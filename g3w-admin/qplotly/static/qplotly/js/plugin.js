@@ -67,7 +67,7 @@
       //end query results charts
 
       //render charts
-      this.changeCharts    = debounce(this.changeCharts.bind(this), 600);
+      this.changeCharts    = debounce(this.changeCharts.bind(this));
 
       // loop over plots
       this.config.plots.forEach(plot => {
@@ -91,6 +91,8 @@
         layer.on('filtertokenchange', this.changeCharts)                         // reload charts after changing filter
       });
 
+      console.log(this.config.plots)
+
       QUERY.addLayersPlotIds([...layersId]);
       QUERY.on('show-chart', this.showContainer);
       QUERY.on('hide-chart', this.clearContainers);
@@ -110,8 +112,6 @@
         }
 
         await i18n(ApplicationState.language);
-
-        console.log(this.config.plots);
 
         // multi plot selector
         const sidebar = this._sidebar = this.createSideBarComponent({
@@ -269,31 +269,31 @@
       // plots that have id belong to plotIds array set by check uncheck plot on sidebar interface
       if (!layerIds && plotIds) {
         plots = [];
+        //loop throught plot ids
         plotIds.forEach(plotId => {
           // check if is child of already show plots
-          let added = this.config.plots.find(p => 
-            p.show &&
-            p.id !== plotId &&
-            // find a plot that has withrelations array and with relationLayer the same layer id belong to plot qgis_layer_id
-            p._rel?.relations.some(r =>
-              r.relationLayer === this.config.plots.find(p => p.id === plotId).qgs_layer_id &&
-              (
-                null === p._rel.data ||
-                undefined === p._rel.data[r.relationId] ||
-                undefined === p._rel.data[r.relationId].find(r => r.id === plotId)
+          const added = this.config.plots
+            .filter(({ show }) => show) //filter only show plots
+            .find(p =>
+              plotId !== p.id // not equal to current plotId (relation plot)
+              // find a plot that has relations array and with relationLayer the same layer id belong to plot qgis_layer_id
+              && p._rel?.relations.find(r =>
+                r.relationLayer === this.config.plots.find(p => plotId === p.id).qgs_layer_id
+                && (
+                  null === p._rel.data
+                  || undefined === p._rel?.data[r.relationLayer]
+                  || undefined === p._rel?.data[r.relationLayer].find(r => r.id === plotId)
+                )
               )
-            )
-          );
-          // if not find add plot by plotId
-          if (!added) {
-            added = this.config.plots.find(p => p.id === plotId)
-          }
+            ) || this.config.plots.find(p => p.id === plotId)
           // check if already (in case of parent plots) added to plots
           if (!plots.some(p => p === added)) {
+            added.loaded = false; //need to force to se loaded false in case of father plot that has already load a child plot
             plots.push(added);
           }
         });
       }
+
 
       // plots that have attribute show to true and not in relation with other plot show
       // if not belong to show plot father relation
@@ -323,7 +323,7 @@
         })
       }
 
-      const order   = ( /*layerIds &&*/ plots.map(p => p.id)); // order of plot ids
+      const order   = ( layerIds ? plots.map(p => p.id) : this.config.plots.filter(({ show }) => show) ).map(p => p.id); // order of plot ids
       const charts  = {};
       const c_cache = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
       const r_cache = new Set(); // cache already loaded relationIds
@@ -332,76 +332,75 @@
       const d = await Promise
         .allSettled(
           plots.flatMap(plot => {
-          const promises = []; // promises array
-      
-          let promise;
-      
-          // no request server request is needed plot is already loaded (show / relation)
-          if (
-            (plot.loaded && !plot._rel) ||
-            (
-              plot.loaded && !plot._rel?.data && 0 === this.config.plots
-                .filter(p => p.show && plot._rel.relations.some(r => p.qgs_layer_id === r.relationLayer))
-                // not child
-                .reduce((nc, p) => {
-                  nc += (Object.values(plot._rel.data).some(d => d.some(d => d.id === p.id))) ? 0 : 1;
-                  return nc;
-                }, 0)
-            )
-          ) {
-            return Promise.resolve({
-              result:    true,
-              data:      plot.data,
-              relations: plot._rel && plot._rel.data,
-            });
-          }
-
-          // data coming from father plots
-          let data;
-
-          // charts relations
-          if (
-            undefined !== rel ||                                 // relation data is passed by query result service
-            this.config.plots.filter(p => p.show).length <= 1 || // single plot 
-            !this.config.plots.some(p => {                       // find if is a plots that belong to plot father
-              if (p.show && p.id !== plot.id && Object.values(p._rel?.data ?? {}).some(d => d.some(d => { if (d.id === plot.id) { data = d.data; return true; } }))) {
-                promises.push(Promise.resolve({ result: true, data: [ data ] }));
-                return true;
-              }
-            })
-          ) {
-            [undefined]
-              .concat(this.state?.rel?.relations.filter(r => plot.qgs_layer_id === r.referencingLayer).map(r => `${r.id}|${this.state.rel.fid}`) ?? [])
-              .forEach(r => {
-                c_cache.push(plot);
-                promise = plot.loaded
-                  ? Promise.resolve({ data: plot.data })
-                  : XHR.get({
-                      url: `/qplotly/api/trace/${this.config?.gid.split(':')[1]}/${plot.qgs_layer_id}/${plot.id}/`,
-                      params: {
-                        relationonetomany: r,
-                        filtertoken: ApplicationState.tokens.filtertoken || undefined,
-                        // withrelations parameter (check if plot has relation child → default: undefined)
-                        withrelations: plot._rel?.relations.filter(r => {
-                          if (this.config.plots.some(p => p.show && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
-                            r_cache.add(r.id);
-                            plot.loaded = false;
-                            return true;
-                          }
-                        })
-                        .map(r => r.id)
-                        .join(',')
-                        || undefined,
-                        // in_bbox parameter (in case of tool map toggled)
-                        in_bbox: (this.state._moveend.plotIds.length > 0 ? -1 !== this.state._moveend.plotIds.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
-                      }
-                  });
-                promises.push(promise);
+            const promises = []; // promises array
+            let promise;
+            // no request server request is needed plot is already loaded (show / relation)
+            if (
+              (plot.loaded && !plot._rel) ||
+              (
+                plot.loaded && !plot._rel?.data && 0 === this.config.plots
+                  .filter(p => p.show && plot._rel.relations.some(r => p.qgs_layer_id === r.relationLayer))
+                  // not child
+                  .reduce((nc, p) => {
+                    nc += (Object.values(plot._rel.data).some(d => d.some(d => d.id === p.id))) ? 0 : 1;
+                    return nc;
+                  }, 0)
+              )
+            ) {
+              return Promise.resolve({
+                result:    true,
+                data:      plot.data,
+                relations: plot._rel && plot._rel.data,
               });
-          }
-          return promises;
+            }
+
+            // data coming from father plots
+            let data;
+
+            // charts relations
+            if (
+              undefined !== rel ||                                 // relation data is passed by query result service
+              this.config.plots.filter(p => p.show).length <= 1 || // single plot
+              !this.config.plots.some(p => {                       // find if is a plots that belong to plot father
+                if (p.show && p.id !== plot.id && Object.values(p._rel?.data ?? {}).some(d => d.some(d => { if (d.id === plot.id) { data = d.data; return true; } }))) {
+                  promises.push(Promise.resolve({ result: true, data: [ data ] }));
+                  return true;
+                }
+              })
+            ) {
+              [undefined]
+                .concat(this.state?.rel?.relations.filter(r => plot.qgs_layer_id === r.referencingLayer).map(r => `${r.id}|${this.state.rel.fid}`) ?? [])
+                .forEach(r => {
+                  c_cache.push(plot);
+                  promise = plot.loaded
+                    ? Promise.resolve({ data: plot.data })
+                    : XHR.get({
+                        url: `/qplotly/api/trace/${this.config?.gid.split(':')[1]}/${plot.qgs_layer_id}/${plot.id}/`,
+                        params: {
+                          relationonetomany: r,
+                          filtertoken: ApplicationState.tokens.filtertoken || undefined,
+                          // withrelations parameter (check if plot has relation child → default: undefined)
+                          withrelations: plot._rel?.relations.filter(r => {
+                            if (this.config.plots.some(p => p.show && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
+                              r_cache.add(r.id);
+                              plot.loaded = false;
+                              return true;
+                            }
+                          })
+                          .map(r => r.id)
+                          .join(',')
+                          || undefined,
+                          // in_bbox parameter (in case of tool map toggled)
+                          in_bbox: (this.state._moveend.plotIds.length > 0 ? -1 !== this.state._moveend.plotIds.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
+                        }
+                    });
+                  promises.push(promise);
+                });
+            }
+            return promises;
         })
       );
+
       d.forEach(({ status, value }, index) => {
         const is_error = 'fulfilled' !== status || !value.result; // some error occurs during get data from server
         const plot     = c_cache[index];
@@ -436,7 +435,6 @@
 
         // request has valid response
         const { relations } = value;
-
         // add data to relations
         if (relations && !plot._rel.data) {
           plot._rel.data = relations;
@@ -455,23 +453,23 @@
                 .forEach(p => {
                   p.loaded            = true;
                   p.data              = r.data;
-                  p.plot.layout.title = `${this.state._relNames[id]} ${p.plot.label}`;
+                  p.plot.layout.title = `${this.state._relNames[id]} ${p.label}`;
                   // get father filter plots
                   if (plot.filters.length) {
                     p.filters.push(`relation.${plot.filters[0]}`);
                   }
                   _setActiveFilters(plot);
                   /** @FIXME add description */
-                  if (!charts[plot.id]) {
-                    charts[plot.id] = [];
+                  if (!charts[p.id]) {
+                    charts[p.id] = [];
                   }
-                  charts[plot.id].push({
-                    filters: plot.filters,
-                    layout:  plot.plot.layout,
-                    tools:   plot.tools,
-                    layerId: plot.qgs_layer_id,
-                    title:   plot.plot.layout.title,
-                    data:    (is_error ?? false) ? null : plot.data[0],
+                  charts[p.id].push({
+                    filters: p.filters,
+                    layout:  p.plot.layout,
+                    tools:   p.tools,
+                    layerId: p.qgs_layer_id,
+                    title:   p.plot.layout.title,
+                    data:    (is_error ?? false) ? null : p.data[0],
                   });
               });
             })
@@ -711,7 +709,7 @@
     }
 
     async togglePlot(id) {
-      const plot = this.config.plots.find(p => p.id === id);
+      const plot = this.config.plots.find(p => id === p.id);
 
       // whether geolayer tools is show
       const has_geo = plot.tools.geolayer.show;
@@ -768,8 +766,6 @@
       }
 
       const plotIds = plot.show ? [plot.id] : this.clearData(plot);
-
-      console.log(plot, plotIds);
 
       if (plot.show || (!plot.show && plotIds.length > 0)) {
         this.emit('change-charts', await this.getCharts({ plotIds }));
