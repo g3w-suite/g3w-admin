@@ -292,7 +292,7 @@ export default ({
               this.$refs[`${plotId}`][0].innerHTML = '';
               // no data component
               setTimeout(() => this.$refs[`${plotId}`][0].appendChild((new Vue.extend({ 
-                template: `
+                template: /* html */ `
 <div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
 <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.layout && chart.layout.title ? ' - ' + chart.layout.title : ''} </h4>
 <div v-t-plugin="qplotly.no_data" style="font-weight: bold;" class="skin-color"></div>
