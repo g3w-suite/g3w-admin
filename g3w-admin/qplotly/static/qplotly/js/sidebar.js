@@ -275,9 +275,7 @@ export default ({
       await this.$nextTick();
 
       const promises = [];
-
-      console.log(this.charts, this.order)
-
+      
       // loop through loop plot ids order and draw Plotly Chart
       this.order.forEach(plotId => {
         let promise;
@@ -293,10 +291,10 @@ export default ({
               // no data component
               setTimeout(() => this.$refs[`${plotId}`][0].appendChild((new Vue.extend({ 
                 template: /* html */ `
-<div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
-<h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.layout && chart.layout.title ? ' - ' + chart.layout.title : ''} </h4>
-<div v-t-plugin="qplotly.no_data" style="font-weight: bold;" class="skin-color"></div>
-</div>`
+                  <div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
+                  <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.layout && chart.layout.title ? ' - ' + chart.layout.title : ''} </h4>
+                  <div v-t-plugin="qplotly.no_data" style="font-weight: bold;" class="skin-color"></div>
+                  </div>`
               })()).$mount().$el));
             }
           });
@@ -413,7 +411,7 @@ export default ({
       layerIds: this.ids, // provided by query result service otherwise is undefined
       rel:      this.rel, // provided by query result service otherwise is undefined
     });
-
+    
     // set charts
     await this.setCharts({ charts, order });
 
