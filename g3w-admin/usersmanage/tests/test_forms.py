@@ -51,6 +51,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'admin01_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk], # required also fro admin1 and admin2
@@ -65,6 +66,13 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         u = User.objects.get(username='admin01_test')
         self.assertTrue(u.is_superuser)
         self.assertTrue(u.is_staff)
+        self.assertTrue(u.is_active)
+
+        # Check password is not changed making a login
+        self.client.logout()
+        login = self.client.login(username='admin01_test', password=self.users_password)
+        self.assertTrue(login)
+        self.client.logout()
 
         u.delete()
         del(u)
@@ -74,6 +82,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'admin01_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk],  # required also for admin1 and admin2
@@ -109,6 +118,11 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertTrue(u.is_superuser)
         self.assertTrue(u.is_staff)
 
+        # Check password is not changed making a login
+        login = self.client.login(username='admin01_test_updated', password=self.users_password)
+        self.assertTrue(login)
+        self.client.logout()
+
         u.delete()
         del(u)
 
@@ -138,6 +152,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'admin02_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk],
@@ -171,6 +186,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'editor1_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': False,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk, self.main_roles[G3W_VIEWER1].pk],  # required also for admin1 and admin2
@@ -208,6 +224,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'editor2_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR2].pk],
@@ -253,6 +270,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': True,
             'is_superuser': False,
             'is_staff': False,
             'groups': [],
@@ -272,6 +290,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': 'on',
             'is_superuser': 'on',
             'is_staff': 'off',
             'groups': [],
@@ -286,6 +305,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': 'on',
             'is_superuser': 'off',
             'is_staff': 'on',
             'groups': [],
@@ -300,6 +320,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': 'on',
             'is_superuser': 'on',
             'is_staff': 'on',
             'groups': [],
@@ -319,6 +340,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': True,
             'is_superuser': False,
             'is_staff': False,
             'groups': [self.main_roles[G3W_EDITOR1].pk, self.main_roles[G3W_EDITOR2].pk],

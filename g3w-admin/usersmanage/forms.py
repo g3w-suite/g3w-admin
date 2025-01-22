@@ -538,12 +538,32 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
 
     def save(self, commit=True):
-        user = super(UserCreationForm, self).save(commit=False)
+
+        # Not inherit from ancestor for new Django 4.2 UserCreationForm
+        if self.errors:
+            raise ValueError(
+                "The %s could not be %s because the data didn't validate."
+                % (
+                    self.instance._meta.object_name,
+                    "created" if self.instance._state.adding else "changed",
+                )
+            )
+        # If not committing, add a method to the form to allow deferred
+        # saving of m2m data.
+        self.save_m2m = self._save_m2m
+
+        user = self.instance
+
         # if editor maps groups user add viewer maps groups group to the user saved
         if commit:
+
+            user.save()
+            if hasattr(self, "save_m2m"):
+                self.save_m2m()
+
             if self.cleaned_data['password1']:
                 user.set_password(self.cleaned_data['password1'])
-            user.save()
+                user.save()
 
             # for save groups
             if 'groups' not in self.cleaned_data:
@@ -722,16 +742,12 @@ class G3WUserUpdateForm(G3WUserForm):
                                 widget=forms.PasswordInput, required=False,
                                 help_text=_("Enter the same password as above, for verification."))
 
-    password = ReadOnlyPasswordHashField()
-
     def clean_username(self):
         """Reject usernames that differ only in case."""
         username = self.cleaned_data.get("username")
 
         return username
 
-    def clean_password(self):
-        return self.initial['password']
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
