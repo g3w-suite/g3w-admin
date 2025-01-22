@@ -110,7 +110,7 @@
         // multi plot selector
         const sidebar = this._sidebar = this.createSideBarComponent({
           data: () => ({ service: this }),
-          template: `
+          template: /* html */ `
 <ul class="treeview-menu" style="padding: 10px; color:#FFF;">
   <li v-for="plot in service.config.plots" :key="plot.id">
     <input type="checkbox" :id="plot.id" @change="service.togglePlot(plot.id)" v-model="plot.show" class="magic-checkbox" /><label :class="{'g3w-disabled': service.state.chartsloading }" :for="plot.id" style="display:flex; justify-content: space-between; align-items: center;"><span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.plot.type }}</label>
@@ -544,7 +544,7 @@
             headertools: [
               Vue.extend({
                 data: () => ({ service: this }),
-                template:`
+                template: /* html */ `
 <div
   v-if  = "service.state.tools.map.show"
   class = "qplotly-tools"
