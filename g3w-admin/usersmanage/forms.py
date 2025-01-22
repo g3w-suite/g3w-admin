@@ -14,6 +14,7 @@ from django.forms import (
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import (
+BaseUserCreationForm,
     UserCreationForm,
     ReadOnlyPasswordHashField,
     AuthenticationForm,
@@ -565,6 +566,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 user.set_password(self.cleaned_data['password1'])
                 user.save()
 
+
             # for save groups
             if 'groups' not in self.cleaned_data:
                 self.cleaned_data['groups'] = self.request.user.groups.all()
@@ -747,7 +749,6 @@ class G3WUserUpdateForm(G3WUserForm):
         username = self.cleaned_data.get("username")
 
         return username
-
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
