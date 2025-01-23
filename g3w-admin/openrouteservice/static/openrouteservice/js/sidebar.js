@@ -2,7 +2,7 @@ const { ApplicationState, ApplicationService } = g3wsdk.core;
 const Inputs                                   = g3wsdk.gui.vue.Inputs.InputsComponents;
 const { tPlugin }                              = g3wsdk.core.i18n;
 const { GUI }                                  = g3wsdk.gui;
-const { XHR, colorHEXToRGB }                   = g3wsdk.core.utils;
+const { XHR }                                  = g3wsdk.core.utils;
 const { CatalogLayersStoresRegistry }          = g3wsdk.core.catalog;
 const { TaskService }                          = g3wsdk.core.task;
 const { ProjectsRegistry }                     = g3wsdk.core.project;
@@ -282,7 +282,7 @@ export default ({
       if (qgis_layer_id) {
         CatalogLayersStoresRegistry.getLayerById(qgis_layer_id)?.change()
       } else {
-        ApplicationService.reloadCurrentProject();
+        ApplicationService.changeProject({ gid: ApplicationState.project.getGid() }); // reload current project
       }
     },
 
@@ -311,9 +311,15 @@ export default ({
         if ('interval' === name) {
           value = this.APP.data.ors.range.length > 1 ? null : (1 * value);
         }
-        
+      
+        // HEX to RGB
         if ('color' === name) {
-            value = colorHEXToRGB(value);
+            value = value ?? '#FFFFFF';
+            value = ([
+              parseInt(value.substr(1,2), 16),
+              parseInt(value.substr(3,2), 16),
+              parseInt(value.substr(5,2), 16)
+            ]);
         }
         
         if ('from_layer' === name) {
