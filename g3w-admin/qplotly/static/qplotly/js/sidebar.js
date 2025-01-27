@@ -69,7 +69,7 @@ export default ({
                 >
                   <span
                     class  = "action-button-icon"
-                    :class = "g3wtemplate.getFontClass('filter')"
+                    :class = "$fa('filter')"
                   ></span>
                 </span>
 
@@ -85,7 +85,7 @@ export default ({
                 >
                   <span
                     class  = "action-button-icon"
-                    :class = "g3wtemplate.getFontClass('map')"
+                    :class = "$fa('map')"
                   ></span>
                 </span>
 

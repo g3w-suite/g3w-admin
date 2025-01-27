@@ -94,13 +94,13 @@ export default ({
         class       = "sidebar-button skin-button btn btn-block"
         v-disabled  = "!validRangeDates || range.value === 0"
         @click.stop = "fastBackwardForward(-1)"
-      ><span :class = "g3wtemplate.getFontClass('fast-backward')"></span></button>
+      ><span :class = "$fa('fast-backward')"></span></button>
       
       <button
         class       = "sidebar-button skin-button btn btn-block"
         v-disabled  = "!validRangeDates || range.value <= 0"
         @click.stop = "stepBackwardForward(-1)"
-      ><span :class = "g3wtemplate.getFontClass('step-backward')"></span></button>
+      ><span :class = "$fa('step-backward')"></span></button>
       
       <button
         class       = "sidebar-button skin-button btn btn-block"
@@ -108,32 +108,32 @@ export default ({
         v-disabled  = "!validRangeDates || range.value <= 0"
         style       = "transform: rotate(180deg)"
         @click.stop = "run(-1)"
-      ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
+      ><span :class = "$fa('run')"></span></button>
       
       <button
         class       = "sidebar-button skin-button btn btn-block"
         :class      = "{ toggled: status === 0 }"
         @click.stop = "pause"
-      ><span :class = "g3wtemplate.getFontClass('pause')"></span></button>
+      ><span :class = "$fa('pause')"></span></button>
       
       <button
         class       = "sidebar-button skin-button btn btn-block"
         :class      = "{toggled: status === 1}"
         v-disabled  = "!validRangeDates || range.value >= range.max"
         @click.stop = "run(1)"
-      ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
+      ><span :class = "$fa('run')"></span></button>
       
       <button
         class       = "sidebar-button skin-button btn btn-block"
         v-disabled  = "!validRangeDates || range.value >= range.max"
         @click.stop = "stepBackwardForward(1)"
-      ><span :class = "g3wtemplate.getFontClass('step-forward')"></span></button>
+      ><span :class = "$fa('step-forward')"></span></button>
       
       <button
         class       = "sidebar-button skin-button btn btn-block"
         v-disabled  = "!validRangeDates || range.value === range.max"
         @click.stop = "fastBackwardForward(1)"
-      ><span :class = "g3wtemplate.getFontClass('fast-forward')"></span></button>
+      ><span :class = "$fa('fast-forward')"></span></button>
 
     </div>
 

@@ -119,7 +119,10 @@
           template: /* html */ `
             <ul class="treeview-menu" style="padding: 10px; color:#FFF;">
               <li v-for="plot in service.config.plots" :key="plot.id">
-                <input type="checkbox" :id="plot.id" @change="service.togglePlot(plot.id)" v-model="plot.show" class="magic-checkbox" /><label :class="{'g3w-disabled': service.state.chartsloading }" :for="plot.id" style="display:flex; justify-content: space-between; align-items: center;"><span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.plot.type }}</label>
+                <input type="checkbox" :id="plot.id" @change="service.togglePlot(plot.id)" v-model="plot.show" class="magic-checkbox" />
+                <label :for="plot.id" style="display:flex; justify-content: space-between;">
+                  <span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.plot.type }}
+                </label>
               </li>
             </ul>`,
         }, this.config.sidebar);
@@ -508,72 +511,69 @@
      * 
      * @fires change-charts
      */
-    showChart(bool, ids, container, rel) {
-      return new Promise(async resolve => {
+    async showChart(bool, ids, container, rel) {
+      /** @FIXME add description */
+      if (!bool && !container) {
+        GUI.closeContent();
+      }
 
-        /** @FIXME add description */
-        if (!bool && !container) {
-          GUI.closeContent();
-        }
+      /** @FIXME add description */
+      if (!bool && container) {
+        this.clearContainers(container);
+      }
 
-        /** @FIXME add description */
-        if (!bool && container) {
-          this.clearContainers(container);
-        }
+      /** @FIXME add description */
+      if (!bool) {
+        return;
+      }
 
-        /** @FIXME add description */
-        if (!bool) {
-          return resolve();
-        }
+      // internal g3w Component
 
-        // internal g3w Component
-        const component = new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
-            ids,
-            rel,
-            service: this
-          }
-        });
+      const content = new Component({
+        title: "qplotly",
+        visible: true,
+        ids,
+        rel,
+        service: this,
+      });
 
-        const content = new Component({
-          title: "qplotly",
-          visible: true,
+      content.internalComponent = new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
           ids,
           rel,
-          service: this,
-        });
+          service: this
+        }
+      });
 
-        content.internalComponent = component;
+      // need to be async
+      setTimeout(() => {
 
-        // need to be async
-        setTimeout(() => {
+        // when not called from Query Result Service
+        if (container) {
+          content.internalComponent.$once('hook:mounted', async function() { container.append(this.$el); });
+          content.internalComponent.$mount();
+          this.state.containers.find(q => container.selector === q.container.selector).component = content.internalComponent;
+          return;
+        }
 
-          // when not called from Query Result Service
-          if (container) {
-            component.$once('hook:mounted', async function() { container.append(this.$el); });
-            component.$mount();
-            this.state.containers.find(q => container.selector === q.container.selector).component = component;
-            return;
-          }
+        // when called by sidebar item (once chartsReady event resolve promise)
 
-          // when called by sidebar item (once chartsReady event resolve promise)
+        this.state.tools.map.show = this.state.geolayer && !this.state.rel;
 
-          this.state.tools.map.show = this.state.geolayer && !this.state.rel;
-
-          // show chart in sidebar
-          GUI.showContent({
-            content,
-            title: 'plugins.qplotly.title',
-            style: {
-              title: {
-                fontSize: '1.3em',
-              }
-            },
-            closable: false,
-            // set header action tools (eg. map filter)
-            headertools: [
-              Vue.extend({
-                data: () => ({ service: this }),
-                template: /* html */ `
+        // show chart in sidebar
+        GUI.showContent({
+          content,
+          title: 'plugins.qplotly.title',
+          style: {
+            title: {
+              fontSize: '1.3em',
+            }
+          },
+          closable: false,
+          // set header action tools (eg. map filter)
+          headertools: [
+            Vue.extend({
+              data: () => ({ service: this }),
+              template: /* html */ `
 <div
   v-if  = "service.state.tools.map.show"
   class = "qplotly-tools"
@@ -585,7 +585,7 @@
     data-placement     = "bottom"
     data-toggle        = "tooltip"
     style              = "font-weight: bold; margin: 3px"
-    :class             = "[ g3wtemplate.getFontClass('map'), service.state.tools.map.toggled ? 'toggled' : '',]"
+    :class             = "[ $fa('map'), service.state.tools.map.toggled ? 'toggled' : '']"
     @click.stop        = "service.updateCharts()"
     v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
   ></span>
@@ -595,8 +595,6 @@
             });
 
         });
-
-      });
     }
 
     /**

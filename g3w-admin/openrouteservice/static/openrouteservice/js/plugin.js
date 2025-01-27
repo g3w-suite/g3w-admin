@@ -36,7 +36,7 @@
         sidebar.onbefore('setOpen', async b => {
           this._panel = this._panel || new g3wsdk.gui.Panel({
             service: this,
-            title: 'OPENROUTESERVICE',
+            title: 'Open Route Service',
             panel: new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({
               propsData: { service: this }
             }),

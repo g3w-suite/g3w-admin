@@ -38,11 +38,11 @@ def set_initconfig_value(sender, **kwargs):
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'sidebar': {
                 'id': 'openrouteservice',
-                'title': 'OPENROUTESERVICE',
+                'title': 'Open Route Service',
                 'open': False,
                 'collapsible': False,
-                'icon': 'layers',
-                'iconColor': 'purple',
+                'icon': 'fa fa-car',
+                # 'iconColor': 'purple',
                 'mobile': True,
                 'sidebarOptions': {
                     'position': 1
