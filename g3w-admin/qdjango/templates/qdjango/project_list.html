@@ -106,7 +106,7 @@
                             {% if object.thumbnail  %}
                             <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ object.thumbnail }}" />
                             {% else %}
-                            <img style="height:60px;" class="img-responsive" src="https://via.placeholder.com/80x60" />
+                            <img style="height:60px;" class="img-responsive" src="{{ SETTINGS.PLACEHOLD_SERVICE }}80x60?text=MAP" />
                             {% endif %}
                             </a>
                         </td>
