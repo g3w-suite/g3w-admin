@@ -707,7 +707,7 @@ class BaseVectorApiView(G3WAPIView):
 
             for i in range(len(feature_collection['features'])):
                 f = feature_collection['features'][i]
-                f['id'] = fids_map[f['id']]server_fid
+                f['id'] = fids_map[f['id']]
 
             api_vector_data = {
                 'data': feature_collection,
