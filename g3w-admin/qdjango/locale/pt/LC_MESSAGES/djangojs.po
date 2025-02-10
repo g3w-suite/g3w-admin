@@ -1,0 +1,466 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-10 08:42+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: qdjango/static/qdjango/js/widget.js:270
+msgid "General configuration for search widget and results"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:278
+msgid "Search title"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:285
+msgid "Paginate resutls"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:329
+msgid "Client search title identification"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:334
+msgid "Check it if you want paginate the search results"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:377
+msgid "No"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:378
+msgid "Yes"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:383
+msgid "equal"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:384
+msgid "greater than"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:385
+msgid "lower than"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:386
+msgid "not equal"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:387
+msgid "greater than equal"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:388
+msgid "lower than equal"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:389
+#: qdjango/static/qdjango/js/widget.js:424
+msgid "like case sensitive"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:407
+#: qdjango/static/qdjango/js/widget.js:425
+msgid "like not case sensitive"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:454
+msgid "Search field settings"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:467
+msgid "Field"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:472
+msgid "Widget"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:477
+msgid "Alias"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:482
+#: qdjango/static/qdjango/js/widget.js:1403
+#: qdjango/static/qdjango/js/widget.js:1658
+#: qdjango/static/qdjango/js/widget.js:1860
+#: qdjango/static/qdjango/js/widget.js:2224
+msgid "Description"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:489
+msgid "Number of digits"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:496
+msgid "Comparison operator"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:501
+msgid "Use Relation Reference"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:504
+msgid ""
+"This field has a 'ReletaionReference' form widget active, do you want use if "
+"for searching?"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:511
+msgid "Dependency"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:516
+msgid "Strictly dependent"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:534
+msgid "Logical join"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:552
+msgid "Alias field name for client search input"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:857
+#: qdjango/static/qdjango/js/widget.js:977
+msgid "Other searching layers"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:861
+#: qdjango/static/qdjango/js/widget.js:981
+msgid "Select one or more additional layers to search on"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:874
+#: qdjango/static/qdjango/js/widget.js:1007
+msgid "Relations"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:878
+#: qdjango/static/qdjango/js/widget.js:1011
+msgid ""
+"This layer is a child in a relation, if you want to excute the search on "
+"father layer of relation, select the relative relation"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:909
+#: qdjango/static/qdjango/js/widget.js:1034
+#: qdjango/static/qdjango/js/widget.js:1561
+#: qdjango/static/qdjango/js/widget.js:1767
+msgid "Add"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1129
+msgid "QGIS Expression"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1144
+#: qdjango/static/qdjango/js/widget.js:1956
+msgid "Saved"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1227
+#: qdjango/static/qdjango/js/widget.js:2106
+#: qdjango/static/qdjango/js/widget.js:2911
+msgid "Form title"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1303
+msgid ""
+"Define, for each user and/or group of users, viewing/editing rules based on "
+"the QGIS expressions."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1307
+msgid ""
+"Define, for each user and/or group of users, viewing/editing rules based on "
+"the language or SQL dialect of the associated provider."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1379
+#: qdjango/static/qdjango/js/widget.js:1382
+msgid "New alphanumeric constraints"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1397
+#: qdjango/static/qdjango/js/widget.js:2218
+#: qdjango/static/qdjango/js/widget.js:2391
+#: qdjango/static/qdjango/js/widget.js:2775
+msgid "Actions"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1400
+#: qdjango/static/qdjango/js/widget.js:1650
+#: qdjango/static/qdjango/js/widget.js:2776
+msgid "Name"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1407
+#: qdjango/static/qdjango/js/widget.js:2227
+msgid "For visualization"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1407
+#: qdjango/static/qdjango/js/widget.js:2227
+msgid "For editing"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1412
+msgid "Subset rules count"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1415
+msgid "Expression rules count"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1461
+msgid "Update alphanumeric constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1471
+msgid "Constraint Rules based on provider's language / SQL dialect"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1482
+msgid "Constraint Rules based on QGIS Expression"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1624
+#: qdjango/static/qdjango/js/widget.js:1830
+msgid "Save"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1629
+#: qdjango/static/qdjango/js/widget.js:1835
+msgid "Delete"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1646
+msgid "Set a name and a possible description for the alphanumeric constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1669
+#: qdjango/static/qdjango/js/widget.js:1871
+msgid "Active for visualization"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1680
+#: qdjango/static/qdjango/js/widget.js:1882
+msgid "Active for editing"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1695
+msgid "Provider's language / SQL dialect Rules"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1700
+msgid "QGIS Expression Rules"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1850
+msgid "Select the constraint layer, only Polygon or MultiPolygon geometry"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1854
+msgid "Constraint layer"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1893
+msgid "Autozoom on map bootstrap"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:1906
+msgid "Manage geo-constaints"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2200
+msgid "New geo constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2203
+msgid "New constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2221
+msgid "Layer constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2229
+msgid "Autozoom"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2230
+msgid "Rules count"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2275
+msgid "Update constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2286
+msgid "Geo Constraint Rules"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2377
+msgid "Create New Column Level Constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2380
+msgid "New Column Level Constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2392
+msgid "User"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2393
+msgid "Group"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2394
+msgid "Restricted Fields"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2405
+msgid "Delete Column Level Constraint from the layer."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2416
+#: qdjango/static/qdjango/js/widget.js:2555
+msgid "Edit Column Level Constraint."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2462
+msgid "Delete Column Level Constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2463
+msgid "Are you sure to delete column constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2475
+msgid "Edit Column Level Constraint"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2550
+msgid "Define hidden columns for a user or a group."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2551
+msgid "Create a new Column Level Constraint."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2659
+msgid "You must select a 'group' or a 'user'!"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2666
+msgid ""
+"You cannot select both a 'group' and a 'user': they are mutually exclusive!"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2681
+msgid "Hidden Fields is required!"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2714
+msgid "User (required if group is not set)"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2721
+msgid "Group (required if user is not set)"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2728
+msgid "Hidden Fields (required)"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2730
+msgid "Select the hidden fields"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2757
+msgid "Create New Style From QML"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2760
+msgid "New Style From QML"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2777
+msgid "Current"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2790
+msgid "Delete style from the layer."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2802
+msgid "Edit style name or replace the style QML."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2846
+msgid "Delete Style"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2847
+msgid "Are you sure to delete style"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2858
+msgid "Edit Style"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2905
+msgid "Create a new style from an uploaded QML file."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2907
+msgid "Edit style name or replace the style from an uploaded QML file."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2941
+msgid "Style name is required!"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2947
+msgid "QML is required!"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:2955
+msgid "A style with this name already exists!"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:3054
+msgid ""
+"The style defined in the uploaded QML must be compatible with the target "
+"layer."
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:3056
+msgid "Style name (required)"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:3058
+msgid "Enter the unique name of the new style"
+msgstr ""
+
+#: qdjango/static/qdjango/js/widget.js:3065
+msgid "Upload layer style QML file"
+msgstr ""
