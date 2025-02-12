@@ -8,7 +8,7 @@ sitetrees = (
 
      # ITALIAN
      G3Wtree(
-          'core',
+          'core_it',
           title='Menu',
           module='core',
           items=[
@@ -98,7 +98,7 @@ sitetrees = (
 
      # ENGLISH
      G3Wtree(
-          'core_en',
+          'core',
           title='Menu',
           module='core',
           items=[
