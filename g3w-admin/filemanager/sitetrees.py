@@ -46,6 +46,26 @@ sitetrees = (
         ]
     ),
 
+    # GERMAN
+    G3Wtree(
+        'filemanager_sidebar_right_de',
+        title='STRESS Navbar',
+        module='filemanager',
+        items=[
+            item(
+                'DATEIENVERWALTUNG',
+                '#',
+                type_header=True
+            ),
+            item(
+                'Dateien',
+                'filemanager-home',
+                icon_css_class='fa fa-database',
+                description='Zur Dateiverwaltung...'
+            ),
+        ]
+    ),
+
     # FRENCH
     G3Wtree(
         'filemanager_sidebar_right_fr',

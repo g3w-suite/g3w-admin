@@ -55,7 +55,7 @@ sitetrees = (
 
     # ENGLISH
     G3Wtree(
-        'openrouteservice_en',
+        'openrouteservice',
         title='Openrouteservice',
         module='openrouteservice',
         items=[
@@ -78,6 +78,40 @@ sitetrees = (
                     ),
                     item(
                         'List projects',
+                        'ors-project-list',
+                        url_as_pattern=True,
+                        icon_css_class='fa fa-list'
+                    ),
+                ]
+            ),
+        ]
+    ),
+
+    # GERMAN
+    G3Wtree(
+        'openrouteservice_de',
+        title='Openrouteservice',
+        module='openrouteservice',
+        items=[
+            item(
+                'Openrouteservice',
+                '#',
+                type_header=True
+            ),
+            item(
+                'ORS-Projekte',
+                '#',
+                icon_css_class='fa fa-road',
+                children=[
+                    item(
+                        'Projekt hinzufügen',
+                        'ors-project-add',
+                        url_as_pattern=True,
+                        icon_css_class='fa fa-plus',
+                        access_by_perms=['qdjango.change_project']
+                    ),
+                    item(
+                        'Projektliste',
                         'ors-project-list',
                         url_as_pattern=True,
                         icon_css_class='fa fa-list'
