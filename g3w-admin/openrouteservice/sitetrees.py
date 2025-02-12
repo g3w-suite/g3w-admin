@@ -55,7 +55,7 @@ sitetrees = (
 
     # ENGLISH
     G3Wtree(
-        'openrouteservice_en',
+        'openrouteservice',
         title='Openrouteservice',
         module='openrouteservice',
         items=[
