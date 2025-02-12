@@ -9,7 +9,7 @@ sitetrees = (
 
     # ITALIAN
     G3Wtree(
-          'qdjango',
+          'qdjango_it',
           title='Qdjango',
           module='qdjango',
           items=[
@@ -61,7 +61,7 @@ sitetrees = (
 
      # ENGLISH
      G3Wtree(
-          'qdjango_en',
+          'qdjango',
           title='Qdjango',
           module='qdjango',
           items=[
