@@ -729,7 +729,7 @@ class BaseVectorApiView(G3WAPIView):
                         qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
                         qgis_feature_request.setLimit(-1)
 
-                    self.total_feature_ids = [str(f.id()) for f in get_qgis_features(
+                    self.total_feature_ids = [str(server_fid(f, provider)) for f in get_qgis_features(
                         self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
 
 
