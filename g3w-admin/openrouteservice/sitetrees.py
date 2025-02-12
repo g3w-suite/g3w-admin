@@ -21,7 +21,7 @@ sitetrees = (
 
     # ITALIAN
     G3Wtree(
-        'openrouteservice',
+        'openrouteservice_it',
         title='Openrouteservice',
         module='openrouteservice',
         items=[
