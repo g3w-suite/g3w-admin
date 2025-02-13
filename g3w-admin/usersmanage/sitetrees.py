@@ -8,7 +8,7 @@ sitetrees = (
 
      # ITALIAN 
      G3Wtree(
-          'acl',
+          'acl_it',
           title='ACL',
           module='usermanage',
           items=[
@@ -63,7 +63,7 @@ sitetrees = (
 
      # ENGLISH
      G3Wtree(
-          'acl_en',
+          'acl',
           title='ACL',
           module='usermanage',
           items=[
