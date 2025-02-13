@@ -715,6 +715,8 @@ class QgisProjectLayer(XmlData):
                         visibility_expression = element.visibilityExpression()
                         if visibility_expression.enabled():
                             expression = visibility_expression.data()
+                            if expression.expression() == '':
+                                raise Exception('Expression is empty')
                             to_ret_node['visibility_expression'] = {
                                 'expression': expression.expression(),
                                 'referenced_columns': list(expression.referencedColumns()),
