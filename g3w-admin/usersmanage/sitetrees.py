@@ -116,6 +116,62 @@ sitetrees = (
           ]
      ),
 
+     # GERMAN
+     G3Wtree(
+          'acl_de',
+          title='ACL',
+          module='usermanage',
+          items=[
+               item(
+                    'ACL',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Benutzer',
+                    '#',
+                    icon_css_class='fa fa-users',
+                    children=[
+                         item(
+                              'Benutzer hinzufügen',
+                              'user-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-user-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Benutzerliste',
+                              'user-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-users'
+                         ),
+                         item(
+                              'Benutzeraktualisierung',
+                              'user-update object.pk',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False
+                         ),
+                         item(
+                              'Gruppenbenutzer hinzufügen',
+                              'user-group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Gruppenbenutzerliste',
+                              'user-group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              access_by_perms=['auth.add_user']
+                         )
+                    ]
+               ),
+          ]
+     ),
+
+
      # FRENCH
      G3Wtree(
           'acl_fr',

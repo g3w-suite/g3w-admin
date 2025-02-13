@@ -10,9 +10,11 @@ __license__   = "MPL 2.0"
 
 from django.urls import path
 from django.contrib.auth.decorators import login_required
+from base.urls import G3W_SITETREE_I18N_ALIAS
 
 from .views import *
 
+G3W_SITETREE_I18N_ALIAS.append('openrouteservice')
 
 urlpatterns = [
 
