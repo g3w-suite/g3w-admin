@@ -105,5 +105,25 @@ sitetrees = (
             ),
         ]
     ),
+
+    # UKRAINIAN
+    G3Wtree(
+        'filemanager_sidebar_right_uk',
+        title='STRESS navabar',
+        module='filemanager',
+        items=[
+            item(
+                'FILE MANAGER',
+                '#',
+                type_header=True
+            ),
+            item(
+                'Files',
+                'filemanager-home',
+                icon_css_class='fa fa-database',
+                description='Go to file manager application...'
+            ),
+        ]
+    ),
 )
 
