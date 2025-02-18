@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 08:40+0000\n"
+"POT-Creation-Date: 2025-02-18 10:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
 #: qdjango/admin.py:76 qdjango/models/projects.py:414
 #: qdjango/models/projects.py:746 qdjango/templates/qdjango/layers_list.html:57
 #: qdjango/templates/qdjango/message/list.html:24
@@ -103,6 +102,12 @@ msgstr ""
 msgid "Max extent is smaller than init map extent"
 msgstr ""
 
+#: qdjango/forms/projects.py:147
+msgid ""
+"Is not possible set Legend position rendering to \"{Project."
+"CLIENT_LEGEND_POSITION['toc']}\" "
+msgstr ""
+
 #: qdjango/forms/projects.py:167 qdjango/templates/qdjango/project_list.html:35
 #: qdjango/templates/qdjango/project_list.html:160
 msgid "URL alias"
@@ -142,10 +147,6 @@ msgstr ""
 
 #: qdjango/forms/projects.py:241
 msgid "Qgis Project"
-msgstr ""
-
-#: qdjango/forms/projects.py:248
-msgid "Translatable fields"
 msgstr ""
 
 #: qdjango/forms/projects.py:273
@@ -1316,27 +1317,27 @@ msgstr ""
 msgid "Current datasource is {}"
 msgstr ""
 
-#: qdjango/utils/data.py:1063
+#: qdjango/utils/data.py:1065
 msgid "The project file is malformed: {}"
 msgstr ""
 
-#: qdjango/utils/data.py:1084 qdjango/utils/data.py:1100
+#: qdjango/utils/data.py:1086 qdjango/utils/data.py:1102
 msgid "Could not read QGIS project file: {}"
 msgstr ""
 
-#: qdjango/utils/data.py:1262 qdjango/utils/data.py:1786
+#: qdjango/utils/data.py:1264 qdjango/utils/data.py:1788
 msgid ""
 "The project contains an embedded group {} from a project that could not be "
 "found {}"
 msgstr ""
 
-#: qdjango/utils/data.py:1761
+#: qdjango/utils/data.py:1763
 msgid ""
 "The project contains an embedded layer {} from a project that could not be "
 "found {}"
 msgstr ""
 
-#: qdjango/utils/data.py:1840
+#: qdjango/utils/data.py:1842
 msgid "The project settings is malformed: {} ----- {}"
 msgstr ""
 
@@ -1449,8 +1450,4 @@ msgstr ""
 
 #: qdjango/views/projects.py:140
 msgid "The project has been modified by G3W-Suite after it was uploaded."
-msgstr ""
-
-#: qdjango/views/projects.py:642
-msgid "same datasource"
 msgstr ""

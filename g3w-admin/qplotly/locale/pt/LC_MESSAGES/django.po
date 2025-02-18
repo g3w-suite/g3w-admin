@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 08:40+0000\n"
+"POT-Creation-Date: 2025-02-18 10:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: qplotly/api/widgets/serializers.py:44
+#, python-brace-format
+msgid ""
+"Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
+"source_layer_id}"
+msgstr ""
 
 #: qplotly/models.py:12
 msgid "XML original settings"
@@ -48,6 +54,12 @@ msgstr ""
 
 #: qplotly/models.py:33
 msgid "XML is not a DataPlotly settings."
+msgstr ""
+
+#: qplotly/models.py:39
+#, python-brace-format
+msgid ""
+"Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
 msgstr ""
 
 #: qplotly/models.py:43
