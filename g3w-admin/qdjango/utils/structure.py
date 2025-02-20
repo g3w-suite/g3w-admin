@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
-from qgis.core import QgsDataSourceUri
+from qgis.core import QgsDataSourceUri, QgsProviderRegistry
 
 import requests
 
@@ -112,7 +112,7 @@ def datasource2dict(datasource):
     return datasourceDict
 
 
-def datasourcearcgis2dict(datasource):
+def datasourcearcgis2dict(datasource: str) -> dict[str, str]:
     """
     Read a ArcGisMapServer datasource string and put data in a python dict
 
@@ -121,16 +121,7 @@ def datasourcearcgis2dict(datasource):
     :rtype: dict
     """
 
-    datasourcedict = {}
-
-    keys = re.findall(r'([A-z][A-z0-9-_]+)=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?', datasource)
-    for k in keys:
-        try:
-            datasourcedict[k] = re.findall(r'{}=[\'"]([#$:_^?+=!*()\'-/@%&\w\."]+)[\'"]'.format(k), datasource)[0]
-        except:
-            pass
-
-    return datasourcedict
+    return {k: str(v) for k, v in QgsProviderRegistry.instance().decodeUri("arcgismapserver", datasource).items()}
 
 
 class QdjangoMetaLayer(CoreMetaLayer):
