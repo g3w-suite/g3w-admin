@@ -357,7 +357,7 @@ class QgisProjectTest(TestCase):
 
     def test_dataSourceToDict(self):
 
-        res = datasource2dict("dbname='data_testing' host=web-gis.postgres.database.azure.com port=5432 sslmode=require user='testing@webgis' password='#\\\'$%?@^&rX43#/' srid=4326 type=Point checkPrimaryKeyUnicity='1' table=\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\" (geom) sql=")
+        res = datasource2dict("dbname='data_testing' host=web-gis.postgres.database.azure.com port=5432 sslmode=require user='testing@webgis' password='#\\\'$%?@^&rX43#/' srid=4326 type=Point checkPrimaryKeyUnicity='1' table=\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\" (geom) sql=", "postgres")
 
         self.assertEqual(res['checkPrimaryKeyUnicity'], '1')
         self.assertEqual(res['dbname'], 'data_testing')
@@ -369,7 +369,7 @@ class QgisProjectTest(TestCase):
         self.assertEqual(
             res['table'], "\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\"")
 
-        res = datasource2dict('dbname=\'data_testing\' user=\'xxx\' password=\'xxx\' host=localhost port=5432 sslmode=disable key=\'id\' srid=4326 type=LineStringZ checkPrimaryKeyUnicity=\'0\' table="centurylink"."Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN" (geom) sql=')
+        res = datasource2dict('dbname=\'data_testing\' user=\'xxx\' password=\'xxx\' host=localhost port=5432 sslmode=disable key=\'id\' srid=4326 type=LineStringZ checkPrimaryKeyUnicity=\'0\' table="centurylink"."Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN" (geom) sql=', "postgres")
         self.assertEqual(
             res['table'], "\"centurylink\".\"Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN\"")
         self.assertEqual(res['checkPrimaryKeyUnicity'], '0')
@@ -382,7 +382,7 @@ class QgisProjectTest(TestCase):
 
         # for Postgis Raster
         res = datasource2dict(
-            "PG:  dbname='geo_demo' host=localhost user=postgres password=postgres port=5432 mode=2 schema='raster' column='rast' table='nasa_density_population' ")
+            "PG:  dbname='geo_demo' host=localhost user=postgres password=postgres port=5432 mode=2 schema='raster' column='rast' table='nasa_density_population' ", "postgres")
         self.assertEqual(res['dbname'], 'geo_demo')
         self.assertEqual(res['table'], 'nasa_density_population')
         self.assertEqual(res['host'], 'localhost')
@@ -394,7 +394,7 @@ class QgisProjectTest(TestCase):
 
         # Issue with finland customer
         res = datasource2dict(
-            'dbname=\'my_db\' host=my.host.name port=5432 user=\'user\' password=\'password\' sslmode=disable key=\'identifier\' checkPrimaryKeyUnicity=\'0\' table="akaa_gk20"."spatial_plan_regulation"')
+            'dbname=\'my_db\' host=my.host.name port=5432 user=\'user\' password=\'password\' sslmode=disable key=\'identifier\' checkPrimaryKeyUnicity=\'0\' table="akaa_gk20"."spatial_plan_regulation"', "postgres")
         self.assertEqual(res['dbname'], 'my_db')
         self.assertEqual(res['table'], '"akaa_gk20"."spatial_plan_regulation"')
         self.assertEqual(res['host'], 'my.host.name')

@@ -13,7 +13,8 @@ from django.utils.translation import gettext_lazy as _
 from lxml import etree
 
 from qgis.core import (
-    QgsProject, QgsMapLayer,
+    QgsProject,
+    QgsMapLayer,
     QgsUnitTypes,
     QgsProjectVersion,
     QgsWkbTypes,
@@ -253,14 +254,14 @@ class QgisProjectLayer(XmlData):
                 if self.datasource.startswith('PG:'):
 
                     # add whitespace to datasource string for re findall
-                    dts = datasource2dict(self.datasource + ' ')
+                    dts = datasource2dict(self.datasource + ' ', self.qgs_layer.providerType())
                     name = re.sub('["\']', "", dts['table'].split('.')[-1])
                 else:
                     name = os.path.splitext(
                         os.path.basename(self.datasource))[0]
         elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
             try:
-                dts = datasource2dict(self.datasource)
+                dts = datasource2dict(self.datasource, self.qgs_layer.providerType())
                 name = dts['table'].split('.')[-1].replace("\"", "")
             except:
 
@@ -1857,7 +1858,7 @@ class QgisProjectSettingsWMS(XmlData):
         :param tag: str xml tag name
         :return: search string
         :rtype: str
-        """
+        """setData
         return '{{{0}}}{1}'.format(self._NS['xlink'], tag)
 
     def _getBBOXLayer(self, layerTree):
