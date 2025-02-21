@@ -133,19 +133,19 @@ sitetrees = (
                 type_header=True
             ),
             item(
-                'ORS Projects',
+                'Проекти ORS',
                 '#',
                 icon_css_class='fa fa-road',
                 children=[
                     item(
-                        'Add project',
+                        'Додати',
                         'ors-project-add',
                         url_as_pattern=True,
                         icon_css_class='fa fa-plus',
                         access_by_perms=['qdjango.change_project']
                     ),
                     item(
-                        'List projects',
+                        'Список проектів',
                         'ors-project-list',
                         url_as_pattern=True,
                         icon_css_class='fa fa-list'

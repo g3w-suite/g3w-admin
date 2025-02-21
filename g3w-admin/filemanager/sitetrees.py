@@ -113,12 +113,12 @@ sitetrees = (
         module='filemanager',
         items=[
             item(
-                'FILE MANAGER',
+                'ФАЙЛОВИЙ МЕНЕДЖЕР',
                 '#',
                 type_header=True
             ),
             item(
-                'Files',
+                'Файли',
                 'filemanager-home',
                 icon_css_class='fa fa-database',
                 description='Go to file manager application...'

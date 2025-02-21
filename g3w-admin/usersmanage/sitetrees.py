@@ -293,39 +293,39 @@ sitetrees = (
                     type_header=True
                ),
                item(
-                    'Users',
+                    'Користувачі',
                     '#',
                     icon_css_class='fa fa-users',
                     children=[
                          item(
-                              'Add user',
+                              'Додати',
                               'user-add',
                               url_as_pattern=True,
                               icon_css_class='fa fa-user-plus',
                               access_by_perms=['auth.add_user']
                          ),
                          item(
-                              'Users list',
+                              'Список користувачів',
                               'user-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-users'
                          ),
                          item(
-                              'User update',
+                              'Оновити',
                               'user-update object.pk',
                               url_as_pattern=True,
                               icon_css_class='fa fa-edit',
                               in_menu=False
                          ),
                          item(
-                              'Add group users',
+                              'Додати до групи',
                               'user-group-add',
                               url_as_pattern=True,
                               icon_css_class='fa fa-plus',
                               access_by_perms=['auth.add_user']
                          ),
                          item(
-                              'Groups users list',
+                              'Список членів групи',
                               'user-group-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-list',

@@ -459,34 +459,34 @@ sitetrees = (
      # UKRAINIAN
      G3Wtree(
           'core_uk',
-          title='Menu',
+          title='Меню',
           module='core',
           items=[
                item(
-                    'MENU',
+                    'МЕНЮ',
                     '#',
                     type_header=True
                ),
                item(
-                    'Dashboard',
+                    'Інформаційна панель',
                     'home',
                     url_as_pattern=True,
                     icon_css_class='fa fa-dashboard'
                ),
                item(
-                    'Cartographic groups',
+                    'Картографічні групи',
                     'group-list',
                     icon_css_class='fa fa-globe',
                     children=[
                          item(
-                              'Add group',
+                              'Додати',
                               'group-add',
                               url_as_pattern=True,
                               icon_css_class='fa fa-plus',
                               access_by_perms=['core.add_group']
                          ),
                          item(
-                              'Groups list',
+                              'Список груп',
                               'group-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-globe',
@@ -494,7 +494,7 @@ sitetrees = (
                               in_breadcrumbs=False
                          ),
                          item(
-                              'Trash',
+                              'Кошик',
                               'group-deactive-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-trash',
@@ -502,7 +502,7 @@ sitetrees = (
                               in_breadcrumbs=True
                          ),
                          item(
-                              'Groups update {{ object.title}}',
+                              'Оновлення груп {{ object.title}}',
                               'group-update object.slug',
                               url_as_pattern=True,
                               icon_css_class='fa fa-edit',
@@ -510,7 +510,7 @@ sitetrees = (
                               alias='group-update'
                          ),
                          item(
-                              'Projects list {{ group.name }}',
+                              'Список проектів {{ group.name }}',
                               'project-list group.slug',
                               url_as_pattern=True,
                               icon_css_class='fa fa-list',
@@ -521,20 +521,20 @@ sitetrees = (
                     ]
                ),
                item(
-                    'Macro Cartographic groups',
+                    'Картографічні макро-групи',
                     'macrogroup-list',
                     access_by_perms=['core.add_macrogroup'],
                     icon_css_class='fa fa-globe',
                     children=[
                          item(
-                              'Add MACRO group',
+                              'Додати',
                               'macrogroup-add',
                               url_as_pattern=True,
                               icon_css_class='fa fa-plus',
                               access_by_perms=['core.add_macrogroup']
                          ),
                          item(
-                              'MACRO groups list',
+                              'Список макро-груп',
                               'macrogroup-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-globe',
