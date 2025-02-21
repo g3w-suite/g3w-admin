@@ -22,60 +22,60 @@ msgstr ""
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 #: caching/forms.py:11
 msgid "Active"
-msgstr ""
+msgstr "Активний"
 
 #: caching/forms.py:14
 msgid "Save as base layer"
-msgstr ""
+msgstr "Зберегти як базовий шар"
 
 #: caching/forms.py:15
 msgid "Base layer title"
-msgstr ""
+msgstr "Назва базового шару"
 
 #: caching/forms.py:16
 msgid "Base layer description"
-msgstr ""
+msgstr "Опис базового шару"
 
 #: caching/forms.py:17
 msgid "Base layer attribution"
-msgstr ""
+msgstr "Походження базового шару"
 
 #: caching/forms.py:27
 msgid "Check on uncheck to activate/deactivate caching layer capabilities:"
-msgstr ""
+msgstr "Вимкніть або увімкніть щоб активувати чи деактивувати кешування:"
 
 #: caching/forms.py:40
 msgid "Reset cache"
-msgstr ""
+msgstr "Очистити кеш"
 
 #: caching/forms.py:40
 msgid "Reset cache for project"
-msgstr ""
+msgstr "Очистити кеш для проекту"
 
 #: caching/forms.py:52
 msgid "Base layer data"
-msgstr ""
+msgstr "Дані базового шару"
 
 #: caching/forms.py:74
 msgid "This field is required"
-msgstr ""
+msgstr "Обов'язкове поле"
 
 #: caching/templates/caching/caching_layer_active_form.html:7
 msgid "Alert"
-msgstr ""
+msgstr "Увага"
 
 #: caching/templates/caching/caching_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Форма містить помилки. Перевірте та відправте ще раз."
 
 #: caching/templates/caching/layer_action.html:7
 msgid "Caching layer"
-msgstr ""
+msgstr "Кешування шару"
 
 #: caching/templates/caching/layer_action.html:9
 msgid "Activation layer caching"
-msgstr ""
+msgstr "Активація кешування шару"
 
 #: caching/views.py:201
 msgid "Cache erased!"
-msgstr ""
+msgstr "Кеш очищено!"

@@ -22,8 +22,8 @@ msgstr ""
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 #: qtimeseries/forms.py:22
 msgid "Active"
-msgstr ""
+msgstr "Активний"
 
 #: qtimeseries/forms.py:31
 msgid "Check on uncheck to attive/deactive time series layer capabilities:"
-msgstr ""
+msgstr "Вимкніть або увімкніть щоб активувати чи деактивувати часові ряди:"

@@ -22,235 +22,241 @@ msgstr ""
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 #: usersmanage/forms.py:103
 msgid "Editor1 user"
-msgstr ""
+msgstr "Користувач Editor1"
 
 #: usersmanage/forms.py:104
 msgid "Set Editor Level 1 owner"
-msgstr ""
+msgstr "Встановити власника Editor Level 1"
 
 #: usersmanage/forms.py:107
 msgid "Editor2 user"
-msgstr ""
+msgstr "Користувач Editor2"
 
 #: usersmanage/forms.py:110
-msgid "Viewer users"
+msgid "Користувачі з правом перегляду"
 msgstr ""
 
 #: usersmanage/forms.py:117
 msgid "Editor user groups"
-msgstr ""
+msgstr "Групи з правом редагування"
 
 #: usersmanage/forms.py:124
 msgid "Viewer user groups"
-msgstr ""
+msgstr "Групи з правом перегляду"
 
 #: usersmanage/forms.py:130
 msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
-msgstr ""
+msgstr "Поширити <b>НОВІ</b> дозволи на групи та користувачів з правом перегляду"
 
 #: usersmanage/forms.py:297 usersmanage/forms.py:922 usersmanage/models.py:22
 msgid "Other informations"
-msgstr ""
+msgstr "Інша інформація"
 
 #: usersmanage/forms.py:302
 msgid "Select roles for this user"
-msgstr ""
+msgstr "Виберіть ролі"
 
 #: usersmanage/forms.py:303
 msgid "Main roles"
-msgstr ""
+msgstr "Основні ролі"
 
 #: usersmanage/forms.py:310
 msgid ""
 "Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
 msgstr ""
+"Виберіть <b>групи з правом РЕДАГУВАННЯ</b> для користувача, можна додати тільки Editor Level 2"
 
 #: usersmanage/forms.py:311
 msgid "User editor groups"
-msgstr ""
+msgstr "Групи користувача з правом редагування"
 
 #: usersmanage/forms.py:318
 msgid ""
 "Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
 msgstr ""
+"Виберіть <b>групи з правом ПЕРЕГЛЯДУ</b> для користувача, можна додати тільки Viewer Level 1"
 
 #: usersmanage/forms.py:319
 msgid "User viewer groups"
-msgstr ""
+msgstr "Групи користувача з правом перегляду"
 
 #: usersmanage/forms.py:362
 msgid "Anagraphic"
-msgstr ""
+msgstr "Анаграфічний"
 
 #: usersmanage/forms.py:381
 msgid "ACL/Roles"
-msgstr ""
+msgstr "ACL/Ролі"
 
 #: usersmanage/forms.py:400
 msgid "Login data"
-msgstr ""
+msgstr "Дані для входу"
 
 #: usersmanage/forms.py:418
 msgid "User data"
-msgstr ""
+msgstr "Дані користувача"
 
 #: usersmanage/forms.py:446
-msgid "User backend"
+msgid "Бекенд"
 msgstr ""
 
 #: usersmanage/forms.py:649
 msgid "User can't be Editor level 1 and at same time Editor level 2"
-msgstr ""
+msgstr "Користувач не може мати одночасно ролі Editor level 1 та Editor level 2"
 
 #: usersmanage/forms.py:663
 msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
-msgstr ""
+msgstr "Користувач не може входити до **груп з правом редагування** якщо він не має роль Editor level 2"
 
 #: usersmanage/forms.py:677
 msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
-msgstr ""
+msgstr "Користувач не може входити до **груп з правом перегляду** якщо він не має роль Viewer level 1"
 
 #: usersmanage/forms.py:695
 msgid "Avatar is no a valid image"
-msgstr ""
+msgstr "Аватар не є зображенням"
 
 #: usersmanage/forms.py:708 usersmanage/forms.py:942
 msgid "A user with that email already exists."
-msgstr ""
+msgstr "Користувач з такою адресою email вже існує"
 
 #: usersmanage/forms.py:739
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: usersmanage/forms.py:741
 msgid "Password confirmation"
-msgstr ""
+msgstr "Підтвердження пароля"
 
 #: usersmanage/forms.py:743
 msgid "Enter the same password as above, for verification."
-msgstr ""
+msgstr "Введіть пароль ще раз"
 
 #: usersmanage/forms.py:798
 #: usersmanage/templates/usersmanage/user_group_list.html:29
 msgid "Role"
-msgstr ""
+msgstr "Роль"
 
 #: usersmanage/forms.py:799
 #: usersmanage/templates/usersmanage/user_group_list.html:30
 #: usersmanage/templates/usersmanage/user_list.html:10
 msgid "Users"
-msgstr ""
+msgstr "Користувачі"
 
 #: usersmanage/forms.py:815
 #: usersmanage/templates/usersmanage/ajax/user_group_detail.html:5
 msgid "Group"
-msgstr ""
+msgstr "Група"
 
 #: usersmanage/forms.py:852
 #, python-brace-format
 msgid "User {user} has not role {cop_role}"
-msgstr ""
+msgstr "Користувач {user} не має ролі {cop_role}"
 
 #: usersmanage/forms.py:958
 msgid "No user is available with this email."
-msgstr ""
+msgstr "Користувач з таким emaiil відсутній."
 
 #: usersmanage/models.py:21
 msgid "Avatar"
-msgstr ""
+msgstr "Аватар"
 
 #: usersmanage/models.py:23
 msgid "Registered user"
-msgstr ""
+msgstr "Створити користувача"
 
 #: usersmanage/models.py:24
 msgid "User activated by administrator"
-msgstr ""
+msgstr "Користувач активований адміністратором"
 
 #: usersmanage/models.py:26
 msgid "User changed password at first login"
-msgstr ""
+msgstr "Змінити пароль під час першого входу"
 
 #: usersmanage/models.py:59
 msgid "Group role"
-msgstr ""
+msgstr "Роль групи"
 
 #: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:2
 #: usersmanage/templates/django_registration/activation_email_body.txt:2
 msgid "Dear"
-msgstr ""
+msgstr "Шановний"
 
 #: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:4
 msgid "your profile was activated by administrators"
-msgstr ""
+msgstr "ваш профіль було активовано адміністратором"
 
 #: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:6
 msgid "Now you can make the login"
-msgstr ""
+msgstr "Тепер ви можете увійти"
 
 #: usersmanage/templates/django_registration/activated_by_admin_email_subject.txt:2
 msgid "your account is active"
-msgstr ""
+msgstr "ваш обліковий запис активовано"
 
 #: usersmanage/templates/django_registration/activation_admin_email_body.txt:2
 msgid "Dear administrator"
-msgstr ""
+msgstr "Шановний адміністратор"
 
 #: usersmanage/templates/django_registration/activation_admin_email_body.txt:4
 msgid ""
 "a new user has registered, to activate the new user, follow or copy the link "
 "in your browser"
 msgstr ""
+"зареєструвався новий користувач, щоб активувати його обліковий запис, перейдіть за посиланням "
+"або відкрийте його у браузері"
 
 #: usersmanage/templates/django_registration/activation_admin_email_subject.txt:2
 msgid "New registration by"
-msgstr ""
+msgstr "Новий обліковий запис для"
 
 #: usersmanage/templates/django_registration/activation_complete.html:7
 msgid "Activation Complete!"
-msgstr ""
+msgstr "Активовано!"
 
 #: usersmanage/templates/django_registration/activation_complete.html:9
 msgid "Your account is active"
-msgstr ""
+msgstr "Ваш обліковий запис активовано"
 
 #: usersmanage/templates/django_registration/activation_complete.html:12
 msgid "Now you can make the"
-msgstr ""
+msgstr "Тепер ви можете"
 
 #: usersmanage/templates/django_registration/activation_email_body.txt:4
 msgid ""
 "please got to the following link or copy it and paste in you browser to "
 "activate your account and validate your email"
 msgstr ""
+"перейдіть за посиланням або скопіюйте та вставте його у браузері щоб "
+"активувати свій обліковий запис та підтвердити email"
 
 #: usersmanage/templates/django_registration/activation_email_body.txt:8
 msgid "The link will be active for"
-msgstr ""
+msgstr "Посилання буде активним протягом"
 
 #: usersmanage/templates/django_registration/activation_email_body.txt:8
 msgid "days"
-msgstr ""
+msgstr "днів"
 
 #: usersmanage/templates/django_registration/activation_email_subject.txt:2
 msgid "active your account"
-msgstr ""
+msgstr "активувати ваш обліковий запис"
 
 #: usersmanage/templates/django_registration/activation_failed.html:7
 msgid "Activation Failed!"
-msgstr ""
+msgstr "Не вдалося активувати!"
 
 #: usersmanage/templates/django_registration/activation_failed.html:9
 msgid "An error occurred activation of your account"
-msgstr ""
+msgstr "Під час активації облікового запису сталася помилка"
 
 #: usersmanage/templates/django_registration/registration_closed.html:7
 msgid "Sorry but the registration is closed!"
-msgstr ""
+msgstr "На жаль, реєстрацію закрито!"
 
 #: usersmanage/templates/django_registration/registration_complete.html:7
 msgid "Registration complete!"
-msgstr ""
+msgstr "Реєстрацію завершено!"
 
 #: usersmanage/templates/django_registration/registration_complete.html:10
 msgid ""
@@ -260,137 +266,141 @@ msgid ""
 "            is activated you will receive an activation confirmation email.\n"
 "        "
 msgstr ""
+"\n"
+"            Адміністратори переглянуть ваш запит на реєстрацію, коли обліковий запис\n"
+"            буде активовано ви отримаєте листа.\n"
+"        "
 
 #: usersmanage/templates/django_registration/registration_complete.html:17
 msgid ""
 "\n"
-"            You will receive a mail with a link to activate you account and "
-"validate your email.\n"
+"            Ви отримаєте листа з посиланням для активації облікового запису та "
+"підтверждення email.\n"
 "        "
 msgstr ""
 
 #: usersmanage/templates/django_registration/registration_form.html:17
 msgid "ERROR"
-msgstr ""
+msgstr "ПОМИЛКА"
 
 #: usersmanage/templates/django_registration/registration_form.html:78
 msgid "Sign Up"
-msgstr ""
+msgstr "Реєстрація"
 
 #: usersmanage/templates/socialaccount/provider_list.html:6
 msgid "OR"
-msgstr ""
+msgstr "АБО"
 
 #: usersmanage/templates/usersmanage/ajax/user_detail.html:5
 #: usersmanage/templates/usersmanage/user_list.html:20
 msgid "User"
-msgstr ""
+msgstr "Користувач"
 
 #: usersmanage/templates/usersmanage/user_form.html:85
 msgid "System users"
-msgstr ""
+msgstr "Системні користувачі"
 
 #: usersmanage/templates/usersmanage/user_form.html:96
 #: usersmanage/templates/usersmanage/user_group_form.html:67
 msgid "Alert"
-msgstr ""
+msgstr "Увага"
 
 #: usersmanage/templates/usersmanage/user_form.html:97
 #: usersmanage/templates/usersmanage/user_group_form.html:68
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Форма містить помилки. Перевірте та відправте ще раз."
 
 #: usersmanage/templates/usersmanage/user_group_form.html:56
 msgid "System user groups"
-msgstr ""
+msgstr "Системні групи"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:10
 #: usersmanage/templates/usersmanage/user_list.html:31
 msgid "User groups"
-msgstr ""
+msgstr "Групи"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:20
 msgid "User group"
-msgstr ""
+msgstr "Групи користувача"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:27
 #: usersmanage/templates/usersmanage/user_list.html:27
 msgid "Actions"
-msgstr ""
+msgstr "Дії"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:28
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:31
 #: usersmanage/templates/usersmanage/user_list.html:46
 msgid "Created"
-msgstr ""
+msgstr "Створено"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:39
 #: usersmanage/templates/usersmanage/user_list.html:59
 msgid "Show detail"
-msgstr ""
+msgstr "Детальніше"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:43
 #: usersmanage/templates/usersmanage/user_list.html:64
 msgid "Edit"
-msgstr ""
+msgstr "Редагувати"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:48
 #: usersmanage/templates/usersmanage/user_list.html:69
 msgid "Delete"
-msgstr ""
+msgstr "Вилучити"
 
 #: usersmanage/templates/usersmanage/user_list.html:28
 msgid "Username"
-msgstr ""
+msgstr "Ім'я користувача"
 
 #: usersmanage/templates/usersmanage/user_list.html:30
 msgid "Roles"
-msgstr ""
+msgstr "Ролі"
 
 #: usersmanage/templates/usersmanage/user_list.html:33
 msgid "Macro groups"
-msgstr ""
+msgstr "Макро групи"
 
 #: usersmanage/templates/usersmanage/user_list.html:37
 msgid "Active"
-msgstr ""
+msgstr "Активний"
 
 #: usersmanage/templates/usersmanage/user_list.html:40
 msgid "Superuser"
-msgstr ""
+msgstr "Superuser"
 
 #: usersmanage/templates/usersmanage/user_list.html:41
 msgid "Staff"
-msgstr ""
+msgstr "Персонал"
 
 #: usersmanage/templates/usersmanage/user_list.html:44
 msgid "First name"
-msgstr ""
+msgstr "Ім'я"
 
 #: usersmanage/templates/usersmanage/user_list.html:45
 msgid "Last name"
-msgstr ""
+msgstr "Прізвище"
 
 #: usersmanage/templates/usersmanage/user_list.html:48
 msgid "Backend"
-msgstr ""
+msgstr "Бекенд"
 
 #: usersmanage/utils.py:236
 msgid "ACL Users"
-msgstr ""
+msgstr "ACL користувачів"
 
 #: usersmanage/views.py:262
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
-msgstr ""
+msgstr "Не знайдено %(verbose_name) за запитом"
 
 #: usersmanage/views.py:411
 msgid "Username recovery"
-msgstr ""
+msgstr "Відновлення імені"
 
 #: usersmanage/views.py:418
 msgid "Username sent"
-msgstr ""
+msgstr "Ім'я відправлено"

@@ -26,67 +26,72 @@ msgid ""
 "Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
 "source_layer_id}"
 msgstr ""
+"Шар з ID {layer.qgs_layer_id} не співпадає з настройками {settings."
+"source_layer_id}"
 
 #: qplotly/models.py:12
 msgid "XML original settings"
-msgstr ""
+msgstr "Оригінальні настройки XML"
 
 #: qplotly/models.py:13
 msgid "Layer datasource"
-msgstr ""
+msgstr "Джерело даних шару"
 
 #: qplotly/models.py:14
 msgid "Use selected features only"
-msgstr ""
+msgstr "Використовувати тільки вибрані об'єкти"
 
 #: qplotly/models.py:15
 msgid "Use visible features only"
-msgstr ""
+msgstr "Використовувати тільки видимі об'єкти"
 
 #: qplotly/models.py:16
 msgid "Plot type"
-msgstr ""
+msgstr "Тип діаграми"
 
 #: qplotly/models.py:17
 msgid "Plot title"
-msgstr ""
+msgstr "Назва діаграми"
 
 #: qplotly/models.py:19
 msgid "Set as default plot on starting map"
-msgstr ""
+msgstr "Встановити як діаграму за замовчанням для мапи"
 
 #: qplotly/models.py:33
 msgid "XML is not a DataPlotly settings."
-msgstr ""
+msgstr "Файл XML не містить налаштування DataPlotly"
 
 #: qplotly/models.py:39
 #, python-brace-format
 msgid ""
 "Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
 msgstr ""
+"Шар з qgs_layer_id={settings.source_layer_id} відсутній у базі даних"
 
 #: qplotly/models.py:43
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
 "values."
 msgstr ""
+"Джерело даних шару з настройок DataPlotly не співпадає з джерелом даних "
+"значення."
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:9
 msgid "Actions"
-msgstr ""
+msgstr "Дії"
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:10
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:11
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:12
 msgid "Linked"
-msgstr ""
+msgstr "Пов'язано"
 
 #: qplotly/templates/qplotly/layer_action.html:8
 msgid "Qplotly widgets"
-msgstr ""
+msgstr "Віджети Qplotly"
