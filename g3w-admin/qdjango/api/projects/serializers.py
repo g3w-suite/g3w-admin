@@ -19,7 +19,7 @@ from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
 from qdjango.signals import load_qdjango_widget_layer
 from qdjango.apps import get_qgs_project
-from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
+from qdjango.utils.structure import QdjangoMetaLayer, datasource2dict
 from qdjango.utils.session import reset_filtertoken
 from qdjango.api.layers.serializers import FilterLayerSavedSerializer
 from core.utils.structure import mapLayerAttributes
@@ -844,7 +844,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             if instance.layer_type == Layer.TYPES.wms:
                 datasource_wms = QueryDict(instance.datasource)
             else:
-                datasource_wms = datasourcearcgis2dict(instance.datasource)
+                datasource_wms = datasource2dict(instance.datasource, instance.layer_type)
 
             if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' \
                     not in instance.datasource:

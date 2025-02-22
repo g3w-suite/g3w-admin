@@ -112,18 +112,6 @@ def datasource2dict(datasource: str, provider: str) -> dict[str, str]:
     return parts
 
 
-def datasourcearcgis2dict(datasource: str) -> dict[str, str]:
-    """
-    Read a ArcGisMapServer datasource string and put data in a python dict
-
-    :param datasource: qgis project arcgis layer datasource
-    :return: dict with datasource params
-    :rtype: dict
-    """
-
-    return {k: str(v) for k, v in QgsProviderRegistry.instance().decodeUri("arcgismapserver", datasource).items()}
-
-
 class QdjangoMetaLayer(CoreMetaLayer):
     """
     Metalayer used for belonging layers group activations/deactivations image map by client tree toc

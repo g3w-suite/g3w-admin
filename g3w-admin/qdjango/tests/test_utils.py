@@ -18,7 +18,7 @@ from django.conf import settings
 from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSettingsWMS
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
-from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
+from qdjango.utils.structure import get_schema_table, datasource2dict
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_capabilities4layer
 from qdjango.utils.qgis import explode_expression
 from qdjango.templatetags.qdjango_tags import is_geom_type_gpx_compatible
@@ -402,10 +402,8 @@ class QgisProjectTest(TestCase):
         self.assertEqual(res['password'], 'password')
         self.assertEqual(res['port'], '5432')
 
-    def test_dataSourceArcGisToDict(self):
-
-        res = datasourcearcgis2dict(
-            'crs=\'EPSG:4326\' format=\'PNG24\' layer=\'2\' url=\'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer\'')
+        res = datasource2dict(
+            'crs=\'EPSG:4326\' format=\'PNG24\' layer=\'2\' url=\'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer\'', "arcgismapserver")
         self.assertEqual(res['crs'], 'EPSG:4326')
         self.assertEqual(res['format'], 'PNG24')
         self.assertEqual(res['layer'], '2')
