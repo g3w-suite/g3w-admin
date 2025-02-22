@@ -25,70 +25,72 @@ msgid ""
 "The feature id {} of layer {} cannot be modified because it is not locked "
 "anymore"
 msgstr ""
+"Неможливо редагувати об'єкт з id {} шару {} оскільки він більше не заблокований"
 
 #: editing/api/base/views.py:142
 msgid "Sorry but your user doesn't has 'Add Feature' capability"
-msgstr ""
+msgstr "У вас відсутній дозвіл 'Add Feature'"
 
 #: editing/api/base/views.py:146
 msgid "Sorry but your user doesn't has 'Delete Feature' capability"
-msgstr ""
+msgstr "У вас відсутній дозвіл 'Delete Feature'"
 
 #: editing/api/base/views.py:152
 msgid ""
 "Sorry but your user doesn't has 'Change or Change Attributes Features' "
 "capability"
 msgstr ""
+"У вас відсутній дозвіл 'Change or Change Attributes Features'"
 
 #: editing/api/base/views.py:359 editing/api/base/views.py:362
 #, python-format
 msgid "Error adding feature: %s"
-msgstr ""
+msgstr "Помилка додавання об'єкта"
 
 #: editing/api/base/views.py:369
 msgid "Error adding feature on Spatialite provider: "
-msgstr ""
+msgstr "Помилка додавання об'єкта з провайдером Spatialite"
 
 #: editing/api/base/views.py:389 editing/api/base/views.py:400
 #, python-format
 msgid "Error changing attribute values: %s"
-msgstr ""
+msgstr "Помилка редагування атрибутів: %s"
 
 #: editing/api/base/views.py:395 editing/api/base/views.py:403
 #, python-format
 msgid "Error changing geometry: %s"
-msgstr ""
+msgstr "Помилка редагування геометрії: %s"
 
 #: editing/api/base/views.py:514 editing/api/base/views.py:518
 #, python-format
 msgid "Cannot delete feature: %s"
-msgstr ""
+msgstr "Не вдалося вилучити об'єкти: %s"
 
 #: editing/api/base/views.py:559
 #, python-format
 msgid "Layer %s is not editable!"
-msgstr ""
+msgstr "Шар %s недоступний для редагування!"
 
 #: editing/api/base/views.py:637
 #, python-format
 msgid "Backend error saving layer %s: %s"
-msgstr ""
+msgstr "Помилка збереження шару %s: %s"
 
 #: editing/forms.py:61 editing/forms.py:222
 msgid "Active"
-msgstr ""
+msgstr "Активний"
 
 #: editing/forms.py:62 editing/forms.py:220
 msgid "Scale"
-msgstr ""
+msgstr "Масштаб"
 
 #: editing/forms.py:62 editing/forms.py:220
 msgid "Scale after that editing mode is active"
-msgstr ""
+msgstr "Масштаб за якого активується режим редагування"
 
 #: editing/forms.py:63 editing/forms.py:224
 msgid "Visible"
-msgstr ""
+msgstr "Видимий"
 
 #: editing/forms.py:64 editing/forms.py:226
 msgid "Viewers"
@@ -170,7 +172,7 @@ msgstr ""
 
 #: editing/forms.py:217
 msgid "Layers"
-msgstr ""
+msgstr "Шари"
 
 #: editing/forms.py:218
 msgid "Select layers on which to activate editing"
@@ -220,7 +222,7 @@ msgstr ""
 #: editing/templates/editing/copy_editing_permission_form.html:7
 #: editing/templates/editing/editing_layer_active_form.html:7
 msgid "Alert"
-msgstr ""
+msgstr "Увага"
 
 #: editing/templates/editing/copy_editing_permission_form.html:8
 #: editing/templates/editing/editing_layer_active_form.html:8
@@ -230,7 +232,7 @@ msgstr ""
 #: editing/templates/editing/copy_editing_permission_form.html:13
 #: editing/templates/editing/editing_layer_active_form.html:14
 msgid "Important"
-msgstr ""
+msgstr "Важливо"
 
 #: editing/templates/editing/copy_editing_permission_form.html:14
 msgid ""
@@ -257,4 +259,4 @@ msgstr ""
 #: editing/templates/editing/project_layers_action.html:15
 #: editing/templates/editing/project_layers_action.html:18
 msgid "Copy permissions"
-msgstr ""
+msgstr "Копіювати дозволи"

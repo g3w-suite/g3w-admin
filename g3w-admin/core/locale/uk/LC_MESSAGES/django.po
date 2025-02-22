@@ -22,135 +22,137 @@ msgstr ""
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 #: core/admin.py:25
 msgid "Basic settings"
-msgstr ""
+msgstr "Основні настройки"
 
 #: core/admin.py:28
 msgid "Access settings"
-msgstr ""
+msgstr "Настройки доступу"
 
 #: core/admin.py:32
 msgid "Display settings"
-msgstr ""
+msgstr "Настройки відображення"
 
 #: core/admin.py:36
 msgid "Additional settings"
-msgstr ""
+msgstr "Додаткові настройки"
 
 #: core/api/base/views.py:143
 msgid "Data are not correct or insufficent!"
-msgstr ""
+msgstr "Неправильні або неповні дані!"
 
 #: core/api/base/views.py:149
 msgid "A error server is occured!"
-msgstr ""
+msgstr "Помилка сервера!"
 
 #: core/api/base/views.py:157
 msgid "Not found"
-msgstr ""
+msgstr "Не знайдено"
 
 #: core/api/base/views.py:163
 msgid "Permission denied"
-msgstr ""
+msgstr "Доступ заборонено"
 
 #: core/api/views.py:49
 msgid "Expression evaluation error."
-msgstr ""
+msgstr "Помилка обчислення виразу."
 
 #: core/api/views.py:54
 msgid "Expression parse error."
-msgstr ""
+msgstr "Помилка розбору виразу."
 
 #: core/api/views.py:60
 msgid "Expression empty error."
-msgstr ""
+msgstr "Вираз порожній."
 
 #: core/api/views.py:66
 msgid "Expression form data error."
-msgstr ""
+msgstr "Помилка виразу форми даних."
 
 #: core/api/views.py:72
 msgid "Layer error."
-msgstr ""
+msgstr "Помилка шару."
 
 #: core/configs.py:11
 msgid "Search"
-msgstr ""
+msgstr "Пошук"
 
 #: core/configs.py:28
 msgid "Law"
-msgstr ""
+msgstr "Закон"
 
 #: core/forms.py:55 core/forms.py:425
 msgid "General data"
-msgstr ""
+msgstr "Основні дані"
 
 #: core/forms.py:80
 msgid "GEO data"
-msgstr ""
+msgstr "Просторові дані"
 
 #: core/forms.py:101
 msgid "Base Layers and Map default features"
-msgstr ""
+msgstr "Базові шари та основний функціонал мапи"
 
 #: core/forms.py:128
 msgid "Logo/Picture"
-msgstr ""
+msgstr "Логотип"
 
 #: core/forms.py:155
 msgid "Copyright"
-msgstr ""
+msgstr "Авторське право"
 
 #: core/forms.py:201
 #, python-brace-format
 msgid ""
 "SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
 msgstr ""
+"SRID EPSG:{srid} не співпадає з системою коррдинат проекту EPSG:{layer_srid}"
 
 #: core/forms.py:236
 msgid "Frontend home data"
-msgstr ""
+msgstr "Дані домашньої сторінки (frontend)"
 
 #: core/forms.py:261
 msgid "Frontend about data"
-msgstr ""
+msgstr "Дані про програму (frontend)"
 
 #: core/forms.py:282
 msgid "Frontend groups map data"
-msgstr ""
+msgstr "Дані груп мап (frontend)"
 
 #: core/forms.py:298
 msgid "Frontend login data"
-msgstr ""
+msgstr "Дані для входу (frontend)"
 
 #: core/forms.py:316
 msgid "Frontend social data"
-msgstr ""
+msgstr "Соціальні мережі (frontend)"
 
 #: core/forms.py:338
 msgid "Map client data"
-msgstr ""
+msgstr "Дані картографічного клієнта"
 
 #: core/forms.py:356
 msgid "Registration"
-msgstr ""
+msgstr "Реєстрація"
 
 #: core/forms.py:382
 msgid "Editor users"
-msgstr ""
+msgstr "Редактори"
 
 #: core/forms.py:402
 msgid "ACL Users"
-msgstr ""
+msgstr "Права доступу"
 
 #: core/forms.py:434
 msgid ""
 "<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
 msgstr ""
+"<b>Увага!</b> Ці настройки застосовуються виключно до груп мап з однією макрогрупою"
 
 #: core/forms.py:475
 msgid "Macro cartographic group"
-msgstr ""
+msgstr "Картографічна макрогрупа"
 
 #: core/forms.py:477
 msgid "Editor level 1"
@@ -178,42 +180,42 @@ msgstr ""
 
 #: core/models.py:91
 msgid "Identification name"
-msgstr ""
+msgstr "Ідентифікатор"
 
 #: core/models.py:92
 msgid "Internal identification Macrogroup name"
-msgstr ""
+msgstr "Внутрішнє ім'я макрогрупи"
 
 #: core/models.py:93 core/models.py:132 core/models.py:418
 #: core/templates/core/ajax/macrogroup_detail.html:7
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
-msgstr ""
+msgstr "Назва"
 
 #: core/models.py:94 core/models.py:133
 #: core/templates/core/ajax/macrogroup_detail.html:9
 msgid "Description"
-msgstr ""
+msgstr "Опис"
 
 #: core/models.py:95 core/models.py:140
 msgid "Logo image"
-msgstr ""
+msgstr "Логотип"
 
 #: core/models.py:96 core/models.py:142
 msgid "Logo link"
-msgstr ""
+msgstr "Посилання логотипу"
 
 #: core/models.py:97 core/models.py:143
 msgid "Enter link with http:// or https//"
-msgstr ""
+msgstr "Вставте посилання http:// або https://"
 
 #: core/models.py:98
 msgid "Use title for client"
-msgstr ""
+msgstr "Використовувати назву у клієнті"
 
 #: core/models.py:99 core/models.py:167
 msgid "Use logo image for client"
-msgstr ""
+msgstr "Використовувати логотип у клієнті"
 
 #: core/models.py:102 core/models.py:135
 msgid "Slug"
@@ -221,19 +223,19 @@ msgstr ""
 
 #: core/models.py:131
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: core/models.py:137
 msgid "Is active"
-msgstr ""
+msgstr "Активна"
 
 #: core/models.py:159
 msgid "Terms of use text"
-msgstr ""
+msgstr "Умови використання"
 
 #: core/models.py:162
 msgid "Terms of use link"
-msgstr ""
+msgstr "Посилання на умови використання"
 
 #: core/models.py:168
 msgid ""
@@ -243,15 +245,15 @@ msgstr ""
 
 #: core/models.py:409 core/templates/core/group_form.html:11
 msgid "Group"
-msgstr ""
+msgstr "Група"
 
 #: core/models.py:410
 msgid "Project type"
-msgstr ""
+msgstr "Тип проекту"
 
 #: core/models.py:411
 msgid "Project type id"
-msgstr ""
+msgstr "Id типу проекту"
 
 #: core/models.py:419
 msgid "Subtitle"
@@ -379,15 +381,15 @@ msgstr ""
 
 #: core/templates/core/403_MGC.html:15 core/templates/core/403_MPC.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Доступ заборонено"
 
 #: core/templates/core/403_MGC.html:17
 msgid "You can't add new Group"
-msgstr ""
+msgstr "Ви не можете додавати нові групи"
 
 #: core/templates/core/403_MPC.html:17
 msgid "You can't add new Project"
-msgstr ""
+msgstr "Ви не можете додавати нові проекти"
 
 #: core/templates/core/ajax/group_detail.html:5
 msgid "Geografic component"
@@ -395,7 +397,7 @@ msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:7
 msgid "Geographic coordinate system"
-msgstr ""
+msgstr "Система координат"
 
 #: core/templates/core/ajax/group_detail.html:8
 msgid "SRID"
@@ -403,43 +405,43 @@ msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:9
 msgid "Units"
-msgstr ""
+msgstr "Одиниці виміру"
 
 #: core/templates/core/ajax/group_detail.html:10
 msgid "Principal map"
-msgstr ""
+msgstr "Основна мапа"
 
 #: core/templates/core/ajax/group_detail.html:11
 msgid "Max scale"
-msgstr ""
+msgstr "Макс. масштаб"
 
 #: core/templates/core/ajax/group_detail.html:12
 msgid "Min scale"
-msgstr ""
+msgstr "Мін. масштаб"
 
 #: core/templates/core/ajax/group_detail.html:13
 msgid "Overview Map"
-msgstr ""
+msgstr "Оглядова мапа"
 
 #: core/templates/core/ajax/group_detail.html:14
 msgid "Panoramic max scale"
-msgstr ""
+msgstr "Макс. масштаб огляду"
 
 #: core/templates/core/ajax/group_detail.html:15
 msgid "Panoramic min scale"
-msgstr ""
+msgstr "Мін. масштаб огляду"
 
 #: core/templates/core/ajax/group_detail.html:18
 msgid "Users"
-msgstr ""
+msgstr "Користувачі"
 
 #: core/templates/core/ajax/group_detail.html:21
 msgid "Editor level 1 user"
-msgstr ""
+msgstr "Користувач Editor level 1"
 
 #: core/templates/core/ajax/group_detail.html:25
 msgid "Editor level 2 user"
-msgstr ""
+msgstr "Користувач Editor level 2"
 
 #: core/templates/core/ajax/group_detail.html:26
 msgid "Viewer users"
@@ -459,11 +461,11 @@ msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:37
 msgid "Interface language"
-msgstr ""
+msgstr "Мова інтерфейсу"
 
 #: core/templates/core/ajax/group_detail.html:38
 msgid "Language"
-msgstr ""
+msgstr "Мова"
 
 #: core/templates/core/ajax/group_detail.html:39
 msgid "Associated logo"
@@ -483,7 +485,7 @@ msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:50
 msgid "Terms of use"
-msgstr ""
+msgstr "Умови використання"
 
 #: core/templates/core/ajax/group_detail.html:51
 msgid "HeaderTermsOfUseText"
@@ -495,25 +497,25 @@ msgstr ""
 
 #: core/templates/core/ajax/macrogroup_detail.html:5
 msgid "Data"
-msgstr ""
+msgstr "Дані"
 
 #: core/templates/core/ajax/macrogroup_detail.html:11
 #: core/templates/core/macrogroup_list_table.html:29
 msgid "Groups"
-msgstr ""
+msgstr "Групи"
 
 #: core/templates/core/ajax/system_info.html:4
 #: core/templates/core/ajax/system_info.html:17
 msgid "General"
-msgstr ""
+msgstr "Основні"
 
 #: core/templates/core/ajax/system_info.html:10
 msgid "DataBase"
-msgstr ""
+msgstr "База даних"
 
 #: core/templates/core/ajax/system_info.html:16
 msgid "Libraries"
-msgstr ""
+msgstr "Бібліотеки"
 
 #: core/templates/core/ajax/system_info.html:21
 msgid "Geographic"
@@ -525,23 +527,23 @@ msgstr ""
 
 #: core/templates/core/generalsuitedata_form.html:11
 msgid "General suite data"
-msgstr ""
+msgstr "Про Suite"
 
 #: core/templates/core/generalsuitedata_form.html:24
 #: core/templates/core/group_form.html:45
 #: core/templates/core/macrogroup_form.html:51
 msgid "Alert"
-msgstr ""
+msgstr "Увага"
 
 #: core/templates/core/generalsuitedata_form.html:25
 #: core/templates/core/group_form.html:46
 #: core/templates/core/macrogroup_form.html:52
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Форма містить помилки. Перевірте та відправте ще раз."
 
 #: core/templates/core/group_deactive_list.html:10
 msgid "Cartographic groups deactivated"
-msgstr ""
+msgstr "Картографічні групи вимкнено"
 
 #: core/templates/core/group_deactive_list.html:34
 #: core/templates/core/group_list.html:97
@@ -554,7 +556,7 @@ msgstr ""
 #: core/templates/core/group_list.html:97
 #: core/templates/core/project_list.html:11
 msgid "Projects"
-msgstr ""
+msgstr "Проекти"
 
 #: core/templates/core/group_deactive_list.html:41
 #: core/templates/core/group_list.html:104
@@ -565,7 +567,7 @@ msgstr ""
 #: core/templates/core/search/group.html:24
 #: core/templates/core/search/macrogroup.html:22
 msgid "Show detail"
-msgstr ""
+msgstr "Детальніше"
 
 #: core/templates/core/group_deactive_list.html:50
 msgid "Redo/Active"
@@ -575,32 +577,32 @@ msgstr ""
 #: core/templates/core/macrogroup_list.html:83
 #: core/templates/core/macrogroup_list_table.html:43
 msgid "Delete"
-msgstr ""
+msgstr "Вилучити"
 
 #: core/templates/core/group_deactive_list.html:62
 msgid "Warning: deleting the group will delete the projects it contains!"
-msgstr ""
+msgstr "Увага: видалення групи призведе до видалення проектів які вона містить!"
 
 #: core/templates/core/group_form.html:33
 msgid "Current"
-msgstr ""
+msgstr "Поточна"
 
 #: core/templates/core/group_list.html:10
 #: core/templates/core/search/group.html:9
 msgid "Cartographic groups"
-msgstr ""
+msgstr "Картографічні групи"
 
 #: core/templates/core/group_list.html:51
 msgid "Filter by"
-msgstr ""
+msgstr "Фільтрувати за"
 
 #: core/templates/core/group_list.html:60
 msgid "Filter"
-msgstr ""
+msgstr "Фільтр"
 
 #: core/templates/core/group_list.html:85
 msgid "Add new project"
-msgstr ""
+msgstr "Додати новий проект"
 
 #: core/templates/core/group_list.html:113
 #: core/templates/core/macrogroup_list.html:74
@@ -610,24 +612,26 @@ msgstr ""
 #: core/templates/core/search/group.html:28
 #: core/templates/core/search/macrogroup.html:24
 msgid "Edit"
-msgstr ""
+msgstr "Редагувати"
 
 #: core/templates/core/group_list.html:122
 msgid "Delete/Deactivate"
-msgstr ""
+msgstr "Вилучити/Деактивувати"
 
 #: core/templates/core/group_list.html:125
 msgid ""
 "<strong>Warning</strong>: deleting the group (move to bucket) will delete "
 "the projects it contains (move to the bucket)!"
 msgstr ""
+"<strong>Увага</strong>: вилучення групи (переміщення до кошика) призведе до вилучення "
+"(переміщення до кошика) проектів які вона містить!"
 
 #: core/templates/core/include/add_project.html:4
-msgid "Add project"
+msgid "Додати проект"
 msgstr ""
 
 #: core/templates/core/include/add_project.html:10
-msgid "Select project type to add:"
+msgid "Виберіть тип проекту:"
 msgstr ""
 
 #: core/templates/core/include/cookieconsent.html:11
@@ -635,14 +639,15 @@ msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
 msgstr ""
+"Ми використовуємо cookies щоб забезпечити найкращий досвід роботи з сайтом"
 
 #: core/templates/core/include/cookieconsent.html:12
 msgid "Got it"
-msgstr ""
+msgstr "Зрозуміло"
 
 #: core/templates/core/include/form_buttons.html:7
 msgid "Save"
-msgstr ""
+msgstr "Зберегти"
 
 #: core/templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
@@ -650,66 +655,66 @@ msgstr ""
 
 #: core/templates/core/macrogroup_form.html:10
 msgid "Macro Group"
-msgstr ""
+msgstr "Макрогрупа"
 
 #: core/templates/core/macrogroup_form.html:24
 msgid "Current groups"
-msgstr ""
+msgstr "Поточні групи"
 
 #: core/templates/core/macrogroup_list.html:10
 #: core/templates/core/macrogroup_list_table.html:10
 #: core/templates/core/search/macrogroup.html:8
 msgid "Cartographic macro groups"
-msgstr ""
+msgstr "Картографічні макрогрупи"
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
-msgstr ""
+msgstr "Макрогрупа"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
-msgstr ""
+msgstr "Шар"
 
 #: core/templates/core/tags/add_project.html:7
 msgid "Project"
-msgstr ""
+msgstr "Проект"
 
 #: core/utils/data.py:24
 msgid "[{} error on {}({})]-- {}"
-msgstr ""
+msgstr "[{} помилка в {}({})]-- {}"
 
 #: core/utils/forms.py:21
 msgid "Default base layer"
-msgstr ""
+msgstr "Базовий шар за замовчанням"
 
 #: core/utils/forms.py:48
 msgid "MACRO Groups"
-msgstr ""
+msgstr "Макро групи"
 
 #: core/utils/qgisapi.py:511
 msgid "Function \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "Функція \"{}\" недоступна з міркувань безпеки!"
 
 #: core/utils/qgisapi.py:516
 msgid "Variable \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "Змінна \"{}\" недоступна з міркувань безпеки!"
 
 #: core/utils/qgisapi.py:528 core/utils/qgisapi.py:545
 msgid "QGIS layer with id \"{}\" could not be found!"
-msgstr ""
+msgstr "Шар з id \"{}\" не знайдено!"
 
 #: core/utils/qgisapi.py:551
 msgid "QDjango project with id \"{}\" could not be found!"
-msgstr ""
+msgstr "Проект QDjango з id \"{}\" не знайдено!"
 
 #: core/utils/qgisapi.py:561
 msgid "A valid QGIS layer is required to process form data!"
-msgstr ""
+msgstr "Щоб обробити форму необхідний дійсний шар QGIS!"
 
 #: core/utils/qgisapi.py:575
 msgid "A valid QGIS layer (parent layer) is required to process form data!"
-msgstr ""
+msgstr "Щоб обробити форму необхідний дійсний (батьківський) шар QGIS!"
 
 #: core/utils/structure.py:187
 msgid "Yes"
-msgstr ""
+msgstr "Так"

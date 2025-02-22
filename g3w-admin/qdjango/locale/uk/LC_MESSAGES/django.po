@@ -24,7 +24,7 @@ msgstr ""
 #: qdjango/models/projects.py:746 qdjango/templates/qdjango/layers_list.html:57
 #: qdjango/templates/qdjango/message/list.html:24
 msgid "Project"
-msgstr ""
+msgstr "Проект"
 
 #: qdjango/admin.py:160
 msgid "{} can not be deleted because: {}"
@@ -51,7 +51,7 @@ msgstr ""
 
 #: qdjango/api/layers/views.py:207 qdjango/api/layers/views.py:304
 msgid "Error parsing QML"
-msgstr ""
+msgstr "Помилка розбору QML"
 
 #: qdjango/api/layers/views.py:212
 msgid "Error parsing style name"
@@ -137,7 +137,7 @@ msgstr ""
 
 #: qdjango/forms/projects.py:188
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: qdjango/forms/projects.py:228
 #, python-brace-format
@@ -150,7 +150,7 @@ msgstr ""
 
 #: qdjango/forms/projects.py:241
 msgid "Qgis Project"
-msgstr ""
+msgstr "Проект QGIS"
 
 #: qdjango/forms/projects.py:273
 msgid "Description data"
@@ -211,14 +211,14 @@ msgstr ""
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:9
 #: qdjango/templates/qdjango/layers_list.html:122
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: qdjango/models/constraints.py:46 qdjango/models/geoconstraints.py:54
 #: qdjango/models/projects.py:213 qdjango/models/projects.py:727
 #: qdjango/templates/qdjango/ajax/project_detail.html:166
 #: qdjango/templates/qdjango/ajax/project_detail.html:212
 msgid "Description"
-msgstr ""
+msgstr "Опис"
 
 #: qdjango/models/constraints.py:48 qdjango/models/geoconstraints.py:58
 msgid "Active for visualization"
@@ -363,11 +363,11 @@ msgstr ""
 #: qdjango/templates/qdjango/project_list.html:58
 #: qdjango/templates/qdjango/search/project.html:38
 msgid "Layers"
-msgstr ""
+msgstr "Шари"
 
 #: qdjango/models/projects.py:165
 msgid "Base layers"
-msgstr ""
+msgstr "Базові шари"
 
 #: qdjango/models/projects.py:166
 #: qdjango/templates/qdjango/layers_list.html:296
@@ -437,7 +437,7 @@ msgstr ""
 
 #: qdjango/models/projects.py:224 qdjango/models/projects.py:739
 msgid "Is active"
-msgstr ""
+msgstr "Активний"
 
 #: qdjango/models/projects.py:227
 #: qdjango/templates/qdjango/ajax/project_detail.html:35
@@ -446,7 +446,7 @@ msgstr ""
 
 #: qdjango/models/projects.py:233
 msgid "Group"
-msgstr ""
+msgstr "Група"
 
 #: qdjango/models/projects.py:239
 msgid "Initial extent"
@@ -458,7 +458,7 @@ msgstr ""
 
 #: qdjango/models/projects.py:252
 msgid "Qgis project version"
-msgstr ""
+msgstr "Версія проекту QGIS"
 
 #: qdjango/models/projects.py:259
 msgid "Layers tree structure"
@@ -466,7 +466,7 @@ msgstr ""
 
 #: qdjango/models/projects.py:267
 msgid "Base Layer"
-msgstr ""
+msgstr "Базовий шар"
 
 #: qdjango/models/projects.py:276 qdjango/models/projects.py:863
 msgid "Layer relations"
@@ -585,7 +585,7 @@ msgstr ""
 #: qdjango/templates/qdjango/project_list.html:16
 #: qdjango/templates/qdjango/search/project.html:8
 msgid "Projects"
-msgstr ""
+msgstr "Проекти"
 
 #: qdjango/models/projects.py:681
 msgid "Postgres"
@@ -672,16 +672,16 @@ msgstr ""
 #: qdjango/templates/qdjango/ajax/project_detail.html:220
 #: qdjango/templates/qdjango/layers_list.html:123
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: qdjango/models/projects.py:768
 #: qdjango/templates/qdjango/ajax/layer_detail.html:20
 msgid "Datasource"
-msgstr ""
+msgstr "Джерело даних"
 
 #: qdjango/models/projects.py:772
 msgid "Is visible"
-msgstr ""
+msgstr "Видимий"
 
 #: qdjango/models/projects.py:777
 msgid "Order"
@@ -802,7 +802,7 @@ msgstr ""
 #: qdjango/models/projects.py:1250
 #: qdjango/templates/qdjango/ajax/project_detail.html:257
 msgid "Layer"
-msgstr ""
+msgstr "Шар"
 
 #: qdjango/models/projects.py:1381
 msgid "Body"
@@ -810,7 +810,7 @@ msgstr ""
 
 #: qdjango/models/projects.py:1385
 msgid "datasource"
-msgstr ""
+msgstr "джерело даних"
 
 #: qdjango/models/projects.py:1441
 msgid "Theme name"
@@ -834,11 +834,11 @@ msgstr ""
 
 #: qdjango/models/qgisauth.py:101
 msgid "Method"
-msgstr ""
+msgstr "Метод"
 
 #: qdjango/models/qgisauth.py:102
 msgid "Version"
-msgstr ""
+msgstr "Версія"
 
 #: qdjango/models/qgisauth.py:103
 msgid "Config"
@@ -874,7 +874,7 @@ msgstr ""
 #: qdjango/templates/qdjango/project_list.html:31
 #: qdjango/templates/qdjango/project_list.html:156
 msgid "Actions"
-msgstr ""
+msgstr "Дії"
 
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:11
 msgid "Linked"
@@ -884,16 +884,16 @@ msgstr ""
 #: qdjango/templates/qdjango/message/list.html:86
 #: qdjango/templates/qdjango/project_list.html:185
 msgid "Delete"
-msgstr ""
+msgstr "Вилучити"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:8
 msgid "General"
-msgstr ""
+msgstr "Основні"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:17
 #: qdjango/templates/qdjango/ajax/project_detail.html:258
 msgid "Users"
-msgstr ""
+msgstr "Користувачі"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:20
 msgid "Editor level 1 user"
@@ -937,7 +937,7 @@ msgstr ""
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:101
 msgid "Scale"
-msgstr ""
+msgstr "Масштаб"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:102
 msgid "User adding data field"
@@ -958,7 +958,7 @@ msgstr ""
 #: qdjango/templates/qdjango/ajax/project_detail.html:111
 #: qdjango/templates/qdjango/ajax/project_detail.html:129
 msgid "Permissions"
-msgstr ""
+msgstr "Права доступу"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:128
 msgid "User Group Name"
@@ -983,7 +983,7 @@ msgstr ""
 #: qdjango/templates/qdjango/ajax/project_detail.html:213
 #: qdjango/templates/qdjango/ajax/project_detail.html:214
 msgid "Yes"
-msgstr ""
+msgstr "Так"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:167
 #: qdjango/templates/qdjango/ajax/project_detail.html:168
@@ -991,7 +991,7 @@ msgstr ""
 #: qdjango/templates/qdjango/ajax/project_detail.html:213
 #: qdjango/templates/qdjango/ajax/project_detail.html:214
 msgid "No"
-msgstr ""
+msgstr "Ні"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:168
 #: qdjango/templates/qdjango/ajax/project_detail.html:214
@@ -1023,7 +1023,7 @@ msgstr ""
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:259
 msgid "User Groups"
-msgstr ""
+msgstr "Групи користувачів"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:282
 #: qdjango/templates/qdjango/ajax/project_detail.html:297
@@ -1069,7 +1069,7 @@ msgstr ""
 #: qdjango/templates/qdjango/message/form.html:27
 #: qdjango/templates/qdjango/project_form.html:66
 msgid "Alert"
-msgstr ""
+msgstr "Увага"
 
 #: qdjango/templates/qdjango/layer_actions/fitler_by_user_layer_form.html:8
 #: qdjango/templates/qdjango/message/form.html:28
@@ -1115,11 +1115,11 @@ msgstr ""
 #: qdjango/templates/qdjango/project_list.html:75
 #: qdjango/templates/qdjango/search/project.html:37
 msgid "Edit"
-msgstr ""
+msgstr "Редагування"
 
 #: qdjango/templates/qdjango/layers_list.html:98
 msgid "Data"
-msgstr ""
+msgstr "Дані"
 
 #: qdjango/templates/qdjango/layers_list.html:99
 msgid "Structure"
@@ -1213,7 +1213,7 @@ msgstr ""
 
 #: qdjango/templates/qdjango/message/form.html:14
 msgid "New"
-msgstr ""
+msgstr "Новий"
 
 #: qdjango/templates/qdjango/message/form.html:14
 #: qdjango/templates/qdjango/message/list.html:64
@@ -1226,7 +1226,7 @@ msgstr ""
 
 #: qdjango/templates/qdjango/message/list.html:73
 msgid "level"
-msgstr ""
+msgstr "рівень"
 
 #: qdjango/templates/qdjango/message/list.html:74
 msgid "Availble from"
@@ -1238,11 +1238,11 @@ msgstr ""
 
 #: qdjango/templates/qdjango/project_form.html:15
 msgid "QGIS project"
-msgstr ""
+msgstr "Проект QGIS"
 
 #: qdjango/templates/qdjango/project_form.html:17
 msgid "New QGIS project"
-msgstr ""
+msgstr "Новий проект QGIS"
 
 #: qdjango/templates/qdjango/project_form.html:18
 msgid "Create a new QGIS project for current group"
@@ -1254,7 +1254,7 @@ msgstr ""
 
 #: qdjango/templates/qdjango/project_list.html:19
 msgid "Trash"
-msgstr ""
+msgstr "Кошик"
 
 #: qdjango/templates/qdjango/project_list.html:29
 msgid "Panoramic"
@@ -1289,12 +1289,12 @@ msgstr ""
 #: qdjango/templates/qdjango/project_list.html:128
 #: qdjango/templates/qdjango/project_list.html:216
 msgid "created"
-msgstr ""
+msgstr "створено"
 
 #: qdjango/templates/qdjango/project_list.html:131
 #: qdjango/templates/qdjango/project_list.html:219
 msgid "modified"
-msgstr ""
+msgstr "змінено"
 
 #: qdjango/templates/qdjango/project_list.html:148
 msgid "No projects available."
@@ -1310,7 +1310,7 @@ msgstr ""
 
 #: qdjango/templates/qdjango/search/project.html:29
 msgid "group:"
-msgstr ""
+msgstr "група:"
 
 #: qdjango/utils/data.py:340
 msgid "Missing or invalid type for layer"
