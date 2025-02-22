@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
-from qgis.core import QgsDataSourceUri, QgsProviderRegistry
+from qgis.core import Qgis, QgsDataSourceUri, QgsProviderRegistry
 
 import requests
 
@@ -89,10 +89,14 @@ def datasource2dict(datasource: str, provider: str) -> dict[str, str]:
     :rtype: dict
     """
 
-    # first try with the provider specific method
-    parts = QgsProviderRegistry.instance().decodeUri(provider, datasource)
-    if parts:
-        return {k: str(v) for k, v in parts.items()}
+    # TODO: teprorarily safeguard with version check as QGIS < 3.42.1 and QGIS < 3.40.5
+    # have small bug in PostgreSQL data provider decodeUri(). For more details
+    # see https://github.com/qgis/QGIS/pull/60703
+    if Qgis.QGIS_VERSION_INT >= 34201 or Qgis.QGIS_VERSION_INT >= 34005:
+        # first try with the provider specific method
+        parts = QgsProviderRegistry.instance().decodeUri(provider, datasource)
+        if parts:
+            return {k: str(v) for k, v in parts.items()}
 
     # data provider does not support decodeUri(), we need to process it manually
     parts = {}
