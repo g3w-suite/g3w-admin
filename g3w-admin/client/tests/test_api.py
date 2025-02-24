@@ -823,6 +823,10 @@ class ClientApiTest(CoreTestBase):
         self.assertTrue('"name": "Countries"' in layerstree)
         self.assertTrue('"name": "Rivers"' in layerstree)
 
+        # Check relations
+        self.assertEqual(len(jres['relations']), 1)
+
+
         layer_cities = self.project_print310.instance.layer_set.filter(name="Cities")
         layer_countries = self.project_print310.instance.layer_set.filter(name="Countries")
 
@@ -852,6 +856,9 @@ class ClientApiTest(CoreTestBase):
         self.assertTrue('"name": "Countries"' in layerstree)
         self.assertTrue('"name": "Rivers"' in layerstree)
 
+        # Check relations
+        self.assertEqual(len(jres['relations']), 0)
+
         self.client.logout()
 
         # Check vs other project with same layer ids
@@ -876,6 +883,9 @@ class ClientApiTest(CoreTestBase):
         self.assertTrue('"name": "Countries"' in layerstree)
         self.assertTrue('"name": "Rivers"' in layerstree)
 
+        # Check relations
+        self.assertEqual(len(jres['relations']), 1)
+
         self.client.logout()
 
         # login as viewer1.3 inside group gu_viewer2
@@ -897,6 +907,9 @@ class ClientApiTest(CoreTestBase):
         self.assertFalse('"name": "Countries"' in layerstree)
         self.assertTrue('"name": "Rivers"' in layerstree)
 
+        # Check relations
+        self.assertEqual(len(jres['relations']), 0)
+
         self.client.logout()
 
         # Check vs other project with same layer ids for user groups
@@ -917,5 +930,8 @@ class ClientApiTest(CoreTestBase):
         self.assertTrue('"name": "Cities"' in layerstree)
         self.assertTrue('"name": "Countries"' in layerstree)
         self.assertTrue('"name": "Rivers"' in layerstree)
+
+        # Check relations
+        self.assertEqual(len(jres['relations']), 1)
 
 
