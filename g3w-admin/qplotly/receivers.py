@@ -135,6 +135,11 @@ def set_initconfig_value(sender, **kwargs):
     layers = project.layer_set.all()
 
     for layer in layers:
+
+        # Add check ACL for user
+        if not hasattr(sender, 'request') or not sender.request.user.has_perm('view_layer', layer):
+            continue
+
         qplotly_widgets = layer.qplotlywidget_set.all()
 
         for qplotly_widget in qplotly_widgets:
