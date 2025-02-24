@@ -23,7 +23,7 @@ from qdjango.models import \
     GeoConstraint, \
     GeoConstraintRule
 from rest_framework.test import APIClient
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, remove_perm
 from qplotly.utils import get_qplotlywidget_for_project
 from qplotly.models import QplotlyWidget
 from qplotly.utils.models import get_qplotlywidgets4layer
@@ -172,6 +172,33 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(plugin_plot['plot']['type'], 'histogram')
         self.assertTrue('layout' in plugin_plot['plot'])
         self.assertEqual(plugin_plot['plot']['layout']['title'], {'text': ''})
+
+        # Test for users wit not permisions
+        # ---------------------------------
+        assign_perm('view_project', self.test_viewer1, self.project.instance)
+
+        response = self._testApiCall('group-map-config',
+                                     args=[self.project_group.slug, 'qdjango', self.project.instance.pk],
+                                     username=self.test_viewer1.username)
+
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(plugin['plots'][0]['qgs_layer_id'], 'countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+
+
+        # Remove permisssion to layer for viewer1 user
+        layer = self.project.instance.layer_set.get(qgs_layer_id='countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+
+        remove_perm('view_layer', self.test_viewer1, layer)
+
+        response = self._testApiCall('group-map-config',
+                                     args=[self.project_group.slug, 'qdjango', self.project.instance.pk],
+                                     username=self.test_viewer1.username)
+
+        jcontent = json.loads(response.content)
+
+        self.assertFalse('qplotly' in jcontent['plugins'])
+
 
     def test_trace_api(self):
         """/qplotly/api/trace API"""
