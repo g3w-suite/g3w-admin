@@ -176,7 +176,7 @@ msgstr "Шари"
 
 #: editing/forms.py:218
 msgid "Select layers on which to activate editing"
-msgstr ""
+msgstr "Виберіть шари для яких слід дозволити редагування"
 
 #: editing/forms.py:247
 msgid "Check on uncheck to attive/deactive editing layers capabilities:"
@@ -184,40 +184,40 @@ msgstr ""
 
 #: editing/forms.py:287
 msgid "From User"
-msgstr ""
+msgstr "Від користувача"
 
 #: editing/forms.py:288
 msgid "Select the user from which to take the permissions to copy"
-msgstr ""
+msgstr "Виберіть користувача, права доступу якого необхідно скопіювати"
 
 #: editing/forms.py:290
 msgid "To users"
-msgstr ""
+msgstr "До користувачів"
 
 #: editing/forms.py:291
 msgid "Select the users who will receive permissions"
-msgstr ""
+msgstr "Виберіть користувачів, які отримають права доступу"
 
 #: editing/forms.py:293
 msgid "From Group of User"
-msgstr ""
+msgstr "Від групи користувачів"
 
 #: editing/forms.py:294
 msgid "Select the group df user from which to take the permissions to copy"
-msgstr ""
+msgstr "Виберіть групу користувачів, права доступу якої необхідно скопіювати"
 
 #: editing/forms.py:296
 msgid "To Groups of Users"
-msgstr ""
+msgstr "До груп користувачів"
 
 #: editing/forms.py:297
 msgid "Select the groups of users who will receive permissions"
-msgstr ""
+msgstr "Виберіть групу користувачів до якої треба додати права доступу"
 
 #: editing/receivers.py:306
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
-msgstr ""
+msgstr "Порушено обмеження для геометрії: %s"
 
 #: editing/templates/editing/copy_editing_permission_form.html:7
 #: editing/templates/editing/editing_layer_active_form.html:7
@@ -227,7 +227,7 @@ msgstr "Увага"
 #: editing/templates/editing/copy_editing_permission_form.html:8
 #: editing/templates/editing/editing_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Форма містить помилки. Перевірте та відправте знову."
 
 #: editing/templates/editing/copy_editing_permission_form.html:13
 #: editing/templates/editing/editing_layer_active_form.html:14
@@ -239,12 +239,15 @@ msgid ""
 "The following actions will change the permissions of the selected users who "
 "will lose their previous settings."
 msgstr ""
+"Ці дії змінять права доступу вказаних користувачів та замінять наявні настройки."
 
 #: editing/templates/editing/editing_layer_active_form.html:15
 msgid ""
 "The following settings will be applied to all the layers indicated and will "
 "overwrite the settings set at the single layer level"
 msgstr ""
+"Ці настройки буде застосовано до всіх вказаних шарів і вони замінять наявні "
+"настройки кожного шару"
 
 #: editing/templates/editing/layer_action.html:5
 #: editing/templates/editing/project_layers_action.html:6

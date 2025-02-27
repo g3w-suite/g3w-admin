@@ -103,11 +103,11 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
 msgid "Project"
-msgstr ""
+msgstr "Проект"
 
 #: openrouteservice/models.py:38
 msgid "Isochrones"
-msgstr ""
+msgstr "Ізохрони"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
 msgid "Openrouteservice Project"
@@ -115,11 +115,11 @@ msgstr ""
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
 msgid "Alert"
-msgstr ""
+msgstr "Увага"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Форма містить помилки. Перевірте та відправте знову."
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
 msgid "Openrouteservice Projects"
@@ -131,15 +131,15 @@ msgstr ""
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
 msgid "Services"
-msgstr ""
+msgstr "Сервіси"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
 msgid "Edit"
-msgstr ""
+msgstr "Редагування"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
 msgid "Delete"
-msgstr ""
+msgstr "Видалити"
 
 #: openrouteservice/utils.py:494
 msgid "Cannot create temporary layer for isochrone result."
@@ -219,7 +219,7 @@ msgstr ""
 
 #: templates/403.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Доступ заборонено"
 
 #: templates/403.html:17
 msgid "You don't have grant to access this section"
@@ -227,7 +227,7 @@ msgstr ""
 
 #: templates/404.html:11
 msgid "Oops! Page not found."
-msgstr ""
+msgstr "Сторінку не знайдено."
 
 #: templates/404.html:13
 msgid "We could not find the page you were looking for."
@@ -239,15 +239,15 @@ msgstr ""
 
 #: templates/admin/base.html:12
 msgid "Documentation"
-msgstr ""
+msgstr "Документація"
 
 #: templates/admin/base.html:16
 msgid "Change password"
-msgstr ""
+msgstr "Змінити пароль"
 
 #: templates/admin/base.html:18
 msgid "Log out"
-msgstr ""
+msgstr "Вийти"
 
 #: templates/base.html:189 templates/index.html:6
 msgid "Dashboard"
@@ -255,42 +255,42 @@ msgstr ""
 
 #: templates/base.html:228
 msgid "Version"
-msgstr ""
+msgstr "Версія"
 
 #: templates/base_login.html:25 templates/login.html:18
 msgid "Sign in to start your session"
-msgstr ""
+msgstr "Увійдіть щоб почати роботу"
 
 #: templates/base_login.html:29 templates/login.html:22
 #: templates/registration/password_reset_form.html:10
 #: templates/registration/username_recovery_form.html:10
 msgid "LOGIN ERROR"
-msgstr ""
+msgstr "ПОМИЛКА ВХОДУ"
 
 #: templates/base_login.html:30 templates/login.html:23
 msgid "Username and/or password uncorrect"
-msgstr ""
+msgstr "Неправильне ім'я користувача або пароль"
 
 #: templates/base_login.html:45 templates/login.html:39
 msgid "Sign In"
-msgstr ""
+msgstr "Вхід"
 
 #: templates/base_login.html:51 templates/login.html:50
 #: templates/registration/password_reset_form.html:22
 msgid "Forgot your password?"
-msgstr ""
+msgstr "Забули пароль?"
 
 #: templates/base_login.html:58 templates/login.html:62
 msgid "Sign up"
-msgstr ""
+msgstr "Реєстрація"
 
 #: templates/include/login_page_version.html:2
 msgid " Version"
-msgstr ""
+msgstr " Версія"
 
 #: templates/include/navbar_right_menu.html:11
 msgid "Search"
-msgstr ""
+msgstr "Пошук"
 
 #: templates/include/navbar_right_menu.html:25
 msgid "Frontend"
@@ -298,36 +298,36 @@ msgstr ""
 
 #: templates/include/navbar_right_menu.html:46
 msgid "Registered on"
-msgstr ""
+msgstr "Зареєстровано"
 
 #: templates/include/navbar_right_menu.html:47
 msgid "Last login"
-msgstr ""
+msgstr "Останній вхід"
 
 #: templates/include/navbar_right_menu.html:54
 msgid "Profile"
-msgstr ""
+msgstr "Профіль"
 
 #: templates/include/navbar_right_menu.html:57
 msgid "Logout"
-msgstr ""
+msgstr "Вихід"
 
 #: templates/include/sidebar_right.html:10
 msgid "Information"
-msgstr ""
+msgstr "Інформація"
 
 #: templates/include/sidebar_right.html:13
 #: templates/include/sidebar_right.html:16
 msgid "System information"
-msgstr ""
+msgstr "Про систему"
 
 #: templates/include/sidebar_right.html:17
 msgid "System information about QGIS-Server etc."
-msgstr ""
+msgstr "Інформація про QGIS Server та інші бібліотеки"
 
 #: templates/include/sidebar_right.html:23
 msgid "Configurations"
-msgstr ""
+msgstr "Настройки"
 
 #: templates/include/sidebar_right.html:30
 msgid "Edit general data"
@@ -339,7 +339,7 @@ msgstr ""
 
 #: templates/include/sidebar_right.html:39
 msgid "Django administration"
-msgstr ""
+msgstr "Адміністрування Django"
 
 #: templates/include/sidebar_right.html:40
 msgid "Go to staff administration section"
@@ -351,11 +351,11 @@ msgstr ""
 
 #: templates/index.html:19
 msgid "Groups"
-msgstr ""
+msgstr "Групи"
 
 #: templates/index.html:26
 msgid "Show"
-msgstr ""
+msgstr "Показати"
 
 #: templates/index.html:32
 msgid "Module widgets"
@@ -364,11 +364,11 @@ msgstr ""
 #: templates/login.html:55
 #: templates/registration/username_recovery_form.html:22
 msgid "Forgot your username?"
-msgstr ""
+msgstr "Забули ім'я користувача?"
 
 #: templates/registration/password_reset_complete.html:8
 msgid "Password reset complete"
-msgstr ""
+msgstr "Скидання паролю завершено"
 
 #: templates/registration/password_reset_complete.html:9
 msgid "Your new password has been set. You can log in now on the"
@@ -380,19 +380,19 @@ msgstr ""
 
 #: templates/registration/password_reset_confirm.html:9
 msgid "Enter new password"
-msgstr ""
+msgstr "Введіть новий пароль"
 
 #: templates/registration/password_reset_confirm.html:16
 msgid "New password"
-msgstr ""
+msgstr "Новий пароль"
 
 #: templates/registration/password_reset_confirm.html:21
 msgid "Repeat password"
-msgstr ""
+msgstr "Повторити пароль"
 
 #: templates/registration/password_reset_confirm.html:26
 msgid "Change my password"
-msgstr ""
+msgstr "Змінити пароль"
 
 #: templates/registration/password_reset_confirm.html:31
 msgid ""
@@ -485,12 +485,12 @@ msgstr ""
 
 #: templates/search.html:14
 msgid "Not results found!"
-msgstr ""
+msgstr "Нічого не знайдено!"
 
 #: templates/search.html:16
 msgid "Found "
-msgstr ""
+msgstr "Знайдено "
 
 #: templates/search.html:16
 msgid " results."
-msgstr ""
+msgstr " записів."
