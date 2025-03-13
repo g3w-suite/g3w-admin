@@ -31,10 +31,7 @@ def global_settings(request):
     g3wadmin_context['today'] = datetime.today()
 
     # add cookies:
-    g3wadmin_context['sidebar_status'] = 'sidebar-open'
-    if 'g3wadmin_sidebar_status' in request.COOKIES:
-        if request.COOKIES['g3wadmin_sidebar_status'] == 'collapsed':
-            g3wadmin_context['sidebar_status'] = 'sidebar-collapse'
+    g3wadmin_context['sidebar_status'] = 'sidebar-collapse' if 'expanded' != request.COOKIES.get('g3wadmin_sidebar_status')  else ''
 
     # add specific css modules and submodules
     css_modules = load_css_modules.send(request)

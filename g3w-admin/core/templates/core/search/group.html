@@ -21,11 +21,11 @@
                 {% if user %}
                 <p class="result-search-item-links">
                     {% if "view_group" in userObj_perms %}
-                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' r.slug %}"><i class="ion ion-eye"></i></a>
-                        <a href="{% url 'project-list' r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}"><i class="ion ion-map"></i></a>
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' r.slug %}"><i class="fa fa-info-circle"></i></a>
+                        <a href="{% url 'project-list' r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}"><i class="fa fa-map"></i></a>
                     {% endif %}
                     {% if "change_group" in userObj_perms %}
-                    <a href="{% url 'group-update' r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                    <a href="{% url 'group-update' r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="fa fa-pencil"></i></a>
                     {% endif %}
                 </p>
             {% endif %}

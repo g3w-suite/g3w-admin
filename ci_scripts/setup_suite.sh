@@ -48,12 +48,6 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
       echo "wait 30s until is ready"
       sleep 30;
     done
-    
-    pushd .
-    cd ${DJANGO_DIRECTORY}/core/static
-    rm -rf bower_components
-    ln -s "/code/node_modules/@bower_components" bower_components
-    popd
 
     echo "Creating a unique SECRET_KEY file ..."
     python3 "${DJANGO_DIRECTORY}/manage.py" generate_secret_key_file -o ${SECRET_KEY_FILE}
@@ -88,11 +82,6 @@ else
       echo "wait 30s until is ready"
       sleep 30;
     done
-
-    # Restore on restart ln -s for bower_component
-    cd ${DJANGO_DIRECTORY}/core/static
-    rm -rf bower_components
-    ln -s "/code/node_modules/@bower_components" bower_components
 
     # Create SECRET_KEY value file if not exists
     if [ ! -e ${SECRET_KEY_FILE} ]; then

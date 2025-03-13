@@ -4,35 +4,38 @@
 {% block page_header %}
 <h1>
     {% trans 'Dashboard' %}
-    <small>{% trans 'Current situation' %}</small>
 </h1>
 {% endblock%}
 
 {% block main_content %}
 <div class="row">
-    <div class="col-md-4">
-        <div class="small-box bg-aqua">
-            <div class="inner">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h3>{{ n_groups }}</h3>
-                        <p>{% trans 'Groups' %}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="icon">
-                <i class="fa fa-globe"></i>
-            </div>
-            <a href="{% url 'group-list' %}" class="small-box-footer">{% trans 'Show' %} <i class="fa fa-arrow-circle-right"></i></a>
+  <div class="col-md-4">
+    <div class="small-box bg-green">
+      <div class="inner">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>{{ n_groups }}</h3>
+            <p>{% trans 'Groups' %}</p>
+          </div>
         </div>
+      </div>
+      <div class="icon">
+        <i class="fa fa-globe"></i>
+      </div>
+      <a href="{% url 'group-list' %}" class="small-box-footer">
+        {% trans 'Show' %}
+        <i class="fa fa-arrow-circle-right"></i>
+      </a>
     </div>
+  </div>
 </div>
+
 {% if widgets  %}
 <div class="row">
-    <div class="col-md-12"><h3>{% trans 'Module widgets' %}</h3></div>
-    {% for widget in widgets %}
-        {{ widget }}
-    {% endfor %}
+  <div class="col-md-12"><h3>{% trans 'Module widgets' %}</h3></div>
+  {% for widget in widgets %}
+      {{ widget }}
+  {% endfor %}
 </div>
 {% endif %}
 {% endblock %}

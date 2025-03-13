@@ -12,49 +12,45 @@ sitetrees = (
           title='ACL',
           module='usermanage',
           items=[
-                item(
-                    'ACL',
-                    '#',
-                    type_header=True
-               ),
                item(
                     'Utenti',
-                    '#',
+                    'user-list',
                     icon_css_class='fa fa-users',
                     children=[
-                        item(
-                              'Aggiungi utente',
-                              'user-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-user-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
                          item(
-                              'Lista utenti',
+                              'Utenti',
                               'user-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-users'
+                              children=[
+                                   item(
+                                        'Aggiungi utente',
+                                        'user-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                                   item(
+                                        'Agg. utente',
+                                        'user-update object.pk',
+                                        url_as_pattern=True,
+                                        in_menu=False
+                                   ),
+                              ]
                          ),
                          item(
-                              'Agg. utente',
-                              'user-update object.pk',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-edit',
-                              in_menu=False
-                         ),
-                         item(
-                              'Aggiungi gruppo utenti',
-                              'user-group-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-plus',
-                              access_by_perms=['auth.add_group']
-                         ),
-                         item(
-                              'Lista gruppi utenti',
+                              'Gruppi',
                               'user-group-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-list',
-                              access_by_perms=['auth.add_group']
+                              access_by_perms=['auth.add_group'],
+                              children=[
+                                   item(
+                                      'Aggiungi gruppo utenti',
+                                        'user-group-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_group'],
+                                        in_menu=False
+                                   )
+                              ]
                          )
                     ]
                ),
@@ -68,48 +64,44 @@ sitetrees = (
           module='usermanage',
           items=[
                item(
-                    'ACL',
-                    '#',
-                    type_header=True
-               ),
-               item(
                     'Users',
-                    '#',
+                    'user-list',
                     icon_css_class='fa fa-users',
                     children=[
                          item(
-                              'Add user',
-                              'user-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-user-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
-                         item(
-                              'Users list',
+                              'Users',
                               'user-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-users'
+                              children=[
+                                   item(
+                                        'Add user',
+                                        'user-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                                   item(
+                                        'User update',
+                                        'user-update object.pk',
+                                        url_as_pattern=True,
+                                        in_menu=False
+                                   ),
+                              ]
                          ),
                          item(
-                              'User update',
-                              'user-update object.pk',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-edit',
-                              in_menu=False
-                         ),
-                         item(
-                              'Add group users',
-                              'user-group-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
-                         item(
-                              'Groups users list',
+                              'Groups',
                               'user-group-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-list',
-                              access_by_perms=['auth.add_user']
+                              access_by_perms=['auth.add_user'],
+                              children=[
+                                   item(
+                                        'Add group users',
+                                        'user-group-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                              ]
                          )
                     ]
                ),
@@ -123,48 +115,44 @@ sitetrees = (
           module='usermanage',
           items=[
                item(
-                    'ACL',
-                    '#',
-                    type_header=True
-               ),
-               item(
                     'Utilisateurs',
-                    '#',
+                    'user-list',
                     icon_css_class='fa fa-users',
                     children=[
                          item(
-                              'Ajouter un utilisateur',
-                              'user-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-user-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
-                         item(
-                              'Liste des utilisateurs',
+                              'Utilisateurs',
                               'user-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-users'
+                              children=[
+                                   item(
+                                        'Ajouter un utilisateur',
+                                        'user-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                                   item(
+                                        'Mise à jour utilisateur',
+                                        'user-update object.pk',
+                                        url_as_pattern=True,
+                                        in_menu=False
+                                   ),
+                              ]
                          ),
                          item(
-                              'Mise à jour utilisateur',
-                              'user-update object.pk',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-edit',
-                              in_menu=False
-                         ),
-                         item(
-                              'Ajouter des utilisateurs de groupe',
-                              'user-group-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
-                         item(
-                              'Liste des utilisateurs des groupes',
+                              'Groupes',
                               'user-group-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-list',
-                              access_by_perms=['auth.add_user']
+                              access_by_perms=['auth.add_user'],
+                              children=[
+                                   item(
+                                        'Ajouter des utilisateurs de groupe',
+                                        'user-group-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                              ]
                          )
                     ]
                ),
@@ -178,48 +166,44 @@ sitetrees = (
           module='usermanage',
           items=[
                item(
-                    'ACL',
-                    '#',
-                    type_header=True
-               ),
-               item(
                     'Utilizatori',
-                    '#',
+                    'user-list',
                     icon_css_class='fa fa-users',
                     children=[
                          item(
-                              'Add user',
-                              'user-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-user-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
-                         item(
-                              'Lista utilizatori',
+                              'Utilizatori',
                               'user-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-users'
+                              children=[
+                                  item(
+                                        'Add user',
+                                        'user-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                                   item(
+                                        'Actualizare utilizatori',
+                                        'user-update object.pk',
+                                        url_as_pattern=True,
+                                        in_menu=False
+                                   ),
+                              ]
                          ),
                          item(
-                              'Actualizare utilizatori',
-                              'user-update object.pk',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-edit',
-                              in_menu=False
-                         ),
-                         item(
-                              'Adaugă utilizatori la grup',
-                              'user-group-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
-                         item(
-                              'Lista grupuri de utilizatori',
+                              'Grupuri',
                               'user-group-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-list',
-                              access_by_perms=['auth.add_user']
+                              access_by_perms=['auth.add_user'],
+                              children=[
+                                  item(
+                                        'Adaugă utilizatori la grup',
+                                        'user-group-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                              ]
                          )
                     ]
                ),

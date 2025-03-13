@@ -4,102 +4,70 @@
 {% load g3wadmin_tags %}
 {% load i18n %}
 
-
-{% block custom_js_links_page %}
-<script>
-
-    var cleaned_data = {{ cleaned_data|safe }};
-    ga.$useRoleSelect = $('#id_groups');
-    ga.$useRoleSelect.on('change', function(e){
-
-        var value = $(this).val();
-        var data = {roles: value, user_id: {{ form.instance.pk|default:'null' }}};
-        ga.utils.addCsfrtokenData(data);
-        var $ug_editor_select = $("#id_user_groups_editor");
-        var $ug_viewer_select = $("#id_user_groups_viewer");
-        if (value) {
-            $.ajax({
-                method: 'post',
-                url: '{% url 'user-group-by-user-role' %}',
-                data: data,
-                success:function(res){
-
-                    var viewer_groups = _.filter(res.user_groups, function(item){return item.role == 'viewer'})
-                    for (i in viewer_groups) {
-                        if (!viewer_groups[i]['selected'] && _.indexOf(cleaned_data['user_groups_viewer'], viewer_groups[i]['id']) != -1)
-                            viewer_groups[i]['selected'] = true;
-                    }
-                    var editor_groups = _.filter(res.user_groups, function(item){return item.role == 'editor'})
-                    for (i in editor_groups) {
-                        if (!editor_groups[i]['selected'] && _.indexOf(cleaned_data['user_groups_editor'], editor_groups[i]['id']) != -1)
-                            editor_groups[i]['selected'] = true;
-                    }
-                    $ug_viewer_select.html('');
-                    $ug_viewer_select.select2({data: viewer_groups});
-                    $ug_editor_select.html('');
-                    $ug_editor_select.select2({data: editor_groups});
-                }
-            });
-        } else {
-            //$("#id_viewer_users").select2('val', '');
-        }
-
-    });
-    // to start
-    ga.$useRoleSelect.trigger('change');
-
-    var checking_user_properties = function (){
-        if($('#id_is_superuser').prop('checked') || $('#id_is_staff').prop('checked')){
-            ga.$useRoleSelect.removeAttr('required','');
-        } else {
-            ga.$useRoleSelect.attr('required','');
-        }
-    };
-
-    var admin_activation = function(e){
-        var $this = $(this);
-        if (e.type == 'ifChecked'){
-            ga.$useRoleSelect.removeAttr('required');
-        } else {
-            checking_user_properties();
-        }
-    };
-
-    $(document).on('ifChecked', '#id_is_superuser', admin_activation);
-    $(document).on('ifChecked', '#id_is_staff', admin_activation);
-    $(document).on('ifUnchecked', '#id_is_superuser', admin_activation);
-    $(document).on('ifUnchecked', '#id_is_staff', admin_activation);
-
-    // for load page
-    $(document).ready(checking_user_properties);
-
-    /*initUploadFields(
-      document.getElementById("user-form")
-   );*/
-</script>
-{% endblock %}
-
-
 {% block page_header %}
 <h1>
-    {% trans 'System users' %}
-    <small>Stystem users list and property</small>
+  {% trans 'System users' %}
+  <small>Stystem users list and property</small>
 </h1>
 {% endblock %}
 
 {% block main_content %}
-        <form method="post" id="user-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
-            {% if form.errors %}
-                <div class="row">
-                    <div class="col-md-12">
-                    <div class="alert alert-danger alert-dismissable">
-                        <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                            {% trans 'Some errors on form. Check it and send again.' %}
-                      </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% crispy form %}
-            {% g3wadmin_add_button_form %}
-        </form>
+<form method="post" id="user-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
+  {% if form.errors %}
+    <div class="alert alert-danger alert-dismissable">
+      <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+      {% trans 'Some errors on form. Check it and send again.' %}
+    </div>
+  {% endif %}
+  {% crispy form %}
+  {% g3wadmin_add_button_form %}
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const DATA = {{ cleaned_data|safe }};
+  const q    = document.querySelector.bind(document);
+
+  $('#id_groups').on('change', async function(e) {
+    const roles = $(e.target).val();
+    if (!roles) {
+      return;
+    }
+    const res = await (await fetch(`{% url 'user-group-by-user-role' %}`, {
+        method: 'POST',
+        body:  new URLSearchParams([
+          ...roles.map(id => ["roles[]", id]),
+          ["user_id", {{ form.instance.pk|default:'null' }}],
+          ["csrfmiddlewaretoken", $.cookie('csrftoken')],
+        ]),
+    })).json();
+    $("#id_user_groups_viewer").html('');
+    $("#id_user_groups_viewer").select2({
+      data: res.user_groups.filter(group => 'viewer' === group.role).map(group => {
+        if (!group.selected && DATA.user_groups_viewer.includes(group.id)) {
+          group.selected = true;
+        }
+        return group;
+      })
+    });
+    $("#id_user_groups_editor").html('');
+    $("#id_user_groups_editor").select2({
+      data: res.user_groups.filter(group => 'editor' === group.role).map(group => {
+        if (!group.selected && DATA.user_groups_editor.includes(group.id)) {
+          group.selected = true;
+        }
+        return group;
+      })
+    });
+  });
+
+  document.querySelectorAll('#id_is_superuser, #id_is_staff').forEach(el => el.addEventListener('click', () => q('#id_groups').toggleAttribute('required', !(q('#id_is_superuser').checked || q('#id_is_staff').checked))));
+
+  q('#id_groups').toggleAttribute('required', !(q('#id_is_superuser').checked || q('#id_is_staff').checked));
+
+  $('#id_groups').trigger('change');
+
+  // initUploadFields(document.getElementById("user-form"));
+});
+</script>
 {% endblock %}

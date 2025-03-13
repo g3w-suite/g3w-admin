@@ -3,12 +3,8 @@
 {% load svg_icon %}
 
 
-{% block custom_css_links_page %}
-<link rel="stylesheet" href="{% static "css/dropzone.css" %}">
-{% endblock %}
-
 {% block custom_js_links_page %}
-<script type="text/javascript" src="{% static "js/dropzone.js" %}"></script>
+<script src="{% static "js/dropzone.js" %}"></script>
 {% endblock %}
 
 {% block main_content %}
@@ -26,8 +22,8 @@
     </div>
 
     <div>
-    {% svg_icon 'svg/sprite.svg' 'business-color_chart' %}
-    <svg role="img" title="award"><use xlink:href="{% static 'svg/sprite.svg' %}#business-color_award-74"></use></svg>
+    {% svg_icon 'img/ajaxupload-sprite.svg' 'business-color_chart' %}
+    <svg role="img" title="award"><use xlink:href="{% static 'img/ajaxupload-sprite.svg' %}#business-color_award-74"></use></svg>
     </div>
 
 {% endblock %}

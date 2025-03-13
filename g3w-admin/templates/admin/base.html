@@ -3,17 +3,18 @@
 
 
 {% block userlinks %}
+    <br><br>
+    {% url 'django-admindocs-docroot' as docsroot %}
     {% if site_url %}
-        <a href="{% url 'home' %}">{% trans 'G3W-ADMIN' %}</a> /
+        <a href="{% url 'home' %}" title="Go back to g3w-admin dashboard">{% trans 'G3W-ADMIN' %}</a>
     {% endif %}
-    {% if user.is_active and user.is_staff %}
-        {% url 'django-admindocs-docroot' as docsroot %}
-        {% if docsroot %}
-            <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
-        {% endif %}
+    {% if docsroot and user.is_active and user.is_staff %}
+        / <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>
     {% endif %}
-    {% if user.has_usable_password %}
-    <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+    {% if not user.is_staff and user.has_usable_password %}
+        / <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
     {% endif %}
-    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+    {% if not user.is_staff %}
+        / <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+    {% endif %}
 {% endblock %}

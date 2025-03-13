@@ -7,138 +7,225 @@
 {% load g3wadmin_tags %}
 
 {% block page_header %}
-    <h1>{% trans 'Cartographic groups' %}</h1>
-{% endblock %}
-
-{% block custom_js_links_page %}
-{% if user.is_superuser %}
-<script>
-    $("#groups_list").sortable({
-        placeholder: "col-md-3 col-sm-6 sort-highlight-group",
-        handle: ".handle",
-        update: function(e, ui){
-            new_order = $(e.target).sortable("toArray");
-
-            // get current id of group moved
-            var gid = ui.item.attr('id').substring(6)
-            var url = _.template("/jx/groups/<%= gid %>/setorder/")({gid: gid});
-            var data = {
-                new_order: new_order
-            }
-            ga.utils.addCsfrtokenData(data);
-
-            $.post(url, data, function(res){
-                console.log(res);
-            });
-
-        },
-    });
-    $("#groups_list").disableSelection();
-    $('.handle').hover(function() {
-        $(this).css('cursor','move');
-    });
-</script>
-{% endif %}
+  <h1>
+    {% trans 'Cartographic groups' %}
+    {% if perms.core.add_group %}
+      <a href="{% url 'group-add' %}" title="Add new element">
+        <i class="fa fa-plus-circle"></i>
+      </a>
+    {% endif %}
+  </h1>
 {% endblock %}
 
 {% block main_content %}
 
-<div id="group_list_fitler_bar" class="row">
-<section class="col-lg-5">
-    <div class="box box-solid {% if collapsed_filter_form %}collapsed-box{% endif %}">
-            <div class="box-header ui-sortable-handle" style="cursor: move;">
-              <i class="fa fa-filter"></i>
-              <h3 class="box-title">{% trans 'Filter by' %}</h3>
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="box-body border-radius-none">
-                <form method="get" id="group-filter">
-                {% crispy filter_form  %}
-                    <button class="btn btn-block btn-default">{% trans 'Filter' %}</button>
-                </form>
-            </div>
-          </div>
-</section>
-</div>
-<div id="groups_list" class="row">
-{% for object in object_list %}
+<details id="groups_filter" {% if not collapsed_filter_form %}open{% endif %}>
+  <summary>
+    <i class="fa fa-filter"></i>
+    <b >{% trans 'Filter by' %}</b>
+  </summary>
+  <form method="get" id="group-filter">
+    {% crispy filter_form  %}
+      <button class="btn btn-block btn-default">{% trans 'Filter' %}</button>
+    </form>
+</details>
+
+<div id="groups_list">
+  {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
-    <div class="col-md-3 col-sm-6" id="group_{{ object.pk }}">
-     <div class="box box-widget widget-user" id="group_{{ object.slug }}">
-                <!-- Add the bg color to the header using any of the bg-* classes -->
-                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') no-repeat center center;">
-                <div class="row">
-                    <div class="col-sm-12 widget-group-title handle">
-                        <h3 class="widget-user-username">{{ object.name }}</h3>
-                        <h5 class="widget-user-desc">{{ object.title }} <small>({{ object.srid }})</small></h5>
-                    </div>
-                </div>
-                </div>
-                <div class="box-footer">
-                  <div class="row">
-                   <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        {% if "change_group" in userObj_perms %}
-                        <div class="icon" data-toggle="tooltip" data-placement="top" title="{% trans 'Add new project' %}" >
-                        {% if SETTINGS.G3WADMIN_PROJECT_APPS|length == 1 %}
-                            <a href="{% url 'qdjango-project-add' object.slug %}" ><i class="ion ion-plus-circled"></i></a>
-                        {% else %}
-                            {% include 'core/include/add_project.html' %}
-                        {% endif %}
-                        </div>
-                        {% endif %}
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-4 col-xs-4">
-                      <div class="description-block projects-group">
-                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{% g3wadmin_get_projects_number object user 1 %} {% trans 'Projects' %}</a></h5>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                         <div class="icon">
-                         {% if "view_group" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' object.slug %}"><i class="ion ion-eye"></i></a>
-                         {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "change_group" in userObj_perms %}
-                          <a href="{% url 'group-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                        {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "delete_group" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete/Deactivate' %}"  data-widget-type="activeDeactiveItem" data-active-deactive-action="deactivate" data-active-deactive-url="{% url 'group-deactive' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
-                        {% endif %}
-                            <div class="hidden pre-active-deactive-message">
-                                <div><p>{% blocktrans %}<strong>Warning</strong>: deleting the group (move to bucket) will delete the projects it contains (move to the bucket)!{% endblocktrans %}</p></div>
-                            </div>
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                  </div><!-- /.row -->
-                </div>
-          </div><!-- /.widget-user -->
+    <div id="group_{{ object.pk }}" class="col-md-3 col-sm-6">
+
+      <figure class="handle bg-green-active">
+        <img loading="lazy" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" alt="{{ object.title }} ({{ object.srid }})">
+        <figcaption>
+          <h3><b>{{ object.name }}</b></h3>
+          <small style="color:#777">{{ object.title }} ({{ object.srid }})</small>
+        </figcaption>
+      </figure>
+
+      {% if "change_group" in userObj_perms and SETTINGS.G3WADMIN_PROJECT_APPS|length == 1 %}
+        <a
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Add new project' %}"
+          href="{% url 'qdjango-project-add' object.slug %}"
+        >
+          <i class="fa fa-plus-circle"></i>
+        </a>
+      {% elif "change_group" in userObj_perms %}
+        <div data-toggle="tooltip" data-placement="top" title="{% trans 'Add new project' %}" >
+          {% include 'core/include/add_project.html' %}
+        </div>
+      {% endif %}
+      
+      <a
+        href="{% url 'project-list' object.slug %}"
+        data-toggle="tooltip"
+        data-placement="top"
+        title="{% trans 'Group projects' %}"
+      >
+        {% g3wadmin_get_projects_number object user 1 %}
+        {% trans 'Projects' %}
+      </a>
+      
+      {% if "view_group" in userObj_perms %}
+        <a
+          href="#"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Show detail' %}"
+          data-widget-type="detailItem"
+          data-detail-url="{% url 'group-detail' object.slug %}"
+        >
+          <i class="fa fa-info-circle"></i>
+        </a>
+      {% endif %}
+
+      {% if "change_group" in userObj_perms %}
+        <a
+          href="{% url 'group-update' object.slug %}"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Edit' %}"
+        >
+          <i class="fa fa-pencil"></i>
+        </a>
+      {% endif %}
+
+      {% if "delete_group" in userObj_perms %}
+        <a
+          href="#"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Delete/Deactivate' %}"
+          data-widget-type="activeDeactiveItem"
+          data-active-deactive-action="deactivate"
+          data-active-deactive-url="{% url 'group-deactive' object.slug %}"
+          data-item-selector="#group_{{ object.slug }}"
+        >
+          <i class="fa fa-trash" style="color: red;"></i>
+        </a>
+      {% endif %}
+
+      <div class="hidden pre-active-deactive-message">
+        <div><p>{% blocktrans %}<strong>Warning</strong>: deleting the group (move to bucket) will delete the projects it contains (move to the bucket)!{% endblocktrans %}</p></div>
+      </div>
+
     </div>
-{% endfor %}
+  {% endfor %}
 </div>
+
 {% if perms.core.add_group %}
-<div class="row">
-{% with 'group-add' as object_add_url_name %}
-    {% include 'core/include/widget_add_box.html' %}
-{% endwith %}
-</div>
+  <a
+    id="group_add"
+    href="{% url 'group-add' %}"
+    title="Add new element"
+  >
+    <i class="fa fa-plus-circle"></i>
+  </a>
 {% endif %}
+
+<script>
+document.head.insertAdjacentHTML(
+  'beforeend',
+  /* css */`
+<style>
+  details#groups_filter {
+    margin:1em auto 2em 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    position: sticky;
+    top: 50px;
+    z-index: 1;
+  }
+  details#groups_filter summary {
+    list-style: none;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 1.1em;
+    padding:1em;
+    user-select:none;
+    cursor:pointer;
+    background: #f7fafc;
+  }
+  details#groups_filter form {
+    padding: 1em;
+  }
+  details#groups_filter summary::after {
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 14px;
+    font-size: inherit;
+    text-rendering: auto;
+    content: "\uf0d7";
+    pointer-events:none;
+    position:absolute;
+    top:1.2em;
+    right:1em;
+  }
+  details#groups_filter[open] summary:after {
+    content: "\uf0d8";
+  }
+  #groups_list [id^="group_"] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding-bottom: 1em;
+    background-color: #fff;
+  }
+  #groups_list figure > img {
+    min-height: 200px;
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: contain;
+  }
+  #groups_list figure > figcaption {
+    background-color: #fff;
+    width: 100%;
+    padding: 10px
+  }
+  #groups_list figure > figcaption > * {
+    margin: 0;
+    color: #222d32;
+    font-weight: 400;
+    width:100%;
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
+  #groups_list [id^="group_"] i {
+    font-size: 1.5em;
+  }
+  #group_add {
+    aspect-ratio: 1;
+    margin-top: 20px;
+    display: inline-block;
+    min-width: 200px;
+    text-align: center;
+    font-size: 136px;
+    background-color: rgba(255,255,255,.7);
+    color: rgb(0,0,0,.15);
+    border: 1px dashed #ddd;
+  }
+</style>`
+);
+{% if user.is_superuser %}
+document.addEventListener("DOMContentLoaded", function() {
+  $("#groups_list").sortable({
+    placeholder: "col-md-3 col-sm-6 sort-highlight-group",
+    handle: ".handle",
+    update(e, ui) {
+      // post current moved group id  
+      $.post(`/jx/groups/${ui.item.attr('id').substring(6)}/setorder/`, {
+        new_order: $(e.target).sortable("toArray"),
+        csrfmiddlewaretoken: $.cookie('csrftoken'),
+      });
+    },
+  });
+  $("#groups_list").disableSelection();
+  $('.handle').hover(function() { $(this).css('cursor','move'); });
+});
+{% endif %}
+</script>
 
 {% endblock %}

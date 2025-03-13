@@ -7,315 +7,359 @@
 {% load qdjango_tags %}
 
 {% block custom_js_links_page %}
-{% comment %}Add caching/ui.js if caching in django apps{% endcomment %}
-{% if 'caching' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
-<script type="text/javascript" src="{% static "caching/js/ui.js" %}"></script>
-{% endif %}
-{% if 'editing' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
-<script type="text/javascript" src="{% static "editing/js/widget.js" %}"></script>
-{% endif %}
-<script type="text/javascript" src="{% static "qdjango/js/widget.js" %}"></script>
-<script type="text/javascript">
-    $('#tree').treeview({data:{{ layers_tree|safe }}});
-
-    ga.ui.__bindCheckboxAttr('[data-widget-type="noShowAttributesTable"]', 'not_show_attributes_table');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="noLegendLayer"]',         'exclude_from_legend');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayer"]',         'download_layer');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayerxls"]',      'download_layer_xls');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayergpx"]',      'download_layer_gpx');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayercsv"]',      'download_layer_csv');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayergpkg"]',     'download_layer_gpkg');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayerpdf"]',     'download_layer_pdf');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="externalLayer"]',         'external');
-
-    ga.ui.__bindCheckboxAttr('[data-widget-type="noShowAttributesTable"]', 'not_show_attributes_table');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="noLegendLayer"]', 'exclude_from_legend');
-    ga.ui.__bindCheckboxAttr('[data-widget-type="noTocLayer"]', 'exclude_from_toc');
-
-    // add expression svg
-    ga.ui.expression_svg = '<svg id="expressioniconsvg" height="20" width="20" viewBox="0 0 32 32"\n' +
-        '     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >\n' +
-        '  <image x="0" y="0" height="122%" width="122%"  ' +
-        ' xlink:href="{% static 'svg/mIconExpression_orange.svg' %}" />'
+<script>
+// bind checkbox attrs
+document.addEventListener('click', async function (e) { try {
+  const input = e.target.closest('[type="checkbox"]');
+  if (input && e.target.closest('.dropdown-menu[data-ajax-url]')) {
+    await fetch(e.target.closest('.dropdown-menu[data-ajax-url]').getAttribute('data-ajax-url'), {
+      method: 'POST',
+      body:  new URLSearchParams([
+        [({
+          'download':                  'download_layer',
+          'download_xls':              'download_layer_xls',
+          'download_gpx':              'download_layer_gpx',
+          'download_csv':              'download_layer_csv',
+          'download_gpkg':             'download_layer_gpkg',
+          'download_pdf':              'download_layer_pdf',
+          'not_show_attributes_table': 'not_show_attributes_table',
+          'no_legend':                 'exclude_from_legend',
+          'no_toc':                    'exclude_from_toc',
+        })[e.target.name.slice(0, e.target.name.lastIndexOf('_'))], input.checked ? 1 : 0],
+        ["csrfmiddlewaretoken", $.cookie('csrftoken')],
+      ]),
+    });
+  }
+} catch (e) {
+  g3wadmin.widget.showError(e);
+}});
 </script>
 {% endblock %}
 
 {% block page_header %}
 <h1>
 {% trans 'QGIS Project Layers' %}
-    <small></small>
+<small></small>
 </h1>
 {% endblock %}
 
 {% block main_content %}
 {% get_obj_perms user for project as "userPrj_perms" %}
-<div class="row">
-    <div class="col-md-12 col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">{% trans 'Project' %}</h3>
-            </div>
-            <div class="box-body">
-                <div class="attachment-block clearfix">
-                    {% if project.thumbnail %}
-                    <img class="attachment-img" src="{{ MEDIA_URL }}{{ project.thumbnail }}">
-                    {% endif %}
-                    <div class="{% if project.thumbnail %}attachment-pushed{% else %}attachement{% endif %}">
-                        <div class=" attachment-heading"><h4>{{ project.title }}</h4></div>
-                        <div class="attachment-text">{{ project.description|safe }}</div>
-                    </div>
-                </div>
-                <div class="project-abstract-action">
-                    {% if "view_project" in userPrj_perms %}
-                    <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" class="color-orange btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
-                        <i class="ion ion-map"></i>
-                        {% trans 'Show map' %}
-                    </a>
-                    {% endif %}
-                    {% if "view_project" in userPrj_perms %}
-                    <a class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" >
-                        <i class="ion ion-eye"></i>
-                        {% trans 'Show detail' %}
-                    </a>
-                    {% endif %}
-                    {% if "change_project" in userPrj_perms %}
-                    <a href="{% url 'qdjango-project-update' group.slug project.slug %}" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
-                        <i class="ion ion-edit"></i>
-                        {% trans 'Edit' %}
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title">{% trans 'Project' %}</h3>
+  </div>
+  <div class="box-body">
+    <div class="attachment-block clearfix">
+      {% if project.thumbnail %}
+        <img class="attachment-img" src="{{ MEDIA_URL }}{{ project.thumbnail }}">
+      {% endif %}
+      <div class="{% if project.thumbnail %}attachment-pushed{% else %}attachement{% endif %}">
+        <div class=" attachment-heading"><h4>{{ project.title }}</h4></div>
+        <div class="attachment-text">{{ project.description|safe }}</div>
+      </div>
     </div>
+    <div class="project-abstract-action">
+      {% if "view_project" in userPrj_perms %}
+        <a
+          href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}"
+          class="color-orange btn btn-app"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Show map' %}"
+          target="_blank"
+        >
+          <i class="fa fa-map"></i>
+          {% trans 'Show map' %}
+        </a>
+      {% endif %}
+      {% if "view_project" in userPrj_perms %}
+        <a
+          class="btn btn-app"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Show detail' %}"
+          data-widget-type="detailItem"
+          data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}"
+        >
+          <i class="fa fa-info-circle"></i>
+          {% trans 'Show detail' %}
+        </a>
+      {% endif %}
+      {% if "change_project" in userPrj_perms %}
+        <a
+          href="{% url 'qdjango-project-update' group.slug project.slug %}"
+          class="btn btn-app"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Edit' %}"
+        >
+          <i class="fa fa-pencil"></i>
+          {% trans 'Edit' %}
+        </a>
+      {% endif %}
+    </div>
+  </div>
 </div>
 
 <div class="box">
-    <div class="box-body">
-        <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
-              <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> {% trans 'Data' %}</a></li>
-              <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
-            </ul>
-            <div class="tab-content">
-              <div class="tab-pane active project_layers_action-content" id="tab_layers_data">
-                <div class="row">
-                <div class="col-md-3 col-md-offset-6 col-xs-6" >
-                    <b>{% trans 'Project layers actions' %}:</b>
-                </div>
-                <div class="col-md-3 col-xs-6" style="border-bottom: 1px solid #f4f4f4;">
-                {% g3wadmin_project_layers_actions project 'qdjango' user as project_layers_actions %}
+  <div class="box-body">
+    <div>
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> {% trans 'Data' %}</a></li>
+        <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
+      </ul>
+      <div class="tab-content">
 
-                {% for action in project_layers_actions %}
-                    {{ action }}
-                {% endfor %}
-                </div>
-                </div>
+        <!-- LAYERS DATA -->
+        <div class="tab-pane active" id="tab_layers_data">
+          <p style="font-size: 1.25em;padding: 1em 0; display: flex; justify-content: center;gap: 10px;">
+            <b>{% trans 'Project layers actions' %}:</b>
+            {% g3wadmin_project_layers_actions project 'qdjango' user as project_layers_actions %}
+            {% for action in project_layers_actions %}
+                {{ action }}
+            {% endfor %}
+          </p>
 
+          <table id="layers_table" class="table" data-widget-type="dataTable">
+            <thead>
+              <tr>
+                <th style="width:200px">{%  trans 'Label' %}</th>
+                <th style="width:200px">{%  trans 'Name' %}</th>
+                <th style="width: 40px">{% trans 'Type' %}</th>
+                {% if "change_project" in userPrj_perms %}
+                  <th style="width:100px">{% trans 'WMS External' %}</th>
+                {% endif %}
+                <th style="width: 40px">WFS</th>
+                <th style="min-width:200px; width:240px;">{% trans 'Actions'%}</th>
+                {% if "change_project" in userPrj_perms %}
+                  <th style="width:100px">{% trans 'Download capabilities' %}</th>
+                  <th style="width:40px">{% trans 'Visibility capabilities' %}</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for object in object_list %}
+                <tr id="qdjango_project_layer_{{ object.slug }}">
 
-                <table id="layers_table" class="table table-hover table-striped" data-widget-type="dataTable">
-                    <thead>
-                        <tr>
+                  <td>{{ object.title }}</td>
 
-                            <th style="width:200px">{%  trans 'Label' %}</th>
-                            <th style="width:200px">{%  trans 'Name' %}</th>
-                            <th style="width: 40px">{% trans 'Type' %}</th>
-                            {% if "change_project" in userPrj_perms %}
-                            <th style="width:100px">{% trans 'WMS External' %}</th>
-                            {% endif %}
-                            <th style="width: 40px">WFS</th>
-                            <th style="min-width:200px; width:240px;">{% trans 'Actions'%}</th>
-                            {% if "change_project" in userPrj_perms %}
-                            <th style="width:100px">{% trans 'Download capabilities' %}</th>
-                            <th style="width:40px">{% trans 'Visibility capabilities' %}</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for object in object_list %}
-                        <tr id="qdjango_project_layer_{{ object.slug }}">
+                  <td>
+                    {{ object.origname }}
+                    {% if "change_project" in userPrj_perms %}
+                      <a
+                        href="#"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="{% trans 'Show detail' %}"
+                        data-widget-type="detailItem"
+                        data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}"
+                      >
+                        <i class="fa fa-info-circle"></i>
+                      </a>
+                    {% endif %}
+                  </td>
 
+                  <td>
+                    {% include 'qdjango/include/layer_icon.html' %}
+                  </td>
 
-                            <td>{{ object.title }}</td>
-                            <td>{{ object.origname }}
-                                {% if "change_project" in userPrj_perms %}
-                                <a data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% include 'qdjango/include/layer_icon.html' %}
-                            </td>
-                            {% if "change_project" in userPrj_perms %}
-                            <td>
-                                {% if object|can_set_external %}
-                                <input type="checkbox" data-widget-type="externalLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="external_{{ object.pk }}" {% if object.external %}checked="checked"{% endif %}>
-                                {% endif %}
-                            </td>
-                            {% endif %}
-                            <td>
-                                {% if object.wfscapabilities %}
-                                <span class="fa fa-check-circle" style="color: orange"></span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="row">
-                                    {% g3wadmin_layer_actions object 'qdjango' user as actions %}
+                  {% if "change_project" in userPrj_perms %}
+                    <td>
+                      {% if object|can_set_external %}
+                      <input type="checkbox" name="external_{{ object.pk }}" {% if object.external %}checked{% endif %} onclick="fetch('{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}', { method: 'POST', body:  new URLSearchParams([['external', event.target.checked ? 1 : 0], ['csrfmiddlewaretoken', $.cookie('csrftoken')] ]).catch(g3wadmin.widget.showError)" />
+                      {% endif %}
+                    </td>
+                  {% endif %}
 
-                                    {% for action in actions %}
-                                        {{ action }}
-                                    {% endfor %}
-                                    {% if object.layer_type in type_layer_for_widget %}
-                                    {% comment %} Add geoconstraints management {% endcomment %}
-                                    {% if object.geometrytype != NOGEOMETRY %}
-                                    <span class="col-xs-1 icon">
-                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Geo-constraints by Users/Groups' %}" data-widget-type="geoConstraintsList" data-geoconstraints-layer-pk="{{ object.pk }}" data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-object-ungroup"></i>
-                                        <span class="label label-info label-action-layer">{% geoconstraitnswidget4layer object %}</span>
-                                        </a>
-                                    </span>
-                                    {% endif %}
-                                    {% comment %} Add singlelayerconstraints management {% endcomment %}
-                                    <span class="col-xs-1 icon">
-                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Alphanumeric and QGIS expressions constraints by Users/Groups' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
-                                            <span class="label label-info label-action-layer">{{ object.getConstraintsNumber }}</span>
-                                        </a>
-                                    </span>
+                  <td>
+                    {% if object.wfscapabilities %}
+                      <span class="fa fa-check-circle" style="color: orange"></span>
+                    {% endif %}
+                  </td>
 
-                                    {% comment %} Add Column ACL management {% endcomment %}
-                                    <span class="col-xs-1 icon">
-                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Hide columns by Users/Groups' %}" data-widget-type="columnAclManagerList" data-column-acl-layer-pk="{{ object.pk }}"
-                                        data-column-acl-list-url="{% url 'qdjango-column-acl-api-filter-by-layer-id' object.pk %}"
-                                        data-column-acl-fields-url="{% url 'qdjango-column-acl-api-fields' object.pk %}"
-                                        data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"
-                                        data-info-layer-authgroup="{% url 'qdjango-api-info-layer-authgroup' object.pk %}"
-                                         ><i class="fa fa-table"></i>
-                                            <span class="label label-info label-action-layer">{{ object.getColumnAclNumber }}</span>
-                                        </a>
-                                    </span>
+                  <td style="display: flex; flex-wrap: wrap; gap: 0 10px; font-size: 1.25em;">
+                      {% g3wadmin_layer_actions object 'qdjango' user as actions %}
 
-                                    <span class="col-xs-1 icon">
-                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i>
-                                            <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>
+                      {% for action in actions %}
+                        {{ action }}
+                      {% endfor %}
 
-                                    </span>
-                                    {% if not object.is_embedded %}
-                                    <span class="col-xs-1 icon">
-                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage layer styles' %}" data-widget-type="styleManagerList" data-stylemanager-layer-pk="{{ object.pk }}" data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}" ><i class="fa fa-paint-brush"></i>
-                                            <span class="label label-info label-action-layer">{{ object.styles_count }}</span>
-                                        </a>
-                                    </span>
-                                    {% endif %}
-                                    {% endif %}
-                                </span>
-                            </td>
-                            <td>
+                      <!-- Geo-constraints by Users/Groups -->
+                      {% if object.layer_type in type_layer_for_widget and object.geometrytype != NOGEOMETRY %}
+                        <a
+                          class="layer-action"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          title="{% trans 'Geo-constraints by Users/Groups' %}"
+                          data-widget-type="geoConstraintsList"
+                          data-geoconstraints-layer-pk="{{ object.pk }}"
+                          data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}"
+                        >
+                          <i class="fa fa-object-ungroup"></i>
+                          <span class="label-action-layer">{% geoconstraitnswidget4layer object %}</span>
+                        </a>
+                      {% endif %}
 
-{#                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>#}
-                                <div class="dropdown">
-                                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                  <i class="fa fa-download"></i>
-                                    {% trans 'Download' %}
-                                </a>
-                                <ul class="dropdown-menu" style="hoverflow: hidden; width:100%; min-width: 200px;">
-                                    <li>
-                                        <div class="slimScrollDiv vector-download">
-                                            <ul class="menu">
-                                                {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS or 'geotiff' in SETTINGS.G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS %}
-                                                {% if object.layer_type in type_layer_for_download or object.layer_type in type_raster_layer_for_download %}
-                                                <li>
-                                                    <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
-                                                    {% trans 'Download as shp/geotiff' %}
-                                                </li>
-                                                {% endif %}
-                                                {% endif %}
-                                                {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
-                                                <li>
-                                                    <input type="checkbox" data-widget-type="downloadLayergpkg" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpkg_{{ object.pk }}" {% if object.download_gpkg %}checked="checked"{% endif %}>
-                                                    {% trans 'Download as gpkg' %}
-                                                </li>
-                                                {% endif %}
-                                                {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
-                                                <li>
-                                                    <input type="checkbox" data-widget-type="downloadLayerxls" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_xls_{{ object.pk }}" {% if object.download_xls %}checked="checked"{% endif %}>
-                                                    {% trans 'Download as xls' %}
-                                                </li>
-                                                {% endif %}
-                                                {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
-                                                <li>
-                                                     <input type="checkbox" data-widget-type="downloadLayercsv" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_csv_{{ object.pk }}" {% if object.download_csv %}checked="checked"{% endif %}>
-                                                    {% trans 'Download as csv' %}
-                                                </li>
-                                                {% endif %}
+                      <!-- Alphanumeric and QGIS expressions constraints by Users/Groups -->
+                      {% if object.layer_type in type_layer_for_widget %}
+                        <a
+                          class="layer-action"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          title="{% trans 'Alphanumeric and QGIS expressions constraints by Users/Groups' %}"
+                          data-widget-type="singlelayerConstraintsList"
+                          data-singlelayerconstraints-layer-pk="{{ object.pk }}"
+                          data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}"
+                        >
+                          <i class="fa fa-filter"></i>
+                          {% if object.getConstraintsNumber > 0 %}<span class="label-action-layer">{{ object.getConstraintsNumber }}</span>{%endif%}
+                        </a>
+                      {% endif %}
 
+                      <!-- Hide columns by Users/Groups -->
+                      {% if object.layer_type in type_layer_for_widget %}
+                        <a
+                          class="layer-action"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          title="{% trans 'Hide columns by Users/Groups' %}"
+                          data-widget-type="columnAclManagerList"
+                          data-column-acl-layer-pk="{{ object.pk }}"
+                          data-column-acl-list-url="{% url 'qdjango-column-acl-api-filter-by-layer-id' object.pk %}"
+                          data-column-acl-fields-url="{% url 'qdjango-column-acl-api-fields' object.pk %}"
+                          data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"
+                          data-info-layer-authgroup="{% url 'qdjango-api-info-layer-authgroup' object.pk %}"
+                        >
+                          <i class="fa fa-table"></i>
+                          {% if object.getColumnAclNumber > 0 %}<span class="label-action-layer">{{ object.getColumnAclNumber }}</span>{%endif%}
+                        </a>
+                      {% endif %}
 
-                                                {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download and object|is_geom_type_gpx_compatible %}
-                                                <li>
-                                                     <input type="checkbox" data-widget-type="downloadLayergpx" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpx_{{ object.pk }}" {% if object.download_gpx %}checked="checked"{% endif %}>
-                                                    {% trans 'Download as gpx' %}
-                                                </li>
-                                                {% endif %}
-                                            
-                                                 {% if 'pdf' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
-                                                <li>
-                                                    <input type="checkbox" data-widget-type="downloadLayerpdf" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_pdf_{{ object.pk }}" {% if object.download_pdf %}checked="checked"{% endif %}>
-                                                    {% trans 'Download as pdf' %}
-                                                </li>
-                                                {% endif %}
-                                            </ul>
-                                        </div>
-                                    </li>
-                                </ul>
-                                </div>
+                      <!-- Widgets list -->
+                      {% if object.layer_type in type_layer_for_widget %}
+                        <a
+                          class="layer-action"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          title="{% trans 'Widgets list' %}"
+                          data-widget-type="detailItemDataTable"
+                          data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}"
+                        >
+                          <i class="fa fa-cog"></i>
+                          {% if object.getWidgetsNumber > 0 %}<span class="label-action-layer">{{ object.getWidgetsNumber }}</span>{%endif%}
+                        </a>
+                      {% endif %}
 
-                            </td>
+                      <!-- Manage layer styles -->
+                      {% if object.layer_type in type_layer_for_widget and not object.is_embedded %}
+                        <a
+                          class="layer-action"
+                          data-toggle="tooltip"
+                          data-placement="top"
+                          title="{% trans 'Manage layer styles' %}"
+                          data-widget-type="styleManagerList"
+                          data-stylemanager-layer-pk="{{ object.pk }}"
+                          data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}"
+                        >
+                          <i class="fa fa-paint-brush"></i>
+                          {% if object.styles_count > 0 %}<span class="label-action-layer">{{ object.styles_count }}</span>{%endif%}
+                        </a>
+                      {% endif %}
 
-                            {% if "change_project" in userPrj_perms %}
-                            <td>
-                            <div class="dropdown">
-                                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                  <i class="fa fa-eye"></i>
-                                    {% trans 'Hide' %}
-                                </a>
+                  </td>
 
-                                <ul class="dropdown-menu" style="hoverflow: hidden; width:100%;">
-                                    <li>
-                                        <div class="slimScrollDiv not-show">
-                                            <ul class="menu">
-                                                {% if object.layer_type in type_layer_for_download %}
-                                                <li>
-                                                    <input type="checkbox" data-widget-type="noShowAttributesTable" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="not_show_attributes_table_{{ object.pk }}" {% if object.not_show_attributes_table %}checked="checked"{% endif %}>
-                                                    {% trans 'Attributes table' %}
-                                                </li>
-                                                {% endif %}
-                                                {% if object.geometrytype != NOGEOMETRY %}
-                                                <li>
-                                                    <input type="checkbox" data-widget-type="noLegendLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_legend_{{ object.pk }}" {% if object.exclude_from_legend %}checked="checked"{% endif %}>
-                                                    {% trans 'Legend' %}
-                                                </li>
-                                                {% endif %}
-                                                <li>
-                                                    <input type="checkbox" data-widget-type="noTocLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_toc_{{ object.pk }}" {% if object.exclude_from_toc %}checked="checked"{% endif %}>
-                                                    {% trans 'Layer TOC' %}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            </td>
-                            {% endif %}
+                  <td class="dropdown">
+                    <a
+                      class="btn btn-default dropdown-toggle"
+                      data-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="fa fa-download"></i>
+                      {% trans 'Download' %}
+                    </a>
+                    <ul
+                      class="dropdown-menu skip-icheck"
+                      style="line-height: 35px;white-space: nowrap;padding: 10px;"
+                      data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}"
+                    >
+                      <!-- Download as shp/geotiff -->
+                      {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS or 'geotiff' in SETTINGS.G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS %}
+                        {% if object.layer_type in type_layer_for_download or object.layer_type in type_raster_layer_for_download %}
+                          <li><input type="checkbox" name="download_{{ object.pk }}" {% if object.download %}checked{% endif %} /> {% trans 'Download as shp/geotiff' %}</li>
+                        {% endif %}
+                      {% endif %}
 
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-              </div><!-- /.tab-pane -->
-              <div class="tab-pane" id="tab_layers_structure">
-                <div id="tree"></div>
-              </div><!-- /.tab-pane -->
+                      <!-- Download as gpkg -->
+                      {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                        <li><input type="checkbox" name="download_gpkg_{{ object.pk }}" {% if object.download_gpkg %}checked{% endif %} /> {% trans 'Download as gpkg' %}</li>
+                      {% endif %}
 
-            </div><!-- /.tab-content -->
-          </div>
+                      <!-- Download as xls -->
+                      {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                        <li><input type="checkbox" name="download_xls_{{ object.pk }}" {% if object.download_xls %}checked{% endif %} /> {% trans 'Download as xls' %}</li>
+                      {% endif %}
 
+                      <!-- Download as csv -->
+                      {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                        <li><input type="checkbox" name="download_csv_{{ object.pk }}" {% if object.download_csv %}checked{% endif %} /> {% trans 'Download as csv' %}</li>
+                      {% endif %}
+
+                      <!-- Download as gpx -->
+                      {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download and object|is_geom_type_gpx_compatible %}
+                        <li><input type="checkbox" name="download_gpx_{{ object.pk }}" {% if object.download_gpx %}checked{% endif %} /> {% trans 'Download as gpx' %}</li>
+                      {% endif %}
+
+                      {% if 'pdf' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                        <li><input type="checkbox" name="download_pdf_{{ object.pk }}" {% if object.download_pdf %}checked{% endif %} /> {% trans 'Download as pdf' %}</li>
+                      {% endif %}
+                    </ul>
+                  </td>
+
+                  {% if "change_project" in userPrj_perms %}
+                    <td class="dropdown">
+                      <a
+                        class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <i class="fa fa-eye"></i>
+                        {% trans 'Hide' %}
+                      </a>
+                      <ul
+                        class="dropdown-menu skip-icheck"
+                        style="line-height: 35px;white-space: nowrap;padding: 10px;"
+                        data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}"
+                      >
+                        <!-- Attributes table -->
+                        {% if object.layer_type in type_layer_for_download %}
+                          <li><input type="checkbox" name="not_show_attributes_table_{{ object.pk }}" {% if object.not_show_attributes_table %}checked{% endif %} /> {% trans 'Attributes table' %}</li>
+                        {% endif %}
+                        <!-- Legend -->
+                        {% if object.geometrytype != NOGEOMETRY %}
+                          <li><input type="checkbox" name="no_legend_{{ object.pk }}" {% if object.exclude_from_legend %}checked{% endif %} /> {% trans 'Legend' %}</li>
+                        {% endif %}
+                        <!-- Table of Contents -->
+                        <li><input type="checkbox" name="no_toc_{{ object.pk }}" {% if object.exclude_from_toc %}checked{% endif %} /> {% trans 'Layer TOC' %}</li>
+                      </ul>
+                    </td>
+                  {% endif %}
+
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div><!-- /.tab-pane -->
+
+        <!-- LAYERS STRUCTURE -->
+        <div class="tab-pane" id="tab_layers_structure">
+          <g3w-tree data="{{ layers_tree }}"></g3w-tree>
+          <script type="module" src="{% static "components/g3w-tree.js" %}"></script>
+        </div><!-- /.tab-pane -->
+
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

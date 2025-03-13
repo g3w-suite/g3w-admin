@@ -20,33 +20,23 @@ from core.utils.tree import G3Wtree
 sitetrees = (
 
     # ITALIAN
+    
     G3Wtree(
         'openrouteservice',
         title='Openrouteservice',
         module='openrouteservice',
         items=[
             item(
-                'Openrouteservice',
-                '#',
-                type_header=True
-            ),
-            item(
-                'ORS Progetti',
-                '#',
+                'Open Route Service',
+                'ors-project-list',
                 icon_css_class='fa fa-road',
                 children=[
                     item(
                         'Aggiungi progetto',
                         'ors-project-add',
                         url_as_pattern=True,
-                        icon_css_class='fa fa-plus',
-                        access_by_perms=['qdjango.change_project']
-                    ),
-                    item(
-                        'Lista progetti',
-                        'ors-project-list',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-list'
+                        access_by_perms=['qdjango.change_project'],
+                        in_menu=False
                     ),
                 ]
             ),
@@ -60,27 +50,16 @@ sitetrees = (
         module='openrouteservice',
         items=[
             item(
-                'Openrouteservice',
-                '#',
-                type_header=True
-            ),
-            item(
-                'ORS Projects',
-                '#',
+                'Open Route Service',
+                'ors-project-list',
                 icon_css_class='fa fa-road',
                 children=[
                     item(
                         'Add project',
                         'ors-project-add',
                         url_as_pattern=True,
-                        icon_css_class='fa fa-plus',
-                        access_by_perms=['qdjango.change_project']
-                    ),
-                    item(
-                        'List projects',
-                        'ors-project-list',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-list'
+                        access_by_perms=['qdjango.change_project'],
+                        in_menu=False
                     ),
                 ]
             ),

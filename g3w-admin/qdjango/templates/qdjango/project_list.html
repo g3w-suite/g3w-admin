@@ -1,3 +1,4 @@
+{% load static %}
 {% load i18n %}
 {% load g3wadmin_tags %}
 {% load guardian_tags %}
@@ -10,30 +11,31 @@
         {% endif %}
     </div>
     <div class="box-body">
-        <div class="nav-tabs-custom">
+        <div class="">
         <ul class="nav nav-tabs">
             <li class="active">
-                <a href="#tab-active-projects" data-toggle="tab"><span class="ion ion-ios-list"></span> {% trans 'Projects' %}</a>
+                <a href="#tab-active-projects" data-toggle="tab"><span class="fa fa-list"></span> {% trans 'Projects' %}</a>
             </li>
             <li>
-                <a href="#tab-deactivated-projects" data-toggle="tab"><span class="ion ion-trash-a"></span> {% trans 'Trash' %} ({{ inactive_project_list|length  }})</a>
+                <a href="#tab-deactivated-projects" data-toggle="tab"><span class="fa fa-trash"></span> {% trans 'Trash' %} ({{ inactive_project_list|length  }})</a>
             </li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab-active-projects">
             {% if object_list|length > 0 %}
-            <table class="table table-hover table-striped projects-list">
+            <table class="table projects-list">
                 <thead>
                     <tr>
                         {% if perms.qdjango.add_project %}
                         <th style="width:70px;">{% trans 'Panoramic' %}</th>
                         {% endif %}
-                        <th style="width:120px">{% trans 'Actions' %}</th>
+                        <th>{% trans 'Actions' %}</th>
                         <th>Logo</th>
                         <th>{% trans 'QGIS project title' %}</th>
                         <th>{% trans 'Public title' %}</th>
                         <th>{% trans 'URL alias' %}</th>
                         <th>{% trans 'Created/Modified' %}</th>
+                        {% if "delete_project" in userObj_perms %}<th></th>{% endif %}
                         {% comment %}<th>{% trans 'Widgets' %}</th>{% endcomment %}
                     </tr>
                 </thead>
@@ -43,63 +45,43 @@
                     <tr id="qdjangoproject_{{ object.pk }}">
                         {% if perms.qdjango.add_project %}
                         <td>
-                            <input type="radio" name="panoramic_map" {% if object.id == projectPanoramic.0.project_id %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="setProjectPanoramic" data-ajax-url="{% url 'group-set-project-panoramic' group.slug 'qdjango' object.id %}"/>
+                            <input type="radio" name="panoramic_map" {% if object.id == projectPanoramic.0.project_id %}checked{% endif %} value="{{ object.id }}" data-widget-type="setProjectPanoramic" data-ajax-url="{% url 'group-set-project-panoramic' group.slug 'qdjango' object.id %}"/>
                         </td>
                         {% endif %}
-                        <td>
+                        <td style="display: flex; flex-wrap: wrap; gap: 0 10px;font-size:1.25em">
+                            {% if "change_project" in userObj_perms %}
+                                <a href="{% url 'qdjango-project-update' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            {% endif %}
+                            {% if "change_project" in userObj_perms %}
+                                <a href="{% url 'qdjango-project-layers-list' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" >
+                                    <i class="fa fa-list-alt"></i>
+                                </a>
+                            {% endif %}
                             {% if "view_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a class="color-orange" href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
-                            </span>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" >
+                                    <i class="fa fa-info-circle"></i>
+                                </a>
                             {% endif %}
                             {% if "change_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="{% url 'qdjango-project-layers-list' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i></a>
-                            </span>
-                            {% endif %}
-                            {% if "view_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" ><i class="ion ion-eye"></i></a>
-                            </span>
-                            {% endif %}
-
-                            {% if "change_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a target="_blank" href="/ows/{{ group.slug }}/qdjango/{{ object.pk }}/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetProjectSettings" data-toggle="tooltip" data-placement="top" title="{% trans 'Test WMS capabilities' %}" ><i class="ion ion-flash"></i></a>
-                            </span>
-                            {% endif %}
-
-                            {% if "change_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="{% url 'qdjango-project-update' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                            </span>
-                            {% endif %}
-
-                            {% if "delete_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete/Deactivate' %}" data-widget-type="activeDeactiveItem" data-active-deactive-action="deactivate" data-active-deactive-url="{% url 'qdjango-project-deactive' group.slug object.slug %}" data-item-selector="#qdjangoproject_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
-                                {% if object.pk in pre_delete_messages %}
-                                <div class="hidden pre-active-deactive-message">
-                                    {{ pre_delete_messages|lookup:object.pk }}
-                                </div>
-                                {% endif %}
-                            </span>
+                                <a target="_blank" href="/ows/{{ group.slug }}/qdjango/{{ object.pk }}/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetProjectSettings" data-toggle="tooltip" data-placement="top" title="{% trans 'Test WMS capabilities' %}" >
+                                    <i class="fa fa-bolt"></i>
+                                </a>
                             {% endif %}
                             {% if "change_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="{% url 'qdjango-project-download' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Download' %}" ><i class="ion ion-android-download"></i></a>
-                            </span>
+                                <a href="{% url 'qdjango-project-download' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Download' %}" >
+                                    <i class="fa fa-cloud-download"></i>
+                                </a>
                             {% endif %}
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-widget-type="showWEBServices" data-api-url="{% url 'qdjango-webservice-api-list' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'WEB services available' %}" ><i class="ion ion-android-globe"></i></a>
-                            </span>
+                                <a href="#" data-widget-type="showWEBServices" data-api-url="{% url 'qdjango-webservice-api-list' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'WEB services available' %}" >
+                                    <i class="fa fa-globe"></i>
+                                </a>
                             {% if "change_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="{% url 'qdjango-project-messages-list' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Messages' %}" ><i class="fa fa-commenting-o"></i></a>
-                            </span>
+                                <a href="{% url 'qdjango-project-messages-list' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Messages' %}" >
+                                    <i class="fa fa-commenting-o"></i>
+                                </a>
                             {% endif %}
-
                         </td>
                         <td>
                             <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" class="project-thumb" title="{% trans 'Show map' %}" target="_blank">
@@ -110,10 +92,15 @@
                             {% endif %}
                             </a>
                         </td>
-                        <td>
+                        <td style="display: flex;justify-content: space-between; max-width:300px;">
                             <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" target="_blank">
                             <strong>{{ object.title }}</strong>
                             </a>
+                            {% if "view_project" in userObj_perms %}
+                            <a style="color:forestgreen" href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        {% endif %}
                         </td>
                         <td>{% if object.title_ur %}{{ object.title_ur }}{% endif %}</td>
                         <td>
@@ -138,6 +125,18 @@
                             {% endfor %}
                         </td>
                         {% endcomment %}
+                        <td>
+                            {% if "delete_project" in userObj_perms %}
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete/Deactivate' %}" data-widget-type="activeDeactiveItem" data-active-deactive-action="deactivate" data-active-deactive-url="{% url 'qdjango-project-deactive' group.slug object.slug %}" data-item-selector="#qdjangoproject_{{ object.pk }}">
+                                <i class="fa fa-trash" style="color: red; font-size: 1.25em"></i>
+                            </a>
+                                {% if object.pk in pre_delete_messages %}
+                                <div class="hidden pre-active-deactive-message">
+                                    {{ pre_delete_messages|lookup:object.pk }}
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -151,12 +150,13 @@
             <table class="table table-striped inactive-projects-list">
                 <thead>
                     <tr>
-                        <th style="width:120px">{% trans 'Actions' %}</th>
+                        <th>{% trans 'Actions' %}</th>
                         <th>Logo</th>
                         <th>{% trans 'QGIS project title' %}</th>
                         <th>{% trans 'Public title' %}</th>
                         <th>{% trans 'URL alias' %}</th>
                         <th>{% trans 'Created/Modified' %}</th>
+                        <th></th>
                         {% comment %}<th>{% trans 'Widgets' %}</th>{% endcomment %}
                     </tr>
                 </thead>
@@ -164,33 +164,21 @@
                     {% for object in inactive_project_list %}
                     {% get_obj_perms user for object as "userObj_perms" %}
                     <tr id="inactive_qdjangoproject_{{ object.pk }}">
-                        <td>
+                        <td style="display: flex; flex-wrap: wrap; gap: 0 10px; font-size:1.25em">
                              {% if "change_project" in userObj_perms and group.is_active %}
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'qdjango-project-active' group.slug object.slug %}" data-item-selector="#inactive_qdjangoproject_{{ object.pk }}"><i class="ion ion-arrow-return-left"></i></a>
-                            </span>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'qdjango-project-active' group.slug object.slug %}" data-item-selector="#inactive_qdjangoproject_{{ object.pk }}">
+                                    <i class="fa fa-undo"></i>
+                                </a>
                             {% endif %}
-
                             {% if "view_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" ><i class="ion ion-eye"></i></a>
-                            </span>
-                            {% endif %}
-
-                            {% if "delete_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#inactive_qdjangoproject_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
-                                {% if object.pk in pre_delete_messages %}
-                                <div class="hidden pre-delete-message">
-                                    {{ pre_delete_messages|lookup:object.pk }}
-                                </div>
-                                {% endif %}
-                            </span>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" >
+                                    <i class="fa fa-info-circle"></i>
+                                </a>
                             {% endif %}
                             {% if "change_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="{% url 'qdjango-project-download' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Download' %}" ><i class="ion ion-android-download"></i></a>
-                            </span>
+                                <a href="{% url 'qdjango-project-download' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Download' %}" >
+                                    <i class="fa fa-cloud-download"></i>
+                                </a>
                             {% endif %}
                         </td>
                         <td>
@@ -214,6 +202,18 @@
                             {% if object.modified %}
                                 <br />
                                 {% trans 'modified' %}: {{ object.modified }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if "delete_project" in userObj_perms %}
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#inactive_qdjangoproject_{{ object.pk }}">
+                                    <i class="fa fa-trash" style="color: red; font-size: 1.25em"></i>
+                                </a>
+                                {% if object.pk in pre_delete_messages %}
+                                <div class="hidden pre-delete-message">
+                                    {{ pre_delete_messages|lookup:object.pk }}
+                                </div>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

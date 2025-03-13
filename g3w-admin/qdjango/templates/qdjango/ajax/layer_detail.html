@@ -1,26 +1,13 @@
 {% load i18n %}
 {% load auth_extras %}
 
-<div class="row">
-    <div class="col-md-12">
-        <ul class="list-unstyled">
-            <li>
-                  <h4>{% trans 'Title' %}:</h4>
-                  <span>{{ object.title }}</span>
-            </li>
-            <li>
-                  <h4>{% trans 'Name' %}:</h4>
-                  <span>{{ object.origname }}</span>
-            </li>
-            <li>
-                  <h4>{% trans 'QGIS layer ID' %}:</h4>
-                  <span>{{ object.qgs_layer_id }}</span>
-            </li>
-            <li>
-                  <h4>{% trans 'Datasource' %}:</h4>
-                  <span>{{ object.datasource }}</span>
-            </li>
-
-        </ul>
-    </div>
-</div>
+<dl>
+  <dt>{% trans 'Title' %}:</dt>
+  <dd>{{ object.title }}</dd>
+  <dt>{% trans 'Name' %}:</dt>
+  <dd>{{ object.origname }}</dd>
+  <dt>{% trans 'QGIS layer ID' %}:</dt>
+  <dd>{{ object.qgs_layer_id }}</dd>
+  <dt>{% trans 'Datasource' %}:</dt>
+  <dd>{{ object.datasource }}</dd>
+</ul>

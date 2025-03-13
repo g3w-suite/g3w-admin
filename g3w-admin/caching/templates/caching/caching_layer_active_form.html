@@ -1,38 +1,52 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
+
 <form method="post" id="caching_layer_form">
-    <div class="row">
-        <div class="col-md-12 error-form-message hidden">
-            <div class="alert alert-danger alert-dismissable">
-                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                    {% trans 'Some errors on form. Check it and send again.' %}
-            </div>
-        </div>
+  <div class="error-form-message hidden">
+    <div class="alert alert-danger alert-dismissable">
+      <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+      {% trans 'Some errors on form. Check it and send again.' %}
     </div>
-    <div class="row">
-        <div class="col-md-12">
-        {% crispy form %}
-        </div>
-    </div>
+  </div>
+  <div class="skip-icheck">
+    {% crispy form %}
+  </div>
 </form>
+
 <script>
+(function() {
+  const ACTIVE   = document.querySelector('#caching_layer_form #id_active')
+  const BASE     = document.querySelector('#caching_layer_form #id_as_base_layer');
+  const FIELDSET = document.querySelector('#caching_layer_form fieldset');
+  const TITLE    = document.querySelector('#caching_layer_form #id_base_layer_title');
 
-    $('#caching_layer_form').find('li').click(function(){
-        var $reset_url = $('#caching_layer_form').find('#id_reset_layer_cache_url').val();
-        var id = $(this).find('a').attr('id');
-        if (id == 'resetcache_for_project') {
-            $reset_url += '?reset_by_project';
-        }
-        var $that = $(this).parent();
-        $that.next('span').remove();
-        var $after = $("<span></span>").css('margin-left','4px').css('margin-top', '8px');
+  document.querySelectorAll('#caching_layer_form #resetcache, #caching_layer_form #resetcache_for_project').forEach(action => action.addEventListener('click', async function (e) {
+    try {
+      const message = action.closest('details').querySelector('.message');
+      message.innerHTML = '';
+      message.innerHTML = '&nbsp;' + (await (await fetch(action.closest('form').querySelector('#id_reset_layer_cache_url').value + ('resetcache_for_project' === action.id ? '?reset_by_project' : ''))).json()).message;
+    } catch(e) {
+      message.innerHTML = '&nbsp; Error';
+    }
+  }));
 
-        $.get($reset_url, function(data){
-            $after.html(data.message).insertAfter($that);
-        }, 'json').fail(function(){
-            $after.html('Error').insertAfter($that);
-        });
-    });
+  BASE.toggleAttribute('disabled', !ACTIVE.checked);
+  TITLE.toggleAttribute('required');
 
-    ga.ui.initCachingActiveCheckBox();
+  if (BASE.checked) {
+    FIELDSET.toggleAttribute('disabled', false);
+  }
+
+  ACTIVE.addEventListener('click', async function (e) {
+    if (!e.target.checked) {
+      BASE.checked = false;  
+    }
+    BASE.toggleAttribute('disabled', !e.target.checked);
+    FIELDSET.toggleAttribute('disabled', !BASE.checked);
+  });
+
+  BASE.addEventListener('click', async function (e) {
+    FIELDSET.toggleAttribute('disabled', !e.target.checked);
+  });
+})();
 </script>

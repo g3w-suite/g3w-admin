@@ -7,53 +7,44 @@
 
 {% block page_header %}
 <h1>
-    {% trans 'Macro Group' %}
-    <small>{{ form.instance.name }}</small>
+  {% trans 'Macro Group' %}
+  <small>{{ form.instance.name }}</small>
 </h1>
 {% endblock %}
-
 
 
 {% block main_content %}
 
 {% if object %}
-    <div class="row">
-    <div class="col-md-12 col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">{% trans 'Current groups' %}</h3>
-                {% comment %}
-                <h3 class="box-title">
-                    {% include 'core/include/add_project.html' %}
-                </h3>
-                {% endcomment %}
-            </div>
-            <div class="box-body">
-            {% comment %}
-                <h4>{% trans 'Current groups' %}</h4>
-            {% endcomment %}
-                {% for group in object.group_set.all %}
-                <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
-                {% endfor %}
-            </div>
-        </div>
+  <div class="box">
+    <div class="box-header">
+      <h3 class="box-title">{% trans 'Current groups' %}</h3>
+      {% comment %}
+      <h3 class="box-title">
+        {% include 'core/include/add_project.html' %}
+      </h3>
+      {% endcomment %}
     </div>
-</div>
+    <div class="box-body">
+      {% comment %}
+        <h4>{% trans 'Current groups' %}</h4>
+      {% endcomment %}
+      {% for group in object.group_set.all %}
+        <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
+      {% endfor %}
+    </div>
+  </div>
 {% endif %}
 
-<form method="post" id="macrogroup-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
-    {% if form.errors %}
-        <div class="row">
-            <div class="col-md-12">
-            <div class="alert alert-danger alert-dismissable">
-                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                    {% trans 'Some errors on form. Check it and send again.' %}
-              </div>
-            </div>
-        </div>
-    {% endif %}
-    {% crispy form %}
-    {% g3wadmin_add_button_form%}
+<form method="post" id="macrogroup-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
+  {% if form.errors %}
+    <div class="alert alert-danger alert-dismissable">
+      <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+      {% trans 'Some errors on form. Check it and send again.' %}
+    </div>
+  {% endif %}
+  {% crispy form %}
+  {% g3wadmin_add_button_form%}
 </form>
 
 {% endblock %}

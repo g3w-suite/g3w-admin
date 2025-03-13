@@ -1,37 +1,34 @@
 {% load crispy_forms_tags %}
-<div class="row">
-    <div class="col-md-12">
-        <form id='widget_form' enctype="multipart/form-data" role="form" action="." method="post">
-          {% crispy form %}
-        </form>
-        <div class="row">
-            <div class="col-md-12 rightCol"></div>
-        </div>
-    </div>
+
+<div>
+  <form id='widget_form' enctype="multipart/form-data" role="form" action="." method="post">
+    {% crispy form %}
+  </form>
+  <div class="rightCol"></div>
 </div>
+
 <script>
-    ga.Qdjango.localVars['update'] = false;
-    ga.Qdjango.localVars['layer_type'] = '{{ layer.layer_type }}';
-	ga.Qdjango.localVars['layer_columns'] = {{ layer.database_columns | safe }};
-    ga.Qdjango.localVars['layer_edittypes'] = {{ layer_edittypes | safe }};
-	ga.Qdjango.localVars['layer_name'] = "{{ layer.qgs_layer_id }}";
-	ga.Qdjango.localVars['project_layers'] = {{ project_layers | safe }};
-    ga.Qdjango.localVars['relations'] = {{ relations | safe }};
-    {% if context_data %}
-    ga.Qdjango.localVars['context_data'] = {{ context_data | safe }};
-    {%  endif %}
+Object.assign(g3wadmin.Qdjango.localVars, {
+  layer_type:      '{{ layer.layer_type }}',
+  layer_columns:   {{ layer.database_columns | safe }},
+  layer_edittypes: {{ layer_edittypes | safe }},
+  layer_name:      "{{ layer.qgs_layer_id }}",
+  project_layers:  {{ project_layers | safe }},
+  relations:       {{ relations | safe }},
+  context_data:    {% if context_data %}{{ context_data | safe }}{% else %}undefined{% endif %},
+  laws_list:       {% if laws_list %}{{ laws_list | safe }}{% else %}undefined{% endif %},
+  update:          {% if object.pk %}true{% else %}false{% endif %},
+  widget:          {% if object.pk %}{
+    name :        '{{ object.name }}',
+    widget_type : '{{ object.widget_type }}',
+    body :        {{ object.body | safe }}
+  }{% else %}undefined{% endif %},
+});
 
-    {%  if laws_list %}
-    ga.Qdjango.localVars['laws_list'] = {{ laws_list | safe }};
-    {% endif %}
-	{% if object.pk %}
-	ga.Qdjango.localVars['update'] = true;
-	ga.Qdjango.localVars['widget'] = {
-		name : '{{ object.name }}',
-		widget_type : '{{ object.widget_type }}',
-		body : {{ object.body | safe }}
-	}
-	{% endif %}
+g3wadmin.Qdjango.widgetEditor.onWidgetTypeChange();
 
-    ga.Qdjango.widgetEditor.init();
+$("#id_widget_type").change(() => g3wadmin.Qdjango.widgetEditor.onWidgetTypeChange());
+
+// Add event on init
+$(g3wadmin.Qdjango.widgetEditor).trigger('init:after');    
 </script>

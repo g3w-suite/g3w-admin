@@ -1,27 +1,24 @@
 {% load i18n %}
 {% load auth_extras %}
-<div class="row">
-  <div class="col-md-8">
-  <h3>{%trans 'Data'%}</h3>
-    <ul class="list-unstyled">
-      <li><h4>{%trans 'Title'%}</h4>
-      <li>{{ object.title }}</li>
-      <li><h4>{%trans 'Description'%}</h4>
-      <li>{{ object.description|safe }}</li>
-      <li><h4>{% trans 'Groups' %}</h4></li>
-      <li>
-        {% for group in object.group_set.all %}
+
+<style>
+  #accordion dl                  { display: grid; grid-template: auto / .5fr 1fr; margin-bottom: 0; word-break: break-all; }
+  #accordion dt                  { background: #fee; }
+  #accordion dd                  { background: hsl(220, 10%, 95%); }
+  #accordion dt, #accordion dd   { margin: 0; padding: .3em .5em; border-top: 1px solid #fff; }
+</style>
+
+<div id="accordion">
+  <dl>
+    <dt>{%trans 'Title'%}</dt><dd>{{ object.title }}</dd>
+    <dt>{%trans 'Description'%}</dt><dd>{{ object.description|safe }}</dd>
+    <dt>{%trans 'Groups'%}</dt>
+    <dd>
+      {% for group in object.group_set.all %}
         <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
-        {% endfor %}
-      </li>
-    </ul>
-  </div>
-  <div class="col-md-4">
-      <ul class="list-unstyled">
-          <li><img class="img-responsive" src="{{ MEDIA_URL }}{{ object.logo_img }}" ></li>
-          {% if object.logo_link %}
-          <li><a href="{{ object.logo_link }}">{{ object.logo_link }}</a></li>
-          {% endif %}
-      </ul>
-  </div>
+      {% endfor %}
+    </dd>
+    <dt>{%trans 'HeaderLogoImg'%}</dt><dd><img class="img-responsive" src="{{ MEDIA_URL }}{{ object.logo_img }}" /></dd>
+    <dt>{%trans 'HeaderLogoLink'%}</dt><dd>{% if object.logo_link %}{{ object.logo_link }}{% endif %}</dd>
+  </dl>
 </div>

@@ -30,12 +30,12 @@
                 {% if r.description %}<p>{{ r.description|safe }}</p> {% endif %}
                 <p class="result-search-item-links">
                     {% if "view_project" in userObj_perms %}
-                        <a class="color-orange" href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' r.group.slug r.slug %}" ><i class="ion ion-eye"></i></a>
+                        <a class="color-orange" href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="fa fa-map"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' r.group.slug r.slug %}" ><i class="fa fa-info-circle"></i></a>
                     {% endif %}
                     {% if "change_project" in userObj_perms %}
-                        <a href="{% url 'qdjango-project-update' r.group.slug r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                        <a href="{% url 'qdjango-project-layers-list' r.group.slug r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i></a>
+                        <a href="{% url 'qdjango-project-update' r.group.slug r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="fa fa-pencil"></i></a>
+                        <a href="{% url 'qdjango-project-layers-list' r.group.slug r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="fa fa-bars"></i></a>
                     {% endif %}
                 </p>
             </div>

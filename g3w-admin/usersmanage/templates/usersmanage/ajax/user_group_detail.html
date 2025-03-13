@@ -1,8 +1,5 @@
 {% load i18n %}
 {% load auth_extras %}
-<div class="row">
-  <div class="col-md-12">
-    <h3>{%trans 'Group'%}</h3>
-        {{ object.name }}
-  </div>
-</div>
+
+<h3>{%trans 'Group'%}</h3>
+{{ object.name }}
