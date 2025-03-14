@@ -115,7 +115,16 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         map_relations = []
         for relation in relations:
             relation['type'] = RELATIONS_ONE_TO_MANY
-            map_relations.append(relation)
+
+            # Check ACL for referencedLayer and referencingLayer
+            # Send only with http requests
+            if self.request:
+                referencedlayer = instance.layer_set.get(qgs_layer_id=relation['referencedLayer'])
+                referencinglayer = instance.layer_set.get(qgs_layer_id=relation['referencingLayer'])
+                if self.request.user.has_perm('qdjango.view_layer', referencedlayer) and \
+                        self.request.user.has_perm('qdjango.view_layer', referencinglayer):
+                    map_relations.append(relation)
+
         return map_relations
 
     def get_map_layers_relations_from_vectorjoins(self, layer_id, vectorjoins, layers):
