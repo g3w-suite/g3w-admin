@@ -41,7 +41,7 @@
         <li>
           <h4>{% trans 'Thumbnail' %}</h4>
           {% if object.thumbnail %}<a href="{{ MEDIA_URL }}{{ object.thumbnail }}"><img style="height: 120px;" src="{{ MEDIA_URL }}{{ object.thumbnail }}" /></a>
-          {% else %}<img src="https://via.placeholder.com/160x120" />{% endif %}
+          {% else %}<img src="{{ SETTINGS.PLACEHOLD_SERVICE }}160x120?text=MAP" />{% endif %}
         </li>
         <li>
           <h4>{% trans 'Qgis project Version:' %}</h4>

@@ -16,11 +16,7 @@
             {% if "view_project" in userObj_perms %}
             <a href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}" class="project-thumb" title="{% trans 'Show map' %}" target="_blank">
             {% endif %}
-            {% if r.thumbnail  %}
-            <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ r.thumbnail }}" />
-            {% else %}
-            <img style="height:60px;" class="img-responsive" src="https://via.placeholder.com/80x60" />
-            {% endif %}
+            <img style="height:60px;" class="img-responsive" src="{% if r.thumbnail  %}{{ MEDIA_URL }}{{ r.thumbnail }}{% else %}{{ SETTINGS.PLACEHOLD_SERVICE }}80x60?text=MAP{% endif %}" />
             {% if "view_project" in userObj_perms %}
             </a>
             {% endif %}

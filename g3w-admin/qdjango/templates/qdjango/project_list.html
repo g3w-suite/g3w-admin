@@ -182,11 +182,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if object.thumbnail  %}
-                            <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ object.thumbnail }}" />
-                            {% else %}
-                            <img style="height:60px;" class="img-responsive" src="https://via.placeholder.com/80x60" />
-                            {% endif %}
+                            <img style="height:60px;" class="img-responsive" src="{% if object.thumbnail  %}{{ MEDIA_URL }}{{ object.thumbnail }}{% else %}{{ SETTINGS.PLACEHOLD_SERVICE }}80x60?text=MAP{% endif %}" />
                         </td>
                         <td>
                             <strong>{{ object.title }}</strong>
