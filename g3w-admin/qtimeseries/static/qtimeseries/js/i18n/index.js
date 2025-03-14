@@ -5,6 +5,7 @@ import se from './se.js';
 import fr from './fr.js';
 import de from './de.js';
 import ro from './ro.js';
+import uk from './uk.js';
 
 export default {
   it,
@@ -14,4 +15,5 @@ export default {
   fr,
   de,
   ro,
+  uk,
 }
