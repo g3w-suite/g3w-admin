@@ -57,7 +57,7 @@
 
       modal: class {
         constructor ($modal, options) {
-          console.warn('[G3W-ADMIN] ga.modal is deprecated');
+          console.warn('[G3W-ADMIN] ga.ui.modal is deprecated');
           this.$modal  = $modal;
           this.options = options;
           this.data    = {};                                             // TODO: check if unused (eg. used only by: g3wadmin.currentModal.data.$evoker ?)
@@ -307,6 +307,24 @@
 
   /** @deprecated since g3w-admin v4.0 */
   g3wadmin.Qdjango.widgetEditor.fadeNumber = 400;
+
+  /** @deprecated since g3w-admin v4.0 */
+  g3wadmin.ui.buildDefaultModal = t => {
+    console.warn('[G3W-ADMIN] ga-ui.buildDefaultModal is deprecated');
+    return g3wadmin.ui._buildModal(t, '')
+  };
+
+  /** @deprecated since g3w-admin v4.0 */
+  g3wadmin.ui.buildDangerModal: t => {
+    console.warn('[G3W-ADMIN] ga-ui.buildDangerModal is deprecated');
+    return g3wadmin.ui._buildModal(t, 'modal-danger')
+  };
+
+  /** @deprecated since g3w-admin v4.0 */
+  g3wadmin.ui.buildWarningModal = t => {
+    console.warn('[G3W-ADMIN] ga-ui.buildDangerModal is deprecated');
+    return g3wadmin.ui._buildModal(t, 'modal-warning')
+  };
 
   /********************************************************************
    * Initialize widgets
