@@ -315,7 +315,7 @@
   };
 
   /** @deprecated since g3w-admin v4.0 */
-  g3wadmin.ui.buildDangerModal: t => {
+  g3wadmin.ui.buildDangerModal = t => {
     console.warn('[G3W-ADMIN] ga-ui.buildDangerModal is deprecated');
     return g3wadmin.ui._buildModal(t, 'modal-danger')
   };
