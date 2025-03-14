@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #: qtimeseries/forms.py:22
 msgid "Active"
-msgstr ""
+msgstr "Ativo"
 
 #: qtimeseries/forms.py:31
 msgid "Check on uncheck to attive/deactive time series layer capabilities:"
-msgstr ""
+msgstr "Marque ou desmarque para ativar/desativar as capacidades da camada de séries temporais:"

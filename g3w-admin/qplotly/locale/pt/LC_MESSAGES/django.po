@@ -23,67 +23,71 @@ msgid ""
 "Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
 "source_layer_id}"
 msgstr ""
+"A camada com o ID {layer.qgs_layer_id} não é igual à configuração {settings."
+"source_layer_id}"
 
 #: qplotly/models.py:12
 msgid "XML original settings"
-msgstr ""
+msgstr "Configurações originais XML"
 
 #: qplotly/models.py:13
 msgid "Layer datasource"
-msgstr ""
+msgstr "Fonte de dados da camada"
 
 #: qplotly/models.py:14
 msgid "Use selected features only"
-msgstr ""
+msgstr "Usar apenas entidades selecionadas"
 
 #: qplotly/models.py:15
 msgid "Use visible features only"
-msgstr ""
+msgstr "Usar apenas entidades visíveis"
 
 #: qplotly/models.py:16
 msgid "Plot type"
-msgstr ""
+msgstr "Tipo de gráfico"
 
 #: qplotly/models.py:17
 msgid "Plot title"
-msgstr ""
+msgstr "Título do gráfico"
 
 #: qplotly/models.py:19
 msgid "Set as default plot on starting map"
-msgstr ""
+msgstr "Definir como gráfico padrão no início do mapa"
 
 #: qplotly/models.py:33
 msgid "XML is not a DataPlotly settings."
-msgstr ""
+msgstr "O XML não é uma configuração do DataPlotly."
 
 #: qplotly/models.py:39
 #, python-brace-format
 msgid ""
 "Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
 msgstr ""
+"A camada com qgs_layer_id={settings.source_layer_id} não está presente na base de dados"
 
 #: qplotly/models.py:43
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
 "values."
 msgstr ""
+"A fonte de dados da camada nas configurações do DataPlotly não é igual à fonte de dados nos valores."
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:9
 msgid "Actions"
-msgstr ""
+msgstr "Ações"
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:10
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:11
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: qplotly/templates/qplotly/ajax/layer_widgets.html:12
 msgid "Linked"
-msgstr ""
+msgstr "Ligado"
 
 #: qplotly/templates/qplotly/layer_action.html:8
 msgid "Qplotly widgets"
-msgstr ""
+msgstr "Widgets Qplotly"
