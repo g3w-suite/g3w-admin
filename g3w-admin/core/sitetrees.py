@@ -455,4 +455,94 @@ sitetrees = (
                ),
           ]
      ),
+
+     # PORTUGUESE
+     G3Wtree(
+          'core_pt',
+          title='Menu',
+          module='core',
+          items=[
+               item(
+                    'MENU',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Início',
+                    'home',
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-dashboard'
+               ),
+               item(
+                    'Grupo cartográfico',
+                    'group-list',
+                    icon_css_class='fa fa-globe',
+                    children=[
+                        item(
+                              'Adicionar grupo',
+                              'group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['core.add_group']
+                         ),
+                         item(
+                              'Listar grupos',
+                              'group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-globe',
+                              alias='group-list',
+                              in_breadcrumbs=True
+                         ),
+                         item(
+                              'Lixo',
+                              'group-deactive-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-trash',
+                              alias='group-deactive-list',
+                              in_breadcrumbs=True
+                         ),
+                         item(
+                              'Actualizar grupo {{ object.title}}',
+                              'group-update object.slug',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False,
+                              alias='group-update'
+                         ),
+                         item(
+                              'Listar projectos {{ group.name }}',
+                              'project-list group.slug',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              in_menu=False,
+                              in_breadcrumbs=True,
+                              alias='project-list'
+                         ),
+                    ]
+               ),
+               item(
+                    'Grupos macro cartográficos',
+                    'macrogroup-list',
+                    access_by_perms=['core.add_macrogroup'],
+                    icon_css_class='fa fa-globe',
+                    children=[
+                         item(
+                              'Adicionar grupo MACRO',
+                              'macrogroup-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['core.add_macrogroup']
+                         ),
+                         item(
+                              'Listar grupos MACRO',
+                              'macrogroup-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-globe',
+                              alias='macrogroup-list',
+                              in_breadcrumbs=True
+                         ),
+                    ]
+               ),
+          ]
+     ),
 )
