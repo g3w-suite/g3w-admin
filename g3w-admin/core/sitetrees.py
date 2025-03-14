@@ -341,49 +341,65 @@ sitetrees = (
           module='core',
           items=[
                item(
-                    'MENÜ',
-                    '#',
-                    type_header=True
-               ),
-               item(
                     'Dashboard',
                     'home',
                     url_as_pattern=True,
                     icon_css_class='fa fa-dashboard'
                ),
                item(
-                    'Kartografische Gruppen',
+                    'Karten',
                     'group-list',
-                    icon_css_class='fa fa-globe',
+                    icon_css_class='fa fa-map',
                     children=[
-                         item(
+                        item(
                               'Gruppe hinzufügen',
                               'group-add',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-plus',
-                              access_by_perms=['core.add_group']
+                              access_by_perms=['core.add_group'],
+                              in_menu=False,
                          ),
                          item(
                               'Gruppenliste',
                               'group-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-globe',
                               alias='group-list',
-                              in_breadcrumbs=False
+                              in_breadcrumbs=True
+                         ),
+                         item(
+                              'Makro Gruppen',
+                              'macrogroup-list',
+                              url_as_pattern=True,
+                              alias='macrogroup-list',
+                              in_breadcrumbs=True,
+                              access_by_perms=['core.add_macrogroup'],
+                              children=[
+                                   item(
+                                        'Aktualisieren Makrogruppe {{ object.title}}',
+                                        'macrogroup-update object.slug',
+                                        url_as_pattern=True,
+                                        in_menu=False,
+                                        alias='macrogroup-update'
+                                   ),
+                                   item(
+                                        'Makrogruppe hinzufügen',
+                                        'macrogroup-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['core.add_macrogroup'],
+                                        in_menu=False,
+                                   ),
+                              ]
                          ),
                          item(
                               'Papierkorb',
                               'group-deactive-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-trash',
                               alias='group-deactive-list',
                               in_breadcrumbs=True
                          ),
                          item(
-                              'Gruppenaktualisierung {{ object.title }}',
+                              'Gruppenaktualisierung {{ object.title}}',
                               'group-update object.slug',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-edit',
                               in_menu=False,
                               alias='group-update'
                          ),
@@ -391,33 +407,9 @@ sitetrees = (
                               'Projektliste {{ group.name }}',
                               'project-list group.slug',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-list',
                               in_menu=False,
                               in_breadcrumbs=True,
                               alias='project-list'
-                         )
-                    ]
-               ),
-               item(
-                    'Makro-Kartografische Gruppen',
-                    'macrogroup-list',
-                    access_by_perms=['core.add_macrogroup'],
-                    icon_css_class='fa fa-globe',
-                    children=[
-                         item(
-                              'Makrogruppe hinzufügen',
-                              'macrogroup-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-plus',
-                              access_by_perms=['core.add_macrogroup']
-                         ),
-                         item(
-                              'Makrogruppenliste',
-                              'macrogroup-list',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-globe',
-                              alias='macrogroup-list',
-                              in_breadcrumbs=True
                          ),
                     ]
                ),

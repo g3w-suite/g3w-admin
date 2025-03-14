@@ -43,11 +43,6 @@ sitetrees = (
         module='filemanager',
         items=[
             item(
-                'DATEIENVERWALTUNG',
-                '#',
-                type_header=True
-            ),
-            item(
                 'Dateien',
                 'filemanager-home',
                 icon_css_class='fa fa-database',

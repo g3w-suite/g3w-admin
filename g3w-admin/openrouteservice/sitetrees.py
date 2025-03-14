@@ -73,11 +73,6 @@ sitetrees = (
         module='openrouteservice',
         items=[
             item(
-                'Openrouteservice',
-                '#',
-                type_header=True
-            ),
-            item(
                 'ORS-Projekte',
                 '#',
                 icon_css_class='fa fa-road',
@@ -88,12 +83,6 @@ sitetrees = (
                         url_as_pattern=True,
                         icon_css_class='fa fa-plus',
                         access_by_perms=['qdjango.change_project']
-                    ),
-                    item(
-                        'Projektliste',
-                        'ors-project-list',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-list'
                     ),
                 ]
             ),

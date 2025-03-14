@@ -114,49 +114,45 @@ sitetrees = (
           title='ACL',
           module='usermanage',
           items=[
-               item(
-                    'ACL',
-                    '#',
-                    type_header=True
-               ),
-               item(
-                    'Benutzer',
-                    '#',
+              item(
+                    'Users',
+                    'user-list',
                     icon_css_class='fa fa-users',
                     children=[
-                         item(
-                              'Benutzer hinzufügen',
-                              'user-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-user-plus',
-                              access_by_perms=['auth.add_user']
-                         ),
                          item(
                               'Benutzerliste',
                               'user-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-users'
-                         ),
-                         item(
-                              'Benutzeraktualisierung',
-                              'user-update object.pk',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-edit',
-                              in_menu=False
-                         ),
-                         item(
-                              'Gruppenbenutzer hinzufügen',
-                              'user-group-add',
-                              url_as_pattern=True,
-                              icon_css_class='fa fa-plus',
-                              access_by_perms=['auth.add_user']
+                              children=[
+                                   item(
+                                        'Benutzer hinzufügen',
+                                        'user-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                                   item(
+                                        'Benutzeraktualisierung',
+                                        'user-update object.pk',
+                                        url_as_pattern=True,
+                                        in_menu=False
+                                   ),
+                              ]
                          ),
                          item(
                               'Gruppenbenutzerliste',
                               'user-group-list',
                               url_as_pattern=True,
-                              icon_css_class='fa fa-list',
-                              access_by_perms=['auth.add_user']
+                              access_by_perms=['auth.add_user'],
+                              children=[
+                                   item(
+                                        'Add group users',
+                                        'user-group-add',
+                                        url_as_pattern=True,
+                                        access_by_perms=['auth.add_user'],
+                                        in_menu=False
+                                   ),
+                              ]
                          )
                     ]
                ),
