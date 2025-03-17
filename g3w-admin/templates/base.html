@@ -72,7 +72,7 @@
 
   </head>
   {% comment %} TODO: deprecate "adminlte_skin" and "adminlte_layout_option"? {% endcomment %}
-  <body class="{{ adminlte_skin }} {{ adminlte_layout_option }} {{ sidebar_status }}">
+  <body class="{{ adminlte_skin }} {{ adminlte_layout_option }} {{ sidebar_status }} {{ request.resolver_match.view_name }}">
 
   {% block body_content %}
 
