@@ -47,6 +47,7 @@
             'geoConstraintsList',
             'columnAclManagerList',
             'styleManagerList',
+            'qplotlyWidgetList',
           ].forEach(widget => {
             $datatable.find(`[data-widget-type="${widget}"]`).on("click", async function (e) {
               (await import(`../components/data-widget-${widget}.js`))[widget]($(this).parents("table").DataTable(), $(this));

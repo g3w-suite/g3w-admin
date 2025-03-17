@@ -211,17 +211,6 @@ def set_initconfig_value(sender, **kwargs):
     }
 
 
-@receiver(load_js_modules)
-def get_js_modules(sender, **kwargs):
-    """Add qplotly js scripts"""
-
-    try:
-        if sender.resolver_match.view_name == 'qdjango-project-layers-list':
-            return 'qplotly/js/widget.js'
-    except Exception as e:
-        logger.error(str(e))
-
-
 @receiver(load_layer_actions)
 def qplottly_layer_action(sender, **kwargs):
     """
