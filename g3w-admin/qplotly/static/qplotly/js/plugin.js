@@ -568,7 +568,7 @@
               fontSize: '1.3em',
             }
           },
-          closable: false,
+          closable: true,
           // set header action tools (eg. map filter)
           headertools: [
             Vue.extend({
