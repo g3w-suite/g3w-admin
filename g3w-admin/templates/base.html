@@ -89,9 +89,9 @@
           <!-- Search bar -->
           <li>
             <div class="has-feedback" >
-              <form action="{% url 'search-admin' %}" style="margin-top:10px; color: #fff;">
-                <input type="text" name="stext" class="form-control" placeholder="{% trans 'Search' %}">
-                <span class="fa fa-search form-control-feedback text-black"></span>
+              <form action="{% url 'search-admin' %}">
+                <input type="text" name="stext" class="form-control" placeholder="{% trans 'Search' %}" />
+                <button type="submit" class="btn fa fa-search"><span class="sr-only">{% trans 'Search' %}<span></button>
               </form>
             </div>
           </li>
