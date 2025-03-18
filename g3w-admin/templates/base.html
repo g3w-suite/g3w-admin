@@ -224,10 +224,8 @@
 
     <footer>
       {% if powerd_by %}
-        <div class="pull-right hidden-xs">
-          {% block footer-right %}<strong>G3W-SUITE {% trans 'Version' %} {{ VERSION }}</strong>: administration GIS application.{% endblock %}
-        </div>
-        <strong>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+      <div>{% block footer-right %}<b>G3W-SUITE</b> {{ VERSION }}{% endblock %}</div>
+      <b>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a></b>
       {% endif %}
     </footer>
   {% endblock %}
