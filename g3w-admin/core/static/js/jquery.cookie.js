@@ -17,7 +17,7 @@
     // Write key
     if (value !== undefined) {
       return (document.cookie = [
-        key, '=', encodeURIComponent(JSON.stringify(value)),
+        key, '=', JSON.stringify(encodeURIComponent(value)),
         'number' === typeof options.expires ? '; expires=' + (new Date(Date.now() + options.expires * 864e+5)).toUTCString() : '', // use expires attribute, max-age is not supported by IE
         options.path    ? '; path=' + options.path : '',
         options.domain  ? '; domain=' + options.domain : '',
