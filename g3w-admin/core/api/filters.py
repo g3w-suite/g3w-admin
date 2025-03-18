@@ -484,8 +484,6 @@ class WKTPolyFilter(BaseFilterBackend):
             if not geometry.valid:
                 raise ParseError(err_msg)
 
-            return True, "Geometria WKT valida"
-
         except (GEOSException, ValueError) as e:
             raise ParseError(f"{err_msg}: {e}")
 
@@ -522,7 +520,7 @@ class WKTPolyFilter(BaseFilterBackend):
                 wkt = geom.asWkt()
 
             # Build expression string
-            expression = f"{comp_method}($geometry, geom_from_wkt('{wkt}'))"
+            expression = f"{comp_method}(geom_from_wkt('{wkt}'), $geometry)"
 
             qgis_feature_request.combineFilterExpression(expression)
 
