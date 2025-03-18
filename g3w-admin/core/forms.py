@@ -192,7 +192,6 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                 Field('login_description', css_class='wys5 translate', style="width:100%;"),
                 PrependedText('facebook_url', '<i class="fa fa-facebook"></i>'),
                 PrependedText('twitter_url', '<i class="fa fa-twitter"></i>'),
-                PrependedText('googleplus_url', '<i class="fa fa-google-plus"></i>'),
                 PrependedText('youtube_url', '<i class="fa fa-youtube"></i>'),
                 PrependedText('instagram_url', '<i class="fa fa-instagram"></i>'),
                 PrependedText('flickr_url', '<i class="fa fa-flickr"></i>'),

@@ -1,6 +1,4 @@
-@import url("glyphicons.css");
 @import url("font-awesome.css");
-@import url("ionicons.css");
 @import url("jquery-filer.css");
 @import url("summernote.css");
 @import url("../file_form/file_form.css");
@@ -832,7 +830,7 @@ body > aside                                                         { height: 1
 aside > ul                                                           { list-style: none; margin: 0; padding: 0; }
 aside > ul > li                                                      { position: relative; margin: 0; padding: 0; }
 aside > ul > li > a                                                  { padding: 12px 5px 12px 15px; display: block; }
-aside > ul > li > a > :is(.fa, .glyphicon, .ion)                     { width: 20px; }
+aside > ul > li > a > .fa                                            { width: 20px; }
 aside > ul > li :is(.label, .badge)                                  { margin-right: 5px; }
 aside > ul > li .badge                                               { margin-top: 3px; }
 aside > ul li.header                                                 { padding: 10px 25px 10px 15px; font-size: 12px; }
@@ -844,7 +842,7 @@ aside > ul ul                                                        { display: 
 aside > ul ul ul                                                     { padding-left: 20px; }
 aside > ul ul > li                                                   { margin: 0; }
 aside > ul ul > li > a                                               { padding: 5px 5px 5px 15px; display: block; font-size: 14px; }
-aside > ul ul > li > a > :is(.fa, .glyphicon, .ion)                  { width: 20px; }
+aside > ul ul > li > a > .fa                                         { width: 20px; }
 aside > ul ul > li > a > :is(.fa-angle-left, .fa-angle-down)         { width: auto; }
 aside > ul:hover                                                     { overflow: visible; }
 aside > ul > li.header                                               { overflow: hidden; text-overflow: clip; /* display: none; */}
@@ -885,11 +883,11 @@ body:not(.sidebar-collapse) > aside                                  { overflow-
 /**************************************************************************************
  * 3. Dropdown menu
  **************************************************************************************/
-.dropdown-menu                                                                            { box-shadow: none; border-color: #eee; }
-.dropdown-menu > li > a                                                                   { color: #777; }
-.dropdown-menu > li > a > :is(.glyphicon, .fa, .ion)                                      { margin-right: 10px; }
-.dropdown-menu > li > a:hover                                                             { background-color: #e1e3e9; color: #333; }
-.dropdown-menu > .divider                                                                 { background-color: #eee; }
+.dropdown-menu                { box-shadow: none; border-color: #eee; }
+.dropdown-menu > li > a       { color: #777; }
+.dropdown-menu > li > a > .fa { margin-right: 10px; }
+.dropdown-menu > li > a:hover { background-color: #e1e3e9; color: #333; }
+.dropdown-menu > .divider     { background-color: #eee; }
 
 /**************************************************************************************
  * 4. Form
@@ -975,8 +973,8 @@ body:not(.sidebar-collapse) > aside                                  { overflow-
 .box-header                                               { color: #444; display: block; padding: 10px; position: relative; }
 .box-header.with-border                                   { border-bottom: 1px solid #f4f4f4; }
 .collapsed-box .box-header.with-border                    { border-bottom: none; }
-.box-header :is(> .fa, > .glyphicon, > .ion, .box-title)  { display: inline-block; font-size: 18px; margin: 0; line-height: 1; }
-.box-header > :is(.fa, .glyphicon, .ion)                  { margin-right: 5px; }
+.box-header :is(> .fa, .box-title)                        { display: inline-block; font-size: 18px; margin: 0; line-height: 1; }
+.box-header > .fa                                         { margin-right: 5px; }
 .box-header > .box-tools                                  { position: absolute; right: 10px; top: 5px; }
 .box-header > .box-tools [data-toggle="tooltip"]          { position: relative; }
 .box-header > .box-tools.pull-right .dropdown-menu        { right: 0; left: auto; }
@@ -1046,9 +1044,7 @@ body:not(.sidebar-collapse) > aside                                  { overflow-
 .btn-outline:is(:hover, :focus, :active) { color: rgba(255, 255, 255, 0.7); border-color: rgba(255, 255, 255, 0.7); }
 .btn[class*='bg-']:hover                 { box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2); }
 .btn-app                                 { position: relative; padding: 15px 5px; margin: 0 0 10px 10px; min-width: 80px; height: 60px; text-align: center; color: #666; border: 1px solid #ddd; background-color: #f4f4f4; font-size: 12px; }
-.btn-app > :is(.fa, .glyphicon, .ion)    { font-size: 20px; display: block; }
-.btn-app:hover                           { background: #f4f4f4; color: #444; border-color: #aaa; }
-.btn-app:is(:active, :focus)             { box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); }
+.btn-app > .fa                           { font-size: 20px; display: block; }
 .btn-app > .badge                        { position: absolute; top: -3px; right: -10px; font-size: 10px; font-weight: 400; }
 
 /**************************************************************************************
@@ -1164,7 +1160,7 @@ div.dataTables_wrapper div.dataTables_processing                         { posit
 table.dataTable thead > tr > :is(th, td):active                          { outline: none; }
 table.dataTable thead > tr > :is(td, th):is(.sorting_asc, .sorting_desc, .sorting, .sorting_asc, .sorting_desc, .sorting) { padding-right: 30px; }
 table.dataTable thead :is(.sorting, .sorting_asc, .sorting_desc, .sorting_asc_disabled, .sorting_desc_disabled)           { cursor: pointer; position: relative; }
-table.dataTable thead :is(.sorting, .sorting_asc, .sorting_desc, .sorting_asc_disabled, .sorting_desc_disabled):after     { position: absolute; bottom: 8px; right: 8px; display: block; font-family: 'Glyphicons Halflings'; opacity: 0.5; }
+table.dataTable thead :is(.sorting, .sorting_asc, .sorting_desc, .sorting_asc_disabled, .sorting_desc_disabled):after     { position: absolute; bottom: 8px; right: 8px; display: block; opacity: 0.5; }
 table.dataTable thead .sorting:after                                     { opacity: 0.2; content: "\e150"; }
 table.dataTable thead .sorting_asc:after                                 { content: "\e155"; }
 table.dataTable thead .sorting_desc:after                                { content: "\e156"; }
@@ -1992,11 +1988,6 @@ aside > ul > li > ul > li > a:hover             { color: #fff; }
 .box-footer .projects-group          { text-align: left; }
 table span.icon                      { font-size: 22px; }
 table span.iconmap                   { font-size: 30px; }
-.icon .ion-trash-b,
-.qq-upload-delete .ion-trash-b,
-.qq-upload-cancel .ion-close         { color: #bf2d2d; }
-.icon .ion-trash-b:hover             { color: #f28a7e; }
-.icon .ion-android-upload            { color: #605ca8; }
 
 /* widget group */
 .widget-group-add                    { height: 192px; text-align: center; font-size: 136px; background-color: rgba(255, 255, 255, .7); }

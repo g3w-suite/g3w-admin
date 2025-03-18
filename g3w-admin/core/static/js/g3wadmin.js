@@ -1,6 +1,5 @@
 /**
  * @TODO replace `$.ajax` with `window.fetch`
- * @TODO replace `pace.js` with something else
  * 
  * @file      Initially based on on AdminLTE v2.3.8
  * @author    Walter Lorenzetti <lorenzetti@gis3w.it>
@@ -490,24 +489,45 @@
 $.fn.jstree = new Proxy({}, {
   get: function() {
     ga.widget.showError(`
+<p><b>jstree</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<hr>
 <p>Please update your plugins or add this dependecies within your code:</p>
-<br>
-&lt;style&gt;@import url(&apos;https://unpkg.com/jstree@3.3.17/dist/themes/default/style.css&apos;);&lt;/style&gt;
-<br>
-&lt;script&gt;import &apos;https://unpkg.com/jstree@3.3.17/dist/jstree.js&apos;;&lt;/script&gt;
-<br>
-<p><b>jstree</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>`);
+<pre><code>&lt;style&gt;@import url(&apos;https://unpkg.com/jstree@3.3.17/dist/themes/default/style.css&apos;);&lt;/style&gt;
+&lt;script&gt;import &apos;https://unpkg.com/jstree@3.3.17/dist/jstree.js&apos;;&lt;/script&gt;</pre></code>`);
   },
 });
 
 globalThis._ = new Proxy({}, {
   get: function() {
     ga.widget.showError(`
-<p>Please update your plugins or add this dependecies within your code:</p>
-<br>
-<pre>&lt;script&gt;import &apos;https://unpkg.com/underscore@1.9.1/underscore.js&apos;;&lt;/script&gt;</pre>
-<br>
 <p><b>underscore.js</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
-`);
+<hr>
+<p>Please update your plugins or add this dependecies within your code:</p>
+<pre><code>&lt;script&gt;import &apos;https://unpkg.com/underscore@1.9.1/underscore.js&apos;;&lt;/script&gt;</pre></code>`);
   },
 });
+
+const glyphicons_css = setInterval(() => {
+  const icon = document.querySelector('.glyphicon');
+  if (icon) {
+    document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' }));
+    ga.widget.showError(`
+<p><b>glyphicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a>.</p>
+`);
+    clearInterval(glyphicons_css);
+  }
+}, 1000);
+
+const ionicons_css = setInterval(() => {
+  const icon = document.querySelector('.ion') || document.querySelector('.ionicons');
+  if (icon) {
+    document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://unpkg.com/ionicons@2.0.1/css/ionicons.css' }));
+    ga.widget.showError(`
+<p><b>ionicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a> or download appropriate svg icons from <a href="https://ionic.io/ionicons" target="_blank" style="color: currentColor;text-decoration: underline;">here</a>.</p>
+`);
+    clearInterval(ionicons_css);
+  }
+}, 1000);
+
