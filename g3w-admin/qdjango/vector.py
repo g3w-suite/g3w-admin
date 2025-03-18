@@ -176,14 +176,15 @@ class QGISLayerVectorViewMixin(object):
             # Check for cascading relations
             # This condition is for avoid the recursive loop in cross layer relations
             sub_relations = get_relations_by_layers(relation['referencingLayer'])
-            if ( sub_relations and
-                    (level == 0 or relation['referencedLayer'] not in self.metadata_relations)):
+            if sub_relations:
                 level += 1
                 for sub_relation in sub_relations:
-                    build_metadata_relation(
-                        sub_relation,
-                        relation_layer.qgis_layer,
-                        level)
+                    if (sub_relation['referencingLayer'] not in self.metadata_relations or
+                            sub_relation['referencingLayer'] != self.layer.qgs_layer_id):
+                        build_metadata_relation(
+                            sub_relation,
+                            relation_layer.qgis_layer,
+                            level)
 
         for r in get_relations_by_layers(self.layer.qgs_layer_id):
             build_metadata_relation(r, self.layer.qgis_layer)
