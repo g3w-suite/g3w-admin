@@ -797,7 +797,7 @@ body.sidebar-collapse { grid-template-columns: 50px auto; }
 header                { grid-area: header }
 main                  { grid-area: main; }
 aside                 { grid-area: aside; }
-footer                { grid-area: footer; padding: 15px; border-top: 1px solid #d2d6de; display: flex; justify-content: space-between; }
+footer                { grid-area: footer; padding: 15px; border-top: 1px solid #d2d6de; display: flex; justify-content: space-between; align-items: center; }
 
 /**************************************************************************************
  * 1. Content
@@ -2023,11 +2023,6 @@ h5 small                             { color: #fff; }
 .label-action-layer                  { display: inline; font-weight: bold; border-radius: 100%; font-size: 8px; padding: 0 3px; vertical-align: text-bottom; background-color: #fff; margin-left: -10px; border: 1px solid currentColor; color: #555; }
 
 #qdjango_projects_list table a.project-thumb:hover img { border: 2px solid #ff4500; }
-
-.result-search-item                  { margin-bottom: 10px; margin-left: 10px; margin-right: 10px; padding: 5px; }
-.result-search-item-odd              { background: #fff; }
-.result-search-item-odd              { background: #d8dee9; }
-.result-search-item-links            { font-size: 150%; }
 
 .group-abstract-action,
 .project-abstract-action                          { margin-left: -10px; }

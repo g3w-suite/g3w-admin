@@ -3,19 +3,58 @@
 
 {% block page_header %}
 <h1>
-    {% trans 'Search results for' %} ...<i>{{ search_text }}</i>...
+  {% trans 'Search results for' %}: <a href="#" style="color: #00a65a; font-weight: bold;" onclick="event.preventDefault(); document.querySelector('form[action$=\'/admin/search/\'] input').focus();">{{ search_text }}</a>
 </h1>
-
-
 {% endblock%}
 
 {% block main_content %}
 {% if n_tot_results == 0 %}
-<div><h4>{% trans 'Not results found!' %}</h4></div>
+  <span>{% trans 'Not results found!' %}</span>
 {% else %}
-<div><h4>{% trans 'Found ' %} {{ n_tot_results }} {% trans ' results.' %}</h4></div>
-{% for r in results %}
+  {% for r in results %}
     {{ r.render }}
-{% endfor %}
+  {% endfor %}
+  <script>
+  document.head.insertAdjacentHTML(
+      'beforeend',
+      /* css */`
+    <style>
+    .content > details {
+      margin:1em auto 2em 0;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-top: 3px solid #d2d6de;
+      position:relative;
+    }
+    .content details summary {
+      cursor: pointer;
+      user-select: none;
+    }
+    .content > details > summary {
+      list-style: none;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 1.1em;
+      padding:1em;
+      user-select:none;
+      cursor:pointer;
+      background: #f7fafc;
+    }
+    .content > details > summary::after {
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: 14px;
+      font-size: inherit;
+      text-rendering: auto;
+      content: "\uf0d7";
+      pointer-events:none;
+      position:absolute;
+      top:1.2em;
+      right:1em;
+    }
+    .content > details[open] > summary:after {
+      content: "\uf0d8";
+    }
+  </style>`
+  );
+  </script>
 {% endif %}
 {% endblock %}
