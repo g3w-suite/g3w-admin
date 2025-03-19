@@ -74,63 +74,55 @@
   </div>
 </div>
 
-<div class="box">
-  <div class="box-header">
-    <div class="box-header">
-      <a
-        href="{% url 'qdjango-project-messages-add' group.slug project.slug %}"
-        class="btn btn-info"
-        id="btn-add-project"
-      >
-        <i class="fa fa-plus-circle"></i>
-        {% trans 'Message' %}
-      </a>
-    </div>
-  </div>
-  <div class="box-body">
-    <table id="project_message_table" class="table" data-widget-type="dataTable">
-      <thead>
-        <tr>
-          <th style="width: 80px" >{%  trans 'Actions' %}</th>
-          <th>{%  trans 'Title' %}</th>
-          <th style="width: 40px">{% trans 'level' %}</th>
-          <th style="width:100px">{% trans 'Availble from' %}</th>
-          <th style="width:40px">{% trans 'Available to' %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for object in object_list %}
-          <tr id="qdjango_project_message_{{ object.slug }}">
-            <td style="display: flex; flex-wrap: wrap; gap: 0 10px;font-size:1.25em">
-              <a
-                href="{% url 'qdjango-project-messages-update' group.slug project.slug object.pk %}"
-                data-toggle="tooltip"
-                data-placement="top"
-                title="{% trans 'Edit' %}"
-              >
-                <i class="fa fa-lg fa-pencil"></i>
-              </a>
-              <a
-                href="#"
-                data-toggle="tooltip"
-                data-placement="top"
-                title="{% trans 'Delete' %}"
-                data-widget-type="deleteItem"
-                data-delete-url="{% url 'qdjango-project-messages-delete' group.slug project.slug object.pk %}"
-                data-item-selector="#qdjango_project_message_{{ object.slug }}"
-              >
-                <i class="fa fa-trash" style="color:red"></i>
-              </a>
-            </td>
-            <td>{{ object.title }}</td>
-            <td>{{ object.level|message_level }}</td>
-            <td>{% if object.valid_from %}{{ object.valid_from }}{% endif %}</td>
-            <td>{% if object.valid_to %}{{ object.valid_to }}{% endif %}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+<a
+  href="{% url 'qdjango-project-messages-add' group.slug project.slug %}"
+  class="btn btn-info"
+  id="btn-add-project"
+>
+  <i class="fa fa-plus-circle"></i>
+  {% trans 'Message' %}
+</a>
 
+<table id="project_message_table" class="table" data-widget-type="dataTable">
+  <thead>
+    <tr>
+      <th style="width: 80px" >{%  trans 'Actions' %}</th>
+      <th>{%  trans 'Title' %}</th>
+      <th style="width: 40px">{% trans 'level' %}</th>
+      <th style="width:100px">{% trans 'Availble from' %}</th>
+      <th style="width:40px">{% trans 'Available to' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for object in object_list %}
+      <tr id="qdjango_project_message_{{ object.slug }}">
+        <td style="display: flex; flex-wrap: wrap; gap: 0 10px;font-size:1.25em">
+          <a
+            href="{% url 'qdjango-project-messages-update' group.slug project.slug object.pk %}"
+            data-toggle="tooltip"
+            data-placement="top"
+            title="{% trans 'Edit' %}"
+          >
+            <i class="fa fa-lg fa-pencil"></i>
+          </a>
+          <a
+            href="#"
+            data-toggle="tooltip"
+            data-placement="top"
+            title="{% trans 'Delete' %}"
+            data-widget-type="deleteItem"
+            data-delete-url="{% url 'qdjango-project-messages-delete' group.slug project.slug object.pk %}"
+            data-item-selector="#qdjango_project_message_{{ object.slug }}"
+          >
+            <i class="fa fa-trash" style="color:red"></i>
+          </a>
+        </td>
+        <td>{{ object.title }}</td>
+        <td>{{ object.level|message_level }}</td>
+        <td>{% if object.valid_from %}{{ object.valid_from }}{% endif %}</td>
+        <td>{% if object.valid_to %}{{ object.valid_to }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

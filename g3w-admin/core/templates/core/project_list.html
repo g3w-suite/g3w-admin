@@ -4,59 +4,77 @@
 {% load guardian_tags %}
 {% load auth_extras %}
 {% load i18n %}
-
+{% load g3wadmin_tags %}
 
 {% block page_header %}
-  <h1>{% trans 'Projects' %}</h1>
+  <h1>
+    {% trans 'Projects' %} {% trans 'Group' %}: “{{ group.name }}”
+    <a href="{% url 'qdjango-project-add' group.slug %}" title="Add new element">
+      <i class="fa fa-plus-circle"></i>
+    </a>
+  </h1>
 {% endblock %}
 
 {% block main_content %}
 {% get_obj_perms user for group as "userObj_perms" %}
-<div class="box">
-  <div class="box-header">
-    <h3 class="box-title">Group</h3>
-  </div>
-  <div class="box-body">
-    <div class="attachment-block clearfix">
-      <img class="attachment-img" src="{{ MEDIA_URL }}{{ group.header_logo_img }}">
-      <div class="attachment-pushed">
-        <div class="attachment-heading"><h4>{{ group.name }}</h4></div>
-        <div class="attachment-text">{{ group.description|safe }}</div>
-      </div>
-    </div>
-    <div class="group-abstract-action">
-      {% if "view_group" in userObj_perms %}
+
+<div class="attachment-block clearfix">
+  <div style="margin: 1em; float: right;">
+    {% if "view_group" in userObj_perms %}
+      <a
+        href="#"
+        data-toggle="tooltip"
+        class="btn btn-app"
+        data-placement="top"
+        title="{% trans 'Show detail' %}"
+        data-widget-type="detailItem"
+        data-detail-url="{% url 'group-detail' group.slug %}"
+      >
+        <i class="fa fa-info-circle"></i>
+        {% trans 'Show detail' %}
+      </a>
+    {% endif %}
+    {% if "change_group" in userObj_perms %}
+      {% if group.is_active == 1 %}
         <a
-          href="#"
-          data-toggle="tooltip"
+          href="{% url 'group-update' group.slug %}"
           class="btn btn-app"
+          data-toggle="tooltip"
           data-placement="top"
-          title="{% trans 'Show detail' %}"
-          data-widget-type="detailItem"
-          data-detail-url="{% url 'group-detail' group.slug %}"
+          title="{% trans 'Edit' %}"
         >
-          <i class="fa fa-info-circle"></i>
-          {% trans 'Show detail' %}
+          <i class="fa fa-pencil"></i>
+          {% trans 'Edit' %}
         </a>
       {% endif %}
-      {% if "change_group" in userObj_perms %}
-        {% if group.is_active == 1 %}
-          <a
-            href="{% url 'group-update' group.slug %}"
-            class="btn-app btn"
-            data-toggle="tooltip"
-            data-placement="top"
-            title="{% trans 'Edit' %}"
-          >
-            <i class="fa fa-edit"></i>
-            {% trans 'Edit' %}
-          </a>
-        {% endif %}
-      {% endif %}
-    </div>
+    {% endif %}
+    {% if perms.qdjango.add_project and "add_project_to_group" in userObj_perms and group.is_active  %}
+      <a
+        href="{% url 'qdjango-project-add' group.slug %}"
+        class="btn btn-app bg-green"
+      >
+        <i class="fa fa-plus-circle"></i>
+        {% trans 'Project' %} <b>QGIS</b>
+      </a>
+    {% endif %}
+  </div>
+  <img class="attachment-img" src="{{ MEDIA_URL }}{{ group.header_logo_img }}">
+  <div class="attachment-pushed">
+    <div class="attachment-text">{{ group.description|safe }}</div>
   </div>
 </div>
 
 <g3w-projects urls="[{% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}{% with app|add:'-project-list' as listurl %}&quot;{% url listurl group.slug %}&quot;{% if not forloop.last %},{% endif %}{% endwith %}{% endfor %}]" {% if user.is_superuser %}sortable{% endif %}></g3w-projects>
 <script type="module" src="{% static "components/g3w-projects.js" %}"></script>
+
+{% if perms.qdjango.add_project and "add_project_to_group" in userObj_perms and group.is_active  %}
+  <a
+    href="{% url 'qdjango-project-add' group.slug %}"
+    title="Add new element"
+    style="margin-top: 20px; display: block; text-align: center; font-size: 50px; background-color: rgba(255,255,255,.7); color: rgb(0,0,0,.15); border: 1px dashed #ddd;"
+  >
+    <i class="fa fa-plus-circle"></i>
+    {% trans 'Project' %} <b>QGIS</b>
+  </a>
+{% endif %}
 {% endblock %}

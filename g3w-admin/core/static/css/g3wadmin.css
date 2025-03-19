@@ -822,6 +822,7 @@ body > header .logo .logo-mini                        { display: none; }
 .navbar-toggle                                        { color: #fff; border: 0; margin: 0; padding: 15px 15px;}
 .breadcrumb                                           { border-bottom: 1px solid #d2d6de; }
 select                                                { border-radius: 0; border: 1px solid #ddd; }
+.content > .dataTables_wrapper                        { background: #fff; padding: 10px; margin: 10px 0; border-top: 3px solid #d2d6de; }
 
 /**************************************************************************************
  * 2. Sidebar
@@ -1947,7 +1948,7 @@ fieldset[disabled] .datepicker table tr td span.active:is(
 .img-lg + .img-push                                              { margin-left: 110px; }
 .img-bordered                                                    { border: 3px solid #d2d6de; padding: 3px; }
 .img-bordered-sm                                                 { border: 2px solid #d2d6de; padding: 2px; }
-.attachment-block                                                { border: 1px solid #f4f4f4; padding: 5px; margin-bottom: 10px; background: #f7f7f7; }
+.attachment-block                                                { padding: 5px; margin-bottom: 10px; background: #f7f7f7; }
 .attachment-block .attachment-img                                { max-width: 100px; max-height: 100px; height: auto; float: left; }
 .attachment-block .attachment-pushed                             { margin-left: 110px; }
 .attachment-block .attachment-heading                            { margin: 0; }

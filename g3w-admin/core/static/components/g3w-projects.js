@@ -16,7 +16,7 @@ if (!customElements.get('g3w-projects')) {
           [data-loader] > *      { animation: data-loader 1s linear infinite forwards; background: linear-gradient(to right, #eee 8%, #ddd 18%, #eee 33%);  height: 96px; position: relative; }
           [data-loader] > * > *  { background: #fff; position: absolute; }
         </style>
-        <div class="g3w-projects" style="display:flex;"></div>
+        <div class="g3w-projects"></div>
       `;
       try {
         this.#wrapper = this.#wrapper || this.shadowRoot.querySelector('.g3w-projects');
