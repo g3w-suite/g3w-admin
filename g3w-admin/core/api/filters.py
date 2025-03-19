@@ -514,7 +514,7 @@ class WKTPolyFilter(BaseFilterBackend):
                 to_srid = view.layer.srid
                 ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(
                     from_srid), QgsCoordinateReferenceSystem(to_srid), QgsCoordinateTransformContext())
-                geom = ct.transform(geom)
+                geom.transform(ct)
 
                 # Restore to WKT
                 wkt = geom.asWkt()
