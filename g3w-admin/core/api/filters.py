@@ -471,7 +471,7 @@ class WKTPolyFilter(BaseFilterBackend):
             comp_method = 'intersects'
 
         else:
-            if comp_method not in ('intersercts, contains'):
+            if comp_method not in ('intersects, contains'):
                 raise ParseError("'geo_filter_mode' must be one of ('intersects', 'contains')")
 
         # Validate WKT
