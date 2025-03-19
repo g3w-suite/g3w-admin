@@ -92,13 +92,14 @@ export async function columnAclManagerList($datatable, $item, refresh) {
             modalBody: `${gettext("Are you sure to delete column constraint")} #<strong>${$(e.currentTarget).attr("data-column-acl-pk")}</strong>?`,
             closeButtonText: "No",
           })
-          modal.$modal.find('.modal-button-confirm').on('click', function () {
-            $.ajax({
-              method: "delete",
-              url: "/" + SITE_PREFIX_URL + "qdjango/api/column_acl/detail/" + $(e.currentTarget).attr("data-column-acl-pk") + "/",
-              success() { columnAclManagerList($datatable, $item, true); modal.hide(); },
-              error(xhr, status, message) { ga.widget.showError(`<h3>${ xhr.status ?? 500 }</h3><p>${ (xhr?.responseJSON?.error?.message) || message || '' }</p>`) },
-            })
+          modal.$modal.find('.modal-button-confirm').on('click', async function () {
+            try {
+              await fetch(`/${SITE_PREFIX_URL}qdjango/api/column_acl/detail/${$(e.currentTarget).attr("data-column-acl-pk")}/`, { method: 'delete' });
+              columnAclManagerList($datatable, $item, true);
+              modal.hide();
+            } catch (e) {
+              ga.widget.showError(e);
+            }
           })
           modal.show()
           return;

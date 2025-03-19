@@ -10,8 +10,9 @@
  */
 export default async function activeDeactiveItem(item) {
   try {
-    if (undefined === $(item).attr('data-active-deactive-url')) {
-      throw 'Attribute data-active-deactive-url not defined';
+    const url = $(item).attr('data-active-deactive-url');
+    if (undefined === url) {
+      throw 'data-active-deactive-url is not defined';
     }
     const action = $(item).attr('data-active-deactive-action') ?? 'activate';
     const modal = g3wadmin.ui._buildModal({
@@ -19,17 +20,15 @@ export default async function activeDeactiveItem(item) {
       modalBody:  gettext('Are you sure to ' + action + ' this Item') + '?' + ($(item).parent().find('.pre-active-deactive-message').html() ?? ''),
       closeButtonText: 'No'
     });
-    // call ajax delete action (url)
-    modal.$modal.find('.modal-button-confirm').on('click', () => {
-      $.ajax({
-        method: $(item).attr('data-active-deactive-method') || 'post',
-        url:    $(item).attr('data-active-deactive-url'),
-        data:   { csrfmiddlewaretoken: $.cookie('csrftoken') },
-        success() {
-          window.location.reload();
-        },
-        error(xhr, status, message) { ga.widget.showError(`<h3>${ xhr.status ?? 500 }</h3><p>${ message || '' }</p>`); }
-      });
+    // ajax call (active/deactive url)
+    modal.$modal.find('.modal-button-confirm').on('click', async () => {
+      try {
+        await fetch(url, { method: 'POST', body: new URLSearchParams([["csrfmiddlewaretoken", $.cookie('csrftoken')]]) });
+        modal.hide();
+        window.location.reload();
+      } catch (e) {
+        ga.widget.showError(e);
+      }
     });
     modal.show();
   } catch (e) {
