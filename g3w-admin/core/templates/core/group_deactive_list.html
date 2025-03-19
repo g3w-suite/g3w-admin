@@ -16,8 +16,8 @@
     {% get_obj_perms user for object as "userObj_perms" %}
     <div id="group_{{ object.slug }}" class="col-md-3 col-sm-6">
 
-      <figure class="bg-green-active">
-        <img loading="lazy" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" alt="{{ object.title }} ({{ object.srid }})">
+      <figure>
+        <img loading="lazy" class="bg-green-active" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" alt="{{ object.title }} ({{ object.srid }})">
         <figcaption>
           <h3><b>{{ object.name }}</b></h3>
           <small style="color:#777">{{ object.title }} ({{ object.srid }})</small>

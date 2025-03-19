@@ -64,7 +64,7 @@ if (!customElements.get('g3w-projects')) {
         row.addEventListener('dragleave',  () => { row.style.border=null; });
         row.addEventListener('drop', e => {
           if (dragged) {
-            dragged.parentNode.insertBefore(dragged, row.nextSibling);
+            dragged.parentNode.insertBefore(dragged, dragged == row.nextSibling ? row : row.nextSibling);
             fetch(`/qdjango/jx/project/${dragged.id.substring(15)}/setorder/`, {
                 method: 'POST',
                 body:  new URLSearchParams([

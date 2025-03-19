@@ -33,10 +33,10 @@
 <div id="groups_list">
   {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
-    <div id="group_{{ object.pk }}" class="col-md-3 col-sm-6">
+    <div id="group_{{ object.pk }}" class="handle col-md-3 col-sm-6">
 
-      <figure class="handle bg-green-active">
-        <img loading="lazy" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" alt="{{ object.title }} ({{ object.srid }})">
+      <figure>
+        <img loading="lazy" class="bg-green-active" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" alt="{{ object.title }} ({{ object.srid }})">
         <figcaption>
           <h3><b>{{ object.name }}</b></h3>
           <small style="color:#777">{{ object.title }} ({{ object.srid }})</small>
@@ -211,19 +211,29 @@ document.head.insertAdjacentHTML(
 );
 {% if user.is_superuser %}
 document.addEventListener("DOMContentLoaded", function() {
-  $("#groups_list").sortable({
-    placeholder: "col-md-3 col-sm-6 sort-highlight-group",
-    handle: ".handle",
-    update(e, ui) {
-      // post current moved group id  
-      $.post(`/jx/groups/${ui.item.attr('id').substring(6)}/setorder/`, {
-        new_order: $(e.target).sortable("toArray"),
-        csrfmiddlewaretoken: $.cookie('csrftoken'),
-      });
-    },
+  let dragged = null;
+  document.querySelectorAll('#groups_list .handle').forEach(row => {
+    row.setAttribute('draggable', true);
+    row.addEventListener('mouseover',  () => { row.style.cursor = 'move'; });
+    row.addEventListener('mouseleave', () => { row.style.cursor = null; });
+    row.addEventListener('dragstart',  () => { dragged = row; });
+    row.addEventListener('dragend',    () => { dragged = null; });
+    row.addEventListener('dragover',   e => { e.preventDefault(); row.style.border="2px dashed #000"; });
+    row.addEventListener('dragleave',  () => { row.style.border=null; });
+    row.addEventListener('drop', e => {
+      if (dragged) {
+        dragged.parentNode.insertBefore(dragged, dragged == row.nextSibling ? row : row.nextSibling);
+        fetch(`/jx/groups/${dragged.id.substring(6)}/setorder/`, {
+          method: 'POST',
+          body: new URLSearchParams([
+            ...Array.from(row.parentNode.children).map(tr => tr.id).filter(Boolean).map(id => ["new_order[]", id]),
+            ["csrfmiddlewaretoken", $.cookie('csrftoken')],
+          ]),
+        });
+      }
+      row.style.border=null;
+    });
   });
-  $("#groups_list").disableSelection();
-  $('.handle').hover(function() { $(this).css('cursor','move'); });
 });
 {% endif %}
 </script>
