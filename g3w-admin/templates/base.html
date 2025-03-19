@@ -82,7 +82,7 @@
           <!-- Search bar -->
           <li>
             <div class="has-feedback" >
-              <form action="{% url 'search-admin' %}">
+              <form action="{% url 'search-admin' %}" onkeydown="if ('Escape' === event.key) event.target.blur();">
                 <input type="text" name="stext" class="form-control" placeholder="{% trans 'Search' %}" />
                 <button type="submit" class="btn fa fa-search"><span class="sr-only">{% trans 'Search' %}</span></button>
               </form>
@@ -218,7 +218,7 @@
     <footer>
       {% if powerd_by %}
       <span>{% block footer-right %}<b>G3W-SUITE</b> {{ VERSION }}{% endblock %}</span>
-      <b>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it" target="_blank" title="Gis3w s.n.c"><img src="{% static "" %}/img/logo_gis3w_156_85.png" alt="Gis3w s.n.c" width="60"></a></b>
+      <b><span style="vertical-align: middle;font-size: large;">&copy;</span> 2015 - {{ today.year }} <a href="http://www.gis3w.it" target="_blank" title="Gis3w s.n.c"><img src="{% static "" %}/img/logo_gis3w_156_85.png" alt="Gis3w s.n.c" width="60"></a></b>
       {% endif %}
     </footer>
   {% endblock %}
