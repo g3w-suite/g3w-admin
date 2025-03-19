@@ -23,7 +23,21 @@
           {% endif %}
           <tr>
             <td style="padding: 10px;">
+              {% if user %}
+                {% if "view_group" in userObj_perms %}
+                  <a
+                    href="{% url 'project-list' r.slug %}"
+                    title="{% trans 'Group projects' %}"
+                    target="_blank"
+                  >
+                {% endif %}
+              {% endif %}
               <img style="width: 130px; object-fit: cover;" src="{{ MEDIA_URL }}{{ r.header_logo_img }}">
+              {% if user %}
+                {% if "view_group" in userObj_perms %}
+                  </a>
+                {% endif %}
+              {% endif %}
             </td>
             <td>
               <h4>{{ r.title }}</h4>

@@ -23,7 +23,6 @@
               {% if "view_project" in userObj_perms %}
                 <a
                   href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}"
-                  class="project-thumb"
                   title="{% trans 'Show map' %}"
                   target="_blank"
                 >
