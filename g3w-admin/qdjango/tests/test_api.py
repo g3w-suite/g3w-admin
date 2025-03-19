@@ -41,9 +41,21 @@ from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
-from .base import (QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION,
-                   QGS328_RELATION_REFERENCE)
+from .base import (
+    QdjangoTestBase,
+    CURRENT_PATH,
+    TEST_BASE_PATH,
+    QGS310_WIDGET_FILE,
+    CoreGroup,
+    G3WSpatialRefSys,
+    QGS322_FILE,
+    QGS322_INITEXTENT_GEOCONSTRAINT_FILE,
+    QGS322_FORMATTING_DATE,
+    QGS328_FILE,
+    QGS328_VALUE_RELATION,
+    QGS328_RELATION_REFERENCE,
+    QGS340_THEME_FILE
+)
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -2448,3 +2460,157 @@ class TestVectorApiConfigCrossRelation(QdjangoTestBase):
 
         self.client.logout()
 
+class TestVectorApiGeoFilter(QdjangoTestBase):
+    """ Test /vector/api/config with geo filter
+        Test geo_filter_wkt and geo_fitler_mode parameters
+    """
+
+    def setUp(self):
+
+        self.project_group_3857 = CoreGroup(name='GroupGeoFilter3857', title='GroupGeoFilter3857', header_logo_img='',
+                                          srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        self.project_group_3857.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS340_THEME_FILE), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_geo_filter = QgisProject(qgis_project_file)
+        self.project_geo_filter.group = self.project_group_3857
+        self.project_geo_filter.save()
+        qgis_project_file.close()
+
+    def test_vector_api_geo_filter(self):
+
+        self.client.login(username='admin01', password='admin01')
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 8965)
+
+        # Add a geo_filter_wkt
+        # mode: intersects (default)
+        wkt = 'Polygon ((1096269.93631389969959855 5632333.77473515085875988, 1418298.05854365834966302 5406914.08917431905865669, 1398976.37120987288653851 5117088.7791675366461277, 1006102.06208956707268953 5104207.65427834633737803, 864409.6883084736764431 5252340.59050403535366058, 851528.56341928336769342 5503522.52584324683994055, 1096269.93631389969959855 5632333.77473515085875988))'
+
+        url += f'?geo_filter_wkt={wkt}'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 150)
+
+        # Test inersects vs contains on layer countries
+        # ---------------------------------------------
+        wkt = 'Polygon ((-1239720.59820769750513136 5636026.31521254032850266, 261954.69451352674514055 5628285.72092016320675611, 734130.94634855119511485 4622008.46291109547019005, 370323.01460681110620499 3801505.46791908610612154, -767544.34637267340440303 3708618.33641055691987276, -1293904.75825433968566358 4374309.44555501639842987, -1239720.59820769750513136 5636026.31521254032850266))'
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                      ])
+
+        url += f'?geo_filter_wkt={wkt}'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 5)
+
+        url += '&geo_filter_mode=contains'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Exclude France
+        self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+        # Test post
+        # ----------------------------------
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Exclude France
+        self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+        # Test exceptions
+        # ----------------------------------
+        res = self.client.post(url, {
+            'geo_filter_wkt': 'fake wkt',
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+
+        self.assertEqual(jres, {"result":False,"error":{"code":"servererror","message":"A error server is occured!","data":"The WKT geometry is not valid: String input unrecognized as WKT EWKT, and HEXEWKB."}})
+
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'fake_mode'
+        })
+
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+
+        self.assertEqual(jres, {'result': False, 'error': {'code': 'servererror', 'message': 'A error server is occured!', 'data': "'geo_filter_mode' must be one of ('intersects', 'contains')"}})
+
+
+        # Test reproject
+        # -----------------------------
+        # Areoporti 3857
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'aeroporti_3857_e9d2f842_0851_437e_9dfe_7b30a1bb4160'
+                      ])
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['vector']['data']['features']), 19)
+
+        #Areoporti 4326
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'aeroporti_4326_49526f36_2ce3_4051_863f_d8e3e1de97e3'
+                      ])
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['vector']['data']['features']), 19)
+
+
+        self.client.logout()
