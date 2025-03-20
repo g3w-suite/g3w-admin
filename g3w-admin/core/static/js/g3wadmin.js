@@ -481,6 +481,11 @@
 
     $('#page_user_messages').find('.alert').delay(4000).slideUp(500);
 
+    // update <title> tag
+    if (document.querySelector('h1')?.innerText) {
+      document.title = `${document.querySelector('h1').innerText} | ` + document.title.toUpperCase();
+    }
+
   });
 
 })();
