@@ -9,68 +9,59 @@
 
 
 {% block page_header %}
-<h1>{% trans 'QGIS Project Messages' %}</h1>
+<h1>{% trans 'QGIS Project Messages' %}: “{{ project.title }}”</h1>
 {% endblock %}
 
 {% block main_content %}
-
 {% get_obj_perms user for project as "userPrj_perms" %}
 
-<div class="box">
-  <div class="box-header">
-    <h3 class="box-title">{% trans 'Project' %}</h3>
+<div class="attachment-block clearfix">
+  <div style="margin: 1em; float: right;">
+    {% if "view_project" in userPrj_perms %}
+      <a
+        href="#"
+        class="btn btn-app"
+        data-toggle="tooltip"
+        data-placement="top"
+        title="{% trans 'Show detail' %}"
+        data-widget-type="detailItem"
+        data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}"
+      >
+        <i class="fa fa-info-circle"></i>
+        {% trans 'Show detail' %}
+      </a>
+    {% endif %}
+    {% if "change_project" in userPrj_perms %}
+      <a
+        href="{% url 'qdjango-project-update' group.slug project.slug %}"
+        class="btn btn-app"
+        data-toggle="tooltip"
+        data-placement="top"
+        title="{% trans 'Edit' %}"
+      >
+        <i class="fa fa-pencil"></i>
+        {% trans 'Edit' %}
+      </a>
+    {% endif %}
+    {% if "view_project" in userPrj_perms %}
+      <a
+        href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}"
+        class="btn btn-app"
+        data-toggle="tooltip"
+        data-placement="top"
+        title="{% trans 'Show map' %}"
+        target="_blank"
+      >
+        <i class="fa fa-external-link"></i>
+        {% trans 'Show map' %}
+      </a>
+    {% endif %}
   </div>
-  <div class="box-body">
-    <div class="attachment-block clearfix">
-      {% if project.thumbnail %}
-        <img class="attachment-img" src="{{ MEDIA_URL }}{{ project.thumbnail }}">
-      {% endif %}
-      <div class="{% if project.thumbnail %}attachment-pushed{% else %}attachement{% endif %}">
-        <div class="attachment-heading"><h4>{{ project.title }}</h4></div>
-        <div class="attachment-text">{{ project.description|safe }}</div>
-      </div>
-    </div>
-    <div class="project-abstract-action">
-      {% if "view_project" in userPrj_perms %}
-        <a
-          href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}"
-          class="color-orange btn btn-app"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="{% trans 'Show map' %}"
-          target="_blank"
-        >
-          <i class="fa fa-map"></i>
-          {% trans 'Show map' %}
-        </a>
-      {% endif %}
-      {% if "view_project" in userPrj_perms %}
-        <a
-          href="#"
-          class="btn btn-app"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="{% trans 'Show detail' %}"
-          data-widget-type="detailItem"
-          data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}"
-        >
-          <i class="fa fa-info-circle"></i>
-          {% trans 'Show detail' %}
-        </a>
-      {% endif %}
-      {% if "change_project" in userPrj_perms %}
-        <a
-          href="{% url 'qdjango-project-update' group.slug project.slug %}"
-          class="btn btn-app"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="{% trans 'Edit' %}"
-        >
-          <i class="fa fa-pencil"></i>
-          {% trans 'Edit' %}
-        </a>
-      {% endif %}
-    </div>
+  {% if project.thumbnail %}
+    <img class="attachment-img" src="{{ MEDIA_URL }}{{ project.thumbnail }}">
+  {% endif %}
+  <div class="{% if project.thumbnail %}attachment-pushed{% else %}attachement{% endif %}">
+    <div class="attachment-text">{{ project.description|safe }}</div>
   </div>
 </div>
 
