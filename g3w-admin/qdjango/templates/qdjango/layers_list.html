@@ -109,7 +109,27 @@
             </td>
 
             <td>
-              {% include 'qdjango/include/layer_icon.html' %}
+              <img
+                data-toggle="tooltip"
+                data-placement="top"
+                title="{{ object.layer_type }}"
+                width="16"
+                height="16"
+                style="object-fit: scale-down;"
+                {% if   object.layer_type == 'postgres' %}            src="{% static 'svg/pg32.svg' %}"
+                {% elif object.layer_type == 'spatialite' %}          src="{% static 'svg/mIconSpatialite.svg' %}"
+                {% elif object.layer_type == 'ogr' %}                 src="{% static 'svg/mActionOgrLayer.svg' %}"
+                {% elif object.layer_type == 'gdal' %}                src="{% static 'svg/mIconRaster.svg' %}"
+                {% elif object.layer_type == 'postgresraster' %}      src="{% static 'svg/mIconRaster.svg' %}"
+                {% elif object.layer_type == 'wms' %}                 src="{% static 'svg/mIconWms.svg' %}"
+                {% elif object.layer_type == 'delimitedtext' %}       src="{% static 'svg/mIconTableLayer.svg' %}"
+                {% elif object.layer_type == 'arcgismapserver' %}     src="{% static 'svg/mIconAms.svg' %}"
+                {% elif object.layer_type == 'mssql' %}               src="{% static 'svg/mIconMssql.svg' %}"
+                {% elif object.layer_type == 'virtual' %}             src="{% static 'svg/mIconVirtualLayer.svg' %}"
+                {% elif object.layer_type == 'oracle' %}              src="{% static 'svg/mIconOracle.svg' %}"
+                {% else %}                                            src="{% static 'svg/mIconWfs.svg' %}"
+                {% endif %}
+                />
             </td>
 
             {% if "change_project" in userPrj_perms %}

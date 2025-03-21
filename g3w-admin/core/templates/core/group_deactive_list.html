@@ -12,7 +12,7 @@
 
 {% block main_content %}
 <div id="groups_list" class="row">
-{% for object in object_list %}
+  {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
     <div id="group_{{ object.slug }}" class="col-md-3 col-sm-6">
 
@@ -80,7 +80,7 @@
       </div>
 
     </div>
-{% endfor %}
+  {% endfor %}
 </div>
 
 <script>

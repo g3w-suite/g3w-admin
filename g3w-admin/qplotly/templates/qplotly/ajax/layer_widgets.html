@@ -1,18 +1,6 @@
 {% load i18n %}
 {% load qdjango_tags %}
 <div id="layer_qplotlywidgets_{{ layer.id }}" style="margin-left:40px;">
-  {% comment %}
-    <a
-      class="btn btn-default"
-      href="#"
-      data-widget-type="ajaxForm"
-      data-form-url="{% url 'qdjango-project-layer-widget-add' group.slug project.slug layer.slug %}"
-      data-modal-size="modal-lg"
-    >
-      <i class="fa fa-plus-circle"></i>
-      {% trans 'Add new widget' %}
-    </a>
-  {% endcomment %}
   <table class="table">
     <thead>
       <tr>
@@ -25,34 +13,16 @@
     <tbody>
       {% for object in object_list %}
         <tr id="qdjango_project_layer_qplotlywidget_{{ object.slug }}">
-          <td style="display: flex; flex-wrap: wrap; gap: 0 10px;">
-            {% comment %}
-              <a
-                href="#"
-                data-widget-type="ajaxForm"
-                data-form-url="{% url 'qdjango-project-layer-widget-update' group.slug project.slug layer.slug object.slug %}"
-                data-modal-size="modal-lg"
-              >
-                <i class="fa fa-lg fa-pencil"></i>
-              </a>
-            {% endcomment %}
-            {% comment %}
-              <a
-                href="#"
-                data-toggle="tooltip"
-                data-placement="top"
-                title="{% trans 'Delete' %}"
-                data-widget-type="deleteItem"
-                data-delete-url="{% url 'qdjango-project-layer-widget-delete' group.slug project.slug layer.slug object.slug %}"
-                data-item-selector="#qdjango_project_layer_qplotlywidget_{{ object.slug }}"
-              >
-                <i class="fa fa-lg fa-trash"></i>
-              </a>
-            {% endcomment %}
-          </td>
+          <td style="display: flex; flex-wrap: wrap; gap: 0 10px;"></td>
           <td>{{ object.pk }}</td>
           <td>
-            {% include 'qplotly/include/plot_type_icon.html' %} {{ object.type }}
+            <img
+              width="16"
+              height="16"
+              style="object-fit: scale-down;"
+              src="{% static 'svg/icons/'|add:object.type|add:'.svg' %}"
+            />
+            {{ object.type }}
           </td>
           <td>
             <input
@@ -60,7 +30,6 @@
               {% if object|widget_linked_layer:layer %}checked{% endif %}
               value="{{ object.id }}"
               data-widget-type="linkWidget2Layer"
-              data-ajax-url="{%comment%} {% url 'qdjango-project-layer-widget-link' group.slug project.slug layer.slug object.slug %}{% endcomment %}"
             />
           </td>
         </tr>

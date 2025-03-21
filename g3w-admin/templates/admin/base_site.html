@@ -3,10 +3,6 @@
 
 {% block branding %}
 <a href="{% url 'admin:index' %}" class="logo">
-    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
-        <span class="logo-lg"><img src="{{ SETTINGS.G3WSUITE_MAIN_LOGO }}"></span>
-    {% else %}
-        <span class="logo-lg"><img src="{% static SETTINGS.G3WSUITE_MAIN_LOGO %}"></span>
-    {% endif %}
+  <img src="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{{ SETTINGS.G3WSUITE_MAIN_LOGO }}{% else %}{% static SETTINGS.G3WSUITE_MAIN_LOGO %}{% endif %}"></span>
 </a>
 {% endblock %}
