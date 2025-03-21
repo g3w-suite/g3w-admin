@@ -763,9 +763,10 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # Iterate
         for qgs_layer_id, metadata_relation in self.metadata_relations.items():
 
-            # TODO: add control is relation layer can be downloaded
+
             # Only the more proximity relations
-            if metadata_relation.level == 0:
+            cdb, dfs = metadata_relation.layer.can_be_downloaded()
+            if metadata_relation.level == 0 and cdb:
 
                 # get QgsRelation object
                 qgs_prj = self.layer.project.qgis_project
@@ -791,6 +792,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
                     # Instance save options
                     save_options = QgsVectorFileWriter.SaveVectorOptions()
+                    save_options.fileEncoding = 'utf-8'
 
                     # Set attributes
                     self._set_download_attributes(qgs_request, save_options,
@@ -800,13 +802,40 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                         qgs_request.filterExpression().expression())
                     save_options.onlySelectedFeatures = True
 
+                    # Set fmode by mode
+                    if mode in dfs:
+                        fmode = mode
+                    else:
+
+                        # Get first mode available
+                        fmode = dfs[0]
+
+                    # Create file path
+                    file_path = os.path.join(tmp_dir.name, metadata_relation.layer.name)
 
                     # Switch mode
-                    if mode == 'shp':
+                    if fmode == 'shp':
                         save_options.driverName = 'ESRI Shapefile'
-                        save_options.fileEncoding = 'utf-8'
+                        file_path += '.shp'
+                    elif fmode == 'gpx':
+                        save_options.driverName = 'GPX'
+                        save_options.datasourceOptions = [
+                            "GPX_USE_EXTENSIONS=1",
+                            "GPX_EXTENSIONS_NS_URL=http://osgeo.org/gdal",
+                            "GPX_EXTENSIONS_NS=ogr"
+                        ]
+                        file_path += '.gpx'
+                    elif fmode == 'xls':
+                        save_options.driverName = 'xlsx'
+                        file_path += '.xlsx'
+                    elif fmode == 'gpkg':
+                        save_options.driverName = 'gpkg'
+                        file_path += '.gpkg'
+                    elif fmode == 'csv':
+                        save_options.driverName = 'csv'
+                        save_options.layerOptions = ['GEOMETRY=AS_WKT']
+                        file_path += '.csv'
 
-                        file_path = os.path.join(tmp_dir.name, metadata_relation.layer.name + '.shp')
 
                     error_code, error_message, new_file_path, new_layer_name = QgsVectorFileWriter.writeAsVectorFormatV3(
                         metadata_relation.qgis_layer,
@@ -827,6 +856,47 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                     metadata_relation.qgis_layer.setSubsetString(original_subset_string)
 
         return files_saved
+
+    def _create_zip_file(self, filenames, zip_filename, tmp_dir, relation_files):
+        """
+        Create a zipfile with the list of filenames for download when is necessary
+
+        :param filenames: list of filenames to add to zip
+        :param zip_filename: name of zip file
+        :param tmp_dir: temporary directory
+        :param relation_files: list of relation files to add to zip
+        :return: BytesIO object with zip file
+        """
+        # Open BytesIO to grab in-memory ZIP contents
+        s = io.BytesIO()
+
+        # The zip compressor
+        zf = zipfile.ZipFile(s, "w")
+
+        for fpath in filenames:
+
+            # Add file, at correct path
+            ftoadd = os.path.join(tmp_dir.name, fpath)
+            if os.path.exists(ftoadd):
+                zf.write(ftoadd, fpath)
+
+        # Add relations files saved
+        for fpath in relation_files:
+            if os.path.exists(fpath):
+                zf.write(fpath, os.path.basename(fpath))
+
+            # Check for other shapefile files
+            if fpath.endswith(".shp"):
+                for ext in self.shp_extentions:
+                    if ext != ".shp":
+                        ftoadd = fpath.replace(".shp", ext)
+                        if os.path.exists(ftoadd):
+                            zf.write(ftoadd, os.path.basename(ftoadd))
+
+        # Must close zip for all contents to be written
+        zf.close()
+
+        return s
 
     def response_shp_mode(self, request):
         """
@@ -869,9 +939,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         )
 
         # Once saved the father layer, save the children layers (relations)
+        # -----------------------------------------------------------------
         relation_files = []
         if self.download_relations:
-            # TODO: implement download relations
             relation_files = self._download_relations(save_options, 'shp', tmp_dir)
 
 
@@ -890,35 +960,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                      for ftype in self.shp_extentions]
 
         zip_filename = "{}.zip".format(filename)
-
-        # Open BytesIO to grab in-memory ZIP contents
-        s = io.BytesIO()
-
-        # The zip compressor
-        zf = zipfile.ZipFile(s, "w")
-
-        for fpath in filenames:
-
-            # Add file, at correct path
-            ftoadd = os.path.join(tmp_dir.name, fpath)
-            if os.path.exists(ftoadd):
-                zf.write(ftoadd, fpath)
-
-        # Add relations files saved
-        for fpath in relation_files:
-            if os.path.exists(fpath):
-                zf.write(fpath, os.path.basename(fpath))
-
-            # Check for other shapefile files
-            if fpath.endswith(".shp"):
-                for ext in self.shp_extentions:
-                    if ext != ".shp":
-                        ftoadd = fpath.replace(".shp", ext)
-                        if os.path.exists(ftoadd):
-                            zf.write(ftoadd, os.path.basename(ftoadd))
-
-        # Must close zip for all contents to be written
-        zf.close()
+        s = self._create_zip_file(filenames, zip_filename, tmp_dir, relation_files)
         tmp_dir.cleanup()
 
         # Grab ZIP file from in-memory, make response with correct MIME-type
@@ -976,6 +1018,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             save_options
         )
 
+        # Once saved the father layer, save the children layers (relations)
+        # -----------------------------------------------------------------
+        relation_files = []
+        if self.download_relations:
+            relation_files = self._download_relations(save_options, 'gpx', tmp_dir)
+
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
@@ -984,9 +1032,20 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
-        response = HttpResponse(
-            open(gpx_tmp_path, 'rb').read(), content_type='application/octet-stream')
-        tmp_dir.cleanup()
+        # If not enpty relation files send a zip file
+        if relation_files:
+            filenames = [filename]
+            zip_filename = "{}.zip".format(filename)
+            s = self._create_zip_file(filenames, zip_filename, tmp_dir, relation_files)
+            response = HttpResponse(
+                s.getvalue(), content_type="application/x-zip-compressed")
+
+            # Replace file name for set cookie
+            filename = zip_filename
+        else:
+            response = HttpResponse(
+                open(gpx_tmp_path, 'rb').read(), content_type='application/octet-stream')
+            tmp_dir.cleanup()
 
         self._set_filename_cookie(response, filename)
 
@@ -1031,6 +1090,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             save_options
         )
 
+        # Once saved the father layer, save the children layers (relations)
+        # -----------------------------------------------------------------
+        relation_files = []
+        if self.download_relations:
+            relation_files = self._download_relations(save_options, 'xls', tmp_dir)
+
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
@@ -1039,8 +1104,19 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
-        response = HttpResponse(
-            open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
+        if relation_files:
+            filenames = [filename]
+            zip_filename = "{}.zip".format(filename)
+            s = self._create_zip_file(filenames, zip_filename, tmp_dir, relation_files)
+            response = HttpResponse(
+                s.getvalue(), content_type="application/x-zip-compressed")
+
+            # Replace file name for set cookie
+            filename = zip_filename
+        else:
+            response = HttpResponse(
+                open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
+
         tmp_dir.cleanup()
 
         self._set_filename_cookie(response, filename)
@@ -1086,6 +1162,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             save_options
         )
 
+        # Once saved the father layer, save the children layers (relations)
+        # -----------------------------------------------------------------
+        relation_files = []
+        if self.download_relations:
+            relation_files = self._download_relations(save_options, 'gpkg', tmp_dir)
+
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
@@ -1094,9 +1176,20 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
-        response = HttpResponse(
-            open(gpkg_tmp_path, 'rb').read(), content_type='application/geopackage+vnd.sqlite3')
-        tmp_dir.cleanup()
+
+        if relation_files:
+            filenames = [filename]
+            zip_filename = "{}.zip".format(filename)
+            s = self._create_zip_file(filenames, zip_filename, tmp_dir, relation_files)
+            response = HttpResponse(
+                s.getvalue(), content_type="application/x-zip-compressed")
+
+            # Replace file name for set cookie
+            filename = zip_filename
+        else:
+            response = HttpResponse(
+                open(gpkg_tmp_path, 'rb').read(), content_type='application/geopackage+vnd.sqlite3')
+            tmp_dir.cleanup()
 
         self._set_filename_cookie(response, filename)
 
@@ -1142,6 +1235,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             save_options
         )
 
+        # Once saved the father layer, save the children layers (relations)
+        # -----------------------------------------------------------------
+        relation_files = []
+        if self.download_relations:
+            relation_files = self._download_relations(save_options, 'gpkg', tmp_dir)
+
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
@@ -1150,9 +1249,19 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
-        response = HttpResponse(
-            open(xls_tmp_path, 'rb').read(), content_type='text/csv')
-        tmp_dir.cleanup()
+        if relation_files:
+            filenames = [filename]
+            zip_filename = "{}.zip".format(filename)
+            s = self._create_zip_file(filenames, zip_filename, tmp_dir, relation_files)
+            response = HttpResponse(
+                s.getvalue(), content_type="application/x-zip-compressed")
+
+            # Replace file name for set cookie
+            filename = zip_filename
+        else:
+            response = HttpResponse(
+                open(xls_tmp_path, 'rb').read(), content_type='text/csv')
+            tmp_dir.cleanup()
 
         self._set_filename_cookie(response, filename)
 
