@@ -780,6 +780,9 @@ class BaseVectorApiView(G3WAPIView):
         # Get request data by GET or POST method
         self.request_data = request.query_params if request.method == 'GET' else request.data
 
+        # Set self.download_relations
+        self.download_relations = True if self.request_data.get('down_with_relations') else False
+
         # get results
         response = self.get_response_data(request)
 

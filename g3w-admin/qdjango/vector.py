@@ -725,19 +725,23 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             except Exception as e:
                 logger.error(e)
 
-    def _set_download_attributes(self, qgs_request, save_options):
+    def _set_download_attributes(self, qgs_request, save_options, **kwargs):
         """
         Set attributes for QgsVectorFileWriter.SaveVectorOptions instance.
         Check for fields excluded for WMS service into QGIS project.
         """
 
+        # I.e. for use this method also do relation layers
+        layer = kwargs.get('layer', self.layer)
+        metadata_layer = kwargs.get('metadata_layer', self.metadata_layer)
+
         column_to_exclude = eval(
-            self.layer.exclude_attribute_wms) if self.layer.exclude_attribute_wms else []
+            layer.exclude_attribute_wms) if layer.exclude_attribute_wms else []
 
         # Only if fields to exclude are present
         if column_to_exclude:
-            column_to_exclude = [self.metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
-            save_options.attributes = list(set(self.metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
+            column_to_exclude = [metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
+            save_options.attributes = list(set(metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
 
         # Integrate attributes removed by filters by intersection
         if qgs_request.subsetOfAttributes():
@@ -746,6 +750,83 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                     set(qgs_request.subsetOfAttributes()).intersection(set(save_options.attributes)))
             else:
                 save_options.attributes = qgs_request.subsetOfAttributes()
+
+    def _download_relations(self, fsave_options, mode, tmp_dir):
+        """
+        Download relations of data: get relations layer with selected features to download
+        :param save_options: QgsVectorFileWriter.SaveVectorOptions instance of father layer
+        :param mode: mode of download, i.e. 'shp', 'xls', 'gpx', etc..
+        :param tmp_dir: temporary directory for files
+        """
+
+        files_saved = []
+        # Iterate
+        for qgs_layer_id, metadata_relation in self.metadata_relations.items():
+
+            # TODO: add control is relation layer can be downloaded
+            # Only the more proximity relations
+            if metadata_relation.level == 0:
+
+                # get QgsRelation object
+                qgs_prj = self.layer.project.qgis_project
+                qgs_relation = qgs_prj.relationManager().relation(metadata_relation.relation_id)
+
+                # Check for selected features
+                ffeatures = self.metadata_layer.qgis_layer.selectedFeatures() if fsave_options.onlySelectedFeatures \
+                    else self.metadata_layer.qgis_layer.getFeatures()
+
+                cids = []
+                for ffeat in ffeatures:
+                    cfeatures = qgs_relation.getRelatedFeatures(ffeat)
+                    for cfeat in cfeatures:
+                        cids.append(str(cfeat.id()))
+
+                if cids:
+
+                    # Instance a QgsFeatureRequest
+                    qgs_request = QgsFeatureRequest()
+                    original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+
+                    qgs_request.combineFilterExpression("$id IN (%s)" % ','.join(cids))
+
+                    # Instance save options
+                    save_options = QgsVectorFileWriter.SaveVectorOptions()
+
+                    # Set attributes
+                    self._set_download_attributes(qgs_request, save_options,
+                                                  layer=metadata_relation.layer, metadata_layer=metadata_relation)
+
+                    metadata_relation.qgis_layer.selectByExpression(
+                        qgs_request.filterExpression().expression())
+                    save_options.onlySelectedFeatures = True
+
+
+                    # Switch mode
+                    if mode == 'shp':
+                        save_options.driverName = 'ESRI Shapefile'
+                        save_options.fileEncoding = 'utf-8'
+
+                        file_path = os.path.join(tmp_dir.name, metadata_relation.layer.name + '.shp')
+
+                    error_code, error_message, new_file_path, new_layer_name = QgsVectorFileWriter.writeAsVectorFormatV3(
+                        metadata_relation.qgis_layer,
+                        file_path,
+                        metadata_relation.qgis_layer.transformContext(),
+                        save_options
+                    )
+
+                    if error_code != QgsVectorFileWriter.NoError:
+                        tmp_dir.cleanup()
+                        return HttpResponse(status=500, reason=error_message)
+
+                    # Add file to list
+                    files_saved.append(new_file_path)
+
+                    # Reset
+                    metadata_relation.qgis_layer.selectByIds([])
+                    metadata_relation.qgis_layer.setSubsetString(original_subset_string)
+
+        return files_saved
 
     def response_shp_mode(self, request):
         """
@@ -787,6 +868,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             save_options
         )
 
+        # Once saved the father layer, save the children layers (relations)
+        relation_files = []
+        if self.download_relations:
+            # TODO: implement download relations
+            relation_files = self._download_relations(save_options, 'shp', tmp_dir)
+
+
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
@@ -815,6 +903,19 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             ftoadd = os.path.join(tmp_dir.name, fpath)
             if os.path.exists(ftoadd):
                 zf.write(ftoadd, fpath)
+
+        # Add relations files saved
+        for fpath in relation_files:
+            if os.path.exists(fpath):
+                zf.write(fpath, os.path.basename(fpath))
+
+            # Check for other shapefile files
+            if fpath.endswith(".shp"):
+                for ext in self.shp_extentions:
+                    if ext != ".shp":
+                        ftoadd = fpath.replace(".shp", ext)
+                        if os.path.exists(ftoadd):
+                            zf.write(ftoadd, os.path.basename(ftoadd))
 
         # Must close zip for all contents to be written
         zf.close()
