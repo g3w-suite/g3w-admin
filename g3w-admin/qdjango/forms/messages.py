@@ -29,7 +29,7 @@ class MessageForm(G3WFormMixin, G3WRequestFormMixin, G3WGroupFormMixin, G3WProje
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['valid_from'].widget = DateInput(attrs={'type': 'time', 'dir':'rtl', 'style':'text-align:left;'})
+        self.fields['valid_from'].widget = DateInput(attrs={'type': 'date', 'dir':'rtl', 'style':'text-align:left;'})
         self.fields['valid_to'].widget = DateInput(attrs={'type': 'date', 'dir':'rtl', 'style':'text-align:left;'})
         self.helper = FormHelper(self)
         self.helper.form_tag = False

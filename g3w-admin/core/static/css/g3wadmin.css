@@ -909,7 +909,6 @@ body:not(.sidebar-collapse) > aside                                  { overflow-
 .form-group.has-error :is(.form-control, .input-group-addon)                              { border-color: #dd4b39; box-shadow: none; }
 .form-group.has-error .help-block                                                         { color: #dd4b39; }
 .input-group .input-group-addon                                                           { border-radius: 0; border-color: #d2d6de; background-color: #fff; }
-.icheck > label                                                                           { padding-left: 0; }
 .form-control-feedback.fa                                                                 { line-height: 34px; }
 :is(.input-lg, .input-group-lg, .form-group-lg .form-control) + .form-control-feedback.fa { line-height: 46px; }
 :is(.input, .input-group-sm, .form-group-sm .form-control)    + .form-control-feedback.fa { line-height: 30px; }
@@ -1796,31 +1795,6 @@ fieldset[disabled] .datepicker table tr td span.active:is(
 /**************************************************************************************
  * 28. iCheck
  **************************************************************************************/
-/* iCheck plugin */
-.icheckbox_flat-blue,   .iradio_flat-blue                                                { display: inline-block; vertical-align: middle; margin: 0; padding: 0; width: 20px; height: 20px; background: url(../img/icheck-blue.png) no-repeat; border: none; cursor: pointer; }
-.icheckbox_flat-yellow, .iradio_flat-yellow                                              { display: inline-block; vertical-align: middle; margin: 0; padding: 0; width: 20px; height: 20px; background: url(../img/icheck-yellow.png) no-repeat; border: none; cursor: pointer; }
-.icheckbox_flat-green,  .iradio_flat-green                                               { display: inline-block; vertical-align: middle; margin: 0; padding: 0; width: 20px; height: 20px; background: url(../img/icheck-green.png) no-repeat; border: none; cursor: pointer; }
-.icheckbox_square-blue, .iradio_square-blue                                              { display: inline-block; vertical-align: middle; margin: 0; padding: 0; width: 22px; height: 22px; background: url(../img/icheck-square-blue.png) no-repeat; border: none; cursor: pointer; }
-:is(.icheckbox_flat-blue, .icheckbox_flat-yellow, .icheckbox_flat-green)                 { background-position: 0 0; }
-:is(.icheckbox_flat-blue, .icheckbox_flat-yellow,.icheckbox_flat-green).checked          { background-position: -22px 0; }
-:is(.icheckbox_flat-blue, .icheckbox_flat-yellow,.icheckbox_flat-green).disabled         { background-position: -44px 0; cursor: default; }
-:is(.icheckbox_flat-blue, .icheckbox_flat-yellow,.icheckbox_flat-green).checked.disabled { background-position: -66px 0; }
-:is(.iradio_flat-blue, .iradio_flat-yellow, .iradio_flat-green)                          { background-position: -88px 0; }
-:is(.iradio_flat-blue, .iradio_flat-yellow, .iradio_flat-green).checked                  { background-position: -110px 0; }
-:is(.iradio_flat-blue, .iradio_flat-yellow, .iradio_flat-green).disabled                 { background-position: -132px 0; cursor: default; }
-:is(.iradio_flat-blue, .iradio_flat-yellow, .iradio_flat-green).disabled                 { background-position: -154px 0; }
-
-.icheckbox_square-blue                  { background-position: 0 0; }
-.icheckbox_square-blue.hover            { background-position: -24px 0; }
-.icheckbox_square-blue.checked          { background-position: -48px 0; }
-.icheckbox_square-blue.disabled         { background-position: -72px 0; cursor: default; }
-.icheckbox_square-blue.checked.disabled { background-position: -96px 0; }
-.iradio_square-blue                     { background-position: -120px 0; }
-.iradio_square-blue.hover               { background-position: -144px 0; } 
-.iradio_square-blue.checked             { background-position: -168px 0; }
-.iradio_square-blue.disabled            { background-position: -192px 0; cursor: default; }
-.iradio_square-blue.checked.disabled    { background-position: -216px 0; }
-
 
 /**************************************************************************************
  * 29. Miscellaneous
