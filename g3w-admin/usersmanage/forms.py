@@ -405,15 +405,15 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     def __authrole_fields(self):
         """ Get fields for ACL box if they are into self.fields """
 
-        fields = [Field('is_active', **{'css_class': 'skip-icheck' })]
+        fields = [Field('is_active')]
         if 'is_superuser' in self.fields:
             fields.append(
-                Field('is_superuser', **{'style': 'accent-color: purple', 'css_class': 'skip-icheck' })
+                Field('is_superuser', **{'style': 'accent-color: purple'})
             )
 
         if 'is_staff' in self.fields:
             fields.append(
-                Field('is_staff', **{'style': 'accent-color: purple', 'css_class': 'skip-icheck' })
+                Field('is_staff', **{'style': 'accent-color: purple'})
             )
 
         if 'groups' in self.fields:

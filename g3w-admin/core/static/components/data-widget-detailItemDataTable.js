@@ -21,8 +21,6 @@ export async function detailItemDataTable($datatable, $item, refresh) {
 
     row.child(await (await fetch($item.attr('data-detail-url'))).text()).show();
 
-    ga.ui.initRadioCheckbox(row.child());
-
     // update widget counter
     $item.find('[data-widget-count]').attr('data-widget-count', $item.parents("tr").next().find("tr").length - 1);
   } catch (e) {

@@ -1,26 +1,12 @@
-/** bootstrap-datepicker */
-jQuery.fn.datepicker.dates.de = {
-  days:        ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
-  daysShort:   ["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"],
-  daysMin:     ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
-  months:      ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
-  monthsShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
-  today:       "Heute",
-  monthsTitle: "Monate",
-  clear:       "Löschen",
-  weekStart:   1,
-  format:      "dd.mm.yyyy"
-};
-
 /* select2 */
 jQuery.fn.select2.amd.define("select2/i18n/de", [], () => ({
-  errorLoading:    ()  => "Die Ergebnisse konnten nicht geladen werden.",
-  inputTooLong:    (e) => "Bitte " + (e.input.length - e.maximum) + " Zeichen weniger eingeben",
-  inputTooShort:   (e) => "Bitte " + (e.minimum - e.input.length) + " Zeichen mehr eingeben",
-  loadingMore:     ()  => "Lade mehr Ergebnisse…",
-  maximumSelected: (e) => "Sie können nur " + e.maximum + " Eintr" + (e.maximum === 1 ? "ag" : "äge") + " auswählen",
-  noResults:       ()  => "Keine Übereinstimmungen gefunden",
-  searching:       ()  => "Suche…",
+  errorLoading:    () => "Die Ergebnisse konnten nicht geladen werden.",
+  inputTooLong:     e => "Bitte " + (e.input.length - e.maximum) + " Zeichen weniger eingeben",
+  inputTooShort:    e => "Bitte " + (e.minimum - e.input.length) + " Zeichen mehr eingeben",
+  loadingMore:     () => "Lade mehr Ergebnisse…",
+  maximumSelected:  e => "Sie können nur " + e.maximum + " Eintr" + (e.maximum === 1 ? "ag" : "äge") + " auswählen",
+  noResults:       () => "Keine Übereinstimmungen gefunden",
+  searching:       () => "Suche…",
 }));
 
 /** summernote */

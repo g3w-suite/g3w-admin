@@ -91,7 +91,6 @@ export async function qplotlyWidgetList($datatable, $item, refresh = false) {
                   name="show_on_start_client"
                   value="1"
                   ${v.show_on_start_client ? 'checked' : ''}
-                  class="skip-icheck"
                   onchange="fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showonstartclient/${v.pk}/' + (event.target.checked ? '' : '?show=0')).catch(g3wadmin.widget.showError)"
                 />
               </td>

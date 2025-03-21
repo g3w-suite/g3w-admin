@@ -1,26 +1,12 @@
-/** bootstrap-datepicker */
-jQuery.fn.datepicker.dates.it = {
-  days:        ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
-  daysShort:   ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
-  daysMin:     ["Do", "Lu", "Ma", "Me", "Gi", "Ve", "Sa"],
-  months:      ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
-  monthsShort: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
-  today:       "Oggi",
-  monthsTitle: "Mesi",
-  clear:       "Cancella",
-  weekStart:   1,
-  format:      "dd/mm/yyyy"
-};
-
 /* select2 */
 jQuery.fn.select2.amd.define("select2/i18n/it", [], () => ({
-  errorLoading:    ()  => "I risultati non possono essere caricati.",
-  inputTooLong:    (e) => "Per favore cancella " + (e.input.length - e.maximum) + " caratter" + (1 !== (e.input.length - e.maximum)? 'i' : 'e'),
-  inputTooShort:   (e) => "Per favore inserisci " + (e.input.length - e.maximum) + " o più caratteri",
-  loadingMore:     ()  => "Caricando più risultati…",
-  maximumSelected: (e) => "Puoi selezionare solo " + e.maximum + " element" + (1 !== e.maximum ? 'i' : 'o'),
-  noResults:       ()  => "Nessun risultato trovato",
-  searching:       ()  => "Sto cercando…",
+  errorLoading:    () => "I risultati non possono essere caricati.",
+  inputTooLong:     e => "Per favore cancella " + (e.input.length - e.maximum) + " caratter" + (1 !== (e.input.length - e.maximum)? 'i' : 'e'),
+  inputTooShort:    e => "Per favore inserisci " + (e.input.length - e.maximum) + " o più caratteri",
+  loadingMore:     () => "Caricando più risultati…",
+  maximumSelected:  e => "Puoi selezionare solo " + e.maximum + " element" + (1 !== e.maximum ? 'i' : 'o'),
+  noResults:       () => "Nessun risultato trovato",
+  searching:       () => "Sto cercando…",
 }));
 
 /** summernote */

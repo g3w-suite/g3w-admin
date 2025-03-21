@@ -42,7 +42,6 @@ if (!customElements.get('g3w-projects')) {
         ).join('');
         this.#wrapper.innerHTML = (await Promise.all(urls.map(async url => await (await fetch(url)).text()))).join('');
         this.insertAdjacentElement('afterend', this.#wrapper);
-        g3wadmin.ui.initRadioCheckbox(this.#wrapper);
         if (this.hasAttribute('sortable')) {
           this.#sortable();
         }

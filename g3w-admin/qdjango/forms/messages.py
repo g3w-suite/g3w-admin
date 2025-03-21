@@ -10,7 +10,7 @@ __date__ = '2023-03-31'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__ = 'MPL 2.0'
 
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, ValidationError, DateInput
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML, Row, Field, Fieldset
@@ -29,13 +29,15 @@ class MessageForm(G3WFormMixin, G3WRequestFormMixin, G3WGroupFormMixin, G3WProje
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['valid_from'].widget = DateInput(attrs={'type': 'time', 'dir':'rtl', 'style':'text-align:left;'})
+        self.fields['valid_to'].widget = DateInput(attrs={'type': 'date', 'dir':'rtl', 'style':'text-align:left;'})
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(
                 f"<i class='fa fa-file'></i> {_('Validity')}</h3>",
-                PrependedText('valid_from', '<i class="fa fa-calendar"></i>', css_class='datepicker'),
-                PrependedText('valid_to', '<i class="fa fa-calendar"></i>', css_class='datepicker'),
+                'valid_from',
+                'valid_to',
             ),
             Fieldset(
                 f"<i class='fa fa-file'></i> {_('General data')}",

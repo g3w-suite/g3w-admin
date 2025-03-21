@@ -1,26 +1,12 @@
-/** bootstrap-datepicker */
-
-jQuery.fn.datepicker.dates.sv = {
-  days:        ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"],
-  daysShort:   ["sön", "mån", "tis", "ons", "tor", "fre", "lör"],
-  daysMin:     ["sö", "må", "ti", "on", "to", "fr", "lö"],
-  months:      ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"],
-  monthsShort: ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
-  today:       "Idag",
-  format:      "yyyy-mm-dd",
-  weekStart:   1,
-  clear:       "Rensa"
-};
-
 /* select2 */
 jQuery.fn.select2.amd.define("select2/i18n/sv", [], () => ({
-  errorLoading:    ()  => "Resultat kunde inte laddas.",
-  inputTooLong:    (e) => "Vänligen sudda ut " + (e.input.length - e.maximum) + " tecken",
-  inputTooShort:   (e) => "Vänligen skriv in " + (e.minimum - e.input.length) + " eller fler tecken",
-  loadingMore:     ()  => "Laddar fler resultat…",
-  maximumSelected: (e) => "Du kan max välja " + e.maximum + " element",
-  noResults:       ()  => "Inga träffar",
-  searching:       ()  => "Söker…",
+  errorLoading:    () => "Resultat kunde inte laddas.",
+  inputTooLong:     e => "Vänligen sudda ut " + (e.input.length - e.maximum) + " tecken",
+  inputTooShort:    e => "Vänligen skriv in " + (e.minimum - e.input.length) + " eller fler tecken",
+  loadingMore:     () => "Laddar fler resultat…",
+  maximumSelected:  e => "Du kan max välja " + e.maximum + " element",
+  noResults:       () => "Inga träffar",
+  searching:       () => "Söker…",
 }));
 
 /** summernote */

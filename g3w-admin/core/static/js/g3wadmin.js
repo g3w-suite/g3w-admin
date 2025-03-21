@@ -75,23 +75,6 @@
       },
 
       /**
-       * Apply skin if is set (iCheck)
-       */
-      initRadioCheckbox(context) {
-        console.warn('[G3W-ADMIN] ga.ui.initRadioCheckbox is deprecated'); // please make use of native checkbox/radio buttons!
-        (context ? $(context).find('input[type="checkbox"], input[type="radio"]') : $('input[type="checkbox"], input[type="radio"]'))
-          .each(function() {
-            if (['setProjectPanoramic', 'linkWidget2Layer'].includes(this.getAttribute('data-widget-type')) || this.closest('.skip-icheck')){
-              return;
-            }
-            $(this).iCheck({
-              checkboxClass: 'icheckbox_flat-' + ($(this).attr('data-icheck-skin') || 'green'),
-              radioClass: 'iradio_flat-' + ($(this).attr('data-icheck-skin') || 'green')
-            });
-          });
-      },
-
-      /**
        * build the modal jquery object
        */
       _buildModal(options, className = '') {
@@ -367,6 +350,13 @@
     // widgets
     document.addEventListener('click', async function (e) {
 
+      // Datepicker
+      if (e.target.closest('input[type="date"]')) {
+        e.preventDefault();
+        e.target.showPicker();
+        return;
+      }
+
       // Box widget
       if (e.target.closest('[data-widget="collapse"]')) {
         e.preventDefault();
@@ -460,10 +450,6 @@
       ],
     });
 
-    g3wadmin.ui.initRadioCheckbox();
-
-    $('.datepicker').datepicker({ language: SETTINGS.CURRENT_LANGUAGE_CODE });
-    $('.timepicker').timepicker({ showMeridian: false, showInputs: true });
     $('.colorpicker').parent().addClass('colorpicker-component').colorpicker();
     $('.select2').select2();
 
@@ -488,19 +474,41 @@
 
 })();
 
+/***************************************************************************************************************************
+ * DEPRECATED plugins
+ **************************************************************************************************************************/
+
+(function($) {
+  const $on = $.fn.on;
+  $.fn.on = function(...args) {
+    const event = args[0];
+    if (event.match(/ifClicked|ifChanged|ifChecked|ifUnchecked|ifToggled|ifDisabled|ifEnabled|ifIndeterminate|ifDeterminate|ifCreated|ifDestroyed/)) {
+      ga.widget.showError(`
+<p><b>icheck.js</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please update your plugins in order to use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="checkbox"]</a> or <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="radio"]</a></b> instead.</p>
+        `);
+    }
+    return $on.apply(this, args);
+  };
+})(jQuery);
+
+$.fn.iCheck = $.iCheck = function() {
+  ga.widget.showError(`
+<p><b>icheck.js</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please update your plugins in order to use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="checkbox"]</a> or <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="radio"]</a></b> instead.</p>`);
+};
+
 // used by the following plugins: "ogc"
-$.fn.jstree = new Proxy({}, {
-  get: function() {
+$.fn.jstree = $.jstree = function() {
     ga.widget.showError(`
 <p><b>jstree</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
 <hr>
 <p>Please update your plugins or add this dependecies within your code:</p>
 <pre><code>&lt;style&gt;@import url(&apos;https://unpkg.com/jstree@3.3.17/dist/themes/default/style.css&apos;);&lt;/style&gt;
 &lt;script&gt;import &apos;https://unpkg.com/jstree@3.3.17/dist/jstree.js&apos;;&lt;/script&gt;</pre></code>`);
-  },
-});
+};
 
-globalThis._ = new Proxy({}, {
+globalThis._ = globalThis._ || new Proxy({}, {
   get: function() {
     ga.widget.showError(`
 <p><b>underscore.js</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
@@ -510,39 +518,83 @@ globalThis._ = new Proxy({}, {
   },
 });
 
+// used by the following plugins: "billboards", "law", "ps-timeseries", "stress"
+$.fn.datepicker = $.datepicker = function() {
+    ga.widget.showError(`
+<p><b>bootstrap-datepicker (v1.9.0)</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please update your plugins in order to use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="date"]</a> or <a href="https://docs.djangoproject.com/en/4.2/ref/forms/widgets/#dateinput" target="_blank" style="color: currentColor;text-decoration: underline;">DateInput(attrs={'type': 'date'})</a> instead.</p>`);
+};
+
+// glyphicon.css
 (function() {
-  const glyphicons_css = setInterval(() => {
+  const int = setInterval(() => {
     const icon = document.querySelector('.glyphicon');
     if (icon) {
       document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' }));
       ga.widget.showError(`
-  <p><b>glyphicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
-  <p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a>.</p>
+<p><b>glyphicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a>.</p>
   `);
-      clearInterval(glyphicons_css);
+      clearInterval(int);
     }
   }, 1000);
-  
-  const ionicons_css = setInterval(() => {
+})();
+
+// ionicons.css
+(function() {
+  const int = setInterval(() => {
     const icon = document.querySelector('.ion') || document.querySelector('.ionicons');
     if (icon) {
       document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://unpkg.com/ionicons@2.0.1/css/ionicons.css' }));
       ga.widget.showError(`
-  <p><b>ionicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
-  <p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a> or download appropriate svg icons from <a href="https://ionic.io/ionicons" target="_blank" style="color: currentColor;text-decoration: underline;">here</a>.</p>
+<p><b>ionicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a> or download appropriate svg icons from <a href="https://ionic.io/ionicons" target="_blank" style="color: currentColor;text-decoration: underline;">here</a>.</p>
   `);
-      clearInterval(ionicons_css);
+      clearInterval(int);
     }
   }, 1000);
-  
-  const label_action_layer = setInterval(() => {
+})();
+
+// .label-action-layer
+(function() {
+  const int = setInterval(() => {
     const icon = document.querySelector('.label-action-layer');
     if (icon) {
       ga.widget.showError(`
-  <p><b>.label-action-layer</b> class has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
-  <p>Please update your plugins in order to use <b>[data-widget-count]</b> attribute instead.</p>
+<p><b>.label-action-layer</b> class has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please update your plugins in order to use <b>[data-widget-count]</b> attribute instead.</p>
   `);
-      clearInterval(label_action_layer);
+      clearInterval(int);
+    }
+  }, 1000);
+})();
+
+// bootstrap-datepicker
+(function() {
+  const int = setInterval(() => {
+    const icon = document.querySelector('.datepicker');
+    if (icon) {
+      document.querySelectorAll('.datepicker').forEach(el => { el.type = 'date'; el.dir = 'rtl'; el.style.textAlign = 'left'; el.classList.remove('datepicker'); });
+      ga.widget.showError(`
+<p><b>bootstrap-datepicker (v1.9.0)</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please update your plugins in order to use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="date"]</a> or <a href="https://docs.djangoproject.com/en/4.2/ref/forms/widgets/#dateinput" target="_blank" style="color: currentColor;text-decoration: underline;">DateInput(attrs={'type': 'date'})</a> instead.</p>
+  `);
+      clearInterval(int);
+    }
+  }, 1000);
+})();
+
+// bootstrap-timepicker
+(function() {
+  const int = setInterval(() => {
+    const icon = document.querySelector('.timepicker');
+    if (icon) {
+      document.querySelectorAll('.timepicker').forEach(el => { el.type = 'time'; el.classList.remove('timepicker'); });
+      ga.widget.showError(`
+<p><b>bootstrap-timepicker (v0.5.2)</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+<p>Please update your plugins in order to use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/time" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="time"]</a> or <a href="https://docs.djangoproject.com/en/4.2/ref/forms/widgets/#dateinput" target="_blank" style="color: currentColor;text-decoration: underline;">DateInput(attrs={'type': 'time'})</a> instead.</p>
+  `);
+      clearInterval(int);
     }
   }, 1000);
 })();

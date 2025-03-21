@@ -37,6 +37,5 @@ class OpenrouteserviceProjectForm(G3WFormMixin, G3WRequestFormMixin, ModelForm):
                 f"<i class='fa fa-file'></i> {_('Project')}",
                 'project',
                 Field('services'),
-                css_class="skip-icheck"
             ),
         )

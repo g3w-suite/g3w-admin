@@ -1,25 +1,12 @@
-/** bootstrap-datepicker */
-jQuery.fn.datepicker.dates.fi = {
-  days:        ["sunnuntai", "maanantai", "tiistai", "keskiviikko", "torstai", "perjantai", "lauantai"],
-  daysShort:   ["sun", "maa", "tii", "kes", "tor", "per", "lau"],
-  daysMin:     ["su", "ma", "ti", "ke", "to", "pe", "la"],
-  months:      ["tammikuu", "helmikuu", "maaliskuu", "huhtikuu", "toukokuu", "kesäkuu", "heinäkuu", "elokuu", "syyskuu", "lokakuu", "marraskuu", "joulukuu"],
-  monthsShort: ["tam", "hel", "maa", "huh", "tou", "kes", "hei", "elo", "syy", "lok", "mar", "jou"],
-  today:       "tänään",
-  clear:       "Tyhjennä",
-  weekStart:   1,
-  format:      "d.m.yyyy"
-};
-
 /* select2 */
 jQuery.fn.select2.amd.define("select2/i18n/fi", [], () => ({
-  errorLoading:    ()  => "Tuloksia ei saatu ladattua.",
-  inputTooLong:    (e) => "Ole hyvä ja anna " + (e.input.length - e.maximum) + " merkkiä vähemmän",
-  inputTooShort:   (e) => "Ole hyvä ja anna " + (e.minimum - e.input.length) + " merkkiä lisää",
-  loadingMore:     ()  => "Ladataan lisää tuloksia…",
-  maximumSelected: (e) => "Voit valita ainoastaan " + e.maximum + " kpl",
-  noResults:       ()  => "Ei tuloksia",
-  searching:       ()  => "Haetaan…",
+  errorLoading:    () => "Tuloksia ei saatu ladattua.",
+  inputTooLong:     e => "Ole hyvä ja anna " + (e.input.length - e.maximum) + " merkkiä vähemmän",
+  inputTooShort:    e => "Ole hyvä ja anna " + (e.minimum - e.input.length) + " merkkiä lisää",
+  loadingMore:     () => "Ladataan lisää tuloksia…",
+  maximumSelected: e  => "Voit valita ainoastaan " + e.maximum + " kpl",
+  noResults:       () => "Ei tuloksia",
+  searching:       () => "Haetaan…",
 }));
 
 /** summernote */

@@ -1,25 +1,12 @@
-/** bootstrap-datepicker */
-jQuery.fn.datepicker.dates.ro = {
-  days:        ["Duminică", "Luni", "Marţi", "Miercuri", "Joi", "Vineri", "Sâmbătă"],
-  daysShort:   ["Dum", "Lun", "Mar", "Mie", "Joi", "Vin", "Sâm"],
-  daysMin:     ["Du", "Lu", "Ma", "Mi", "Jo", "Vi", "Sâ"],
-  months:      ["Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie", "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie"],
-  monthsShort: ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  today:       "Astăzi",
-  clear:       "Șterge",
-  weekStart:   1,
-  format:      'dd.mm.yyyy'
-};
-
 /* select2  */
 jQuery.fn.select2.amd.define("select2/i18n/ro", [], () => ({
-  errorLoading:    ()  => "Rezultatele nu au putut fi incărcate.",
-  inputTooLong:    (e) => "Vă rugăm să ștergeți " + (e.input.length - e.maximum) + " caracter" + (1 != (e.input.length - e.maximum) ? 'e' : ''),
-  inputTooShort:   (e) => "Vă rugăm să introduceți " + (e.minimum - e.input.length) + " sau mai multe caractere",
-  loadingMore:     ()  => "Se încarcă mai multe rezultate…",
-  maximumSelected: (e) => "Aveți voie să selectați cel mult " + e.maximum + " element" + (1 != e.maximum === 1 ? 'e' : ''),
-  noResults:       ()  => "Nu au fost găsite rezultate",
-  searching:       ()  => "Căutare…",
+  errorLoading:    () => "Rezultatele nu au putut fi incărcate.",
+  inputTooLong:     e => "Vă rugăm să ștergeți " + (e.input.length - e.maximum) + " caracter" + (1 != (e.input.length - e.maximum) ? 'e' : ''),
+  inputTooShort:    e => "Vă rugăm să introduceți " + (e.minimum - e.input.length) + " sau mai multe caractere",
+  loadingMore:     () => "Se încarcă mai multe rezultate…",
+  maximumSelected:  e => "Aveți voie să selectați cel mult " + e.maximum + " element" + (1 != e.maximum === 1 ? 'e' : ''),
+  noResults:       () => "Nu au fost găsite rezultate",
+  searching:       () => "Căutare…",
 }));
 
 /** summernote */

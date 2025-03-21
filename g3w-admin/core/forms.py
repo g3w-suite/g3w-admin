@@ -88,7 +88,6 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                 'upload_url',
                 #AppendedText('header_logo_height','px'),
                 'header_logo_link',
-                css_class='skip-icheck'
             ),
 
             Fieldset(

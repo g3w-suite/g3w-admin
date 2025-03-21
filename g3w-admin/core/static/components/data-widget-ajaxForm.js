@@ -29,9 +29,6 @@ export default async function ajaxForm(item) {
     form.successAction = () => { modal.hide(); location.reload(); };       // close modal and reload page
     modal.$modal.find('.modal-button-confirm').click(form.sendData);       // add form send data action
     // init form input plugins
-    ga.ui.initRadioCheckbox(modal.$modal[0]);
-    $(modal.$modal).find('.datepicker').datepicker({ language: SETTINGS.CURRENT_LANGUAGE_CODE });
-    $(modal.$modal).find('.timepicker').timepicker({ showMeridian: false, showInputs: true });
     $(modal.$modal).find('.select2').select2();
   } catch (e) {
     ga.widget.showError(e.message)

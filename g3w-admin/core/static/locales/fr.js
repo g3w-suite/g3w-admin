@@ -1,26 +1,12 @@
-/** bootstrap-datepicker */
-jQuery.fn.datepicker.dates.fr = {
-  days:        ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
-  daysShort:   ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
-  daysMin:     ["d", "l", "ma", "me", "j", "v", "s"],
-  months:      ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
-  monthsShort: ["janv.", "févr.", "mars", "avril", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."],
-  today:       "Aujourd'hui",
-  monthsTitle: "Mois",
-  clear:       "Effacer",
-  weekStart:   1,
-  format:      "dd/mm/yyyy"
-};
-
 /* select2 */
 jQuery.fn.select2.amd.define("select2/i18n/fr", [], () => ({
-  errorLoading:    ()  => "Les résultats ne peuvent pas être chargés.",
-  inputTooLong:    (e) => "Supprimez " + (e.input.length - e.maximum) + " caractère" + (e.input.length - e.maximum > 1 ? "s" : ""),
-  inputTooShort:   (e) => "Saisissez au moins " + (e.input.length - e.maximum) + " caractère" + + (e.input.length - e.maximum > 1 ? "s" : ""),
-  loadingMore:     ()  => "Chargement de résultats supplémentaires…",
-  maximumSelected: (e) => "Vous pouvez seulement sélectionner " + e.maximum + " élément" + (e.maximum > 1) ? "s" : "",
-  noResults:       ()  => "Aucun résultat trouvé",
-  searching:       ()  => "Recherche en cours…",
+  errorLoading:    () => "Les résultats ne peuvent pas être chargés.",
+  inputTooLong:     e => "Supprimez " + (e.input.length - e.maximum) + " caractère" + (e.input.length - e.maximum > 1 ? "s" : ""),
+  inputTooShort:    e => "Saisissez au moins " + (e.input.length - e.maximum) + " caractère" + + (e.input.length - e.maximum > 1 ? "s" : ""),
+  loadingMore:     () => "Chargement de résultats supplémentaires…",
+  maximumSelected:  e => "Vous pouvez seulement sélectionner " + e.maximum + " élément" + (e.maximum > 1) ? "s" : "",
+  noResults:       () => "Aucun résultat trouvé",
+  searching:       () => "Recherche en cours…",
 }));
 
 /** summernote */
