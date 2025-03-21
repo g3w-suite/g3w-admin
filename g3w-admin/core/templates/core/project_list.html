@@ -23,10 +23,7 @@
     {% if "view_group" in userObj_perms %}
       <a
         href="#"
-        data-toggle="tooltip"
         class="btn btn-app"
-        data-placement="top"
-        title="{% trans 'Show detail' %}"
         data-widget-type="detailItem"
         data-detail-url="{% url 'group-detail' group.slug %}"
       >
@@ -39,9 +36,6 @@
         <a
           href="{% url 'group-update' group.slug %}"
           class="btn btn-app"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="{% trans 'Edit' %}"
         >
           <i class="fa fa-pencil"></i>
           {% trans 'Edit' %}

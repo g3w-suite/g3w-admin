@@ -21,9 +21,6 @@
       <a
         href="#"
         class="btn btn-app"
-        data-toggle="tooltip"
-        data-placement="top"
-        title="{% trans 'Show detail' %}"
         data-widget-type="detailItem"
         data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}"
       >
@@ -35,9 +32,6 @@
       <a
         href="{% url 'qdjango-project-update' group.slug project.slug %}"
         class="btn btn-app"
-        data-toggle="tooltip"
-        data-placement="top"
-        title="{% trans 'Edit' %}"
       >
         <i class="fa fa-pencil"></i>
         {% trans 'Edit' %}
@@ -47,9 +41,6 @@
       <a
         href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}"
         class="btn btn-app"
-        data-toggle="tooltip"
-        data-placement="top"
-        title="{% trans 'Show map' %}"
         target="_blank"
       >
         <i class="fa fa-external-link"></i>

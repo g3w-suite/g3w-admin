@@ -16,24 +16,12 @@
 {% block main_content %}
 
 {% if object %}
-  <div class="box">
-    <div class="box-header">
-      <h3 class="box-title">{% trans 'Current groups' %}</h3>
-      {% comment %}
-      <h3 class="box-title">
-        {% include 'core/include/add_project.html' %}
-      </h3>
-      {% endcomment %}
-    </div>
-    <div class="box-body">
-      {% comment %}
-        <h4>{% trans 'Current groups' %}</h4>
-      {% endcomment %}
-      {% for group in object.group_set.all %}
-        <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
-      {% endfor %}
-    </div>
-  </div>
+  <fieldset>
+    <legend style="margin:0; float:left;">{% trans 'Current groups' %}:</legend>
+    {% for group in object.group_set.all %}
+      <a style="border: 1px solid #367fa9; border-radius: 4px; margin: 5px; background-color: #3c8dbc; padding: 1px 10px; color: #fff;float: left;" href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
+    {% endfor %}
+  </fieldset>
 {% endif %}
 
 <form method="post" id="macrogroup-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
