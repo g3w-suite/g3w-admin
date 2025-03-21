@@ -11,7 +11,7 @@
   data-qplotlywidget-project-pk="{{ layer.project.pk }}"
   data-qplotlywidget-layer-pk="{{ layer.pk }}"
   data-qplotlywidget-list-url="{% url 'qplotly-widget-api-filter-by-layer-id' layer.pk %}"
+  data-widget-count="{% qplotlywidget4layer layer %}"
 >
   <i class="fa fa-area-chart"></i>
-  <span class="label-action-layer">{% qplotlywidget4layer layer %}</span>
 </a>

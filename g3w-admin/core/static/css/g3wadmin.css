@@ -2021,7 +2021,7 @@ h5 small                             { color: #fff; }
 .color-orange:hover                  { color: orangered; opacity: 80%; }
 .color-red                           { color: #bf2d2d; }
 .color-red:hover                     { color: #bf2d2d; opacity: 80%; }
-.label-action-layer                  { display: inline; font-weight: bold; border-radius: 100%; font-size: 8px; padding: 0 3px; vertical-align: text-bottom; background-color: #fff; margin-left: -10px; border: 1px solid currentColor; color: #555; }
+[data-widget-count]:not([data-widget-count="0"]):after{ content: attr(data-widget-count); display: inline; font-weight: bold; border-radius: 100%; font-size: 8px; padding: 0 3px; vertical-align: text-bottom; background-color: #fff; margin-left: -10px; border: 1px solid currentColor; color: #555; }
 
 #qdjango_projects_list table a.project-thumb:hover img { border: 2px solid #ff4500; }
 

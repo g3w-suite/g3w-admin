@@ -163,9 +163,9 @@
                     data-widget-type="geoConstraintsList"
                     data-geoconstraints-layer-pk="{{ object.pk }}"
                     data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}"
+                    data-widget-count="{% geoconstraitnswidget4layer object %}"
                   >
                     <i class="fa fa-object-ungroup"></i>
-                    <span class="label-action-layer">{% geoconstraitnswidget4layer object %}</span>
                   </a>
                 {% endif %}
 
@@ -179,9 +179,9 @@
                     data-widget-type="singlelayerConstraintsList"
                     data-singlelayerconstraints-layer-pk="{{ object.pk }}"
                     data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}"
+                    data-widget-count="{{ object.getConstraintsNumber }}"
                   >
                     <i class="fa fa-filter"></i>
-                    {% if object.getConstraintsNumber > 0 %}<span class="label-action-layer">{{ object.getConstraintsNumber }}</span>{%endif%}
                   </a>
                 {% endif %}
 
@@ -198,9 +198,9 @@
                     data-column-acl-fields-url="{% url 'qdjango-column-acl-api-fields' object.pk %}"
                     data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"
                     data-info-layer-authgroup="{% url 'qdjango-api-info-layer-authgroup' object.pk %}"
+                    data-widget-count="{{ object.getColumnAclNumber }}"
                   >
                     <i class="fa fa-table"></i>
-                    {% if object.getColumnAclNumber > 0 %}<span class="label-action-layer">{{ object.getColumnAclNumber }}</span>{%endif%}
                   </a>
                 {% endif %}
 
@@ -213,9 +213,9 @@
                     title="{% trans 'Widgets list' %}"
                     data-widget-type="detailItemDataTable"
                     data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}"
+                    data-widget-count="{{ object.getWidgetsNumber }}"
                   >
                     <i class="fa fa-cog"></i>
-                    {% if object.getWidgetsNumber > 0 %}<span class="label-action-layer">{{ object.getWidgetsNumber }}</span>{%endif%}
                   </a>
                 {% endif %}
 
@@ -229,9 +229,9 @@
                     data-widget-type="styleManagerList"
                     data-stylemanager-layer-pk="{{ object.pk }}"
                     data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}"
+                    data-widget-count="{{ object.styles_count }}"
                   >
                     <i class="fa fa-paint-brush"></i>
-                    {% if object.styles_count > 0 %}<span class="label-action-layer">{{ object.styles_count }}</span>{%endif%}
                   </a>
                 {% endif %}
 

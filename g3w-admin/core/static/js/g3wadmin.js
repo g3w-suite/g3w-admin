@@ -155,7 +155,7 @@
         sendData(e, method, data, content_type) {
           if (g3wadmin.currentModal) {
             console.warn('[G3W-ADMIN] ga.Qdjango.currentModal is deprecated');
-            $(g3wadmin.Qdjango.widgetEditor).trigger(`onsubmitform:${g3wadmin.Qdjango.widgetEditor.widget.widget_type ?? 'default'}`);
+            $(g3wadmin.Qdjango.widgetEditor).trigger(`onsubmitform:${g3wadmin.Qdjango.widgetEditor?.widget?.widget_type ?? 'default'}`);
             if (![undefined, null].includes(g3wadmin.Qdjango.widgetEditor.onsubmitform_obj)) {
               console.warn(`[G3W-ADMIN] ga.Qdjango.widgetEditor.onsubmitform_obj is deprecated`)
               $("#id_body").val(JSON.stringify(g3wadmin.Qdjango.widgetEditor.onsubmitform_obj));
@@ -173,12 +173,10 @@
                 return;
               }
               if (g3wadmin.currentModal) {
-                this.successAction = (async () => {
-                  g3wadmin.currentModal.hide()
-                  // get row and update widget counter
-                  const $item = g3wadmin.currentModal.data.$evoker.parents("tr").prev().find('[data-widget-type="detailItemDataTable"]');
-                  $item.one('click', () => { $item.click(); }).click();
-                });
+                g3wadmin.currentModal.hide()
+                // get row and update widget counter
+                const $item = g3wadmin.currentModal.data.$evoker.parents("tr").prev().find('[data-widget-type="detailItemDataTable"]');
+                $item.one('click', () => { $item.click(); }).click();
               }
               if (this.successAction) {
                 this.successAction(res);
@@ -512,27 +510,39 @@ globalThis._ = new Proxy({}, {
   },
 });
 
-const glyphicons_css = setInterval(() => {
-  const icon = document.querySelector('.glyphicon');
-  if (icon) {
-    document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' }));
-    ga.widget.showError(`
-<p><b>glyphicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
-<p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a>.</p>
-`);
-    clearInterval(glyphicons_css);
-  }
-}, 1000);
-
-const ionicons_css = setInterval(() => {
-  const icon = document.querySelector('.ion') || document.querySelector('.ionicons');
-  if (icon) {
-    document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://unpkg.com/ionicons@2.0.1/css/ionicons.css' }));
-    ga.widget.showError(`
-<p><b>ionicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
-<p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a> or download appropriate svg icons from <a href="https://ionic.io/ionicons" target="_blank" style="color: currentColor;text-decoration: underline;">here</a>.</p>
-`);
-    clearInterval(ionicons_css);
-  }
-}, 1000);
-
+(function() {
+  const glyphicons_css = setInterval(() => {
+    const icon = document.querySelector('.glyphicon');
+    if (icon) {
+      document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' }));
+      ga.widget.showError(`
+  <p><b>glyphicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+  <p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a>.</p>
+  `);
+      clearInterval(glyphicons_css);
+    }
+  }, 1000);
+  
+  const ionicons_css = setInterval(() => {
+    const icon = document.querySelector('.ion') || document.querySelector('.ionicons');
+    if (icon) {
+      document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://unpkg.com/ionicons@2.0.1/css/ionicons.css' }));
+      ga.widget.showError(`
+  <p><b>ionicons.css</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+  <p>Please migrate your plugins to <a href="https://fontawesome.com/v4/icons/" target="_blank" style="color: currentColor;text-decoration: underline;">Font Awesome</a> or download appropriate svg icons from <a href="https://ionic.io/ionicons" target="_blank" style="color: currentColor;text-decoration: underline;">here</a>.</p>
+  `);
+      clearInterval(ionicons_css);
+    }
+  }, 1000);
+  
+  const label_action_layer = setInterval(() => {
+    const icon = document.querySelector('.label-action-layer');
+    if (icon) {
+      ga.widget.showError(`
+  <p><b>.label-action-layer</b> class has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
+  <p>Please update your plugins in order to use <b>[data-widget-count]</b> attribute instead.</p>
+  `);
+      clearInterval(label_action_layer);
+    }
+  }, 1000);
+})();
