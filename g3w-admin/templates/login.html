@@ -5,11 +5,13 @@
 
 {% block body_content %}
  <main class="login-box">
+
   <div class="login-logo">
     <span class="logo-lg">
       <img src="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{{ SETTINGS.G3WSUITE_LOGIN_LOGO }}{% else %}{% static SETTINGS.G3WSUITE_LOGIN_LOGO %}{% endif %}">
     </span>
-  </div><!-- /.login-logo -->
+  </div>
+
   <div class="login-box-body">
     <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
     {% if form.errors %}
@@ -42,7 +44,9 @@
         <a class="btn btn-info btn-block btn-flat margin-bottom-small" href="{% url 'django_registration_register' %}">{% trans 'Sign up' %}</a>
       {% endif %}
     </form>
-  </div><!-- /.login-box-body -->
+  </div>
+
   <div style="text-align: center; color: grey; margin-top: 10px"><i>{% trans ' Version' %} {{ VERSION }}</i></div>
-</main><!-- /.login-box -->
+
+</main>
 {% endblock %}
