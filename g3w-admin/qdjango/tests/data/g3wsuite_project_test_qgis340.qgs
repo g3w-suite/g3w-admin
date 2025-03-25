@@ -35,22 +35,22 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Rivers" id="rivers20171228095726368" providerKey="ogr" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/rivers.shp">
+    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Rivers" id="rivers20171228095726368" providerKey="ogr" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="./geodata/rivers.shp">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Cities" id="cities10000eu20171228095720113" providerKey="ogr" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/cities10000eu.shp">
+    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Cities" id="cities10000eu20171228095720113" providerKey="ogr" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="./geodata/cities10000eu.shp">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Countries" id="countries_simpl20171228095706310" providerKey="ogr" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/countries.shp">
+    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Countries" id="countries_simpl20171228095706310" providerKey="ogr" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="./geodata/countries.shp">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Dem" id="europa_dem20171228095729169" providerKey="gdal" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/europa_dem.jpg">
+    <layer-tree-layer expanded="1" legend_split_behavior="0" name="Dem" id="europa_dem20171228095729169" providerKey="gdal" checked="Qt::Checked" legend_exp="" patch_size="0,0" source="./geodata/europa_dem.jpg">
       <customproperties>
         <Option/>
       </customproperties>
@@ -426,7 +426,7 @@
         <ymax>69.96666670000000465</ymax>
       </wgs84extent>
       <id>cities10000eu20171228095720113</id>
-      <datasource>/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/cities10000eu.shp</datasource>
+      <datasource>./geodata/cities10000eu.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -782,7 +782,7 @@
       </geometryOptions>
       <legend showLabelLegend="0" type="default-vector"/>
       <referencedLayers>
-        <relation strength="Association" referencedLayer="countries_simpl20171228095706310" layerId="countries_simpl20171228095706310" layerName="Countries" name="countries-citites" id="cities1000_ISO2_CODE_countries__ISOCODE" referencingLayer="cities10000eu20171228095720113" dataSource="/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/countries.shp" providerKey="ogr">
+        <relation strength="Association" referencedLayer="countries_simpl20171228095706310" layerId="countries_simpl20171228095706310" layerName="Countries" name="countries-citites" id="cities1000_ISO2_CODE_countries__ISOCODE" referencingLayer="cities10000eu20171228095720113" dataSource="./geodata/countries.shp" providerKey="ogr">
           <fieldRef referencedField="ISOCODE" referencingField="ISO2_CODE"/>
         </relation>
       </referencedLayers>
@@ -1040,7 +1040,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>81.85736800000000812</ymax>
       </wgs84extent>
       <id>countries_simpl20171228095706310</id>
-      <datasource>/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/countries.shp</datasource>
+      <datasource>./geodata/countries.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -1648,7 +1648,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>75.50836177203473198</ymax>
       </wgs84extent>
       <id>europa_dem20171228095729169</id>
-      <datasource>/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/europa_dem.jpg</datasource>
+      <datasource>./geodata/europa_dem.jpg</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -1854,7 +1854,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>70.43313599999999042</ymax>
       </wgs84extent>
       <id>rivers20171228095726368</id>
-      <datasource>/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/rivers.shp</datasource>
+      <datasource>./geodata/rivers.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -3736,7 +3736,7 @@ def my_form_open(dialog, layer, feature):
           <Option value="png" name="atlasRasterFormat" type="QString"/>
         </Option>
       </customproperties>
-      <Atlas hideCoverage="0" sortFeatures="0" coverageLayer="countries_simpl20171228095706310" pageNameExpression="&quot;ISOCODE&quot;" filterFeatures="1" enabled="1" coverageLayerProvider="ogr" filenamePattern="'output_'||@atlas_featurenumber" coverageLayerName="Countries" featureFilter="" coverageLayerSource="/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/countries.shp"/>
+      <Atlas hideCoverage="0" sortFeatures="0" coverageLayer="countries_simpl20171228095706310" pageNameExpression="&quot;ISOCODE&quot;" filterFeatures="1" enabled="1" coverageLayerProvider="ogr" filenamePattern="'output_'||@atlas_featurenumber" coverageLayerName="Countries" featureFilter="" coverageLayerSource="./geodata/countries.shp"/>
     </Layout>
   </Layouts>
   <mapViewDocks3D/>
@@ -3809,7 +3809,7 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
-  <ProjectGpsSettings autoAddTrackVertices="0" destinationFollowsActiveLayer="1" autoCommitFeatures="0" destinationLayer="rivers20171228095726368" destinationLayerName="Rivers" destinationLayerSource="/data/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/geodata/rivers.shp" destinationLayerProvider="ogr">
+  <ProjectGpsSettings autoAddTrackVertices="0" destinationFollowsActiveLayer="1" autoCommitFeatures="0" destinationLayer="rivers20171228095726368" destinationLayerName="Rivers" destinationLayerSource="./geodata/rivers.shp" destinationLayerProvider="ogr">
     <timeStampFields/>
   </ProjectGpsSettings>
 </qgis>
