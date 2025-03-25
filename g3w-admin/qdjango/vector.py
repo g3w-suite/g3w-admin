@@ -1032,7 +1032,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
-        # If not enpty relation files send a zip file
+        # If not empty relation files send a zip file
         if relation_files:
             filenames = [filename]
             zip_filename = "{}.zip".format(filename)
