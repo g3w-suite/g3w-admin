@@ -267,6 +267,15 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         QgsExpressionFilterBackend,
     )
 
+    # Filter backend to applye for download of relations
+    relations_filter_backends = (
+        SingleLayerSubsetStringConstraintFilter,
+        SingleLayerExpressionConstraintFilter,
+        GeoConstraintsFilter,
+        ColumnAclFilter,
+        SingleLayerSessionTokenFilter,
+    )
+
     ordering_fields = '__all__'
 
     # Modes call available (output formats)
@@ -751,12 +760,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             else:
                 save_options.attributes = qgs_request.subsetOfAttributes()
 
-    def _download_relations(self, fsave_options, mode, tmp_dir):
+    def _download_relations(self, fsave_options, mode, tmp_dir, request):
         """
         Download relations of data: get relations layer with selected features to download
         :param save_options: QgsVectorFileWriter.SaveVectorOptions instance of father layer
         :param mode: mode of download, i.e. 'shp', 'xls', 'gpx', etc..
         :param tmp_dir: temporary directory for files
+        :param request: http request object
         """
 
         files_saved = []
@@ -787,6 +797,10 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                     # Instance a QgsFeatureRequest
                     qgs_request = QgsFeatureRequest()
                     original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+
+                    if hasattr(self, 'relations_filter_backends'):
+                        for backend in self.relations_filter_backends:
+                            backend().apply_filter(request, metadata_relation, qgs_request, self)
 
                     qgs_request.combineFilterExpression("$id IN (%s)" % ','.join(cids))
 
@@ -942,7 +956,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # -----------------------------------------------------------------
         relation_files = []
         if self.download_relations:
-            relation_files = self._download_relations(save_options, 'shp', tmp_dir)
+            relation_files = self._download_relations(save_options, 'shp', tmp_dir, request)
 
 
         # Restore the original subset string and select no features
@@ -1022,7 +1036,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # -----------------------------------------------------------------
         relation_files = []
         if self.download_relations:
-            relation_files = self._download_relations(save_options, 'gpx', tmp_dir)
+            relation_files = self._download_relations(save_options, 'gpx', tmp_dir, request)
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
@@ -1094,7 +1108,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # -----------------------------------------------------------------
         relation_files = []
         if self.download_relations:
-            relation_files = self._download_relations(save_options, 'xls', tmp_dir)
+            relation_files = self._download_relations(save_options, 'xls', tmp_dir, request)
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
@@ -1166,7 +1180,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # -----------------------------------------------------------------
         relation_files = []
         if self.download_relations:
-            relation_files = self._download_relations(save_options, 'gpkg', tmp_dir)
+            relation_files = self._download_relations(save_options, 'gpkg', tmp_dir, request)
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
@@ -1239,7 +1253,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # -----------------------------------------------------------------
         relation_files = []
         if self.download_relations:
-            relation_files = self._download_relations(save_options, 'gpkg', tmp_dir)
+            relation_files = self._download_relations(save_options, 'gpkg', tmp_dir, request)
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
