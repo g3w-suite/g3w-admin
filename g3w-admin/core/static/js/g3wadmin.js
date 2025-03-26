@@ -482,7 +482,7 @@
   const $on = $.fn.on;
   $.fn.on = function(...args) {
     const event = args[0];
-    if (event.match(/ifClicked|ifChanged|ifChecked|ifUnchecked|ifToggled|ifDisabled|ifEnabled|ifIndeterminate|ifDeterminate|ifCreated|ifDestroyed/)) {
+    if (`${event}`.match(/ifClicked|ifChanged|ifChecked|ifUnchecked|ifToggled|ifDisabled|ifEnabled|ifIndeterminate|ifDeterminate|ifCreated|ifDestroyed/)) {
       ga.widget.showError(`
 <p><b>icheck.js</b> has been removed from core since: <b>G3W-ADMIN v4.0</b></p>
 <p>Please update your plugins in order to use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="checkbox"]</a> or <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio" target="_blank" style="color: currentColor;text-decoration: underline;">input[type="radio"]</a></b> instead.</p>
