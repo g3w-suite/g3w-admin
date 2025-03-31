@@ -10,6 +10,7 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2020-02-10'
 __copyright__ = 'Copyright 2020, Gis3w'
 
+from django.contrib.gis.geos import GEOSGeometry, GEOSException
 import json
 from qgis.core import (
     QgsCoordinateReferenceSystem,
@@ -19,6 +20,7 @@ from qgis.core import (
     QgsCoordinateTransformContext,
     QgsExpressionContextUtils,
     QgsJsonUtils,
+    QgsGeometry
 )
 from rest_framework.exceptions import ParseError
 from urllib.parse import unquote
@@ -437,4 +439,88 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
 
                 except:
                     raise Exception("Layer or project could not be found!")
+
+
+class WKTPolyFilter(BaseFilterBackend):
+    """
+    A REST API filter for filter data by WKT geometry (Polygon/MultiPolygon) with intersects/contains method
+    """
+
+    def _get_wkt_from_request(self, request_data):
+        """Get WKT from request and validate it
+
+        :param request_data: request data
+        :type request_data: dict
+        :raises ParseError: parse error
+        :return: wkt string, comparison method (intersects, contains)
+        :rtype: str, str
+        """
+
+        # Check for geo_filter_wkt
+        wkt = request_data.get('geo_filter_wkt')
+
+        if not wkt:
+            return None, None
+
+        # Check for Comparison method
+        comp_method = request_data.get('geo_filter_mode')
+
+        if not comp_method:
+
+            # Default method
+            comp_method = 'intersects'
+
+        else:
+            if comp_method not in ('intersects, contains'):
+                raise ParseError("'geo_filter_mode' must be one of ('intersects', 'contains')")
+
+        # Validate WKT
+        # ---------------------------------------
+        err_msg = 'The WKT geometry is not valid'
+        try:
+            geometry = GEOSGeometry(wkt)
+
+            # Check topology of the geometry
+            if not geometry.valid:
+                raise ParseError(err_msg)
+
+        except (GEOSException, ValueError) as e:
+            raise ParseError(f"{err_msg}: {e}")
+
+        return wkt, comp_method
+
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
+
+        # only for layer with geometry
+        if not qgis_layer.isSpatial():
+            return
+
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        wkt, comp_method = self._get_wkt_from_request(request_data)
+
+        if wkt:
+
+            # Check if necessary reproject
+            if hasattr(view, 'reproject') and view.reproject:
+
+                geom = QgsGeometry.fromWkt(wkt)
+                from_srid = view.layer.project.group.srid.auth_srid
+                to_srid = view.layer.srid
+                ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(
+                    from_srid), QgsCoordinateReferenceSystem(to_srid), QgsCoordinateTransformContext())
+                geom.transform(ct)
+
+                # Restore to WKT
+                wkt = geom.asWkt()
+
+            # Build expression string
+            expression = f"{comp_method}(geom_from_wkt('{wkt}'), $geometry)"
+
+            qgis_feature_request.combineFilterExpression(expression)
 
