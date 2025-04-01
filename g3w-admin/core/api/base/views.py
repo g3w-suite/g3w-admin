@@ -516,6 +516,7 @@ class BaseVectorApiView(G3WAPIView):
                 self.request_data.get('fformatter'))
 
             qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
+            qfield = self.metadata_layer.qgis_layer.fields()[qfieldidx]
             r_qfieldidx = qfieldidx
             qlayer = self.metadata_layer.qgis_layer
             qfeatures = self.features
@@ -621,7 +622,18 @@ class BaseVectorApiView(G3WAPIView):
                 and 'ordering' in self.request_data
                 and self.request_data['fformatter'] in self.request_data['ordering']):
                 rev = True if self.request_data['ordering'].startswith('-') else False
-                values.sort(reverse=rev, key=lambda e: (e[1] is None, e[1]))
+
+                kl = lambda e: (e[1] is None, e[1])
+                is_numeric = qfield.type() in (2, 4, 6)
+                if is_numeric:
+
+                    # Case float, reals
+                    if qfield.type() in (4, 6):
+                        kl = lambda e: (e[1] is None, float(e[1]))
+                    else:
+                        kl = lambda e: (e[1] is None, int(e[1]))
+
+                values.sort(reverse=rev, key=kl)
             else:
                 values.sort()
             self.results.update({
