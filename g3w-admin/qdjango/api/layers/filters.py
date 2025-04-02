@@ -13,8 +13,6 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 import logging
 
-from kombu.transport.sqlalchemy import metadata
-
 from core.api.filters import BaseFilterBackend
 from core.utils.qgisapi import get_qgs_project, expression_from_server_fids
 from django.conf import settings
