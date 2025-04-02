@@ -208,7 +208,8 @@ class QGISLayerVectorViewMixin(object):
         self.metadata_layer = MetadataVectorLayer(
             qgis_layer,
             self.layer.origname,
-            layer_id=self.layer.pk
+            layer_id=self.layer.pk,
+            layer=self.layer
         )
 
 
@@ -267,7 +268,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         QgsExpressionFilterBackend,
     )
 
-    # Filter backend to applye for download of relations
+    # Filter backend to apply  for download of relations
     relations_filter_backends = (
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,

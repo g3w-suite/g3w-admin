@@ -13,6 +13,8 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 import logging
 
+from kombu.transport.sqlalchemy import metadata
+
 from core.api.filters import BaseFilterBackend
 from core.utils.qgisapi import get_qgs_project, expression_from_server_fids
 from django.conf import settings
@@ -135,8 +137,6 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        qgis_layer = metadata_layer.qgis_layer
-
         if request.method == 'POST':
             request_data = request.data
         else:
@@ -149,7 +149,7 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
 
         try:
             expression_text = SessionTokenFilter.get_expr_for_token(
-                filtertoken, view.layer)
+                filtertoken, metadata_layer.layer)
         except Exception:
             return
 
@@ -170,15 +170,9 @@ class ColumnAclFilter(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        if request.method == 'POST':
-            request_data = request.data
-        else:
-            request_data = request.query_params
-
         try:
-            layer = Layer.objects.get(pk=metadata_layer.layer_id)
-            if layer.has_column_acl:
-                visible_attributes = layer.visible_fields_for_user(request.user)
+            if metadata_layer.layer.has_column_acl:
+                visible_attributes = metadata_layer.layer.visible_fields_for_user(request.user)
                 subset = qgis_feature_request.subsetOfAttributes()
                 # We need attribute index here
                 attr_idx = []
