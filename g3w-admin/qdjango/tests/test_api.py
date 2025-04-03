@@ -65,11 +65,13 @@ import os
 import zipfile
 import base64
 from io import BytesIO
+import csv
 
 
 QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
 QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE = 'test_temporal_vector_layer_316_not_active.qgs'
 QGS_FILE_CASCADE_AUTORELATION = 'cascade_autorelation_334.qgs'
+QGIS_FILE_DOWNLOAD_WITH_RELATIONS = "g3wsuite_project_test_qgis340.qgs"
 
 # Temporal raster layer wmst
 QGS_FILE_WMST = 'test_WMST.qgs'
@@ -2460,6 +2462,128 @@ class TestVectorApiConfigCrossRelation(QdjangoTestBase):
 
         self.client.logout()
 
+class TestVectorApiDataDownloadWithRelations(QdjangoTestBase):
+    """
+    Test /vector/api/data download with relations
+    """
+
+    def setUp(self):
+
+        self.group_with_relations = CoreGroup(name='GroupDownWithRelation4326', title='GroupDownWithRelation4326',
+                                                header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+        self.group_with_relations.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_DOWNLOAD_WITH_RELATIONS), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_down_with_relations = QgisProject(qgis_project_file)
+        self.project_down_with_relations.group = self.group_with_relations
+        self.project_down_with_relations.save()
+        qgis_project_file.close()
+
+    def test_vector_api_download(self):
+        """
+        Test Download api
+        """
+
+        countries = self.project_down_with_relations.instance.layer_set.get(
+            qgs_layer_id='countries_simpl20171228095706310')
+        cities = self.project_down_with_relations.instance.layer_set.get(
+            qgs_layer_id='cities10000eu20171228095720113')
+
+        # Activate download
+        countries.download = True
+        countries.download_csv = True
+        countries.download_gpkg = True
+        countries.save()
+
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+
+        url = reverse(
+            'core-vector-api',
+            kwargs={
+                'mode_call': 'shp',
+                'project_type': 'qdjango',
+                'project_id': self.project_down_with_relations.instance.id,
+                'layer_name': countries.qgs_layer_id
+            }
+        )
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+
+        # Download with relations
+        # ------------------------
+
+        # No file in relations because no download is active fore relations layer (cities)
+        url += '?down_with_relations=1'
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        self.assertTrue(len(os.listdir(temp.path())), 4)
+
+        # Active download also for relations layer
+        cities.download = True
+        cities.download_csv = True
+        cities.save()
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        self.assertTrue(len(os.listdir(temp.path())), 8)
+
+        # Inactive download for shp, aspect export as .csv
+        cities.download = False
+        cities.save()
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+
+        files_list = os.listdir(temp.path())
+        self.assertTrue(len(files_list), 5)
+        self.assertTrue('Cities.csv' in files_list)
+
+        url += "&field=ISOCODE|eq|IT"
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+
+        files_list = os.listdir(temp.path())
+        self.assertTrue(len(files_list), 5)
+        self.assertTrue('Cities.csv' in files_list)
+
+        with open(f"{temp.path()}/Cities.csv", mode="r", encoding="utf-8") as file:
+            reader = csv.reader(file)
+            total_rows = sum(1 for _ in reader)
+
+        # 1124 + header
+        self.assertEqual(total_rows, 1125)
+
+        self.client.logout()
+
 class TestVectorApiGeoFilter(QdjangoTestBase):
     """ Test /vector/api/config with geo filter
         Test geo_filter_wkt and geo_fitler_mode parameters
@@ -2611,6 +2735,5 @@ class TestVectorApiGeoFilter(QdjangoTestBase):
         jres = json.loads(res.content)
 
         self.assertEqual(len(jres['vector']['data']['features']), 19)
-
 
         self.client.logout()
