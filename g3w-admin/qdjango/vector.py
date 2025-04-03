@@ -35,7 +35,8 @@ from core.api.filters import (
     SearchFilter,
     SuggestFilterBackend,
     FieldFilterBackend,
-    QgsExpressionFilterBackend
+    QgsExpressionFilterBackend,
+    WKTPolyFilter
 )
 from core.api.permissions import ProjectPermission
 
@@ -266,6 +267,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         SingleLayerSessionTokenFilter,
         ColumnAclFilter,
         QgsExpressionFilterBackend,
+        WKTPolyFilter
     )
 
     # Filter backend to apply  for download of relations
