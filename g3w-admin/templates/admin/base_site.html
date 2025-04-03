@@ -6,3 +6,124 @@
   <img src="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{{ SETTINGS.G3WSUITE_MAIN_LOGO }}{% else %}{% static SETTINGS.G3WSUITE_MAIN_LOGO %}{% endif %}"></span>
 </a>
 {% endblock %}
+
+{% block extrahead %}
+<script>localStorage.setItem('theme', 'light');</script>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+:root[data-theme="light"] {
+  --primary: #00a65a;
+  --header-bg: var(--primary);
+  --link-fg: #3c8dbc;
+  --breadcrumbs-bg: #fff;
+  --breadcrumbs-fg: #777;
+  --breadcrumbs-link-fg: var(--link-fg);
+  --body-bg: #ecf0f5;
+  --default-button-bg: #e7e7e7;
+  --default-button-hover-bg: #adadad;
+  --button-hover-bg:#008d4c;
+  font-size: 18px;
+}
+
+:root[data-theme="light"] .default {
+  --button-fg: #333;
+}
+
+:root[data-theme="light"] .module {
+  --body-bg: #fff;
+}
+
+:root[data-theme="light"] #content .module {
+  --body-bg: rgb(255,255,255, .25);
+}
+
+:root[data-theme="light"] #nav-sidebar .module .addlink,
+:root[data-theme="light"] .dashboard #main .module .addlink {
+  display: none;
+}
+
+:root[data-theme="light"] .object-tools a {
+  border-radius: 0;
+  color: black;
+  background: white;
+  border: thin solid;
+  padding: 3px 10px;
+  font-weight: 600;
+}
+
+:root[data-theme="light"] .object-tools a.addlink:after {
+  content: '+';
+  font-size: 1.5em;
+}
+
+:root[data-theme="light"] :is(.button, input, button, select, a) {
+  border-radius: 0;
+}
+
+:root[data-theme="light"] :is(#toolbar,#changelist) :is(input, button, .button, select) {
+  background: white; 
+  color: black;
+  font-weight: 600;
+  box-shadow: none;
+  border-radius: 0;
+  border: thin solid;
+}
+
+:root[data-theme="light"] .breadcrumbs {
+  border-bottom: 1px solid #d2d6de;
+}
+
+:root[data-theme="light"] #toggle-nav-sidebar {
+  display: none;
+}
+
+:root[data-theme="light"] #nav-sidebar .module {
+  margin: 0;
+}
+
+:root[data-theme="light"] #nav-filter {
+  font-size: 1rem;
+  margin: .5rem;
+  width: calc(100% - 1em);
+  margin: .5em;
+}
+
+:root[data-theme="light"] #nav-sidebar .module caption {
+  position: sticky;
+  top: 0;
+}
+
+:root[data-theme="light"] #nav-sidebar {
+  top: 50px;
+}
+
+:root[data-theme="light"] .form-row img {
+  width: 20px;
+}
+
+:root[data-theme="light"] #header {
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 15px;
+  height: 50px;
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1;
+}
+
+:root[data-theme="light"] #header + * {
+  margin-top: 50px;
+}
+
+:root[data-theme="light"] #user-tools {
+  display: flex;
+  gap: 0 3px;
+}
+
+:root[data-theme="light"] #header .logo {
+  margin: 9px 0 0 12px;
+}
+</style>
+{% endblock %}

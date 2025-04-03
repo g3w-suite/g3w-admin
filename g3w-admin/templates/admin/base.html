@@ -6,7 +6,10 @@
   <br><br>
   {% url 'django-admindocs-docroot' as docsroot %}
   {% if site_url %}
-    <a href="{% url 'home' %}" title="Go back to g3w-admin dashboard">{% trans 'G3W-ADMIN' %}</a>
+    <a href="{% url 'home' %}" title="Go back to g3w-admin dashboard" style="position: fixed;inset: 60px 10px auto auto;color: var(--link-fg);text-transform: capitalize;font-weight: 600;">
+      <b style="transform: rotate(180deg) translate(-1px, -3px);display: inline-block;">➜</b>
+      {% trans 'Dashboard' %}
+    </a>
   {% endif %}
   {% if docsroot and user.is_active and user.is_staff %}
     / <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>

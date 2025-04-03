@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block page_header %}
+<h1>{% trans 'Userscripts' %}</h1>
+{% endblock %}
+
+{% block main_content %}
+  <a href="{% url 'userscripts:add' %}" class="btn btn-warning" onclick="add_script(event);">
+    <i class="fa fa-plus-circle"></i>
+    Userscript
+  </a>
+  <table class="table" data-widget-type="dataTable" data-order='[[1, "asc"]]'>
+    <thead>
+      <tr>
+        <th style="width:50px">{% trans 'Actions' %}</th>
+        <th>{% trans 'Name' %}</th>
+        <th>{% trans 'Description' %}</th>
+        <th style="width:50px">{% trans 'Scope' %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for script in scripts %}
+        <tr id="userscript_{{ script.pk }}">
+          <td style="display: flex;  justify-content: space-between;">
+            <a
+              href="{% url 'userscripts:toggle' pk=script.pk %}"
+              data-toggle="tooltip"
+              title="{% if script.is_active %}{% trans 'Deactivate' %}{% else %}{% trans 'Activate' %}{% endif %}"
+            >
+              <i class="fa fa-lg {% if script.is_active %}fa-toggle-on{% else %}fa-toggle-off{% endif %}"></i>
+            </a>
+            <a
+              href="{% url 'userscripts:export' pk=script.pk %}"
+              data-toggle="tooltip"
+              title="{% trans 'Export' %}"
+            >
+              <i class="fa fa-lg fa-download"></i>
+            </a>
+            <a
+              href="#"
+              data-toggle="tooltip"
+              title="{% trans 'Delete' %}"
+              data-widget-type="deleteItem"
+              data-delete-url="{% url 'userscripts:delete' pk=script.pk %}"
+              data-item-selector="#userscript_{{ script.pk }}"
+            >
+              <i class="fa fa-lg fa-trash" style="color:red"></i>
+            </a>
+          </td>
+          <td>
+            <a
+              href="{% url 'userscripts:update' pk=script.pk %}"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="{% trans 'Edit' %}"
+            >
+              <i class="fa {% if script.type == 'css' %}fa-paint-brush{% elif script.type == 'xml' %}fa-file-text-o{% else %}fa-code{% endif %}" style="margin-right: .5em;"></i>
+              <b>{{ script.name }}</b>
+            </a>
+          </td>
+          <td>{{ script.description }}</td>
+          <td>
+            {% if script.match == '.*' %}
+              <i class="fa fa-globe" data-toggle="tooltip" title="{% trans 'Everywhere' %}"></i>
+            {% elif script.match == '^/([a-z]{2})/admin/?' %}
+              <i class="fa fa-dashboard" data-toggle="tooltip" title="{% trans 'Admin only' %}"></i>
+            {% elif script.match == '^/([a-z]{2})/map/?' %}
+              <i class="fa fa-map" data-toggle="tooltip" title="{% trans 'Map only' %}"></i>
+            {% elif script.match == '^/([a-z]{2})/(?!map|admin)/?' %}
+              <i class="fa fa-user" data-toggle="tooltip" title="{% trans 'Frontend only' %}"></i>
+            {% else %}
+              <i class="fa fa-wrench" data-toggle="tooltip" title="{% trans 'Custom regex' %}: {{ script.match }}"></i>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    <tbody>
+  </table>
+  <form id="exportAllForm" action="{% url 'userscripts:export_all' %}" method="get" style="display:inline;">
+    <button type="submit" class="btn btn-info">
+      <i class="fa fa-download"></i> {% trans 'Export' %}
+    </button>
+  </form>
+  <form id="import_script_form" action="{% url 'userscripts:import' %}" method="post" enctype="multipart/form-data" style="display:inline;">
+    {% csrf_token %}
+    <label class="btn btn-info">
+      <input 
+        type="file" 
+        name="file" 
+        accept=".yaml" 
+        required 
+        onchange="import_script();" 
+        style="display: none;"
+      >
+      <i class="fa fa-upload"></i> {% trans 'Import' %}
+    </label>
+  </form>
+
+  <script>
+    async function add_script(e) {
+      e.preventDefault();
+      try {
+
+        const dialog = Object.assign(document.createElement('template'), {
+          innerHTML: /* html */`
+            <dialog>
+              <form method="dialog">
+                <label for="template_name" style="font-size: 1.25em;">{% trans 'Start from template' %}</label>
+                <select name="template_name" class="form-control" style="margin-bottom: 1em;">
+                  <option value="blank">{% trans 'Default' %}</option>
+                  ${
+                    Object
+                      .entries((await (await fetch("{% url 'userscripts:fixtures' %}")).json())
+                      .fixtures
+                      .reduce((acc, f) => (acc[f.substring(0, f.lastIndexOf('-'))] = [...(acc[f.substring(0, f.lastIndexOf('-'))] || []), f], acc), {}))
+                      .map(([prefix, fixtures]) => `<optgroup label="${prefix}">${fixtures.map(f => `<option value="${f}">${f.split('-').pop().replace('.yaml', '').replaceAll('_', ' ').replace(/^./, (char) => char.toUpperCase())}</option>`).join('')}</optgroup>`)
+                      .join('')
+                  }
+                </select>
+                <pre hidden style="margin-top: 1em;" contenteditable></pre>
+                <menu style="display: flex;justify-content: space-between;">
+                  <button type="submit" value="cancel" class="btn btn-secondary">{% trans 'Cancel' %}</button>
+                  <button type="submit" value="start" class="btn btn-success">{% trans 'Confirm' %}</button>
+                </menu>
+              </form>
+            </dialog>
+          `.trim()
+        }).content.firstChild;
+
+        const select = dialog.querySelector('select');
+        const preview = dialog.querySelector('pre');
+
+        // preview script
+        select.addEventListener('change', async () => {
+          const selectedValue = select.value;
+          if (select.value !== 'blank') {
+            try {
+              preview.textContent = (await (await fetch(`{% url 'userscripts:fixtures' %}?fixture=${select.value}`)).text()).replace(/name:\s*".*?"/, `name: "${select.value.split('.').slice(0, -1).join('.')}_${new Date().toISOString().replace(/[-:.TZ]/g, '')}"`);
+            } catch (e) {
+              console.error('Error fetching fixture content:', e);
+              preview.textContent = 'Error loading fixture content.';
+            }
+          } else {
+            preview.textContent = '';
+          }
+          preview.hidden = !preview.textContent;
+        });
+  
+        dialog.addEventListener('close', async () => {
+          const action = dialog.returnValue;
+          if ('start' === action) {
+            if ('blank' === select.value) {
+              window.location.href = "{% url 'userscripts:add' %}";
+            } else if (select.value) {
+              try {
+                // Retrieve the selected fixture content from the server and import it as a normal user would do
+                const body = new FormData();
+                body.append('file', new Blob([preview.textContent], { type: 'application/x-yaml' }));
+                body.append('script_name', preview.textContent.match(/name:\s*"([^"]+)"/)[1]); // get script_name from preview content
+                const response = await import_script(body, false);
+                if (response && response.success && response.script_id) {
+                  window.location.href = `{% url 'userscripts:update' pk=0 %}`.replace('0', response.script_id);
+                }
+              } catch (error) {
+                console.error('Error retrieving or importing script:', error);
+              }
+            }
+          }
+          dialog.remove();
+        });
+
+        document.body.appendChild(dialog);
+        dialog.showModal();
+      } catch (error) {
+        console.error('Error fetching fixtures:', error);
+      }
+    }
+    async function import_script(body, force_redirect=true) {
+      const form = document.getElementById('import_script_form');
+      body = body || new FormData(form);
+      try {
+        const response = await fetch("{% url 'userscripts:import' %}", {
+          method: 'POST',
+          headers: { 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value },
+          body,
+        });
+        const data = await response.json();
+
+        if (!data.conflict) {
+          if (force_redirect) {
+            window.location.reload();
+          }
+          return data; // Return the response data
+        }
+
+        let dialog;
+
+        // Create replace dialog dynamically
+        dialog = Object.assign(document.createElement('template'), {
+          innerHTML: /* html */`
+            <dialog>
+              <form method="dialog">
+                <p style="font-size: 1.25em;">
+                  ${gettext('<b>"%s"</b> script already exists.').replace('%s', data.conflict)}
+                </p>
+                <menu style="display: flex;justify-content: space-between;">
+                  <button value="replace" class="btn btn-danger">{% trans 'Replace existing' %}</button>
+                  <button value="rename" class="btn btn-success">{% trans 'Use a different name' %}</button>
+                </menu>
+              </form>
+            </dialog>
+          `.trim()
+        }).content.firstChild;
+        document.body.appendChild(dialog);
+        dialog.showModal();
+        const action = await new Promise(resolve => dialog.addEventListener('close', () => {
+          resolve(dialog.returnValue);
+          dialog.remove();
+        }));
+
+        if ('replace' === action) {
+          body.set('script_name', data.conflict);
+          return await import_script(body);
+        } else if ('rename' === action) {
+          // Create rename dialog dynamically
+          dialog = Object.assign(document.createElement('template'), {
+            innerHTML: /* html */`
+            <dialog>
+              <form method="dialog">
+                <label>
+                  {% trans 'Provide a new name for the script:' %}
+                  <input 
+                    name="script_name" 
+                    type="text" 
+                    value="${data.conflict}" 
+                    style="display: block;margin: 1em 0;width: 100%;padding: .5em 0; font-weight: normal;"
+                    required
+                  >
+                </label>
+                <button value="confirm" class="btn btn-block btn-success">{% trans 'OK' %}</button>
+              </form>
+            </dialog>
+            `.trim()
+          }).content.firstChild;
+          document.body.appendChild(dialog);
+          dialog.showModal();
+
+          // Move keyboard cursor to the end
+          const input = dialog.querySelector('[name=script_name]');
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+
+          const script_name = await new Promise(resolve => dialog.addEventListener('close', () => {
+            resolve(dialog.returnValue === 'confirm' ? input.value : null);
+            dialog.remove();
+          }));
+
+          // Use a different file name
+          if (script_name) {
+            body.set('script_name', script_name);
+            return await import_script(body);
+          }
+        }
+      } catch (e) {
+        console.error('Error:', e);
+      }
+    }
+  </script>
+{% endblock %}

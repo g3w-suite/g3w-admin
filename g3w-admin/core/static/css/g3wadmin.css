@@ -94,6 +94,14 @@ textarea              { overflow: auto; }
 optgroup              { font-weight: bold; }
 table                 { border-spacing: 0; border-collapse: collapse; }
 td, th                { padding: 0; }
+dialog                { border-width: thin; animation: slide-down 0.3s ease-out; min-width: min(50vw, 350px); }
+dialog::backdrop      { backdrop-filter: blur(1px); }
+dialog menu           { padding: 0; }
+dialog > form > menu  { background: #fff; position:sticky; bottom:0; margin: 0; padding: 10px 0; }
+dialog:has(> form)    { padding: 0; }
+dialog form           { padding: 14px; }
+
+@keyframes slide-down { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 *                               { box-sizing: border-box; }
 *:before, *:after               { box-sizing: border-box; }

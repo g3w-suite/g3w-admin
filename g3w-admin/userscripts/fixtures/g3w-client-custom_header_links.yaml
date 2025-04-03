@@ -1,0 +1,45 @@
+- model: userscripts.userscript
+  fields:
+    name: "Custom header links"
+    type: "js"
+    description: "A custom JS snippet for adding header links."
+    match: ^/([a-z]{2})/map/?
+    run_at: "body_end"
+    code: |
+      (function() {
+        // custom header links
+        window.initConfig.header_custom_links = [
+          // modal button (icon + i18n)
+          {
+            "i18n":   true,
+            "icon":   "fas fa-plus",
+            "title":  "mapcontrols.add_layer_control.header",
+            "type":   "modal",
+            "target": "#modal-addlayer",
+          },
+          // modal button (icon + i18n)
+          {
+            "i18n":   true,
+            "icon":   "fas fa-window-maximize",
+            "title":  "changemap",
+            "type":   "modal",
+            "target": "#modal-changemap",
+          },
+          // external link (with visible text)
+          {
+            "i18n":   false,
+            "text":   "<i class='fas fa-bug'></i> <span hidden>Create a new issue</span>",
+            "title":  "Report a bug",
+            "url":    "https://github.com/g3w-suite",
+            "target": "_blank",
+          },
+          // custom content (image + modal)
+          {
+            "i18n":    false,
+            "title":   'Forecast',
+            "img":     'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>',
+            "content": '<iframe src="https://www.3bmeteo.com/moduli_esterni/italia_7_giorni/ffffff/fc9b2a/5e5e5e/ffffff/it" style="width: 100%;min-height: 655px;border: none;"></iframe>',
+            "type":    'modal'
+          }
+        ];
+      })();

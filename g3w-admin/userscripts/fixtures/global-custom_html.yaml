@@ -1,0 +1,7 @@
+- model: userscripts.userscript
+  fields:
+    name: "Custom HTML"
+    type: "xml"
+    description: "A custom HTML snippet globally applied."
+    match: .*
+    run_at: "body_end"

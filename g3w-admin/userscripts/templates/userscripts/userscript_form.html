@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+{% load g3wadmin_tags %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block page_header %}
+<h1>{% trans 'Userscript' %}</h1>
+{% endblock %}
+
+{% block main_content %}
+<form method="post" id="userscript-form">
+  {% if form.errors %}
+    <div class="alert alert-danger alert-dismissable">
+      <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+      {% trans 'Some errors on form. Check it and send again.' %}
+    </div>
+  {% endif %}
+  {% csrf_token %}
+  {{ form|crispy }}
+  {% g3wadmin_add_button_form %}
+</form>
+
+<script>
+(async () => {
+  const getMode = type => `text/${({ js: 'javascript' })[type.value] || type.value}`;
+  const type = document.getElementById('id_type');
+  const code = document.getElementById('id_code');
+  const match = document.getElementById('id_match');
+  const run_at = document.getElementById('id_run_at');
+
+  match.disabled = true;
+
+  document.querySelector('label[for="id_match"]').style.display = 'none';
+  document.getElementById('div_id_match').insertAdjacentHTML('beforebegin', /* html */ `
+    <div>
+      <label>{% trans 'Scope' %}</label><br>
+      <label>
+        <input type="radio" name="match_scope" value=".*" checked>
+        {% trans 'Everywhere' %}
+      </label><br>
+      <label>
+        <input type="radio" name="match_scope" value="^/([a-z]{2})/admin/?">
+        {% trans 'Admin only' %}
+      </label><br>
+      <label>
+        <input type="radio" name="match_scope" value="^/([a-z]{2})/map/?">
+        {% trans 'Map only' %}
+      </label><br>
+      <label>
+        <input type="radio" name="match_scope" value="^/([a-z]{2})/(?!map|admin)/?">
+        {% trans 'Frontend only' %}
+      </label><br>
+      <label>
+        <input type="radio" name="match_scope">
+        {% trans 'Custom regex' %}
+      </label>
+    </div>
+  `);
+
+  document.querySelectorAll('input[name="match_scope"]').forEach(radio => {
+    radio.addEventListener('change', e => {
+      match.disabled = 'on' !== e.target.value;
+      match.value = match.disabled ? e.target.value : match.value;
+    });
+    radio.checked = (radio.value == match.value);
+  });
+
+  // Ensure match field is sent to server before form submission
+  document.getElementById('userscript-form').addEventListener('submit', () => {
+    match.disabled = false;
+  });
+
+  // Dynamically load CodeMirror resources
+  document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: "{% static 'userscripts/codemirror.css' %}"}));
+  document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: "{% static 'userscripts/themes/monokai.css' %}"}));
+  document.head.insertAdjacentHTML('beforeend', /* html */ `<style>.CodeMirror { border: 1px solid #eee; height: auto; }</style>`);
+  
+  await import ("{% static 'userscripts/codemirror.js' %}");
+  await import ("{% static 'userscripts/modes/javascript.js' %}");
+  await import ("{% static 'userscripts/modes/css.js' %}");
+  await import ("{% static 'userscripts/modes/xml.js' %}");
+
+  const editor = CodeMirror.fromTextArea(code, { lineNumbers: true, theme: 'monokai', mode: getMode(type), });
+  type.addEventListener('change', () => {
+    editor.setOption('mode', getMode(type));
+    if (type.value === 'css') {
+      run_at.value = 'head_end';
+    } else if (type.value === 'js') {
+      run_at.value = 'body_end';
+    }
+  });
+})();
+
+// Submit form on "CTRL+S"
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && 's' === e.key.toLowerCase()) {
+    e.preventDefault();
+    document.getElementById('userscript-form').submit();
+  }
+});
+</script>
+
+{% endblock %}

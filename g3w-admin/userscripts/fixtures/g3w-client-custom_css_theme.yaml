@@ -1,0 +1,35 @@
+- model: userscripts.userscript
+  fields:
+    name: "Custom G3W-CLIENT theme (v4.0.0)"
+    type: "css"
+    description: "A custom CSS theme for G3W-CLIENT version 4.0.0."
+    match: ^/([a-z]{2})/map/?
+    run_at: "head_end"
+    code: |
+      /* Custom G3W-CLIENT theme (v4.0.0) */
+
+      :root {
+        --skin-color: red;
+      }
+
+      .main-sidebar {
+        --bgcolor: #eee;
+        border-right: 1px solid #d6d6d6;
+      }
+
+      .main-sidebar *:not(legend) {
+        color: initial !important;
+      }
+
+      .sidebar-aside-toggle {
+        --bgcolor: #555;
+      }
+
+      .main-sidebar .panel-button.fa-circle {
+        display: none;
+      }
+
+      .ol-scale-line-inner {
+        color: #fff;
+        border-color: hsl(from currentColor h s l / 80%);
+      }
