@@ -585,7 +585,8 @@ class CoreApiTest(CoreTestBase):
         """ Test for interface ows view """
 
         url = reverse('interface-ows')
-        ows_url = 'http://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto'
+        ows_url = 'http://www502.regione.toscana.it/ows2/com.rt.wms.RTmap/wms?map=owsedificato'
+
 
         # Only post method is available
         res = self.client.get(url)
@@ -628,14 +629,18 @@ class CoreApiTest(CoreTestBase):
         jres = json.loads(res.content)
 
         self.assertTrue(jres['result'])
-        self.assertEqual('Geoscopio_wms catasto'.lower(), jres['title'].lower())
+        self.assertEqual('Geoscopio_wms edificato'.lower(), jres['title'].lower())
         self.assertTrue('GetMap' in jres['methods'] and 'GetFeatureInfo' in jres['methods'] and 'GetCapabilities' in jres['methods'])
         self.assertTrue('image/png' in jres['methods']['GetMap']['formats'])
-        self.assertEqual(jres["methods"]["GetMap"]["urls"],[{'type': 'Get', 'url': 'https://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto&'}, {'type': 'Post', 'url': 'https://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto&'}])
+        self.assertEqual(jres["methods"]["GetMap"]["urls"],
+                 [
+                    {'type': 'Get', 'url': 'https://www502.regione.toscana.it/ows2/com.rt.wms.RTmap/wms?map=owsedificato&map_resolution=91&'},
+                    {'type': 'Post', 'url': 'https://www502.regione.toscana.it/ows2/com.rt.wms.RTmap/wms?map=owsedificato&map_resolution=91&'}
+                 ])
         self.assertTrue('text/html' in jres['methods']['GetFeatureInfo']['formats'])
-        self.assertEqual(len(jres['layers']), 21)
+        self.assertEqual(len(jres['layers']), 9)
 
-        self.assertEqual(jres['layers'][1]['title'].lower(), 'Acque - AdT Catasto Terreni'.lower())
+        self.assertEqual(jres['layers'][1]['title'].lower(), 'unita volumetriche')
         self.assertEqual(len(jres['layers'][1]['crss']), 20)
 
 

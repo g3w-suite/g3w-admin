@@ -128,7 +128,8 @@ class QplotlyFactoring(PlotFactory):
             self.metadata_layer = MetadataVectorLayer(
                 self.source_layer,
                 self.layer.origname,
-                layer_id=self.layer.pk
+                layer_id=self.layer.pk,
+                layer=self.layer
             )
 
         if not self.context_generator:

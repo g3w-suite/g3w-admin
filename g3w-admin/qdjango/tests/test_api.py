@@ -53,11 +53,13 @@ import os
 import zipfile
 import base64
 from io import BytesIO
+import csv
 
 
 QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
 QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE = 'test_temporal_vector_layer_316_not_active.qgs'
 QGS_FILE_CASCADE_AUTORELATION = 'cascade_autorelation_334.qgs'
+QGIS_FILE_DOWNLOAD_WITH_RELATIONS = "g3wsuite_project_test_qgis340.qgs"
 
 # Temporal raster layer wmst
 QGS_FILE_WMST = 'test_WMST.qgs'
@@ -2448,3 +2450,279 @@ class TestVectorApiConfigCrossRelation(QdjangoTestBase):
 
         self.client.logout()
 
+class TestVectorApiDataDownloadWithRelations(QdjangoTestBase):
+    """
+    Test /vector/api/data download with relations
+    """
+
+    def setUp(self):
+
+        self.group_with_relations = CoreGroup(name='GroupDownWithRelation4326', title='GroupDownWithRelation4326',
+                                                header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+        self.group_with_relations.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_DOWNLOAD_WITH_RELATIONS), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_down_with_relations = QgisProject(qgis_project_file)
+        self.project_down_with_relations.group = self.group_with_relations
+        self.project_down_with_relations.save()
+        qgis_project_file.close()
+
+    def test_vector_api_download(self):
+        """
+        Test Download api
+        """
+
+        countries = self.project_down_with_relations.instance.layer_set.get(
+            qgs_layer_id='countries_simpl20171228095706310')
+        cities = self.project_down_with_relations.instance.layer_set.get(
+            qgs_layer_id='cities10000eu20171228095720113')
+
+        # Activate download
+        countries.download = True
+        countries.download_csv = True
+        countries.download_gpkg = True
+        countries.save()
+
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+
+        url = reverse(
+            'core-vector-api',
+            kwargs={
+                'mode_call': 'shp',
+                'project_type': 'qdjango',
+                'project_id': self.project_down_with_relations.instance.id,
+                'layer_name': countries.qgs_layer_id
+            }
+        )
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+
+        # Download with relations
+        # ------------------------
+
+        # No file in relations because no download is active fore relations layer (cities)
+        url += '?down_with_relations=1'
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        self.assertTrue(len(os.listdir(temp.path())), 4)
+
+        # Active download also for relations layer
+        cities.download = True
+        cities.download_csv = True
+        cities.save()
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        self.assertTrue(len(os.listdir(temp.path())), 8)
+
+        # Inactive download for shp, aspect export as .csv
+        cities.download = False
+        cities.save()
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+
+        files_list = os.listdir(temp.path())
+        self.assertTrue(len(files_list), 5)
+        self.assertTrue('Cities.csv' in files_list)
+
+        url += "&field=ISOCODE|eq|IT"
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+
+        files_list = os.listdir(temp.path())
+        self.assertTrue(len(files_list), 5)
+        self.assertTrue('Cities.csv' in files_list)
+
+        with open(f"{temp.path()}/Cities.csv", mode="r", encoding="utf-8") as file:
+            reader = csv.reader(file)
+            total_rows = sum(1 for _ in reader)
+
+        # 1124 + header
+        self.assertEqual(total_rows, 1125)
+
+        self.client.logout()
+
+class TestVectorApiGeoFilter(QdjangoTestBase):
+    """ Test /vector/api/config with geo filter
+        Test geo_filter_wkt and geo_fitler_mode parameters
+    """
+
+    def setUp(self):
+
+        self.project_group_3857 = CoreGroup(name='GroupGeoFilter3857', title='GroupGeoFilter3857', header_logo_img='',
+                                          srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        self.project_group_3857.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS340_THEME_FILE), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_geo_filter = QgisProject(qgis_project_file)
+        self.project_geo_filter.group = self.project_group_3857
+        self.project_geo_filter.save()
+        qgis_project_file.close()
+
+    def test_vector_api_geo_filter(self):
+
+        self.client.login(username='admin01', password='admin01')
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 8965)
+
+        # Add a geo_filter_wkt
+        # mode: intersects (default)
+        wkt = 'Polygon ((1096269.93631389969959855 5632333.77473515085875988, 1418298.05854365834966302 5406914.08917431905865669, 1398976.37120987288653851 5117088.7791675366461277, 1006102.06208956707268953 5104207.65427834633737803, 864409.6883084736764431 5252340.59050403535366058, 851528.56341928336769342 5503522.52584324683994055, 1096269.93631389969959855 5632333.77473515085875988))'
+
+        url += f'?geo_filter_wkt={wkt}'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 150)
+
+        # Test inersects vs contains on layer countries
+        # ---------------------------------------------
+        wkt = 'Polygon ((-1239720.59820769750513136 5636026.31521254032850266, 261954.69451352674514055 5628285.72092016320675611, 734130.94634855119511485 4622008.46291109547019005, 370323.01460681110620499 3801505.46791908610612154, -767544.34637267340440303 3708618.33641055691987276, -1293904.75825433968566358 4374309.44555501639842987, -1239720.59820769750513136 5636026.31521254032850266))'
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                      ])
+
+        url += f'?geo_filter_wkt={wkt}'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 5)
+
+        url += '&geo_filter_mode=contains'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Exclude France
+        self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+        # Test post
+        # ----------------------------------
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Exclude France
+        self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+        # Test exceptions
+        # ----------------------------------
+        res = self.client.post(url, {
+            'geo_filter_wkt': 'fake wkt',
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+
+        self.assertEqual(jres, {"result":False,"error":{"code":"servererror","message":"A error server is occured!","data":"The WKT geometry is not valid: String input unrecognized as WKT EWKT, and HEXEWKB."}})
+
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'fake_mode'
+        })
+
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+
+        self.assertEqual(jres, {'result': False, 'error': {'code': 'servererror', 'message': 'A error server is occured!', 'data': "'geo_filter_mode' must be one of ('intersects', 'contains')"}})
+
+
+        # Test reproject
+        # -----------------------------
+        # Areoporti 3857
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'aeroporti_3857_e9d2f842_0851_437e_9dfe_7b30a1bb4160'
+                      ])
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['vector']['data']['features']), 19)
+
+        #Areoporti 4326
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'aeroporti_4326_49526f36_2ce3_4051_863f_d8e3e1de97e3'
+                      ])
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['vector']['data']['features']), 19)
+
+
+        self.client.logout()
