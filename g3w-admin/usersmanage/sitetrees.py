@@ -171,7 +171,6 @@ sitetrees = (
           ]
      ),
 
-
      # FRENCH
      G3Wtree(
           'acl_fr',
@@ -272,6 +271,61 @@ sitetrees = (
                          ),
                          item(
                               'Lista grupuri de utilizatori',
+                              'user-group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              access_by_perms=['auth.add_user']
+                         )
+                    ]
+               ),
+          ]
+     ),
+
+     # UKRAINIAN
+     G3Wtree(
+          'acl_uk',
+          title='ACL',
+          module='usermanage',
+          items=[
+               item(
+                    'ACL',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Користувачі',
+                    '#',
+                    icon_css_class='fa fa-users',
+                    children=[
+                         item(
+                              'Додати',
+                              'user-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-user-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Список користувачів',
+                              'user-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-users'
+                         ),
+                         item(
+                              'Оновити',
+                              'user-update object.pk',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False
+                         ),
+                         item(
+                              'Додати до групи',
+                              'user-group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Список членів групи',
                               'user-group-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-list',
