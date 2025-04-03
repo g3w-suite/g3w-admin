@@ -1011,6 +1011,36 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return styles
 
+    @property
+    def download_shp(self):
+        """Alias for self.download"""
+
+        return self.download
+
+    def can_be_downloaded(self, with_pdf=False):
+        """
+        Returns True if the layer can be downloaded, and return also a list of the available formats
+
+        :param with_pdf: if True, the pdf format is also checked
+        :return: tuple (can_be_downloaded, list of formats)
+        """
+
+        formats = ['shp', 'gpx', 'csv', 'gpkg', 'xls']
+        if with_pdf:
+            formats.append('pdf')
+
+        cbd = any([getattr(self, f"download_{f}") for f in formats])
+        dfs = []
+
+        # Create list of formats
+        if cbd:
+            for f in formats:
+                if getattr(self, f"download_{f}"):
+                    dfs.append(f)
+
+        return cbd, dfs
+
+
     def visible_fields_for_user(self, user):
         """Returns a list of field names visible by the user
         according to ColumnAcl"""
