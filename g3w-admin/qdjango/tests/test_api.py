@@ -41,9 +41,21 @@ from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
-from .base import (QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION,
-                   QGS328_RELATION_REFERENCE)
+from .base import (
+    QdjangoTestBase,
+    CURRENT_PATH,
+    TEST_BASE_PATH,
+    QGS310_WIDGET_FILE,
+    CoreGroup,
+    G3WSpatialRefSys,
+    QGS322_FILE,
+    QGS322_INITEXTENT_GEOCONSTRAINT_FILE,
+    QGS322_FORMATTING_DATE,
+    QGS328_FILE,
+    QGS328_VALUE_RELATION,
+    QGS328_RELATION_REFERENCE,
+    QGS340_THEME_FILE
+)
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -2723,6 +2735,5 @@ class TestVectorApiGeoFilter(QdjangoTestBase):
         jres = json.loads(res.content)
 
         self.assertEqual(len(jres['vector']['data']['features']), 19)
-
 
         self.client.logout()
