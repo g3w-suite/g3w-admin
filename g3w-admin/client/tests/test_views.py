@@ -16,8 +16,9 @@ from django.urls import reverse
 from guardian.shortcuts import assign_perm
 from qdjango.models import ProjectMapUrlAlias
 from core.models import GeneralSuiteData
-from .test_api import ClientApiTest
+from bs4 import BeautifulSoup
 
+from .test_api import ClientApiTest
 
 class ClientViewsTest(ClientApiTest):
 
@@ -90,11 +91,15 @@ class ClientViewsTest(ClientApiTest):
     def test_credits_view(self):
         """ Test for credits view """
 
-        url = reverse('client-credits')
-        response = self.client.get(url)
+        response = self.client.get(reverse('client-credits'))
+
         self.assertEqual(response.status_code, 200)
 
-        generalsuitedata = GeneralSuiteData.objects.get()
-        self.assertEqual(bytes(str(generalsuitedata.credits), encoding='utf-8'), response.content)
+        credits = str(BeautifulSoup(
+            bytes(str(GeneralSuiteData.objects.get().credits), encoding='utf-8'),
+            'html.parser'
+        ).prettify(formatter="html").strip()).encode('utf-8')
+
+        self.assertEqual(credits, response.content)
 
 
