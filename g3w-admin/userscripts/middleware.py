@@ -16,7 +16,7 @@ class UserScriptsMiddleware:
 
         try:
             # Inject custom HTML content using BeautifulSoup
-            if (response.get('Content-Type', '').startswith('text/html')):
+            if (hasattr(response, 'content') and response.get('Content-Type', '').startswith('text/html')):
                 soup = BeautifulSoup(response.content.decode('utf-8'), 'html.parser')
 
                 # Retrieve all userscripts related to current URL
