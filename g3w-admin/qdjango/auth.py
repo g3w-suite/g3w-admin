@@ -19,7 +19,7 @@ class QdjangoProjectAuthorizer(object):
         if (len(set(settings.G3WADMIN_LOCAL_MORE_APPS).intersection(set(['caching', 'qmapproxy']))) > 0
                 and 'g3wsuite_caching_token' in self.request.GET and \
                 (settings.TILESTACHE_CACHE_TOKEN == self.request.GET['g3wsuite_caching_token'] or \
-                        getattr('MAPPROXY_URL_TOKEN') == self.request.GET['g3wsuite_caching_token'])):
+                        getattr(settings, 'MAPPROXY_URL_TOKEN') == self.request.GET['g3wsuite_caching_token'])):
                     return True
 
         # Check for user != Anonymous user
