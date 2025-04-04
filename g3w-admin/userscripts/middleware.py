@@ -1,6 +1,10 @@
 import re
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from .models import UserScript
+
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
 
 class UserScriptsMiddleware:
 
@@ -36,5 +40,7 @@ class UserScriptsMiddleware:
 
                 # Convert the modified soup back to a string and remove leading and trailing spaces
                 response.content = str(soup.prettify(formatter="html").strip()).encode('utf-8')
-        finally:
-            return response
+        except (MarkupResemblesLocatorWarning, UnicodeDecodeError):
+            logger.warning(f"[UserScriptsMiddleware] failed to parse response content for: {request.path}\n")
+
+        return response
