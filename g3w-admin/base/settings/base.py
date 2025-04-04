@@ -83,7 +83,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.google",
-    "allauth.usersessions"
+    "allauth.usersessions",
 ]
 
 G3WADMIN_APPS = [
@@ -410,3 +410,13 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Placehold service
 PLACEHOLD_SERVICE = 'https://placehold.co/'
+
+# Default elasticsearch settings
+# --------------------------------
+ES_ENABLE = False
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://localhost:9200',
+        #'http_auth': ('username', 'password')
+    }
+}
