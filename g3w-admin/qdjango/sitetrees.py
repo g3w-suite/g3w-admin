@@ -14,7 +14,7 @@ sitetrees = tuple(
                 in_menu=False,
                 url_as_pattern=True,
                 icon_css_class='fa fa-plus',
-                access_by_perms=['qdjango.change_projec']
+                access_by_perms=['qdjango.add_project']
             ),
             item(
                 tree["update_project"] + ' {{ group.slug }} {{ object.slug }}',

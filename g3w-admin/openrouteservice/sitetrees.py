@@ -33,7 +33,7 @@ sitetrees = tuple(
                     item(
                         tree['add_route'],
                         'ors-project-add',
-                        access_by_perms=['openrouteservice.add_route'],
+                        access_by_perms=['qdjango.change_project'],
                         in_menu=False,
                     ),
                     item(
