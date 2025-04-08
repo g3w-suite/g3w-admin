@@ -513,11 +513,6 @@
      */
     async showChart(bool, ids, container, rel) {
       /** @FIXME add description */
-      if (!bool && !container) {
-        GUI.closeContent();
-      }
-
-      /** @FIXME add description */
       if (!bool && container) {
         this.clearContainers(container);
       }
