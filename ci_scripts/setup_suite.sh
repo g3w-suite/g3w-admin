@@ -68,14 +68,6 @@ if [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
   ./manage.py collectstatic --noinput -v 0
 fi
 
-# import default data 
-if [ ! -e ${SETUP_DONE} ]; then
-  ./manage.py loaddata /code/g3w-admin/core/fixtures/BaseLayer.json
-  ./manage.py loaddata /code/g3w-admin/core/fixtures/G3WGeneralDataSuite.json
-  ./manage.py loaddata /code/g3w-admin/core/fixtures/G3WMapControls.json
-  ./manage.py loaddata /code/g3w-admin/core/fixtures/G3WSpatialRefSys.json
-fi
-
 # create default admin user
 if [ ! -e ${SETUP_DONE} ]; then
   ./manage.py createsuperuser --noinput --username ${G3WSUITE_ADMIN_USERNAME:-admin} --email admin@email.com || true
@@ -84,6 +76,14 @@ fi
 
 # update database (eg. after installing a new plugin)
 ./manage.py migrate --noinput
+
+# import default data 
+if [ ! -e ${SETUP_DONE} ]; then
+  ./manage.py loaddata /code/g3w-admin/core/fixtures/BaseLayer.json
+  ./manage.py loaddata /code/g3w-admin/core/fixtures/G3WGeneralDataSuite.json
+  ./manage.py loaddata /code/g3w-admin/core/fixtures/G3WMapControls.json
+  ./manage.py loaddata /code/g3w-admin/core/fixtures/G3WSpatialRefSys.json
+fi
 
 # update sidebar menu items (and translations)
 ./manage.py sitetree_resync_apps
