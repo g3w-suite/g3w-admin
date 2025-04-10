@@ -17,29 +17,14 @@ if [ ! -e /code/g3w-admin/base/settings/local_settings.py ]; then
   cp /code/settings_docker.py /code/g3w-admin/base/settings/local_settings.py
 fi
 
-# static files (private and public)
-if [ ! -d /shared-volume/media ]; then
-  ls /shared-volume/media || mkdir /shared-volume/media
-fi
-
-# qgis projects (.qgs files)
-if [ ! -d /shared-volume/media/projects ]; then
-  ls /shared-volume/media/projects || mkdir /shared-volume/media/projects
-fi
-
-# qgis data (eg. shapefiles)
-if [ ! -d /shared-volume/project_data ]; then
-  ls /shared-volume/project_data || mkdir /shared-volume/project_data
-fi
-
-# "django-file-form"
-if [ ! -d /shared-volume/media/temp_uploads ]; then
-  ls /shared-volume/media/temp_uploads || mkdir /shared-volume/media/temp_uploads
-fi
+mkdir -p /shared-volume/media              # static files (private and public)
+mkdir -p /shared-volume/media/projects     # qgis projects (.qgs files)
+mkdir -p /shared-volume/project_data       # qgis data (eg. shapefiles)
+mkdir -p /shared-volume/media/temp_uploads # "django-file-form"
 
 # static files (public)
 if [ ! -d /shared-volume/static ]; then
-  ls /shared-volume/static || ln -s /shared-volume/media /shared-volume/static
+  ln -s /shared-volume/media /shared-volume/static
 fi
 
 # clean up django static files directory
