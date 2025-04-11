@@ -27,7 +27,14 @@ from core.models import G3WSpatialRefSys
 from usersmanage.configs import *
 
 
-class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
+class GroupForm(
+    TranslationModelForm,
+    FileFormMixin,
+    G3WFormMixin,
+    G3WRequestFormMixin,
+    G3WACLForm,
+    ModelForm,
+):
     """Group form."""
 
     propagate = True
@@ -139,7 +146,11 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
             self.instance.addPermissionsToEditor(self.request.user)
 
 
-class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
+class GeneralSuiteDataForm(
+    TranslationModelForm,
+    FileFormMixin,
+    ModelForm,
+):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
     home_description = BleachField(required=False)
@@ -213,7 +224,12 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
         fields = '__all__'
 
 
-class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelForm):
+class MacroGroupForm(
+    TranslationModelForm,
+    FileFormMixin,
+    G3WFormMixin,
+    ModelForm,
+):
     """MacroGroup form."""
 
     initial_editor_users = []
@@ -281,7 +297,11 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
         return instance
 
 
-class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
+class GroupFilterForm(
+    G3WFormMixin,
+    G3WRequestFormMixin,
+    Form,
+):
     """Group filter form."""
 
     macrogroup = ModelChoiceField(label=_('Macro cartographic group'), queryset=MacroGroup.objects.all(), required=False)
