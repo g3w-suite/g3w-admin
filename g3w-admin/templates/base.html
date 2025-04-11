@@ -80,8 +80,8 @@
         </a>
         <ul class="nav-links" style="display: flex;  list-style: none;  margin: 0;">
           <!-- Search bar -->
-          <li>
-            <div class="has-feedback" >
+          <li class="nav-search">
+            <div class="has-feedback">
               <form action="{% url 'search-admin' %}" onkeydown="if ('Escape' === event.key) event.target.blur();">
                 <input type="text" name="stext" class="form-control" placeholder="{% trans 'Search' %}" />
                 <button type="submit" class="btn fa fa-search"><span class="sr-only">{% trans 'Search' %}</span></button>

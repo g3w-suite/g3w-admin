@@ -1114,13 +1114,13 @@ body:not(.sidebar-collapse) > aside                                  { overflow-
 .nav-lang .select2-container--open .select2-selection--single .select2-selection__arrow b { border-color:transparent transparent #fff transparent }
 .nav-lang  .select2-selection--single .select2-selection__rendered             { color:#fff!important }
 
-.navbar form[action$="/admin/search/"]                     { margin-top:10px; color: #fff; display: flex; }
-.navbar form[action$="/admin/search/"] input               { border: 0; }
-.navbar form[action$="/admin/search/"] button              { background: #fff; color: #000; }
-.navbar form[action$="/admin/search/"]:focus-within        { position: fixed; z-index: 1000; inset: 0; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); margin: 0 !important; }
-.navbar form[action$="/admin/search/"]:focus-within:before { position: fixed; background-color: #000; content: ''; inset: 0; z-index: -1; opacity: .5; }
-.navbar form[action$="/admin/search/"]:focus-within input  { max-width: 300px; font-size: 25px; height: auto; }
-.navbar form[action$="/admin/search/"]:focus-within button { background: #00a65a; color: #fff; font-size: 25px; }
+.nav-search form                     { margin-top:10px; color: #fff; display: flex; }
+.nav-search form input               { border: 0; }
+.nav-search form button              { background: #fff; color: #000; }
+.nav-search form:focus-within        { position: fixed; z-index: 1000; inset: 0; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); margin: 0 !important; }
+.nav-search form:focus-within:before { position: fixed; background-color: #000; content: ''; inset: 0; z-index: -1; opacity: .5; }
+.nav-search form:focus-within input  { max-width: 300px; font-size: 25px; height: auto; }
+.nav-search form:focus-within button { background: #00a65a; color: #fff; font-size: 25px; }
 
 
 /**************************************************************************************
