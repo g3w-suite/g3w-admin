@@ -17,23 +17,11 @@ if [ ! -e /code/g3w-admin/base/settings/local_settings.py ]; then
   cp /code/settings_docker.py /code/g3w-admin/base/settings/local_settings.py
 fi
 
-mkdir -p /shared-volume/media              # static files (private and public)
-mkdir -p /shared-volume/media/projects     # qgis projects (.qgs files)
-mkdir -p /shared-volume/project_data       # qgis data (eg. shapefiles)
-mkdir -p /shared-volume/media/temp_uploads # "django-file-form"
-
-# static files (public)
-if [ ! -d /shared-volume/static ]; then
-  ln -s /shared-volume/media /shared-volume/static
-fi
-
-# clean up django static files directory
-if [ -e ${SETUP_DONE} ] || [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
-  rm -rf /shared-volume/static
-fi
-
-# make project_data directory readable
-chmod -R 777 /shared-volume/project_data
+mkdir -p /shared-volume/media                      # static files (private and public)
+mkdir -p /shared-volume/media/projects             # qgis projects (.qgs files)
+mkdir -p /shared-volume/project_data               # qgis data (eg. shapefiles)
+mkdir -p /shared-volume/media/temp_uploads         # "django-file-form"
+chmod -R 777 /shared-volume/project_data           # make "project_data" directory readable
 
 ###################################################################
 
@@ -48,9 +36,13 @@ if [ ! -e /shared-volume/.secret_key ]; then
   ./manage.py generate_secret_key_file -o /shared-volume/.secret_key
 fi
 
-# collect django static files
-if [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
+# collect static files (public / production)
+if [[ ! -e ${SETUP_DONE} || -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
+  rm -rf /shared-volume/static
+  ln -s /shared-volume/media /shared-volume/static
   ./manage.py collectstatic --noinput -v 0
+elif [[ ${G3WSUITE_DEBUG} == "True" ]]; then
+  rm -rf /shared-volume/static
 fi
 
 # update database (eg. after installing a new plugin)
@@ -73,6 +65,7 @@ fi
 # update sidebar menu items (eg. after installing/translating a plugin)
 ./manage.py sitetree_resync_apps
 
+# emit file: "/shared-volume/setup_done"
 if [ ! -e ${SETUP_DONE} ]; then
   touch ${SETUP_DONE}
 fi
