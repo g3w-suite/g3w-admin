@@ -31,6 +31,7 @@ Software releases follow theese main branches as described in the compatibility 
 
 
 [dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.9.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.9.x
 [v.3.8.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.8.x
 [v.3.7.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.7.x
 [v.3.6.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.6.x
