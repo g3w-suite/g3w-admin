@@ -16,7 +16,7 @@ from django.test import TestCase, override_settings
 from django.core.files import File
 from django.conf import settings
 from qdjango.models import Project, Layer, Widget
-from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSettingsWMS
+from qdjango.utils.data import QgisProject, QgisProjectSettingsWMS
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_capabilities4layer
