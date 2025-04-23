@@ -196,6 +196,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             kwargs['initial']['active'] = True
             kwargs['initial']['visible'] = self.activated.visible
             kwargs['initial']['scale'] = self.activated.scale
+            kwargs['initial']['style'] = self.activated.style
             kwargs['initial']['add_user_field'] = self.activated.add_user_field
             kwargs['initial']['edit_user_field'] = self.activated.edit_user_field
             kwargs['initial']['add_user_group_field'] = self.activated.add_user_group_field
@@ -293,6 +294,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     def form_valid(self, form):
         scale = form.cleaned_data['scale']
         visible = form.cleaned_data['visible']
+        style = form.cleaned_data['style']
         add_user_field = form.cleaned_data['add_user_field']
         edit_user_field = form.cleaned_data['edit_user_field']
         add_user_group_field = form.cleaned_data['add_user_group_field']
@@ -303,6 +305,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 self.activated = G3WEditingLayer.objects.create(app_name=self.app_name,
                                                                 layer_id=self.layer_id,
                                                                 scale=scale,
+                                                                style=style,
                                                                 visible=visible,
                                                                 add_user_field=add_user_field,
                                                                 edit_user_field=edit_user_field,
@@ -312,6 +315,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             else:
                 self.activated.visible = visible
                 self.activated.scale = scale
+                self.activated.style = style
                 self.activated.add_user_field = add_user_field
                 self.activated.edit_user_field = edit_user_field
                 self.activated.add_user_group_field = add_user_group_field

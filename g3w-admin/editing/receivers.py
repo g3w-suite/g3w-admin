@@ -451,7 +451,8 @@ def set_editing_visible_status(**kwargs):
 
         kwargs['vector_params'].update({
             'editing': {
-                'visible': el.visible
+                'visible': el.visible,
+                'style': el.style,
             }
         })
 
