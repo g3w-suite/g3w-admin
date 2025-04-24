@@ -727,7 +727,7 @@ class BaseVectorApiView(G3WAPIView):
                 'geometryType': self.metadata_layer.geometry_type
             }
 
-            # Cafe with 'autofilter' parameter: get every id from qgis_feature_request
+            # Case with 'autofilter' parameter: get every id from qgis_feature_request
             # ------------------------------------------------------------------------
             if 'autofilter' in self.request_data and str(self.request_data['autofilter']) == '1':
 
