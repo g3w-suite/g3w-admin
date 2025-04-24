@@ -922,7 +922,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # eval editor_form_structure
         if ret['editor_form_structure']:
-            ret['editor_form_structure'] = eval(instance.editor_form_structure)
+            ret['editor_form_structure'] = instance.get_editor_form_structure()
 
         # add ows
         ret['ows'] = self.get_ows(instance)
