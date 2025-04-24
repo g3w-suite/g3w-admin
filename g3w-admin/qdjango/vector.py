@@ -329,8 +329,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # add widgets
         if hasattr(self.layer, 'edittypes') and self.layer.edittypes:
 
-            # reduild edittypes
-            edittypes = eval(self.layer.edittypes)
+            # Get layer edittypes
+            edittypes = self.layer.get_edittypes()
             allow_edittypes = list(MAPPING_EDITTYPE_QGISEDITTYPE.keys())
 
             for field, data in list(edittypes.items()):

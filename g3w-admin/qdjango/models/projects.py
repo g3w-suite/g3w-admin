@@ -1255,7 +1255,7 @@ class Layer(G3WACLModelMixins, models.Model):
         Check if a field_name has a QGIS Form ValueRelation Widget
         """
 
-        edittypes = eval(self.edittypes)
+        edittypes = self.get_edittypes()
         return edittypes[field_name]["widgetv2type"] == "ValueRelation"
 
     @property
@@ -1272,6 +1272,17 @@ class Layer(G3WACLModelMixins, models.Model):
             'maxx': rect.xMaximum(),
             'maxy': rect.yMaximum(),
         }
+
+    def get_edittypes(self, style=None):
+        """
+        Get edittypes for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return eval(self.edittypes)[style]
 
     def __str__(self):
         return self.name

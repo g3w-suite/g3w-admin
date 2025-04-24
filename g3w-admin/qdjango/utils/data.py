@@ -620,56 +620,77 @@ class QgisProjectLayer(XmlData):
         if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return edittype_columns
 
-        fields = self.qgs_layer.fields()
-        eformconf = self.qgs_layer.editFormConfig()
-        for field in fields:
-            idx = fields.indexFromName(field.name())
+        # Save for every styles associated to the layer
+        sm = self.qgs_layer.styleManager()
 
-            # get field widget data
-            ewidget = self.qgs_layer.editorWidgetSetup(idx)
+        current_style = sm.currentStyle()
+        for style in sm.styles():
 
-            data = {
-                'widgetv2type': ewidget.type(),
-                'fieldEditable': '0' if eformconf.readOnly(idx) else '1',
-                'values': list()
-            }
+            style_edittype = dict()
 
-            options = ewidget.config()
-            if ewidget.type() == 'ValueMap':
-                if 'map' in options:
-                    if isinstance(options['map'], dict):
-                        for key, value in options['map'].items():
-                            data['values'].append({'key': key, 'value': value})
-                    else:
-                        # case list
-                        for item in options['map']:
-                            for key, value in item.items():
-                                data['values'].append(
-                                    {'key': key, 'value': value})
+            # Change style temporary
+            sm.setCurrentStyle(style)
 
-            # If ewidget.type() is ReferenceValue, add DisplayExpression of referencedlayer
-            elif ewidget.type() == 'RelationReference':
+            fields = self.qgs_layer.fields()
 
-                # Add DisplayExpression of ReferencedLayer
-                # Set it into a try except routine for a possible bug of QGIS:
-                # If in QGIS project is set a RelationReference form widget, if the referenced layer is changed
-                # the ReferencedLayerId is not changed and was the old layer id not more present into the project
-                try:
+            eformconf = self.qgs_layer.editFormConfig()
 
-                    # Remove from layer dotasource data
-                    del (options['ReferencedLayerDataSource'],
-                         options['ReferencedLayerProviderKey'])
+            # Set layout for eformconf
 
-                    options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
-                        options['ReferencedLayerId']).displayExpression()
-                except Exception as e:
-                    logger.debug(e)
 
-                data.update(options)
-            else:
-                data.update(options)
+            for field in fields:
+                idx = fields.indexFromName(field.name())
 
-            edittype_columns[field.name()] = data
+                # get field widget data
+                ewidget = self.qgs_layer.editorWidgetSetup(idx)
+
+                data = {
+                    'widgetv2type': ewidget.type(),
+                    'fieldEditable': '0' if eformconf.readOnly(idx) else '1',
+                    'values': list()
+                }
+
+                options = ewidget.config()
+                if ewidget.type() == 'ValueMap':
+                    if 'map' in options:
+                        if isinstance(options['map'], dict):
+                            for key, value in options['map'].items():
+                                data['values'].append({'key': key, 'value': value})
+                        else:
+                            # case list
+                            for item in options['map']:
+                                for key, value in item.items():
+                                    data['values'].append(
+                                        {'key': key, 'value': value})
+
+                # If ewidget.type() is ReferenceValue, add DisplayExpression of referencedlayer
+                elif ewidget.type() == 'RelationReference':
+
+                    # Add DisplayExpression of ReferencedLayer
+                    # Set it into a try except routine for a possible bug of QGIS:
+                    # If in QGIS project is set a RelationReference form widget, if the referenced layer is changed
+                    # the ReferencedLayerId is not changed and was the old layer id not more present into the project
+                    try:
+
+                        # Remove from layer dotasource data
+                        del (options['ReferencedLayerDataSource'],
+                             options['ReferencedLayerProviderKey'])
+
+                        options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
+                            options['ReferencedLayerId']).displayExpression()
+                    except Exception as e:
+                        logger.debug(e)
+
+                    data.update(options)
+                else:
+                    data.update(options)
+
+                style_edittype[field.name()] = data
+
+            edittype_columns[style] = style_edittype
+
+        # Reset to current style
+        sm.setCurrentStyle(current_style)
 
         return edittype_columns
 

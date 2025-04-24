@@ -961,8 +961,8 @@ class WidgetSerializer(serializers.ModelSerializer):
 
         body = json.loads(instance.body)
 
-        # get edittype
-        edittypes = eval(self.layer.edittypes)
+        # Get edittype
+        edittypes = self.layer.get_edittypes()
 
         has_relations = 'search' == instance.widget_type and '' != body.get('relations', '')
 
