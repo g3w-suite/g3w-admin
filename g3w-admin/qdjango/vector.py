@@ -607,15 +607,22 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self.results.update({'data': token_data})
 
     def response_featurecount_mode(self, request):
-        """ Return the feature count value for every layer style category """
+        """
+        Return the feature count value for every layer style category and the editor form structure by
+         layer style
+        """
 
         if request.method == 'POST':
             request_data = request.data
         else:
             request_data = request.query_params
 
-        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,
-                                                           request_data.get('style', None))})
+        style = request_data.get('style', None)
+
+        self.results.update({'data': {
+            'featurecount': get_qgis_featurecount(self.metadata_layer.qgis_layer,style),
+            'editor_form_structure': self.layer.get_editor_form_structure(style)
+        }})
 
     def _selection_responde_download_mode(self, qgs_request, save_options):
         """ Filter download response mode: shp, xls, gpx.."""
