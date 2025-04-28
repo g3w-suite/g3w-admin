@@ -613,13 +613,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         Return the feature count value for every layer style category
         """
 
-        if request.method == 'POST':
-            request_data = request.data
-        else:
-            request_data = request.query_params
-
         style = self.request_data.get('style', None)
-
         self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,style)})
 
     def response_editorformstructure_mode(self, request):
