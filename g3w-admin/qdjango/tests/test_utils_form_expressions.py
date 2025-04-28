@@ -72,4 +72,4 @@ class QgisProjectTest(TestCase):
                         'field_name': 'form2',
                         'alias': 'form2'}]}
 
-        self.assertEqual(layer.editorformstructure[0]['nodes'][1], expected)
+        self.assertEqual(layer.editorformstructure['default'][0]['nodes'][1], expected)

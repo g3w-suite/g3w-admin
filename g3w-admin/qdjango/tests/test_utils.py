@@ -252,7 +252,7 @@ class QgisProjectTest(TestCase):
                 # check editTypes
                 # --------------------------------------------------------
 
-                edit_types_to_check = '{"ISOCODE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_LOCAL": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "POPULATION": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "AREA_KM2": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "ISO_NUM": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
+                edit_types_to_check = '{"predefinito": {"ISOCODE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_LOCAL": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "POPULATION": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "AREA_KM2": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "ISO_NUM": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}}'
 
                 self.assertEqual(
                     layer.editTypes, json.loads(edit_types_to_check))
@@ -263,7 +263,7 @@ class QgisProjectTest(TestCase):
 
                 # check editorformstructure
                 # --------------------------------------------------------
-                self.assertIsNone(layer.editorformstructure)
+                self.assertEqual(layer.editorformstructure,  {'predefinito': None})
 
             if layer.layerId == 'cities10000eu20171228095720113':
 
@@ -278,7 +278,7 @@ class QgisProjectTest(TestCase):
                 # check editorformstructure
                 # --------------------------------------------------------
 
-                editor_form_structure_to_check = [{'name': 'Folder 1',
+                editor_form_structure_to_check = {'predefinito':[{'name': 'Folder 1',
                                                    'showlabel': True,
                                                    'groupbox': False,
                                                    'columncount': 1,
@@ -315,7 +315,7 @@ class QgisProjectTest(TestCase):
                                                               'visibility_expression': None,
                                                               'index': 3,
                                                               'field_name': 'ISO2_CODE',
-                                                              'alias': 'ISO Code'}]}]
+                                                              'alias': 'ISO Code'}]}]}
 
                 self.assertEqual(layer.editorformstructure,
                                  editor_form_structure_to_check)

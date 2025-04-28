@@ -1294,7 +1294,7 @@ class Layer(G3WACLModelMixins, models.Model):
             style = self.qgis_layer.styleManager().currentStyle()
 
 
-        return eval(self.editor_form_structure)[style] if self.editor_form_structure else None
+        return eval(self.editor_form_structure).get(style, None) if self.editor_form_structure else None
 
     def __str__(self):
         return self.name
