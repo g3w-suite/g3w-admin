@@ -793,7 +793,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 for ffeat in ffeatures:
                     cfeatures = qgs_relation.getRelatedFeatures(ffeat)
                     for cfeat in cfeatures:
-                        cids.append(str(cfeat.id()))
+                        cids.append(cfeat.id())
 
                 if cids:
 
@@ -805,8 +805,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                         for backend in self.relations_filter_backends:
                             backend().apply_filter(request, metadata_relation, qgs_request, self)
 
-                    qgs_request.combineFilterExpression("$id IN (%s)" % ','.join(cids))
-
                     # Instance save options
                     save_options = QgsVectorFileWriter.SaveVectorOptions()
                     save_options.fileEncoding = 'utf-8'
@@ -815,8 +813,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                     self._set_download_attributes(qgs_request, save_options,
                                                   layer=metadata_relation.layer, metadata_layer=metadata_relation)
 
-                    metadata_relation.qgis_layer.selectByExpression(
-                        qgs_request.filterExpression().expression())
+                    metadata_relation.qgis_layer.selectByIds(cids)
+
+                    if qgs_request.filterExpression():
+                        metadata_relation.qgis_layer.selectByExpression(
+                            qgs_request.filterExpression().expression())
+
+
                     save_options.onlySelectedFeatures = True
 
                     # Set fmode by mode
