@@ -319,7 +319,7 @@
 		}],
 		"editing": {
 			"visible": true,
-			"form_style": null
+			"layer_style": null
 		}
 	},
 	"featurelocks": null,
