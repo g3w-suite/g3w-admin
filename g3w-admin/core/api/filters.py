@@ -360,7 +360,7 @@ class FieldFilterBackend(BaseFilterBackend):
                             f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                     else:
                         # Case 'in' operator
-                        # Expexted format: [1,2,3] or [a,b,c]
+                        # Expexted format: [1,2,3] or [a,b,c] or (1,2,3) or (a,b,c)
                         single_values = field_value[1:-1].split(',')
                         field_value = f"({','.join([self._quote_value(sv) for sv in single_values])})"
                         quoted_field_value = unquote(field_value)
