@@ -288,7 +288,8 @@ class FieldFilterBackend(BaseFilterBackend):
             # field can be multiple separated by ','
             # i.e. $field=name|eq|Rome,state|eq|Italy
 
-            pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
+            #pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
+            pattern = r',(?=(?:[^()[\]]*(?:\([^()]*\)|\[[^\[\]]*\]))*[^()[\]]*$)'
             fields = re.split(pattern, suggest_value)
 
             count = 0
@@ -358,6 +359,10 @@ class FieldFilterBackend(BaseFilterBackend):
                         quoted_field_value = self._quote_value(
                             f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                     else:
+                        # Case 'in' operator
+                        # Expexted format: [1,2,3] or [a,b,c]
+                        single_values = field_value[1:-1].split(',')
+                        field_value = f"({','.join([self._quote_value(sv) for sv in single_values])})"
                         quoted_field_value = unquote(field_value)
 
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
