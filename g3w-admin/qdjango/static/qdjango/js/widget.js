@@ -386,6 +386,7 @@ ga.Qdjango.widgetEditor = {
 										<option value="ltgt">&lt;&gt; (' + gettext("not equal") + ')</option>\
 										<option value="gte">&gt;= (' + gettext("greater than equal") + ')</option>\
 										<option value="lte">&lt;= (' + gettext("lower than equal") + ')</option>\
+										<option value="in">IN (' + gettext("within") + ')</option>\
 										<option value="LIKE">LIKE (' + gettext("like case sensitive") + ")</option>\
 									</select>"
     )
