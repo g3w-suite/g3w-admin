@@ -22,9 +22,15 @@ Requisiti:
 - elasticsearch-py (installabile con pip install elasticsearch)
 """
 
+from django.urls import reverse, resolve
+from django.http import HttpRequest
+from qdjango.vector import LayerVectorView
+from usersmanage.models import User
+
 from qgis.core import (
     QgsVectorLayer,
     QgsRasterLayer,
+    QgsWkbTypes,
     Qgis
 )
 from elasticsearch.helpers import bulk
@@ -66,7 +72,7 @@ class QGISElasticsearchIndexer:
                     "layer_name": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
                     "feature_id": {"type": "keyword"},
                     "geometry_type": {"type": "keyword"},
-                    "geometry": {"type": "geo_shape"},
+                    #"geometry": {"type": "geo_shape"},
                     "attributes": {"type": "object", "dynamic": True},
                     "text_content": {"type": "text", "analyzer": "standard"},
                     "indexed_at": {"type": "date"}
@@ -95,6 +101,61 @@ class QGISElasticsearchIndexer:
         else:
             logger.info(f"L'indice '{self.index_name}' esiste già")
 
+    def generate_documents_from_api(self, project):
+
+        documents = []
+        project_name = project.title
+        project_id = project.id
+        qgis_project = project.qgis_project
+
+        for layer_id, layer in qgis_project.mapLayers().items():
+
+            if not isinstance(layer, QgsVectorLayer):
+                continue
+
+            kwargs = {
+                'project_type': 'qdjango',
+                'project_id': project_id,
+                'layer_name': layer_id,
+                'mode_call': 'data'
+            }
+
+
+
+            url = reverse('core-vector-api', kwargs=kwargs)
+            req = HttpRequest()
+            req.method = 'GET'
+            req.user = User.objects.get(username='admin01')
+            req.resolver_match = resolve(url)
+
+            view = LayerVectorView.as_view()
+            res = view(req, *[], **kwargs).render()
+            features = json.loads(res.content)
+
+            for feature in features['vector']['data']['features']:
+
+                # Create ES document
+                doc = {
+                    "_index": self.index_name,
+                    "_id": f"{project_id}_{layer_id}_{feature['id']}",
+                    "_source": {
+                        "project_id": project_id,
+                        "project_name": project_name,
+                        "layer_id": layer_id,
+                        "layer_name": layer.name(),
+                        "feature_id": feature['id'],
+                        "geometry_type": "",
+                        #"geometry": feature['geometry'],
+                        "attributes": feature['properties'],
+                        "text_content": " ".join([str(v) for v in feature['properties'].values()]),
+                        "indexed_at": datetime.datetime.now().isoformat()
+                    }
+                }
+
+                documents.append(doc)
+
+        return documents
+
     def generate_documents(self, project):
         """
         Genera documenti per bulk indexing da tutti i layer vettoriali
@@ -109,6 +170,8 @@ class QGISElasticsearchIndexer:
         project_name = project.title
         project_id = project.id
         qgis_project = project.qgis_project
+
+        self.generate_documents_from_api(project)
 
         # Processa tutti i layer nel progetto
         for layer_id, layer in qgis_project.mapLayers().items():
@@ -126,7 +189,6 @@ class QGISElasticsearchIndexer:
                         field_name = field.name()
                         field_value = feature[field_name]
 
-                        print(field_name, field_value)
                         # Salva l'attributo
                         if field_value == NULL:
 
@@ -139,44 +201,58 @@ class QGISElasticsearchIndexer:
 
                     # Estrai la geometria in formato GeoJSON
                     geometry = None
+                    geometry_type = None
                     if feature.hasGeometry() and not feature.geometry().isEmpty():
-                        geom_wkb = feature.geometry().asWkb()
+                        geometry_type = QgsWkbTypes.displayString(feature.geometry().wkbType())
                         try:
-                            # Converti la geometria in GeoJSON
-                            geometry = json.loads(feature.geometry().asJson())
-                        except Exception as e:
-                            logger.info(f"Errore nella conversione della geometria: {str(e)}")
+                            qgeometry = feature.geometry()
+                            # Check geometry is valid, try to fix
+                            if not qgeometry.isGeosValid():
+                                qgeometry = qgeometry.makeValid()
 
-                    # Crea il documento
+                            # To GeoJSON
+                            geometry = json.loads(qgeometry.asJson())
+
+                            # Check again, is not valid create an empty geometry
+                            if not qgeometry.isGeosValid():
+                                geometry = {
+                                    "type": "GeometryCollection",
+                                    "geometries": []
+                                }
+
+                        except Exception as e:
+                            logger.info(f"Errore nella conversione della geometria delle feature id {feature.id()}: {str(e)}")
+                            logger.info(f"Geometria: {geometry}")
+
+                    # Create ES document
                     doc = {
                         "_index": self.index_name,
-                        "_id": f"{layer_id}_{feature.id()}",
+                        "_id": f"{project_id}_{layer_id}_{feature.id()}",
                         "_source": {
                             "project_id": project_id,
                             "project_name": project_name,
                             "layer_id": layer_id,
                             "layer_name": layer.name(),
                             "feature_id": feature.id(),
-                            "geometry_type": "",
-                            #"geometry_type": feature.geometry().type() if feature.hasGeometry() else None,
+                            "geometry_type": geometry_type,
                             "geometry": geometry,
                             "attributes": attrs,
                             "text_content": " ".join(text_content),
                             "indexed_at": datetime.datetime.now().isoformat()
                         }
                     }
-                    if doc['_source']['feature_id'] == 6:
-                        print(doc)
+
                     documents.append(doc)
 
             elif isinstance(layer, QgsRasterLayer):
-                # Per i layer raster, indicizza solo i metadati generali
-                logger.info(f"Elaborazione layer raster: {layer.name()}")
+
+                # For raster only metadata are indexed
+                logger.info(f"Elaboration raster layer: {layer.name()}")
 
                 metadata = {}
                 text_content = []
 
-                # Estrai metadati di base
+                # Extract metadata
                 metadata["width"] = layer.width()
                 metadata["height"] = layer.height()
                 metadata["crs"] = layer.crs().authid()
@@ -224,7 +300,7 @@ class QGISElasticsearchIndexer:
         self.create_index()
 
         # Genera i documenti da indicizzare
-        documents = self.generate_documents(project)
+        documents = self.generate_documents_from_api(project)
 
         # Effettua l'indicizzazione in bulk
         if documents:
@@ -239,8 +315,34 @@ class QGISElasticsearchIndexer:
                     'max_backoff': 600  # Attesa massima tra i tentativi (in secondi)
                 }
 
-                success, failed = bulk(self.es, documents, **bulk_options)
-                logger.info(f"Indicizzati {success} documenti, falliti {len(failed) if failed else 0}")
+                success, bulk_failed = bulk(self.es, documents, **bulk_options)
+                logger.info(f"Indicizzati {success} documenti, falliti {len(bulk_failed) if bulk_failed else 0}")
+
+                success_message = (
+                    f"Indicizzazione completata.\n"
+                    f"- Documenti indicizzati con successo: {success}\n"
+                    f"- Documenti falliti durante il bulk: {len(bulk_failed)}\n"
+                    f"- Totale elementi processati: {success + len(bulk_failed)}\n"
+                )
+
+                logger.info(success_message)
+
+                if bulk_failed:
+                    failed_details = []
+                    for error in bulk_failed:
+                        if 'index' in error and 'error' in error['index']:
+                            doc_id = error['index'].get('_id', 'Unknown')
+                            error_type = error['index']['error'].get('type', 'Unknown')
+                            error_reason = error['index']['error'].get('reason', 'Unknown')
+                            failed_details.append(f"Doc ID: {doc_id}, Errore: {error_type} - {error_reason}")
+
+                    # Limita il log a 10 errori per evitare log troppo lunghi
+                    log_errors = failed_details[:10]
+                    if len(failed_details) > 10:
+                        log_errors.append(f"... e altri {len(failed_details) - 10} errori")
+
+                    logger.info(f"Dettagli degli errori di indicizzazione bulk:\n" + "\n".join(log_errors))
+
                 return True, success
             except Exception as e:
                 logger.info(f"Errore nell'indicizzazione: {str(e)}")
@@ -251,15 +353,15 @@ class QGISElasticsearchIndexer:
 
     def search(self, query_text, filters=None, size=100):
         """
-        Esegue una ricerca full-text nell'indice
+        Performs a full-text search in the index
 
         Args:
-            query_text (str): Testo da cercare
-            filters (dict, optional): Filtri aggiuntivi (es: layer_name, project_name)
-            size (int): Numero massimo di risultati
+            query_text (str): Text to search
+            filters (dict, optional): Additional filters (e.g., layer_name, project_name)
+            size (int): Maximum number of results
 
         Returns:
-            list: Lista dei risultati della ricerca
+            list: List of search results
         """
 
         # Crea la query di base
@@ -289,7 +391,7 @@ class QGISElasticsearchIndexer:
                     query["bool"]["filter"] = query["bool"].get("filter", [])
                     query["bool"]["filter"].append({"term": {"geometry_type": value}})
 
-        # Esegui la ricerca
+        # Query execution
         try:
             response = self.es.search(
                 index=self.index_name,
@@ -313,6 +415,7 @@ class QGISElasticsearchIndexer:
 
                 result = {
                     "score": hit["_score"],
+                    "project_id": source["project_id"],
                     "project_name": source["project_name"],
                     "layer_id": source["layer_id"],
                     "layer_name": source["layer_name"],
@@ -328,18 +431,15 @@ class QGISElasticsearchIndexer:
             logger.info(f"Errore nella ricerca: {str(e)}", self.log_tag, Qgis.Critical)
             return []
 
+    def delete_index(self):
+        """Elimina l'indice Elasticsearch"""
+        if self.es.indices.exists(index=self.index_name):
+            self.es.indices.delete(index=self.index_name)
+            logger.info(f"Index '{self.index_name}' removed successfully")
+        else:
+            logger.info(f"Index '{self.index_name}' doesn't exist")
 
-def run_indexer():
-    """Funzione per eseguire l'indicizzazione dalla console Python di QGIS"""
-    indexer = QGISElasticsearchIndexer()
-    success, count = indexer.index_project()
-    return success, count
 
 
-def search_features(query_text, filters=None):
-    """Funzione per cercare feature dalla console Python di QGIS"""
-    indexer = QGISElasticsearchIndexer()
-    results = indexer.search(query_text, filters)
-    return results
 
 
