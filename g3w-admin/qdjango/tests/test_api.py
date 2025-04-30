@@ -651,7 +651,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
 
     def test_server_filters_value_relation_api(self):
-        """ Test server filter FieldFilterBacked  for fileds with ValueRelation QGIS form widget """
+        """ Test server filter FieldFilterBacked  for fields with ValueRelation QGIS form widget """
 
         pois = Layer.objects.get(
             project_id=self.project328_value_relation.instance.pk, qgs_layer_id='poi_2c470d17_a234_464c_83f8_416bcdedda17')

@@ -351,7 +351,7 @@ class FieldFilterBackend(BaseFilterBackend):
 
                         if len(features) > 0:
                             field_operator = "in"
-                            in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
+                            in_content = ",".join([str(f[config["Key"]]) for f in features])
                             field_value = f"({in_content})"
 
                     pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
