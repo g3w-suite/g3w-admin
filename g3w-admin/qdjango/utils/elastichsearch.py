@@ -23,19 +23,20 @@ Requisiti:
 """
 
 from qgis.core import (
-    QgsProject,
     QgsVectorLayer,
     QgsRasterLayer,
-    QgsMessageLog,
     Qgis
 )
-from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from elasticsearch_dsl import connections
 import json
-import uuid
-import os
 import datetime
+
+from qgis.PyQt.QtCore import NULL
+
+import logging
+
+logger = logging.getLogger('elasticsearch')
 
 
 class QGISElasticsearchIndexer:
@@ -51,7 +52,6 @@ class QGISElasticsearchIndexer:
         """
         self.es = connections.get_connection(connection)
         self.index_name = index_name
-        self.es = None
         self.log_tag = "QGIS-ES-Indexer"
 
     def create_index(self):
@@ -91,9 +91,9 @@ class QGISElasticsearchIndexer:
                 index=self.index_name,
                 body={"mappings": mappings, "settings": settings}
             )
-            QgsMessageLog.logMessage(f"Indice '{self.index_name}' creato con successo", self.log_tag, Qgis.Info)
+            logger.info(f"Indice '{self.index_name}' creato con successo")
         else:
-            QgsMessageLog.logMessage(f"L'indice '{self.index_name}' esiste già", self.log_tag, Qgis.Info)
+            logger.info(f"L'indice '{self.index_name}' esiste già")
 
     def generate_documents(self, project):
         """
@@ -106,14 +106,14 @@ class QGISElasticsearchIndexer:
             list: Lista di documenti pronti per l'indicizzazione bulk
         """
         documents = []
-        project_name = project.name
+        project_name = project.title
         project_id = project.id
         qgis_project = project.qgis_project
 
         # Processa tutti i layer nel progetto
         for layer_id, layer in qgis_project.mapLayers().items():
             if isinstance(layer, QgsVectorLayer):
-                QgsMessageLog.logMessage(f"Elaborazione layer: {layer.name()}", self.log_tag, Qgis.Info)
+                logger.info(f"Elaborazione layer: {layer.name()}")
 
                 # Processa ogni feature nel layer
                 for feature in layer.getFeatures():
@@ -126,7 +126,11 @@ class QGISElasticsearchIndexer:
                         field_name = field.name()
                         field_value = feature[field_name]
 
+                        print(field_name, field_value)
                         # Salva l'attributo
+                        if field_value == NULL:
+
+                            field_value = None
                         attrs[field_name] = field_value
 
                         # Aggiungi al contenuto testuale per la ricerca full-text
@@ -141,8 +145,7 @@ class QGISElasticsearchIndexer:
                             # Converti la geometria in GeoJSON
                             geometry = json.loads(feature.geometry().asJson())
                         except Exception as e:
-                            QgsMessageLog.logMessage(f"Errore nella conversione della geometria: {str(e)}",
-                                                     self.log_tag, Qgis.Warning)
+                            logger.info(f"Errore nella conversione della geometria: {str(e)}")
 
                     # Crea il documento
                     doc = {
@@ -154,18 +157,21 @@ class QGISElasticsearchIndexer:
                             "layer_id": layer_id,
                             "layer_name": layer.name(),
                             "feature_id": feature.id(),
-                            "geometry_type": feature.geometry().type() if feature.hasGeometry() else None,
+                            "geometry_type": "",
+                            #"geometry_type": feature.geometry().type() if feature.hasGeometry() else None,
                             "geometry": geometry,
                             "attributes": attrs,
                             "text_content": " ".join(text_content),
                             "indexed_at": datetime.datetime.now().isoformat()
                         }
                     }
+                    if doc['_source']['feature_id'] == 6:
+                        print(doc)
                     documents.append(doc)
 
             elif isinstance(layer, QgsRasterLayer):
                 # Per i layer raster, indicizza solo i metadati generali
-                QgsMessageLog.logMessage(f"Elaborazione layer raster: {layer.name()}", self.log_tag, Qgis.Info)
+                logger.info(f"Elaborazione layer raster: {layer.name()}")
 
                 metadata = {}
                 text_content = []
@@ -199,6 +205,7 @@ class QGISElasticsearchIndexer:
                 }
                 documents.append(doc)
 
+
         return documents
 
     def index_project(self, project):
@@ -222,16 +229,24 @@ class QGISElasticsearchIndexer:
         # Effettua l'indicizzazione in bulk
         if documents:
             try:
-                success, failed = bulk(self.es, documents, refresh=True)
-                QgsMessageLog.logMessage(f"Indicizzati {success} documenti, falliti {len(failed) if failed else 0}",
-                                         self.log_tag, Qgis.Info)
+
+                bulk_options = {
+                    'refresh': True,
+                    'chunk_size': 500,  # Dimensione batch per evitare problemi di memoria
+                    'raise_on_error': False,  # Continua anche se alcune operazioni falliscono
+                    'max_retries': 3,  # Riprova più volte prima di fallire
+                    'initial_backoff': 2,  # Attesa tra i tentativi (in secondi)
+                    'max_backoff': 600  # Attesa massima tra i tentativi (in secondi)
+                }
+
+                success, failed = bulk(self.es, documents, **bulk_options)
+                logger.info(f"Indicizzati {success} documenti, falliti {len(failed) if failed else 0}")
                 return True, success
             except Exception as e:
-                QgsMessageLog.logMessage(f"Errore nell'indicizzazione: {str(e)}",
-                                         self.log_tag, Qgis.Critical)
+                logger.info(f"Errore nell'indicizzazione: {str(e)}")
                 return False, 0
         else:
-            QgsMessageLog.logMessage("Nessun documento da indicizzare", self.log_tag, Qgis.Warning)
+            logger.info("Nessun documento da indicizzare")
             return True, 0
 
     def search(self, query_text, filters=None, size=100):
@@ -246,9 +261,6 @@ class QGISElasticsearchIndexer:
         Returns:
             list: Lista dei risultati della ricerca
         """
-        if not self.es:
-            if not self.connect():
-                return []
 
         # Crea la query di base
         query = {
@@ -313,7 +325,7 @@ class QGISElasticsearchIndexer:
             return results
 
         except Exception as e:
-            QgsMessageLog.logMessage(f"Errore nella ricerca: {str(e)}", self.log_tag, Qgis.Critical)
+            logger.info(f"Errore nella ricerca: {str(e)}", self.log_tag, Qgis.Critical)
             return []
 
 
