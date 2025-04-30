@@ -362,7 +362,7 @@ class FieldFilterBackend(BaseFilterBackend):
                         # Case 'in' operator
                         # Expexted format: [1,2,3] or [a,b,c] or (1,2,3) or (a,b,c)
                         single_values = field_value[1:-1].split(',')
-                        field_value = f"({','.join([self._quote_value(sv) for sv in single_values])})"
+                        field_value = f"({','.join([self._quote_value(sv.strip()) for sv in single_values])})"
                         quoted_field_value = unquote(field_value)
 
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
