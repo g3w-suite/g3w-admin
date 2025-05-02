@@ -17,6 +17,7 @@ from qdjango.apps import QGS_SERVER
 
 import logging
 import json
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -92,11 +93,16 @@ class GetLegendGraphicFilter(QgsServerFilter):
 
                     for idx in range(len(symbols)):
                         symbol = symbols[idx]
+
+                        # When 'SHOWFEATURECOUNT' parameter is present the symbol['title'] has at the end the count of features
+                        # So we apply a regex to remove it
+                        symbol['title'] = re.sub(r' \[\d+\]$', '', symbol['title'])
                         try:
                             category = categories[symbol['title']]
                             symbol['ruleKey'] = category['ruleKey']
                             symbol['checked'] = category['checked']
-                        except:
+                        except Exception as e:
+                            logger.debug(f'GETLEGENDGRAPHICS: Error getting ruleKey for symbol {symbol["title"]}: {e}')
                             pass
 
                         new_symbols.append(symbol)
