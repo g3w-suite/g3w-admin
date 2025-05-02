@@ -10,17 +10,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2025-04-29'
 __copyright__ = 'Copyright 2025, Gis3w'
 
-# !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-"""
-Script per indicizzare le feature di tutti i layer di un progetto QGIS in Elasticsearch
-per abilitare la ricerca full-text.
-
-Requisiti:
-- QGIS 3.x
-- elasticsearch-py (installabile con pip install elasticsearch)
-"""
 
 from django.urls import reverse, resolve
 from django.http import HttpRequest
@@ -46,24 +36,30 @@ logger = logging.getLogger('elasticsearch')
 
 
 class QGISElasticsearchIndexer:
-    """Classe per indicizzare le feature dei layer QGIS in Elasticsearch"""
+    """Class to index QGIS layer features in Elasticsearch"""
 
-    def __init__(self, connection, index_name='qgis_features'):
+    def __init__(self, connection, user, index_name='qgis_features'):
         """
-        Inizializza il connettore Elasticsearch
+        Initialize the Elasticsearch connector
 
         Args:
-            connection (str); Alias of Elasticsearch connection
-            index_name (str): Nome dell'indice Elasticsearch
+            connection (str): Alias of the Elasticsearch connection
+            user (User): Instance of Django User model
+            index_name (str): Name of the Elasticsearch index
         """
         self.es = connections.get_connection(connection)
-        self.index_name = index_name
+        self.user = user
+
+        # Set the index name with suffix for user id
+        self.index_name = f"{index_name}_{self.user.pk}"
         self.log_tag = "QGIS-ES-Indexer"
 
     def create_index(self):
-        """Crea l'indice se non esiste già"""
+        """Create the index if it does not already exist"""
+
         if not self.es.indices.exists(index=self.index_name):
-            # Definizione della mappatura per l'indice
+
+            # Index mapping definition
             mappings = {
                 "properties": {
                     "project_id": {"type": "keyword"},
@@ -102,6 +98,15 @@ class QGISElasticsearchIndexer:
             logger.info(f"L'indice '{self.index_name}' esiste già")
 
     def generate_documents_from_api(self, project):
+        """
+        Generates documents for bulk indexing from all vector layers by calling the G3W-SUITE /api/data.
+
+        Args:
+            project (Qdjango.Models.Project): Qdjango Project Model instance
+
+        Returns:
+            list: List of documents ready for bulk indexing
+        """
 
         documents = []
         project_name = project.title
@@ -158,13 +163,13 @@ class QGISElasticsearchIndexer:
 
     def generate_documents(self, project):
         """
-        Genera documenti per bulk indexing da tutti i layer vettoriali
+        Generates documents for bulk indexing from all vector layers
 
         Args:
-            project (Qdjango.Models.Project): Qdjango Projetc Model instance
+            project (Qdjango.Models.Project): Qdjango Project Model instance
 
         Returns:
-            list: Lista di documenti pronti per l'indicizzazione bulk
+            list: List of documents ready for bulk indexing
         """
         documents = []
         project_name = project.title
@@ -173,39 +178,40 @@ class QGISElasticsearchIndexer:
 
         self.generate_documents_from_api(project)
 
-        # Processa tutti i layer nel progetto
+        # Porecess every layer in the project
         for layer_id, layer in qgis_project.mapLayers().items():
             if isinstance(layer, QgsVectorLayer):
                 logger.info(f"Elaborazione layer: {layer.name()}")
 
-                # Processa ogni feature nel layer
+                # Process every feature in the layer
                 for feature in layer.getFeatures():
-                    # Estrai gli attributi
+                    # Extract the attributes
                     attrs = {}
                     text_content = []
 
-                    # Processa tutti i campi
+                    # Process the attributes
                     for field in layer.fields():
                         field_name = field.name()
                         field_value = feature[field_name]
 
-                        # Salva l'attributo
+                        # Save attribute value
                         if field_value == NULL:
 
                             field_value = None
                         attrs[field_name] = field_value
 
-                        # Aggiungi al contenuto testuale per la ricerca full-text
+                        # Add the value to the text content
                         if field_value:
                             text_content.append(str(field_value))
 
-                    # Estrai la geometria in formato GeoJSON
+                    # Extract the geometry in GeoJSON format
                     geometry = None
                     geometry_type = None
                     if feature.hasGeometry() and not feature.geometry().isEmpty():
                         geometry_type = QgsWkbTypes.displayString(feature.geometry().wkbType())
                         try:
                             qgeometry = feature.geometry()
+
                             # Check geometry is valid, try to fix
                             if not qgeometry.isGeosValid():
                                 qgeometry = qgeometry.makeValid()
@@ -258,11 +264,11 @@ class QGISElasticsearchIndexer:
                 metadata["crs"] = layer.crs().authid()
                 metadata["extent"] = layer.extent().toString()
 
-                # Aggiungi metadati al contenuto testuale
+                # Add metadata to text content
                 for key, value in metadata.items():
                     text_content.append(f"{key}: {value}")
 
-                # Crea il documento
+                # Create ES document
                 doc = {
                     "_index": self.index_name,
                     "_id": f"raster_{layer_id}",
@@ -286,43 +292,43 @@ class QGISElasticsearchIndexer:
 
     def index_project(self, project):
         """
-        Indicizza tutti i layer del progetto QGIS corrente o specificato
+        Indexes all layers of the current or specified QGIS project.
 
         Args:
-            project (QgsProject, optional): Progetto QGIS da indicizzare.
-                                           Se None, usa il progetto corrente.
+            project (QgsProject, optional): QGIS project to index.
+                                            If None, uses the current project.
 
         Returns:
-            tuple: (successo, numero di documenti indicizzati)
+            tuple: (success, number of indexed documents)
         """
 
-        # Crea l'indice se necessario
+        # Crdate index if it does not exist
         self.create_index()
 
-        # Genera i documenti da indicizzare
+        # Generate the documents from the API
         documents = self.generate_documents_from_api(project)
 
-        # Effettua l'indicizzazione in bulk
+        # Execute the bulk indexing
         if documents:
             try:
 
                 bulk_options = {
                     'refresh': True,
-                    'chunk_size': 500,  # Dimensione batch per evitare problemi di memoria
-                    'raise_on_error': False,  # Continua anche se alcune operazioni falliscono
-                    'max_retries': 3,  # Riprova più volte prima di fallire
-                    'initial_backoff': 2,  # Attesa tra i tentativi (in secondi)
-                    'max_backoff': 600  # Attesa massima tra i tentativi (in secondi)
+                    'chunk_size': 500,  # Batch dimention to avoid memory issues
+                    'raise_on_error': False,  # Continue on error
+                    'max_retries': 3,  # Try to reindex 3 times
+                    'initial_backoff': 2,  # Timeto wait before retrying (in seconds)
+                    'max_backoff': 600  # Max time to wait before retrying (in seconds)
                 }
 
                 success, bulk_failed = bulk(self.es, documents, **bulk_options)
-                logger.info(f"Indicizzati {success} documenti, falliti {len(bulk_failed) if bulk_failed else 0}")
+                logger.info(f"Indexed {success} documents, failed {len(bulk_failed) if bulk_failed else 0}")
 
                 success_message = (
-                    f"Indicizzazione completata.\n"
-                    f"- Documenti indicizzati con successo: {success}\n"
-                    f"- Documenti falliti durante il bulk: {len(bulk_failed)}\n"
-                    f"- Totale elementi processati: {success + len(bulk_failed)}\n"
+                    f"Indexing completed.\n"
+                    f"- Documents successfully indexed: {success}\n"
+                    f"- Documents failed during bulk: {len(bulk_failed)}\n"
+                    f"- Total processed items: {success + len(bulk_failed)}\n"
                 )
 
                 logger.info(success_message)
