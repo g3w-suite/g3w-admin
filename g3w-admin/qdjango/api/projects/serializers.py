@@ -270,8 +270,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Check for QGIS project themes
         # -----------------------------
         map_themes = qgs_project.mapThemeCollection().mapThemes()
-        if len(map_themes) == 0:
-            return
 
         for map_theme in map_themes:
             theme = {
