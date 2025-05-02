@@ -5,7 +5,8 @@ G3WADMIN_LOCAL_MORE_APPS = [
     'caching',
     'filemanager',
     'qplotly',
-    'qtimeseries'
+    'qtimeseries',
+    'qes'
 ]
 
 DATABASES = {

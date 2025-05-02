@@ -11,7 +11,6 @@ __date__ = '2025-04-29'
 __copyright__ = 'Copyright 2025, Gis3w'
 
 
-
 from django.urls import reverse, resolve
 from django.http import HttpRequest
 from qdjango.vector import LayerVectorView
@@ -20,8 +19,7 @@ from usersmanage.models import User
 from qgis.core import (
     QgsVectorLayer,
     QgsRasterLayer,
-    QgsWkbTypes,
-    Qgis
+    QgsWkbTypes
 )
 from elasticsearch.helpers import bulk
 from elasticsearch_dsl import connections
@@ -38,7 +36,7 @@ logger = logging.getLogger('elasticsearch')
 class QGISElasticsearchIndexer:
     """Class to index QGIS layer features in Elasticsearch"""
 
-    def __init__(self, connection, user, index_name='qgis_features'):
+    def __init__(self, connection, user, index_name='qgis_features', **kwargs):
         """
         Initialize the Elasticsearch connector
 
@@ -52,7 +50,11 @@ class QGISElasticsearchIndexer:
 
         # Set the index name with suffix for user id
         self.index_name = f"{index_name}_{self.user.pk}"
-        self.log_tag = "QGIS-ES-Indexer"
+        self.log_tag = "[QES-elasticsearch]: "
+
+        # Check for Huey process info
+        if 'process_info' in kwargs:
+            self.process_info = kwargs['process_info']
 
     def create_index(self):
         """Create the index if it does not already exist"""
@@ -93,9 +95,9 @@ class QGISElasticsearchIndexer:
                 index=self.index_name,
                 body={"mappings": mappings, "settings": settings}
             )
-            logger.info(f"Indice '{self.index_name}' creato con successo")
+            logger.info(f"{self.log_tag}Indice '{self.index_name}' creato con successo")
         else:
-            logger.info(f"L'indice '{self.index_name}' esiste già")
+            logger.info(f"{self.log_tag}L'indice '{self.index_name}' esiste già")
 
     def generate_documents_from_api(self, project):
         """
@@ -181,7 +183,7 @@ class QGISElasticsearchIndexer:
         # Porecess every layer in the project
         for layer_id, layer in qgis_project.mapLayers().items():
             if isinstance(layer, QgsVectorLayer):
-                logger.info(f"Elaborazione layer: {layer.name()}")
+                logger.info(f"{self.log_tag}Elaborazione layer: {layer.name()}")
 
                 # Process every feature in the layer
                 for feature in layer.getFeatures():
@@ -227,8 +229,8 @@ class QGISElasticsearchIndexer:
                                 }
 
                         except Exception as e:
-                            logger.info(f"Errore nella conversione della geometria delle feature id {feature.id()}: {str(e)}")
-                            logger.info(f"Geometria: {geometry}")
+                            logger.info(f"{self.log_tag}Errore nella conversione della geometria delle feature id {feature.id()}: {str(e)}")
+                            logger.info(f"{self.log_tag}Geometria: {geometry}")
 
                     # Create ES document
                     doc = {
@@ -253,7 +255,7 @@ class QGISElasticsearchIndexer:
             elif isinstance(layer, QgsRasterLayer):
 
                 # For raster only metadata are indexed
-                logger.info(f"Elaboration raster layer: {layer.name()}")
+                logger.info(f"{self.log_tag}Elaboration raster layer: {layer.name()}")
 
                 metadata = {}
                 text_content = []
@@ -322,7 +324,7 @@ class QGISElasticsearchIndexer:
                 }
 
                 success, bulk_failed = bulk(self.es, documents, **bulk_options)
-                logger.info(f"Indexed {success} documents, failed {len(bulk_failed) if bulk_failed else 0}")
+                logger.info(f"{self.log_tag}Indexed {success} documents, failed {len(bulk_failed) if bulk_failed else 0}")
 
                 success_message = (
                     f"Indexing completed.\n"
@@ -331,7 +333,7 @@ class QGISElasticsearchIndexer:
                     f"- Total processed items: {success + len(bulk_failed)}\n"
                 )
 
-                logger.info(success_message)
+                logger.info(f"{self.log_tag}{success_message}")
 
                 if bulk_failed:
                     failed_details = []
@@ -342,19 +344,18 @@ class QGISElasticsearchIndexer:
                             error_reason = error['index']['error'].get('reason', 'Unknown')
                             failed_details.append(f"Doc ID: {doc_id}, Errore: {error_type} - {error_reason}")
 
-                    # Limita il log a 10 errori per evitare log troppo lunghi
                     log_errors = failed_details[:10]
                     if len(failed_details) > 10:
-                        log_errors.append(f"... e altri {len(failed_details) - 10} errori")
+                        log_errors.append(f"... end other {len(failed_details) - 10} errors")
 
-                    logger.info(f"Dettagli degli errori di indicizzazione bulk:\n" + "\n".join(log_errors))
+                    logger.info(f"{self.log_tag}Bulk indexes details errors:\n" + "\n".join(log_errors))
 
                 return True, success
             except Exception as e:
-                logger.info(f"Errore nell'indicizzazione: {str(e)}")
+                logger.info(f"{self.log_tag}Indexes error: {str(e)}")
                 return False, 0
         else:
-            logger.info("Nessun documento da indicizzare")
+            logger.info(f"{self.log_tag}No doc to index")
             return True, 0
 
     def search(self, query_text, filters=None, size=100):
@@ -370,7 +371,7 @@ class QGISElasticsearchIndexer:
             list: List of search results
         """
 
-        # Crea la query di base
+        # Create the base query
         query = {
             "bool": {
                 "must": [
@@ -384,15 +385,15 @@ class QGISElasticsearchIndexer:
             }
         }
 
-        # Aggiungi filtri se specificati
+        # Add specific filters
         if filters:
             for key, value in filters.items():
-                if key == "layer_name":
+                if key == "layer_id":
                     query["bool"]["filter"] = query["bool"].get("filter", [])
                     query["bool"]["filter"].append({"term": {"layer_name.keyword": value}})
-                elif key == "project_name":
+                elif key == "project_id":
                     query["bool"]["filter"] = query["bool"].get("filter", [])
-                    query["bool"]["filter"].append({"term": {"project_name": value}})
+                    query["bool"]["filter"].append({"term": {"project_id": value}})
                 elif key == "geometry_type":
                     query["bool"]["filter"] = query["bool"].get("filter", [])
                     query["bool"]["filter"].append({"term": {"geometry_type": value}})
@@ -413,7 +414,7 @@ class QGISElasticsearchIndexer:
                 }
             )
 
-            # Estrai e formatta i risultati
+            # Extract and format the results
             results = []
             for hit in response["hits"]["hits"]:
                 source = hit["_source"]
@@ -434,16 +435,17 @@ class QGISElasticsearchIndexer:
             return results
 
         except Exception as e:
-            logger.info(f"Errore nella ricerca: {str(e)}", self.log_tag, Qgis.Critical)
+            logger.info(f"{self.log_tag}Search errors: {str(e)}")
             return []
 
     def delete_index(self):
-        """Elimina l'indice Elasticsearch"""
+        """Delete the ES index if it exists"""
+
         if self.es.indices.exists(index=self.index_name):
             self.es.indices.delete(index=self.index_name)
-            logger.info(f"Index '{self.index_name}' removed successfully")
+            logger.info(f"{self.log_tag}Index '{self.index_name}' removed successfully")
         else:
-            logger.info(f"Index '{self.index_name}' doesn't exist")
+            logger.info(f"{self.log_tag}Index '{self.index_name}' doesn't exist")
 
 
 
