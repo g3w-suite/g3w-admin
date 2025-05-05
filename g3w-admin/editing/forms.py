@@ -20,7 +20,10 @@ from qgis.PyQt.QtCore import QVariant
 class ActiveEditingMixin(object):
 
     def _set_style_choices(self):
-        self.fields['style'].choices = [(s['name'], s['name']) for s in self.layer.styles]
+        """
+        Set choices for style select
+        """
+        self.fields['style'].choices = [(None, '--------')] + [(s['name'], s['name']) for s in self.layer.styles]
 
 
     def _set_viewer_users_choices(self):
