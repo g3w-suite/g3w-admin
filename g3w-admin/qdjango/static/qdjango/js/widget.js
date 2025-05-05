@@ -612,6 +612,14 @@ ga.Qdjango.widgetEditor = {
         $dependence_strict.addClass("invisible");
         $numdigaut.hide()
       }
+
+      // Activate IN operator for selectbox and autocompletebox
+        if ($(this).val() == "selectbox" || $(this).val() == "autocompletebox") {
+            cmpOperatorSelect.find("option[value='in']").prop("disabled", false);
+        } else {
+            cmpOperatorSelect.find("option[value='in']").prop("disabled", true);
+        }
+
     })
 
     widgetSelect.trigger("change")
