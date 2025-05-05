@@ -49,7 +49,7 @@ def db_task(*args, **kwargs):
     return decorator
 
 @db_task(context=True)
-def es_project_indexing(project, user, task, **kwargs):
+def es_project_indexing(project, users, task, **kwargs):
     """
     Execute ES indexing task
     """
@@ -59,10 +59,28 @@ def es_project_indexing(project, user, task, **kwargs):
         desc='Execute ES indexing task'
     )
 
-    print('ES project indexing task')
 
-    indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
-    indexer.index_project(project)
+    # Indexing for every user
+    for user in users:
+        indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
+        indexer.index_project(project)
+
+@db_task(context=True)
+def es_project_delete(project, users, task, **kwargs):
+    """
+    Execute ES delete documents task
+    """
+
+    process_info = ProcessInfo(
+        task,
+        desc='Execute ES delete documents task'
+    )
+
+
+    # Indexing for every user
+    for user in users:
+        indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
+        indexer.delete_documents_by_project(project)
 
 
 

@@ -49,7 +49,7 @@ class QGISElasticsearchIndexer:
         self.user = user
 
         # Set the index name with suffix for user id
-        self.index_name = f"{index_name}_{self.user.pk}"
+        self.index_name = f"{index_name}_{self.user.pk}" if not self.user.is_anonymous else f"{index_name}_anonymous"
         self.log_tag = "[QES-elasticsearch]: "
 
         # Check for Huey process info
@@ -377,7 +377,7 @@ class QGISElasticsearchIndexer:
                 "must": [
                     {"multi_match": {
                         "query": query_text,
-                        "fields": ["text_content^2", "layer_name", "attributes.*"],
+                        "fields": ["text_content^2", "layer_name"],
                         "type": "best_fields",
                         "fuzziness": "AUTO"
                     }}
@@ -447,7 +447,33 @@ class QGISElasticsearchIndexer:
         else:
             logger.info(f"{self.log_tag}Index '{self.index_name}' doesn't exist")
 
+    def delete_documents_by_project(self, project):
+        """
+        Delete all documents related to a specific project
 
+        Args:
+            project (Qdjango.Models.Project): Qdjango Project Model instance
+        """
 
+        # Delete all documents related to the project
+        query = {
+            "query": {
+                "bool": {
+                    "filter": {
+                        "term": {
+                            "project_id": project.id
+                        }
+                    }
+                }
+            }
+        }
 
+        result = self.es.delete_by_query(index=self.index_name, body=query)
 
+        success_message = (
+            f"Delete documents completed.\n"
+            f"- Documents successfully deleted: {result['total']}\n"
+            f"- Documents failed in delete: {result['failures']}\n"
+        )
+
+        logger.info(f"{self.log_tag}Delete documents from index '{self.index_name}' {success_message}")
