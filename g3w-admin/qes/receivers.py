@@ -10,6 +10,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2025-05-02'
 __copyright__ = 'Copyright 2015 - 2025, Gis3w'
 
+from django.conf import settings
 from django.db.models.signals import (
     pre_delete,
     post_save
@@ -52,14 +53,16 @@ def get_users(project):
 def create_update_es_documents(sender, **kwargs):
     """ Create or update ES documents for project """
 
-    users = get_users(kwargs['instance'])
-    task = es_project_indexing(kwargs['instance'], users)
+    if settings.QES_INDEXING_PROJECT:
+        users = get_users(kwargs['instance'])
+        task = es_project_indexing(kwargs['instance'], users)
 
 @receiver(pre_delete, sender=Project)
 def delete_es_documents(sender, **kwargs):
     """ Delete ES documents for project """
 
-    users = get_users(kwargs['instance'])
-    task = es_project_delete(kwargs['instance'], users, delete=True)
+    if settings.QES_INDEXING_PROJECT:
+        users = get_users(kwargs['instance'])
+        task = es_project_delete(kwargs['instance'], users, delete=True)
 
 

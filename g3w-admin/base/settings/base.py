@@ -419,3 +419,6 @@ ELASTICSEARCH_DSL = {
         #'http_auth': ('username', 'password')
     }
 }
+
+# Activate/deactivate es indexign projects
+QES_INDEXING_PROJECT = True
