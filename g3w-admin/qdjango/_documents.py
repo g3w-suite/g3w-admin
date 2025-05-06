@@ -31,5 +31,5 @@ class ProjectDocument(Document):
             'description',
         ]
 
-        related_models = [Group]
+        #related_models = [Group]
 

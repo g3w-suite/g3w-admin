@@ -413,7 +413,6 @@ PLACEHOLD_SERVICE = 'https://placehold.co/'
 
 # Default elasticsearch settings
 # --------------------------------
-ES_ENABLE = False
 ELASTICSEARCH_DSL = {
     'default': {
         'hosts': 'http://localhost:9200',
