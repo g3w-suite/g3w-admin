@@ -695,7 +695,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'download_gpkg',
             'download_pdf',
             'editor_form_structure',
-            'styles'
+            'styles',
+            'info_result_number_fields'
         )
 
     def column_to_exclude(self, instance):
