@@ -7,7 +7,8 @@ G3WADMIN_LOCAL_MORE_APPS = [
     'filemanager',
     'qplotly',
     'openrouteservice',
-    'qtimeseries'
+    'qtimeseries',
+    'qes'
 ]
 
 DATABASES = {
