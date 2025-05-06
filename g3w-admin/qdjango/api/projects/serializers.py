@@ -569,8 +569,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             ret['relations'] += self.get_map_layers_relations(instance)
 
         # Add project metadata
-        # Also if show or not to show metadata
-        ret['show_metadata_section'] = instance.show_metadata_section
         ret['metadata'] = self.get_metadata(instance, qgs_project)
 
         # set client options/actions
