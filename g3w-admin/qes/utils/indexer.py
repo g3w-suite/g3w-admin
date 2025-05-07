@@ -447,6 +447,15 @@ class QGISElasticsearchIndexer:
         else:
             logger.info(f"{self.log_tag}Index '{self.index_name}' doesn't exist")
 
+    def delete_all_indexes(self):
+        """
+        Delete all indexes in ES
+        """
+        for i in self.es.cat.indices(format='json'):
+            self.es.indices.delete(index=i['index'])
+
+        logger.info(f"{self.log_tag}All indexes removed successfully")
+
     def delete_documents_by_project(self, project):
         """
         Delete all documents related to a specific project
