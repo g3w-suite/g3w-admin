@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='layer',
-            name='info_result_number_fields',
+            name='max_preview_fields',
             field=models.IntegerField(blank=True, default=3, null=True, verbose_name='Number of fields to show in info result'),
         ),
         migrations.AlterField(

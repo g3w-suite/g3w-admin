@@ -213,12 +213,12 @@
                                     <input
                                         data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}"
                                         type="number"
-                                        class="info_result_number_fields text-input form-control"
-                                        value="{{ object.info_result_number_fields|default:"3" }}"
+                                        class="max_preview_fields text-input form-control"
+                                        value="{{ object.max_preview_fields|default:"3" }}"
                                         min="1"
                                         max="100"
                                         step="1"
-                                        onchange="if(!isNaN(+event.target.value.trim())) ga.widget.setLayerData($(event.target), { ['info_result_number_fields']: +event.target.value.trim() });"
+                                        onchange="if(!isNaN(+event.target.value.trim())) ga.widget.setLayerData($(event.target), { ['max_preview_fields']: +event.target.value.trim() });"
                                     >
                                 </div>
                             </td>

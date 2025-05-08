@@ -978,7 +978,7 @@ class Layer(G3WACLModelMixins, models.Model):
         db_index=True,
     )
 
-    info_result_number_fields = models.IntegerField(_('Number of fields to show in info result'), default=3,
+    max_preview_fields = models.IntegerField(_('Number of fields to show in info result'), default=3,
                                                     blank=True, null=True)
 
     objects = models.Manager()  # The default manager.
