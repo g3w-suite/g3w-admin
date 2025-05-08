@@ -134,6 +134,7 @@ class QGISElasticsearchIndexer:
             req.method = 'GET'
             req.user = User.objects.get(username='admin01')
             req.resolver_match = resolve(url)
+            req.GET['formatter'] = 1
 
             view = LayerVectorView.as_view()
             res = view(req, *[], **kwargs).render()
@@ -141,6 +142,28 @@ class QGISElasticsearchIndexer:
 
             for feature in features['vector']['data']['features']:
 
+                # Create text_content
+                text_content = []
+                for v in feature['properties'].values():
+                    if v is not None:
+
+                        # Case for nested dictionaries, i.e for media file:
+                        # -------------------------------------------------
+                        # "form": {
+                        #     "value": "https://v36.g3wsuite.it/en/me/qdjango/353/building_detection_card.pdf",
+                        #     "mime_type": null
+                        # }
+                        # -------------------------------------------------
+                        if isinstance(v, dict):
+                            for subk, subv in v.items():
+                                if subv is not None and subk == 'value':
+                                    text_content.append(subv)
+                        else:
+                            text_content.append(str(v))
+
+
+
+                # Extract the attributes
                 # Create ES document
                 doc = {
                     "_index": self.index_name,
@@ -154,7 +177,7 @@ class QGISElasticsearchIndexer:
                         "geometry_type": "",
                         #"geometry": feature['geometry'],
                         "attributes": feature['properties'],
-                        "text_content": " ".join([str(v) for v in feature['properties'].values()]),
+                        "text_content": " ".join(text_content),
                         "indexed_at": datetime.datetime.now().isoformat()
                     }
                 }
