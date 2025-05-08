@@ -37,19 +37,6 @@
         '     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >\n' +
         '  <image x="0" y="0" height="122%" width="122%"  ' +
         ' xlink:href="{% static 'svg/mIconExpression_orange.svg' %}" />'
-
-    $(document).ready(function(){
-        // For number of fields for info results
-        $('.info_result_number_fields').on('input', function() {
-            let valore = $(this).val();
-
-            // Check if is numeric
-            if ($.isNumeric(valore)) {
-                ga.widget.setLayerData($(this), { ['info_result_number_fields']: valore });
-            }
-        });
-    });
-
 </script>
 {% endblock %}
 
@@ -223,7 +210,16 @@
                             </td>
                             <td>
                                 <div class="controls">
-                                    <input  data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" type="number" class="info_result_number_fields text-input form-control" value="{{ object.info_result_number_fields|default:"3" }}" min="1" max="100" step="1">
+                                    <input
+                                        data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}"
+                                        type="number"
+                                        class="info_result_number_fields text-input form-control"
+                                        value="{{ object.info_result_number_fields|default:"3" }}"
+                                        min="1"
+                                        max="100"
+                                        step="1"
+                                        onchange="if(!isNaN(+event.target.value.trim())) ga.widget.setLayerData($(event.target), { ['info_result_number_fields']: +event.target.value.trim() });"
+                                    >
                                 </div>
                             </td>
                             <td>
