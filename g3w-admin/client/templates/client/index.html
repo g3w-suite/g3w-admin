@@ -12,6 +12,9 @@
   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
   <link rel="stylesheet" href="{{ css }}" />
   {% endfor %}{% endif %}
+  {% if CLIENT_CUSTOM_CSS %}
+  <style>{{ CLIENT_CUSTOM_CSS | safe }}</style>
+  {% endif %}
   <style>
     @keyframes sk-bounce              { 0%, 100% { transform: scale(0.0); } 50% { transform: scale(1.0); } }
     #startingspinner                  { position: fixed; z-index: 100000; height: 10em; width: 10em; overflow: show; margin: auto; inset: 0; }

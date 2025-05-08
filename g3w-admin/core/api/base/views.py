@@ -50,6 +50,7 @@ MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
 MODE_GEOTIFF = 'geotiff' # For raster layers
 MODE_FEATURE_COUNT = 'featurecount'
+MODE_EDITORFORMSTRUCTURE_COUNT = 'editorformstructure'
 
 MIME_TYPES_MOD = {
     MODE_SHP: {
@@ -197,7 +198,7 @@ class BaseVectorApiView(G3WAPIView):
     # Parameter for locking features data into db
     app_name = None
 
-    # specific fileds data for media fifileds like picture/movies
+    # specific fields data for media file-fields like picture/movies
     media_properties = dict()
 
     # Database keyname to use if different from default settings
@@ -216,6 +217,10 @@ class BaseVectorApiView(G3WAPIView):
     ]
 
     pagination_class = G3WAPIPaginator
+
+    # For qgis layer style management
+    style = None
+    current_style = None
 
     @property
     def paginator(self):
@@ -476,12 +481,17 @@ class BaseVectorApiView(G3WAPIView):
 
         # Make sure we have all attrs we need to build the server FID
         provider = self.metadata_layer.qgis_layer.dataProvider()
-        if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
-            attrs = qgis_feature_request.subsetOfAttributes()
-            for attr_idx in provider.pkAttributeIndexes():
-                if attr_idx not in attrs:
-                    attrs.append(attr_idx)
-            qgis_feature_request.setSubsetOfAttributes(attrs)
+
+        def set_qfr_attridx(qgs_feature_request, provider):
+            """
+            Internal function to set the attribute indexes for the feature request
+            """
+            if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
+                attrs = qgis_feature_request.subsetOfAttributes()
+                for attr_idx in provider.pkAttributeIndexes():
+                    if attr_idx not in attrs:
+                        attrs.append(attr_idx)
+                qgis_feature_request.setSubsetOfAttributes(attrs)
 
         # Get feature: apply pagination if 'page' parameters is set
         self.features = get_qgis_features(
@@ -741,6 +751,8 @@ class BaseVectorApiView(G3WAPIView):
                         qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
                         qgis_feature_request.setLimit(-1)
 
+                        set_qfr_attridx(qgis_feature_request, provider)
+
                     self.total_feature_ids = [str(server_fid(f, provider)) for f in get_qgis_features(
                         self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
 
@@ -798,8 +810,22 @@ class BaseVectorApiView(G3WAPIView):
         except:
             self.download_relations = 0
 
+        # Set layer style
+        # If style come from requests data
+        # Change to style requested
+        if 'style' in self.request_data:
+            self.style = self.request_data['style']
+            self.current_style = self.metadata_layer.qgis_layer.styleManager().currentStyle()
+
+        if self.current_style and self.style and self.style != self.current_style:
+            self.metadata_layer.qgis_layer.styleManager().setCurrentStyle(self.style)
+
         # get results
         response = self.get_response_data(request)
+
+        # Reset style
+        if self.current_style and self.style and self.style != self.current_style:
+            self.metadata_layer.qgis_layer.styleManager().setCurrentStyle(self.current_style)
 
         if response is None:
 

@@ -27,7 +27,8 @@ from core.api.base.views import (
     BaseVectorApiView,
     MODE_GPKG,
     IntersectsBBoxFilter,
-    MODE_FEATURE_COUNT
+    MODE_FEATURE_COUNT,
+    MODE_EDITORFORMSTRUCTURE_COUNT
 )
 from core.api.filters import (
     IntersectsBBoxFilter,
@@ -292,7 +293,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         MODE_CSV,  # get CSV
         MODE_GPKG,  # get GeoPackage
         MODE_FILTER_TOKEN,  # get session filter token
-        MODE_FEATURE_COUNT # return the number of feature for every style category
+        MODE_FEATURE_COUNT, # return the number of feature for every style category
+        MODE_EDITORFORMSTRUCTURE_COUNT # return the editor form structure for a layer by style
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
@@ -329,8 +331,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # add widgets
         if hasattr(self.layer, 'edittypes') and self.layer.edittypes:
 
-            # reduild edittypes
-            edittypes = eval(self.layer.edittypes)
+            # Get layer edittypes
+            edittypes = self.layer.get_edittypes()
             allow_edittypes = list(MAPPING_EDITTYPE_QGISEDITTYPE.keys())
 
             for field, data in list(edittypes.items()):
@@ -607,15 +609,21 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self.results.update({'data': token_data})
 
     def response_featurecount_mode(self, request):
-        """ Return the feature count value for every layer style category """
+        """
+        Return the feature count value for every layer style category
+        """
 
-        if request.method == 'POST':
-            request_data = request.data
-        else:
-            request_data = request.query_params
+        style = self.request_data.get('style', None)
+        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,style)})
 
-        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,
-                                                           request_data.get('style', None))})
+    def response_editorformstructure_mode(self, request):
+        """
+        Return the editor form structure for a layer by style
+        """
+
+        style = self.request_data.get('style', None)
+        self.results.update({'data': self.layer.get_editor_form_structure(style)})
+
 
     def _selection_responde_download_mode(self, qgs_request, save_options):
         """ Filter download response mode: shp, xls, gpx.."""
