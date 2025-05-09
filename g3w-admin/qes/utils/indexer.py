@@ -95,19 +95,104 @@ class QGISElasticsearchIndexer:
                 index=self.index_name,
                 body={"mappings": mappings, "settings": settings}
             )
-            logger.info(f"{self.log_tag}Indice '{self.index_name}' creato con successo")
+            logger.info(f"{self.log_tag}Index '{self.index_name}' sucessfully created")
         else:
-            logger.info(f"{self.log_tag}L'indice '{self.index_name}' esiste già")
+            logger.info(f"{self.log_tag}Index '{self.index_name}' exists, no need to create it")
 
-    def generate_documents_from_api(self, project):
+    def make_documents(self, project, qlayer, features):
+        """
+        Give GEOJson features and return a list of documents for ES
+
+        :param project: Qdjango Project Model instance
+        :param qlayer: QGIS Layer instance
+        :param features: List of features in GEOJson format
+        :return: List of documents ready for bulk indexing
+        """
+
+        documents = []
+        project_name = project.title
+        project_id = project.id
+
+        for feature in features:
+
+            # Create text_content
+            text_content = []
+            for v in feature['properties'].values():
+                if v is not None:
+
+                    # Case for nested dictionaries, i.e for media file:
+                    # -------------------------------------------------
+                    # "form": {
+                    #     "value": "https://v36.g3wsuite.it/en/me/qdjango/353/building_detection_card.pdf",
+                    #     "mime_type": null
+                    # }
+                    # -------------------------------------------------
+                    if isinstance(v, dict):
+                        for subk, subv in v.items():
+                            if subv is not None and subk == 'value':
+                                text_content.append(subv)
+                    else:
+                        text_content.append(str(v))
+
+            # Extract the attributes
+            # Create ES document
+            doc = {
+                "_index": self.index_name,
+                "_id": f"{project_id}_{qlayer.id()}_{feature['id']}",
+                "_source": {
+                    "project_id": project_id,
+                    "project_name": project_name,
+                    "layer_id": qlayer.id(),
+                    "layer_name": qlayer.name(),
+                    "feature_id": feature['id'],
+                    "geometry_type": "",
+                    # "geometry": feature['geometry'],
+                    "attributes": feature['properties'],
+                    "text_content": " ".join(text_content),
+                    "indexed_at": datetime.datetime.now().isoformat()
+                }
+            }
+
+            documents.append(doc)
+
+        return documents
+
+    def get_features_from_api(self, project_id, layer_id, feature_ids=None):
+        """
+        Execute a request to /vector/api/data to get formatted features
+
+        :param project_id: QGIS project id
+        :param layer_id: QGIS layer id
+        :param feature_ids: List of feature ids to filter
+        :return: List of features in GEOJson format
+        """
+
+        kwargs = {
+            'project_type': 'qdjango',
+            'project_id': project_id,
+            'layer_name': layer_id,
+            'mode_call': 'data'
+        }
+
+        url = reverse('core-vector-api', kwargs=kwargs)
+        req = HttpRequest()
+        req.method = 'GET'
+        req.user = self.user
+        req.resolver_match = resolve(url)
+        req.GET['formatter'] = 1
+
+        view = LayerVectorView.as_view()
+        res = view(req, *[], **kwargs).render()
+
+        return json.loads(res.content)
+
+    def generate_documents_from_api(self, project, feature_ids=None):
         """
         Generates documents for bulk indexing from all vector layers by calling the G3W-SUITE /api/data.
 
-        Args:
-            project (Qdjango.Models.Project): Qdjango Project Model instance
-
-        Returns:
-            list: List of documents ready for bulk indexing
+        :param project: Qdjango Project Model instance
+        :feature_ids: List of feature ids to filter
+        :return: List of documents ready for bulk indexing
         """
 
         documents = []
@@ -115,74 +200,20 @@ class QGISElasticsearchIndexer:
         project_id = project.id
         qgis_project = project.qgis_project
 
-        for layer_id, layer in qgis_project.mapLayers().items():
 
-            if not isinstance(layer, QgsVectorLayer):
-                continue
+        if not feature_ids:
+            for layer_id, layer in qgis_project.mapLayers().items():
 
-            kwargs = {
-                'project_type': 'qdjango',
-                'project_id': project_id,
-                'layer_name': layer_id,
-                'mode_call': 'data'
-            }
+                if not isinstance(layer, QgsVectorLayer):
+                    continue
 
+                # Get features from API
+                features = self.get_features_from_api(project_id, layer_id)
+        else:
+                feature = self.get_features_from_api(project_id, feature_ids, feature_ids)
 
-
-            url = reverse('core-vector-api', kwargs=kwargs)
-            req = HttpRequest()
-            req.method = 'GET'
-            req.user = self.user
-            req.resolver_match = resolve(url)
-            req.GET['formatter'] = 1
-
-            view = LayerVectorView.as_view()
-            res = view(req, *[], **kwargs).render()
-            features = json.loads(res.content)
-
-            for feature in features['vector']['data']['features']:
-
-                # Create text_content
-                text_content = []
-                for v in feature['properties'].values():
-                    if v is not None:
-
-                        # Case for nested dictionaries, i.e for media file:
-                        # -------------------------------------------------
-                        # "form": {
-                        #     "value": "https://v36.g3wsuite.it/en/me/qdjango/353/building_detection_card.pdf",
-                        #     "mime_type": null
-                        # }
-                        # -------------------------------------------------
-                        if isinstance(v, dict):
-                            for subk, subv in v.items():
-                                if subv is not None and subk == 'value':
-                                    text_content.append(subv)
-                        else:
-                            text_content.append(str(v))
-
-
-
-                # Extract the attributes
-                # Create ES document
-                doc = {
-                    "_index": self.index_name,
-                    "_id": f"{project_id}_{layer_id}_{feature['id']}",
-                    "_source": {
-                        "project_id": project_id,
-                        "project_name": project_name,
-                        "layer_id": layer_id,
-                        "layer_name": layer.name(),
-                        "feature_id": feature['id'],
-                        "geometry_type": "",
-                        #"geometry": feature['geometry'],
-                        "attributes": feature['properties'],
-                        "text_content": " ".join(text_content),
-                        "indexed_at": datetime.datetime.now().isoformat()
-                    }
-                }
-
-                documents.append(doc)
+            # Create documents for ES
+            documents += self.make_documents(project, layer, features['vector']['data']['features'])
 
         return documents
 
@@ -319,12 +350,8 @@ class QGISElasticsearchIndexer:
         """
         Indexes all layers of the current or specified QGIS project.
 
-        Args:
-            project (QgsProject, optional): QGIS project to index.
-                                            If None, uses the current project.
-
-        Returns:
-            tuple: (success, number of indexed documents)
+        :param project: Qdjango Project Model instance
+        :return: Tuple with success status and number of indexed documents
         """
 
         # Crdate index if it does not exist
@@ -380,6 +407,18 @@ class QGISElasticsearchIndexer:
         else:
             logger.info(f"{self.log_tag}No doc to index")
             return True, 0
+
+    def index_layer(self, project, layer, feature_ids=None):
+        """
+        Indexes a specific layer of the current or specified QGIS project ora a subset of the features.
+
+        :param project: Qdjango Project Model instance
+        :param layer: QGIS Layer instance
+        :param feature_ids: List of feature ids to filter
+        :return: Tuple with success status and number of indexed documents
+        """
+
+        pass
 
     def search(self, query_text, filters=None, size=100):
         """
