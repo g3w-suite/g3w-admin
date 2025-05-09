@@ -181,17 +181,21 @@ class QGISElasticsearchIndexer:
         req.resolver_match = resolve(url)
         req.GET['formatter'] = 1
 
+        if feature_ids:
+            req.GET['fids'] = ','.join([str(f) for f in feature_ids])
+
         view = LayerVectorView.as_view()
         res = view(req, *[], **kwargs).render()
 
         return json.loads(res.content)
 
-    def generate_documents_from_api(self, project, feature_ids=None):
+    def generate_documents_from_api(self, project, layer=None, feature_ids=None):
         """
         Generates documents for bulk indexing from all vector layers by calling the G3W-SUITE /api/data.
 
         :param project: Qdjango Project Model instance
-        :feature_ids: List of feature ids to filter
+        :param layer: Qdjango Layer instance (optional)
+        :param feature_ids: List of feature ids to filter
         :return: List of documents ready for bulk indexing
         """
 
@@ -200,22 +204,82 @@ class QGISElasticsearchIndexer:
         project_id = project.id
         qgis_project = project.qgis_project
 
-
-        if not feature_ids:
-            for layer_id, layer in qgis_project.mapLayers().items():
-
-                if not isinstance(layer, QgsVectorLayer):
-                    continue
-
-                # Get features from API
-                features = self.get_features_from_api(project_id, layer_id)
+        # Check for layer
+        # set a list with one layer or default every layer of the project
+        if layer:
+            qlayers = [(layer.qgs_layer_id, layer.qgis_layer)]
         else:
-                feature = self.get_features_from_api(project_id, feature_ids, feature_ids)
+            qlayers = qgis_project.mapLayers().items()
+
+
+        for layer_id, qlayer in qlayers:
+
+            if not isinstance(qlayer, QgsVectorLayer):
+                continue
+
+            # Get features from API
+            features = self.get_features_from_api(project_id, layer_id, feature_ids)
 
             # Create documents for ES
-            documents += self.make_documents(project, layer, features['vector']['data']['features'])
+            documents += self.make_documents(project, qlayer, features['vector']['data']['features'])
 
         return documents
+
+    def push_documents(self, documents):
+        """
+        Push documents to ES index
+
+        :param documents: List of documents to push
+        """
+
+        # Execute the bulk indexing
+        if documents:
+            try:
+
+                bulk_options = {
+                    'refresh': True,
+                    'chunk_size': 500,  # Batch dimention to avoid memory issues
+                    'raise_on_error': False,  # Continue on error
+                    'max_retries': 3,  # Try to reindex 3 times
+                    'initial_backoff': 2,  # Timeto wait before retrying (in seconds)
+                    'max_backoff': 600  # Max time to wait before retrying (in seconds)
+                }
+
+                success, bulk_failed = bulk(self.es, documents, **bulk_options)
+                logger.info(
+                    f"{self.log_tag}Indexed {success} documents, failed {len(bulk_failed) if bulk_failed else 0}")
+
+                success_message = (
+                    f"Indexing completed.\n"
+                    f"- Documents successfully indexed: {success}\n"
+                    f"- Documents failed during bulk: {len(bulk_failed)}\n"
+                    f"- Total processed items: {success + len(bulk_failed)}\n"
+                )
+
+                logger.info(f"{self.log_tag}{success_message}")
+
+                if bulk_failed:
+                    failed_details = []
+                    for error in bulk_failed:
+                        if 'index' in error and 'error' in error['index']:
+                            doc_id = error['index'].get('_id', 'Unknown')
+                            error_type = error['index']['error'].get('type', 'Unknown')
+                            error_reason = error['index']['error'].get('reason', 'Unknown')
+                            failed_details.append(f"Doc ID: {doc_id}, Errore: {error_type} - {error_reason}")
+
+                    log_errors = failed_details[:10]
+                    if len(failed_details) > 10:
+                        log_errors.append(f"... end other {len(failed_details) - 10} errors")
+
+                    logger.info(f"{self.log_tag}Bulk indexes details errors:\n" + "\n".join(log_errors))
+
+                return True, success
+            except Exception as e:
+                logger.info(f"{self.log_tag}Indexes error: {str(e)}")
+                return False, 0
+        else:
+            logger.info(f"{self.log_tag}No doc to index")
+            return True, 0
 
     def generate_documents(self, project):
         """
@@ -346,7 +410,7 @@ class QGISElasticsearchIndexer:
 
         return documents
 
-    def index_project(self, project):
+    def index_project(self, project, layer=None, feature_ids=None):
         """
         Indexes all layers of the current or specified QGIS project.
 
@@ -354,71 +418,12 @@ class QGISElasticsearchIndexer:
         :return: Tuple with success status and number of indexed documents
         """
 
-        # Crdate index if it does not exist
+        # Create index if it does not exist
         self.create_index()
 
         # Generate the documents from the API
-        documents = self.generate_documents_from_api(project)
+        self.push_documents(self.generate_documents_from_api(project, layer, feature_ids))
 
-        # Execute the bulk indexing
-        if documents:
-            try:
-
-                bulk_options = {
-                    'refresh': True,
-                    'chunk_size': 500,  # Batch dimention to avoid memory issues
-                    'raise_on_error': False,  # Continue on error
-                    'max_retries': 3,  # Try to reindex 3 times
-                    'initial_backoff': 2,  # Timeto wait before retrying (in seconds)
-                    'max_backoff': 600  # Max time to wait before retrying (in seconds)
-                }
-
-                success, bulk_failed = bulk(self.es, documents, **bulk_options)
-                logger.info(f"{self.log_tag}Indexed {success} documents, failed {len(bulk_failed) if bulk_failed else 0}")
-
-                success_message = (
-                    f"Indexing completed.\n"
-                    f"- Documents successfully indexed: {success}\n"
-                    f"- Documents failed during bulk: {len(bulk_failed)}\n"
-                    f"- Total processed items: {success + len(bulk_failed)}\n"
-                )
-
-                logger.info(f"{self.log_tag}{success_message}")
-
-                if bulk_failed:
-                    failed_details = []
-                    for error in bulk_failed:
-                        if 'index' in error and 'error' in error['index']:
-                            doc_id = error['index'].get('_id', 'Unknown')
-                            error_type = error['index']['error'].get('type', 'Unknown')
-                            error_reason = error['index']['error'].get('reason', 'Unknown')
-                            failed_details.append(f"Doc ID: {doc_id}, Errore: {error_type} - {error_reason}")
-
-                    log_errors = failed_details[:10]
-                    if len(failed_details) > 10:
-                        log_errors.append(f"... end other {len(failed_details) - 10} errors")
-
-                    logger.info(f"{self.log_tag}Bulk indexes details errors:\n" + "\n".join(log_errors))
-
-                return True, success
-            except Exception as e:
-                logger.info(f"{self.log_tag}Indexes error: {str(e)}")
-                return False, 0
-        else:
-            logger.info(f"{self.log_tag}No doc to index")
-            return True, 0
-
-    def index_layer(self, project, layer, feature_ids=None):
-        """
-        Indexes a specific layer of the current or specified QGIS project ora a subset of the features.
-
-        :param project: Qdjango Project Model instance
-        :param layer: QGIS Layer instance
-        :param feature_ids: List of feature ids to filter
-        :return: Tuple with success status and number of indexed documents
-        """
-
-        pass
 
     def search(self, query_text, filters=None, size=100):
         """
@@ -518,26 +523,42 @@ class QGISElasticsearchIndexer:
 
         logger.info(f"{self.log_tag}All indexes removed successfully")
 
-    def delete_documents_by_project(self, project):
+    def delete_documents(self, project, layer=None, feature_ids=None):
         """
         Delete all documents related to a specific project
 
-        Args:
-            project (Qdjango.Models.Project): Qdjango Project Model instance
+        :param project: Qdjango Project Model instance
+        :return: Result of the delete operation
         """
 
         # Delete all documents related to the project
+        # -------------------------------------------------------
         query = {
             "query": {
                 "bool": {
-                    "filter": {
-                        "term": {
-                            "project_id": project.id
-                        }
-                    }
+                    "filter": {"term": {"project_id": project.id}}
                 }
             }
         }
+
+        # If layer is specified, add it to the query
+        # -------------------------------------------------------
+        if layer:
+            query["query"]["bool"]["filter"] = {
+                "bool": {
+                    "must": [
+                        {"term": {"project_id": project.id}},
+                        {"term": {"layer_id": layer.qgs_layer_id}},
+                    ]
+                }
+            }
+        # If feature_ids is specified, add it to the query
+        # -------------------------------------------------------
+        if layer and feature_ids:
+
+            query["query"]["bool"]["filter"]["bool"]["must"].append ({
+                "terms": {"feature_id": [str(fid) for fid in feature_ids]}
+            })
 
         result = self.es.delete_by_query(index=self.index_name, body=query)
 
@@ -548,3 +569,5 @@ class QGISElasticsearchIndexer:
         )
 
         logger.info(f"{self.log_tag}Delete documents from index '{self.index_name}' {success_message}")
+        
+        return result
