@@ -24,9 +24,6 @@ jobs:
     - name: Starting Docker compose
       run: docker compose -f docker-compose.${{ matrix.qgis_version }}.yml up -d
 
-    - name: Docker compose ps
-      run: docker compose -f docker-compose.${{ matrix.qgis_version }}.yml ps
-
     - name: Copying code into the container
       run: |
           docker cp ./ "$(docker compose -f docker-compose.${{ matrix.qgis_version }}.yml ps -q g3w-suite)":/code
@@ -118,5 +115,6 @@ jobs:
     - name: Setup tmate session
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
       with:
         limit-access-to-actor: true
