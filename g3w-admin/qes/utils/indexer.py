@@ -132,7 +132,7 @@ class QGISElasticsearchIndexer:
             url = reverse('core-vector-api', kwargs=kwargs)
             req = HttpRequest()
             req.method = 'GET'
-            req.user = User.objects.get(username='admin01')
+            req.user = self.user
             req.resolver_match = resolve(url)
             req.GET['formatter'] = 1
 

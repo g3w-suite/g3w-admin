@@ -63,6 +63,7 @@ def es_project_indexing(project, users, task, **kwargs):
     # Indexing for every user
     for user in users:
         indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
+        indexer.delete_index()
         indexer.index_project(project)
 
 @db_task(context=True)
