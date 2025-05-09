@@ -420,5 +420,5 @@ ELASTICSEARCH_DSL = {
     }
 }
 
-# Activate/deactivate es indexign projects
+# Activate/deactivate es indexing projects
 QES_INDEXING_PROJECT = True
