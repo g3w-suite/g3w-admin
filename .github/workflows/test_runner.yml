@@ -35,7 +35,10 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Test Elasticsearch connection
-      run: curl http://elasticsearch:9200
+      run: docker ps
+
+    - name: Test Elasticsearch connection
+      run: curl http://localhost:9200
 
     - name: Extract branch name
       shell: bash
