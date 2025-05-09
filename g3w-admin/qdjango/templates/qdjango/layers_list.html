@@ -209,6 +209,7 @@
                                 </span>
                             </td>
                             <td>
+                                {% if object.layer_type in type_layer_for_download %}
                                 <div class="controls">
                                     <input
                                         data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}"
@@ -216,11 +217,11 @@
                                         class="max_preview_fields text-input form-control"
                                         value="{{ object.max_preview_fields|default:"3" }}"
                                         min="1"
-                                        max="100"
+                                        max="{% fieldsnumber object %}"
                                         step="1"
-                                        onchange="if(!isNaN(+event.target.value.trim())) ga.widget.setLayerData($(event.target), { ['max_preview_fields']: +event.target.value.trim() });"
-                                    >
+                                        onchange="if(!isNaN(+event.target.value.trim())) ga.widget.setLayerData($(event.target), { ['max_preview_fields']: +event.target.value.trim() });">
                                 </div>
+                                {% endif %}
                             </td>
                             <td>
 
