@@ -219,7 +219,8 @@
                                         min="1"
                                         max="{% fieldsnumber object %}"
                                         step="1"
-                                        onchange="if(!isNaN(+event.target.value.trim())) ga.widget.setLayerData($(event.target), { ['max_preview_fields']: +event.target.value.trim() });">
+                                        oninput="this.value = Math.max(0, Math.min(10, this.value)); if(!isNaN(+this.value)) ga.widget.setLayerData($(event.target), { ['max_preview_fields']: +this.value });"
+                                    >
                                 </div>
                                 {% endif %}
                             </td>
