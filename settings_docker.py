@@ -157,3 +157,12 @@ ORS_PROFILES = {
     "driving-car": {"name": "Car"},
     "driving-hgv": {"name": "Heavy Goods Vehicle"}
 }
+
+# Default elasticsearch settings
+# --------------------------------
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://elasticsearch:9200',
+        #'http_auth': ('username', 'password')
+    }
+}
