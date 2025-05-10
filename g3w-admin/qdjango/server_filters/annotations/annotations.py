@@ -140,7 +140,6 @@ class AnnotationsPrintFilter(QgsServerFilter):
                 'font-color': '#FF0000',
                 'font-size': 12,
                 'font-style': 'normal',
-                'opacity': 0.5,
                 'buffer-size': 1,
                 'buffer-color': '#FFFFFF',
             },
@@ -157,7 +156,6 @@ class AnnotationsPrintFilter(QgsServerFilter):
                 'stroke-color': '#0000FF',
                 'stroke-width': 2,
                 'fill-color': '#0000FF',
-                'font-color': '#0000FF',
                 'font-size': 12,
                 'font-style': 'normal',
                 'buffer-size': 1,
@@ -209,7 +207,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
         if 'stroke-color' in styles['points']:
             color = QColor(styles['points']['stroke-color'])
             if not color.isValid():
-                self.error(response, 'Invalid color: {}'.format(styles['points']['stroke-color']))
+                self.error(handler, 'Invalid color: {}'.format(styles['points']['stroke-color']))
                 return True
             annotation_points.renderer().symbol().symbolLayer(0).setStrokeColor(color)
 
@@ -219,7 +217,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
         if 'fill-color' in styles['points']:
             color = QColor(styles['points']['fill-color'])
             if not color.isValid():
-                self.error(response, 'Invalid color: {}'.format(styles['points']['fill-color']))
+                self.error(handler, 'Invalid color: {}'.format(styles['points']['fill-color']))
                 return True
             annotation_points.renderer().symbol().setColor(color)
 
@@ -227,7 +225,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
         if 'stroke-color' in styles['lines']:
             color = QColor(styles['lines']['stroke-color'])
             if not color.isValid():
-                self.error(response, 'Invalid color: {}'.format(styles['lines']['stroke-color']))
+                self.error(handler, 'Invalid color: {}'.format(styles['lines']['stroke-color']))
                 return True
             annotation_lines.renderer().symbol().setColor(color)
 
@@ -238,7 +236,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
         if 'stroke-color' in styles['polygons']:
             color = QColor(styles['polygons']['stroke-color'])
             if not color.isValid():
-                self.error(response, 'Invalid color: {}'.format(styles['polygons']['stroke-color']))
+                self.error(handler, 'Invalid color: {}'.format(styles['polygons']['stroke-color']))
                 return True
             annotation_polygons.renderer().symbol().symbolLayer(0).setStrokeColor(color)
 
@@ -248,7 +246,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
         if 'fill-color' in styles['polygons']:
             color = QColor(styles['polygons']['fill-color'])
             if not color.isValid():
-                self.error(response, 'Invalid color: {}'.format(styles['polygons']['fill-color']))
+                self.error(handler, 'Invalid color: {}'.format(styles['polygons']['fill-color']))
                 return True
             annotation_polygons.renderer().symbol().symbolLayer(0).setFillColor(color)
 
@@ -259,7 +257,6 @@ class AnnotationsPrintFilter(QgsServerFilter):
         layer_settings.placementSettings().setAllowDegradedPlacement( True )
 
         text_format = QgsTextFormat()
-        #text_format.setFont(QFont("Arial", 12))
         text_format.setSize(12)
 
         buffer_settings = QgsTextBufferSettings()
@@ -288,7 +285,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                 if 'font-color' in styles[layer_type]:
                     color = QColor(styles[layer_type]['font-color'])
                     if not color.isValid():
-                        self.error(response, 'Invalid color: {}'.format(styles[layer_type]['font-color']))
+                        self.error(handler, 'Invalid color: {}'.format(styles[layer_type]['font-color']))
                         return
                     text_format.setColor(color)
                 if 'font-style' in styles[layer_type]:
