@@ -286,7 +286,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                     color = QColor(styles[layer_type]['font-color'])
                     if not color.isValid():
                         self.error(handler, 'Invalid color: {}'.format(styles[layer_type]['font-color']))
-                        return
+                        return True
                     text_format.setColor(color)
                 if 'font-style' in styles[layer_type]:
                     text_format.setNamedStyle(styles[layer_type]['font-style'])
