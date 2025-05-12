@@ -18,6 +18,15 @@ class TestQesUtilsAPI(QdjangoTestBase):
 
         host = settings.ELASTICSEARCH_DSL['default']['hosts']
 
+        # Global refresh
+        url = f"{host}/_refresh"
+
+        response = requests.post(url)
+
+        if not response.status_code == 200:
+            raise Exception(response.json())
+
+
         url = f"{host}/{q}?format=json"
 
         response = requests.get(url)
@@ -69,6 +78,16 @@ class TestQesUtilsAPI(QdjangoTestBase):
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
         self.assertEqual(data[0]['docs.count'], str(tot_feature))
 
+        # Test delete project level
+        res = indexer.delete_documents(self.project310.instance)
+
+        # Check
+        data = self._query_es('/_cat/indices')
+
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
+        self.assertEqual(data[0]['docs.count'], '0')
+
         # Test indexing layer level
         # -------------------------
 
@@ -87,6 +106,16 @@ class TestQesUtilsAPI(QdjangoTestBase):
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
         self.assertEqual(data[0]['docs.count'], str(tot_features_cities))
+
+        # Test delete layer level
+        res = indexer.delete_documents(self.project310.instance, layer_cities)
+
+        data = self._query_es('/_cat/indices')
+
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
+        self.assertEqual(data[0]['docs.count'], '0')
+
 
         # Test indexing features level
         # ----------------------------
@@ -118,4 +147,13 @@ class TestQesUtilsAPI(QdjangoTestBase):
                             "POPULATION": 16853
                          })
         self.assertEqual(data['_source']['text_content'], 'Destelbergen 2799496 3 BE Destelbergen 16853')
+
+        # Test delete features level
+        res = indexer.delete_documents(self.project310.instance, layer_cities, [1,2,3])
+
+        data = self._query_es('/_cat/indices')
+
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
+        self.assertEqual(data[0]['docs.count'], '0')
 
