@@ -20,13 +20,21 @@ from django.dispatch import receiver
 from qdjango.models import (
     Project,
 )
+from core.signals import (
+    post_save_maplayer,
+    pre_delete_maplayer,
+    pre_save_maplayer
+)
+from editing.models import EDITING_POST_DATA_DELETED
 from usersmanage.utils import get_users_for_object
 
 from .tasks import (
+    QGISElasticsearchIndexer,
     es_project_indexing,
     es_project_delete
 )
 
+import json
 import logging
 logger = logging.getLogger("django.request")
 
@@ -66,3 +74,31 @@ def delete_es_documents(sender, **kwargs):
         task = es_project_delete(kwargs['instance'], users, delete=True)
 
 
+@receiver(post_save_maplayer)
+@receiver(pre_delete_maplayer)
+def update_es_document(sender, **kwargs):
+    """
+    Update or delete ES document
+    """
+
+    # Only if indexing for QGIS feature is enabled
+    if not settings.QES_INDEXING_PROJECT:
+        return
+
+    if "mode" not in kwargs:
+        kwargs["mode"] = EDITING_POST_DATA_DELETED
+
+    # Fid
+    try:
+        fid = kwargs['data']['feature']['id']
+    except:
+        data = json.loads(kwargs['data'])
+        fid = data['id']
+
+
+    # Get every user can access the project
+    users = get_users(sender.layer.project)
+    for u in users:
+        indexer = QGISElasticsearchIndexer('default', u)
+        method = indexer.index_project if kwargs["mode"] != EDITING_POST_DATA_DELETED else indexer.delete_documents
+        method(sender.layer.project,sender.layer, [fid])
