@@ -3,34 +3,34 @@
   "styles": {
     "points": {
       "stroke-color": "#00FF00",
-      "stroke-width": 1,
+      "stroke-width": 3,
       "fill-color": "#00FFFF",
-      "size": 4,
+      "size": 6,
       "__comment": "text properties for the point label",
-      "font-size": 20,
+      "font-size": 30,
       "font-style": "Italic",
       "font-color": "#FF0000"
     },
     "lines": {
       "stroke-color": "#00FF00",
-      "stroke-width": 2,
+      "stroke-width": 4,
       "__comment": "text properties for the line label",
-      "font-size": 20,
+      "font-size": 30,
       "font-style": "Italic",
       "font-color": "#00FF00"
     },
     "polygons": {
       "stroke-color": "#0000FF",
-      "stroke-width": 2,
+      "stroke-width": 4,
       "fill-color": "#FFFF00",
       "__comment": "text properties for the polygon label",
-      "font-size": 20,
+      "font-size": 30,
       "font-style": "Italic",
       "font-color": "#00FF00"
     },
     "labels": {
       "__comment": "text properties for the point label",
-      "font-size": 20,
+      "font-size": 30,
       "font-style": "Bold",
       "font-color": "#00FFFF"
     }

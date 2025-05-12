@@ -90,26 +90,26 @@ class TestAnnotations(QdjangoTestBase):
             image = QImage(out_file)
             # Check px values
             # Polygon stroke
-            self.assertEqual(image.pixelColor(569, 159), QColor(0, 0, 255))
+            self.assertEqual(image.pixelColor(566, 158), QColor(0, 0, 255))
             # Polygon fill
-            self.assertEqual(image.pixelColor(570, 172), QColor(255, 255, 0))
+            self.assertEqual(image.pixelColor(572, 180), QColor(255, 255, 0))
             # Polygon Text
-            self.assertEqual(image.pixelColor(579, 184), QColor(0, 255, 0))
+            self.assertEqual(image.pixelColor(590, 151), QColor(0, 255, 0))
 
             # Check the point stroke
-            self.assertEqual(image.pixelColor(541, 227), QColor(0, 255, 0))
+            self.assertEqual(image.pixelColor(537, 226), QColor(0, 255, 0))
             # Check the point fill
-            self.assertEqual(image.pixelColor(547, 227), QColor(0, 255, 255))
+            self.assertEqual(image.pixelColor(548, 227), QColor(0, 255, 255))
             # Check the point text
-            self.assertEqual(image.pixelColor(551, 236), QColor(255, 0, 0))
+            self.assertEqual(image.pixelColor(500, 250), QColor(255, 0, 0))
 
             # Check the line stroke
-            self.assertEqual(image.pixelColor(577, 260), QColor(0, 255, 0))
+            self.assertEqual(image.pixelColor(576, 259), QColor(0, 255, 0))
             # Check the line text
-            self.assertEqual(image.pixelColor(613, 256), QColor(0, 255, 0))
+            self.assertEqual(image.pixelColor(613, 240), QColor(0, 255, 0))
 
             # Check the label text
-            self.assertEqual(image.pixelColor(620, 259), QColor(0, 255, 255))
+            self.assertEqual(image.pixelColor(623, 235), QColor(0, 255, 255))
 
 
     def test_annotations_get(self):
