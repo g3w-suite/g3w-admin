@@ -92,16 +92,16 @@ class TestAnnotations(QdjangoTestBase):
             # Polygon stroke
             self.assertEqual(image.pixelColor(566, 158), QColor(0, 0, 255))
             # Polygon fill
-            self.assertEqual(image.pixelColor(572, 180), QColor(255, 255, 0))
+            self.assertEqual(image.pixelColor(559, 170), QColor(255, 255, 0))
             # Polygon Text
-            self.assertEqual(image.pixelColor(590, 151), QColor(0, 255, 0))
+            self.assertEqual(image.pixelColor(575, 169), QColor(0, 255, 0))
 
             # Check the point stroke
             self.assertEqual(image.pixelColor(537, 226), QColor(0, 255, 0))
             # Check the point fill
             self.assertEqual(image.pixelColor(548, 227), QColor(0, 255, 255))
             # Check the point text
-            self.assertEqual(image.pixelColor(500, 250), QColor(255, 0, 0))
+            self.assertEqual(image.pixelColor(490, 244), QColor(255, 0, 0))
 
             # Check the line stroke
             self.assertEqual(image.pixelColor(576, 259), QColor(0, 255, 0))
@@ -109,7 +109,7 @@ class TestAnnotations(QdjangoTestBase):
             self.assertEqual(image.pixelColor(613, 240), QColor(0, 255, 0))
 
             # Check the label text
-            self.assertEqual(image.pixelColor(623, 235), QColor(0, 255, 255))
+            self.assertEqual(image.pixelColor(622, 234), QColor(0, 255, 255))
 
 
     def test_annotations_get(self):
