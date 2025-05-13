@@ -242,3 +242,11 @@ class MessageAdmin(OrderedModelAdmin):
     ordering = ('order',)
 
 admin.site.register(Message, MessageAdmin)
+
+class ScaleVisibilityLayerConstraintAdmin(admin.ModelAdmin):
+
+    model = ScaleVisibilityLayerConstraint
+
+    list_display = ('layer', 'user', 'group', 'anonymoususer', 'minscale', 'maxscale')
+
+admin.site.register(ScaleVisibilityLayerConstraint, ScaleVisibilityLayerConstraintAdmin)
