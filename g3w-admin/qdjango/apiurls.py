@@ -244,6 +244,12 @@ urlpatterns = [
         name='qdjango-scalevisconstraint-api-filter-by-group'
     ),
 
+    # All Constraint(s)
+    path(
+        'api/scalevisconstraint/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-list'
+    ),
 
     #############################################################
     # GeoConstraints (Single layer)

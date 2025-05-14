@@ -386,3 +386,6 @@ def add_filter_token(**kwargs):
         except Exception as e:
             logger.error(f'[ERROR]: Error on getting FILTERTOKEN: {e}')
             return None
+
+
+# TODO: invalidate cache peroject for model ScaleVisibilityLayerContraint
