@@ -16,10 +16,15 @@ from django.apps import apps
 from django.db.models.signals import post_save, pre_delete
 from django.templatetags.static import static
 from django.template import loader
-
-from core.signals import load_layer_actions, load_js_modules
-
-from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
+from core.signals import (
+    load_layer_actions,
+    load_js_modules,
+    load_project_layers_actions
+)
+from qdjango.signals import (
+    load_qdjango_project_file,
+    post_save_qdjango_project_file
+)
 from qdjango.utils.data import QgisProject
 from qdjango.models import Layer
 
@@ -240,3 +245,18 @@ def invalid_prj_cache(**kwargs):
             f"Qdjango project /api/config  invalidate cache after create/update/delete of layer qplotly widget: "
             f"{layer.project}"
         )
+
+@receiver(load_project_layers_actions)
+def editing_project_layers_actions(sender, **kwargs):
+    """
+    Return html actions for order plots by projects.
+    """
+
+
+    if (sender.has_perm('change_project', kwargs['project']) and kwargs['app_name'] == 'qdjango'):
+
+        # Get every qplotly plots for the project
+
+
+        template = loader.get_template('editing/project_layers_action.html')
+        return template.render(kwargs)
