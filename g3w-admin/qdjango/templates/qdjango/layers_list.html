@@ -204,6 +204,18 @@
                                         </a>
                                     </span>
                                     {% endif %}
+                                     
+                                    {% comment %} Add Column ACL management {% endcomment %}
+                                    <span class="col-xs-1 icon">
+                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Scale visibility layer by Users/Groups' %}" data-widget-type="scalevisconstraintManagerList" data-scalevisconstraint-layer-pk="{{ object.pk }}"
+                                        data-scalevisconstraint-list-url="{% url 'qdjango-scalevisconstraint-api-filter-by-layer-id' object.pk %}"
+                                        data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"
+                                        data-info-layer-authgroup="{% url 'qdjango-api-info-layer-authgroup' object.pk %}"
+                                         ><i class="fa fa-map"></i>
+                                            <span class="label label-info label-action-layer">{{ object.getscalevisconstraintNumber }}</span>
+                                        </a>
+                                    </span>
+                                        
                                     {% endif %}
                                 </span>
                             </td>

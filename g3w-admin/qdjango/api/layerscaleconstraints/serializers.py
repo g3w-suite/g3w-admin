@@ -30,6 +30,9 @@ class ScaleVisibilityLayerConstraintSerializer(serializers.ModelSerializer):
         #validators = [ColumnAclCleanValidator()]
 
     def to_representation(self, instance):
+        """Add user an goup name"""
         ret = super().to_representation(instance)
+        ret['username'] = instance.user.username if instance.user else ''
+        ret['groupname'] = instance.group.name if instance.group else ''
 
         return ret
