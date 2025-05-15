@@ -23,7 +23,6 @@ class ScaleVisibilityLayerConstraintSerializer(serializers.ModelSerializer):
             'layer',
             'user',
             'group',
-            'anonymoususer',
             'minscale',
             'maxscale'
         ]
