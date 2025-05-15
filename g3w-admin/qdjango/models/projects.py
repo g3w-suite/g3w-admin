@@ -1375,6 +1375,15 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return self.columnacl_set.count() if self.has_column_acl else 0
 
+
+    def getScaleVisibilityLayerConstraintNumber(self):
+        """
+        Count ScaleVisibilityLayerConstraint for self layer
+        :return: integer
+        """
+
+        return self.scale_visibility_layer.count()
+
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(
             user,
