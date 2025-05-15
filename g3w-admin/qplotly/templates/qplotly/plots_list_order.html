@@ -1,0 +1,52 @@
+{% load i18n %}
+{% load static %}
+
+<div class="">
+    {% trans "Drag and drop the following table's rows to change the widget list oreder" %}
+</div>
+<table id="table_project_plots_list" class="table table-hover table-striped">
+    <thead>
+        <th>{% trans 'Title' %}</th>
+        <th>{% trans 'Type' %}</th>
+    </thead>
+    <tbody>
+    {% for plot in plots %}
+        <tr id="qplotlywidget_{{ plot.0.pk }}">
+            <td>{{ plot.0.title }}</td>
+            <td>{{ plot.0.type }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <script>
+        let project_id = {{ project.pk }}
+        $('#table_project_plots_list').find('tbody').sortable({
+                placeholder: "sort-highlight-project",
+                update: function(e, ui){
+
+                    new_order = $(e.target).sortable("toArray");
+
+                    // get current id of group moved
+                    //var gid = ui.item.attr('id').substring(14)
+                    var url = "/qplotly/jx/widgets/setorder/"
+                    var data = {
+                        new_order: new_order,
+                        project_id: project_id,
+                    }
+                    ga.utils.addCsfrtokenData(data);
+
+                    $.post(url, data, function(res){})
+
+                },
+                start: function(e, ui){
+                    $(ui.item).css('border', '1px solid grey');
+                },
+                stop: function(e, ui){
+                    $(ui.item).css('border', 'none');
+                }
+            })
+
+        $('#table_project_plots_list').find('tbody').find('tr').hover(function() {
+                $(this).css('cursor','move');
+            });
+    </script>
+</table>

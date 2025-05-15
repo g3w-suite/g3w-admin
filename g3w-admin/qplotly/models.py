@@ -21,7 +21,7 @@ class QplotlyWidget(models.Model):
     layers = models.ManyToManyField(Layer)
 
     order = models.PositiveIntegerField(
-        _('Fields order'),
+        _('Order'),
         default=0,
         blank=True,
         null=True,
