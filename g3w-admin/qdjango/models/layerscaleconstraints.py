@@ -27,7 +27,6 @@ class ScaleVisibilityLayerConstraint(models.Model):
                               validators=[validate_vector])
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(AuthGroup, on_delete=models.CASCADE, blank=True, null=True)
-    anonymoususer = models.BooleanField(blank=True, null=True, default=False)
     minscale = models.IntegerField(blank=True, null=True)
     maxscale = models.IntegerField(blank=True, null=True)
 

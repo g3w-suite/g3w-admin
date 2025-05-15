@@ -247,6 +247,6 @@ class ScaleVisibilityLayerConstraintAdmin(admin.ModelAdmin):
 
     model = ScaleVisibilityLayerConstraint
 
-    list_display = ('layer', 'user', 'group', 'anonymoususer', 'minscale', 'maxscale')
+    list_display = ('layer', 'user', 'group', 'minscale', 'maxscale')
 
 admin.site.register(ScaleVisibilityLayerConstraint, ScaleVisibilityLayerConstraintAdmin)
