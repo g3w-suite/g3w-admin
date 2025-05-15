@@ -1347,10 +1347,9 @@ class Layer(G3WACLModelMixins, models.Model):
 
         try:
             if user.is_anonymous:
-                peruser = self.scale_visibility_layer.get(anonymoususer=True)
-            else:
-                peruser = self.scale_visibility_layer.get(user=user)
-            return peruser
+                user = get_anonymous_user()
+
+            return self.scale_visibility_layer.get(user=user)
 
         except ObjectDoesNotExist:
 
