@@ -289,8 +289,21 @@ class FieldFilterBackend(BaseFilterBackend):
             # i.e. $field=name|eq|Rome,state|eq|Italy
 
             #pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
-            pattern = r',(?=(?:[^()[\]]*(?:\([^()]*\)|\[[^\[\]]*\]))*[^()[\]]*$)'
-            fields = re.split(pattern, suggest_value)
+            #pattern = r',(?=(?:[^()[\]]*(?:\([^()]*\)|\[[^\[\]]*\]))*[^()[\]]*$)'
+            #fields = re.split(pattern, suggest_value)
+
+            pattern = re.compile(r'\)\|(AND|OR),')
+            fields = []
+            last_index = 0
+            for match in pattern.finditer(suggest_value):
+                end = match.end()  # where separator end
+                op = match.group(1)
+                segment = suggest_value[last_index:match.start()] + f')|{op}'
+                fields.append(segment)
+                last_index = end
+            # Add last part
+            fields.append(suggest_value[last_index:])
+
 
             count = 0
             nfields = len(fields)
