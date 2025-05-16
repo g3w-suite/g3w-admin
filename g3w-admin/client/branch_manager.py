@@ -34,6 +34,10 @@ class ClientBranchManagerView(View):
         """
         Get the list of "git branches"
         """
+        # Ensures log file existance
+        if not os.path.exists(self.thread_log):
+            open(self.thread_log, 'w').close()
+
         with open(self.thread_log, 'a') as out:
 
             # Ensure repository dir exists, otherwise clone it
@@ -71,6 +75,10 @@ class ClientBranchManagerView(View):
         """
 
         branch_name = request.POST.get("branch_name")
+
+        # Ensures log file existance
+        if not os.path.exists(self.thread_log):
+            open(self.thread_log, 'w').close()
 
         try:
             with open(self.thread_log, 'a') as out:
