@@ -507,3 +507,25 @@ class ShortURL(TimeStampedModel):
 
     def get_short_url(self):
         return f"su/{self.short_code}"
+
+
+class PermaLinkURL(TimeStampedModel):
+    """
+    Model to create a permalink code for store information about the webgis client state.
+    I.e. current extent, toc layer switched on/off annotations etc.
+    """
+
+    data = models.JSONField()
+    short_code = models.CharField(max_length=10, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.short_code:
+            while True:
+                code = generate_short_code()
+                if not PermaLinkURL.objects.filter(short_code=code).exists():
+                    self.short_code = code
+                    break
+        super().save(*args, **kwargs)
+
+    def get_permalink_url(self):
+        return f"pl/{self.short_code}"

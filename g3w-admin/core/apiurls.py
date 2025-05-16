@@ -16,7 +16,7 @@ from .views import(
     GroupSetOrderView,
     MacroGroupSetOrderView,
 ) 
-from .api.views import(
+from .api.views import (
     layer_vector_view,
     G3WSUITEInfoAPIView,
     QgsExpressionLayerContextEvalView,
@@ -24,7 +24,7 @@ from .api.views import(
     InterfaceOws,
     CRSInfoAPIView,
     HTML2PDFAPIView,
-    ShortURLView
+    ShortURLView, PermaLinkView
 )
 
 
@@ -140,12 +140,17 @@ urlpatterns = [
     ),
 
     #############################################################
-    # shorturl API info
+    # shorturl/permalink API info
     #############################################################
     path(
         'su/',
         ShortURLView.as_view(),
         name='core-shorturl-api'
+    ),
+    path(
+        'pl/',
+        PermaLinkView.as_view(),
+        name='core-parmalink-api'
     )
 
 ]

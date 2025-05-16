@@ -12,7 +12,10 @@ from core.api.permissions import ProjectPermission
 from qdjango.models import Project
 from core.api.base.views import APIException
 from core.utils.geo import get_crs_bbox
-from core.models import ShortURL
+from core.models import (
+    ShortURL,
+    PermaLinkURL
+)
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
@@ -418,7 +421,7 @@ class HTML2PDFAPIView(G3WAPIView):
         return response
 
 class ShortURLView(G3WAPIView):
-    """ API wie to get a short url code """
+    """ API view to get a short url code """
 
     authentication_classes = (
         CsrfExemptSessionAuthentication,
@@ -431,6 +434,26 @@ class ShortURLView(G3WAPIView):
         self.results.results.update({
             'data': {
                 'short_url': obj.get_short_url(),
+            }
+        })
+
+        return Response(self.results.results)
+
+
+class PermaLinkView(G3WAPIView):
+    """ API view to get a short url code for a permalink """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+
+        obj, created = PermaLinkURL.objects.get_or_create(data=request.data['data'])
+
+        self.results.results.update({
+            'data': {
+                'permalink': obj.get_permalink_url(),
             }
         })
 
