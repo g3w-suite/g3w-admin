@@ -23,7 +23,8 @@ from .api.views import(
     layer_raster_view,
     InterfaceOws,
     CRSInfoAPIView,
-    HTML2PDFAPIView
+    HTML2PDFAPIView,
+    ShortURLView
 )
 
 
@@ -136,6 +137,15 @@ urlpatterns = [
         'html2pdf/',
         HTML2PDFAPIView.as_view(),
         name='core-html2pdf-api'
+    ),
+
+    #############################################################
+    # shorturl API info
+    #############################################################
+    path(
+        'su/',
+        ShortURLView.as_view(),
+        name='core-shorturl-api'
     )
 
 ]

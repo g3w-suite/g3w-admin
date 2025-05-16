@@ -12,6 +12,7 @@ from core.api.permissions import ProjectPermission
 from qdjango.models import Project
 from core.api.base.views import APIException
 from core.utils.geo import get_crs_bbox
+from core.models import ShortURL
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
@@ -416,3 +417,21 @@ class HTML2PDFAPIView(G3WAPIView):
 
         return response
 
+class ShortURLView(G3WAPIView):
+    """ API wie to get a short url code """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+
+        obj, created = ShortURL.objects.get_or_create(original_url=request.data['url'])
+
+        self.results.results.update({
+            'data': {
+                'short_url': obj.get_short_url(),
+            }
+        })
+
+        return Response(self.results.results)

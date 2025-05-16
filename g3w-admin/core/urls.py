@@ -154,4 +154,14 @@ urlpatterns = [
         login_required(SystemInfoView.as_view()),
         name='systeminfo'
     ),
+
+    #############################################################
+    # ShortUrl
+    #############################################################
+
+    path(
+        'su/<str:code>/',
+        shortcut_redirect_url,
+        name='shorturl_redirect_url'
+    ),
 ]

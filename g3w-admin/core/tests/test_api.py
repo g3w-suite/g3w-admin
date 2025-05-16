@@ -24,7 +24,7 @@ from qgis.core import QgsFieldConstraints
 from rest_framework.test import APIClient, APITestCase
 
 from qdjango.apps import get_qgs_project
-from core.models import Group
+from core.models import Group, ShortURL
 from qdjango.models import Layer, Project
 from base.version import get_version
 from qdjango.utils.data import QgisProject
@@ -706,3 +706,39 @@ class CoreApiTest(CoreTestBase):
         to_compare = enumerate([0, 0, 8388608, 8388608])
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
+
+    def test_short_url_api_rest(self):
+        """ Test shrt url api rest """
+
+        def check(self, data):
+            url = reverse('core-shorturl-api')
+
+
+
+            req = self.client.post(url, data)
+            self.assertEqual(req.status_code, 200)
+            jres = json.loads(req.content)
+
+            sus = ShortURL.objects.get(original_url=data['url'])
+
+            self.assertEqual(jres['data']['short_url'], f"su/{sus.short_code}")
+
+            # Test redirect url
+            url = reverse('shorturl_redirect_url', args=[sus.short_code])
+
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, 302)
+            self.assertEqual(res.headers['Location'], data['url'])
+
+        data = {
+            'url': 'http://g3wsuite.it/map/test-short-url'
+        }
+
+        check(self, data)
+
+        # Test very long URL
+        data = {
+            'url': 'https://example.com/test?data=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        }
+
+        check(self, data)

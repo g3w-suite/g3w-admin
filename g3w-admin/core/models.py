@@ -18,6 +18,9 @@ try:
     from osgeo import osr
 except:
     pass
+
+import string
+import random
 import logging
 
 class G3W2Tree(TreeBase):
@@ -481,3 +484,26 @@ class StatusLog(models.Model):
     class Meta:
         ordering = ('-create_datetime',)
         verbose_name_plural = verbose_name = 'Logging'
+
+
+def generate_short_code(length=6):
+    """ Generate a random short code """
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+class ShortURL(TimeStampedModel):
+    """ Model to store short code for shor url"""
+    original_url = models.URLField(max_length=2000)
+    short_code = models.CharField(max_length=10, unique=True, blank=True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.short_code:
+            while True:
+                code = generate_short_code()
+                if not ShortURL.objects.filter(short_code=code).exists():
+                    self.short_code = code
+                    break
+        super().save(*args, **kwargs)
+
+    def get_short_url(self):
+        return f"su/{self.short_code}"
