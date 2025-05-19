@@ -292,7 +292,7 @@ class FieldFilterBackend(BaseFilterBackend):
             #pattern = r',(?=(?:[^()[\]]*(?:\([^()]*\)|\[[^\[\]]*\]))*[^()[\]]*$)'
             #fields = re.split(pattern, suggest_value)
 
-            pattern = re.compile(r'\)\|(AND|OR),')
+            pattern = re.compile(r'\|(AND|OR),')
             fields = []
             last_index = 0
             for match in pattern.finditer(suggest_value):
