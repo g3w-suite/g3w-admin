@@ -92,7 +92,7 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
               action="${SAVED_CONSTRAINT ? `/${SITE_PREFIX_URL}qdjango/api/scalevisconstraint/detail/${SAVED_CONSTRAINT.pk}/` : $item.attr('data-scalevisconstraint-list-url')}"
               id="form-new-scalevisconstraint-${$item.attr('data-scalevisconstraint-layer-pk')}"
             >
-              <input type="hidden" name="pk" value="${SAVED_CONSTRAINT?.pk || ''}">
+              <input type="hidden" name="pk" value="${SAVED_CONSTRAINT?.pk}">
               <input type="hidden" name="layer" value="${$item.attr('data-scalevisconstraint-layer-pk')}">
               <div class="form-errors"></div>
               <div class="row">
@@ -104,7 +104,7 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
                     <div class="controls ">
                       <select class="form-select" name="user" style="width: 100%">
                         <option value="">---</option>
-                        ${ (await (await fetch($item.attr('data-info-layer-user'))).json()).results.map(user => `<option value="${user.pk}" ${user.pk === SAVED_CONSTRAINT.user ? 'selected' : ''}>${user.username}</option>`).join('') }
+                        ${ (await (await fetch($item.attr('data-info-layer-user'))).json()).results.map(user => `<option value="${user.pk}" ${user.pk === SAVED_CONSTRAINT?.user ? 'selected' : ''}>${user.username}</option>`).join('') }
                       </select>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
                     <div class="controls">
                       <select class="form-select" name="group" style="width: 100%">
                       <option value="">---</option>
-                        ${ (await (await fetch($item.attr('data-info-layer-authgroup'))).json()).results.map(group => `<option value="${group.pk}" ${group.pk === SAVED_CONSTRAINT.group ? 'selected' : ''}>${group.name}</option>`).join('') }
+                        ${ (await (await fetch($item.attr('data-info-layer-authgroup'))).json()).results.map(group => `<option value="${group.pk}" ${group.pk === SAVED_CONSTRAINT?.group ? 'selected' : ''}>${group.name}</option>`).join('') }
                       </select>
                     </div>
                   </div>
@@ -122,14 +122,14 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
                   <div class="form-group">
                     <label class="control-label ">${gettext("Min scale")}</label>
                     <div class="controls ">
-                      <input class="form-control" value="${SAVED_CONSTRAINT?.minscale || ''}" required name="minscale" />
+                      <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.minscale ?? ''}" required name="minscale" />
                     </div>
                   </div>
 
                   <div class="form-group">
                     <label class="control-label ">${gettext("Max scale")}</label>
                     <div class="controls ">
-                      <input class="form-control" value="${SAVED_CONSTRAINT?.maxscale || ''}" required name="maxscale" />
+                      <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.maxscale ?? ''}" required name="maxscale" />
                     </div>
                   </div>
 
