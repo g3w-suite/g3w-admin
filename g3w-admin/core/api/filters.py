@@ -298,7 +298,7 @@ class FieldFilterBackend(BaseFilterBackend):
             for match in pattern.finditer(suggest_value):
                 end = match.end()  # where separator end
                 op = match.group(1)
-                segment = suggest_value[last_index:match.start()] + f')|{op}'
+                segment = suggest_value[last_index:match.start()] + f'|{op}'
                 fields.append(segment)
                 last_index = end
             # Add last part
