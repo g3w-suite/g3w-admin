@@ -1,52 +1,51 @@
 {% load i18n %}
 {% load static %}
 
-<div class="">
-    {% trans "<b>Drag</b> and <b>drop</b> the following table's rows to change the widget list order" %}
+<div>
+  {% trans "<b>Drag</b> and <b>drop</b> the following table's rows to change the widget list order" %}
 </div>
-<table id="table_project_plots_list" class="table table-hover table-striped">
-    <thead>
-        <th>{% trans 'Title' %}</th>
-        <th>{% trans 'Type' %}</th>
-    </thead>
-    <tbody>
+
+<table id="plots_list" class="table table-hover table-striped">
+  <thead>
+    <th>{% trans 'Title' %}</th>
+    <th>{% trans 'Type' %}</th>
+  </thead>
+  <tbody>
     {% for plot in plots %}
-        <tr id="qplotlywidget_{{ plot.0.pk }}">
-            <td>{{ plot.0.title }}</td>
-            <td>{{ plot.0.type }}</td>
-        </tr>
+      <tr id="qplotlywidget_{{ plot.0.pk }}">
+        <td>{{ plot.0.title }}</td>
+        <td>{{ plot.0.type }}</td>
+      </tr>
     {% endfor %}
-    </tbody>
-    <script>
-        let project_id = {{ project.pk }}
-        $('#table_project_plots_list').find('tbody').sortable({
-                placeholder: "sort-highlight-project",
-                update: function(e, ui){
-
-                    new_order = $(e.target).sortable("toArray");
-
-                    // get current id of group moved
-                    //var gid = ui.item.attr('id').substring(14)
-                    var url = "/qplotly/jx/widgets/setorder/"
-                    var data = {
-                        new_order: new_order,
-                        project_id: project_id,
-                    }
-                    ga.utils.addCsfrtokenData(data);
-
-                    $.post(url, data, function(res){})
-
-                },
-                start: function(e, ui){
-                    $(ui.item).css('border', '1px solid grey');
-                },
-                stop: function(e, ui){
-                    $(ui.item).css('border', 'none');
-                }
-            })
-
-        $('#table_project_plots_list').find('tbody').find('tr').hover(function() {
-                $(this).css('cursor','move');
-            });
-    </script>
+  </tbody>
 </table>
+
+<!-- Sortable rows -->
+<script>
+  (function() {
+    let dragged = null;
+    document.querySelectorAll('#plots_list tbody tr').forEach(row => {
+      row.setAttribute('draggable', true);
+      row.addEventListener('mouseover',  () => { row.style.cursor = 'move'; });
+      row.addEventListener('mouseleave', () => { row.style.cursor = null; });
+      row.addEventListener('dragstart',  () => { dragged = row; });
+      row.addEventListener('dragend',    () => { dragged = null; });
+      row.addEventListener('dragover',   e => { e.preventDefault(); row.style.border="2px dashed #000"; });
+      row.addEventListener('dragleave',  () => { row.style.border=null; });
+      row.addEventListener('drop', e => {
+        if (dragged) {
+          dragged.parentNode.insertBefore(dragged, dragged == row.nextSibling ? row : row.nextSibling);
+          fetch(`/qplotly/jx/widgets/setorder/`, {
+            method: 'POST',
+            body: new URLSearchParams([
+              ...Array.from(row.parentNode.children).map(tr => tr.id).filter(Boolean).map(id => ["new_order[]", id]),
+              ["csrfmiddlewaretoken", $.cookie('csrftoken')],
+              ["project_id", {{ project.pk }}],
+            ]),
+          });
+        }
+        row.style.border=null;
+      });
+    });
+  })();
+</script>
