@@ -1789,7 +1789,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                                 cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -1801,7 +1801,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                              cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             },
                                             method='post').content)
 
