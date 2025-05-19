@@ -1703,7 +1703,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -1713,7 +1713,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             },
                                             method='post').content)
 
