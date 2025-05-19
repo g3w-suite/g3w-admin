@@ -45,6 +45,7 @@ class G3WEditingLayer(models.Model):
     visible = models.BooleanField(default=True, null=True, blank=True, help_text="Show layer in layers list to edit")
     add_user_group_field = models.CharField(null=True, blank=True, max_length=255)
     edit_user_group_field = models.CharField(null=True, blank=True, max_length=255)
+    style = models.TextField(null=True, blank=True)
 
     class Meta:
         app_label = 'editing'

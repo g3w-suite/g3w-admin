@@ -16,7 +16,15 @@ from qdjango.models import Layer
 
 from qgis.PyQt.QtCore import QVariant
 
+
 class ActiveEditingMixin(object):
+
+    def _set_style_choices(self):
+        """
+        Set choices for style select
+        """
+        self.fields['style'].choices = [(None, '--------')] + [(s['name'], s['name']) for s in self.layer.styles]
+
 
     def _set_viewer_users_choices(self):
         """
@@ -98,6 +106,9 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
                                                     'Value stored into the field it will be so structured: '
                                                     '<i>[user group name 1, user group name 2, ...]</i>'))
 
+    style = forms.ChoiceField(choices=[], label=_('Layer\'style to use'), required=False,
+                                       help_text=_('Select layer style to use for editing. '))
+
     def __init__(self, *args, **kwargs):
 
         # get layer object from kwargs
@@ -111,6 +122,7 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
         self._set_viewer_users_choices()
         self._set_viewer_user_groups_choices()
         self._set_add_edit_user_field_choices()
+        self._set_style_choices()
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -124,9 +136,8 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
 
         # Check if layer ha geometry or not
         if self.layer.geometrytype != 'NoGeometry':
-            layout_args.append(
-                'scale'
-            )
+            layout_args.append('scale')
+            layout_args.append('style')
 
         layout_args += [
             Field('add_user_field', css_class='select2', style="width:100%;"),

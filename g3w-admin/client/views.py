@@ -169,11 +169,22 @@ class ClientView(TemplateView):
             raise Http404('No project type and/or project id present in group')
 
         # page title
-
         contextData['page_title'] = '{} | {}'.format(
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'),
             self.project.title_ur if self.project.title_ur else self.project.title
         )
+
+        # server side styles (inline css)
+        contextData['CLIENT_CUSTOM_CSS'] = ''
+
+        # Conditionally show sidebar items
+        elements_to_hide = []
+
+        if not getattr(self.project, 'show_metadata_section', True):
+            elements_to_hide.append('#metadata')
+
+        if elements_to_hide:
+            contextData['CLIENT_CUSTOM_CSS'] += f".sidebar-menu > li:is({', '.join(elements_to_hide)}) {{ display: none; }}"
 
         # choosen skin by user main role
         contextData['skin_class'] = get_adminlte_skin_by_user(self.request.user)

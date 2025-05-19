@@ -620,56 +620,77 @@ class QgisProjectLayer(XmlData):
         if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return edittype_columns
 
-        fields = self.qgs_layer.fields()
-        eformconf = self.qgs_layer.editFormConfig()
-        for field in fields:
-            idx = fields.indexFromName(field.name())
+        # Save for every styles associated to the layer
+        sm = self.qgs_layer.styleManager()
 
-            # get field widget data
-            ewidget = self.qgs_layer.editorWidgetSetup(idx)
+        current_style = sm.currentStyle()
+        for style in sm.styles():
 
-            data = {
-                'widgetv2type': ewidget.type(),
-                'fieldEditable': '0' if eformconf.readOnly(idx) else '1',
-                'values': list()
-            }
+            style_edittype = dict()
 
-            options = ewidget.config()
-            if ewidget.type() == 'ValueMap':
-                if 'map' in options:
-                    if isinstance(options['map'], dict):
-                        for key, value in options['map'].items():
-                            data['values'].append({'key': key, 'value': value})
-                    else:
-                        # case list
-                        for item in options['map']:
-                            for key, value in item.items():
-                                data['values'].append(
-                                    {'key': key, 'value': value})
+            # Change style temporary
+            sm.setCurrentStyle(style)
 
-            # If ewidget.type() is ReferenceValue, add DisplayExpression of referencedlayer
-            elif ewidget.type() == 'RelationReference':
+            fields = self.qgs_layer.fields()
 
-                # Add DisplayExpression of ReferencedLayer
-                # Set it into a try except routine for a possible bug of QGIS:
-                # If in QGIS project is set a RelationReference form widget, if the referenced layer is changed
-                # the ReferencedLayerId is not changed and was the old layer id not more present into the project
-                try:
+            eformconf = self.qgs_layer.editFormConfig()
 
-                    # Remove from layer dotasource data
-                    del (options['ReferencedLayerDataSource'],
-                         options['ReferencedLayerProviderKey'])
+            # Set layout for eformconf
 
-                    options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
-                        options['ReferencedLayerId']).displayExpression()
-                except Exception as e:
-                    logger.debug(e)
 
-                data.update(options)
-            else:
-                data.update(options)
+            for field in fields:
+                idx = fields.indexFromName(field.name())
 
-            edittype_columns[field.name()] = data
+                # get field widget data
+                ewidget = self.qgs_layer.editorWidgetSetup(idx)
+
+                data = {
+                    'widgetv2type': ewidget.type(),
+                    'fieldEditable': '0' if eformconf.readOnly(idx) else '1',
+                    'values': list()
+                }
+
+                options = ewidget.config()
+                if ewidget.type() == 'ValueMap':
+                    if 'map' in options:
+                        if isinstance(options['map'], dict):
+                            for key, value in options['map'].items():
+                                data['values'].append({'key': key, 'value': value})
+                        else:
+                            # case list
+                            for item in options['map']:
+                                for key, value in item.items():
+                                    data['values'].append(
+                                        {'key': key, 'value': value})
+
+                # If ewidget.type() is ReferenceValue, add DisplayExpression of referencedlayer
+                elif ewidget.type() == 'RelationReference':
+
+                    # Add DisplayExpression of ReferencedLayer
+                    # Set it into a try except routine for a possible bug of QGIS:
+                    # If in QGIS project is set a RelationReference form widget, if the referenced layer is changed
+                    # the ReferencedLayerId is not changed and was the old layer id not more present into the project
+                    try:
+
+                        # Remove from layer dotasource data
+                        del (options['ReferencedLayerDataSource'],
+                             options['ReferencedLayerProviderKey'])
+
+                        options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
+                            options['ReferencedLayerId']).displayExpression()
+                    except Exception as e:
+                        logger.debug(e)
+
+                    data.update(options)
+                else:
+                    data.update(options)
+
+                style_edittype[field.name()] = data
+
+            edittype_columns[style] = style_edittype
+
+        # Reset to current style
+        sm.setCurrentStyle(current_style)
 
         return edittype_columns
 
@@ -693,78 +714,52 @@ class QgisProjectLayer(XmlData):
     def _getDataEditorformstructure(self):
         """
         Get qgis attribute editor form if editor layout is not generatedlayout
+        for every layer style available
         For now only tablayout management
         :return: form structure
         :rtype: dict, None
         """
 
-        if self.editorlayout == 'tablayout':
+        def build_form_tree_object(elements):
+            to_ret_form_structure = []
+            for element in elements:
 
-            tabs = self.qgs_layer.editFormConfig().tabs()
+                to_ret_node = {
+                    'name': element.name(),
+                    'showlabel': element.showLabel(),
+                }
 
-            def build_form_tree_object(elements):
-                to_ret_form_structure = []
-                for element in elements:
+                try:
+                    visibility_expression = element.visibilityExpression()
+                    if visibility_expression.enabled():
+                        expression = visibility_expression.data()
+                        if expression.expression() == '':
+                            raise Exception('Expression is empty')
+                        to_ret_node['visibility_expression'] = {
+                            'expression': expression.expression(),
+                            'referenced_columns': list(expression.referencedColumns()),
+                            'referenced_functions': list(expression.referencedFunctions()),
+                        }
+                except:
+                    to_ret_node['visibility_expression'] = None
+                    visibility_expression = None
 
-                    to_ret_node = {
-                        'name': element.name(),
-                        'showlabel': element.showLabel(),
-                    }
+                if Qgis.QGIS_VERSION_INT >= 33200:
+                    etype = element.type()
 
-                    try:
-                        visibility_expression = element.visibilityExpression()
-                        if visibility_expression.enabled():
-                            expression = visibility_expression.data()
-                            if expression.expression() == '':
-                                raise Exception('Expression is empty')
-                            to_ret_node['visibility_expression'] = {
-                                'expression': expression.expression(),
-                                'referenced_columns': list(expression.referencedColumns()),
-                                'referenced_functions': list(expression.referencedFunctions()),
-                            }
-                    except:
-                        to_ret_node['visibility_expression'] = None
-                        visibility_expression = None
-
-                    if Qgis.QGIS_VERSION_INT >= 33200:
-                            etype = element.type()
-
-                            if isinstance(etype, Qgis.AttributeEditorContainerType):
-                                to_ret_node.update({
-                                    'groupbox': element.isGroupBox(),
-                                    'columncount': element.columnCount(),
-                                    'nodes': build_form_tree_object(element.children())
-                                })
-                            else:
-                                if element.type() == Qgis.AttributeEditorType.Relation:
-                                    to_ret_node.update({
-                                        'nmRelationId': element.nmRelationId()
-                                    })
-
-                                if element.type() == Qgis.AttributeEditorType.Field:
-                                    to_ret_node.update({
-                                        'index': element.idx(),
-                                        'field_name': element.name()
-                                    })
-                                    if to_ret_node['name'] in self.aliases:
-                                        to_ret_node.update(
-                                            {'alias': self.aliases[to_ret_node['name']]})
-                                    del (to_ret_node['name'])
+                    if isinstance(etype, Qgis.AttributeEditorContainerType):
+                        to_ret_node.update({
+                            'groupbox': element.isGroupBox(),
+                            'columncount': element.columnCount(),
+                            'nodes': build_form_tree_object(element.children())
+                        })
                     else:
-                        if element.type() == QgsAttributeEditorElement.AeTypeRelation:
+                        if element.type() == Qgis.AttributeEditorType.Relation:
                             to_ret_node.update({
                                 'nmRelationId': element.nmRelationId()
                             })
 
-                        if element.type() == QgsAttributeEditorElement.AeTypeContainer:
-
-                            to_ret_node.update({
-                                'groupbox': element.isGroupBox(),
-                                'columncount': element.columnCount(),
-                                'nodes': build_form_tree_object(element.children())
-                            })
-
-                        if element.type() == QgsAttributeEditorElement.AeTypeField:
+                        if element.type() == Qgis.AttributeEditorType.Field:
                             to_ret_node.update({
                                 'index': element.idx(),
                                 'field_name': element.name()
@@ -772,15 +767,61 @@ class QgisProjectLayer(XmlData):
                             if to_ret_node['name'] in self.aliases:
                                 to_ret_node.update(
                                     {'alias': self.aliases[to_ret_node['name']]})
-                            del(to_ret_node['name'])
+                            del (to_ret_node['name'])
+                else:
+                    if element.type() == QgsAttributeEditorElement.AeTypeRelation:
+                        to_ret_node.update({
+                            'nmRelationId': element.nmRelationId()
+                        })
 
-                    to_ret_form_structure.append(to_ret_node)
-                return to_ret_form_structure
+                    if element.type() == QgsAttributeEditorElement.AeTypeContainer:
+                        to_ret_node.update({
+                            'groupbox': element.isGroupBox(),
+                            'columncount': element.columnCount(),
+                            'nodes': build_form_tree_object(element.children())
+                        })
 
-            return build_form_tree_object(tabs)
+                    if element.type() == QgsAttributeEditorElement.AeTypeField:
+                        to_ret_node.update({
+                            'index': element.idx(),
+                            'field_name': element.name()
+                        })
+                        if to_ret_node['name'] in self.aliases:
+                            to_ret_node.update(
+                                {'alias': self.aliases[to_ret_node['name']]})
+                        del (to_ret_node['name'])
 
-        else:
-            return None
+                to_ret_form_structure.append(to_ret_node)
+            return to_ret_form_structure
+
+        editor_from_structures = {}
+
+        # only for VectorLayer
+        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
+            return editor_from_structures
+
+        # Save for every styles associated to the layer
+        sm = self.qgs_layer.styleManager()
+        current_style = sm.currentStyle()
+
+        for style in sm.styles():
+
+            # Change style temporary
+            sm.setCurrentStyle(style)
+
+            if self.qgs_layer.editFormConfig().layout() == QgsEditFormConfig.TabLayout:
+
+                tabs = self.qgs_layer.editFormConfig().tabs()
+
+                editor_from_structures[style] =  build_form_tree_object(tabs)
+
+            else:
+                editor_from_structures[style] = None
+
+        # Reset to current style
+        sm.setCurrentStyle(current_style)
+
+        return editor_from_structures
 
     def _getDataExtent(self):
         """Get layer extension"""
@@ -2173,60 +2214,3 @@ class QgisProjectSettingsWMS(XmlData):
 
         return self._composerTemplatesData
 
-
-class QgisPgConnection(object):
-    """
-    Postgis xml interchange file
-    """
-    _version = "1.0"
-
-    _params = {
-        'port': 5432,
-        'saveUsername': 'true',
-        'password': '',
-        'savePassword': 'true',
-        'sslmode': 1,
-        'service': '',
-        'username': '',
-        'host': '',
-        'database': '',
-        'name': '',
-        'estimatedMetadata': 'false'
-    }
-
-    def __init__(self, **kwargs):
-
-        self._data = {}
-        for k, v in list(kwargs.items()):
-            setattr(self, k, v)
-
-    def __setattr__(self, key, value):
-
-        if key in list(QgisPgConnection._params.keys()):
-            self.__dict__['_data'][key] = value
-        else:
-            self.__dict__[key] = value
-
-    def __getattr__(self, key):
-
-        if key in list(QgisPgConnection._params.keys()):
-            try:
-                return self.__dict__['_data'][key]
-            except:
-                return QgisPgConnection._params[key]
-
-        return self.__dict__[key]
-
-    def asXML(self):
-
-        qgsPgConnectionTree = etree.Element(
-            'qgsPgConnections', version=self._version)
-        postgisTree = etree.Element('postgis')
-        postgisTreeAttributes = postgisTree.attrib
-
-        for key in list(QgisPgConnection._params.keys()):
-            postgisTreeAttributes[key] = str(getattr(self, key))
-
-        qgsPgConnectionTree.append(postgisTree)
-
-        return etree.tostring(qgsPgConnectionTree, doctype='<!DOCTYPE connections>')
