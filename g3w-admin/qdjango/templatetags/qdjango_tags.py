@@ -70,4 +70,7 @@ def fieldsnumber(layer):
     :return: int
     """
 
-    return len(layer.database_columns_by_name().keys())
+    try:
+        return len(layer.database_columns_by_name().keys())
+    except:
+        return 0
