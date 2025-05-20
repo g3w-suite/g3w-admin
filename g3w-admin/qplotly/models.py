@@ -19,6 +19,13 @@ class QplotlyWidget(models.Model):
     show_on_start_client = models.BooleanField(_('Set as default plot on starting map'), null=True, default=False)
 
     layers = models.ManyToManyField(Layer)
+
+    order = models.PositiveIntegerField(
+        _('Order'),
+        default=0,
+        blank=True,
+        null=True,
+    )
     
     def __str__(self):
         return self.datasource if self.datasource else str(self.pk)
