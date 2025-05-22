@@ -24,7 +24,7 @@ from qgis.core import QgsFieldConstraints
 from rest_framework.test import APIClient, APITestCase
 
 from qdjango.apps import get_qgs_project
-from core.models import Group, ShortURL
+from core.models import Group, ShortURL, PermaLinkURL
 from qdjango.models import Layer, Project
 from base.version import get_version
 from qdjango.utils.data import QgisProject
@@ -708,7 +708,7 @@ class CoreApiTest(CoreTestBase):
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
 
     def test_short_url_api_rest(self):
-        """ Test shrt url api rest """
+        """ Test short url api rest """
 
         def check(self, data):
             url = reverse('core-shorturl-api')
@@ -742,3 +742,27 @@ class CoreApiTest(CoreTestBase):
         }
 
         check(self, data)
+
+    def test_permalink_api_rest(self):
+        """ Test permalink api rest """
+
+        # Create a permalink
+        url = reverse('core-permalink-api')
+
+
+        with open(os.path.join(os.path.join(os.getcwd(), 'core', 'tests', 'data'), 'permalink.json'), 'r', encoding='UTF8') as f:
+            data = json.load(f)
+            post_data = {
+                'permalink_data': data
+            }
+
+        req = self.client.post(url, data=post_data, content_type='application/json')
+        self.assertEqual(req.status_code, 200)
+        jres = json.loads(req.content)
+
+        sus = PermaLinkURL.objects.get(permalink_code=jres['data']['permalink_code'])
+        self.assertEqual(sus.data, data)
+
+
+
+

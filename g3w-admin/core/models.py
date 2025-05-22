@@ -516,16 +516,13 @@ class PermaLinkURL(TimeStampedModel):
     """
 
     data = models.JSONField()
-    short_code = models.CharField(max_length=10, unique=True, blank=True)
+    permalink_code = models.CharField(max_length=10, unique=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if not self.short_code:
+        if not self.permalink_code:
             while True:
                 code = generate_short_code()
-                if not PermaLinkURL.objects.filter(short_code=code).exists():
+                if not PermaLinkURL.objects.filter(permalink_code=code).exists():
                     self.short_code = code
                     break
         super().save(*args, **kwargs)
-
-    def get_permalink_url(self):
-        return f"pl/{self.short_code}"

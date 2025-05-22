@@ -1,0 +1,133 @@
+{
+    "layerstrees": [
+        {
+            "nodes": [
+                {
+                    "visible": false,
+                    "id": "work_areas_f0ecbe28_cbd1_4a38_8a57_ab6da91473fe",
+                    "checked": false
+                }
+            ],
+            "name": "Geographical group"
+        }
+    ],
+    "annotations": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                1251924.2080321657,
+                                5433446.92259379
+                            ],
+                            [
+                                1251639.5032961783,
+                                5433296.572901752
+                            ],
+                            [
+                                1251837.836932484,
+                                5433049.1890113065
+                            ],
+                            [
+                                1252153.464654777,
+                                5433001.205067039
+                            ],
+                            [
+                                1252287.819698726,
+                                5433106.769744427
+                            ],
+                            [
+                                1252241.968374204,
+                                5433350.954705255
+                            ],
+                            [
+                                1251924.2080321657,
+                                5433446.92259379
+                            ]
+                        ]
+                    ]
+                },
+                "properties": {
+                    "pid": 180,
+                    "text": "Polygon 4",
+                    "show_text": false,
+                    "info": "",
+                    "show_info": false,
+                    "type": "Polygon",
+                    "style": {
+                        "color": "rgb(244, 78, 59)",
+                        "width": 3,
+                        "radius": 8,
+                        "opacity": 0.5,
+                        "rotation": 0,
+                        "fontsize": 15,
+                        "direction": null
+                    }
+                },
+                "id": 4
+            },
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [
+                            1251687.4872404458,
+                            5433481.044509714
+                        ],
+                        [
+                            1251403.8488143312,
+                            5433334.960057166
+                        ],
+                        [
+                            1251389.9867859872,
+                            5433114.233913535
+                        ],
+                        [
+                            1251578.7236334395,
+                            5432976.6799399685
+                        ],
+                        [
+                            1251800.5160869427,
+                            5432908.436108122
+                        ],
+                        [
+                            1251967.9267369427,
+                            5432889.242530415
+                        ]
+                    ]
+                },
+                "properties": {
+                    "pid": 180,
+                    "text": "LineString 5",
+                    "show_text": false,
+                    "info": "",
+                    "show_info": false,
+                    "type": "LineString",
+                    "style": {
+                        "color": "rgb(244, 78, 59)",
+                        "width": 3,
+                        "radius": 8,
+                        "opacity": 0.5,
+                        "rotation": 0,
+                        "fontsize": 15,
+                        "direction": "forward"
+                    }
+                },
+                "id": 5
+            }
+        ]
+    },
+    "initextent": [
+        1251952.8997665248,
+        5433018.342570828,
+        1252378.429347056,
+        5433464.114509895
+    ],
+    "lng": "en",
+    "initbaselayer": 7
+}

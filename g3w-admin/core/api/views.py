@@ -449,11 +449,11 @@ class PermaLinkView(G3WAPIView):
 
     def post(self, request, **kwargs):
 
-        obj, created = PermaLinkURL.objects.get_or_create(data=request.data['data'])
+        obj, created = PermaLinkURL.objects.get_or_create(data=request.data['permalink_data'])
 
         self.results.results.update({
             'data': {
-                'permalink': obj.get_permalink_url(),
+                'permalink_code': obj.permalink_code,
             }
         })
 
