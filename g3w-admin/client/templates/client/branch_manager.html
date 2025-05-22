@@ -12,24 +12,37 @@
     {% csrf_token %}
     <label for="branch_name">Choose a branch:</label>
     <div style="display: flex; gap: .5em;">
-      <select id="branch_name" name="branch_name" required class="form-control">
+      <select id="branch_name" name="branch_name" required class="form-control" {% if thread_lock %}disabled data-toggle="tooltip" title="Another process is already running."{% endif %}>
         {% for branch in branches %}
           <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
         {% endfor %}
       </select>
-      <button type="submit" onclick="this.form.setAttribute('data-method','post');"   class="btn btn-success"><i class="fa fa-refresh"></i> Clone and build</button>
-      <button type="submit" onclick="this.form.setAttribute('data-method','delete');" class="btn btn-danger"><i class="fa fa-eraser"></i> Reset default</button>
+      {% if thread_lock %}
+        <button type="button" onclick="location.reload();" class="btn btn-warning" {% if thread_lock %}data-toggle="tooltip" title="Another process is already running."{% endif %}><i class="fa fa-refresh"></i> Check again</button>
+      {% else %}
+        <button type="submit" onclick="this.form.setAttribute('data-method','post');"   class="btn btn-success"><i class="fa fa-refresh"></i> Clone and build</button>
+        <button type="submit" onclick="this.form.setAttribute('data-method','delete');" class="btn btn-danger"><i class="fa fa-eraser"></i> Reset default</button>
+      {% endif %}
     </div>
   </form>
 
   <div id="response-message" style="color: red;font-family: Monospace;text-align: center;font-size: 2em;margin: 1em;"></div>
 
   <b style="margin: 2em 0 1em;display: block;">branch_manager.log</b>
-  <pre style="height:50vh;overflow:auto;background:#222;color:#eee;padding:1em;display:flex;flex-direction: column-reverse;resize: vertical;">
-    {{ branch_manager_log }}
-  </pre>
+  
+  <pre
+    style="height:50vh;overflow:auto;background:#222;color:#eee;padding:1em;display:flex;flex-direction: column-reverse;resize: vertical;"
+  ><code>{{ branch_manager_log | safe }}</code></pre>
+
+  <div style="display: flex; gap: .5em; justify-content: space-between; flex-direction: row-reverse;">
+    <button type="button" id="clear-logs"  class="btn btn-warning"><i class="fa fa-trash"></i> Clear log</button>
+  </div>
+
+
+
   <script>
     (function() {
+      // clone | build
       document.getElementById("branch-form").addEventListener("submit", async function(e) {
         e.preventDefault();
         try {
@@ -42,6 +55,24 @@
           const div       = document.getElementById("response-message");
           div.style.color = "success" === result.status ? "green" : "red";
           div.textContent = result.message;
+        } finally {
+          document.getElementById('startingspinner').remove();
+        }
+      });
+      // clear logs
+      document.getElementById("clear-logs").addEventListener("click", async function() {
+        try {
+          document.body.insertAdjacentHTML('beforeend', `<div id="startingspinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>`);
+          const result = await (await fetch("", {
+            method: "PATCH",
+            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+          })).json();
+          const div = document.getElementById("response-message");
+          div.style.color = "success" === result.status ? "green" : "red";
+          div.textContent = result.message;
+          if (result.status === "success") {
+            document.querySelector("pre").textContent = "";
+          }
         } finally {
           document.getElementById('startingspinner').remove();
         }
