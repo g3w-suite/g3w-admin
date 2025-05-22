@@ -751,6 +751,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         Check for fields excluded for WMS service into QGIS project.
         """
 
+        new_attributes_list = []
+
         # I.e. for use this method also do relation layers
         layer = kwargs.get('layer', self.layer)
         metadata_layer = kwargs.get('metadata_layer', self.metadata_layer)
@@ -761,15 +763,22 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # Only if fields to exclude are present
         if column_to_exclude:
             column_to_exclude = [metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
-            save_options.attributes = list(set(metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
+            new_attributes_list = list(set(metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
 
         # Integrate attributes removed by filters by intersection
         if qgs_request.subsetOfAttributes():
             if len(save_options.attributes) > 0:
-                save_options.attributes = list(
+                new_attributes_list = list(
                     set(qgs_request.subsetOfAttributes()).intersection(set(save_options.attributes)))
             else:
-                save_options.attributes = qgs_request.subsetOfAttributes()
+                new_attributes_list = qgs_request.subsetOfAttributes()
+
+        if new_attributes_list:
+
+            # Reorder with original attributes list
+            original_oreder =  {e: i for i, e in enumerate(metadata_layer.qgis_layer.attributeList())}
+            new_attributes_list = sorted(new_attributes_list, key=lambda x: original_oreder.get(x, float('inf')))
+            save_options.attributes = new_attributes_list
 
     def _download_relations(self, fsave_options, mode, tmp_dir, request):
         """
