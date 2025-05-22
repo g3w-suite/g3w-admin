@@ -1,3 +1,4 @@
+from django.conf import settings
 from sitetree.utils import item
 from core.utils.tree import G3Wtree
 
@@ -11,7 +12,8 @@ sitetrees = tuple(
             item(
                 'G3W-CLIENT',
                 '#',
-                type_header=True
+                type_header=True,
+                hidden=not settings.CLIENT_BRANCH_MANAGER_ENABLE,
             ),
             item(
                 tree['branch_manager'],
@@ -20,7 +22,7 @@ sitetrees = tuple(
                 url_as_pattern=True,
                 in_menu=True,
                 access_by_perms=['qdjango.change_project'],
-            ),
+                hidden=not settings.CLIENT_BRANCH_MANAGER_ENABLE,            ),
         ]
     ) for tree in [
         {
