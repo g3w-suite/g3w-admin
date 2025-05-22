@@ -7,9 +7,10 @@ __author__    = 'lorenzetti@gis3w.it'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__   = "MPL 2.0"
 
-from django.urls import re_path
+from django.urls import re_path, path
 from django.contrib.auth.decorators import login_required
 
+from .views import QploltyWidgetSetOrderView
 from .api.plots.views import QplotlyTraceAPIView
 from .api.widgets.views import (
     QplotlyWidgetList,
@@ -60,6 +61,16 @@ urlpatterns = [
         r'^api/widget/$',
         login_required(QplotlyWidgetList.as_view()),
         name='qplotly-widget-api-list'
+    ),
+
+    #############################################################
+    # Order
+    #############################################################
+
+    path(
+        'jx/widgets/setorder/',
+        login_required(QploltyWidgetSetOrderView.as_view()),
+        name='qplotly-widget-set-order'
     ),
 
 ]

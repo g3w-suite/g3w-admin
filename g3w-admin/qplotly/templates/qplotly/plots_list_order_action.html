@@ -1,0 +1,15 @@
+{% load i18n %}
+{% load static %}
+
+{# Multi layer editing active #}
+<span class="col-md-1 icon">
+<a class="plots-list-order-action" data-toggle="tooltip" title="{% trans "Project's Qploty Widgets order" %}"
+data-widget-type="detailItem"
+data-detail-url="{% url 'qplotly-project-list-plots' project.pk %}"
+data-modal-title="{% trans "Project's Qploty Widgets order" %}">
+    <i class="fa fa-area-chart"></i>
+</a>
+</span>
+
+<span class="label label-info col-xs-1"></span>
+
