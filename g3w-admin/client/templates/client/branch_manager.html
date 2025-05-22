@@ -34,11 +34,10 @@
     style="height:50vh;overflow:auto;background:#222;color:#eee;padding:1em;display:flex;flex-direction: column-reverse;resize: vertical;"
   ><code>{{ branch_manager_log | safe }}</code></pre>
 
-  <div style="display: flex; gap: .5em; justify-content: space-between; flex-direction: row-reverse;">
-    <button type="button" id="clear-logs"  class="btn btn-warning"><i class="fa fa-trash"></i> Clear log</button>
+  <div id="actions" style="display: flex; gap: .5em; justify-content: space-between; flex-direction: row-reverse;">
+    <button type="button" name="patch" value="clear_logs"    class="btn btn-warning"><i class="fa fa-trash"></i> Clear log</button>
+    <button type="button" name="patch" value="collectstatic" class="btn btn-outline" style="color: initial;border-color: currentColor;" {% if thread_lock %}disabled data-toggle="tooltip" title="Another process is already running."{% endif %}><i class="fa fa-cogs"></i> Collect static files</button>
   </div>
-
-
 
   <script>
     (function() {
@@ -59,24 +58,24 @@
           document.getElementById('startingspinner').remove();
         }
       });
-      // clear logs
-      document.getElementById("clear-logs").addEventListener("click", async function() {
+      // clear logs | collectstatic
+      document.querySelectorAll("#actions button[name='patch']").forEach(btn => btn.addEventListener("click", async function() {
         try {
           document.body.insertAdjacentHTML('beforeend', `<div id="startingspinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>`);
           const result = await (await fetch("", {
             method: "PATCH",
-            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, 'X-Action': btn.value },
           })).json();
           const div = document.getElementById("response-message");
           div.style.color = "success" === result.status ? "green" : "red";
           div.textContent = result.message;
-          if (result.status === "success") {
+          if (result.status === "success" && 'clear_logs' === btn.value) {
             document.querySelector("pre").textContent = "";
           }
         } finally {
           document.getElementById('startingspinner').remove();
         }
-      });
+      }));
     })();
 
     document.head.insertAdjacentHTML(

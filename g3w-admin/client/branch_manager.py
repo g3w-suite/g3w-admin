@@ -4,31 +4,27 @@ from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 
-import subprocess, os, threading, json, shutil
-import logging
+import subprocess, os, threading, json, shutil, logging, signal, atexit
 
-build_path = os.path.join(os.path.dirname(__file__), 'frontend', 'build')
+LOCK_FILE = os.path.join(os.path.dirname(__file__), 'branch_manager.lock')
+REPO_FOLDER = os.path.join(os.path.dirname(__file__), "frontend")
+BUILD_FOLDER = os.path.join(os.path.dirname(__file__), 'frontend', 'build')
 
 # Override "static" folder (add a STATICFILES_DIRS for each plugin inside 'build' folder)
-if os.path.exists(build_path):
-    for folder in os.listdir(build_path):
-        settings.STATICFILES_DIRS.append(os.path.join(build_path, folder, 'static'))
+if os.path.exists(BUILD_FOLDER):
+    for folder in os.listdir(BUILD_FOLDER):
+        settings.STATICFILES_DIRS.append(os.path.join(BUILD_FOLDER, folder, 'static'))
 
-# Add a file handler if not already present
-logger = logging.getLogger(__name__)
-
-if not logger.handlers:
+# Store logs into "branch_manager.log"
+if not logging.getLogger(__name__).handlers:
     file_handler = logging.FileHandler(os.path.join(os.path.dirname(__file__), 'branch_manager.log'), encoding='utf-8')
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(name)s %(message)s'))
-    logger.addHandler(file_handler)
-    logger.setLevel(logging.DEBUG)
+    logging.getLogger(__name__).addHandler(file_handler)
+    logging.getLogger(__name__).setLevel(logging.DEBUG)
 
 class ClientBranchManagerView(View):
     template_name = "client/branch_manager.html"
 
-    repo_dir = os.path.join(os.path.dirname(__file__), "frontend")
-    thread_lock = os.path.join(os.path.dirname(__file__), "branch_manager.lock")
-    
     logger = logging.getLogger(__name__)
 
     def dispatch(self, request, *args, **kwargs):
@@ -41,24 +37,18 @@ class ClientBranchManagerView(View):
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         """
         Get the list of "git branches"
         """
 
         # Ensure repository dir exists, otherwise clone it
-        if not os.path.exists(self.repo_dir):
+        if not os.path.exists(REPO_FOLDER):
             try:
-                self.run_command(f"git clone https://github.com/g3w-suite/g3w-client {self.repo_dir}")
-                self.run_command(f"git config --global --add safe.directory {self.repo_dir}")
+                self.run_command(f"git clone https://github.com/g3w-suite/g3w-client {REPO_FOLDER}")
+                self.run_command(f"git config --global --add safe.directory {REPO_FOLDER}")
             except Exception as e:
                 return JsonResponse({"status": "error", "message": f"Failed to clone repository: {str(e)}"})
-
-        from django.contrib.auth.models import Permission
-
-        permissions = Permission.objects.all()
-        for permission in permissions:
-            self.logger.info(permission.codename)
 
         # retrieve list of branches
         try:
@@ -70,12 +60,12 @@ class ClientBranchManagerView(View):
 
         return render(request, self.template_name, {
             "branches": branches,
-            "current_branch": None if not os.path.exists(os.path.join(self.repo_dir, 'build')) else self.run_command("git rev-parse --abbrev-ref HEAD", logger=False).stdout.strip(),
+            "current_branch": None if not os.path.exists(BUILD_FOLDER) else self.run_command("git rev-parse --abbrev-ref HEAD", logger=False).stdout.strip(),
             "branch_manager_log": self.branch_manager_log(),
-            "thread_lock": os.path.exists(self.thread_lock),
+            "thread_lock": os.path.exists(LOCK_FILE),
         })
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         """
         Handle branch selection, cloning, and build process
         """
@@ -83,12 +73,12 @@ class ClientBranchManagerView(View):
         branch_name = request.POST.get("branch_name")
 
         try:
-            if os.path.exists(self.thread_lock):
+            if os.path.exists(LOCK_FILE):
                 raise Exception("Another process is already running.")
 
             # Ensure repository dir exists, otherwise clone it
-            if not os.path.exists(self.repo_dir):
-                self.run_command(f"git clone -b {branch_name} https://github.com/g3w-suite/g3w-client {self.repo_dir}")
+            if not os.path.exists(REPO_FOLDER):
+                self.run_command(f"git clone -b {branch_name} https://github.com/g3w-suite/g3w-client {REPO_FOLDER}")
 
             # Reset all local changes before switching branch
             self.run_command("git reset --hard")
@@ -113,7 +103,7 @@ class ClientBranchManagerView(View):
                 "message": str(e)
             })
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request):
         """
         Delete "build" folder (resetting "static" overrides)
         """
@@ -129,27 +119,39 @@ class ClientBranchManagerView(View):
                 "message": str(e)
             })
 
-    def patch(self, request, *args, **kwargs):
+    def patch(self, request):
         """
-        Clear the branch_manager.log file
+        Handles:
+        - purge "branch_manager.log"
+        - django "collectstatic"
         """
         try:
-            # Find the log file
-            log_file = None
-            for handler in self.logger.handlers:
-                if hasattr(handler, 'baseFilename'):
-                    log_file = handler.baseFilename
-            if log_file and os.path.exists(log_file):
-                open(log_file, 'w').close()
-                return JsonResponse({
-                    "status": "success",
-                    "message": "Log cleared successfully."
-                })
-            else:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Log file not found."
-                })
+            
+            match request.headers.get('X-Action'):
+
+                case 'collectstatic':
+                    self.run_thread(target=self.collect_static_files)
+                    return JsonResponse({
+                        "status": "success",
+                        "message": "Collectstatic process started."
+                    })
+
+                case 'clear_logs':
+                    log_file = None
+                    for handler in self.logger.handlers:
+                        if hasattr(handler, 'baseFilename'):
+                            log_file = handler.baseFilename
+                    if log_file and os.path.exists(log_file):
+                        open(log_file, 'w').close()
+                        return JsonResponse({
+                            "status": "success",
+                            "message": "Log cleared successfully."
+                        })
+                    else:
+                        return JsonResponse({
+                            "status": "error",
+                            "message": "Log file not found."
+                        })
         except Exception as e:
             return JsonResponse({
                 "status": "error",
@@ -161,8 +163,6 @@ class ClientBranchManagerView(View):
         """
         Run a subprocess command and log stdout/stderr to the branch_manager logger.
         """
-
-        cwd = ClientBranchManagerView.repo_dir
         
         if (logger):
             ClientBranchManagerView.logger.info(f'\x1b[0;32m{cmd}\x1b[0m')
@@ -183,7 +183,20 @@ class ClientBranchManagerView(View):
             return
 
         try:
-            result = subprocess.run(cmd, cwd=cwd, env=env, shell=True, capture_output=True, text=True, check=True)
+            # Ensure "frontend" folder is there
+            if not os.path.exists(REPO_FOLDER):
+                os.makedirs(REPO_FOLDER, exist_ok=True)
+
+            # execute shell command
+            result = subprocess.run(
+                cmd,
+                cwd=REPO_FOLDER,
+                env=env,
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=True
+            )
             if logger and result.stdout:
                 ClientBranchManagerView.logger.info(result.stdout)
             if logger and result.stderr:
@@ -195,14 +208,11 @@ class ClientBranchManagerView(View):
     
     @staticmethod
     def run_thread(target):
-        SELF = ClientBranchManagerView
-
-        if os.path.exists(SELF.thread_lock):
+        if os.path.exists(LOCK_FILE):
             raise Exception("Another process is already running.")
 
         thread = threading.Thread(target=target, daemon=True)
         thread.start()
-        
 
     @staticmethod
     def build_client():
@@ -211,33 +221,26 @@ class ClientBranchManagerView(View):
         """
         SELF = ClientBranchManagerView
         try:
-            if os.path.exists(SELF.thread_lock):
-                SELF.logger.warning("Another process is already running.")
+            if SELF.thread_lock():
                 return
-
-            open(SELF.thread_lock, 'w').close()
 
             SELF.run_command("npm install || yarn install")                       # 1. npm install
             SELF.clone_package_json()                                             # 2. fix package.json
             SELF.run_command("npx gulp clone:plugins || yarn gulp clone:plugins") # 3. clone default plugins
 
             # Set safe directory
-            plugins_dir = os.path.join(SELF.repo_dir, 'src', 'plugins')
+            plugins_dir = os.path.join(REPO_FOLDER, 'src', 'plugins')
             for plugin in os.listdir(plugins_dir):
                 SELF.run_command(f"git config --global --add safe.directory {os.path.join(plugins_dir, plugin)}")
 
             SELF.run_command("npx gulp build:plugins || yarn gulp build:plugins", env={**os.environ, "G3W_PLUGINS": "editing"})
             SELF.run_command("npx gulp build:client || yarn gulp build:client")
 
-            # if (not settings.DEBUG or os.path.ismount('/code')):
-            #     SELF.run_command("python3 /code/g3w-admin/manage.py collectstatic --noinput")
-
         except Exception as e:
             SELF.logger.error(f"Exception: {e}")
 
         finally:
-            if os.path.exists(SELF.thread_lock):
-                os.remove(SELF.thread_lock)
+            SELF.thread_unlock()
 
     @staticmethod
     def reset_client():
@@ -246,18 +249,11 @@ class ClientBranchManagerView(View):
         """
         SELF = ClientBranchManagerView
         try:
-
-            if os.path.exists(SELF.thread_lock):
-                SELF.logger.warning("Another process is already running.")
+            if SELF.thread_lock():
                 return
 
-            open(SELF.thread_lock, 'w').close()
-
-            if not os.path.exists(os.path.join(SELF.repo_dir, 'build')):
-                SELF.logger.info("'build' folder does not exist.")
-                return
-
-            shutil.rmtree(os.path.join(SELF.repo_dir, 'build'))
+            if os.path.exists(BUILD_FOLDER):
+                shutil.rmtree(BUILD_FOLDER)
 
             SELF.logger.info("'build' folder deleted successfully.")
 
@@ -265,15 +261,33 @@ class ClientBranchManagerView(View):
             SELF.logger.error(f"Error while deleting the build folder: {str(e)}")
 
         finally:
-            if os.path.exists(SELF.thread_lock):
-                os.remove(SELF.thread_lock)
+            SELF.thread_unlock()
+
+    @staticmethod
+    def collect_static_files():
+        """
+        Attempt to collect django static files
+        """
+        SELF = ClientBranchManagerView
+        try:
+            if SELF.thread_lock():
+                return
+
+            if (not settings.DEBUG or os.path.ismount('/code')):
+                SELF.run_command("python3 /code/g3w-admin/manage.py collectstatic --noinput")
+
+        except Exception as e:
+            SELF.logger.error(f"Error while deleting the build folder: {str(e)}")
+
+        finally:
+            SELF.thread_unlock()
 
     @staticmethod
     def fix_engines():
         """
         Suppress invalid 'engines' from package.json
         """
-        package_json_path = os.path.join(ClientBranchManagerView.repo_dir, 'package.json')
+        package_json_path = os.path.join(REPO_FOLDER, 'package.json')
 
         try:
             with open(package_json_path, 'r') as file:
@@ -295,9 +309,9 @@ class ClientBranchManagerView(View):
         Fix missing package-lock.json.
         """
         try:
-            with open(os.path.join(ClientBranchManagerView.repo_dir, 'package.json'), 'r') as file:
+            with open(os.path.join(REPO_FOLDER, 'package.json'), 'r') as file:
                 package_data = json.load(file)
-            with open(os.path.join(ClientBranchManagerView.repo_dir, 'package-lock.json'), 'w') as file:
+            with open(os.path.join(REPO_FOLDER, 'package-lock.json'), 'w') as file:
                 json.dump(package_data, file, indent=2)
         except Exception as e:
             print(f"Error while cloning package.json to package-lock.json: {e}")
@@ -309,7 +323,7 @@ class ClientBranchManagerView(View):
         """
         SELF = ClientBranchManagerView
         try:
-            with open(os.path.join(SELF.repo_dir, 'config.template.js'), 'r') as file:
+            with open(os.path.join(REPO_FOLDER, 'config.template.js'), 'r') as file:
                 config_data = file.read()
 
             # Update variables to be relative to the current file
@@ -324,14 +338,14 @@ class ClientBranchManagerView(View):
                 ''
             )
 
-            with open(os.path.join(SELF.repo_dir, 'config.js'), 'w') as file:
+            with open(os.path.join(REPO_FOLDER, 'config.js'), 'w') as file:
                 file.write(updated_config)
 
         except Exception as e:
             print(f"Error while cloning and updating config.template.js: {e}")
 
         try:
-            with open(os.path.join(SELF.repo_dir, 'gulpfile.js'), 'r') as file:
+            with open(os.path.join(REPO_FOLDER, 'gulpfile.js'), 'r') as file:
                 config_data = file.read()
 
             # Force production = True
@@ -340,7 +354,7 @@ class ClientBranchManagerView(View):
                 'let production   = true;'
             )
 
-            with open(os.path.join(SELF.repo_dir, 'gulpfile.js'), 'w') as file:
+            with open(os.path.join(REPO_FOLDER, 'gulpfile.js'), 'w') as file:
                 file.write(updated_config)
 
         except Exception as e:
@@ -366,3 +380,25 @@ class ClientBranchManagerView(View):
             .replace('INFO', ' <b style="color:cyan;">INFO</b> ') \
             .replace('WARNING', ' <b style="color:yellow;">WARNING</b> ') \
             .replace('ERROR ', ' <b style="color:purple;">ERROR</b> ')
+
+    @staticmethod
+    def thread_lock():
+        if os.path.exists(LOCK_FILE):
+            ClientBranchManagerView.logger.warning("Another process is already running.")
+            return True
+
+        open(LOCK_FILE, 'w').close()
+
+    @staticmethod
+    def thread_unlock():
+        if os.path.exists(LOCK_FILE):
+            try:
+                os.remove(LOCK_FILE)
+            except Exception:
+                pass
+
+# safely remove "LOCK_FILE" on gunicorn reload/kill
+atexit.register(ClientBranchManagerView.thread_unlock)
+signal.signal(signal.SIGTERM, ClientBranchManagerView.thread_unlock)
+signal.signal(signal.SIGINT, ClientBranchManagerView.thread_unlock)
+signal.signal(signal.SIGHUP, ClientBranchManagerView.thread_unlock)
