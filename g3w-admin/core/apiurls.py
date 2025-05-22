@@ -150,7 +150,7 @@ urlpatterns = [
     path(
         'pl/',
         PermaLinkView.as_view(),
-        name='core-parmalink-api'
+        name='core-permalink-api'
     )
 
 ]
