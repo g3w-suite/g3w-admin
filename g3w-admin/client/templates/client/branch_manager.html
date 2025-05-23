@@ -60,6 +60,9 @@
       });
       // clear logs | collectstatic
       document.querySelectorAll("#actions button[name='patch']").forEach(btn => btn.addEventListener("click", async function() {
+        if ('collectstatic' === btn.value && !window.confirm("🚨 This might slow down your site, are you sure? ")) {
+          return;
+        }
         try {
           document.body.insertAdjacentHTML('beforeend', `<div id="startingspinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>`);
           const result = await (await fetch("", {
