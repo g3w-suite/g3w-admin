@@ -63,6 +63,8 @@ def create_update_es_documents(sender, **kwargs):
 
     if settings.QES_INDEXING_PROJECT:
         users = get_users(kwargs['instance'])
+
+        # Execute task in background
         task = es_project_indexing(kwargs['instance'], users)
 
 @receiver(pre_delete, sender=Project)
@@ -71,6 +73,8 @@ def delete_es_documents(sender, **kwargs):
 
     if settings.QES_INDEXING_PROJECT:
         users = get_users(kwargs['instance'])
+
+        # Execute task in background
         task = es_project_delete(kwargs['instance'], users, delete=True)
 
 
@@ -79,6 +83,7 @@ def delete_es_documents(sender, **kwargs):
 def update_es_document(sender, **kwargs):
     """
     Update or delete ES document
+    On editing actions
     """
 
     # Only if indexing for QGIS feature is enabled
