@@ -523,6 +523,9 @@ class PermaLinkURL(TimeStampedModel):
             while True:
                 code = generate_short_code()
                 if not PermaLinkURL.objects.filter(permalink_code=code).exists():
-                    self.short_code = code
+                    self.permalink_code = code
                     break
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.permalink_code

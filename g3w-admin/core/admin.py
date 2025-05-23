@@ -14,7 +14,8 @@ from .models import (
     G3WSpatialRefSys,
     ProjectMapUrlAlias,
     StatusLog,
-    ShortURL
+    ShortURL,
+    PermaLinkURL
 )
 from guardian.admin import GuardedModelAdmin
 
@@ -106,6 +107,11 @@ admin.site.register(StatusLog, StatusLogAdmin)
 class ShortURLAdmin(admin.ModelAdmin):
     model = ShortURL
 admin.site.register(ShortURL, ShortURLAdmin)
+
+class PermaLinkURLAdmin(admin.ModelAdmin):
+    model = PermaLinkURL
+    list_display = ('permalink_code', 'created', 'modified')
+admin.site.register(PermaLinkURL, PermaLinkURLAdmin)
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc
 admin.site.site_title = 'G3W Admin Administration'
