@@ -13,7 +13,8 @@ BUILD_FOLDER = os.path.join(os.path.dirname(__file__), 'frontend', 'build')
 # Override "static" folder (add a STATICFILES_DIRS for each plugin inside 'build' folder)
 if os.path.exists(BUILD_FOLDER):
     for folder in os.listdir(BUILD_FOLDER):
-        settings.STATICFILES_DIRS.append(os.path.join(BUILD_FOLDER, folder, 'static'))
+        if folder == 'client': # TODO: "editing" plugin
+            settings.STATICFILES_DIRS.append(os.path.join(BUILD_FOLDER, folder, 'static'))
 
 # Store logs into "branch_manager.log"
 if not logging.getLogger(__name__).handlers:
