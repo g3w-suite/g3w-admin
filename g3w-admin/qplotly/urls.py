@@ -14,6 +14,8 @@ from .views import (
     QplotlyLinkWidget2LayerView,
     QplotlyDownloadView,
     QplotlyWidgetShowOnStartClientView,
+    QplotlyProjectPlotsListView,
+    QploltyWidgetSetOrderView
 )
 
 
@@ -35,6 +37,16 @@ urlpatterns = [
         'download/xml/<int:pk>/',
         login_required(QplotlyDownloadView.as_view()),
         name='qplotly-download-xml'
-    )
+    ),
+
+    #############################################################
+    # Order
+    #############################################################
+
+    path(
+        'project/widgets/<int:project_id>/',
+        login_required(QplotlyProjectPlotsListView.as_view()),
+        name='qplotly-project-list-plots'
+    ),
 
 ]

@@ -6,3 +6,4 @@ from .geoconstraints import *
 from .column_acl import *
 from .layer_acl import *
 from .messages import *
+from .layerscaleconstraints import *

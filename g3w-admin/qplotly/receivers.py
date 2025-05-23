@@ -16,10 +16,15 @@ from django.apps import apps
 from django.db.models.signals import post_save, pre_delete
 from django.templatetags.static import static
 from django.template import loader
-
-from core.signals import load_layer_actions, load_js_modules
-
-from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
+from core.signals import (
+    load_layer_actions,
+    load_js_modules,
+    load_project_layers_actions
+)
+from qdjango.signals import (
+    load_qdjango_project_file,
+    post_save_qdjango_project_file
+)
 from qdjango.utils.data import QgisProject
 from qdjango.models import Layer
 
@@ -30,6 +35,7 @@ from core.signals import initconfig_plugin_start
 
 from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
+from .utils.models import get_qplotlywidgets4project
 from .models import QplotlyWidget
 
 import plotly
@@ -122,6 +128,9 @@ def update_widget(sender, **kwargs):
 def set_initconfig_value(sender, **kwargs):
     """Set base editing data for initconfig"""
 
+    if not hasattr(sender, 'request'):
+        return
+
     project = apps.get_app_config(kwargs['projectType']).get_model('project').objects.get(pk=kwargs['project'])
 
     plots = []
@@ -132,48 +141,39 @@ def set_initconfig_value(sender, **kwargs):
         'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
     }
 
-    layers = project.layer_set.all()
+    qplotly_widgets = get_qplotlywidgets4project(project, sender.request.user)
 
-    for layer in layers:
+    for qplotly_widget, qgs_layer_id in qplotly_widgets:
 
-        # Add check ACL for user
-        if not hasattr(sender, 'request') or not sender.request.user.has_perm('view_layer', layer):
+        # load settings from db
+        settings = QplotlySettings()
+        if not settings.read_from_model(qplotly_widget):
             continue
 
-        qplotly_widgets = layer.qplotlywidget_set.all()
+        # instace q QplotlyFactory
+        factory = QplotlyFactoring(settings, request=None, layer=None)
+        factory.build_layout()
 
-        for qplotly_widget in qplotly_widgets:
+        if plotly.__version__ != '2.5.1':
+            fig = go.Figure(layout=factory.layout)
+            layout = fig.to_dict()['layout']
+        else:
+            layout = factory.layout
 
+        plots.append({
+            'id': qplotly_widget.pk,
+            'qgs_layer_id': qgs_layer_id,
+            'selected_features_only': qplotly_widget.selected_features_only,
+            'visible_features_only': qplotly_widget.visible_features_only,
+            'show': qplotly_widget.show_on_start_client,
 
-            # load settings from db
-            settings = QplotlySettings()
-            if not settings.read_from_model(qplotly_widget):
-                continue
+            'plot': {
+                'type': settings.plot_type,
+                'layout': layout,
+                'config': plot_config
+            }
 
-            # instace q QplotlyFactory
-            factory = QplotlyFactoring(settings, request=None, layer=None)
-            factory.build_layout()
-
-            if plotly.__version__ != '2.5.1':
-                fig = go.Figure(layout=factory.layout)
-                layout = fig.to_dict()['layout']
-            else:
-                layout = factory.layout
-
-            plots.append({
-                'id': qplotly_widget.pk,
-                'qgs_layer_id': layer.qgs_layer_id,
-                'selected_features_only': qplotly_widget.selected_features_only,
-                'visible_features_only': qplotly_widget.visible_features_only,
-                'show': qplotly_widget.show_on_start_client,
-
-                'plot': {
-                    'type': settings.plot_type,
-                    'layout': layout,
-                    'config': plot_config
-                }
-
-            })
+        })
 
     # no plots no 'qplotly' section
     if len(plots) == 0:
@@ -240,3 +240,13 @@ def invalid_prj_cache(**kwargs):
             f"Qdjango project /api/config  invalidate cache after create/update/delete of layer qplotly widget: "
             f"{layer.project}"
         )
+
+@receiver(load_project_layers_actions)
+def editing_project_layers_actions(sender, **kwargs):
+    """
+    Return html actions for order plots by projects.
+    """
+
+    if (sender.has_perm('change_project', kwargs['project']) and kwargs['app_name'] == 'qdjango'):
+        template = loader.get_template('qplotly/plots_list_order_action.html')
+        return template.render(kwargs)
