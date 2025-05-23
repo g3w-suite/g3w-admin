@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('auth', '0012_alter_user_first_name_max_length'),
-        ('qdjango', '0124_alter_project_show_metadata_section'),
+        ('qdjango', '0124_layer_info_result_number_fields_and_more'),
     ]
 
     operations = [

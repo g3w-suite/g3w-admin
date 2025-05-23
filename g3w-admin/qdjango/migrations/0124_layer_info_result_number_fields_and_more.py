@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0123_alter_message_options_project_show_metadata_section'),
+        ('qdjango', '0124_alter_project_show_metadata_section'),
     ]
 
     operations = [
