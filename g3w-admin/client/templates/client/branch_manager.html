@@ -12,7 +12,10 @@
     {% csrf_token %}
     <label for="branch_name">Choose a branch:</label>
     <div style="display: flex; gap: .5em;">
-      <select id="branch_name" name="branch_name" required class="form-control" {% if thread_lock %}disabled data-toggle="tooltip" title="Another process is already running."{% endif %}>
+      <select id="branch_name" name="branch_name" required autocomplete="off" class="form-control" {% if thread_lock %}disabled data-toggle="tooltip" title="Another process is already running."{% endif %}>
+        {% if not current_branch %}
+          <option disabled selected></option>
+        {% endif %}
         {% for branch in branches %}
           <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
         {% endfor %}
@@ -21,7 +24,7 @@
         <button type="button" onclick="location.reload();" class="btn btn-warning" {% if thread_lock %}data-toggle="tooltip" title="Another process is already running."{% endif %}><i class="fa fa-refresh"></i> Check again</button>
       {% else %}
         <button type="submit" onclick="this.form.setAttribute('data-method','post');"   class="btn btn-success"><i class="fa fa-refresh"></i> Clone and build</button>
-        <button type="submit" onclick="this.form.setAttribute('data-method','delete');" class="btn btn-danger"><i class="fa fa-eraser"></i> Reset default</button>
+        <button type="submit" onclick="this.form.setAttribute('data-method','delete');" class="btn btn-danger" data-toggle="tooltip" data-html="true" title="<b>G3W-ADMIN</b><br><i style='white-space: nowrap;''>{{ g3w_suite_version }}</i>"><i class="fa fa-eraser"></i> Reset default</button>
       {% endif %}
     </div>
   </form>

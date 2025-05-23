@@ -3,12 +3,21 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
+from base.version import get_version
 
 import subprocess, os, threading, json, shutil, logging, signal, atexit
 
-LOCK_FILE = os.path.join(os.path.dirname(__file__), 'branch_manager.lock')
-REPO_FOLDER = os.path.join(os.path.dirname(__file__), "frontend")
-BUILD_FOLDER = os.path.join(os.path.dirname(__file__), 'frontend', 'build')
+LOGGER = logging.getLogger(__name__)
+
+# Make use of a "/tmp" folder while developing
+BASE_DIR = '/tmp/g3w-client-branch-manager' if settings.DEBUG and os.path.ismount('/code') else os.path.dirname(__file__)
+LOCK_FILE = os.path.join(BASE_DIR, 'branch_manager.lock')
+REPO_FOLDER = os.path.join(BASE_DIR, "frontend")
+BUILD_FOLDER = os.path.join(REPO_FOLDER, 'build')
+
+# Create "/tmp" folder 
+if not os.path.exists(BASE_DIR):
+    os.makedirs(BASE_DIR, exist_ok=True)
 
 # Override "static" folder (add a STATICFILES_DIRS for each plugin inside 'build' folder)
 if os.path.exists(BUILD_FOLDER):
@@ -17,16 +26,14 @@ if os.path.exists(BUILD_FOLDER):
             settings.STATICFILES_DIRS.append(os.path.join(BUILD_FOLDER, folder, 'static'))
 
 # Store logs into "branch_manager.log"
-if not logging.getLogger(__name__).handlers:
-    file_handler = logging.FileHandler(os.path.join(os.path.dirname(__file__), 'branch_manager.log'), encoding='utf-8')
+if not LOGGER.handlers:
+    file_handler = logging.FileHandler(os.path.join(BASE_DIR, 'branch_manager.log'), encoding='utf-8')
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(name)s %(message)s'))
-    logging.getLogger(__name__).addHandler(file_handler)
-    logging.getLogger(__name__).setLevel(logging.DEBUG)
+    LOGGER.addHandler(file_handler)
+    LOGGER.setLevel(logging.DEBUG)
 
 class ClientBranchManagerView(View):
     template_name = "client/branch_manager.html"
-
-    logger = logging.getLogger(__name__)
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -38,7 +45,7 @@ class ClientBranchManagerView(View):
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """
         Get the list of "git branches"
         """
@@ -64,9 +71,10 @@ class ClientBranchManagerView(View):
             "current_branch": None if not os.path.exists(BUILD_FOLDER) else self.run_command("git rev-parse --abbrev-ref HEAD", logger=False).stdout.strip(),
             "branch_manager_log": self.branch_manager_log(),
             "thread_lock": os.path.exists(LOCK_FILE),
+            "g3w_suite_version": get_version()
         })
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """
         Handle branch selection, cloning, and build process
         """
@@ -104,7 +112,7 @@ class ClientBranchManagerView(View):
                 "message": str(e)
             })
 
-    def delete(self, request):
+    def delete(self, request, *args, **kwargs):
         """
         Delete "build" folder (resetting "static" overrides)
         """
@@ -120,7 +128,7 @@ class ClientBranchManagerView(View):
                 "message": str(e)
             })
 
-    def patch(self, request):
+    def patch(self, request, *args, **kwargs):
         """
         Handles:
         - purge "branch_manager.log"
@@ -139,7 +147,7 @@ class ClientBranchManagerView(View):
 
                 case 'clear_logs':
                     log_file = None
-                    for handler in self.logger.handlers:
+                    for handler in LOGGER.handlers:
                         if hasattr(handler, 'baseFilename'):
                             log_file = handler.baseFilename
                     if log_file and os.path.exists(log_file):
@@ -166,7 +174,7 @@ class ClientBranchManagerView(View):
         """
         
         if (logger):
-            ClientBranchManagerView.logger.info(f'\x1b[0;32m{cmd}\x1b[0m')
+            LOGGER.info(f'\x1b[0;32m{cmd}\x1b[0m')
 
         # Split commands by ' || ' and execute them sequentially
         if (' || ' in cmd):
@@ -199,12 +207,12 @@ class ClientBranchManagerView(View):
                 check=True
             )
             if logger and result.stdout:
-                ClientBranchManagerView.logger.info(result.stdout)
+                LOGGER.info(result.stdout)
             if logger and result.stderr:
-                ClientBranchManagerView.logger.warning(result.stderr)
+                LOGGER.warning(result.stderr)
             return result
         except subprocess.CalledProcessError as e:
-            ClientBranchManagerView.logger.error(f"Comand failed: {cmd}\nstdout: {e.stdout}\nstderr: {e.stderr}")
+            LOGGER.error(f"Comand failed: {cmd}\nstdout: {e.stdout}\nstderr: {e.stderr}")
             raise
     
     @staticmethod
@@ -238,7 +246,7 @@ class ClientBranchManagerView(View):
             SELF.run_command("npx gulp build:client || yarn gulp build:client")
 
         except Exception as e:
-            SELF.logger.error(f"Exception: {e}")
+            LOGGER.error(f"Exception: {e}")
 
         finally:
             SELF.thread_unlock()
@@ -256,10 +264,10 @@ class ClientBranchManagerView(View):
             if os.path.exists(BUILD_FOLDER):
                 shutil.rmtree(BUILD_FOLDER)
 
-            SELF.logger.info("'build' folder deleted successfully.")
+            LOGGER.info("'build' folder deleted successfully.")
 
         except Exception as e:
-            SELF.logger.error(f"Error while deleting the build folder: {str(e)}")
+            LOGGER.error(f"Error while deleting the build folder: {str(e)}")
 
         finally:
             SELF.thread_unlock()
@@ -278,7 +286,7 @@ class ClientBranchManagerView(View):
                 SELF.run_command("python3 /code/g3w-admin/manage.py collectstatic --noinput")
 
         except Exception as e:
-            SELF.logger.error(f"Error while deleting the build folder: {str(e)}")
+            LOGGER.error(f"Error while deleting the build folder: {str(e)}")
 
         finally:
             SELF.thread_unlock()
@@ -322,7 +330,6 @@ class ClientBranchManagerView(View):
         """
         Create config.js from config.template.js
         """
-        SELF = ClientBranchManagerView
         try:
             with open(os.path.join(REPO_FOLDER, 'config.template.js'), 'r') as file:
                 config_data = file.read()
@@ -369,7 +376,7 @@ class ClientBranchManagerView(View):
         branch_manager_log = ''
 
         # Retrieve the log file if the logger writes to a file
-        log_file = next((h.baseFilename for h in ClientBranchManagerView.logger.handlers if hasattr(h, 'baseFilename')), None)
+        log_file = next((h.baseFilename for h in LOGGER.handlers if hasattr(h, 'baseFilename')), None)
 
         if log_file and os.path.exists(log_file):
             with open(log_file, 'r', encoding='utf-8') as f:
@@ -385,7 +392,7 @@ class ClientBranchManagerView(View):
     @staticmethod
     def thread_lock():
         if os.path.exists(LOCK_FILE):
-            ClientBranchManagerView.logger.warning("Another process is already running.")
+            LOGGER.warning("Another process is already running.")
             return True
 
         open(LOCK_FILE, 'w').close()
@@ -400,6 +407,6 @@ class ClientBranchManagerView(View):
 
 # safely remove "LOCK_FILE" on gunicorn reload/kill
 atexit.register(ClientBranchManagerView.thread_unlock)
-signal.signal(signal.SIGTERM, ClientBranchManagerView.thread_unlock)
-signal.signal(signal.SIGINT, ClientBranchManagerView.thread_unlock)
-signal.signal(signal.SIGHUP, ClientBranchManagerView.thread_unlock)
+signal.signal(signal.SIGTERM, lambda signum, frame: ClientBranchManagerView.thread_unlock())
+signal.signal(signal.SIGINT, lambda signum, frame: ClientBranchManagerView.thread_unlock())
+signal.signal(signal.SIGHUP, lambda signum, frame: ClientBranchManagerView.thread_unlock())
