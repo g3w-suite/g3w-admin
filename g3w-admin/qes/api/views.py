@@ -20,7 +20,7 @@ from qes.utils.indexer import QGISElasticsearchIndexer
 
 
 class QesSearchAPIView(G3WAPIView):
-    """ API view for search on Elsticsearch"""
+    """ API view for search on Elasticsearch"""
 
     permission_classes = (
         ProjectPermission,
