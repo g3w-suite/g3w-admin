@@ -1,4 +1,4 @@
 # CLIENT SETTIGNS DEFAULT VALUE
 # -----------------------------
 
-CLIENT_BRANCH_MANAGER_ENABLE = False
+# CLIENT_BRANCH_MANAGER = False

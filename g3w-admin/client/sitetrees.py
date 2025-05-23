@@ -2,6 +2,13 @@ from django.conf import settings
 from sitetree.utils import item
 from core.utils.tree import G3Wtree
 
+# DEBUG: print all access permissions by: "{appname}.{codename}"
+
+# from django.contrib.auth.models import Permission
+# permissions = Permission.objects.all()
+# for permission in permissions:
+#     print(f"{permission.content_type.app_label}.{permission.codename}")
+
 # Be sure you defined `sitetrees` in your module.
 sitetrees = tuple(
     G3Wtree(
@@ -13,7 +20,7 @@ sitetrees = tuple(
                 'G3W-CLIENT',
                 '#',
                 type_header=True,
-                hidden=not settings.CLIENT_BRANCH_MANAGER_ENABLE,
+                access_by_perms=['sites.delete_site'],
             ),
             item(
                 tree['branch_manager'],
@@ -21,8 +28,8 @@ sitetrees = tuple(
                 icon_css_class='fa fa-code-fork',
                 url_as_pattern=True,
                 in_menu=True,
-                access_by_perms=['qdjango.change_project'],
-                hidden=not settings.CLIENT_BRANCH_MANAGER_ENABLE,            ),
+                access_by_perms=['sites.delete_site'],
+            ),
         ]
     ) for tree in [
         {
