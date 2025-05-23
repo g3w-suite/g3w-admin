@@ -8,8 +8,10 @@ __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__   = "MPL 2.0"
 
 from django.urls import path, re_path
-
+from django.contrib.auth.decorators import login_required
 from .views import *
+
+from .branch_manager import ClientBranchManagerView 
 
 
 USER_MEDIA_PREFIX = 'me'
@@ -50,5 +52,11 @@ urlpatterns = [
         'credits/',
         credits,
         name='client-credits'
+    ),
+
+    path(
+        'admin/client-branch/',
+        login_required(ClientBranchManagerView.as_view()),
+          name='client-branch-manager'
     ),
 ]
