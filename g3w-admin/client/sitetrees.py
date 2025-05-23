@@ -21,6 +21,7 @@ sitetrees = tuple(
                 '#',
                 type_header=True,
                 access_by_perms=['sites.delete_site'],
+                hidden=not settings.DEBUG
             ),
             item(
                 tree['branch_manager'],
@@ -29,6 +30,7 @@ sitetrees = tuple(
                 url_as_pattern=True,
                 in_menu=True,
                 access_by_perms=['sites.delete_site'],
+                hidden=not settings.DEBUG
             ),
         ]
     ) for tree in [
