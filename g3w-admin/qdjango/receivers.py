@@ -34,7 +34,8 @@ from .models import (
     GeoConstraintRule,
     ConstraintSubsetStringRule,
     ConstraintExpressionRule,
-    Message
+    Message,
+    ScaleVisibilityLayerConstraint
 )
 from .searches import ProjectSearch
 from .views import (
@@ -386,3 +387,15 @@ def add_filter_token(**kwargs):
         except Exception as e:
             logger.error(f'[ERROR]: Error on getting FILTERTOKEN: {e}')
             return None
+
+
+@receiver(post_save, sender=ScaleVisibilityLayerConstraint)
+@receiver(pre_delete, sender=ScaleVisibilityLayerConstraint)
+def invalid_prj_cache_by_scalevisibilitylayerconstraint(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    kwargs['instance'].layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a scale visibility layer constraint: "
+        f"{kwargs['instance'].layer.project}"
+    )

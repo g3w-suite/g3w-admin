@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load static %}
+
+<div>
+  {% trans "<b>Drag</b> and <b>drop</b> the following table's rows to change the widget list order" %}
+</div>
+
+<table id="plots_list" class="table table-hover table-striped">
+  <thead>
+    <th>{% trans 'Title' %}</th>
+    <th>{% trans 'Type' %}</th>
+  </thead>
+  <tbody>
+    {% for plot in plots %}
+      <tr id="qplotlywidget_{{ plot.0.pk }}">
+        <td>{{ plot.0.title }}</td>
+        <td>{{ plot.0.type }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Sortable rows -->
+<script>
+  (function() {
+    let dragged = null;
+    document.querySelectorAll('#plots_list tbody tr').forEach(row => {
+      row.setAttribute('draggable', true);
+      row.addEventListener('mouseover',  () => { row.style.cursor = 'move'; });
+      row.addEventListener('mouseleave', () => { row.style.cursor = null; });
+      row.addEventListener('dragstart',  () => { dragged = row; });
+      row.addEventListener('dragend',    () => { dragged = null; });
+      row.addEventListener('dragover',   e => { e.preventDefault(); row.style.border="2px dashed #000"; });
+      row.addEventListener('dragleave',  () => { row.style.border=null; });
+      row.addEventListener('drop', e => {
+        if (dragged) {
+          dragged.parentNode.insertBefore(dragged, dragged == row.nextSibling ? row : row.nextSibling);
+          fetch(`/qplotly/jx/widgets/setorder/`, {
+            method: 'POST',
+            body: new URLSearchParams([
+              ...Array.from(row.parentNode.children).map(tr => tr.id).filter(Boolean).map(id => ["new_order[]", id]),
+              ["csrfmiddlewaretoken", $.cookie('csrftoken')],
+              ["project_id", {{ project.pk }}],
+            ]),
+          });
+        }
+        row.style.border=null;
+      });
+    });
+  })();
+</script>

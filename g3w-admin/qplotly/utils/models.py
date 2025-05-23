@@ -49,3 +49,31 @@ def get_qplotlywidgets4layer(layer):
         return QplotlyWidget.objects.filter(to_contain)
     else:
         return QplotlyWidget.objects.filter(datasource=layer.datasource)
+
+
+def get_qplotlywidgets4project(project, user=None):
+    """
+    Get every qplotly widget for evey layer of the project and order by 'order' field
+
+    :param project: Qdjango Project model instance
+    :param user: User model instance
+    :return: Ordered list of ( QplotlyWidget instance, qgs_layer_id)
+    """
+
+    # Get every qplotly plots for the project
+    layers = project.layer_set.all()
+
+    plots = []
+    for layer in layers:
+
+        # If user is set che permission
+        if user and not user.has_perm('view_layer', layer):
+            continue
+
+        qplotly_widgets = layer.qplotlywidget_set.all()
+        for qplotly_widget in qplotly_widgets:
+            if qplotly_widget not in plots:
+                plots.append((qplotly_widget, layer.qgs_layer_id))
+
+    # Order by order parameter
+    return sorted(plots, key=lambda x: x[0].order)
