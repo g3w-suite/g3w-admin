@@ -143,12 +143,12 @@ urlpatterns = [
     # shorturl/permalink API info
     #############################################################
     path(
-        'su/',
+        'api/su/',
         ShortURLView.as_view(),
         name='core-shorturl-api'
     ),
     path(
-        'pl/',
+        'api/pl/',
         PermaLinkView.as_view(),
         name='core-permalink-api'
     )
