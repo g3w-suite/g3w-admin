@@ -5,8 +5,10 @@ from .models import QplotlyWidget
 class QplotlyWidgetAdmin(admin.ModelAdmin):
 
     list_display = (
+        'title',
         'datasource',
         'project',
         'selected_features_only',
-        'visible_features_only'
+        'visible_features_only',
+        'order'
     )

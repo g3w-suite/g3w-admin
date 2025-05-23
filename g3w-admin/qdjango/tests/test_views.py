@@ -47,6 +47,9 @@ class QdjangoViewsTest(QdjangoTestBase):
         # get first layer of project
         layer = self.project.instance.layer_set.all()[0]
 
+        # check for max_preview_fields default value
+        self.assertEqual(layer.max_preview_fields, 3)
+
         # check initial condition for params list
         data_post = {}
         parms_to_check = {
@@ -61,6 +64,9 @@ class QdjangoViewsTest(QdjangoTestBase):
         for p, a in parms_to_check.items():
             self.assertFalse(getattr(layer, a))
             data_post.update({p: 1})
+
+        # Add for max_preview_fields
+        data_post['max_preview_fields'] = 5
 
         url = reverse('qdjango-project-layers-data-editing',
                       args=[self.project_group.slug, self.project.instance.slug, layer.pk])
@@ -77,6 +83,9 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         for p, a in parms_to_check.items():
             self.assertTrue(getattr(layer, a))
+
+        # check for max_preview_fields
+        self.assertEqual(layer.max_preview_fields, 5)
 
         client.logout()
 
