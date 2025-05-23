@@ -2737,6 +2737,17 @@ _.extend(g3wadmin.tpl, {
         </form>`),
 })
 
+// Add ScaleLayerVisibilityConstraint manager widget
+// -------------------------------------------------
+// activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
+ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
+  $widgetItem.find('[data-widget-type="scalevisconstraintManagerList"]').on("click", async function (e) {
+    const widget = 'scalevisconstraintManagerList';
+    const a = (await import(`${STATIC_BASE_URL}components/data-widget-${widget}.js`));
+    a[widget]($(this).parents("table").DataTable(), $(this));
+  })
+})
+
 // Add Style manager widget
 // --------------------------------
 _.extend(g3wadmin.widget, {

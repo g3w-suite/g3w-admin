@@ -1,4 +1,4 @@
-Django==4.2.20
+Django==4.2.21
 django-formtools==2.2
 django-crispy-forms==2.3
 crispy-bootstrap3==2024.1
@@ -43,4 +43,5 @@ weasyprint==63.0
 distro==1.7.0
 django-allauth[socialaccount]==0.63.6
 django-elasticsearch-dsl==8.0
+natsort==8.4.0
 

@@ -43,6 +43,11 @@ from .api.column_acl.views import (
     ColumnAclDetail,
     ColumnAclFields,
 )
+from .api.layerscaleconstraints.views import (
+    ScaleVisibilityLayerConstraintList,
+    ScaleVisibilityLayerConstraintDetail
+)
+
 from .views import ProjectSetOrderView
 
 
@@ -207,6 +212,44 @@ urlpatterns = [
         name='qdjango-column-acl-api-list'
     ),
 
+    #############################################################
+    # ScaleVisibilityLayerConstraint (Single layer)
+    #############################################################
+
+    # Detail of a ScaleVisibilityLayerConstraint
+    path(
+        'api/scalevisconstraint/detail/<int:pk>/',
+        login_required(ScaleVisibilityLayerConstraintDetail.as_view()),
+        name='qdjango-scalevisconstraint-api-detail'
+    ),
+
+    # All (s) ColumnAcl filtered by layer qdjango layer pk
+    path(
+        'api/scalevisconstraint/layer/<int:layer_id>/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-filter-by-layer-id'
+    ),
+
+    # All Constraint(s) filtered by user
+    path(
+        'api/scalevisconstraint/user/<int:user_id>/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-filter-by-user'
+    ),
+
+    # All Constraint(s) filtered by group
+    path(
+        'api/scalevisconstraint/group/<int:group_id>/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-filter-by-group'
+    ),
+
+    # All Constraint(s)
+    path(
+        'api/scalevisconstraint/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-list'
+    ),
 
     #############################################################
     # GeoConstraints (Single layer)
