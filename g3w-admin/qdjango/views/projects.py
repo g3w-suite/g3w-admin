@@ -604,6 +604,10 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.not_show_attributes_table = int(
                 request.POST['not_show_attributes_table'])
 
+        if 'max_preview_fields' in request.POST:
+            layer.max_preview_fields = int(
+                request.POST['max_preview_fields'])
+
         for format in settings.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS:
             k = 'download_layer'
             mparam = 'download'

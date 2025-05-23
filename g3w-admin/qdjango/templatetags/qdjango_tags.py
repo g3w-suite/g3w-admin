@@ -62,3 +62,15 @@ def message_level(level:int) -> str:
     msg_level = {m[0]: m[1] for m in MSG_LEVELS}
     return msg_level[level]
 
+@register.simple_tag()
+def fieldsnumber(layer):
+    """
+    Return number of fields for layer
+    :param layer: Qdjango Layer model instance
+    :return: int
+    """
+
+    try:
+        return len(layer.database_columns_by_name().keys())
+    except:
+        return 0
