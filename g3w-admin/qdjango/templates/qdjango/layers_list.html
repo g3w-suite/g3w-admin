@@ -126,6 +126,7 @@
                             <th style="width: 40px">WFS</th>
                             <th style="min-width:200px; width:240px;">{% trans 'Actions'%}</th>
                             {% if "change_project" in userPrj_perms %}
+                            <th style="width:100px">{% trans 'Preview fields (max.)' %}</th>
                             <th style="width:100px">{% trans 'Download capabilities' %}</th>
                             <th style="width:40px">{% trans 'Visibility capabilities' %}</th>
                             {% endif %}
@@ -204,8 +205,43 @@
                                         </a>
                                     </span>
                                     {% endif %}
+                                     
+                                    {% comment %} Add Column ACL management {% endcomment %}
+                                    <span class="col-xs-1 icon">
+                                        <a
+                                            class="layer-action"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="{% trans 'Scale visibility layer by Users/Groups' %}"
+                                            data-widget-type="scalevisconstraintManagerList"
+                                            data-scalevisconstraint-layer-pk="{{ object.pk }}"
+                                            data-scalevisconstraint-list-url="{% url 'qdjango-scalevisconstraint-api-filter-by-layer-id' object.pk %}"
+                                            data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"
+                                            data-info-layer-authgroup="{% url 'qdjango-api-info-layer-authgroup' object.pk %}"
+                                         >
+                                            <i class="fa fa-map"></i>
+                                            <span class="label label-info label-action-layer">{{ object.getScaleVisibilityLayerConstraintNumber }}</span>
+                                        </a>
+                                    </span>
+                                        
                                     {% endif %}
                                 </span>
+                            </td>
+                            <td>
+                                {% if object.layer_type in type_layer_for_download %}
+                                <div class="controls">
+                                    <input
+                                        data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}"
+                                        type="number"
+                                        class="max_preview_fields text-input form-control"
+                                        value="{{ object.max_preview_fields|default:"3" }}"
+                                        min="1"
+                                        max="{% fieldsnumber object %}"
+                                        step="1"
+                                        oninput="this.value = Math.max(this.min, Math.min(this.max, this.value)); if(!isNaN(+this.value)) ga.widget.setLayerData($(event.target), { ['max_preview_fields']: +this.value });"
+                                    >
+                                </div>
+                                {% endif %}
                             </td>
                             <td>
 

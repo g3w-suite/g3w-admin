@@ -2,6 +2,7 @@ import logging
 import os
 import time
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.text import slugify
 from django_extensions.db.fields import AutoSlugField
 from django.db.models import UniqueConstraint
@@ -978,6 +979,9 @@ class Layer(G3WACLModelMixins, models.Model):
         db_index=True,
     )
 
+    max_preview_fields = models.IntegerField(_('Number of fields to show in info result'), default=3,
+                                                    blank=True, null=True)
+
     objects = models.Manager()  # The default manager.
 
     vectors = VectorLayersManager()
@@ -1336,6 +1340,35 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return len(get_constraints4layer(self))
 
+    def get_scalevisibilityconstraint(self, user):
+        """
+        Return the ScaleVisibilityConstraint instance if exists for user
+        Check also for groups of user
+        """
+
+        peruser = None
+
+        try:
+            if user.is_anonymous:
+                user = get_anonymous_user()
+
+            return self.scale_visibility_layer.get(user=user)
+
+        except ObjectDoesNotExist:
+
+            # Try with user's groups
+            # Get viewer groups of user
+            if not user.is_anonymous:
+                groups = user.groups.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
+                for g in groups:
+                    try:
+                        peruser = self.scale_visibility_layer.get(group=g)
+                    except ObjectDoesNotExist:
+                        pass
+
+        return peruser
+
+
     def getColumnAclNumber(self):
         """
         Count ColumnAcl for self layer
@@ -1343,6 +1376,15 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         return self.columnacl_set.count() if self.has_column_acl else 0
+
+
+    def getScaleVisibilityLayerConstraintNumber(self):
+        """
+        Count ScaleVisibilityLayerConstraint for self layer
+        :return: integer
+        """
+
+        return self.scale_visibility_layer.count()
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(

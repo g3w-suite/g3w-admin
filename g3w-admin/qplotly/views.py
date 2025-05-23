@@ -10,15 +10,17 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-09-22'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
-from django.views.generic import View
+from django.views.generic import View, TemplateView
 from django.shortcuts import get_object_or_404
 from qdjango.mixins.views import QdjangoProjectViewMixin, QdjangoLayerViewMixin
 from django.core.files.base import ContentFile
 from django.http.response import JsonResponse
 from django_downloadview import VirtualDownloadView
 from qdjango.utils.models import comparedbdatasource
+from qdjango.models import Project
 from django.utils.text import slugify
 from .models import QplotlyWidget
+from .utils.models import get_qplotlywidgets4project
 
 
 class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
@@ -77,3 +79,41 @@ class QplotlyDownloadView(VirtualDownloadView):
 
         title = slugify(self.widget.title)
         return ContentFile(self.widget.xml, name=f"qplotly_{title}.xml")
+
+
+class QplotlyProjectPlotsListView(TemplateView):
+    """
+    View to show in a table the list of plots by project
+    """
+
+    template_name = 'qplotly/plots_list_order.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Get every qplotly plots for the project
+        ctx['project'] = Project.objects.get(pk=kwargs['project_id'])
+        ctx['plots'] = get_qplotlywidgets4project(ctx['project'])
+
+        return ctx
+
+
+class QploltyWidgetSetOrderView(View):
+    '''
+    Set order view list widgets
+    '''
+
+    # only user with change_group for this group can change overview map.
+    # @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    # def dispatch(self, *args, **kwargs):
+    #     return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        # get new order save value for group
+        new_order = self.request.POST.getlist('new_order[]')
+        for oindex, gid in enumerate(new_order):
+            p = QplotlyWidget.objects.get(pk=gid.split('_')[1])
+            p.order = oindex
+            p.save()
+
+        return JsonResponse({'Saved': 'ok'})
