@@ -30,6 +30,7 @@ from qdjango.models import (
     ScaleVisibilityLayerConstraint
 )
 from django.contrib.auth.models import Group as AuthGroup
+from qdjango.models import Layer
 
 from unittest import skipIf
 from .base import QdjangoTestBase
@@ -48,18 +49,15 @@ class TestScaleVisibilityLayerConstraint(QdjangoTestBase):
         super().setUp()
 
         self.qdjango_project = Project.objects.all()[0]
-        self.world = self.qdjango_project.layer_set.filter(
-            qgs_layer_id='world20181008111156525')[0]
-        self.spatialite_points = self.qdjango_project.layer_set.filter(
-            qgs_layer_id='spatialite_points20190604101052075')[0]
+        self.world = Layer.objects.get(qgs_layer_id='world20181008111156525', project=self.qdjango_project)
+        self.spatialite_points = Layer.objects.get(qgs_layer_id='spatialite_points20190604101052075', project=self.qdjango_project)
         # Make a cloned layer
         self.cloned_project = Project(
             group=self.qdjango_project.group, title='My Clone')
 
         self.cloned_project.qgis_file = self.qdjango_project.qgis_file
         self.cloned_project.save()
-        self.cloned_layer = self.qdjango_project.layer_set.filter(
-            qgs_layer_id='world20181008111156525')[0]
+        self.cloned_layer = Layer.objects.get(qgs_layer_id='world20181008111156525', project=self.cloned_project)
         self.cloned_layer.pk = None
         self.cloned_layer.project = self.cloned_project
         self.cloned_layer.save()
