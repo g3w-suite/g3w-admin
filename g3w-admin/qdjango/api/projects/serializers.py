@@ -963,7 +963,6 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Check for Scale layer visibility constraint per user
         ret['minscale'], ret['maxscale'], ret['scalebasedvisibility'] = self.get_min_max_scale(instance, ret)
-        ret['scalebasedvisibility'] = False
 
         return ret
 
