@@ -165,3 +165,54 @@ class QdjangoMetaLayer(CoreMetaLayer):
             self.toIncrement = False
 
         return self.current
+
+
+from copy import deepcopy
+
+
+def apply_tree_patch(original_tree, patch_tree):
+    """
+    Apply a patch (tree structure) to an existing tree, modifying only matching nodes by 'id'.
+
+    This function recursively traverses the original tree, searching for nodes that match
+    the 'id' of the patch nodes and updates only the fields present in the patch.
+
+    Args:
+        original_tree (list): The original tree structure (list of dicts).
+        patch_tree (list): The patch to apply, with partial nodes identified by 'id'.
+
+    Returns:
+        list: A deep-copied and updated version of the original tree with the patch applied.
+    """
+
+    def apply_patch(original_nodes, patch_nodes):
+        """
+        Recursively apply patch updates to the original tree nodes.
+        """
+        for patch in patch_nodes:
+            target_id = patch.get("id")
+
+            # If the patch contains an 'id', update the corresponding node
+            if target_id:
+                def update_node_by_id(nodes):
+                    for node in nodes:
+                        if node.get("id") == target_id:
+                            # Update only the keys provided in the patch (except 'id')
+                            for key, value in patch.items():
+                                if key != "id":
+                                    node[key] = value
+                            return True
+                        # Recurse into children if present
+                        if "nodes" in node:
+                            if update_node_by_id(node["nodes"]):
+                                return True
+                    return False
+
+                update_node_by_id(original_nodes)
+
+            # If no 'id', assume this is a group node and match by 'name'
+            elif "nodes" in patch:
+                for orig_group in original_nodes:
+                    if orig_group.get("name") == patch.get("name"):
+                        apply_patch(orig_group.get("nodes", []), patch["nodes"])
+

@@ -50,6 +50,8 @@ from .vector import (
     LayerVectorView,
     MODE_DATA
 )
+from .utils.structure import apply_tree_patch
+
 import json
 
 logger = logging.getLogger("django.request")
@@ -423,9 +425,17 @@ def update_by_permalinkcode(sender, **kwargs):
 
     for key, value in permalink.data.get("data", {}).items():
         if key in orig_data:
-            # Update data
-            data['values'][key] = value
-        elif key == 'annotations':
+
+            # Special case for layer
+            if key == 'layerstree':
+                apply_tree_patch(orig_data['layerstree'], value)
+                data['values'][key] = orig_data['layerstree']
+            else:
+
+                # Update data
+                data['values'][key] = value
+
+        else:
             # Add new data
             data['values'][key] = value
     
