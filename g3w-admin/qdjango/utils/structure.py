@@ -172,37 +172,34 @@ from copy import deepcopy
 
 def apply_tree_patch(original_tree, patch_tree):
     """
-    Apply a patch (tree structure) to an existing tree, modifying only matching nodes by 'id'.
+    Apply a patch (tree structure) to an existing tree, modifying nodes by 'id' or 'name'.
 
-    This function recursively traverses the original tree, searching for nodes that match
-    the 'id' of the patch nodes and updates only the fields present in the patch.
+    This function traverses the original tree, and for each node in the patch:
+    - If it contains an 'id', it updates the matching node's properties.
+    - If it doesn't contain an 'id' but contains a 'name', it updates the matching group's properties.
 
     Args:
         original_tree (list): The original tree structure (list of dicts).
-        patch_tree (list): The patch to apply, with partial nodes identified by 'id'.
+        patch_tree (list): The patch tree, where nodes may include full or partial updates.
 
     Returns:
         list: A deep-copied and updated version of the original tree with the patch applied.
     """
 
     def apply_patch(original_nodes, patch_nodes):
-        """
-        Recursively apply patch updates to the original tree nodes.
-        """
         for patch in patch_nodes:
-            target_id = patch.get("id")
+            patch_id = patch.get("id")
+            patch_name = patch.get("name")
 
-            # If the patch contains an 'id', update the corresponding node
-            if target_id:
+            if patch_id:
+                # Update node by ID
                 def update_node_by_id(nodes):
                     for node in nodes:
-                        if node.get("id") == target_id:
-                            # Update only the keys provided in the patch (except 'id')
+                        if node.get("id") == patch_id:
                             for key, value in patch.items():
                                 if key != "id":
                                     node[key] = value
                             return True
-                        # Recurse into children if present
                         if "nodes" in node:
                             if update_node_by_id(node["nodes"]):
                                 return True
@@ -210,9 +207,21 @@ def apply_tree_patch(original_tree, patch_tree):
 
                 update_node_by_id(original_nodes)
 
-            # If no 'id', assume this is a group node and match by 'name'
-            elif "nodes" in patch:
-                for orig_group in original_nodes:
-                    if orig_group.get("name") == patch.get("name"):
-                        apply_patch(orig_group.get("nodes", []), patch["nodes"])
+            elif patch_name:
+                # Update node by name (group-level node)
+                def update_node_by_name(nodes):
+                    for node in nodes:
+                        if node.get("name") == patch_name:
+                            for key, value in patch.items():
+                                if key not in ("id", "nodes"):
+                                    node[key] = value
+                            if "nodes" in patch and "nodes" in node:
+                                apply_patch(node["nodes"], patch["nodes"])
+                            return True
+                    return False
 
+                update_node_by_name(original_nodes)
+
+    updated_tree = deepcopy(original_tree)
+    apply_patch(updated_tree, patch_tree)
+    return updated_tree

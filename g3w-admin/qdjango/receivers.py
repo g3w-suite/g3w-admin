@@ -428,8 +428,7 @@ def update_by_permalinkcode(sender, **kwargs):
 
             # Special case for layer
             if key == 'layerstree':
-                apply_tree_patch(orig_data['layerstree'], value)
-                data['values'][key] = orig_data['layerstree']
+                data['values'][key] = apply_tree_patch(orig_data['layerstree'], value)
             else:
 
                 # Update data
