@@ -2,13 +2,17 @@ import logging
 import os
 from pathlib import Path
 
-from core.models import ProjectMapUrlAlias
+from core.models import (
+    ProjectMapUrlAlias,
+    PermaLinkURL
+)
 from core.signals import (
     execute_search_on_models,
     load_layer_actions,
     pre_delete_project,
     pre_update_project,
-    before_return_vector_data_layer
+    before_return_vector_data_layer,
+    post_serialize_project
 )
 from django.conf import settings
 from django.urls import (
@@ -399,3 +403,40 @@ def invalid_prj_cache_by_scalevisibilitylayerconstraint(**kwargs):
         f"Parent qdjango project /api/config invalidate on create/update/delete of a scale visibility layer constraint: "
         f"{kwargs['instance'].layer.project}"
     )
+
+
+@receiver(post_serialize_project)
+def update_by_permalinkcode(sender, **kwargs):
+
+    # Check if permalink_code exists
+    try:
+        permalink = PermaLinkURL.objects.get(permalink_code=sender.request.session['permalink_code'])
+    except:
+        return
+
+    orig_data = sender.data
+
+    data = {
+        'operation_type': 'update',
+        'values': {}
+    }
+
+    for key, value in permalink.data.items():
+        if key in orig_data:
+
+            # Update data
+            data['values'][key] = value
+
+        else:
+            # Add new data
+            if key == 'annotations':
+                data['values'][key] = value
+
+
+    # Delete permalink_code from session
+    try:
+        del sender.request.session['permalink_code']
+    except:
+        pass
+
+    return data

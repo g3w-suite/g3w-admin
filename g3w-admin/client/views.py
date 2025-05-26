@@ -21,6 +21,10 @@ from copy import deepcopy
 import json
 import secrets
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
 
 def client_map_alias_view(request, map_name_alias, *args, **kwargs):
     """
@@ -75,6 +79,11 @@ class ClientView(TemplateView):
                 return redirect_to_login(request.get_full_path(), settings.LOGIN_URL, 'next')
             else:
                 raise PermissionDenied()
+
+        # Set in session permalink_code if exists
+        if 'permalink_code' in request.GET and request.GET['permalink_code']:
+            request.session['permalink_code'] = request.GET.get('permalink_code')
+
 
         return super(ClientView, self).dispatch(request, *args, **kwargs)
 
