@@ -32,8 +32,8 @@ def comparedbdatasource(ds1, ds2, layer_type='postgres'):
 
     try:
         # split ds
-        ds1 = datasource2dict(ds1)
-        ds2 = datasource2dict(ds2)
+        ds1 = datasource2dict(ds1, layer_type)
+        ds2 = datasource2dict(ds2, layer_type)
 
 
         # compare only dbname and table if host is not present like for SQlite db:
@@ -61,7 +61,7 @@ def get_widgets4layer(layer):
     # for postgis layer
     if layer.layer_type == 'postgres':
         try:
-            ds = datasource2dict(layer.datasource)
+            ds = datasource2dict(layer.datasource, layer.layer_type)
         except:
 
             # For very complex QueryLayer

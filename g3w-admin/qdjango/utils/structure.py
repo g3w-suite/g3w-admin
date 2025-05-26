@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
-from qgis.core import QgsDataSourceUri
+from qgis.core import Qgis, QgsDataSourceUri, QgsProviderRegistry
 
 import requests
 
@@ -79,58 +79,41 @@ def qgsdatasourceuri2dict(datasource: str) -> dict:
     return toret
 
 
-def datasource2dict(datasource):
+def datasource2dict(datasource: str, provider: str) -> dict[str, str]:
     """
     Read a DB datasource string and put data in a python dict
 
     :param datasource: qgis project datasource
+    :param provider: data provider type (key)
     :return: dict with datasource params
     :rtype: dict
     """
 
-    datasourceDict = {}
+    # TODO: teprorarily safeguard with version check as QGIS < 3.42.1 and QGIS < 3.40.5
+    # have small bug in PostgreSQL data provider decodeUri(). For more details
+    # see https://github.com/qgis/QGIS/pull/60703
+    if Qgis.QGIS_VERSION_INT >= 34201 or Qgis.QGIS_VERSION_INT >= 34005:
+        # first try with the provider specific method
+        parts = QgsProviderRegistry.instance().decodeUri(provider, datasource)
+        if parts:
+            return {k: str(v) for k, v in parts.items()}
 
-    # before get sql
-    try:
-        datasource, sql = datasource.split('sql=')
-    except:
-        sql = None
+    # data provider does not support decodeUri(), we need to process it manually
+    parts = {}
+    ds_uri = QgsDataSourceUri(datasource)
+    for k in ds_uri.parameterKeys():
+        value = ds_uri[k]
+        if value:
+            parts[k] = str(value)
 
-    keys = re.findall(r'([A-z][A-z0-9-_]+)=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?', datasource)
-    for k in keys:
-        try:
-            datasourceDict[k] = re.findall(r'%s=([^"\'][#$^?+=!*()\'-/@%%&\w\.]+|\d)' % k, datasource)[0]
-        except:
-            # If I reincarnate as a human, I'll choose to be a farmer.
-            datasourceDict[k] = re.findall(r'%s=((?:["\'](?:(?:[^\"\']|\\\')+)["\'])(?:\.["\'](?:(?:[^\"\']|\\\')+)["\'])?)(?:\s|$)' % k, datasource)[0].strip('\'')
+        # special handling for "sql" parameter
+        if k == "sql":
+            if value:
+                parts[k] = '{}'.format(unicode2ascii(value))
+            else:
+                parts[k] = ""
 
-    # add sql
-    if sql:
-        datasourceDict['sql'] = '{}'.format(unicode2ascii(sql))
-    else:
-        datasourceDict['sql'] = ''
-    return datasourceDict
-
-
-def datasourcearcgis2dict(datasource):
-    """
-    Read a ArcGisMapServer datasource string and put data in a python dict
-
-    :param datasource: qgis project arcgis layer datasource
-    :return: dict with datasource params
-    :rtype: dict
-    """
-
-    datasourcedict = {}
-
-    keys = re.findall(r'([A-z][A-z0-9-_]+)=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?', datasource)
-    for k in keys:
-        try:
-            datasourcedict[k] = re.findall(r'{}=[\'"]([#$:_^?+=!*()\'-/@%&\w\."]+)[\'"]'.format(k), datasource)[0]
-        except:
-            pass
-
-    return datasourcedict
+    return parts
 
 
 class QdjangoMetaLayer(CoreMetaLayer):

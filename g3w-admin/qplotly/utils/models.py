@@ -31,7 +31,7 @@ def get_qplotlywidgets4layer(layer):
     # for postgis layer
     if layer.layer_type == 'postgres':
         try:
-            ds = datasource2dict(layer.datasource)
+            ds = datasource2dict(layer.datasource, layer.layer_type)
         except:
 
             # For very complex QueryLayer
