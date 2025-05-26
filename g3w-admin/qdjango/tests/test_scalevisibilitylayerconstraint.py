@@ -57,7 +57,7 @@ class TestScaleVisibilityLayerConstraint(QdjangoTestBase):
 
         self.cloned_project.qgis_file = self.qdjango_project.qgis_file
         self.cloned_project.save()
-        self.cloned_layer = Layer.objects.get(qgs_layer_id='world20181008111156525', project=self.cloned_project)
+        self.cloned_layer = Layer.objects.get(qgs_layer_id='world20181008111156525', project=self.qdjango_project)
         self.cloned_layer.pk = None
         self.cloned_layer.project = self.cloned_project
         self.cloned_layer.save()
