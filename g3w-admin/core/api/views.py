@@ -9,13 +9,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from owslib.wms import WebMapService
 from weasyprint import HTML as WeasyHTML
-from qgis.core import NULL, QgsExpression, QgsExpressionContext, Qgis, QgsCoordinateReferenceSystem
+from qgis.core import NULL, Qgis, QgsCoordinateReferenceSystem
 
 from base.version import get_version
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.permissions import ProjectPermission
 from core.api.base.views import G3WAPIView, APIException
-from qdjango.models import Project
 from core.models import ShortURL, PermaLinkURL
 from core.utils.geo import get_crs_bbox
 from core.utils.qgisapi import (
