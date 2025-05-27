@@ -21,6 +21,7 @@ from django.contrib.auth.models import Group as UserGroup
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
+from django.core.files import File
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
 from qgis.PyQt.QtCore import QTemporaryDir
@@ -35,10 +36,12 @@ from qdjango.models import (
     GeoConstraint,
     GeoConstraintRule,
     Layer,
-    Project
+    Project,
+    ScaleVisibilityLayerConstraint
 )
+from core.models import Group as CoreGroup, G3WSpatialRefSys
 from unittest import skipIf
-from .base import QdjangoTestBase
+from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QgisProject
 
 import os
 
@@ -47,6 +50,8 @@ logger = logging.getLogger(__name__)
 
 # Determine if we are using an old and bugged version of QGIS
 IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
+
+QGIS_FILE_SCALEVISIBILITY = 'g3wsuite_project_test_qgis340_3857.qgs'
 
 
 class TestSingleLayerConstraintsBase(QdjangoTestBase):
@@ -2288,3 +2293,220 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         })
 
         self.assertTrue(b'another point' in response.content)
+
+
+class TestVisibilityScaleLayerConstraintFilters(QdjangoTestBase):
+    """ For VisibilityScaleLayerConstraint filters """
+
+    def setUp(self):
+
+        # main project group
+        self.project_group = CoreGroup(name='Group3857', title='Group3857', header_logo_img='',
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+
+        self.project_group.save()
+
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_SCALEVISIBILITY), 'r'))
+        self.project = QgisProject(qgis_project_file)
+        self.project.title = 'A project 3857'
+        self.project.group = self.project_group
+        self.project.save()
+
+    def test_visibilityscalelayer_filter(self):
+
+        # assign permissions
+        # also to Anonymous user
+
+        self.world = self.project.instance.layer_set.get(qgs_layer_id='countries_simpl20171228095706310')
+
+        for u in (self.test_viewer1, self.test_viewer1_3, self.test_gu_viewer1, get_anonymous_user()):
+            assign_perm('view_project', u, self.project.instance)
+            for l in self.project.instance.layer_set.all():
+                assign_perm("view_layer", u, l)
+
+        # Build visibilitiscalelayercontraint
+        scvc = ScaleVisibilityLayerConstraint.objects.create(
+            user=self.test_viewer1,
+            maxscale=400000,
+            minscale=600000,
+            layer=self.world
+        )
+
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.project.instance.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.project.instance.id})
+
+        expected_1_feature = b'{"crs":{"properties":{"name":"urn:ogc:def:crs:EPSG::3857"},"type":"name"},"features":[{"geometry":null,"id":"countries_simpl20171228095706310.18","properties":{"AREA_KM2":301230,"CAPITAL_BR":"Roma","CAPITAL_DE":"Rom","CAPITAL_EN":"Rome","CAPITAL_ES":"Roma","CAPITAL_FR":"Rome","CAPITAL_IT":"Roma","ISOCODE":"IT","ISO_NUM":380,"NAME_BR":"It\xef\xbf\xbdlia","NAME_DE":"Italien","NAME_EN":"Italy","NAME_ES":"Italia","NAME_FR":"Italie","NAME_IT":"Italia","NAME_LOCAL":"Italia","POPULATION":58103033},"type":"Feature"}],"type":"FeatureCollection"}'
+        expected_no_feature = b'{"features":[],"type":"FeatureCollection"}'
+
+
+        # Make a request to the server
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+
+        # TEST SCALE 1:1000.000
+        # EXPECTED: 1 features
+        # ----------------------
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
+            # 'BBOX': '36.44,0.66,49.06,24.57',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        print(response.content)
+        self.assertEqual(response.content, expected_1_feature)
+
+        c.logout()
+
+        # TEST SCALE 1:1000.000
+        # EXPECTED: no features
+        # ----------------------
+        self.assertTrue(c.login(username=self.test_viewer1.username, password=self.test_viewer1.username))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
+            #'BBOX': '36.44,0.66,49.06,24.57',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_no_feature)
+
+        c.logout()
+
+        # TEST SCALE 1:1000.000
+        # EXPECTED: 1 features
+        # ----------------------
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
+            # 'BBOX': '36.44,0.66,49.06,24.57',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_1_feature)
+
+        c.logout()
+
+        self.assertTrue(c.login(username=self.test_viewer1.username, password=self.test_viewer1.username))
+
+        # TEST SCALE 1:500.000
+        # EXPECTED: 1 features
+        # ----------------------
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1282422.3031204767,5253651.691721216,1368980.1245507998,5418669.133497123',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_1_feature)
+
+        # TEST SCALE 1:200.000
+        # EXPECTED: 0 features
+        # ----------------------
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1309914.540790124,5295526.849377409,1344416.2764602622,5361302.397595171',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_no_feature)
+
+        c.logout()
+
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+
+        # TEST SCALE 1:200.000
+        # EXPECTED: 1 features
+        # ----------------------
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1309914.540790124,5295526.849377409,1344416.2764602622,5361302.397595171',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_1_feature)

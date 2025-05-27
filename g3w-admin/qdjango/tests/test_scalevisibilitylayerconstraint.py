@@ -252,6 +252,7 @@ class TestScaleVisibilityLayerConstraint(QdjangoTestBase):
             if l['id'] == self.world.qgs_layer_id:
                 self.assertEqual(l['minscale'], 100000000)
                 self.assertEqual(l['maxscale'], 0)
+                self.assertFalse(l['scalebasedvisibility'])
 
         svl = ScaleVisibilityLayerConstraint(layer=self.world,
                                              user=self.test_viewer1,
@@ -270,6 +271,7 @@ class TestScaleVisibilityLayerConstraint(QdjangoTestBase):
             if l['id'] == self.world.qgs_layer_id:
                 self.assertEqual(l['minscale'], 200)
                 self.assertEqual(l['maxscale'], 100)
+                self.assertTrue(l['scalebasedvisibility'])
 
         esponse = self._testApiCallAdmin01(
             'group-project-map-config', [self.qdjango_project.group.slug, 'qdjango', self.qdjango_project.pk],
@@ -281,6 +283,7 @@ class TestScaleVisibilityLayerConstraint(QdjangoTestBase):
             if l['id'] == self.world.qgs_layer_id:
                 self.assertEqual(l['minscale'], 100000000)
                 self.assertEqual(l['maxscale'], 0)
+                self.assertFalse(l['scalebasedvisibility'])
 
         # Give permission to user group of viewer1_2
         svl.group = self.test_gu_viewer1
@@ -296,6 +299,7 @@ class TestScaleVisibilityLayerConstraint(QdjangoTestBase):
             if l['id'] == self.world.qgs_layer_id:
                 self.assertEqual(l['minscale'], 200)
                 self.assertEqual(l['maxscale'], 100)
+                self.assertTrue(l['scalebasedvisibility'])
 
 
     def test_api(self):
