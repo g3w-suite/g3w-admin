@@ -44,13 +44,14 @@ class ScaleVisibilityLayerConstraintFilter(QgsServerFilter):
         qgs_project = QGS_SERVER.project.qgis_project
         use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
 
+
         layers = params['LAYERS'].split(',') if 'LAYERS' in params and params['LAYERS'] else []
         if len(layers) == 0:
             layers = [params['LAYER']] if 'LAYER' in params and params['LAYER'] else []
 
 
 
-        svlc = QGS_SERVER.project.get_scalevisibilitylayerconstraint(user=QGS_SERVER.djrequest.user)
+        svlc = QGS_SERVER.project.get_scalevisibilitylayerconstraint(user=QGS_SERVER.djrequest.user,use_ids=use_ids)
 
         if not svlc:
             return
@@ -58,8 +59,10 @@ class ScaleVisibilityLayerConstraintFilter(QgsServerFilter):
         # Layer to scale visibility constraints
         layer_constraints = list(set(layers).intersection(set(svlc.keys())))
 
+
         for l in layer_constraints:
-            qgs_layer = qgs_project.mapLayer(l)
+            qgs_layer = qgs_project.mapLayer(l) if use_ids else qgs_project.mapLayersByName(l)[0]
+
 
             # Set restore context for the layer
             self.restore_ctx[l] = {
@@ -82,8 +85,7 @@ class ScaleVisibilityLayerConstraintFilter(QgsServerFilter):
         use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
 
         for l, v in self.restore_ctx.items():
-
-            qgs_layer = qgs_project.mapLayer(l)
+            qgs_layer = qgs_project.mapLayer(l) if use_ids else qgs_project.mapLayersByName(l)[0]
 
             # Restore the layer scale visibility
             qgs_layer.setScaleBasedVisibility(v['scale_based_visibility'])

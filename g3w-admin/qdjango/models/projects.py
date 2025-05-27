@@ -664,7 +664,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 f"[CACHING /api/config] - An error on cache invalidation: {e}"
             )
 
-    def get_scalevisibilitylayerconstraint(self, user):
+    def get_scalevisibilitylayerconstraint(self, user, use_ids=True):
         """
         Return the ScaleVisibilityConstraint instance if exists for user for every layer
         Check also for groups of user
@@ -674,7 +674,10 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         for l in self.layer_set.all():
             peruser = l.get_scalevisibilityconstraint(user)
             if peruser:
-                res[l.qgs_layer_id] = peruser
+                if use_ids:
+                    res[l.qgs_layer_id] = peruser
+                else:
+                    res[l.name] = peruser
 
         return res
 
