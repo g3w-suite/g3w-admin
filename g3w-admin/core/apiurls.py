@@ -148,9 +148,24 @@ urlpatterns = [
         name='core-shorturl-api'
     ),
     path(
-        'api/pl/',
-        PermaLinkView.as_view(),
-        name='core-permalink-api'
-    )
+        'api/embed/', 
+        PermaLinkView.as_view(), 
+        name='core-permalink-create'
+    ),
+    path(
+        'api/embed/<str:code>/',
+        PermaLinkView.redirect_url,
+        name='core-permalink-redirect'
+    ),
+
+    #############################################################
+    # ShortUrl
+    #############################################################
+
+    path(
+        'su/<str:code>/',
+        ShortURLView.redirect_url,
+        name='shorturl_redirect_url'
+    ),
 
 ]

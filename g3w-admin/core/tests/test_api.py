@@ -747,7 +747,7 @@ class CoreApiTest(CoreTestBase):
         """ Test permalink api rest """
 
         # Create a permalink
-        url = reverse('core-permalink-api')
+        url = reverse('core-permalink-create')
 
 
         with open(os.path.join(os.path.join(os.getcwd(), 'core', 'tests', 'data'), 'permalink.json'), 'r', encoding='UTF8') as f:

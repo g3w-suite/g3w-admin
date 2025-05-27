@@ -155,13 +155,4 @@ urlpatterns = [
         name='systeminfo'
     ),
 
-    #############################################################
-    # ShortUrl
-    #############################################################
-
-    path(
-        'su/<str:code>/',
-        shortcut_redirect_url,
-        name='shorturl_redirect_url'
-    ),
 ]

@@ -1,10 +1,8 @@
 from django.conf import settings
-from django.shortcuts import redirect
 from django.http import (
     JsonResponse,
     HttpResponseBadRequest,
     HttpResponse,
-    Http404
 )
 from django.views.generic import (
     CreateView,
@@ -37,7 +35,6 @@ from .models import (
     MapControl,
     GeneralSuiteData,
     MacroGroup,
-    ShortURL
 )
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .signals import after_update_group, execute_search_on_models
@@ -640,20 +637,3 @@ class SystemInfoView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['sysinfo'] = get_system_info()
         return ctx
-
-
-
-def shortcut_redirect_url(request, code):
-    """ Simple view for shorturl redirect"""
-    try:
-        obj = ShortURL.objects.get(short_code=code)
-        return redirect(obj.original_url)
-    except ShortURL.DoesNotExist:
-        raise Http404("Short link not found")
-
-
-
-
-
-
-
