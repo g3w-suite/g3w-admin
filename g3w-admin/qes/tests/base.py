@@ -21,7 +21,7 @@ import requests
 )
 class QesTesBase(QdjangoTestBase):
 
-    def _query_es(self, q):
+    def _query_es(self, q, method='GET', **kwargs):
 
         host = settings.ELASTICSEARCH_DSL['default']['hosts']
 
@@ -35,7 +35,10 @@ class QesTesBase(QdjangoTestBase):
 
         url = f"{host}/{q}?format=json"
 
-        response = requests.get(url)
+        if method.upper() == 'POST':
+            response = requests.post(url, json=kwargs['data'])
+        else:
+            response = requests.get(url)
 
         if response.status_code == 200:
             return response.json()

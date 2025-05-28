@@ -26,7 +26,11 @@ from core.signals import (
     pre_save_maplayer
 )
 from qdjango.signals import post_save_qdjango_project_file
-from editing.models import EDITING_POST_DATA_DELETED
+from editing.models import (
+    EDITING_POST_DATA_DELETED,
+    EDITING_POST_DATA_ADDED,
+    EDITING_POST_DATA_UPDATED
+)
 from usersmanage.utils import get_users_for_object
 
 from .tasks import (
@@ -108,7 +112,11 @@ def update_es_document(sender, **kwargs):
 
     # Fid
     try:
-        fid = kwargs['data']['feature']['id']
+        if kwargs["mode"] in (EDITING_POST_DATA_UPDATED, EDITING_POST_DATA_DELETED):
+            fid = kwargs['data']['feature']['id']
+        else:
+            # Get new id
+            fid = kwargs['to_res']['id']
     except:
         data = json.loads(kwargs['data'])
         fid = data['id']
