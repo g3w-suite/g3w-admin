@@ -107,8 +107,7 @@ def makeDatasource(datasource, layerType):
         # eg: "//SIT-SERVER/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite"
         oldPath = re.sub(r"(.*)dbname='(.*?)'(.*)", r"\2", datasource)
         # eg: "\home\sit\charts/Carte stradali\\naturalearth_110m_physical.sqlite" (``?`` means ungreedy)
-        #newPath = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, oldPath)
-        newPath = re.sub(r'^.*data', basePath, oldPath)
+        newPath = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, oldPath)
         newDatasource = datasource.replace(oldPath, newPath)
 
     return newDatasource
