@@ -36,7 +36,7 @@ class QesIndexingTest(QesTesBase):
 
     def setUp(self):
 
-        # main project group
+        # Main project group
         self.project_group = CoreGroup(name='GroupES', title='GroupES', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
         self.project_group.save()
@@ -85,8 +85,7 @@ class QesIndexingTest(QesTesBase):
 
         for index in expected_indexes:
             data = self._query_es(f'/{index}/_count')
-
-        print (data)
+            self.assertEqual(data['count'], 0)
 
 
 
