@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from owslib.wms import WebMapService
 from weasyprint import HTML as WeasyHTML
 from qgis.core import NULL, Qgis, QgsCoordinateReferenceSystem
+from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
 
 from base.version import get_version
 from core.api.authentication import CsrfExemptSessionAuthentication
@@ -458,7 +459,14 @@ class PermaLinkView(G3WAPIView):
         """
         try:
             # return redirect(PermaLinkURL.objects.get(permalink_code=code).data['HTTP_REFERER'])
+            # obj = PermaLinkURL.objects.get(permalink_code=code)
+            # separator = '&' if '?' in obj.data['original_url'] else '?'
+            # return redirect(f"{obj.data['original_url']}{separator}permalink_code={code}")
             obj = PermaLinkURL.objects.get(permalink_code=code)
-            return redirect(f"{obj.data['original_url']}{'&' if '?' in obj.data['original_url'] else '?'}permalink_code={code}")
+            url = urlparse(obj.data['original_url'])
+            qs = parse_qs(url.query)
+            # Set the permalink_code parameter
+            qs['permalink_code'] = code
+            return redirect(urlunparse(url._replace(query=urlencode(qs, doseq=True))))
         except PermaLinkURL.DoesNotExist:
             raise Http404("Permalink not found")
