@@ -819,6 +819,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         min_scale = ret['minscale']
         max_scale = ret['maxscale']
+        scalebasedvisibility = ret['scalebasedvisibility']
 
         # Check if the layer has min and max scale per user
         if hasattr(self.request, 'user'):
@@ -828,8 +829,9 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             if svl:
                 min_scale = svl.minscale
                 max_scale = svl.maxscale
+                scalebasedvisibility = True
 
-        return min_scale, max_scale
+        return min_scale, max_scale, scalebasedvisibility
 
     def to_representation(self, instance):
         ret = super(LayerSerializer, self).to_representation(instance)
@@ -960,8 +962,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['opacity'] = int(qgs_maplayer.opacity() * 100)
 
         # Check for Scale layer visibility constraint per user
-        ret['minscale'], ret['maxscale'] = self.get_min_max_scale(instance, ret)
-
+        ret['minscale'], ret['maxscale'], ret['scalebasedvisibility'] = self.get_min_max_scale(instance, ret)
         return ret
 
 
