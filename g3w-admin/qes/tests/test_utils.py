@@ -37,7 +37,6 @@ class TestQesUtilsAPI(QesTesBase):
                     layer_cities = layer
                     tot_features_cities = qlayer.featureCount()
 
-        #print(tot_feature)
         indexer = QGISElasticsearchIndexer('default', self.test_admin1)
         self.assertIsInstance(indexer, QGISElasticsearchIndexer)
 

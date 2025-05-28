@@ -25,6 +25,7 @@ from core.signals import (
     pre_delete_maplayer,
     pre_save_maplayer
 )
+from qdjango.signals import post_save_qdjango_project_file
 from editing.models import EDITING_POST_DATA_DELETED
 from usersmanage.utils import get_users_for_object
 
@@ -57,11 +58,23 @@ def get_users(project):
     return users
 
 
-@receiver(post_save, sender=Project)
+@receiver(post_save_qdjango_project_file)
 def create_update_es_documents(sender, **kwargs):
     """ Create or update ES documents for project """
 
     if settings.QES_INDEXING_PROJECT:
+        users = get_users(sender.instance)
+
+        # Execute task in background
+        task = es_project_indexing(sender.instance, users)
+
+
+@receiver(post_save, sender=Project)
+def create_update_es_documents_from_model(sender, **kwargs):
+    """ Create or update ES documents for project """
+
+    # Is necessary check if the project has layers to indexing
+    if settings.QES_INDEXING_PROJECT and kwargs['instance'].layer_set.count() > 0:
         users = get_users(kwargs['instance'])
 
         # Execute task in background

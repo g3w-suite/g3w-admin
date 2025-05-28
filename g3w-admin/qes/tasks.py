@@ -81,7 +81,7 @@ def es_project_delete(project, users, task, **kwargs):
     # Indexing for every user
     for user in users:
         indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
-        indexer.delete_documents_by_project(project)
+        indexer.delete_documents(project)
 
 
 
