@@ -430,6 +430,15 @@ def update_by_permalinkcode(sender, **kwargs):
             # Special case for layer
             if key == 'layerstree':
                 data['values'][key] = apply_tree_patch(orig_data['layerstree'], value)
+            elif  key == 'layers':
+                ltu = {l['id']: l for l in value}
+
+                for layer in orig_data['layers']:
+                    if layer['id'] in ltu:
+                        for kl,vl in ltu[layer['id']].items():
+                            orig_data['layers'][orig_data['layers'].index(layer)][kl] = vl
+
+                data['values'][key] = orig_data['layers']
             else:
 
                 # Update data
