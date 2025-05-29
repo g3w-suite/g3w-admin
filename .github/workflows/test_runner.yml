@@ -14,6 +14,9 @@ jobs:
 
     steps:
 
+    - name: Fix DNS resolution
+      run: echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
+
     - uses: actions/checkout@v2
 
     - name: Extract branch name
