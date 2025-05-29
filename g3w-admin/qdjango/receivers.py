@@ -429,9 +429,11 @@ def update_by_permalinkcode(sender, **kwargs):
             # Add new data
             data['values'][key] = value
     
-    print('----------------------------------------')
-    print(json.dumps(data, indent=2, default=str))
-    print('----------------------------------------')
+    if settings.DEBUG:
+        logging.getLogger("g3wadmin.debug").debug(
+            f"PERMALINK: {permalink.permalink_code} \n"
+            f"{json.dumps(data, indent=2, default=str)}"
+        )
 
     # Delete permalink_code from session
     try:
