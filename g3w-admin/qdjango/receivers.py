@@ -421,17 +421,17 @@ def update_by_permalinkcode(sender, **kwargs):
         'values': {}
     }
 
-    for key, value in permalink.data.items():
+    for key, value in permalink.data.get("data", {}).items():
         if key in orig_data:
-
             # Update data
             data['values'][key] = value
-
-        else:
+        elif key == 'annotations':
             # Add new data
-            if key == 'annotations':
-                data['values'][key] = value
-
+            data['values'][key] = value
+    
+    print('----------------------------------------')
+    print(json.dumps(data, indent=2, default=str))
+    print('----------------------------------------')
 
     # Delete permalink_code from session
     try:

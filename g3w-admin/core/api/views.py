@@ -441,10 +441,9 @@ class PermaLinkView(G3WAPIView):
 
     def post(self, request, **kwargs):
         """
-        Shorturl creation
+        Permalink creation
         """
-        # request.data['permalink_data'].update({ 'HTTP_REFERER': request.META.get('HTTP_REFERER')})
-        obj, created = PermaLinkURL.objects.update_or_create(data=request.data['permalink_data'])
+        obj, created = PermaLinkURL.objects.update_or_create(data=request.data)
         self.results.results.update({
             'data': {
                 'permalink_code': obj.permalink_code
@@ -458,12 +457,8 @@ class PermaLinkView(G3WAPIView):
         Permalink redirect
         """
         try:
-            # return redirect(PermaLinkURL.objects.get(permalink_code=code).data['HTTP_REFERER'])
-            # obj = PermaLinkURL.objects.get(permalink_code=code)
-            # separator = '&' if '?' in obj.data['original_url'] else '?'
-            # return redirect(f"{obj.data['original_url']}{separator}permalink_code={code}")
             obj = PermaLinkURL.objects.get(permalink_code=code)
-            url = urlparse(obj.data['original_url'])
+            url = urlparse(obj.data['url'])
             qs = parse_qs(url.query)
             # Set the permalink_code parameter
             qs['permalink_code'] = code

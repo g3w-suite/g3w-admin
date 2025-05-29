@@ -746,22 +746,21 @@ class CoreApiTest(CoreTestBase):
     def test_permalink_api_rest(self):
         """ Test permalink api rest """
 
-        # Create a permalink
-        url = reverse('core-permalink-create')
-
-
         with open(os.path.join(os.path.join(os.getcwd(), 'core', 'tests', 'data'), 'permalink.json'), 'r', encoding='UTF8') as f:
             data = json.load(f)
-            post_data = {
-                'permalink_data': data
-            }
 
-        req = self.client.post(url, data=post_data, content_type='application/json')
-        self.assertEqual(req.status_code, 200)
-        jres = json.loads(req.content)
+        # Create permalink
+        response = self.client.post(
+            reverse('core-permalink-create'),
+            data= { 'data': data },
+            content_type='application/json'
+        )
 
-        sus = PermaLinkURL.objects.get(permalink_code=jres['data']['permalink_code'])
-        self.assertEqual(sus.data, data)
+        self.assertEqual(response.status_code, 200)
+
+        permalink = PermaLinkURL.objects.get(permalink_code=json.loads(response.content)['data']['permalink_code'])
+
+        self.assertEqual(permalink.data['data'], data)
 
 
 
