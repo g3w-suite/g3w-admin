@@ -416,7 +416,8 @@ def update_by_permalinkcode(sender, **kwargs):
     except:
         return
 
-    orig_data = sender.data
+
+    orig_data = kwargs['ps_data'] if 'ps_data' in kwargs else sender.data
 
     data = {
         'operation_type': 'update',
