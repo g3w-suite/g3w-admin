@@ -45,6 +45,9 @@ class TestQesAPI(QesTesBase):
         shutil.copy(f'{CURRENT_PATH}{TEST_BASE_PATH}{QGS_EDITING_DB_BACKUP}',
                     f'{CURRENT_PATH}{TEST_BASE_PATH}{QGS_EDITING_DB}')
 
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+
         # Load QGIS editing project
         qgis_project_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_FILE), 'r', encoding='UTF8'))
