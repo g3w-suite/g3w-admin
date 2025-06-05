@@ -48,6 +48,7 @@ class TestQesAPI(QesTesBase):
 
         self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                        srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+        self.project_group.save()
 
         # Load QGIS editing project
         qgis_project_file = File(open('{}{}{}'.format(
