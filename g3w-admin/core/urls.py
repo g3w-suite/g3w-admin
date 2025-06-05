@@ -154,4 +154,5 @@ urlpatterns = [
         login_required(SystemInfoView.as_view()),
         name='systeminfo'
     ),
+
 ]

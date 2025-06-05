@@ -15,6 +15,8 @@ from qgis.core import (
     QgsVectorLayer,
     QgsJsonUtils,
     QgsFeature,
+    QgsExpressionContext,
+    QgsExpressionContextUtils
 )
 
 from qgis.PyQt.QtCore import QVariant
@@ -462,7 +464,7 @@ class BaseVectorApiView(G3WAPIView):
 
         # Create the QGIS feature request, it will be passed through filters
         # and to the final QGIS API get features call.
-        qgis_feature_request = QgsFeatureRequest()
+        qgis_feature_request = self.instance_qgsfeaturerequest()
 
         # Prepare arguments for the get feature call
         kwargs = {}
@@ -767,6 +769,23 @@ class BaseVectorApiView(G3WAPIView):
         # FIXME: use QgsProject crs(), can be (in a try/except block):
         # self.layer.project.qgis_project.crs() != self.layer.qgis_layer.crs()
         self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
+
+    def instance_qgsfeaturerequest(self):
+        """
+        Return a QgsFeatureRequest instance with context
+        :return: QgsFeatureRequest
+        """
+
+        # Add context to QgsFeatureRequest
+        qgis_feature_request = QgsFeatureRequest()
+
+        ctx = QgsExpressionContext()
+        ctx.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(self.metadata_layer.qgis_layer))
+
+        qgis_feature_request.setExpressionContext(ctx)
+
+
+        return qgis_feature_request
 
     def get_response_data(self, request):
         """

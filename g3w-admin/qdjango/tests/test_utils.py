@@ -9,6 +9,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2019-11-28'
 __copyright__ = 'Copyright 2019, GIS3W'
 
+from import_export.utils import original
 
 from .base import QdjangoTestBase
 from django.urls import reverse
@@ -18,7 +19,7 @@ from django.conf import settings
 from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProject, QgisProjectSettingsWMS
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
-from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
+from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict, apply_tree_patch
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_capabilities4layer
 from qdjango.utils.qgis import explode_expression
 from qdjango.templatetags.qdjango_tags import is_geom_type_gpx_compatible
@@ -558,6 +559,172 @@ class QdjangoUtilsTest(QdjangoTestBase):
 
         self.client.logout()
 
+    def test_apply_tree_patch(self):
+        """ Test for apply_tree_patch function """
+
+        original_tree = """
+            [
+            {
+                "name": "Geographical group",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "buildings",
+                        "expanded": true,
+                        "id": "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
+                        "visible": true,
+                        "showfeaturecount": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "roads",
+                        "expanded": true,
+                        "id": "roads_ea006d6f_bd87_4635_aae0_4e9e7842b3f4",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Work areas",
+                        "expanded": true,
+                        "id": "work_areas_f0ecbe28_cbd1_4a38_8a57_ab6da91473fe",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Type - Subtype",
+                        "expanded": true,
+                        "id": "type_subtype_caec4a0b_e7c4_4542_b59c_769f2033d6b1",
+                        "visible": false,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "1:N referencing tables",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "Maintenance works",
+                        "expanded": true,
+                        "id": "maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Buildings rating",
+                        "expanded": true,
+                        "id": "buildings_rating_3d535fae_fd04_4df6_b6ff_8cbd13df078f",
+                        "visible": true,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "OFC 2023 (GSD 20cm) di proprietà di  Regione Toscana. Esecuzione volo CGR SpA (Compagnia Generale Ripreseaeree). Copertura del territorio: completa. Immagini a 8 bit di colore.",
+                "expanded": true,
+                "id": "_a4453b18_6ce6_4207_be30_3c91b0ab49e8",
+                "visible": false,
+                "toc": true
+            }
+        ]"""
+
+        patch_tree = """
+        [
+            {
+                "name": "Geographical group",
+                "nodes": [
+                    {
+                        "id": "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
+                        "visible": false
+                    },
+                    {
+                        "id": "work_areas_f0ecbe28_cbd1_4a38_8a57_ab6da91473fe",
+                        "visible": false
+                    }
+                ]
+            }
+        ]
+        """
+
+        exptected_tree = """
+            [
+            {
+                "name": "Geographical group",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "buildings",
+                        "expanded": true,
+                        "id": "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
+                        "visible": false,
+                        "showfeaturecount": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "roads",
+                        "expanded": true,
+                        "id": "roads_ea006d6f_bd87_4635_aae0_4e9e7842b3f4",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Work areas",
+                        "expanded": true,
+                        "id": "work_areas_f0ecbe28_cbd1_4a38_8a57_ab6da91473fe",
+                        "visible": false,
+                        "toc": true
+                    },
+                    {
+                        "name": "Type - Subtype",
+                        "expanded": true,
+                        "id": "type_subtype_caec4a0b_e7c4_4542_b59c_769f2033d6b1",
+                        "visible": false,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "1:N referencing tables",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "Maintenance works",
+                        "expanded": true,
+                        "id": "maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Buildings rating",
+                        "expanded": true,
+                        "id": "buildings_rating_3d535fae_fd04_4df6_b6ff_8cbd13df078f",
+                        "visible": true,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "OFC 2023 (GSD 20cm) di proprietà di  Regione Toscana. Esecuzione volo CGR SpA (Compagnia Generale Ripreseaeree). Copertura del territorio: completa. Immagini a 8 bit di colore.",
+                "expanded": true,
+                "id": "_a4453b18_6ce6_4207_be30_3c91b0ab49e8",
+                "visible": false,
+                "toc": true
+            }
+        ]"""
+
+        patched_tree = apply_tree_patch(original_tree=json.loads(original_tree), patch_tree=json.loads(patch_tree))
+
+        self.assertEqual(patched_tree, json.loads(exptected_tree))
+
+
 
 class QdjangoUtilsDataValidators(QdjangoTestBase):
     """Test for validators loaded into  import data classes"""
@@ -803,8 +970,4 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         self.assertTrue('referencing_fields' in dfields['area']['input']['options']['default_expression'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['referencing_fields'], ['length'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['apply_on_update'], False)
-
-
-
-
 
