@@ -30,6 +30,7 @@ from qdjango.models import (
     ScaleVisibilityLayerConstraint
 )
 from django.contrib.auth.models import Group as AuthGroup
+from qdjango.models import Layer
 
 from unittest import skipIf
 from .base import QdjangoTestBase
