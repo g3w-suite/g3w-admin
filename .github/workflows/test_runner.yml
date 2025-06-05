@@ -1,6 +1,13 @@
 name: G3W-Suite CI tests
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - 'v.*.*.x'
+    tags:
+      - '*'
 
 jobs:
 
