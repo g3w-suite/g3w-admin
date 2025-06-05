@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.core.files import File
 from editing.tests.test_models import QGS_EDITING_DB, QGS_EDITING_DB_BACKUP
 from qdjango.utils.data import QgisProject
+from core.models import Group as CoreGroup, G3WSpatialRefSys
 from .base import QesTesBase, override_settings
 import os
 import shutil
