@@ -2,6 +2,10 @@
 from django.db import close_old_connections
 from huey.contrib.djhuey import HUEY
 from huey_monitor.tqdm import ProcessInfo
+from qdjango.models import (
+    Project,
+    Layer
+)
 
 from .utils.indexer import QGISElasticsearchIndexer
 
@@ -49,7 +53,7 @@ def db_task(*args, **kwargs):
     return decorator
 
 @db_task(context=True)
-def es_project_indexing(project, users, task, **kwargs):
+def es_project_indexing(obj_to_index, users, task, **kwargs):
     """
     Execute ES indexing task
     """
@@ -59,15 +63,22 @@ def es_project_indexing(project, users, task, **kwargs):
         desc='Execute ES indexing task'
     )
 
+    if isinstance(obj_to_index, Project):
+        project = obj_to_index
+        layer = None
+    elif isinstance(obj_to_index, Layer):
+        project = obj_to_index.project
+        layer = obj_to_index
+
 
     # Indexing for every user
     for user in users:
         indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
         indexer.delete_index()
-        indexer.index_project(project)
+        indexer.index_project(project, layer)
 
 @db_task(context=True)
-def es_project_delete(project, users, task, **kwargs):
+def es_project_delete(obj_to_index, users, task, **kwargs):
     """
     Execute ES delete documents task
     """
@@ -77,11 +88,18 @@ def es_project_delete(project, users, task, **kwargs):
         desc='Execute ES delete documents task'
     )
 
+    if isinstance(obj_to_index, Project):
+        project = obj_to_index
+        layer = None
+    elif isinstance(obj_to_index, Layer):
+        project = obj_to_index.project
+        layer = obj_to_index
+
 
     # Indexing for every user
     for user in users:
         indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
-        indexer.delete_documents(project)
+        indexer.delete_documents(project, layer)
 
 
 

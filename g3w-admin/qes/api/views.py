@@ -11,6 +11,7 @@ __copyright__ = 'Copyright 2015 - 2025, Gis3w'
 
 from core.api.base.views import G3WAPIView
 from core.api.permissions import ProjectPermission
+from guardian.utils import get_anonymous_user
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from qdjango.models import Project
@@ -42,7 +43,13 @@ class QesSearchAPIView(G3WAPIView):
         # Get project from request
         project = Project.objects.get(id=kwargs['project_id'])
 
-        indexer = QGISElasticsearchIndexer('default', self.request.user)
+        # Check if user has grant on project
+        u = get_anonymous_user()
+        if request.user.has_perm('qdjango.view_project', project):
+            if not self.request.user.is_anonymous:
+                u = self.request.user
+
+        indexer = QGISElasticsearchIndexer('default', u)
         results = indexer.search(request.GET['q'], filters={
             'project_id': project.id
         })

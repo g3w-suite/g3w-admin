@@ -19,6 +19,11 @@ from django.dispatch import receiver
 
 from qdjango.models import (
     Project,
+    ColumnAcl,
+    GeoConstraintRule,
+    ConstraintSubsetStringRule,
+    ConstraintExpressionRule,
+    LayerAcl
 )
 from core.signals import (
     post_save_maplayer,
@@ -128,3 +133,61 @@ def update_es_document(sender, **kwargs):
         indexer = QGISElasticsearchIndexer('default', u)
         method = indexer.index_project if kwargs["mode"] != EDITING_POST_DATA_DELETED else indexer.delete_documents
         method(sender.layer.project,sender.layer, [fid])
+
+
+@receiver(post_save, sender=ColumnAcl)
+@receiver(pre_delete, sender=ColumnAcl)
+def re_indexing_es_columnacl(**kwargs):
+    """Re-indexing project when column ACL is changed"""
+
+    if settings.QES_INDEXING_PROJECT:
+        users = []
+        if kwargs['instance'].user:
+            users.append(kwargs['instance'].user)
+        if kwargs['instance'].group:
+            users += kwargs['instance'].group.user_set.all()
+
+
+        # Execute task in background
+        task = es_project_indexing(kwargs['instance'].layer, users)
+
+
+@receiver(post_save, sender=GeoConstraintRule)
+@receiver(pre_delete, sender=GeoConstraintRule)
+@receiver(post_save, sender=ConstraintExpressionRule)
+@receiver(pre_delete, sender=ConstraintExpressionRule)
+@receiver(post_save, sender=ConstraintSubsetStringRule)
+@receiver(pre_delete, sender=ConstraintSubsetStringRule)
+def re_indexing_es_constraint(**kwargs):
+    """Re-indexing project when constraints are changed"""
+
+    if settings.QES_INDEXING_PROJECT:
+        users = []
+        if kwargs['instance'].user:
+            users.append(kwargs['instance'].user)
+        if kwargs['instance'].group:
+            users += kwargs['instance'].group.user_set.all()
+
+        # Execute task in background
+        task = es_project_indexing(kwargs['instance'].constraint.layer, users)
+
+
+@receiver(post_save, sender=LayerAcl)
+@receiver(pre_delete, sender=LayerAcl)
+def re_indexing_es_layeracl(**kwargs):
+    """Re-indexing project when Layer ACL is changed"""
+
+    if settings.QES_INDEXING_PROJECT:
+        users = []
+        if kwargs['instance'].user:
+            users.append(kwargs['instance'].user)
+        if kwargs['instance'].group:
+            users += kwargs['instance'].group.user_set.all()
+
+        # Execute task in background
+        # Working in negative mode: for every user is necessary delete from the index the document
+
+        if kwargs.get('created', None):
+            task = es_project_delete(kwargs['instance'].layer, users, delete=True)
+        else:
+            task = es_project_indexing(kwargs['instance'].layer, users)
