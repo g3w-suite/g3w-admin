@@ -26,6 +26,10 @@ from core.utils.structure import FIELD_TYPES_MAPPING
 from qdjango.models import Widget, WIDGET_TYPES
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
 # Re-use test data from qdjango module
 PROJECTS_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 DATASOURCE_PATH = f'{PROJECTS_PATH}/geodata'
@@ -934,4 +938,18 @@ class ClientApiTest(CoreTestBase):
         # Check relations
         self.assertEqual(len(jres['relations']), 1)
 
+    def test_client_permalink_code(self):
+        """Test permalink code url parameter and change of /api/config result"""
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+
+        url = reverse('group-project-map-config', args=[self.project_print310.instance.group.slug, 'qdjango', self.project_print310.instance.pk])
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = res.json()
+
+        logger.debug(jres)
+
+        self.client.logout()
 

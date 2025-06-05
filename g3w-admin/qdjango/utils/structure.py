@@ -165,3 +165,63 @@ class QdjangoMetaLayer(CoreMetaLayer):
             self.toIncrement = False
 
         return self.current
+
+
+from copy import deepcopy
+
+
+def apply_tree_patch(original_tree, patch_tree):
+    """
+    Apply a patch (tree structure) to an existing tree, modifying nodes by 'id' or 'name'.
+
+    This function traverses the original tree, and for each node in the patch:
+    - If it contains an 'id', it updates the matching node's properties.
+    - If it doesn't contain an 'id' but contains a 'name', it updates the matching group's properties.
+
+    Args:
+        original_tree (list): The original tree structure (list of dicts).
+        patch_tree (list): The patch tree, where nodes may include full or partial updates.
+
+    Returns:
+        list: A deep-copied and updated version of the original tree with the patch applied.
+    """
+
+    def apply_patch(original_nodes, patch_nodes):
+        for patch in patch_nodes:
+            patch_id = patch.get("id")
+            patch_name = patch.get("name")
+
+            if patch_id:
+                # Update node by ID
+                def update_node_by_id(nodes):
+                    for node in nodes:
+                        if node.get("id") == patch_id:
+                            for key, value in patch.items():
+                                if key != "id":
+                                    node[key] = value
+                            return True
+                        if "nodes" in node:
+                            if update_node_by_id(node["nodes"]):
+                                return True
+                    return False
+
+                update_node_by_id(original_nodes)
+
+            elif patch_name:
+                # Update node by name (group-level node)
+                def update_node_by_name(nodes):
+                    for node in nodes:
+                        if node.get("name") == patch_name:
+                            for key, value in patch.items():
+                                if key not in ("id", "nodes"):
+                                    node[key] = value
+                            if "nodes" in patch and "nodes" in node:
+                                apply_patch(node["nodes"], patch["nodes"])
+                            return True
+                    return False
+
+                update_node_by_name(original_nodes)
+
+    updated_tree = deepcopy(original_tree)
+    apply_patch(updated_tree, patch_tree)
+    return updated_tree

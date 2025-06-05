@@ -162,7 +162,7 @@ def cache_page(timeout, key_args, key_prefix="", cache_alias=None):
         def _wrapped_view(request, *args, **kwargs):
 
             # Check if caching is active
-            if not settings.QDJANGO_PRJ_CACHE:
+            if not settings.QDJANGO_PRJ_CACHE or request.session.get('permalink_code') != None:
                 return view_func(request, *args, **kwargs)
 
             if request.user.is_anonymous:
