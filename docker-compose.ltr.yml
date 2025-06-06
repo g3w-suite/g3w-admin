@@ -29,6 +29,8 @@ services:
       - postgis
     volumes:
       - shared-volume:/shared-volume
+      - pip-cache:/root/.cache/pip
 
 volumes:
     shared-volume:
+    pip-cache:
