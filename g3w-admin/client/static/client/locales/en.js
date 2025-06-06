@@ -481,7 +481,11 @@ export default {
           },
           download: {
             unknow: 'Download',
-            geotiff_map_extent: "GeoTiff (current view)"
+            geotiff_map_extent: "GeoTiff (current view)",
+            title: "Export features",
+            layer: "Layer",
+            include_relations: "Include relations in exported file?",
+            data_format: "Data Format"
           }
         }
       },

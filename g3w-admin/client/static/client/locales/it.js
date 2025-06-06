@@ -479,7 +479,11 @@ export default {
           },
           download: {
             unknow: "Scarica",
-            geotiff_map_extent: "GeoTiff (vista attuale)"
+            geotiff_map_extent: "GeoTiff (vista attuale)",
+            title: "Esporta",
+            layer: "Livello",
+            include_relations: "Includere le relazioni?",
+            data_format: "Formato"
           }
         }
       },
