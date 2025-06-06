@@ -50,9 +50,6 @@ from qgis.PyQt.QtCore import Qt, QTemporaryDir
 from qdjango.apps import QGS_SERVER, remove_project_from_cache
 
 
-from logging import getLogger
-logger = getLogger(__name__)
-
 class AnnotationsPrintFilter(QgsServerFilter):
     """
     Filter to add a new request to print a specific atlas feature
@@ -112,8 +109,6 @@ class AnnotationsPrintFilter(QgsServerFilter):
         color = QColor(color_str)
         if not color.isValid():
             raise ValueError("Invalid color: {}".format(color_str))
-
-        logger.warning("Setting color for {} to {}, opacity {}".format(geometry_type, color.name(), opacity))
 
         layer_settings  = QgsPalLayerSettings()
         layer_settings.priority = 10;
