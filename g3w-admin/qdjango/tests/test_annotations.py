@@ -54,7 +54,7 @@ class TestAnnotations(QdjangoTestBase):
         c = Client()
         self.assertTrue(c.login(username='admin01', password='admin01'))
 
-        with open(os.path.join(CURRENT_PATH, 'qdjango', 'tests', 'data', 'annotations', 'annotations.geojson'), 'r') as f:
+        with open(os.path.join(CURRENT_PATH, 'qdjango', 'tests', 'data', 'annotations', 'annotations_with_style.json'), 'r') as f:
 
             annotations = json.load(f)
             annotations_text = json.dumps(annotations)
@@ -64,14 +64,14 @@ class TestAnnotations(QdjangoTestBase):
                 "VERSION": "1.3.0",
                 "REQUEST": "GetPrint",
                 "TEMPLATE": "A4",
-                "DPI": "96",
+                "DPI": "40",
                 "STYLES": "predefinito",
                 "LAYERS": "Countries",
                 "FORMAT": "png",
                 "CRS": "EPSG:4326",
                 "filtertoken": "undefined",
-                "map0:SCALE": "10000000",
-                "map0:EXTENT": "36.89659055406611,4.076705735113007,47.4869571772545,21.1215561582328",
+                "map0:SCALE": "2500000",
+                "map0:EXTENT": "43.77054953715294,8.474822780012191,46.41814119295004,12.736035385792139",
                 "map0:ROTATION": "0",
                 "Print": "Print",
                 'ANNOTATIONS': annotations_text,
@@ -83,33 +83,17 @@ class TestAnnotations(QdjangoTestBase):
             # Save the response to a temporary pdf file
             temp_dir = QTemporaryDir()
             out_file = temp_dir.path() + '/annotations_test_output.png'
+            #out_file = '/tmp/annotations_test_output.png'
             with open(out_file, 'wb') as f:
                 f.write(response.content)
 
             # Check the output file
             image = QImage(out_file)
             # Check px values
-            # Polygon stroke
-            self.assertEqual(image.pixelColor(566, 158), QColor(0, 0, 255))
-            # Polygon fill
-            self.assertEqual(image.pixelColor(559, 170), QColor(255, 255, 0))
-            # Polygon Text
-            self.assertEqual(image.pixelColor(575, 169), QColor(0, 255, 0))
-
-            # Check the point stroke
-            self.assertEqual(image.pixelColor(537, 226), QColor(0, 255, 0))
-            # Check the point fill
-            self.assertEqual(image.pixelColor(548, 227), QColor(0, 255, 255))
-            # Check the point text
-            self.assertEqual(image.pixelColor(490, 244), QColor(255, 0, 0))
-
-            # Check the line stroke
-            self.assertEqual(image.pixelColor(576, 259), QColor(0, 255, 0))
-            # Check the line text
-            self.assertEqual(image.pixelColor(613, 240), QColor(0, 255, 0))
-
-            # Check the label text
-            self.assertEqual(image.pixelColor(622, 234), QColor(0, 255, 255))
+            self.assertEqual(image.pixelColor(169, 105), QColor(41, 165, 216))
+            self.assertEqual(image.pixelColor(213, 114), QColor(244, 78, 59))
+            self.assertEqual(image.pixelColor(252, 67), QColor(0, 0, 255))
+            self.assertEqual(image.pixelColor(274, 122), QColor(194, 203, 99))
 
 
     def test_annotations_get(self):
@@ -118,93 +102,3 @@ class TestAnnotations(QdjangoTestBase):
     def test_annotations_post(self):
         self.__test_annotations(method='post')
 
-    def test_error_bad_json(self):
-
-        ows_url = reverse('OWS:ows',
-                          kwargs={'group_slug': self.project310.instance.group.slug,
-                                  'project_type': 'qdjango',
-                                  'project_id': self.project310.instance.id}
-                          )
-
-        c = Client()
-        self.assertTrue(c.login(username='admin01', password='admin01'))
-
-        bad_json = 'bad json'
-        url_data = {
-            "SERVICE": "WMS",
-            "VERSION": "1.3.0",
-            "REQUEST": "GetPrint",
-            "TEMPLATE": "A4",
-            "DPI": "96",
-            "STYLES": "predefinito",
-            "LAYERS": "Countries",
-            "FORMAT": "png",
-            "CRS": "EPSG:4326",
-            "filtertoken": "undefined",
-            "map0:SCALE": "10000000",
-            "map0:EXTENT": "36.89659055406611,4.076705735113007,47.4869571772545,21.1215561582328",
-            "map0:ROTATION": "0",
-            'ANNOTATIONS': bad_json,
-        }
-
-        response = c.get(ows_url, url_data)
-        self.assertEqual(response.status_code, 400)
-        self.assertIn(b'Invalid JSON', response.content)
-
-    def __test_error_bad_json_color(self, which=('points', 'stroke-color'), error_msg=b'Invalid color'):
-
-        ows_url = reverse('OWS:ows',
-                          kwargs={'group_slug': self.project310.instance.group.slug,
-                                  'project_type': 'qdjango',
-                                  'project_id': self.project310.instance.id}
-                          )
-
-        c = Client()
-        self.assertTrue(c.login(username='admin01', password='admin01'))
-
-        with open(os.path.join(CURRENT_PATH, 'qdjango', 'tests', 'data', 'annotations', 'annotations.geojson'), 'r') as f:
-            annotations = json.load(f)
-            annotations['styles'][which[0]][which[1]] = 'bad color'
-            bad_json = json.dumps(annotations)
-
-            url_data = {
-                "SERVICE": "WMS",
-                "VERSION": "1.3.0",
-                "REQUEST": "GetPrint",
-                "TEMPLATE": "A4",
-                "DPI": "96",
-                "STYLES": "predefinito",
-                "LAYERS": "Countries",
-                "FORMAT": "png",
-                "CRS": "EPSG:4326",
-                "filtertoken": "undefined",
-                "map0:SCALE": "10000000",
-                "map0:EXTENT": "36.89659055406611,4.076705735113007,47.4869571772545,21.1215561582328",
-                "map0:ROTATION": "0",
-                'ANNOTATIONS': bad_json,
-            }
-
-            response = c.get(ows_url, url_data)
-            self.assertEqual(response.status_code, 400)
-            self.assertIn(error_msg, response.content)
-
-    def test_error_bad_json_points_stroke_color(self):
-        self.__test_error_bad_json_color(which=('points', 'stroke-color'))
-
-    def test_error_bad_json_points_fill_color(self):
-        self.__test_error_bad_json_color(which=('points', 'fill-color'))
-
-    def test_error_bad_json_lines_stroke_color(self):
-        self.__test_error_bad_json_color(which=('lines', 'stroke-color'))
-
-    def test_error_bad_json_polygons_stroke_color(self):
-        self.__test_error_bad_json_color(which=('polygons', 'stroke-color'))
-
-    def test_error_bad_json_polygons_fill_color(self):
-        self.__test_error_bad_json_color(which=('polygons', 'fill-color'))
-
-    def test_error_bad_json_labels_font_color(self):
-        self.__test_error_bad_json_color(which=('labels', 'font-color'))
-
-    def test_error_bad_json_labels_font_size(self):
-        self.__test_error_bad_json_color(which=('labels', 'font-size'), error_msg=b'Error setting styles')

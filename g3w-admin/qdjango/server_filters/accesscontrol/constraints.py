@@ -65,7 +65,7 @@ class SingleLayerExpressionAccessControlFilter(QgsAccessControlFilter):
             qdjango_layer = Layer.objects.get(project=QGS_SERVER.project, qgs_layer_id=layer.id())
         except Layer.DoesNotExist:
             # This is a special case for internal layers, we don't want to log this
-            if '_g3wsuite_internal_' not in layer.id():
+            if not layer.customProperty('g3w-suite-internal', False):
                 QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
             return ""
 
@@ -102,7 +102,7 @@ class GeoConstraintAccessControlFilter(QgsAccessControlFilter):
             qdjango_layer = Layer.objects.get(project=QGS_SERVER.project, qgs_layer_id=layer.id())
         except Layer.DoesNotExist:
             # This is a special case for internal layers, we don't want to log this
-            if '_g3wsuite_internal_' not in layer.id():
+            if not layer.customProperty('g3w-suite-internal', False):
                 QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
             return ""
 

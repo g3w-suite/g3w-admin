@@ -14,6 +14,7 @@ __copyright__ = 'Copyright 2025, ItOpen'
 
 
 import json
+import math
 from urllib.parse import unquote_plus
 
 from qgis.core import (
@@ -33,6 +34,7 @@ from qgis.core import (
     QgsLineSymbol,
     QgsFillSymbol,
     QgsMessageLog,
+    QgsArrowSymbolLayer,
 )
 
 from qgis.server import (
@@ -43,10 +45,13 @@ from qgis.server import (
 )
 
 from qgis.PyQt.QtGui import QFont, QColor
-from qgis.PyQt.QtCore import QTemporaryDir
+from qgis.PyQt.QtCore import Qt, QTemporaryDir
 
 from qdjango.apps import QGS_SERVER, remove_project_from_cache
 
+
+from logging import getLogger
+logger = getLogger(__name__)
 
 class AnnotationsPrintFilter(QgsServerFilter):
     """
@@ -60,6 +65,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
         self.temp_dir = None
         self.original_project_path = None
         self.temp_project_path = None
+        self.layer_number = 0
 
     def error(self, handler, message):
         """
@@ -86,15 +92,163 @@ class AnnotationsPrintFilter(QgsServerFilter):
 
         return True
 
+    def setLabeling(self, layer, geometry_type, style):
+        """Set up labeling for the layer based on the geometry type and style."""
+
+        color_str = style.get('color', 'rgb(0, 0, 0)')
+        opacity = style.get('opacity', 1.0)
+        width = style.get('width', 1)
+        # For points only:
+        radius = style.get('radius', 2)
+        direction = style.get('direction', '')
+
+        # Color to #XXXXX dec to hex
+        if color_str.startswith('rgb'):
+            color_str = color_str[4:-1].split(',')
+            color_str = '#{:02x}{:02x}{:02x}'.format(int(color_str[0]), int(color_str[1]), int(color_str[2]))
+        elif color_str.startswith('#'):
+            color_str = color_str.strip()
+
+        color = QColor(color_str)
+        if not color.isValid():
+            raise ValueError("Invalid color: {}".format(color_str))
+
+        logger.warning("Setting color for {} to {}, opacity {}".format(geometry_type, color.name(), opacity))
+
+        layer_settings  = QgsPalLayerSettings()
+        layer_settings.priority = 10;
+        layer_settings.placementSettings().setOverlapHandling( Qgis.LabelOverlapHandling.AllowOverlapIfRequired )
+        layer_settings.placementSettings().setAllowDegradedPlacement( True )
+
+        text_format = QgsTextFormat()
+        text_format.setSizeUnit(Qgis.RenderUnit.Pixels)
+
+        if geometry_type == 'Text':
+            text_format.setSize(style.get('fontsize', 15))
+        else:
+            text_format.setSize(15)
+
+        buffer_settings = QgsTextBufferSettings()
+        buffer_settings.setEnabled(True)
+        buffer_settings.setSize(5)
+        buffer_settings.setSizeUnit(Qgis.RenderUnit.Pixels)
+        buffer_settings.setColor(QColor("white"))
+
+        text_format.setBuffer(buffer_settings)
+
+        layer_settings.setFormat(text_format)
+        layer_settings.fieldName = "name"
+
+        layer_settings.multilineAlign = Qgis.LabelMultiLineAlignment.Center
+        layer_settings.enabled = True
+
+        if geometry_type == 'Text':
+            layer.renderer().symbol().setOpacity(0.0)
+
+        if geometry_type == 'Text':
+            layer_settings.placement = Qgis.LabelPlacement.AroundPoint
+            rotation_rad = style.get('rotation', 0)
+            if rotation_rad:
+                rotation_deg = rotation_rad / math.pi * 180
+                layer_settings.angleOffset = rotation_deg
+        elif geometry_type == 'Point':
+            layer_settings.placement = Qgis.LabelPlacement.OverPoint
+            layer_settings.pointSettings().setQuadrant( Qgis.LabelQuadrantPosition.Above )
+            layer_settings.yOffset = -2
+        elif geometry_type == 'LineString':
+            layer_settings.placement = Qgis.LabelPlacement.Line
+            layer_settings.lineSettings().setPlacementFlags( Qgis.LabelLinePlacementFlag.AboveLine | Qgis.LabelLinePlacementFlag.MapOrientation )
+        elif geometry_type == 'Polygon':
+            layer_settings.placement = Qgis.LabelPlacement.AroundPoint
+
+        labeling = QgsVectorLayerSimpleLabeling(layer_settings)
+        layer.setLabelsEnabled(True)
+        layer.setLabeling(labeling)
+
+        if geometry_type == 'Point':
+            layer.renderer().symbol().symbolLayer(0).setStrokeColor(color)
+            layer.renderer().symbol().symbolLayer(0).setSize(radius)
+            layer.renderer().symbol().symbolLayer(0).setSizeUnit(Qgis.RenderUnit.Pixels)
+            transparent_color = QColor(color)
+            transparent_color.setAlphaF(opacity)
+            assert transparent_color.isValid(), "Invalid transparent color"
+            layer.renderer().symbol().symbolLayer(0).setFillColor(transparent_color)
+        elif geometry_type == 'Polygon' or geometry_type == 'Circle':
+            transparent_color = QColor(color)
+            transparent_color.setAlphaF(opacity)
+            assert transparent_color.isValid(), "Invalid transparent color"
+            layer.renderer().symbol().symbolLayer(0).setFillColor(transparent_color)
+            layer.renderer().symbol().symbolLayer(0).setStrokeColor(color)
+            layer.renderer().symbol().symbolLayer(0).setStrokeWidth(width)
+            layer.renderer().symbol().symbolLayer(0).setStrokeWidthUnit(Qgis.RenderUnit.Pixels)
+        elif geometry_type == 'LineString':
+            if direction in ['forward', 'backward']:
+                properties = {
+                    "is_repeated": True,
+                    "is_curved" : False,
+                    "arrow_width": width,
+                    "arrow_width_unit": "Pixel",
+                    "arrow_start_width": width,
+                    "arrow_start_width_unit": "Pixel",
+                    "head_thickness": width * 1.5,
+                    "head_thickness_unit": "Pixel",
+                    "head_length": width * 1.5 * 1.4142,
+                    "head_length_unit": "Pixel",
+                }
+                if direction == 'backward':
+                    properties['head_type'] = QgsArrowSymbolLayer.HeadType.HeadReversed
+                arrow_symbol = QgsArrowSymbolLayer.create(properties)
+                arrow_symbol.setStrokeColor(color)
+                fill_symbol = arrow_symbol.subSymbol().symbolLayer(0)
+                fill_symbol.setStrokeStyle(Qt.PenStyle.NoPen)
+                fill_symbol.setStrokeWidth(0)
+                layer.renderer().symbol().changeSymbolLayer(0, arrow_symbol)
+            else:
+                layer.renderer().symbol().setColor(color)
+                layer.renderer().symbol().setWidth(width)
+                layer.renderer().symbol().setWidthUnit(Qgis.RenderUnit.Pixels)
+
+
+    def makeLayer(self, geometry_type):
+        """
+        Create a QgsVectorLayer for the given geometry type.
+        """
+        layer = None
+        if geometry_type == 'Point':
+            layer = QgsVectorLayer('Point?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_points_%s' % self.layer_number, 'memory')
+        elif geometry_type == 'Text':
+            layer = QgsVectorLayer('Point?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_text%s' % self.layer_number, 'memory')
+        elif geometry_type == 'LineString':
+            layer = QgsVectorLayer('LineString?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_lines_%s' % self.layer_number, 'memory')
+        elif geometry_type == 'Polygon':
+            layer = QgsVectorLayer('Polygon?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_polygons_%s' % self.layer_number, 'memory')
+        elif geometry_type == 'Circle':
+            layer = QgsVectorLayer('MultiSurface?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_polygons_%s' % self.layer_number, 'memory')
+        else:
+            raise ValueError("Unsupported geometry type: {}".format(geometry_type))
+
+        self.layer_number += 1
+        layer.setCustomProperty('g3w-suite-internal', True)
+        return layer
+
+
     def onRequestReady(self):
+
         handler = self.server_iface.requestHandler()
         params = handler.parameterMap()
 
         if not self.checkService(params):
             return True
 
+        self.layer_number = 0
+
         # Parse the JSON annotations
         annotations_data = unquote_plus(params['ANNOTATIONS'])
+
+        # Load from file for testing
+        if False:
+            with open('qdjango/tests/data/annotations/annotations_with_style.json', 'r') as f:
+                annotations_data = f.read()
 
         # Parse the annotations JSON
         try:
@@ -104,258 +258,130 @@ class AnnotationsPrintFilter(QgsServerFilter):
 
         self.temp_dir = QTemporaryDir()
 
-        # Load the annotations into three QgsVectorLayer objects, one for each type
-        # of annotation (point, line, polygon), plus the hidden labels layer
-        annotation_points = QgsVectorLayer('Point?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_points', 'memory')
-        annotation_points.setCustomProperty('g3w-suite-internal', True)
-        annotation_lines = QgsVectorLayer('LineString?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_lines', 'memory')
-        annotation_lines.setCustomProperty('g3w-suite-internal', True)
-        annotation_polygons = QgsVectorLayer('Polygon?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_polygons', 'memory')
-        annotation_polygons.setCustomProperty('g3w-suite-internal', True)
-        annotation_labels = QgsVectorLayer('Point?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_labels', 'memory')
-        annotation_labels.setCustomProperty('g3w-suite-internal', True)
-
-
-        assert annotation_points.isValid()
-        assert annotation_lines.isValid()
-        assert annotation_polygons.isValid()
-        assert annotation_labels.isValid()
-
-        layers = [annotation_points, annotation_lines, annotation_polygons, annotation_labels]
-
         QgsMessageLog.logMessage("AnnotationsPrintFilter layers initialized", 'annotationsprint', Qgis.Info)
 
-        # Default styles
-        styles = {
-            'points': {
-                'stroke-color': '#FF0000',
-                'stroke-width': 2,
-                'fill-color': '#FF0000',
-                'size': 5,
-                'font-color': '#FF0000',
-                'font-size': 12,
-                'font-style': 'normal',
-            },
-            'labels': {
-                'font-color': '#FF0000',
-                'font-size': 12,
-                'font-style': 'normal',
-                'buffer-size': 1,
-                'buffer-color': '#FFFFFF',
-            },
-            'lines': {
-                'stroke-color': '#00FF00',
-                'stroke-width': 2,
-                'font-color': '#00FF00',
-                'font-size': 12,
-                'font-style': 'normal',
-                'buffer-size': 1,
-                'buffer-color': '#FFFFFF'
-            },
-            'polygons': {
-                'stroke-color': '#0000FF',
-                'stroke-width': 2,
-                'fill-color': '#0000FF',
-                'font-size': 12,
-                'font-style': 'normal',
-                'buffer-size': 1,
-                'buffer-color': '#FFFFFF'
-            },
-        }
-
-        if 'styles' in annotations:
-            # Override the default styles with the ones provided in the annotations
-            styles = annotations['styles']
-
-        for layer in layers:
-            layer.startEditing()
-
-        # Load the JSON annotations into the layers
-        for annotation in annotations['features']:
-            geom = annotation['geometry']
-            coords = geom['coordinates']
-            if geom['type'] == 'LineString':
-                feature = QgsFeature(annotation_lines.fields())
-                line = [QgsPointXY(coord[0], coord[1]) for coord in coords]
-                feature.setGeometry(QgsGeometry.fromPolylineXY(line))
-                feature.setAttribute('name', annotation['properties']['name'])
-                annotation_lines.addFeatures([feature])
-            elif geom['type'] == 'Point':
-                feature = QgsFeature(annotation_points.fields())
-                feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(coords[0], coords[1])))
-                feature.setAttribute('name', annotation['properties']['name'])
-                if 'label' in annotation['properties']:
-                    annotation_labels.addFeatures([feature])
-                else:
-                    annotation_points.addFeatures([feature])
-            elif geom['type'] == 'Polygon':
-                feature = QgsFeature(annotation_polygons.fields())
-                polygon = [QgsPointXY(coord[0], coord[1]) for coord in coords[0]]
-                feature.setGeometry(QgsGeometry.fromPolygonXY([polygon]))
-                feature.setAttribute('name', annotation['properties']['name'])
-                annotation_polygons.addFeatures([feature])
-
-        for layer in layers:
-            layer.commitChanges()
-
-        # Set the styles for the layers
-
-        # Points
-        if 'size' in styles['points']:
-            annotation_points.renderer().symbol().setSize(styles['points']['size'])
-
-        if 'stroke-color' in styles['points']:
-            color = QColor(styles['points']['stroke-color'])
-            if not color.isValid():
-                self.error(handler, 'Invalid color: {}'.format(styles['points']['stroke-color']))
-                return True
-            annotation_points.renderer().symbol().symbolLayer(0).setStrokeColor(color)
-
-        if 'stroke-width' in styles['points']:
-            annotation_points.renderer().symbol().symbolLayer(0).setStrokeWidth(styles['points']['stroke-width'])
-
-        if 'fill-color' in styles['points']:
-            color = QColor(styles['points']['fill-color'])
-            if not color.isValid():
-                self.error(handler, 'Invalid color: {}'.format(styles['points']['fill-color']))
-                return True
-            annotation_points.renderer().symbol().setColor(color)
-
-        # Lines
-        if 'stroke-color' in styles['lines']:
-            color = QColor(styles['lines']['stroke-color'])
-            if not color.isValid():
-                self.error(handler, 'Invalid color: {}'.format(styles['lines']['stroke-color']))
-                return True
-            annotation_lines.renderer().symbol().setColor(color)
-
-        if 'stroke-width' in styles['lines']:
-            annotation_lines.renderer().symbol().setWidth(styles['lines']['stroke-width'])
-
-        # Polygons
-        if 'stroke-color' in styles['polygons']:
-            color = QColor(styles['polygons']['stroke-color'])
-            if not color.isValid():
-                self.error(handler, 'Invalid color: {}'.format(styles['polygons']['stroke-color']))
-                return True
-            annotation_polygons.renderer().symbol().symbolLayer(0).setStrokeColor(color)
-
-        if 'stroke-width' in styles['polygons']:
-            annotation_polygons.renderer().symbol().symbolLayer(0).setStrokeWidth(styles['polygons']['stroke-width'])
-
-        if 'fill-color' in styles['polygons']:
-            color = QColor(styles['polygons']['fill-color'])
-            if not color.isValid():
-                self.error(handler, 'Invalid color: {}'.format(styles['polygons']['fill-color']))
-                return True
-            annotation_polygons.renderer().symbol().symbolLayer(0).setFillColor(color)
-
-        # Set the base labeling and text format
-        layer_settings  = QgsPalLayerSettings()
-        layer_settings.priority = 10;
-        layer_settings.placementSettings().setOverlapHandling( Qgis.LabelOverlapHandling.AllowOverlapIfRequired )
-        layer_settings.placementSettings().setAllowDegradedPlacement( True )
-
-        text_format = QgsTextFormat()
-        text_format.setSize(12)
-
-        buffer_settings = QgsTextBufferSettings()
-        buffer_settings.setEnabled(True)
-        buffer_settings.setSize(1)
-        buffer_settings.setColor(QColor("white"))
-
-        text_format.setBuffer(buffer_settings)
-
-        layer_settings.setFormat(text_format)
-        layer_settings.fieldName = "name"
-
-        # layer_settings.placement = Qgis.LabelPlacement.OrderedPositionsAroundPoint
-        layer_settings.enabled = True
-
-        labeling = {}
+        layers = []
 
         try:
 
-            # Override font size weight style and color for each layer
-            for layer_type in ['points', 'lines', 'polygons', 'labels']:
-                if layer_type not in styles:
-                    continue
-                if 'font-size' in styles[layer_type]:
-                    text_format.setSize(styles[layer_type]['font-size'])
-                if 'font-color' in styles[layer_type]:
-                    color = QColor(styles[layer_type]['font-color'])
-                    if not color.isValid():
-                        self.error(handler, 'Invalid color: {}'.format(styles[layer_type]['font-color']))
-                        return True
-                    text_format.setColor(color)
-                if 'font-style' in styles[layer_type]:
-                    text_format.setNamedStyle(styles[layer_type]['font-style'])
+            # Loop through the annotations and create one layer for each feature
+            for annotation in annotations['features']:
+                geom = annotation['geometry']
+                coords = geom.get('coordinates', [])
+                style = annotation['properties'].get('style', {})
+                if geom['type'] == 'LineString':
+                    layer = self.makeLayer('LineString')
+                    feature = QgsFeature(layer.fields())
+                    line = [QgsPointXY(coord[0], coord[1]) for coord in coords]
+                    feature.setGeometry(QgsGeometry.fromPolylineXY(line))
+                    feature.setAttribute('name', annotation['properties'].get('label', ''))
+                    layer.dataProvider().addFeatures([feature])
+                    self.setLabeling(layer, 'LineString', style)
+                    layers.append(layer)
+                elif geom['type'] == 'Point':
+                    layer = self.makeLayer('Point')
+                    feature = QgsFeature(layer.fields())
+                    feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(coords[0], coords[1])))
+                    feature.setAttribute('name', annotation['properties'].get('label', ''))
+                    layer.dataProvider().addFeatures([feature])
+                    self.setLabeling(layer,  annotation['properties'].get('type', 'Point'), style)
+                    layers.append(layer)
+                elif geom['type'] == 'Polygon':
+                    layer = self.makeLayer('Polygon')
+                    feature = QgsFeature(layer.fields())
+                    polygon = [QgsPointXY(coord[0], coord[1]) for coord in coords[0]]
+                    feature.setGeometry(QgsGeometry.fromPolygonXY([polygon]))
+                    feature.setAttribute('name', annotation['properties'].get('label', ''))
+                    layer.dataProvider().addFeatures([feature])
+                    self.setLabeling(layer, 'Polygon', style)
+                    layers.append(layer)
+                elif geom['type'] == 'GeometryCollection':  # Circle
+                    layer = self.makeLayer('Circle')
+                    feature = QgsFeature(layer.fields())
+                    center = annotation['properties'].get('center', [0, 0])
+                    center_xy = QgsPointXY(center[0], center[1])
+                    radius = annotation['properties'].get('radius', 0)
+                    # find three points on the circle
+                    points = []
+                    for angle in [0, 90, 180, 270, 360]:
+                        rad = angle * (3.14159 / 180.0)
+                        x = center_xy.x() + radius * math.cos(rad)
+                        y = center_xy.y() + radius * math.sin(rad)
+                        points.append(QgsPointXY(x, y))
 
-                layer_settings.setFormat(text_format)
+                    feature.setGeometry(QgsGeometry.fromWkt('CURVEPOLYGON(CIRCULARSTRING(' + ', '.join(['{} {}'.format(p.x(), p.y()) for p in points]) + '))'))
+                    feature.setAttribute('name', annotation['properties'].get('label', ''))
+                    layer.dataProvider().addFeatures([feature])
+                    self.setLabeling(layer, 'Circle', style)
+                    layers.append(layer)
 
-                if layer_type in ['points', 'labels']:
-                    layer_settings.placement = Qgis.LabelPlacement.AroundPoint
-                elif layer_type == 'lines':
-                    layer_settings.placement = Qgis.LabelPlacement.Line
-                    layer_settings.lineSettings().setPlacementFlags( Qgis.LabelLinePlacementFlag.AboveLine | Qgis.LabelLinePlacementFlag.MapOrientation )
-                elif layer_type == 'polygons':
-                    layer_settings.placement = Qgis.LabelPlacement.AroundPoint
+                    # Check if we have a label_radius and add a linestring layer
+                    label_radius = annotation['properties'].get('label_radius', '')
+                    if label_radius:
+                        layer = self.makeLayer('LineString')
+                        feature = QgsFeature(layer.fields())
 
-                labeling[layer_type] = QgsVectorLayerSimpleLabeling(layer_settings)
+                        point_on_circle = annotation['properties'].get('endCoordinates', [0, 0])
+                        point_on_circle_xy = QgsPointXY(point_on_circle[0], point_on_circle[1])
+                        line = [center_xy, point_on_circle_xy]
+                        feature.setGeometry(QgsGeometry.fromPolylineXY(line))
+                        feature.setAttribute('name', annotation['properties'].get('label_radius', ''))
+                        layer.dataProvider().addFeatures([feature])
+                        self.setLabeling(layer, 'LineString', style)
+                        layers.append(layer)
+
+                    # Check if we have a label_angle and add a point (text-only) layer
+                    label_angle = annotation['properties'].get('label_angle', '')
+                    if label_angle:
+                        layer = self.makeLayer('Text')
+                        feature = QgsFeature(layer.fields())
+                        point_on_circle = annotation['properties'].get('endCoordinates', [0, 0])
+                        point_on_circle_xy = QgsPointXY(point_on_circle[0], point_on_circle[1])
+                        feature.setGeometry(QgsGeometry.fromPointXY(point_on_circle_xy))
+                        feature.setAttribute('name', label_angle)
+                        layer.dataProvider().addFeatures([feature])
+                        # Empty style or we get the circle color
+                        self.setLabeling(layer, 'Text', {})
+                        layers.append(layer)
+
+            # Make a temporary copy of the project to avoid modifying the original
+            self.temp_project_path = self.temp_dir.path() + '/temp_getprint_annotation_project.qgs'
+
+            qgs_project = QgsProject.instance()
+            self.original_project_path = qgs_project.fileName()
+            qgs_project.setFileName(self.temp_project_path)
+            if not qgs_project.write():
+                self.error(handler, 'Error writing temporary project file')
+                return True
+
+            # Add the layers to the project
+            for layer in layers:
+                if not layer.isValid():
+                    self.error(handler, 'Invalid layer: {}'.format(layer.name()))
+                    return True
+                qgs_project.addMapLayer(layer, False)
+
+            qgs_project.write()
+
+            QgsMessageLog.logMessage("AnnotationsPrintFilter layers labeling setup", 'annotationsprint', Qgis.Info)
+
+            # Get the print output
+            original_layers = handler.parameter('LAYERS')
+            # Add the annotation layer to the layers parameter, URI encoded
+            for layer in layers:
+                if layers == '':
+                    original_layers = layer.name()
+                else:
+                    original_layers = original_layers + ',' + layer.name()
+
+            handler.setParameter('LAYERS', original_layers)
 
         except Exception as e:
-            self.error(handler, 'Error setting styles: {}'.format(e))
-            return True
+            # Get exception line
+            return self.error(handler, 'Error creating layers: {}'.format(e))
 
-        # Set the styles for the labels layer
-        annotation_labels.setLabelsEnabled(True)
-        annotation_labels.setLabeling(labeling['labels'])
-
-        # No symbol for labels
-        annotation_labels.renderer().symbol().setOpacity(0.0)
-
-        # Set the styles for the points layer
-        annotation_points.setLabelsEnabled(True)
-        annotation_points.setLabeling(labeling['points'])
-
-        # Set the styles for the lines layer
-        annotation_lines.setLabelsEnabled(True)
-        annotation_lines.setLabeling(labeling['lines'])
-
-        # Set the styles for the polygons layer
-        annotation_polygons.setLabelsEnabled(True)
-        annotation_polygons.setLabeling(labeling['polygons'])
-
-        # Make a temporary copy of the project to avoid modifying the original
-        self.temp_project_path = self.temp_dir.path() + '/temp_getprint_annotation_project.qgs'
-
-        qgs_project = QgsProject.instance()
-        self.original_project_path = qgs_project.fileName()
-        qgs_project.setFileName(self.temp_project_path)
-        if not qgs_project.write():
-            self.error(handler, 'Error writing temporary project file')
-            return True
-
-        # Add the layers to the project
-        qgs_project.addMapLayer(annotation_points, False)
-        qgs_project.addMapLayer(annotation_lines, False)
-        qgs_project.addMapLayer(annotation_polygons, False)
-        qgs_project.addMapLayer(annotation_labels, False)
-        qgs_project.write()
-
-        QgsMessageLog.logMessage("AnnotationsPrintFilter layers labeling setup", 'annotationsprint', Qgis.Info)
-
-        # Get the print output
-        layers = handler.parameter('LAYERS')
-        # Add the annotation layer to the layers parameter, URI encoded
-        for layer in [annotation_points, annotation_lines, annotation_polygons, annotation_labels]:
-            if layers == '':
-                layers = layer.name()
-            else:
-                layers = layers + ',' + layer.name()
-
-        handler.setParameter('LAYERS', layers)
         return True
+
 
     def onResponseComplete(self):
 
