@@ -25,6 +25,7 @@ class G3WEditingFeatureLockAdmin(G3WImportExportModelAdmin):
         'user',
         'sessionid',
         'feature_lock_id',
+        'feature_id',
         'time_locked'
     )
     list_filter = ('user', 'layer_name')

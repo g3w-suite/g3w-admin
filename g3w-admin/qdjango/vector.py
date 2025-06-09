@@ -7,7 +7,6 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from qgis.core import \
     QgsVectorFileWriter, \
-    QgsFeatureRequest, \
     QgsJsonUtils, \
     Qgis, \
     QgsFieldConstraints, \
@@ -815,7 +814,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 if cids:
 
                     # Instance a QgsFeatureRequest
-                    qgs_request = QgsFeatureRequest()
+                    qgs_request = self.instance_qgsfeaturerequest()
                     original_subset_string = self.metadata_layer.qgis_layer.subsetString()
 
                     if hasattr(self, 'relations_filter_backends'):
@@ -951,7 +950,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         filename = self._build_download_filename(request)
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1024,7 +1023,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         tmp_dir = tempfile.TemporaryDirectory()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1099,7 +1098,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1171,7 +1170,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1243,7 +1242,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:

@@ -16,14 +16,15 @@ from .views import(
     GroupSetOrderView,
     MacroGroupSetOrderView,
 ) 
-from .api.views import(
+from .api.views import (
     layer_vector_view,
     G3WSUITEInfoAPIView,
     QgsExpressionLayerContextEvalView,
     layer_raster_view,
     InterfaceOws,
     CRSInfoAPIView,
-    HTML2PDFAPIView
+    HTML2PDFAPIView,
+    ShortURLView, PermaLinkView
 )
 
 
@@ -136,6 +137,35 @@ urlpatterns = [
         'html2pdf/',
         HTML2PDFAPIView.as_view(),
         name='core-html2pdf-api'
-    )
+    ),
+
+    #############################################################
+    # shorturl/permalink API info
+    #############################################################
+    path(
+        'api/su/',
+        ShortURLView.as_view(),
+        name='core-shorturl-api'
+    ),
+    path(
+        'api/embed/', 
+        PermaLinkView.as_view(), 
+        name='core-permalink-create'
+    ),
+    path(
+        'api/embed/<str:code>/',
+        PermaLinkView.redirect_url,
+        name='core-permalink-redirect'
+    ),
+
+    #############################################################
+    # ShortUrl
+    #############################################################
+
+    path(
+        'su/<str:code>/',
+        ShortURLView.redirect_url,
+        name='shorturl_redirect_url'
+    ),
 
 ]

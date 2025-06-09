@@ -48,7 +48,8 @@ class TestScaleVisibilityLayerConstraint(QdjangoTestBase):
 
         super().setUp()
 
-        self.qdjango_project = Project.objects.all()[0]
+        #self.qdjango_project = Project.objects.all()[0]
+        self.qdjango_project = self.project.instance
         self.world = self.qdjango_project.layer_set.filter(
             qgs_layer_id='world20181008111156525')[0]
         self.spatialite_points = self.qdjango_project.layer_set.filter(

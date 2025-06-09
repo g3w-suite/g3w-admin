@@ -1,6 +1,17 @@
 name: G3W-Suite CI tests
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - 'v.*.*.x'
+    tags:
+      - '*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
 
@@ -20,6 +31,14 @@ jobs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Starting Docker compose
       run: docker compose -f docker-compose.${{ matrix.qgis_version }}.yml up -d
