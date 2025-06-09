@@ -288,8 +288,22 @@ class FieldFilterBackend(BaseFilterBackend):
             # field can be multiple separated by ','
             # i.e. $field=name|eq|Rome,state|eq|Italy
 
-            pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
-            fields = re.split(pattern, suggest_value)
+            #pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
+            #pattern = r',(?=(?:[^()[\]]*(?:\([^()]*\)|\[[^\[\]]*\]))*[^()[\]]*$)'
+            #fields = re.split(pattern, suggest_value)
+
+            pattern = re.compile(r'\|(AND|OR),')
+            fields = []
+            last_index = 0
+            for match in pattern.finditer(suggest_value):
+                end = match.end()  # where separator end
+                op = match.group(1)
+                segment = suggest_value[last_index:match.start()] + f'|{op}'
+                fields.append(segment)
+                last_index = end
+            # Add last part
+            fields.append(suggest_value[last_index:])
+
 
             count = 0
             nfields = len(fields)
@@ -350,7 +364,7 @@ class FieldFilterBackend(BaseFilterBackend):
 
                         if len(features) > 0:
                             field_operator = "in"
-                            in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
+                            in_content = ",".join([str(f[config["Key"]]) for f in features])
                             field_value = f"({in_content})"
 
                     pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
@@ -358,6 +372,10 @@ class FieldFilterBackend(BaseFilterBackend):
                         quoted_field_value = self._quote_value(
                             f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                     else:
+                        # Case 'in' operator
+                        # Expexted format: [1,2,3] or [a,b,c] or (1,2,3) or (a,b,c)
+                        single_values = field_value[1:-1].split(',')
+                        field_value = f"({','.join([self._quote_value(sv.strip()) for sv in single_values])})"
                         quoted_field_value = unquote(field_value)
 
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(

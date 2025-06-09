@@ -146,10 +146,8 @@ class ClientBranchManagerView(View):
                     })
 
                 case 'clear_logs':
-                    log_file = None
-                    for handler in LOGGER.handlers:
-                        if hasattr(handler, 'baseFilename'):
-                            log_file = handler.baseFilename
+                    log_file = next((h.baseFilename for h in LOGGER.handlers if hasattr(h, 'baseFilename')), None)
+
                     if log_file and os.path.exists(log_file):
                         open(log_file, 'w').close()
                         return JsonResponse({
@@ -407,6 +405,3 @@ class ClientBranchManagerView(View):
 
 # safely remove "LOCK_FILE" on gunicorn reload/kill
 atexit.register(ClientBranchManagerView.thread_unlock)
-signal.signal(signal.SIGTERM, lambda signum, frame: ClientBranchManagerView.thread_unlock())
-signal.signal(signal.SIGINT, lambda signum, frame: ClientBranchManagerView.thread_unlock())
-signal.signal(signal.SIGHUP, lambda signum, frame: ClientBranchManagerView.thread_unlock())

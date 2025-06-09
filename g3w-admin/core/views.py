@@ -1,6 +1,9 @@
 from django.conf import settings
-from django.template.response import HttpResponse
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
+from django.http import (
+    JsonResponse,
+    HttpResponseBadRequest,
+    HttpResponse,
+)
 from django.views.generic import (
     CreateView,
     UpdateView,
@@ -26,17 +29,18 @@ from usersmanage.utils import get_users_for_object, userHasGroups
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2
 from usersmanage.models import User, Group as AuthGroup
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm, GroupFilterForm
-from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
+from .models import (
+    Group,
+    GroupProjectPanoramic,
+    MapControl,
+    GeneralSuiteData,
+    MacroGroup,
+)
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .signals import after_update_group, execute_search_on_models
 from .utils.general import get_system_info
 import requests
 import json
-
-
-#class NotFoundView(TemplateView):
-#
-#    template_name = '404.html'
 
 
 class TestView(View):
@@ -633,14 +637,3 @@ class SystemInfoView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['sysinfo'] = get_system_info()
         return ctx
-
-
-
-
-
-
-
-
-
-
-
