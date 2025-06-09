@@ -29,13 +29,15 @@
       })),
     }),
     fetch_geom: async item => {
-      await g3wsdk.core.data.DataRouterService.getData('search:fids', {
+      const { data = [] }  = await g3wsdk.core.data.DataRouterService.getData('search:fids', {
         inputs: {
           layer: g3wsdk.core.catalog.CatalogLayersStoresRegistry.getLayerById(item.layer_id),
           fids:  [item.feature_id]
         },
         outputs: { show: true }
       });
+      //zoom to feature
+      GUI.getService('map').zoomToFeatures([data?.[0]?.features?.[0]]);
     }
   });
 
