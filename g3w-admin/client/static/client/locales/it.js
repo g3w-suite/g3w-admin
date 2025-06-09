@@ -479,7 +479,11 @@ export default {
           },
           download: {
             unknow: "Scarica",
-            geotiff_map_extent: "GeoTiff (vista attuale)"
+            geotiff_map_extent: "GeoTiff (vista attuale)",
+            title: "Esporta",
+            layer: "Livello",
+            include_relations: "Includere le relazioni?",
+            data_format: "Formato"
           }
         }
       },
@@ -575,7 +579,7 @@ export default {
       },
       geocoding: {
         choose_layer: "Scegli un livello in cui aggiungere questa funzionalità",
-        placeholder: "Indirizzo ...",
+        placeholder: "Cerca",
         nolayers: "Nessun layer di punti modificabile trovato in questo progetto",
         noresults: "Nessun risultato",
         notresponseserver: "Il server non risponde"

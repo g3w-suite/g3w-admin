@@ -481,7 +481,11 @@ export default {
           },
           download: {
             unknow: 'Download',
-            geotiff_map_extent: "GeoTiff (current view)"
+            geotiff_map_extent: "GeoTiff (current view)",
+            title: "Export features",
+            layer: "Layer",
+            include_relations: "Include relations in exported file?",
+            data_format: "Data Format"
           }
         }
       },
@@ -574,7 +578,7 @@ export default {
       },
       geocoding: {
         choose_layer: "Choose a layer where to add this feature",
-        placeholder: "Address ...",
+        placeholder: "Search",
         nolayers: "No editable point layers found on this project",
         noresults: "No results",
         notresponseserver: "No response from server"
