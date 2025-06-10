@@ -2,6 +2,7 @@ import logging
 import os
 import time
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.text import slugify
 from django_extensions.db.fields import AutoSlugField
 from django.db.models import UniqueConstraint
@@ -367,6 +368,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         help_text=_('Automatic zoom on query result features for only one layer'),
     )
 
+    show_metadata_section = models.BooleanField(
+        _("Show the 'Metadata' section on left bar"),
+        default=True,
+        help_text=_("It is possible choose if show or hide the 'Metadata' section on left bar"),
+    )
+
     layouts = models.TextField(
         _('Project layouts'),
         null=True,
@@ -657,6 +664,22 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 f"[CACHING /api/config] - An error on cache invalidation: {e}"
             )
 
+    def get_scalevisibilitylayerconstraint(self, user, use_ids=True):
+        """
+        Return the ScaleVisibilityConstraint instance if exists for user for every layer
+        Check also for groups of user
+        """
+
+        res = {}
+        for l in self.layer_set.all():
+            peruser = l.get_scalevisibilityconstraint(user)
+            if peruser:
+                if use_ids:
+                    res[l.qgs_layer_id] = peruser
+                else:
+                    res[l.name] = peruser
+
+        return res
 
 post_delete.connect(check_overviewmap_project, sender=Project)
 
@@ -972,6 +995,9 @@ class Layer(G3WACLModelMixins, models.Model):
         db_index=True,
     )
 
+    max_preview_fields = models.IntegerField(_('Number of fields to show in info result'), default=3,
+                                                    blank=True, null=True)
+
     objects = models.Manager()  # The default manager.
 
     vectors = VectorLayersManager()
@@ -1255,7 +1281,7 @@ class Layer(G3WACLModelMixins, models.Model):
         Check if a field_name has a QGIS Form ValueRelation Widget
         """
 
-        edittypes = eval(self.edittypes)
+        edittypes = self.get_edittypes()
         return edittypes[field_name]["widgetv2type"] == "ValueRelation"
 
     @property
@@ -1272,6 +1298,29 @@ class Layer(G3WACLModelMixins, models.Model):
             'maxx': rect.xMaximum(),
             'maxy': rect.yMaximum(),
         }
+
+    def get_edittypes(self, style=None):
+        """
+        Get edittypes for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return eval(self.edittypes)[style]
+
+    def get_editor_form_structure(self, style=None):
+        """
+        Get editor_from_struct for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+
+        return eval(self.editor_form_structure).get(style, None) if self.editor_form_structure else None
 
     def __str__(self):
         return self.name
@@ -1307,6 +1356,35 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return len(get_constraints4layer(self))
 
+    def get_scalevisibilityconstraint(self, user):
+        """
+        Return the ScaleVisibilityConstraint instance if exists for user
+        Check also for groups of user
+        """
+
+        peruser = None
+
+        try:
+            if user.is_anonymous:
+                user = get_anonymous_user()
+
+            return self.scale_visibility_layer.get(user=user)
+
+        except ObjectDoesNotExist:
+
+            # Try with user's groups
+            # Get viewer groups of user
+            if not user.is_anonymous:
+                groups = user.groups.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
+                for g in groups:
+                    try:
+                        peruser = self.scale_visibility_layer.get(group=g)
+                    except ObjectDoesNotExist:
+                        pass
+
+        return peruser
+
+
     def getColumnAclNumber(self):
         """
         Count ColumnAcl for self layer
@@ -1314,6 +1392,15 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         return self.columnacl_set.count() if self.has_column_acl else 0
+
+
+    def getScaleVisibilityLayerConstraintNumber(self):
+        """
+        Count ScaleVisibilityLayerConstraint for self layer
+        :return: integer
+        """
+
+        return self.scale_visibility_layer.count()
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(

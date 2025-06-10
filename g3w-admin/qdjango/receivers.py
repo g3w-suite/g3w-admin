@@ -2,13 +2,17 @@ import logging
 import os
 from pathlib import Path
 
-from core.models import ProjectMapUrlAlias
+from core.models import (
+    ProjectMapUrlAlias,
+    PermaLinkURL
+)
 from core.signals import (
     execute_search_on_models,
     load_layer_actions,
     pre_delete_project,
     pre_update_project,
-    before_return_vector_data_layer
+    before_return_vector_data_layer,
+    post_serialize_project
 )
 from django.conf import settings
 from django.urls import (
@@ -34,7 +38,8 @@ from .models import (
     GeoConstraintRule,
     ConstraintSubsetStringRule,
     ConstraintExpressionRule,
-    Message
+    Message,
+    ScaleVisibilityLayerConstraint
 )
 from .searches import ProjectSearch
 from .views import (
@@ -45,6 +50,8 @@ from .vector import (
     LayerVectorView,
     MODE_DATA
 )
+from .utils.structure import apply_tree_patch
+
 import json
 
 logger = logging.getLogger("django.request")
@@ -345,6 +352,7 @@ def add_filter_token(**kwargs):
     :return: A dict with autofilter token
     :rtype: dict, None
     """
+
     # Check if is instance of layerVectorView
     if (
         isinstance(kwargs["sender"], LayerVectorView)
@@ -360,25 +368,96 @@ def add_filter_token(**kwargs):
             if results['result'] and hasattr(kwargs["sender"], 'total_feature_ids'):
                 fids = kwargs["sender"].total_feature_ids
 
-                if fids:
-                    rkwargs = {'project_type': 'qdjango',
-                               'project_id': layer.project.pk,
-                               'layer_name': layer.qgs_layer_id,
-                               'mode_call': 'filtertoken'
-                               }
+                # Add a 'fake' fids array value for to create a filtertoken with zero results
+                if not fids:
+                    fids = ['-99999']
 
-                    url = reverse('core-vector-api', kwargs=rkwargs)
-                    req = HttpRequest()
-                    req.method = 'GET'
-                    req.COOKIES = kwargs["sender"].request.COOKIES
-                    req.user = kwargs["sender"].request.user
-                    req.resolver_match = resolve(url)
-                    req.GET['fidsin'] = ",".join(fids)
+                rkwargs = {'project_type': 'qdjango',
+                           'project_id': layer.project.pk,
+                           'layer_name': layer.qgs_layer_id,
+                           'mode_call': 'filtertoken'
+                           }
 
-                    view = LayerVectorView.as_view()
-                    res = view(req, *[], **rkwargs).render()
+                url = reverse('core-vector-api', kwargs=rkwargs)
+                req = HttpRequest()
+                req.method = 'GET'
+                req.COOKIES = kwargs["sender"].request.COOKIES
+                req.user = kwargs["sender"].request.user
+                req.resolver_match = resolve(url)
+                req.GET['fidsin'] = ",".join(fids)
 
-                    return json.loads(res.content)['data']
+                view = LayerVectorView.as_view()
+                res = view(req, *[], **rkwargs).render()
+
+                return json.loads(res.content)['data']
         except Exception as e:
             logger.error(f'[ERROR]: Error on getting FILTERTOKEN: {e}')
             return None
+
+
+@receiver(post_save, sender=ScaleVisibilityLayerConstraint)
+@receiver(pre_delete, sender=ScaleVisibilityLayerConstraint)
+def invalid_prj_cache_by_scalevisibilitylayerconstraint(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    kwargs['instance'].layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a scale visibility layer constraint: "
+        f"{kwargs['instance'].layer.project}"
+    )
+
+
+@receiver(post_serialize_project)
+def update_by_permalinkcode(sender, **kwargs):
+
+    # Check if permalink_code exists
+    try:
+        permalink = PermaLinkURL.objects.get(permalink_code=sender.request.session['permalink_code'])
+    except:
+        return
+
+
+    orig_data = kwargs['ps_data'] if 'ps_data' in kwargs else sender.data
+
+    data = {
+        'operation_type': 'update',
+        'values': {}
+    }
+
+    for key, value in permalink.data.get("data", {}).items():
+        if key in orig_data:
+
+            # Special case for layer
+            if key == 'layerstree':
+                data['values'][key] = apply_tree_patch(orig_data['layerstree'], value)
+            elif  key == 'layers':
+                ltu = {l['id']: l for l in value}
+
+                for layer in orig_data['layers']:
+                    if layer['id'] in ltu:
+                        for kl,vl in ltu[layer['id']].items():
+                            orig_data['layers'][orig_data['layers'].index(layer)][kl] = vl
+
+                data['values'][key] = orig_data['layers']
+            else:
+
+                # Update data
+                data['values'][key] = value
+
+        else:
+            # Add new data
+            data['values'][key] = value
+    
+    if settings.DEBUG:
+        logging.getLogger("g3wadmin.debug").debug(
+            f"PERMALINK: {permalink.permalink_code} \n"
+            f"{json.dumps(data, indent=2, default=str)}"
+        )
+
+    # Delete permalink_code from session
+    try:
+        del sender.request.session['permalink_code']
+    except:
+        pass
+
+    return data

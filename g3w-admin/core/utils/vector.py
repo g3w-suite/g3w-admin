@@ -103,7 +103,7 @@ class BaseUserMediaHandler(object):
 
         self.set_layer_md5_source()
         current_instance = self.get_current_instance()
-        edittypes = eval(self.layer.edittypes) if self.layer.edittypes else {}
+        edittypes = self.layer.get_edittypes() if self.layer.edittypes else {}
 
         for field, data in list(edittypes.items()):
             if data['widgetv2type'] == 'ExternalResource' and field in self.feature_properties:
@@ -191,7 +191,7 @@ class BaseUserMediaHandler(object):
     def change_value(self):
 
         self.set_layer_md5_source()
-        edittypes = eval(self.layer.edittypes)
+
 
     def send_file(self):
         """ Send current media saved """

@@ -270,8 +270,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Check for QGIS project themes
         # -----------------------------
         map_themes = qgs_project.mapThemeCollection().mapThemes()
-        if len(map_themes) == 0:
-            return
 
         for map_theme in map_themes:
             theme = {
@@ -570,7 +568,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if instance.relations:
             ret['relations'] += self.get_map_layers_relations(instance)
 
-        # add project metadata
+        # Add project metadata
         ret['metadata'] = self.get_metadata(instance, qgs_project)
 
         # set client options/actions
@@ -697,7 +695,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'download_gpkg',
             'download_pdf',
             'editor_form_structure',
-            'styles'
+            'styles',
+            'max_preview_fields'
         )
 
     def column_to_exclude(self, instance):
@@ -813,6 +812,27 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return metadata
 
+    def get_min_max_scale(self, instance, ret):
+        """
+        Check if the layer has min and max scale per user
+        """
+
+        min_scale = ret['minscale']
+        max_scale = ret['maxscale']
+        scalebasedvisibility = ret['scalebasedvisibility']
+
+        # Check if the layer has min and max scale per user
+        if hasattr(self.request, 'user'):
+
+            svl = instance.get_scalevisibilityconstraint(self.request.user)
+
+            if svl:
+                min_scale = svl.minscale
+                max_scale = svl.maxscale
+                scalebasedvisibility = True
+
+        return min_scale, max_scale, scalebasedvisibility
+
     def to_representation(self, instance):
         ret = super(LayerSerializer, self).to_representation(instance)
 
@@ -922,7 +942,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # eval editor_form_structure
         if ret['editor_form_structure']:
-            ret['editor_form_structure'] = eval(instance.editor_form_structure)
+            ret['editor_form_structure'] = instance.get_editor_form_structure()
 
         # add ows
         ret['ows'] = self.get_ows(instance)
@@ -941,6 +961,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Set current opacity translated to 0 - 100
         ret['opacity'] = int(qgs_maplayer.opacity() * 100)
 
+        # Check for Scale layer visibility constraint per user
+        ret['minscale'], ret['maxscale'], ret['scalebasedvisibility'] = self.get_min_max_scale(instance, ret)
         return ret
 
 
@@ -961,8 +983,8 @@ class WidgetSerializer(serializers.ModelSerializer):
 
         body = json.loads(instance.body)
 
-        # get edittype
-        edittypes = eval(self.layer.edittypes)
+        # Get edittype
+        edittypes = self.layer.get_edittypes()
 
         has_relations = 'search' == instance.widget_type and '' != body.get('relations', '')
 

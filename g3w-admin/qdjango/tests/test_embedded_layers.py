@@ -285,9 +285,10 @@ class TestEmbeddedLayers(QdjangoTestBase):
         # Check form configuration for both parent and embedded
         parent_project = Project.objects.get(
             original_name='embedded_parent.qgs')
-        self.assertIsNone(parent_project.layer_set.filter(name='countries')[0].editor_form_structure)
+        self.assertEqual(parent_project.layer_set.filter(name='countries')[0].editor_form_structure, "{'default': None}")
         project = Project.objects.get(original_name='embedded.qgs')
-        self.assertIsNone(project.layer_set.filter(name='countries')[0].editor_form_structure)
+        self.assertEqual(project.layer_set.filter(name='countries')[0].editor_form_structure,
+                         "{'default': None}")
 
         # Update parent with DD form configuration and test both
         form = self._make_form(self.parent_project_ddform_path, parent_project, 'embedded_parent_ddform.qgs')
@@ -297,14 +298,14 @@ class TestEmbeddedLayers(QdjangoTestBase):
         parent_project = Project.objects.get(
             original_name='embedded_parent_ddform.qgs')
         countries = parent_project.layer_set.all()[0]
-        structure = eval(countries.editor_form_structure)
+        structure = countries.get_editor_form_structure()
         self.assertEqual(set([f['field_name'] for f in structure]), {'ISOCODE', 'NAME_LOCAL'})
 
         # Now from embedded:
         project = Project.objects.get(original_name='embedded.qgs')
         countries = project.layer_set.filter(name='countries')[0]
         self.assertIsNotNone(countries.editor_form_structure)
-        structure = eval(countries.editor_form_structure)
+        structure = countries.get_editor_form_structure()
         self.assertEqual(set([f['field_name'] for f in structure]), {'ISOCODE', 'NAME_LOCAL'})
 
         # Test delete parent also deletes embedded layer

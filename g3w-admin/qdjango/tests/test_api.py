@@ -651,7 +651,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
 
     def test_server_filters_value_relation_api(self):
-        """ Test server filter FieldFilterBacked  for fileds with ValueRelation QGIS form widget """
+        """ Test server filter FieldFilterBacked  for fields with ValueRelation QGIS form widget """
 
         pois = Layer.objects.get(
             project_id=self.project328_value_relation.instance.pk, qgs_layer_id='poi_2c470d17_a234_464c_83f8_416bcdedda17')
@@ -1599,7 +1599,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|in|(\'IT\', \'FR\')'
+                                                'field': 'ISO2_CODE|in|[IT,FR]'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -1609,7 +1609,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|in|(\'IT\', \'FR\')'
+                                                'field': 'ISO2_CODE|in|[IT,FR]'
                                             },
                                             method='post').content)
 
@@ -1703,7 +1703,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -1713,7 +1713,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             },
                                             method='post').content)
 
@@ -1789,7 +1789,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                                 cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -1801,7 +1801,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                              cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             },
                                             method='post').content)
 
@@ -2738,3 +2738,95 @@ class TestVectorApiGeoFilter(QdjangoTestBase):
 
 
         self.client.logout()
+
+    def test_vector_api_featurecount_with_style(self):
+        """
+        Test for /vector/api/featurecount/ with style
+        """
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'featurecount',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                      ])
+
+        response = self.client.get(url)
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent, {'result': True, 'data': {'0': 54},
+                                    'capabilities': [
+                                        'add_feature',
+                                        'change_feature',
+                                        'delete_feature',
+                                        'change_attr_feature']
+                                    })
+
+        response = self.client.get(f'{url}?style=new_style')
+
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent, {'result': True,
+            'data': {
+                '{4fbcc944-0cd7-4a54-90c5-feeb5787fb31}': 10,
+                '{615324e6-d85f-4fad-aa42-a18aa9c02c19}': 11,
+                '{711763e5-55cc-4e5f-9d17-4d84f9a8b74d}': 11,
+                '{99edb832-867c-4c23-ae23-87fdacd3cbb1}': 11,
+                '{fab0aeb1-643e-430f-b3f1-9cd283c5aeeb}': 8
+            },
+            'capabilities': [
+                'add_feature',
+                'change_feature',
+                'delete_feature',
+                'change_attr_feature']
+            })
+
+
+
+        self.client.logout()
+
+class TestVectorApiEditorformstructureFeaturecountFilter(TestVectorApiGeoFilter):
+
+    def test_vector_api_editorformstructure_with_style(self):
+        """
+        Test for /vector/api/editorformstructure/ with style
+        """
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'editorformstructure',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                      ])
+
+        response = self.client.get(url)
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent['data'],
+ [
+             {'alias': 'ISOCODE', 'field_name': 'ISOCODE', 'index': 0, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_LOCAL', 'field_name': 'NAME_LOCAL', 'index': 1, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_EN', 'field_name': 'NAME_EN', 'index': 2, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'CAPITAL_EN', 'field_name': 'CAPITAL_EN', 'index': 3, 'showlabel': True, 'visibility_expression': None}
+         ])
+
+        response = self.client.get(f'{url}?style=new_style')
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent['data'],
+ [
+             {'alias': 'ISOCODE', 'field_name': 'ISOCODE', 'index': 0, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_LOCAL', 'field_name': 'NAME_LOCAL', 'index': 1, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_EN', 'field_name': 'NAME_EN', 'index': 2, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'CAPITAL_EN', 'field_name': 'CAPITAL_EN', 'index': 3, 'showlabel': True,'visibility_expression': None},
+             {'columncount': 1, 'groupbox': False, 'name': 'TAB1', 'nodes': [
+                    {'alias': 'NAME_IT', 'field_name': 'NAME_IT', 'index': 6, 'showlabel': True, 'visibility_expression': None},
+                    {'alias': 'CAPITAL_IT', 'field_name': 'CAPITAL_IT', 'index': 7, 'showlabel': True,'visibility_expression': None}
+             ], 'showlabel': True}
+         ])

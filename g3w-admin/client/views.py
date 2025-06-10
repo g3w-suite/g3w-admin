@@ -21,6 +21,10 @@ from copy import deepcopy
 import json
 import secrets
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
 
 def client_map_alias_view(request, map_name_alias, *args, **kwargs):
     """
@@ -75,6 +79,11 @@ class ClientView(TemplateView):
                 return redirect_to_login(request.get_full_path(), settings.LOGIN_URL, 'next')
             else:
                 raise PermissionDenied()
+
+        # Set in session permalink_code if exists
+        if 'permalink_code' in request.GET and request.GET['permalink_code']:
+            request.session['permalink_code'] = request.GET.get('permalink_code')
+
 
         return super(ClientView, self).dispatch(request, *args, **kwargs)
 
@@ -169,11 +178,22 @@ class ClientView(TemplateView):
             raise Http404('No project type and/or project id present in group')
 
         # page title
-
         contextData['page_title'] = '{} | {}'.format(
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'),
             self.project.title_ur if self.project.title_ur else self.project.title
         )
+
+        # server side styles (inline css)
+        contextData['CLIENT_CUSTOM_CSS'] = ''
+
+        # Conditionally show sidebar items
+        elements_to_hide = []
+
+        if not getattr(self.project, 'show_metadata_section', True):
+            elements_to_hide.append('#metadata')
+
+        if elements_to_hide:
+            contextData['CLIENT_CUSTOM_CSS'] += f".sidebar-menu > li:is({', '.join(elements_to_hide)}) {{ display: none; }}"
 
         # choosen skin by user main role
         contextData['skin_class'] = get_adminlte_skin_by_user(self.request.user)

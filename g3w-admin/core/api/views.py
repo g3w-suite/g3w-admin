@@ -1,36 +1,23 @@
 from django import get_version as dj_get_version
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http.response import HttpResponse
+from django.http import HttpResponse, Http404
+from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
+
+from rest_framework import status
 from rest_framework.response import Response
 from owslib.wms import WebMapService
 from weasyprint import HTML as WeasyHTML
+from qgis.core import NULL, Qgis, QgsCoordinateReferenceSystem
+from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+
 from base.version import get_version
-from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.permissions import ProjectPermission
-from qdjango.models import Project
-from core.api.base.views import APIException
+from core.api.base.views import G3WAPIView, APIException
+from core.models import ShortURL, PermaLinkURL
 from core.utils.geo import get_crs_bbox
-from django.utils.translation import gettext_lazy as _
-from rest_framework import status
-
-from qgis.core import NULL
-
-import json
-
-from qgis.core import (
-    QgsExpression,
-    QgsExpressionContext,
-)
-
-import platform
-
-from qgis.core import (
-    Qgis,
-    QgsCoordinateReferenceSystem
-)
-
 from core.utils.qgisapi import (
     expression_eval,
     ExpressionEvalError,
@@ -39,7 +26,7 @@ from core.utils.qgisapi import (
     ExpressionLayerError
 )
 
-import logging
+import json, platform, logging
 
 logger = logging.getLogger(__name__)
 
@@ -416,3 +403,65 @@ class HTML2PDFAPIView(G3WAPIView):
 
         return response
 
+class ShortURLView(G3WAPIView):
+    """ API view to get a short url code """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+
+        obj, created = ShortURL.objects.get_or_create(original_url=request.data['url'])
+
+        self.results.results.update({
+            'data': {
+                'short_url': obj.get_short_url(),
+            }
+        })
+
+        return Response(self.results.results)
+
+    @staticmethod
+    def redirect_url(request, code):
+        """ Simple view for shorturl redirect"""
+        try:
+            obj = ShortURL.objects.get(short_code=code)
+            return redirect(obj.original_url)
+        except ShortURL.DoesNotExist:
+            raise Http404("Short link not found")
+
+
+class PermaLinkView(G3WAPIView):
+    """ API view to get a short url code for a permalink """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+        """
+        Permalink creation
+        """
+        obj, created = PermaLinkURL.objects.update_or_create(data=request.data)
+        self.results.results.update({
+            'data': {
+                'permalink_code': obj.permalink_code
+            }
+        })
+        return Response(self.results.results)
+
+    @staticmethod
+    def redirect_url(request, code):
+        """
+        Permalink redirect
+        """
+        try:
+            obj = PermaLinkURL.objects.get(permalink_code=code)
+            url = urlparse(obj.data['url'])
+            qs = parse_qs(url.query)
+            # Set the permalink_code parameter
+            qs['permalink_code'] = code
+            return redirect(urlunparse(url._replace(query=urlencode(qs, doseq=True))))
+        except PermaLinkURL.DoesNotExist:
+            raise Http404("Permalink not found")

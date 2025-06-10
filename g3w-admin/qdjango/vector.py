@@ -7,7 +7,6 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from qgis.core import \
     QgsVectorFileWriter, \
-    QgsFeatureRequest, \
     QgsJsonUtils, \
     Qgis, \
     QgsFieldConstraints, \
@@ -27,7 +26,8 @@ from core.api.base.views import (
     BaseVectorApiView,
     MODE_GPKG,
     IntersectsBBoxFilter,
-    MODE_FEATURE_COUNT
+    MODE_FEATURE_COUNT,
+    MODE_EDITORFORMSTRUCTURE_COUNT
 )
 from core.api.filters import (
     IntersectsBBoxFilter,
@@ -292,7 +292,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         MODE_CSV,  # get CSV
         MODE_GPKG,  # get GeoPackage
         MODE_FILTER_TOKEN,  # get session filter token
-        MODE_FEATURE_COUNT # return the number of feature for every style category
+        MODE_FEATURE_COUNT, # return the number of feature for every style category
+        MODE_EDITORFORMSTRUCTURE_COUNT # return the editor form structure for a layer by style
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
@@ -329,8 +330,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # add widgets
         if hasattr(self.layer, 'edittypes') and self.layer.edittypes:
 
-            # reduild edittypes
-            edittypes = eval(self.layer.edittypes)
+            # Get layer edittypes
+            edittypes = self.layer.get_edittypes()
             allow_edittypes = list(MAPPING_EDITTYPE_QGISEDITTYPE.keys())
 
             for field, data in list(edittypes.items()):
@@ -607,15 +608,21 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self.results.update({'data': token_data})
 
     def response_featurecount_mode(self, request):
-        """ Return the feature count value for every layer style category """
+        """
+        Return the feature count value for every layer style category
+        """
 
-        if request.method == 'POST':
-            request_data = request.data
-        else:
-            request_data = request.query_params
+        style = self.request_data.get('style', None)
+        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,style)})
 
-        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,
-                                                           request_data.get('style', None))})
+    def response_editorformstructure_mode(self, request):
+        """
+        Return the editor form structure for a layer by style
+        """
+
+        style = self.request_data.get('style', None)
+        self.results.update({'data': self.layer.get_editor_form_structure(style)})
+
 
     def _selection_responde_download_mode(self, qgs_request, save_options):
         """ Filter download response mode: shp, xls, gpx.."""
@@ -743,6 +750,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         Check for fields excluded for WMS service into QGIS project.
         """
 
+        new_attributes_list = []
+
         # I.e. for use this method also do relation layers
         layer = kwargs.get('layer', self.layer)
         metadata_layer = kwargs.get('metadata_layer', self.metadata_layer)
@@ -753,15 +762,22 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # Only if fields to exclude are present
         if column_to_exclude:
             column_to_exclude = [metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
-            save_options.attributes = list(set(metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
+            new_attributes_list = list(set(metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
 
         # Integrate attributes removed by filters by intersection
         if qgs_request.subsetOfAttributes():
             if len(save_options.attributes) > 0:
-                save_options.attributes = list(
+                new_attributes_list = list(
                     set(qgs_request.subsetOfAttributes()).intersection(set(save_options.attributes)))
             else:
-                save_options.attributes = qgs_request.subsetOfAttributes()
+                new_attributes_list = qgs_request.subsetOfAttributes()
+
+        if new_attributes_list:
+
+            # Reorder with original attributes list
+            original_oreder =  {e: i for i, e in enumerate(metadata_layer.qgis_layer.attributeList())}
+            new_attributes_list = sorted(new_attributes_list, key=lambda x: original_oreder.get(x, float('inf')))
+            save_options.attributes = new_attributes_list
 
     def _download_relations(self, fsave_options, mode, tmp_dir, request):
         """
@@ -793,19 +809,17 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 for ffeat in ffeatures:
                     cfeatures = qgs_relation.getRelatedFeatures(ffeat)
                     for cfeat in cfeatures:
-                        cids.append(str(cfeat.id()))
+                        cids.append(cfeat.id())
 
                 if cids:
 
                     # Instance a QgsFeatureRequest
-                    qgs_request = QgsFeatureRequest()
+                    qgs_request = self.instance_qgsfeaturerequest()
                     original_subset_string = self.metadata_layer.qgis_layer.subsetString()
 
                     if hasattr(self, 'relations_filter_backends'):
                         for backend in self.relations_filter_backends:
                             backend().apply_filter(request, metadata_relation, qgs_request, self)
-
-                    qgs_request.combineFilterExpression("$id IN (%s)" % ','.join(cids))
 
                     # Instance save options
                     save_options = QgsVectorFileWriter.SaveVectorOptions()
@@ -815,8 +829,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                     self._set_download_attributes(qgs_request, save_options,
                                                   layer=metadata_relation.layer, metadata_layer=metadata_relation)
 
-                    metadata_relation.qgis_layer.selectByExpression(
-                        qgs_request.filterExpression().expression())
+                    metadata_relation.qgis_layer.selectByIds(cids)
+
+                    if qgs_request.filterExpression():
+                        metadata_relation.qgis_layer.selectByExpression(
+                            qgs_request.filterExpression().expression())
+
+
                     save_options.onlySelectedFeatures = True
 
                     # Set fmode by mode
@@ -931,7 +950,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         filename = self._build_download_filename(request)
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1004,7 +1023,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         tmp_dir = tempfile.TemporaryDirectory()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1079,7 +1098,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1151,7 +1170,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
@@ -1223,7 +1242,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
-        qgs_request = QgsFeatureRequest()
+        qgs_request = self.instance_qgsfeaturerequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:

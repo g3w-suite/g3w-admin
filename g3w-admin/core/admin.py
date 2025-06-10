@@ -6,13 +6,17 @@ from django.utils.html import format_html
 from ordered_model.admin import OrderedModelAdmin
 from sitetree.admin import TreeItemAdmin, override_item_admin
 from .ie.admin import G3WImportExportModelAdmin
-from .models import Group, \
-    BaseLayer, \
-    MapControl, \
-    MacroGroup, \
-    G3WSpatialRefSys, \
-    ProjectMapUrlAlias, \
-    StatusLog
+from .models import (
+    Group,
+    BaseLayer,
+    MapControl,
+    MacroGroup,
+    G3WSpatialRefSys,
+    ProjectMapUrlAlias,
+    StatusLog,
+    ShortURL,
+    PermaLinkURL
+)
 from guardian.admin import GuardedModelAdmin
 
 import logging
@@ -98,9 +102,16 @@ class StatusLogAdmin(admin.ModelAdmin):
         return instance.create_datetime.strftime('%Y-%m-%d %X')
     create_datetime_format.short_description = 'Created at'
 
-
 admin.site.register(StatusLog, StatusLogAdmin)
 
+class ShortURLAdmin(admin.ModelAdmin):
+    model = ShortURL
+admin.site.register(ShortURL, ShortURLAdmin)
+
+class PermaLinkURLAdmin(admin.ModelAdmin):
+    model = PermaLinkURL
+    list_display = ('permalink_code', 'created', 'modified')
+admin.site.register(PermaLinkURL, PermaLinkURLAdmin)
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc
 admin.site.site_title = 'G3W Admin Administration'

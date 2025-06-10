@@ -400,7 +400,7 @@ def add_constraints(**kwargs):
 @receiver(before_return_vector_data_layer)
 def add_atomic_capabilities(**kwargs):
     """
-    Add catomic editing permisions to MODE_CONFIG response vectorlayer
+    Add atomic editing permisions to MODE_CONFIG response vectorlayer
     :return: list with atomic permissions
     :rtype: dict, None
     """
@@ -451,7 +451,8 @@ def set_editing_visible_status(**kwargs):
 
         kwargs['vector_params'].update({
             'editing': {
-                'visible': el.visible
+                'visible': el.visible,
+                'layer_style': el.style,
             }
         })
 

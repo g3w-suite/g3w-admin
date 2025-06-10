@@ -232,75 +232,134 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
-
             Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML(
+                                "<h3 class='box-title'><i class='ion ion-map'></i> {}</h3>".format(
+                                    _('Qgis Project')
+                                )
+                            ),
+                            css_class='box-header with-border',
+                        ),
+                        Div(
+                            HTML(
+                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"
+                            ),
+                            'qgis_file',
+                            'qgis_file-uploads',
+                            'form_id',
+                            'upload_url',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-6'
+                ),
+
                 crispyBoxACL(self),
-                style='display: block !important;'
-            ),
+                crispyBoxBaseLayer(self),
 
-            # QGIS Auth
-            Fieldset(
-                f"<i class='fa fa-lock'></i> {_('QGIS Authentication')}",
-                HTML(
-                    f"""
-                        <p>The error in the project suggests that one or more layers require authentication. You can add the required credentials now. Credentials will be encrypted and added to the QGIS Authentication DB.</p>
-                        <p><strong>Authentication ID: {self.fields['authentication_id'].initial}</strong></p>
-                    """
+                css_class='row'
+            ),
+            Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                    _('Description data')
+                                )
+                            ),
+                            css_class='box-header with-border',
+                        ),
+                        Div(
+                            Field('title_ur', css_class='translate'),
+                            Field('description',
+                                  css_class='wys5 translate'),
+                            'thumbnail',
+                            HTML(
+                                """
+                                 <img
+                                    {% if not form.thumbnail.value %}style="display:none;"{% endif %}
+                                    class="img-responsive img-thumbnail"
+                                    src="{{ MEDIA_URL }}{{ form.thumbnail.value }}"
+                                 >
+                                 """,
+                            ),
+                            'url_alias',
+                            css_class='box-body',
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-6'
                 ),
-                'authentication_id',
-                'authentication_username',
-                'authentication_password',
-            ) if self.fields['authentication_id'].initial else None,
 
-            Fieldset(
-                f"<i class='fa fa-map'></i> {_('Qgis Project')}",
-                HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
-                'qgis_file',
-                'qgis_file-uploads',
-                'form_id',
-                'upload_url',
-            ),
+                Div(
+                    Div(
+                        Div(
+                            HTML(
+                                "<h3 class='box-title'><i class='ion ion-gear'></i> {}</h3>".format(
+                                    _('Options and actions')
+                                )
+                            ),
+                            css_class='box-header with-border',
+                        ),
+                        Div(
+                            'use_map_extent_as_init_extent',
+                            'toc_tab_default',
+                            'toc_layers_init_status',
+                            'toc_themes_init_status',
+                            'legend_position',
+                            'autozoom_query',
+                            'show_metadata_section',
+                            'wms_getmap_format',
+                            'feature_count_wms',
+                            'multilayer_query',
+                            'multilayer_querybybbox',
+                            'multilayer_querybypolygon',
+                            Field('geocoding_providers', css_class='select2', style="width:100%;"),
+                            css_class='box-body',
 
-            # Based on "core.utils.forms.crispyBoxBaseLayer" (v3.9)
-            Fieldset(
-                f"<i class='fa fa-map'></i> {_('Default base layer')}</h3>",
-                'baselayer',
-            ),
-
-            Fieldset(
-                f"<i class='fa fa-file'></i> {_('Description data')}",
-                Field('title_ur', css_class='translate'),
-                Field('description', css_class='wys5 translate'),
-                'thumbnail',
-                HTML(
-                    """
-                    <img
-                        {% if not form.thumbnail.value %}style="display:none;"{% endif %}
-                        class="img-responsive img-thumbnail"
-                        src="{{ MEDIA_URL }}{{ form.thumbnail.value }}"
-                    >
-                    """,
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-6'
                 ),
-                'url_alias',
-            ),
 
-            Fieldset(
-                f"<i class='fa fa-cog'></i> {_('Options and actions')}",
-                'use_map_extent_as_init_extent',
-                'toc_tab_default',
-                'toc_layers_init_status',
-                'toc_themes_init_status',
-                'legend_position',
-                'autozoom_query',
-                'wms_getmap_format',
-                'feature_count_wms',
-                'multilayer_query',
-                'multilayer_querybybbox',
-                'multilayer_querybypolygon',
-                Field('geocoding_providers', css_class='select2', style="width:100%;"),
+                css_class='row'
             ),
-
         )
+
+        if self.fields['authentication_id'].initial:
+            auth_box = Div(
+                Div(
+                    Div(
+                        HTML(
+                            """
+                                <h3 class='box-title'><i class='fa fa-lock'></i> {}</h3>
+                                <p>The error in the project suggests that one or more layers require authentication. You can add the required credentials now. Credentials will be encrypted and added to the QGIS Authentication DB.</p>
+                                <p><strong>Authentication ID: {}</strong></p>
+                             """.format(
+                                _('QGIS Authentication'),
+                                self.fields['authentication_id'].initial,
+                            )
+                        ),
+                        css_class='box-header with-border',
+                    ),
+                    Div(
+                        'authentication_id',
+                        'authentication_username',
+                        'authentication_password',
+                        css_class='box-body',
+                    ),
+                    css_class='box box-success'
+                ),
+                css_class='col-md-6'
+            )
+            self.helper.layout.fields.insert(1, auth_box)
 
     class Meta:
         model = Project
@@ -316,6 +375,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'toc_themes_init_status',
             'legend_position',
             'autozoom_query',
+            'show_metadata_section',
             'multilayer_query',
             'multilayer_querybybbox',
             'multilayer_querybypolygon',
