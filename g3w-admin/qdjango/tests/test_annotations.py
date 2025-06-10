@@ -66,7 +66,7 @@ class TestAnnotations(QdjangoTestBase):
                 "TEMPLATE": "A4",
                 "DPI": "40",
                 "STYLES": "predefinito",
-                "LAYERS": "Countries",
+                "map0:LAYERS": "Countries",
                 "FORMAT": "png",
                 "CRS": "EPSG:4326",
                 "filtertoken": "undefined",

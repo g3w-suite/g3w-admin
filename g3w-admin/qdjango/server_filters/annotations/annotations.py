@@ -231,6 +231,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
 
         handler = self.server_iface.requestHandler()
         params = handler.parameterMap()
+        self.original_project_path = None
 
         if not self.checkService(params):
             return True
@@ -360,16 +361,22 @@ class AnnotationsPrintFilter(QgsServerFilter):
 
             QgsMessageLog.logMessage("AnnotationsPrintFilter layers labeling setup", 'annotationsprint', Qgis.Info)
 
-            # Get the print output
-            original_layers = handler.parameter('LAYERS')
-            # Add the annotation layer to the layers parameter, URI encoded
-            for layer in layers:
-                if layers == '':
-                    original_layers = layer.name()
-                else:
-                    original_layers = original_layers + ',' + layer.name()
+            # Get the print output for each MAPn parameter
+            layers_param = [k for k in handler.parameterMap().keys() if k.upper().endswith(':LAYERS')]
+            if handler.parameter('LAYERS'):
+                layers_param.append('LAYERS')
 
-            handler.setParameter('LAYERS', original_layers)
+            for param in layers_param:
+                # Get the layers parameter, URI encoded
+                original_layers = handler.parameter(param)
+                # Add the annotation layer to the layers parameter, URI encoded
+                for layer in layers:
+                    if layers == '':
+                        original_layers = layer.name()
+                    else:
+                        original_layers = original_layers + ',' + layer.name()
+
+                handler.setParameter(param, original_layers)
 
         except Exception as e:
             # Get exception line
@@ -381,6 +388,10 @@ class AnnotationsPrintFilter(QgsServerFilter):
     def onResponseComplete(self):
 
         handler = self.server_iface.requestHandler()
+
+        if not handler:
+            return True
+
         params = handler.parameterMap()
 
         if not self.checkService(params):
