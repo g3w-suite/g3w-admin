@@ -1,5 +1,3 @@
-
-
 from .base import *
 from .base_layout_settings import *
 from .base_geo_settings import *
@@ -13,6 +11,10 @@ TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 G3WADMIN_PROJECT_APPS = G3WADMIN_PROJECT_APPS + G3WADMIN_PROJECT_APPS_BASE
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + G3WADMIN_APPS + G3WADMIN_PROJECT_APPS
 MIDDLEWARE = MIDDLEWARE + G3WADMIN_MIDDLEWARE
+
+# Add   "django_elasticsearch_dsl" if qes module is active
+if 'qes' in G3WADMIN_LOCAL_MORE_APPS:
+    INSTALLED_APPS += ['django_elasticsearch_dsl']
 
 if SITE_PREFIX_URL:
     VECTOR_URL = '/' + SITE_PREFIX_URL + VECTOR_URL[1:]

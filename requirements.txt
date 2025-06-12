@@ -42,5 +42,6 @@ pydantic==2.6.3
 weasyprint==63.0
 distro==1.7.0
 django-allauth[socialaccount]==0.63.6
+django-elasticsearch-dsl==8.0
 natsort==8.4.0
 

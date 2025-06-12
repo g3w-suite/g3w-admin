@@ -32,6 +32,16 @@ services:
       - shared-volume:/shared-volume
       - pip-cache:/root/.cache/pip
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.18.1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
 volumes:
   shared-volume:
   pip-cache:

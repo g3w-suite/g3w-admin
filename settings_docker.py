@@ -7,7 +7,8 @@ G3WADMIN_LOCAL_MORE_APPS = [
     'filemanager',
     'qplotly',
     'openrouteservice',
-    'qtimeseries'
+    'qtimeseries',
+    'qes'
 ]
 
 DATABASES = {
@@ -156,3 +157,15 @@ ORS_PROFILES = {
     "driving-car": {"name": "Car"},
     "driving-hgv": {"name": "Heavy Goods Vehicle"}
 }
+
+# Default elasticsearch settings
+# --------------------------------
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://elasticsearch:9200',
+        #'http_auth': ('username', 'password')
+    }
+}
+
+# Activate/deactivate es indexing projects
+QES_INDEXING_PROJECT = False
