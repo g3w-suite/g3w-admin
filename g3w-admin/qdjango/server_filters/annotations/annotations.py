@@ -21,7 +21,6 @@ from qgis.core import (
     Qgis,
     QgsProject,
     QgsVectorLayer,
-    QgsField,
     QgsFeature,
     QgsGeometry,
     QgsPointXY,
@@ -29,19 +28,14 @@ from qgis.core import (
     QgsTextFormat,
     QgsTextBufferSettings,
     QgsVectorLayerSimpleLabeling,
-    QgsSymbol,
-    QgsMarkerSymbol,
-    QgsLineSymbol,
-    QgsFillSymbol,
     QgsMessageLog,
     QgsArrowSymbolLayer,
 )
 
 from qgis.server import (
-    QgsServerRequest,
-    QgsServerResponse,
     QgsServerFilter,
     QgsServerException,
+    QgsServerProjectUtils
 )
 
 from qgis.PyQt.QtGui import QFont, QColor
@@ -236,6 +230,9 @@ class AnnotationsPrintFilter(QgsServerFilter):
         if not self.checkService(params):
             return True
 
+        qgs_project = QGS_SERVER.project.qgis_project
+        use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
+
         self.layer_number = 0
 
         # Parse the JSON annotations
@@ -371,11 +368,11 @@ class AnnotationsPrintFilter(QgsServerFilter):
                 original_layers = handler.parameter(param)
                 # Add the annotation layer to the layers parameter, URI encoded
                 for layer in layers:
+                    lay_to_add = layer.id() if use_ids else layer.name()
                     if layers == '':
-                        original_layers = layer.name()
+                        original_layers = lay_to_add
                     else:
-                        original_layers = original_layers + ',' + layer.name()
-
+                        original_layers = original_layers + ',' + lay_to_add
                 handler.setParameter(param, original_layers)
 
         except Exception as e:
