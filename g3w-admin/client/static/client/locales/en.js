@@ -298,7 +298,10 @@ export default {
           },
           querybycircle: {
             tooltip: 'draw a circle'
-          }
+          },
+          querybyfreehand: {
+            tooltip: 'freehand'
+          },
         },
         querybypolygon: {
           download: {
@@ -336,6 +339,12 @@ export default {
           label: 'Radius',
           help: {
             message: "<ul><li>Click on map to draw circle</li></ul>"
+          },
+        },
+        querybyfreehand: {
+          tooltip: "Query by Draw Polygon (freehand)",
+          help: {
+            message: "<ul><li>Drag the mouse to draw a polygon and query the levels</li></ul>"
           },
         },
         addlayer: {
@@ -411,7 +420,8 @@ export default {
             'export': 'Export',
             'import': 'Import',
             'remove': 'Remove',
-            'show_all': 'Show All,'
+            'show_hide': 'Show/Hide',
+            'show_all': 'Show All',
           }
         }
       },

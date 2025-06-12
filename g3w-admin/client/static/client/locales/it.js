@@ -295,7 +295,10 @@ export default {
           },
           querybycircle: {
             tooltip: 'disegna un cerchio'
-          }
+          },
+          querybyfreehand: {
+            tooltip: 'disegno a mano libera'
+          },
         },
         querybypolygon: {
           download: {
@@ -333,6 +336,12 @@ export default {
           label: 'Raggio',
           help: {
             message: "<ul><li>Clicca sulla mappa per disegnare il cerchio</li></ul>"
+          },
+        },
+        querybyfreehand: {
+          tooltip: "Disegno un poligono (a mano libera) per interrogare",
+          help: {
+            message: "<ul><li>Trascina il mouse per disegnare un poligono ed interrogare i livelli</li></ul>"
           },
         },
         addlayer: {
@@ -409,6 +418,7 @@ export default {
             'export': 'Esporta',
             'import': 'Importa',
             'remove': 'Rimuovi',
+            'show_hide': 'Mostra/Nascondi',
             'show_all': 'Mostra tutti',
           }
         }
