@@ -38,7 +38,7 @@ from qgis.server import (
     QgsServerProjectUtils
 )
 
-from qgis.PyQt.QtGui import QFont, QColor
+from qgis.PyQt.QtGui import QColor
 from qgis.PyQt.QtCore import Qt, QTemporaryDir
 
 from qdjango.apps import QGS_SERVER, remove_project_from_cache
