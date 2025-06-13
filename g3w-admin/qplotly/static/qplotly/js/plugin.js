@@ -647,6 +647,7 @@
 
     // loop through order plotId
     async updateMapBBox(id, active, charts) {
+      const order   = this.config.plots.flatMap(p => p.show ? p.id : []);
       const plotIds = [{ id, active }];
       const plot    = this.config.plots.find(p => p.id === id);
 
@@ -659,7 +660,7 @@
         });
 
       // set bbox parameter to force
-      this.state.bbox = MAP.getMapBBOX().toString()
+      this.state.bbox = MAP.getMapBBOX().toString();
 
       // handle moveend map event
 
@@ -672,10 +673,9 @@
       }
 
       this.clearData(plot);
-
       // global map tool toggled status base on plot belong to geolayer show on charts
       // return true or false based on map active geo tools
-      this.state.tools.map.toggled = active && Object.values(this.#CONTENT?.order || {}).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
+      this.state.tools.map.toggled = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
 
       return await this.getCharts({ plotIds: plotIds.map(({ id }) => id) });
     }
