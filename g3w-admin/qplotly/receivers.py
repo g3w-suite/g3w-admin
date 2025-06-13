@@ -168,7 +168,9 @@ def set_initconfig_value(sender, **kwargs):
             'visible_features_only': qplotly_widget.visible_features_only,
             'show': qplotly_widget.show_on_start_client,
             'label': layout['title']['text'],
+            'type': settings.plot_type,
 
+            # TODO: reduce nesting (unnecessary "plot" property)
             'plot': {
                 'type': settings.plot_type,
                 'layout': layout,
