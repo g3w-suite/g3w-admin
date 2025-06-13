@@ -11,12 +11,11 @@
   const MAP                             = GUI.getService('map');
   const QUERY                           = GUI.getService('queryresults');
 
-  const layersId = new Set();
-
   new class extends Plugin {
 
     #CONTENT;
     #SIDEBAR;
+    #layer_ids = new Set();
 
     /**
      * @fires   service~ready
@@ -76,7 +75,7 @@
       this.config.plots.forEach(plot => {
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
 
-        layersId.add(plot.qgs_layer_id);
+        this.#layer_ids.add(plot.qgs_layer_id);
 
         plot.crs   = layer.isGeoLayer() ? layer.getCrs() : undefined;            // when layer has geometry
         plot.tools = {
@@ -96,7 +95,7 @@
 
       console.log(this.config.plots)
 
-      QUERY.addLayersPlotIds([...layersId]);
+      QUERY.addLayersPlotIds([...this.#layer_ids]);
       QUERY.on('show-chart', this.showContainer);
       QUERY.on('hide-chart', this.clearContainers);
 
@@ -799,7 +798,7 @@
       GUI.closeContent();
 
       // unlisten layer change filter to reload charts
-      layersId.forEach(id => {
+      this.#layer_ids.forEach(id => {
         const layer = CatalogLayersStoresRegistry.getLayerById(id);
         if (layer) {
           layer.off('filtertokenchange', this.changeCharts)
@@ -810,7 +809,7 @@
       QUERY.removeListener('show-charts', this.showContainer);
       QUERY.un('closeComponent', this.state._close);
       this.state._close = null;
-      layersId.clear();
+      this.#layer_ids.clear();
       this.emit('clear');
     }
 
