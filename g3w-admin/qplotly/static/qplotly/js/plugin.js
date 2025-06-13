@@ -788,6 +788,7 @@
           charts: {},
         });
       }
+      g3wsdk.gui.GUI.emit('resize')
     }
 
     /**
