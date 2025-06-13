@@ -121,7 +121,7 @@
               <li v-for="plot in service.config.plots" :key="plot.id">
                 <input type="checkbox" :id="plot.id" @change="service.togglePlot(plot.id)" v-model="plot.show" class="magic-checkbox" />
                 <label :for="plot.id" style="display:flex; justify-content: space-between;">
-                  <span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.plot.type }}
+                  <span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.type }}
                 </label>
               </li>
             </ul>`,
