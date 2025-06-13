@@ -15,6 +15,9 @@
 
   new class extends Plugin {
 
+    #CONTENT;
+    #SIDEBAR;
+
     /**
      * @fires   service~ready
      * @listens queryresults~show-chart
@@ -28,9 +31,9 @@
       // i18n
       const VM = new Vue();
       const i18n = async lang => {
-        this._sidebar?.setLoading(true);
+        this.#SIDEBAR?.setLoading(true);
         this.setLocale({ [lang]: (await import(`${BASE_URL}/i18n/${lang}.js`)).default });
-        this._sidebar?.setLoading(false);
+        this.#SIDEBAR?.setLoading(false);
       };
 
       VM.$watch(() => ApplicationState.language, i18n);
@@ -114,7 +117,7 @@
         await i18n(ApplicationState.language);
 
         // multi plot selector
-        const sidebar = this._sidebar = this.createSideBarComponent({
+        const sidebar = this.#SIDEBAR = this.createSideBarComponent({
           data: () => ({ service: this }),
           template: /* html */ `
             <ul class="treeview-menu" style="padding: 10px; color:#FFF;">
@@ -415,7 +418,7 @@
           plot.plot.layout.title = plot.label;
         }
 
-        _setActiveFilters(plot);
+        this.#setActiveFilters(plot);
         
         /** @FIXME add description */
         if (!charts[plot.id]) {
@@ -461,7 +464,7 @@
                   if (plot.filters.length) {
                     p.filters.push(`relation.${plot.filters[0]}`);
                   }
-                  _setActiveFilters(plot);
+                  this.#setActiveFilters(plot);
                   /** @FIXME add description */
                   if (!charts[p.id]) {
                     charts[p.id] = [];
@@ -524,7 +527,7 @@
 
       // internal g3w Component
 
-      const content = new Component({
+      this.#CONTENT = new Component({
         title: "qplotly",
         visible: true,
         ids,
@@ -532,7 +535,7 @@
         service: this,
       });
 
-      content.internalComponent = new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
+      this.#CONTENT.internalComponent = new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
           ids,
           rel,
           service: this
@@ -544,9 +547,9 @@
 
         // when not called from Query Result Service
         if (container) {
-          content.internalComponent.$once('hook:mounted', async function() { container.append(this.$el); });
-          content.internalComponent.$mount();
-          this.state.containers.find(q => container.selector === q.container.selector).component = content.internalComponent;
+          this.#CONTENT.internalComponent.$once('hook:mounted', async function() { container.append(this.$el); });
+          this.#CONTENT.internalComponent.$mount();
+          this.state.containers.find(q => container.selector === q.container.selector).component = this.#CONTENT.internalComponent;
           return;
         }
 
@@ -554,9 +557,11 @@
 
         this.state.tools.map.show = this.state.geolayer && !this.state.rel;
 
+        this.CONTENT = this.#CONTENT;
+
         // show chart in sidebar
         GUI.showContent({
-          content,
+          content: this.#CONTENT,
           title: 'plugins.qplotly.title',
           style: {
             title: {
@@ -570,9 +575,9 @@
               data: () => ({ service: this }),
               template: /* html */ `
 <div
-  v-if  = "service.state.tools.map.show"
-  class = "qplotly-tools"
-  style = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
+  :hidden = "!service.state.tools.map.show"
+  class   = "qplotly-tools"
+  style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
 >
   <span
     class              = "skin-color action-button skin-tooltip-bottom"
@@ -646,7 +651,7 @@
       const plotIds = [{ id, active }];
       const plot    = this.config.plots.find(p => p.id === id);
 
-      this.plots
+      this.config.plots
         .filter(p => p.show && p.id !== id && p.qgs_layer_id === plot.qgs_layer_id)
         .forEach(p => {
           p.tools.geolayer.active = active;
@@ -671,7 +676,7 @@
 
       // global map tool toggled status base on plot belong to geolayer show on charts
       // return true or false based on map active geo tools
-      this.state.tools.map.toggled = Object.values(this.order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
+      this.state.tools.map.toggled = Object.values(this.#CONTENT?.order || {}).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
 
       return await this.getCharts({ plotIds: plotIds.map(({ id }) => id) });
     }
@@ -770,7 +775,7 @@
 
       // remove filters eventually
       if (!plot.show) {
-        _setActiveFilters(plot);
+        this.#setActiveFilters(plot);
       }
 
       // hide plot
@@ -823,29 +828,29 @@
       }
     }
 
-  }
+    /**
+     * Set array of active filter on a plot (eg. map bbox or filtertoken)
+     * 
+     * @param plot
+     */
+    #setActiveFilters(plot) {
+      plot.filters   = [];
 
-  /**
-   * Set array of active filter on a plot (eg. map bbox or filtertoken)
-   * 
-   * @param plot
-   */
-  function _setActiveFilters(plot) {
-    plot.filters   = [];
+      // filtertoken is active
+      if (plot.tools.filter.active) {
+        plot.filters.push('filtertoken');
+      }
 
-    // filtertoken is active
-    if (plot.tools.filter.active) {
-      plot.filters.push('filtertoken');
+      // map bbox tools is active
+      if (plot.tools.geolayer.active && plot.tools.filter.active) {
+        plot.filters.splice(0, 1, 'in_bbox_filtertoken');
+      }
+
+      if (plot.tools.geolayer.active && !plot.tools.filter.active) {
+        plot.filters.push('in_bbox');
+      }
     }
 
-    // map bbox tools is active
-    if (plot.tools.geolayer.active && plot.tools.filter.active) {
-      plot.filters.splice(0, 1, 'in_bbox_filtertoken');
-    }
-
-    if (plot.tools.geolayer.active && !plot.tools.filter.active) {
-      plot.filters.push('in_bbox');
-    }
   }
 
 } catch (e) { console.error(e); } })();

@@ -136,12 +136,6 @@ def set_initconfig_value(sender, **kwargs):
 
     plots = []
 
-    plot_config = config = {
-        'scrollZoom': True,
-        'editable': True,
-        'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
-    }
-
     qplotly_widgets = get_qplotlywidgets4project(project, sender.request.user)
 
     for qplotly_widget, qgs_layer_id in qplotly_widgets:
@@ -167,14 +161,18 @@ def set_initconfig_value(sender, **kwargs):
             'selected_features_only': qplotly_widget.selected_features_only,
             'visible_features_only': qplotly_widget.visible_features_only,
             'show': qplotly_widget.show_on_start_client,
-            'label': layout['title']['text'],
+            'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
             'type': settings.plot_type,
 
             # TODO: reduce nesting (unnecessary "plot" property)
             'plot': {
                 'type': settings.plot_type,
                 'layout': layout,
-                'config': plot_config
+                'config': {
+                    'scrollZoom': True,
+                    'editable': True,
+                    'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
+                }
             }
 
         })
