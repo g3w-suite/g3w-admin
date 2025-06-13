@@ -279,6 +279,11 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                             options['providers'].update({
                                 gp: settings.GEOCODING_PROVIDERS[gp]
                             })
+                    if "qes" in settings.INSTALLED_APPS and mapcontrol.name == 'geocoding':
+                        options['providers'].update({
+                            'qes': {}
+                        })
+
 
             ret['mapcontrols'].update({
                 mapcontrol.name: options

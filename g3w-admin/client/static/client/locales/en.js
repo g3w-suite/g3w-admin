@@ -298,7 +298,10 @@ export default {
           },
           querybycircle: {
             tooltip: 'draw a circle'
-          }
+          },
+          querybyfreehand: {
+            tooltip: 'freehand'
+          },
         },
         querybypolygon: {
           download: {
@@ -336,6 +339,12 @@ export default {
           label: 'Radius',
           help: {
             message: "<ul><li>Click on map to draw circle</li></ul>"
+          },
+        },
+        querybyfreehand: {
+          tooltip: "Query by Draw Polygon (freehand)",
+          help: {
+            message: "<ul><li>Drag the mouse to draw a polygon and query the levels</li></ul>"
           },
         },
         addlayer: {
@@ -411,7 +420,8 @@ export default {
             'export': 'Export',
             'import': 'Import',
             'remove': 'Remove',
-            'show_all': 'Show All,'
+            'show_hide': 'Show/Hide',
+            'show_all': 'Show All',
           }
         }
       },
@@ -481,7 +491,11 @@ export default {
           },
           download: {
             unknow: 'Download',
-            geotiff_map_extent: "GeoTiff (current view)"
+            geotiff_map_extent: "GeoTiff (current view)",
+            title: "Export features",
+            layer: "Layer",
+            include_relations: "Include relations in exported file?",
+            data_format: "Data Format"
           }
         }
       },
@@ -574,7 +588,7 @@ export default {
       },
       geocoding: {
         choose_layer: "Choose a layer where to add this feature",
-        placeholder: "Address ...",
+        placeholder: "Search",
         nolayers: "No editable point layers found on this project",
         noresults: "No results",
         notresponseserver: "No response from server"

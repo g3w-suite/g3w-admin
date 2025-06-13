@@ -295,7 +295,10 @@ export default {
           },
           querybycircle: {
             tooltip: 'disegna un cerchio'
-          }
+          },
+          querybyfreehand: {
+            tooltip: 'disegno a mano libera'
+          },
         },
         querybypolygon: {
           download: {
@@ -333,6 +336,12 @@ export default {
           label: 'Raggio',
           help: {
             message: "<ul><li>Clicca sulla mappa per disegnare il cerchio</li></ul>"
+          },
+        },
+        querybyfreehand: {
+          tooltip: "Disegno un poligono (a mano libera) per interrogare",
+          help: {
+            message: "<ul><li>Trascina il mouse per disegnare un poligono ed interrogare i livelli</li></ul>"
           },
         },
         addlayer: {
@@ -409,6 +418,7 @@ export default {
             'export': 'Esporta',
             'import': 'Importa',
             'remove': 'Rimuovi',
+            'show_hide': 'Mostra/Nascondi',
             'show_all': 'Mostra tutti',
           }
         }
@@ -479,7 +489,11 @@ export default {
           },
           download: {
             unknow: "Scarica",
-            geotiff_map_extent: "GeoTiff (vista attuale)"
+            geotiff_map_extent: "GeoTiff (vista attuale)",
+            title: "Esporta",
+            layer: "Livello",
+            include_relations: "Includere le relazioni?",
+            data_format: "Formato"
           }
         }
       },
@@ -575,7 +589,7 @@ export default {
       },
       geocoding: {
         choose_layer: "Scegli un livello in cui aggiungere questa funzionalità",
-        placeholder: "Indirizzo ...",
+        placeholder: "Cerca",
         nolayers: "Nessun layer di punti modificabile trovato in questo progetto",
         noresults: "Nessun risultato",
         notresponseserver: "Il server non risponde"

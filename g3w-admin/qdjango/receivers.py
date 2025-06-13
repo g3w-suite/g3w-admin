@@ -39,7 +39,8 @@ from .models import (
     ConstraintSubsetStringRule,
     ConstraintExpressionRule,
     Message,
-    ScaleVisibilityLayerConstraint
+    ScaleVisibilityLayerConstraint,
+    LayerAcl
 )
 from .searches import ProjectSearch
 from .views import (
@@ -406,6 +407,16 @@ def invalid_prj_cache_by_scalevisibilitylayerconstraint(**kwargs):
         f"{kwargs['instance'].layer.project}"
     )
 
+@receiver(post_save, sender=LayerAcl)
+@receiver(pre_delete, sender=LayerAcl)
+def invalid_prj_cache_by_layeracl(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    kwargs['instance'].layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a LayerACL: "
+        f"{kwargs['instance'].layer.project}"
+    )
 
 @receiver(post_serialize_project)
 def update_by_permalinkcode(sender, **kwargs):

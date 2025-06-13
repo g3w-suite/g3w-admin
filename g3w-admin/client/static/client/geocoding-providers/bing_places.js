@@ -5,7 +5,7 @@
 
 (function() {
 
-  const geocoding = initConfig.group.mapcontrols.geocoding || {};
+  const geocoding = window.initConfig.mapcontrols.geocoding || {};
   const provider  = document.currentScript.src.split('/').reverse()[0].replace('.js', '') || 'bing_places';
 
   // skip when disabled

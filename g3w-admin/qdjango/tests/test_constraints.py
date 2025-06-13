@@ -62,10 +62,9 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
         super().setUp()
         
         self.qdjango_project = Project.objects.all()[0]
-        self.world = self.qdjango_project.layer_set.filter(
-            qgs_layer_id='world20181008111156525')[0]
-        self.spatialite_points = self.qdjango_project.layer_set.filter(
-            qgs_layer_id='spatialite_points20190604101052075')[0]
+        self.world = Layer.objects.get(qgs_layer_id='world20181008111156525', project=self.qdjango_project)
+        self.spatialite_points = Layer.objects.get(qgs_layer_id='spatialite_points20190604101052075',
+                                                   project=self.qdjango_project)
         # Make a cloned layer
         self.cloned_project = Project(
             group=self.qdjango_project.group, title='My Clone')
