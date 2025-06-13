@@ -32,6 +32,7 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt.QtCore import QFile
 
 from core.signals import initconfig_plugin_start
+from base.version import get_version
 
 from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
@@ -181,12 +182,25 @@ def set_initconfig_value(sender, **kwargs):
 
     return {
         'qplotly': {
+            'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'jsscripts': [
                 static('qplotly/polyfill.min.js'),
                 static('qplotly/plotly-1.52.2.min.js')
             ],
-            'plots': plots
+            'plots': plots,
+            'sidebar': {
+                'id': 'qplotly',
+                'title': 'plugins.qplotly.title',
+                'open': False,
+                'collapsible': True,
+                'icon':'chart-area',
+                'iconColor': 'red',
+                'mobile': True,
+                'sidebarOptions': {
+                    'position': 1,
+                },
+            },
         }
     }
 
