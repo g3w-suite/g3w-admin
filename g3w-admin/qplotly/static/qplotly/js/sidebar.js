@@ -9,20 +9,20 @@ export default ({
 
   // language=html
   template: /* html */ `
-<div
-  v-disabled = "service.state.loading"
-  :id        = "id"
-  class      = "skin-color"
-  :style     = "{
-    overflowY: overflowY,
-    height: rel?.height ? rel.height + 'px' : '100%',
-  }"
->
+    <div
+      v-disabled = "service.state.loading"
+      :id        = "id"
+      class      = "skin-color"
+      :style     = "{
+        overflowY: overflowY,
+        height: rel?.height ? rel.height + 'px' : '100%',
+      }"
+    >
 
     <bar-loader
       v-if     = "undefined !== ids"
       :loading = "service.state.loading"
-    ></bar-loader>
+    />
 
     <div
       v-if   = "show"
@@ -50,7 +50,6 @@ export default ({
                 v-if  = "getTools(chart).geolayer.show || getTools(chart).selection.active"
                 class = "plot-tools"
               >
-
                 <span
                   v-if               = "getTools(chart).selection.active"
                   style              = "margin: auto"
