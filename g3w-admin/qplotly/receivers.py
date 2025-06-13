@@ -167,6 +167,7 @@ def set_initconfig_value(sender, **kwargs):
             'selected_features_only': qplotly_widget.selected_features_only,
             'visible_features_only': qplotly_widget.visible_features_only,
             'show': qplotly_widget.show_on_start_client,
+            'label': layout['title']['text'],
 
             'plot': {
                 'type': settings.plot_type,
