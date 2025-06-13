@@ -198,21 +198,21 @@ class AnnotationsPrintFilter(QgsServerFilter):
                 layer.renderer().symbol().setWidthUnit(Qgis.RenderUnit.Pixels)
 
 
-    def makeLayer(self, geometry_type):
+    def makeLayer(self, geometry_type, epsg_project):
         """
         Create a QgsVectorLayer for the given geometry type.
         """
         layer = None
         if geometry_type == 'Point':
-            layer = QgsVectorLayer('Point?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_points_%s' % self.layer_number, 'memory')
+            layer = QgsVectorLayer(f'Point?crs={epsg_project}&field=name:string', 'annotations_g3wsuite_internal_points_%s' % self.layer_number, 'memory')
         elif geometry_type == 'Text':
-            layer = QgsVectorLayer('Point?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_text%s' % self.layer_number, 'memory')
+            layer = QgsVectorLayer(f'Point?crs={epsg_project}&field=name:string', 'annotations_g3wsuite_internal_text%s' % self.layer_number, 'memory')
         elif geometry_type == 'LineString':
-            layer = QgsVectorLayer('LineString?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_lines_%s' % self.layer_number, 'memory')
+            layer = QgsVectorLayer(f'LineString?crs={epsg_project}&field=name:string', 'annotations_g3wsuite_internal_lines_%s' % self.layer_number, 'memory')
         elif geometry_type == 'Polygon':
-            layer = QgsVectorLayer('Polygon?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_polygons_%s' % self.layer_number, 'memory')
+            layer = QgsVectorLayer(f'Polygon?crs={epsg_project}&field=name:string', 'annotations_g3wsuite_internal_polygons_%s' % self.layer_number, 'memory')
         elif geometry_type == 'Circle':
-            layer = QgsVectorLayer('MultiSurface?crs=EPSG:4326&field=name:string', 'annotations_g3wsuite_internal_polygons_%s' % self.layer_number, 'memory')
+            layer = QgsVectorLayer(f'MultiSurface?crs={epsg_project}&field=name:string', 'annotations_g3wsuite_internal_polygons_%s' % self.layer_number, 'memory')
         else:
             raise ValueError("Unsupported geometry type: {}".format(geometry_type))
 
@@ -232,6 +232,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
 
         qgs_project = QGS_SERVER.project.qgis_project
         use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
+        epsg_project = qgs_project.crs().authid()
 
         self.layer_number = 0
 
@@ -263,7 +264,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                 coords = geom.get('coordinates', [])
                 style = annotation['properties'].get('style', {})
                 if geom['type'] == 'LineString':
-                    layer = self.makeLayer('LineString')
+                    layer = self.makeLayer('LineString', epsg_project)
                     feature = QgsFeature(layer.fields())
                     line = [QgsPointXY(coord[0], coord[1]) for coord in coords]
                     feature.setGeometry(QgsGeometry.fromPolylineXY(line))
@@ -272,7 +273,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                     self.setLabeling(layer, 'LineString', style)
                     layers.append(layer)
                 elif geom['type'] == 'Point':
-                    layer = self.makeLayer('Point')
+                    layer = self.makeLayer('Point', epsg_project)
                     feature = QgsFeature(layer.fields())
                     feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(coords[0], coords[1])))
                     feature.setAttribute('name', annotation['properties'].get('label', ''))
@@ -280,7 +281,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                     self.setLabeling(layer,  annotation['properties'].get('type', 'Point'), style)
                     layers.append(layer)
                 elif geom['type'] == 'Polygon':
-                    layer = self.makeLayer('Polygon')
+                    layer = self.makeLayer('Polygon', epsg_project)
                     feature = QgsFeature(layer.fields())
                     polygon = [QgsPointXY(coord[0], coord[1]) for coord in coords[0]]
                     feature.setGeometry(QgsGeometry.fromPolygonXY([polygon]))
@@ -289,7 +290,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                     self.setLabeling(layer, 'Polygon', style)
                     layers.append(layer)
                 elif geom['type'] == 'GeometryCollection':  # Circle
-                    layer = self.makeLayer('Circle')
+                    layer = self.makeLayer('Circle', epsg_project)
                     feature = QgsFeature(layer.fields())
                     center = annotation['properties'].get('center', [0, 0])
                     center_xy = QgsPointXY(center[0], center[1])
@@ -311,7 +312,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                     # Check if we have a label_radius and add a linestring layer
                     label_radius = annotation['properties'].get('label_radius', '')
                     if label_radius:
-                        layer = self.makeLayer('LineString')
+                        layer = self.makeLayer('LineString', epsg_project)
                         feature = QgsFeature(layer.fields())
 
                         point_on_circle = annotation['properties'].get('endCoordinates', [0, 0])
@@ -326,7 +327,7 @@ class AnnotationsPrintFilter(QgsServerFilter):
                     # Check if we have a label_angle and add a point (text-only) layer
                     label_angle = annotation['properties'].get('label_angle', '')
                     if label_angle:
-                        layer = self.makeLayer('Text')
+                        layer = self.makeLayer('Text', epsg_project)
                         feature = QgsFeature(layer.fields())
                         point_on_circle = annotation['properties'].get('endCoordinates', [0, 0])
                         point_on_circle_xy = QgsPointXY(point_on_circle[0], point_on_circle[1])
