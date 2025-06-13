@@ -573,22 +573,22 @@
             Vue.extend({
               data: () => ({ service: this }),
               template: /* html */ `
-<div
-  :hidden = "!service.state.tools.map.show"
-  class   = "qplotly-tools"
-  style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
->
-  <span
-    class              = "skin-color action-button skin-tooltip-bottom"
-    v-disabled         = "service.state.loading"
-    data-placement     = "bottom"
-    data-toggle        = "tooltip"
-    style              = "font-weight: bold; margin: 3px"
-    :class             = "[ $fa('map'), service.state.tools.map.toggled ? 'toggled' : '']"
-    @click.stop        = "service.updateCharts()"
-    v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
-  ></span>
-</div>`,
+                <div
+                  :hidden = "!service.state.tools.map.show"
+                  class   = "qplotly-tools"
+                  style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
+                >
+                  <span
+                    class              = "skin-color action-button skin-tooltip-bottom"
+                    v-disabled         = "service.state.loading"
+                    data-placement     = "bottom"
+                    data-toggle        = "tooltip"
+                    style              = "font-weight: bold; margin: 3px"
+                    :class             = "[ $fa('map'), service.state.tools.map.toggled ? 'toggled' : '']"
+                    @click.stop        = "service.updateCharts()"
+                    v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
+                  ></span>
+                </div>`,
                 }),
               ],
             });
@@ -675,7 +675,7 @@
 
       // global map tool toggled status base on plot belong to geolayer show on charts
       // return true or false based on map active geo tools
-      this.state.tools.map.toggled = Object.values(this.#CONTENT?.order || {}).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
+      this.state.tools.map.toggled = active && Object.values(this.#CONTENT?.order || {}).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
 
       return await this.getCharts({ plotIds: plotIds.map(({ id }) => id) });
     }
