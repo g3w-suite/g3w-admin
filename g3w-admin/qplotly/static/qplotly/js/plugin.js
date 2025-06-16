@@ -460,7 +460,7 @@
                   p.data              = r.data;
                   p.plot.layout.title = `${this.state._relNames[id]} ${p.label}`;
                   // get father filter plots
-                  if (plot.filters.length) {
+                  if (plot.filters.length && !(`relation.${plot.filters[0]}` in plot.filters)) {
                     plot.filters.push(`relation.${plot.filters[0]}`);
                   }
                   this.#setActiveFilters(plot);
@@ -695,7 +695,7 @@
     clearContainers(container) {
       this.state.containers = this.state.containers.filter(q => {
         if (!container || (container.selector === q.container.selector)) {
-          document.querySelectorAll(q.component.$el).forEach(el => el.remove());
+          document.querySelectorAll(container.selector).forEach(el => el.remove());
           q.component.$destroy();
           return false;
         }
@@ -788,7 +788,7 @@
           charts: {},
         });
       }
-      g3wsdk.gui.GUI.emit('resize')
+      GUI.emit('resize');
     }
 
     /**
