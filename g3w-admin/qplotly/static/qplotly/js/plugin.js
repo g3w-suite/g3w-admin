@@ -43,12 +43,8 @@
         loading:    false, // loading purpose
         showCharts: false, // show/hide charts
         geolayer:   false, // is geolayer
-        tools: {
-          map: {
-            toggled:  false,
-            disabled: false,
-          },
-        },
+        bbox_filter: false,
+        bbox_btn: false,
         bbox: undefined, // custom request param
         rel:  null,      // relation data
         _relNames: {},
@@ -60,7 +56,7 @@
         containers: [], // charts container coming from query results
       });
 
-      VM.$watch(() => this.state.geolayer, b => this.state.tools.map.show = b);
+      VM.$watch(() => this.state.geolayer, b => this.state.bbox_btn = b);
 
      //query result charts
       this.showContainer   = this.showContainer.bind(this);
@@ -75,6 +71,8 @@
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
 
         this.#layer_ids.add(plot.qgs_layer_id);
+
+        plot.show = !!plot.show_on_start;
 
         plot.crs   = layer.isGeoLayer() ? layer.getCrs() : undefined;            // when layer has geometry
         plot.tools = {
@@ -119,7 +117,7 @@
           data: () => ({ service: this }),
           template: /* html */ `
             <ul class="treeview-menu" style="padding: 10px; color:#FFF;">
-              <li v-for="plot in service.config.plots" :key="plot.id">
+              <li v-for="plot in service.config.plots" :key="plot.id" :hidden="!plot.show_in_sidebar">
                 <input type="checkbox" :id="plot.id" @change="service.togglePlot(plot.id)" v-model="plot.show" class="magic-checkbox" />
                 <label :for="plot.id" style="display:flex; justify-content: space-between;">
                   <span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.type }}
@@ -136,7 +134,7 @@
         QUERY.onafter('addActionsForLayers', (actions, layers) => {
           layers.forEach((layer, index) => {
             const relations      = ApplicationState.project.getRelations().filter(r => r.referencedLayer === layer.id);
-            const charts         = relations.filter(r => 'MANY' === r.type).map(r => this.#layer_ids.find(id => id === r.referencingLayer)).filter(Boolean);
+            const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
             const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
             if (charts.length) {
               actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
@@ -195,7 +193,7 @@
         this.state._moveend.plotIds.forEach(plotId => reload.push(Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] })));
       }
 
-      this.state.bbox = (has_move || this.state.tools.map.toggled) ? MAP.getMapBBOX().toString() : undefined;
+      this.state.bbox = (has_move || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
 
       // whether filtertoken is added or removed from layer
       if (layerId) {
@@ -256,8 +254,8 @@
      * @FIXME add description
      */
     clearLoadedPlots() {
-      this.state.tools.map.toggled = false;
-      this.state.bbox              = undefined;
+      this.state.bbox_filter = false;
+      this.state.bbox        = undefined;
       // remove handler of map moveend and reset to empty
       if (this.state._moveend) {
         ol.Observable.unByKey(this.state._moveend.key);
@@ -444,7 +442,6 @@
         if (!is_error) {
           plot.data              = value.data;
           plot.loaded            = true;
-          plot.plot.layout.title = plot.label;
         }
 
         this.#setActiveFilters(plot);
@@ -456,10 +453,9 @@
 
         charts[plot.id].push({
           filters: plot.filters,
-          layout:  plot.plot.layout,
           tools:   plot.tools,
           layerId: plot.qgs_layer_id,
-          title:   plot.plot.layout.title,
+          title:   plot.label,
           data:    (is_error ?? false) ? null : plot.data[0],
         });
 
@@ -486,9 +482,9 @@
               this.config.plots
                 .filter(p => p.show && p.id === r.id)
                 .forEach(p => {
-                  p.loaded            = true;
-                  p.data              = r.data;
-                  p.plot.layout.title = `${this.state._relNames[id]} ${p.label}`;
+                  p.loaded = true;
+                  p.data   = r.data;
+                  p.title  = `${this.state._relNames[id]} ${p.label}`;
                   // get father filter plots
                   if (plot.filters.length && !(`relation.${plot.filters[0]}` in plot.filters)) {
                     plot.filters.push(`relation.${plot.filters[0]}`);
@@ -500,10 +496,9 @@
                   }
                   charts[p.id].push({
                     filters: p.filters,
-                    layout:  p.plot.layout,
                     tools:   p.tools,
                     layerId: p.qgs_layer_id,
-                    title:   p.plot.layout.title,
+                    title:   p.title,
                     data:    (is_error ?? false) ? null : p.data[0],
                   });
               });
@@ -517,12 +512,12 @@
       // remove inactive plot ids
 
       /** @FIXME add description */
-      if (!this.state.tools.map.toggled) {
+      if (!this.state.bbox_filter) {
         this.state._moveend.plotIds = this.state._moveend.plotIds.filter(p => p.active);
       }
 
       // remove handler of map moveend and reset to empty
-      if (!this.state.tools.map.toggled && !this.state._moveend.plotIds.length && this.state._moveend.key) {
+      if (!this.state.bbox_filter && !this.state._moveend.plotIds.length && this.state._moveend.key) {
         ol.Observable.unByKey(this.state._moveend.key);
         this.state._moveend.key     = null;
         this.state._moveend.plotIds = [];
@@ -584,7 +579,7 @@
 
         // when called by sidebar item (once chartsReady event resolve promise)
 
-        this.state.tools.map.show = this.state.geolayer && !this.state.rel;
+        this.state.bbox_btn = this.state.geolayer && !this.state.rel;
 
         this.CONTENT = this.#CONTENT;
 
@@ -604,7 +599,7 @@
               data: () => ({ service: this }),
               template: /* html */ `
                 <div
-                  :hidden = "!service.state.tools.map.show"
+                  :hidden = "!service.state.bbox_btn"
                   class   = "qplotly-tools"
                   style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
                 >
@@ -614,7 +609,7 @@
                     data-placement     = "bottom"
                     data-toggle        = "tooltip"
                     style              = "font-weight: bold; margin: 3px"
-                    :class             = "[ $fa('map'), service.state.tools.map.toggled ? 'toggled' : '']"
+                    :class             = "[ $fa('map'), service.state.bbox_filter ? 'toggled' : '']"
                     @click.stop        = "service.updateCharts()"
                     v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
                   ></span>
@@ -638,15 +633,15 @@
         GUI.setLoadingContent(true);
       }
 
-      this.state.tools.map.toggled = !this.state.tools.map.toggled;
+      this.state.bbox_filter = !this.state.bbox_filter;
 
       // set bbox parameter
-      this.state.bbox = this.state.tools.map.toggled ? MAP.getMapBBOX().toString() : undefined;
+      this.state.bbox = this.state.bbox_filter ? MAP.getMapBBOX().toString() : undefined;
 
       // get active plot related to geolayer
       const geo_plots = this.config.plots.filter(p => {
         if (p.show && p.tools.geolayer.show) {
-          p.tools.geolayer.active = !!this.state.tools.map.toggled;
+          p.tools.geolayer.active = !!this.state.bbox_filter;
           return true;
         }
       });
@@ -654,15 +649,15 @@
       // handle moveend map event
 
       // which plotIds need to trigger map moveend event
-      this.state._moveend.plotIds = this.state.tools.map.toggled ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
+      this.state._moveend.plotIds = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
 
       // get map moveend event just one time
-      if (this.state.tools.map.toggled && !this.state._moveend.key) {
+      if (this.state.bbox_filter && !this.state._moveend.key) {
         this.state._moveend.key = MAP.getMap().on('moveend', this.changeCharts);
       }
 
       // remove handler of map moveend and reset to empty
-      if (!this.state.tools.map.toggled) {
+      if (!this.state.bbox_filter) {
         ol.Observable.unByKey(this.state._moveend.key);
         this.state._moveend.key = null;
       }
@@ -705,7 +700,7 @@
       this.clearData(plot);
       // global map tool toggled status base on plot belong to geolayer show on charts
       // return true or false based on map active geo tools
-      this.state.tools.map.toggled = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
+      this.state.bbox_filter = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
 
       return await this.getCharts({ plotIds: plotIds.map(({ id }) => id) });
     }
@@ -743,7 +738,7 @@
 
       // get active boolean from map toggled
       if (plot.show) {
-        plot.tools.geolayer.active = has_geo ? this.state.tools.map.toggled : plot.tools.geolayer.active;
+        plot.tools.geolayer.active = has_geo ? this.state.bbox_filter : plot.tools.geolayer.active;
       }
 
       // deactive geolayer tools
@@ -753,7 +748,7 @@
 
       // add current plot id in case of already register move map event
       if (plot.show && has_geo && this.state._moveend.key) {
-        this.state._moveend.plotIds.push({ id: plot.id, active: this.state.tools.map.toggled });
+        this.state._moveend.plotIds.push({ id: plot.id, active: this.state.bbox_filter });
       }
 
       // remove map Move end from plotids keys when there is a key moveend listener 
@@ -763,8 +758,8 @@
 
       // no plots have active geo tools
       if (!plot.show && has_geo && !this.state._moveend.plotIds.length) {
-        this.state.bbox              = undefined; // set request params to undefined
-        this.state.tools.map.toggled = false;     // un-toggle main chart map tool
+        this.state.bbox        = undefined; // set request params to undefined
+        this.state.bbox_filter = false;     // un-toggle main chart map tool
       }
 
         // set main map geolayer tools based on if there are plot belong to a geolayer

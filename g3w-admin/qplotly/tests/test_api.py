@@ -167,7 +167,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(plugin_plot['id'], get_qplotlywidget_for_project(self.project.instance)[0].pk)
         self.assertFalse(plugin_plot['selected_features_only'])
         self.assertFalse(plugin_plot['visible_features_only'])
-        self.assertFalse(plugin_plot['active_on_startup'])
+        self.assertFalse(plugin_plot['show_on_start'])
         self.assertTrue(plugin_plot['show_in_sidebar'])
 
         #self.assertEqual(plugin_plot['plot']['type'], 'histogram')

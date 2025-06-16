@@ -256,12 +256,19 @@ export default ({
           if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
             this.$refs[`${plotId}`][0].innerHTML = /* html */ `
               <div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
-                <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.layout?.title ? ' - ' + chart.layout.title : ''} </h4>
+                <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.title ? ' - ' + chart.title : ''} </h4>
                 <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
               </div>`;
           } else {
+            // retrieve "trace-config" from cache
+            this.draw.configs = this.draw.configs || {}
+            if (!this.draw.configs[plotId]) {
+              this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
+            }
+            const { layout, config } = this.draw.configs[plotId];
+            layout.title  = chart.title;
             state.loading = !this.rel;
-            await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , chart.layout, this.plots[0].config);
+            await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , layout, config);
           }
           return plotId;
         })
