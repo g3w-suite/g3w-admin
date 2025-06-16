@@ -461,7 +461,7 @@
                   p.plot.layout.title = `${this.state._relNames[id]} ${p.label}`;
                   // get father filter plots
                   if (plot.filters.length) {
-                    p.filters.push(`relation.${plot.filters[0]}`);
+                    plot.filters.push(`relation.${plot.filters[0]}`);
                   }
                   this.#setActiveFilters(plot);
                   /** @FIXME add description */

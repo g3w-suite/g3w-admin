@@ -278,12 +278,13 @@ export default ({
                 <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.layout?.title ? ' - ' + chart.layout.title : ''} </h4>
                 <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
               </div>`;
+          } else {
+            state.loading = !this.rel;
+            await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , chart.layout, this.plots[0].config);
           }
-          state.loading = !this.rel;
-          await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , chart.layout, this.plots[0].config);
           return plotId;
         })
-      ))).forEach(({ value }) => this.charts?.[value]?.forEach(chart => { chart.state.loading = false; }));
+      ))).forEach(({ value }) => this.charts[value].forEach(chart => { chart.state.loading = false; }));
 
       this.service.setLoading(false);
     },
@@ -470,6 +471,10 @@ document.head.insertAdjacentHTML(
   background-color: #FFF;
   padding-left: 3px;
   font-weight: bold;
+}
+
+.plot_divs_content .plot-container.plotly + * {
+  display: none !important;
 }
 </style>`,
 );
