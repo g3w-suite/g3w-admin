@@ -61,9 +61,7 @@
 
       VM.$watch(() => this.state.geolayer, b => this.state.tools.map.show = b);
 
-      //remove all
-      this.clear           = this.unload.bind();
-      //query result charts
+     //query result charts
       this.showContainer   = this.showContainer.bind(this);
       this.clearContainers = this.clearContainers.bind(this);
       //end query results charts
@@ -792,9 +790,9 @@
     }
 
     /**
-    * @deprecated v4.0.0 Is was used when change project without reload page
-    */
-    unload() {
+     * Remove all
+     */
+    clear() {
       GUI.removeComponent('qplotly', 'sidebar', { position: 1 });
       GUI.closeContent();
 
