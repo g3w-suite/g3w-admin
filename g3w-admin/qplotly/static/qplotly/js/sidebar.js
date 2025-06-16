@@ -1,9 +1,6 @@
 const { GUI }                         = g3wsdk.gui;
-const { getUniqueDomId }              = g3wsdk.core.utils;
-const { resizeMixin }                 = g3wsdk.gui.vue.Mixins;
+const { debounce, getUniqueDomId }    = g3wsdk.core.utils;
 const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
-
-const cache = {};
 
 export default ({
 
@@ -47,15 +44,15 @@ export default ({
               <div style="margin:auto">{{ chart.title || '' }}</div>
 
               <div
-                v-if  = "getTools(chart).geolayer.show || getTools(chart).selection.active"
+                v-if  = "!rel && (chart.tools.geolayer.show || chart.tools.selection.active)"
                 class = "plot-tools"
               >
                 <span
-                  v-if               = "getTools(chart).selection.active"
+                  v-if               = "chart.tools.selection.active"
                   style              = "margin: auto"
                   class              = "action-button skin-tooltip-bottom"
                   @click.stop        = "toggleFilter(chart.layerId)"
-                  :class             = "{ 'toggled': getTools(chart).filter.active }"
+                  :class             = "{ 'toggled': chart.tools.filter.active }"
                   data-placement     = "bottom"
                   data-toggle        = "tooltip"
                   v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
@@ -67,10 +64,10 @@ export default ({
                 </span>
 
                 <span
-                  v-if               = "getTools(chart).geolayer.show"
+                  v-if               = "chart.tools.geolayer.show"
                   style              = "margin: auto"
                   class              = "action-button skin-tooltip-bottom"
-                  :class             = "{ 'toggled': getTools(chart).geolayer.active }"
+                  :class             = "{ 'toggled': chart.tools.geolayer.active }"
                   @click.stop        = "toggleBBox(chart, index)"
                   data-placement     = "bottom"
                   data-toggle        = "tooltip"
@@ -117,8 +114,6 @@ export default ({
 
   name: "qplotly",
 
-  mixins: [resizeMixin],
-
   props: ['ids', 'rel', 'service'],
 
   data() {
@@ -133,24 +128,6 @@ export default ({
   },
 
   methods: {
-
-    getTools(chart) {
-      if (!cache[chart]) {
-        cache[chart] = (this.rel ? undefined : chart.tools) || {
-          filter: {
-            active: false,
-          },
-          selection: {
-            active: false,
-          },
-          geolayer: {
-            show: false,
-            active: false,
-          },
-        };
-      }
-      return cache[chart];
-    },
 
     /**
      * toggle filter token on project layer
@@ -175,10 +152,10 @@ export default ({
      * @returns { Promise<void> }
      */
     async toggleBBox(chart, index) {
-      this.getTools(chart).geolayer.active = !this.getTools(chart).geolayer.active;
+      chart.tools.geolayer.active = !chart.tools.geolayer.active;
       this.service.setLoading(true);
       // call set Charts based on change map tool toggled
-      this.setCharts(await this.service.updateMapBBox(this.order[index], this.getTools(chart).geolayer.active, this.charts));
+      this.setCharts(await this.service.updateMapBBox(this.order[index], chart.tools.geolayer.active, this.charts));
     },
 
     /**
@@ -365,12 +342,10 @@ export default ({
 
   },
 
-  beforeCreate() {
-    this.delayType = 'debounce';
-  },
-
   created() {
     this.charts = {};
+    this.resize = debounce(this.resize.bind(this));
+    GUI.on('resize', this.resize);
   },
 
   /**
@@ -406,6 +381,11 @@ export default ({
     //set mounted true
     this._mounted = true;
 
+    await this.$nextTick();
+
+    this.resize();
+
+    GUI.on('resize', this.resize);
   },
 
   /**
@@ -419,7 +399,8 @@ export default ({
     }
     this.service.clearLoadedPlots();
     this.charts = null;
-    this.order = null ;
+    this.order = null;
+    GUI.off('resize', this.resize);
   },
 
 });
