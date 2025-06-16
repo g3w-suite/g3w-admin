@@ -26,6 +26,12 @@ class QplotlyWidget(models.Model):
         blank=True,
         null=True,
     )
+
+    show_in_sidebar = models.BooleanField(
+        _('Show in sidebar'),
+        default=True,
+        help_text=_('Show this plot in the sidebar. If not checked, it will be shown only on results of a query.')
+    )
     
     def __str__(self):
         return self.datasource if self.datasource else str(self.pk)

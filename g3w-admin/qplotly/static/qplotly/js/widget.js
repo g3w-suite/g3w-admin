@@ -107,6 +107,7 @@ _.extend(g3wadmin.widget, {
             '            <tr>\n' +
             '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
             '                <th>'+gettext('Active on startup')+'</th>\n' +
+            '                <th>'+gettext('Show in sidebar')+'</th>\n' +
             '                <th>'+gettext('Title')+'</th>\n' +
 			'                <th>'+gettext('Type')+'</th>\n' +
             '                <th>'+gettext('From project')+'</th>\n' +
@@ -119,6 +120,7 @@ _.extend(g3wadmin.widget, {
         $.each(res['results'], function(k, v){
             constraint_res[v['pk']] = v;
             var show_on_start_client_checked = (v['show_on_start_client']) ? "checked=\"checked\"" : "";
+            var show_in_sidebar = (v['show_in_sidebar']) ? "checked=\"checked\"" : "";
             var checked = ($.inArray(parseInt(layer_pk), v['layers']) != -1) ? "checked=\"checked\"" : "";
             var editDisplay = v['rule_count'] > 0 ? 'none': 'display';
             var from_project = v['project'] ? "<span class=\"fa fa-check-circle\" style=\"color: #ffa500\"></span>" : "";
@@ -136,6 +138,9 @@ _.extend(g3wadmin.widget, {
             '                <td><input type="checkbox" name="show_on_start_client" value="1" '+show_on_start_client_checked+' ' +
                             'data-widget-type="showOnStartClient" ' +
                             'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + ADMIN_URL_PATH +'qplotly/showonstartclient/'+v['pk']+'/" /></td>\n' +
+            '                <td><input type="checkbox" name="show_in_sidebar" value="1" '+show_in_sidebar+' ' +
+                            'data-widget-type="showOnStartClient" ' +
+                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + ADMIN_URL_PATH +'qplotly/showinsidebar/'+v['pk']+'/" /></td>\n' +
             '                <td>'+v['title']+'</td>\n' +
 			'                <td>'+v['type']+'</td>\n' +
             '                <td>'+from_project+'</td>\n' +

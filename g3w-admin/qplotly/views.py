@@ -46,23 +46,31 @@ class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
         else:
             self.widget.layers.remove(self.layer)
 
-class QplotlyWidgetShowOnStartClientView(View):
+class QplotlyWidgetChangeActionView(View):
     """
     Set on true or false show_on_start_client model property.
     """
+
+    _actions_map = {
+        'showonstartclient': 'show_on_start_client',
+        'showinsidebar': 'show_in_sidebar',
+    }
+
     def get(self, *args, **kwargs):
 
         self.widget = get_object_or_404(QplotlyWidget, pk=kwargs['pk'])
         try:
-            self.show_on_start_client(show=(not 'show' in self.request.GET))
+
+            self.change_status(action=kwargs['action'], show=(not 'show' in self.request.GET))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'errors_form': e.message})
 
-    def show_on_start_client(self, show=True):
+    def change_status(self, action='show_on_start_client',show=True):
 
-        self.widget.show_on_start_client = show
+        setattr(self.widget, self._actions_map[action], show)
         self.widget.save()
+
 
 
 

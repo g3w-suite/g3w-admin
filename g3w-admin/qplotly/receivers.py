@@ -160,7 +160,8 @@ def set_initconfig_value(sender, **kwargs):
             'qgs_layer_id': qgs_layer_id,
             'selected_features_only': qplotly_widget.selected_features_only,
             'visible_features_only': qplotly_widget.visible_features_only,
-            'show': qplotly_widget.show_on_start_client,
+            'active_on_startup': qplotly_widget.show_on_start_client,
+            'show_in_sidebar': qplotly_widget.show_in_sidebar,
             'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
             'type': settings.plot_type,
 
