@@ -364,7 +364,7 @@
 
             // charts relations
             if (
-              undefined !== rel ||                                 // relation data is passed by query result service
+              undefined !== plot._rel ||                                 // relation data is passed by query result service
               this.config.plots.filter(p => p.show).length <= 1 || // single plot
               !this.config.plots.some(p => {                       // find if is a plots that belong to plot father
                 if (p.show && p.id !== plot.id && Object.values(p._rel?.data ?? {}).some(d => d.some(d => { if (d.id === plot.id) { data = d.data; return true; } }))) {
@@ -373,7 +373,7 @@
                 }
               })
             ) {
-              [undefined]
+              (layerIds ? [] : [undefined])
                 .concat(this.state?.rel?.relations.filter(r => plot.qgs_layer_id === r.referencingLayer).map(r => `${r.id}|${this.state.rel.fid}`) ?? [])
                 .forEach(r => {
                   c_cache.push(plot);
@@ -534,7 +534,7 @@
         service: this,
       });
 
-      this.#CONTENT.internalComponent = new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
+      this.#CONTENT.internalComponent = new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
           ids,
           rel,
           service: this
