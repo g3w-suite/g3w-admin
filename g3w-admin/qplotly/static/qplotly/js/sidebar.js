@@ -1,28 +1,25 @@
 const { GUI }                         = g3wsdk.gui;
-const { getUniqueDomId }              = g3wsdk.core.utils;
-const { resizeMixin }                 = g3wsdk.gui.vue.Mixins;
+const { debounce, getUniqueDomId }    = g3wsdk.core.utils;
 const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
-
-const cache = {};
 
 export default ({
 
   // language=html
   template: /* html */ `
-<div
-  v-disabled = "service.state.loading"
-  :id        = "id"
-  class      = "skin-color"
-  :style     = "{
-    overflowY: overflowY,
-    height: rel?.height ? rel.height + 'px' : '100%',
-  }"
->
+    <div
+      v-disabled = "service.state.loading"
+      :id        = "id"
+      class      = "skin-color"
+      :style     = "{
+        overflowY: overflowY,
+        height: rel?.height ? rel.height + 'px' : '100%',
+      }"
+    >
 
     <bar-loader
       v-if     = "undefined !== ids"
       :loading = "service.state.loading"
-    ></bar-loader>
+    />
 
     <div
       v-if   = "show"
@@ -47,16 +44,15 @@ export default ({
               <div style="margin:auto">{{ chart.title || '' }}</div>
 
               <div
-                v-if  = "getTools(chart).geolayer.show || getTools(chart).selection.active"
+                v-if  = "!rel && (chart.tools.geolayer.show || chart.tools.selection.active)"
                 class = "plot-tools"
               >
-
                 <span
-                  v-if               = "getTools(chart).selection.active"
+                  v-if               = "chart.tools.selection.active"
                   style              = "margin: auto"
                   class              = "action-button skin-tooltip-bottom"
                   @click.stop        = "toggleFilter(chart.layerId)"
-                  :class             = "{ 'toggled': getTools(chart).filter.active }"
+                  :class             = "{ 'toggled': chart.tools.filter.active }"
                   data-placement     = "bottom"
                   data-toggle        = "tooltip"
                   v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
@@ -68,10 +64,10 @@ export default ({
                 </span>
 
                 <span
-                  v-if               = "getTools(chart).geolayer.show"
+                  v-if               = "chart.tools.geolayer.show"
                   style              = "margin: auto"
                   class              = "action-button skin-tooltip-bottom"
-                  :class             = "{ 'toggled': getTools(chart).geolayer.active }"
+                  :class             = "{ 'toggled': chart.tools.geolayer.active }"
                   @click.stop        = "toggleBBox(chart, index)"
                   data-placement     = "bottom"
                   data-toggle        = "tooltip"
@@ -118,8 +114,6 @@ export default ({
 
   name: "qplotly",
 
-  mixins: [resizeMixin],
-
   props: ['ids', 'rel', 'service'],
 
   data() {
@@ -134,23 +128,6 @@ export default ({
   },
 
   methods: {
-
-    getTools(chart) {
-      if (cache[chart]) return cache[chart];
-      cache[chart] = (this.rel ? undefined : chart.tools) || {
-        filter: {
-          active: false,
-        },
-        selection: {
-          active: false,
-        },
-        geolayer: {
-          show: false,
-          active: false,
-        },
-      };
-      return cache[chart];
-    },
 
     /**
      * toggle filter token on project layer
@@ -175,10 +152,10 @@ export default ({
      * @returns { Promise<void> }
      */
     async toggleBBox(chart, index) {
-      this.getTools(chart).geolayer.active = !this.getTools(chart).geolayer.active;
+      chart.tools.geolayer.active = !chart.tools.geolayer.active;
       this.service.setLoading(true);
       // call set Charts based on change map tool toggled
-      this.setCharts(await this.service.updateMapBBox(this.order[index], this.getTools(chart).geolayer.active, this.charts));
+      this.setCharts(await this.service.updateMapBBox(this.order[index], chart.tools.geolayer.active, this.charts));
     },
 
     /**
@@ -244,9 +221,12 @@ export default ({
 
       (
         await Promise.allSettled(
-          this.order.flatMap(id => this.charts[id].map(() => {
+          this.order.flatMap(id => this.charts[id].map(async () => {
             this.setHeight(id);
-            return new Promise(resolve => Plotly.Plots.resize(this.$refs[`${id}`][0]).then(() => resolve(id)));
+            if (this.$refs[`${id}`][0]) {
+              await Plotly.Plots.resize(this.$refs[`${id}`][0]);
+            }
+            return id;
           }))
         )
       ).forEach(r => this.charts[r.value].forEach(({ state }) => state.loading = false ));
@@ -279,12 +259,13 @@ export default ({
                 <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.layout?.title ? ' - ' + chart.layout.title : ''} </h4>
                 <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
               </div>`;
+          } else {
+            state.loading = !this.rel;
+            await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , chart.layout, this.plots[0].config);
           }
-          state.loading = !this.rel;
-          await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , chart.layout, this.plots[0].config);
           return plotId;
         })
-      ))).forEach(({ value }) => this.charts?.[value]?.forEach(chart => { chart.state.loading = false; }));
+      ))).forEach(({ value }) => this.charts[value].forEach(chart => { chart.state.loading = false; }));
 
       this.service.setLoading(false);
     },
@@ -361,12 +342,10 @@ export default ({
 
   },
 
-  beforeCreate() {
-    this.delayType = 'debounce';
-  },
-
   created() {
     this.charts = {};
+    this.resize = debounce(this.resize.bind(this));
+    GUI.on('resize', this.resize);
   },
 
   /**
@@ -402,6 +381,11 @@ export default ({
     //set mounted true
     this._mounted = true;
 
+    await this.$nextTick();
+
+    this.resize();
+
+    GUI.on('resize', this.resize);
   },
 
   /**
@@ -415,7 +399,8 @@ export default ({
     }
     this.service.clearLoadedPlots();
     this.charts = null;
-    this.order = null ;
+    this.order = null;
+    GUI.off('resize', this.resize);
   },
 
 });
@@ -471,6 +456,10 @@ document.head.insertAdjacentHTML(
   background-color: #FFF;
   padding-left: 3px;
   font-weight: bold;
+}
+
+.plot_divs_content .plot-container.plotly + * {
+  display: none !important;
 }
 </style>`,
 );

@@ -61,9 +61,7 @@
 
       VM.$watch(() => this.state.geolayer, b => this.state.tools.map.show = b);
 
-      //remove all
-      this.clear           = this.unload.bind();
-      //query result charts
+     //query result charts
       this.showContainer   = this.showContainer.bind(this);
       this.clearContainers = this.clearContainers.bind(this);
       //end query results charts
@@ -329,7 +327,7 @@
       }
 
       const order   = (layerIds ? plots : this.config.plots.filter(({ show }) => show)).map(p => p.id); // order of plot ids
-      const charts  = {};
+      const charts  = {}; // Object containing charts data
       const c_cache = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
       const r_cache = new Set(); // cache already loaded relationIds
 
@@ -373,7 +371,7 @@
                 }
               })
             ) {
-              [undefined]
+              (layerIds ? [] : [undefined])
                 .concat(this.state?.rel?.relations.filter(r => plot.qgs_layer_id === r.referencingLayer).map(r => `${r.id}|${this.state.rel.fid}`) ?? [])
                 .forEach(r => {
                   c_cache.push(plot);
@@ -419,7 +417,7 @@
 
         this.#setActiveFilters(plot);
         
-        /** @FIXME add description */
+        /** In not yer gat data from a plot id, set empty array */
         if (!charts[plot.id]) {
           charts[plot.id] = [];
         }
@@ -460,8 +458,8 @@
                   p.data              = r.data;
                   p.plot.layout.title = `${this.state._relNames[id]} ${p.label}`;
                   // get father filter plots
-                  if (plot.filters.length) {
-                    p.filters.push(`relation.${plot.filters[0]}`);
+                  if (plot.filters.length && !(`relation.${plot.filters[0]}` in plot.filters)) {
+                    plot.filters.push(`relation.${plot.filters[0]}`);
                   }
                   this.#setActiveFilters(plot);
                   /** @FIXME add description */
@@ -534,7 +532,7 @@
         service: this,
       });
 
-      this.#CONTENT.internalComponent = new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
+      this.#CONTENT.internalComponent = new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
           ids,
           rel,
           service: this
@@ -647,6 +645,7 @@
 
     // loop through order plotId
     async updateMapBBox(id, active, charts) {
+      const order   = this.config.plots.flatMap(p => p.show ? p.id : []);
       const plotIds = [{ id, active }];
       const plot    = this.config.plots.find(p => p.id === id);
 
@@ -659,7 +658,7 @@
         });
 
       // set bbox parameter to force
-      this.state.bbox = MAP.getMapBBOX().toString()
+      this.state.bbox = MAP.getMapBBOX().toString();
 
       // handle moveend map event
 
@@ -672,10 +671,9 @@
       }
 
       this.clearData(plot);
-
       // global map tool toggled status base on plot belong to geolayer show on charts
       // return true or false based on map active geo tools
-      this.state.tools.map.toggled = active && Object.values(this.#CONTENT?.order || {}).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
+      this.state.tools.map.toggled = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
 
       return await this.getCharts({ plotIds: plotIds.map(({ id }) => id) });
     }
@@ -695,7 +693,7 @@
     clearContainers(container) {
       this.state.containers = this.state.containers.filter(q => {
         if (!container || (container.selector === q.container.selector)) {
-          document.querySelectorAll(q.component.$el).forEach(el => el.remove());
+          q.component.$el.remove();
           q.component.$destroy();
           return false;
         }
@@ -788,12 +786,13 @@
           charts: {},
         });
       }
+      GUI.emit('resize');
     }
 
     /**
-    * @deprecated v4.0.0 Is was used when change project without reload page
-    */
-    unload() {
+     * Remove all
+     */
+    clear() {
       GUI.removeComponent('qplotly', 'sidebar', { position: 1 });
       GUI.closeContent();
 
