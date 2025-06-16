@@ -2,7 +2,8 @@
 
   const BASE_URL = `${initConfig.group.plugins.qplotly.baseUrl}qplotly/js`;
 
-  const { debounce, XHR }               = g3wsdk.core.utils;
+  const { G3W_FID }                     = g3wsdk.constant;
+  const { debounce, throttle, XHR }     = g3wsdk.core.utils;
   const { GUI }                         = g3wsdk.gui;
   const { ApplicationState }            = g3wsdk.core;
   const { Plugin }                      = g3wsdk.core.plugin;
@@ -130,6 +131,37 @@
         sidebar.onbefore('setOpen', b => this.showChart(b));
 
         GUI.on('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
+
+        // show relations (plot)
+        QUERY.onafter('addActionsForLayers', (actions, layers) => {
+          layers.forEach((layer, index) => {
+            const relations      = ApplicationState.project.getRelations().filter(r => r.referencedLayer === layer.id);
+            const charts         = relations.filter(r => 'MANY' === r.type).map(r => this.#layer_ids.find(id => id === r.referencingLayer)).filter(Boolean);
+            const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
+            if (charts.length) {
+              actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
+                id:       'show-plots-relations',
+                opened:   true,
+                class:    GUI.getFontClass('chart'),
+                state:    Vue.observable({ toggled: layer.features.reduce((a, _ , i ) => { a[i] = null; return a; }, {}) }),
+                hint:     'sdk.mapcontrols.query.actions.relations_charts.hint',
+                cbk: throttle((layer, feature, action, index, container) => {
+                  action.state.toggled[index] = !action.state.toggled[index];
+                  if (action.state.toggled[index]) {
+                    QUERY.emit('show-chart', charts, container, {
+                      relations,
+                      fid:       feature.attributes[G3W_FID],
+                      height:    400
+                    });
+                  } else {
+                    QUERY.hideChart(container);
+                  }
+                }),
+              });
+            }
+          });
+        });
+
         this.setReady(true);
 
       });
