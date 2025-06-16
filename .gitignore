@@ -15,6 +15,10 @@ docs/locales/**/*.mo
 # PyCharms project file
 /.idea/
 
+# vscode project file
+/.vscode/
+/venv/
+
 # temp_uploads for jqupload
 /temp_uploads/
 
