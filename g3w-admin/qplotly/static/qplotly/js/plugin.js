@@ -695,7 +695,7 @@
     clearContainers(container) {
       this.state.containers = this.state.containers.filter(q => {
         if (!container || (container.selector === q.container.selector)) {
-          document.querySelectorAll(container.selector).forEach(el => el.remove());
+          q.component.$el.remove();
           q.component.$destroy();
           return false;
         }
