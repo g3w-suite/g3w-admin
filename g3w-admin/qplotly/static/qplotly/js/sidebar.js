@@ -135,19 +135,20 @@ export default ({
   methods: {
 
     getTools(chart) {
-      if (cache[chart]) return cache[chart];
-      cache[chart] = (this.rel ? undefined : chart.tools) || {
-        filter: {
-          active: false,
-        },
-        selection: {
-          active: false,
-        },
-        geolayer: {
-          show: false,
-          active: false,
-        },
-      };
+      if (!cache[chart]) {
+        cache[chart] = (this.rel ? undefined : chart.tools) || {
+          filter: {
+            active: false,
+          },
+          selection: {
+            active: false,
+          },
+          geolayer: {
+            show: false,
+            active: false,
+          },
+        };
+      }
       return cache[chart];
     },
 
@@ -243,9 +244,12 @@ export default ({
 
       (
         await Promise.allSettled(
-          this.order.flatMap(id => this.charts[id].map(() => {
+          this.order.flatMap(id => this.charts[id].map(async () => {
             this.setHeight(id);
-            return new Promise(resolve => Plotly.Plots.resize(this.$refs[`${id}`][0]).then(() => resolve(id)));
+            if (this.$refs[`${id}`][0]) {
+              await Plotly.Plots.resize(this.$refs[`${id}`][0]);
+            }
+            return id;
           }))
         )
       ).forEach(r => this.charts[r.value].forEach(({ state }) => state.loading = false ));
