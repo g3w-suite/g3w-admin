@@ -364,7 +364,7 @@
 
             // charts relations
             if (
-              undefined !== plot._rel ||                                 // relation data is passed by query result service
+              undefined !== rel ||                                 // relation data is passed by query result service
               this.config.plots.filter(p => p.show).length <= 1 || // single plot
               !this.config.plots.some(p => {                       // find if is a plots that belong to plot father
                 if (p.show && p.id !== plot.id && Object.values(p._rel?.data ?? {}).some(d => d.some(d => { if (d.id === plot.id) { data = d.data; return true; } }))) {
