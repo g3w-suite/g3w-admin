@@ -170,9 +170,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertFalse(plugin_plot['active_on_startup'])
         self.assertTrue(plugin_plot['show_in_sidebar'])
 
-        self.assertEqual(plugin_plot['plot']['type'], 'histogram')
-        self.assertTrue('layout' in plugin_plot['plot'])
-        self.assertEqual(plugin_plot['plot']['layout']['title'], {'text': ''})
+        #self.assertEqual(plugin_plot['plot']['type'], 'histogram')
+        #self.assertTrue('layout' in plugin_plot['plot'])
+        #self.assertEqual(plugin_plot['plot']['layout']['title'], {'text': ''})
 
         # Test for users wit not permisions
         # ---------------------------------
@@ -612,6 +612,38 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         widget.delete()
 
+    def test_trace_config_api(self):
+        """/qplotly/api/trace-config/<int:pk> API"""
+
+        qplotlywidget_id = QplotlyWidget.objects.all()[0].pk
+        qplotlywidget_3857_id = QplotlyWidget.objects.all()[1].pk
+
+        response = self._testApiCall('qplotly-trace-plot-config-api', args=[
+            qplotlywidget_id
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_config_data = json.loads(response.content)['data']
+
+        print(f'{DATASOURCE_PATH}/trace_config.json')
+
+        with open(f'{DATASOURCE_PATH}trace_config.json', 'r') as f:
+            expected = json.load(f)
+
+        self.assertEqual(trace_config_data, expected['data'])
+
+        response = self._testApiCall('qplotly-trace-plot-config-api', args=[
+            qplotlywidget_3857_id
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_config_data = json.loads(response.content)['data']
+
+        with open(f'{DATASOURCE_PATH}trace_config_3857.json', 'r') as f:
+            expected = json.load(f)
+
+        self.assertEqual(trace_config_data, expected['data'])
+    
     def test_get_qplotlywidgets4layer(self):
         """Test for homonimous util function"""
 

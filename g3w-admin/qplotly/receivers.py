@@ -163,19 +163,7 @@ def set_initconfig_value(sender, **kwargs):
             'active_on_startup': qplotly_widget.show_on_start_client,
             'show_in_sidebar': qplotly_widget.show_in_sidebar,
             'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
-            'type': settings.plot_type,
-
-            # TODO: reduce nesting (unnecessary "plot" property)
-            'plot': {
-                'type': settings.plot_type,
-                'layout': layout,
-                'config': {
-                    'scrollZoom': True,
-                    'editable': True,
-                    'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
-                }
-            }
-
+            'type': settings.plot_type
         })
 
     # no plots no 'qplotly' section
