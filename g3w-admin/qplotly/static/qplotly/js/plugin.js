@@ -324,7 +324,7 @@
         })
       }
 
-      const order   = (layerIds ? plots : this.config.plots.filter(({ show }) => show)).map(p => p.id); // order of plot ids
+      const order   = (layerIds ? plots : this.config.plots.filter(({ show, show_in_sidebar }) => show && show_in_sidebar)).map(p => p.id); // order of plot ids
       const charts  = {}; // Object containing charts data
       const c_cache = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
       const r_cache = new Set(); // cache already loaded relationIds
