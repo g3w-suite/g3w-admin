@@ -350,7 +350,7 @@ export default ({
      * 
      * @returns { Promise<void> }
      */
-    async resize(check){
+    async resize() {
       if (this._mounted) {
         await this.resizePlots();
       }
@@ -472,7 +472,7 @@ export default ({
     }
 
     this.service.off('change-charts', this.setCharts);
-    this.service.off('toggle-chart', this.toggle);
+    this.service.off('toggle-chart',  this.toggle);
 
     if (this.rel) {
       GUI.off('pop-content', this.resize);
@@ -487,20 +487,21 @@ export default ({
       this.service.state._moveend.key     = null;
       this.service.state._moveend.plotIds = [];
     }
+    GUI.off('resize', this.resize);
 
     this.service.config.plots
       .filter(p => p.show)
       .forEach(p => {
         this.service.clearData(p);
         p.tools.geolayer.active =  p.tools.geolayer.show ? false : p.tools.geolayer.active;
-        p.filters = [];
+        p.filters               = [];
       });
 
+    this._mounted                 = false;
     this.service.state.showCharts = false;
-
-    this.charts = null;
-    this.order = null;
-    GUI.off('resize', this.resize);
+    this.charts                   = null;
+    this.order                    = null;
+    
   },
 
 });
