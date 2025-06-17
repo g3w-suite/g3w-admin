@@ -158,12 +158,12 @@ export default ({
       const active = chart.tools.geolayer.active;
       const charts = this.charts;
 
-      const order   = this.service.config.plots.flatMap(p => p.show ? p.id : []);
+      const order   = this.service.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []);
       const plotIds = [{ id, active }];
       const plot    = this.service.config.plots.find(p => p.id === id);
 
       this.service.config.plots
-        .filter(p => p.show && p.id !== id && p.qgs_layer_id === plot.qgs_layer_id)
+        .filter(p => p.show && p.show_in_sidebar && p.id !== id && p.qgs_layer_id === plot.qgs_layer_id)
         .forEach(p => {
           p.tools.geolayer.active = active;
           this.service.clearData(p);
@@ -501,7 +501,6 @@ export default ({
     this.service.state.showCharts = false;
     this.charts                   = null;
     this.order                    = null;
-    
   },
 
 });
