@@ -8,15 +8,14 @@
   const { ApplicationState }            = g3wsdk.core;
   const { Plugin }                      = g3wsdk.core.plugin;
   const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
-  const Component                       = g3wsdk.gui.vue.Component;
   const MAP                             = GUI.getService('map');
   const QUERY                           = GUI.getService('queryresults');
 
   new class extends Plugin {
 
-    #CONTENT;
     #SIDEBAR;
     #LAYERS = [];
+    #CHARTS = [];
 
     /**
      * @fires   service~ready
@@ -51,11 +50,7 @@
           key:     null,
           plotIds: [],
         },
-        containers: [], // charts container coming from query results
       });
-
-      this.showContainer   = this.showContainer.bind(this);
-      this.clearContainers = this.clearContainers.bind(this);
 
       //render charts
       this.changeCharts    = debounce(this.changeCharts.bind(this));
@@ -90,8 +85,13 @@
       console.log(this.config.plots)
 
       QUERY.addLayersPlotIds(Array.from(new Set(this.#LAYERS.map(l => l.getId()))));
-      QUERY.on('show-chart', this.showContainer);
-      QUERY.on('hide-chart', this.clearContainers);
+
+      QUERY.on('show-chart', (ids, container, rel) => {
+        this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot loaded by query service
+        this.showChart(true, ids, container, rel);
+      });
+
+      QUERY.on('hide-chart', container => { this.showChart(false, undefined, container); });
 
       // check if some some plot has visible geolayer 
       this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
@@ -525,80 +525,28 @@
      * @param { boolean } bool true = show chart
      * @param { Array } ids    passed by query result services
      * @param container        DOM element - passed by query result service
-     * @param rel          Passed by query result service
+     * @param rel              Passed by query result service
      * 
      * @returns { Promise<unknown> }
      * 
      * @fires change-charts
      */
     async showChart(bool, ids, container, rel) {
-      /** @FIXME add description */
-      if (!bool && container) {
-        this.clearContainers(container);
-      }
-
-      /** @FIXME add description */
-      if (!bool) {
-        return;
-      }
-
-      // internal g3w Component
-
-      this.#CONTENT = new Component({
-        title: "qplotly",
-        visible: true,
-        ids,
-        rel,
-        service: this,
-      });
-
-      this.#CONTENT.internalComponent = new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
+      if (bool) {
+        this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
           ids,
           rel,
-          service: this
+          service: this,
+          container
+        }}).$mount());
+      } else {
+        const i = this.#CHARTS.findIndex(chart => container?.selector === chart.container.selector);
+        if (1!== i) {
+          this.#CHARTS[i].$destroy();                                       // remove container
+          this.#CHARTS.splice(i, 1);
+          this.config.plots.forEach(p => p.loaded && this.clearData(plot)); // clear plot data
         }
-      });
-
-      // need to be async
-      setTimeout(() => {
-
-        // when not called from Query Result Service
-        if (container) {
-          this.#CONTENT.internalComponent.$once('hook:mounted', async function() { container.append(this.$el); });
-          this.#CONTENT.internalComponent.$mount();
-          this.state.containers.find(q => container.selector === q.container.selector).component = this.#CONTENT.internalComponent;
-          return;
-        }
-
-        // show chart in sidebar
-        GUI.showContent({
-          content: this.#CONTENT,
-          title: 'plugins.qplotly.title',
-          headertools: [
-            Vue.extend({
-              data: () => ({ service: this }),
-              template: /* html */ `
-                <div
-                  :hidden = "!service.state.geolayer && !service.state.rel"
-                  class   = "qplotly-tools"
-                  style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
-                >
-                  <span
-                    class              = "skin-color action-button skin-tooltip-bottom"
-                    v-disabled         = "service.state.loading"
-                    data-placement     = "bottom"
-                    data-toggle        = "tooltip"
-                    style              = "font-weight: bold; margin: 3px"
-                    :class             = "[ $fa('map'), service.state.bbox_filter ? 'toggled' : '']"
-                    @click.stop        = "service.updateCharts()"
-                    v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
-                  ></span>
-                </div>`,
-                }),
-              ],
-            });
-
-        });
+      }
     }
 
     /**
@@ -683,31 +631,6 @@
       this.state.bbox_filter = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
 
       return await this.getCharts({ plotIds: plotIds.map(({ id }) => id) });
-    }
-
-    // called from 'show-chart' event query result service
-    showContainer(ids, container, rel) {
-      const found = this.state.containers.find(q => container.selector === q.container.selector);
-      if (!found) {
-        this.state.containers.push({ container, component: null });
-      }
-      // clear already plot loaded by query service
-      this.config.plots.forEach(p => p.loaded && this.clearData(p));
-      this.showChart(!found, ids, container, rel);
-    }
-
-    // clear chart containers
-    clearContainers(container) {
-      this.state.containers = this.state.containers.filter(q => {
-        if (!container || (container.selector === q.container.selector)) {
-          q.component.$el.remove();
-          q.component.$destroy();
-          return false;
-        }
-        return true;
-      });
-      // clear already plot loaded by query service
-      this.config.plots.forEach(p => p.loaded && this.clearData(plot));
     }
 
     async togglePlot(id) {

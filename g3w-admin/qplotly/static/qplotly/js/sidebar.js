@@ -4,7 +4,6 @@ const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
 
 export default ({
 
-  // language=html
   template: /* html */ `
     <div
       v-disabled = "service.state.loading"
@@ -114,7 +113,7 @@ export default ({
 
   name: "qplotly",
 
-  props: ['ids', 'rel', 'service'],
+  props: ['ids', 'rel', 'service', 'container'],
 
   data() {
     return {
@@ -362,6 +361,10 @@ export default ({
    */
   async mounted() {
 
+    if (this.$props.container) {
+      this.$props.container.append(this.$el);
+    }
+
     //set mounted false
     this._mounted = false;
 
@@ -393,12 +396,45 @@ export default ({
     this.resize();
 
     GUI.on('resize', this.resize);
+
+    // show chart in sidebar
+    if (!this.$props.container) {
+      GUI.showContent({
+        content: this.$el,
+        title: 'plugins.qplotly.title',
+        headertools: [
+          Vue.extend({
+            data: () => ({ service: this }),
+            template: /* html */ `
+              <div
+                :hidden = "!service.state.geolayer && !service.state.rel"
+                class   = "qplotly-tools"
+                style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
+              >
+                <span
+                  class              = "skin-color action-button skin-tooltip-bottom"
+                  v-disabled         = "service.state.loading"
+                  data-placement     = "bottom"
+                  data-toggle        = "tooltip"
+                  style              = "font-weight: bold; margin: 3px"
+                  :class             = "[ $fa('map'), service.state.bbox_filter ? 'toggled' : '']"
+                  @click.stop        = "service.updateCharts()"
+                  v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
+                ></span>
+              </div>`,
+          }),
+        ],
+      });
+    }
   },
 
   /**
    * un listen all events
    */
   beforeDestroy() {
+    if (this.$props.container) {
+      this.$el.remove();
+    }
     this.service.off('change-charts', this.setCharts);
     this.service.off('toggle-chart', this.toggle);
     if (this.rel) {
