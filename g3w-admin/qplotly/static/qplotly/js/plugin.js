@@ -382,7 +382,7 @@
                           filtertoken: ApplicationState.tokens.filtertoken || undefined,
                           // withrelations parameter (check if plot has relation child → default: undefined)
                           withrelations: plot._rel?.relations.filter(r => {
-                            if (this.config.plots.some(p => p.show && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
+                            if (this.config.plots.some(p => p.show && p.show_in_sidebar && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
                               r_cache.add(r.id);
                               plot.loaded = false;
                               return true;
