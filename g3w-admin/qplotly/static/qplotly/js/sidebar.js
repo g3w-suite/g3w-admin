@@ -206,8 +206,8 @@ export default ({
      */
     async toggle({
       plotId,
-      charts={},
-      order=[],
+      charts = {},
+      order  = [],
       action,
     } = {}) {
 
