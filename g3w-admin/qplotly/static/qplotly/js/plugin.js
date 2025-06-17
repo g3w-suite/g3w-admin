@@ -16,7 +16,7 @@
 
     #CONTENT;
     #SIDEBAR;
-    #layer_ids = new Set();
+    #LAYERS = [];
 
     /**
      * @fires   service~ready
@@ -38,13 +38,12 @@
 
       VM.$watch(() => ApplicationState.language, i18n);
 
-      // State of plugin (Vue.observable)
+      // state of plugin
       this.state = Vue.observable({
         loading:    false, // loading purpose
         showCharts: false, // show/hide charts
         geolayer:   false, // is geolayer
         bbox_filter: false,
-        bbox_btn: false,
         bbox: undefined, // custom request param
         rel:  null,      // relation data
         _relNames: {},
@@ -52,16 +51,11 @@
           key:     null,
           plotIds: [],
         },
-        _close:     undefined, // close component event
         containers: [], // charts container coming from query results
       });
 
-      VM.$watch(() => this.state.geolayer, b => this.state.bbox_btn = b);
-
-     //query result charts
       this.showContainer   = this.showContainer.bind(this);
       this.clearContainers = this.clearContainers.bind(this);
-      //end query results charts
 
       //render charts
       this.changeCharts    = debounce(this.changeCharts.bind(this));
@@ -70,17 +64,20 @@
       this.config.plots.forEach(plot => {
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
 
-        this.#layer_ids.add(plot.qgs_layer_id);
+        this.#LAYERS.push(layer);
 
         plot.show = !!plot.show_on_start;
 
-        plot.crs   = layer.isGeoLayer() ? layer.getCrs() : undefined;            // when layer has geometry
         plot.tools = {
           filter:    layer.getFilter(),                                          // reactive layer filter attribute:    { filter:    { active: <Boolean> } }
           selection: layer.getSelection(),                                       // reactive layer selection attribute: { selection: { active: <Boolean> } }
           geolayer:  Vue.observable({ show: layer.isGeoLayer(), active: false }) // if is geolayer show map tool
         };
-        plot._rel  = layer.isFather() ? { data: null, relations: layer.getRelations().getArray().filter(r => r.getFather() === plot.qgs_layer_id).map(r => ({ id: r.getId(), relationLayer: r.getChild() })) } : null; // set relation to null
+
+        plot._rel  = layer.isFather() ? {
+          data: null,
+          relations: layer.getRelations().getArray().filter(r => r.getFather() === plot.qgs_layer_id).map(r => ({ id: r.getId(), relationLayer: r.getChild() }))
+        } : null;
 
         // check if a layer has child (relation) → so add withrerlations attribute to plot
         if (layer.isFather()) {
@@ -92,15 +89,11 @@
 
       console.log(this.config.plots)
 
-      QUERY.addLayersPlotIds([...this.#layer_ids]);
+      QUERY.addLayersPlotIds(Array.from(new Set(this.#LAYERS.map(l => l.getId()))));
       QUERY.on('show-chart', this.showContainer);
       QUERY.on('hide-chart', this.clearContainers);
 
-      // get close component event key when component (right element where result are show is closed)
-      this.state._close = QUERY.onafter('closeComponent', this.clearContainers);
-
-      // Set geo-layer tools true or false if some plot chart has geolayer show
-      // if no show plot have geolayer tool to show (geolayer) hide charts geolayer tool
+      // check if some some plot has visible geolayer 
       this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
 
       // setup gui
@@ -126,7 +119,12 @@
             </ul>`,
         }, this.config.sidebar);
 
-        sidebar.onbefore('setOpen', b => this.showChart(b));
+        sidebar.onbefore('setOpen', b => {
+          this.showChart(b);
+          if (!b) {
+            GUI.closeContent();
+          }
+        });
 
         GUI.on('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
 
@@ -183,22 +181,17 @@
         return;
       }
 
+      this.state.bbox = (this.state._moveend.plotIds.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
+
       // in case of a filter is change on showed chart it redraw the chart
 
-      const reload   = [];                                     // array of plot to reload
-      const has_move = this.state._moveend.plotIds.length > 0; // check if there is a plot that need to update data when move map
-
-      // there is a plot → add plot to plot reaload
-      if (has_move) {
-        this.state._moveend.plotIds.forEach(plotId => reload.push(Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] })));
-      }
-
-      this.state.bbox = (has_move || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
-
-      // whether filtertoken is added or removed from layer
-      if (layerId) {
-        this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId).forEach(p => reload.push(p));
-      }
+      // plots to reload
+      const reload   = [
+        // whether there is a bbox filter
+        ...(this.state._moveend.plotIds.length ? this.state._moveend.plotIds.map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] })) : []),
+        // whether filtertoken is added or removed from layer
+        ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
+      ];
 
       // redraw the chart
       try {
@@ -577,29 +570,16 @@
           return;
         }
 
-        // when called by sidebar item (once chartsReady event resolve promise)
-
-        this.state.bbox_btn = this.state.geolayer && !this.state.rel;
-
-        this.CONTENT = this.#CONTENT;
-
         // show chart in sidebar
         GUI.showContent({
           content: this.#CONTENT,
           title: 'plugins.qplotly.title',
-          style: {
-            title: {
-              fontSize: '1.3em',
-            }
-          },
-          closable: true,
-          // set header action tools (eg. map filter)
           headertools: [
             Vue.extend({
               data: () => ({ service: this }),
               template: /* html */ `
                 <div
-                  :hidden = "!service.state.bbox_btn"
+                  :hidden = "!service.state.geolayer && !service.state.rel"
                   class   = "qplotly-tools"
                   style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
                 >
@@ -814,29 +794,6 @@
         });
       }
       GUI.emit('resize');
-    }
-
-    /**
-     * Remove all
-     */
-    clear() {
-      GUI.removeComponent('qplotly', 'sidebar', { position: 1 });
-      GUI.closeContent();
-
-      // unlisten layer change filter to reload charts
-      this.#layer_ids.forEach(id => {
-        const layer = CatalogLayersStoresRegistry.getLayerById(id);
-        if (layer) {
-          layer.off('filtertokenchange', this.changeCharts)
-        }
-      });
-
-      this.state.containers = [];
-      QUERY.removeListener('show-charts', this.showContainer);
-      QUERY.un('closeComponent', this.state._close);
-      this.state._close = null;
-      this.#layer_ids.clear();
-      this.emit('clear');
     }
 
     /**

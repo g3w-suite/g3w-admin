@@ -83,7 +83,7 @@ export default ({
 
             </div>
 
-            <ul v-if="(chart.filters || []).length > 0" class="skin-color plot-filters">
+            <ul v-if="(chart.filters || []).length > 0" class="plot-filters">
               <li
                 v-for      = "filter in chart.filters"
                 :key       = "filter"
@@ -458,11 +458,9 @@ document.head.insertAdjacentHTML(
   border-radius: 3px;
 }
 .plot_divs_content .plot-filters {
-  margin-top: 5px;
-  list-style-type: none;
-  background-color: #FFF;
-  padding-left: 3px;
-  font-weight: bold;
+  color: initial;
+  list-style-type: ' ℹ️ ';
+  padding: 5px 0 0 25px;
 }
 
 .plot_divs_content .plot-container.plotly + * {

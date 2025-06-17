@@ -10,13 +10,13 @@ export default {
     filter_chart: "Filtra i grafici sulla base degli elementi selezionati"
   },
   filters: {
-    in_bbox: "I dati mostrati nel grafico sono filtrati in base alle geometrie visibili sulla mappa",
-    filtertoken: "I dati mostrati nel grafico sono filtrati in base alle geometrie/records selezionati",
-    in_bbox_filtertoken: "I dati mostrati nel grafico sono filtrati in base alle geometrie/records selezionati e visibili sulla mappa",
+    in_bbox: "Dati filtrati in base alle geometrie visibili sulla mappa",
+    filtertoken: "Dati filtrati in base alle geometrie/records selezionati",
+    in_bbox_filtertoken: "Dati filtrati in base alle geometrie/records selezionati e visibili sulla mappa",
     relation: {
-      in_bbox: "I dati mostrati nel grafico sono filtrati in base alle geometrie di riferimento (genitori) visibili sulla mappa",
-      filtertoken: "I dati mostrati nel grafico sono filtrati in base alle geometrie/records selezionati di riferimento (genitori)",
-      in_bbox_filtertoken: "I dati mostrati nel grafico sono filtrati in base alle geometrie/records di riferimento (genitori) selezionati e visibili sulla mappa"
+      in_bbox: "Dati filtrati in base alle geometrie di riferimento (genitori) visibili sulla mappa",
+      filtertoken: "Dati filtrati in base alle geometrie/records selezionati di riferimento (genitori)",
+      in_bbox_filtertoken: "Dati filtrati in base alle geometrie/records di riferimento (genitori) selezionati e visibili sulla mappa"
     }
   }
 }

@@ -10,13 +10,13 @@ export default {
     filter_chart: "Filter plots according to the selected geometries/records"
   },
   filters: {
-    in_bbox: "The data ​​shown in the plot are filtered according to the geometries visible on the map",
-    filtertoken: "The data ​​shown in the plot are filtered according to the selected geometries/records",
-    in_bbox_filtertoken: "The data ​​shown in the plot are filtered according to the geometries/records selected and visible on the map",
+    in_bbox: "Data filtered according to the geometries visible on the map",
+    filtertoken: "Data filtered according to the selected geometries/records",
+    in_bbox_filtertoken: "Data filtered according to the geometries/records selected and visible on the map",
     relation: {
-      in_bbox: "The data​​ shown in the plot are filtered according to the reference (parents) geometries visible on the map",
-      filtertoken: "The data ​​shown in the plot are filtered according to the reference (parents) selected geometries/records",
-      in_bbox_filtertoken: "The data ​​shown in the plot are filtered according to the reference (parents) geometries/records selected and visible on the map"
+      in_bbox: "Data filtered according to the reference (parents) geometries visible on the map",
+      filtertoken: "Data filtered according to the reference (parents) selected geometries/records",
+      in_bbox_filtertoken: "Data filtered according to the reference (parents) geometries/records selected and visible on the map"
     }
   }
 }
