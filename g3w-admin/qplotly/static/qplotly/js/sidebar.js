@@ -180,7 +180,7 @@ export default ({
 
       // get map moveend event just one time
       if (!this.service.state._moveend.key) {
-        this.service.state._moveend.key = MAP.getMap().on('moveend', this.service.changeCharts);
+        this.service.state._moveend.key = GUI.getService('map').getMap().on('moveend', this.service.changeCharts);
       }
 
       this.service.clearData(plot);
