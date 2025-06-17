@@ -22,8 +22,7 @@ from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
 from qplotly.utils.qplotly_factory import QplotlyFactoring, QplotlyFactoringRelation
 import plotly
-if plotly.__version__ != '2.5.1':
-    import plotly.graph_objects as go
+import plotly.graph_objects as go
 
 
 import logging
