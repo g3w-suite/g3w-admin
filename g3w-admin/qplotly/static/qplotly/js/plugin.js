@@ -613,7 +613,7 @@
         // not find a show plot with same qgs_layer_id
         this.config.plots
           // find a child plot show
-          .filter(p => p.show && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
+          .filter(p => p.show && p.show_in_sidebar && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
           .forEach(p => {
             // if found clear plot data to force to reload by parent plot
             const plotIds = this.clearData(p);
@@ -645,7 +645,7 @@
           plotId: plot.id,
           action: 'hide',
           filter: plot.filters,
-          order:  this.config.plots.flatMap(p => p.show ? p.id : []), // order of plot ids
+          order:  this.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []), // order of plot ids
           charts: {},
         });
       }
