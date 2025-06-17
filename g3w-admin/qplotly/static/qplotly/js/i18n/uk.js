@@ -1,7 +1,5 @@
 export default {
   title: 'Діаграми',
-  pietitle: "Кругові діаграми",
-  no_subplots_charts: 'Exclusive plots',
   no_plots : 'Без діаграм. Додайте принаймні одну діаграму.',
   no_data: "Дані не доступні",
   tooltip: {

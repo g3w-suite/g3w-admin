@@ -1,7 +1,5 @@
 export default {
   title: 'Diagramme',
-  pietitle: "Torten-Diagramme",
-  no_subplots_charts: 'Exklusive Diagramme',
   no_plots : 'Kein Diagramm vorhanden. Mindestens ein Diagramm hinzufügen',
   no_data: "Keine Daten verfügbar",
   tooltip: {
