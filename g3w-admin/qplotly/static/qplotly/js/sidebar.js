@@ -171,7 +171,7 @@ export default ({
         });
 
       // set bbox parameter to force
-      this.service.state.bbox = MAP.getMapBBOX().toString();
+      this.service.state.bbox = GUI.getService('map').getMapBBOX().toString();
 
       // handle moveend map event
 
@@ -439,7 +439,7 @@ export default ({
         title: 'plugins.qplotly.title',
         headertools: [
           Vue.extend({
-            data: () => ({ service: this }),
+            data: () => ({ service: this.service }),
             template: /* html */ `
               <div
                 :hidden = "!service.state.geolayer && !service.state.rel"
