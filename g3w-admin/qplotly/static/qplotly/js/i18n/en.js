@@ -1,7 +1,5 @@
 export default {
   title: 'Charts',
-  pietitle: "Pie Charts",
-  no_subplots_charts: 'Exclusive plots',
   no_plots : 'No chart. Add at least one plot',
   no_data: "No Data available",
   tooltip: {

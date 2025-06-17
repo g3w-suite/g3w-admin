@@ -1,7 +1,5 @@
 export default {
   title: 'Graphiques',
-  pietitle: "Cake Charts",
-  no_subplots_charts: 'Graphiques exclusifs',
   no_plots : 'Pas de graphiques à montrer. Ajoutez au moins un graphique',
   no_data: "Aucune donnée disponible",
   tooltip: {

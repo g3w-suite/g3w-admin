@@ -1,7 +1,5 @@
 export default {
   title: 'Grafice',
-  pietitle: "Diagrame radiale",
-  no_subplots_charts: 'Exclusiv grafice',
   no_plots : 'Fără grafice. Adaugă unul',
   no_data: "Nu avem date disponibile",
   tooltip: {
