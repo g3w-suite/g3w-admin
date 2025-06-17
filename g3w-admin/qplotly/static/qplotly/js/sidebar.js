@@ -153,8 +153,43 @@ export default ({
     async toggleBBox(chart, index) {
       chart.tools.geolayer.active = !chart.tools.geolayer.active;
       this.service.setLoading(true);
-      // call set Charts based on change map tool toggled
-      this.setCharts(await this.service.updateMapBBox(this.order[index], chart.tools.geolayer.active, this.charts));
+
+      const id     = this.order[index];
+      const active = chart.tools.geolayer.active;
+      const charts = this.charts;
+
+      const order   = this.service.config.plots.flatMap(p => p.show ? p.id : []);
+      const plotIds = [{ id, active }];
+      const plot    = this.service.config.plots.find(p => p.id === id);
+
+      this.service.config.plots
+        .filter(p => p.show && p.id !== id && p.qgs_layer_id === plot.qgs_layer_id)
+        .forEach(p => {
+          p.tools.geolayer.active = active;
+          this.service.clearData(p);
+          plotIds.push({ id: p.id, active })
+        });
+
+      // set bbox parameter to force
+      this.service.state.bbox = MAP.getMapBBOX().toString();
+
+      // handle moveend map event
+
+      // which plotIds need to trigger map moveend event
+      this.service.state._moveend.plotIds = plotIds;
+
+      // get map moveend event just one time
+      if (!this.service.state._moveend.key) {
+        this.service.state._moveend.key = MAP.getMap().on('moveend', this.service.changeCharts);
+      }
+
+      this.service.clearData(plot);
+      // global map tool toggled status base on plot belong to geolayer show on charts
+      // return true or false based on map active geo tools
+      this.service.state.bbox_filter = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
+
+
+      this.setCharts(await this.service.getCharts({ plotIds: plotIds.map(({ id }) => id) }))
     },
 
     /**
@@ -435,12 +470,34 @@ export default ({
     if (this.$props.container) {
       this.$el.remove();
     }
+
     this.service.off('change-charts', this.setCharts);
     this.service.off('toggle-chart', this.toggle);
+
     if (this.rel) {
       GUI.off('pop-content', this.resize);
     }
-    this.service.clearLoadedPlots();
+
+    this.service.state.bbox_filter = false;
+    this.service.state.bbox        = undefined;
+
+    // remove handler of map moveend and reset to empty
+    if (this.service.state._moveend) {
+      ol.Observable.unByKey(this.service.state._moveend.key);
+      this.service.state._moveend.key     = null;
+      this.service.state._moveend.plotIds = [];
+    }
+
+    this.service.config.plots
+      .filter(p => p.show)
+      .forEach(p => {
+        this.service.clearData(p);
+        p.tools.geolayer.active =  p.tools.geolayer.show ? false : p.tools.geolayer.active;
+        p.filters = [];
+      });
+
+    this.service.state.showCharts = false;
+
     this.charts = null;
     this.order = null;
     GUI.off('resize', this.resize);

@@ -88,10 +88,10 @@
 
       QUERY.on('show-chart', (ids, container, rel) => {
         this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot loaded by query service
-        this.showChart(true, ids, container, rel);
+        this.toggleChart(true, ids, container, rel);
       });
 
-      QUERY.on('hide-chart', container => { this.showChart(false, undefined, container); });
+      QUERY.on('hide-chart', container => { this.toggleChart(false, undefined, container); });
 
       // check if some some plot has visible geolayer 
       this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
@@ -120,7 +120,7 @@
         }, this.config.sidebar);
 
         sidebar.onbefore('setOpen', b => {
-          this.showChart(b);
+          this.toggleChart(b);
           if (!b) {
             GUI.closeContent();
           }
@@ -174,10 +174,7 @@
     async changeCharts({ layerId }) {
 
       // change only if one of these condition is true
-      if (
-        !this.state.showCharts && undefined !== this.state.rel
-        && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show))
-      ) {
+      if (!this.state.showCharts && undefined !== this.state.rel && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show))) {
         return;
       }
 
@@ -188,7 +185,7 @@
       // plots to reload
       const reload   = [
         // whether there is a bbox filter
-        ...(this.state._moveend.plotIds.length ? this.state._moveend.plotIds.map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] })) : []),
+        ...((this.state._moveend.plotIds || []).map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] }))),
         // whether filtertoken is added or removed from layer
         ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
       ];
@@ -241,28 +238,6 @@
       }
 
       return plotIds;
-    }
-
-    /**
-     * @FIXME add description
-     */
-    clearLoadedPlots() {
-      this.state.bbox_filter = false;
-      this.state.bbox        = undefined;
-      // remove handler of map moveend and reset to empty
-      if (this.state._moveend) {
-        ol.Observable.unByKey(this.state._moveend.key);
-        this.state._moveend.key     = null;
-        this.state._moveend.plotIds = [];
-      }
-      this.config.plots
-        .filter(p => p.show)
-        .forEach(p => {
-          this.clearData(p);
-          p.tools.geolayer.active =  p.tools.geolayer.show ? false : p.tools.geolayer.active;
-          p.filters = [];
-        });
-      this.state.showCharts = false;
     }
 
     /**
@@ -531,7 +506,7 @@
      * 
      * @fires change-charts
      */
-    async showChart(bool, ids, container, rel) {
+    async toggleChart(bool, ids, container, rel) {
       if (bool) {
         this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
           ids,
@@ -598,40 +573,6 @@
 
     }
 
-    // loop through order plotId
-    async updateMapBBox(id, active, charts) {
-      const order   = this.config.plots.flatMap(p => p.show ? p.id : []);
-      const plotIds = [{ id, active }];
-      const plot    = this.config.plots.find(p => p.id === id);
-
-      this.config.plots
-        .filter(p => p.show && p.id !== id && p.qgs_layer_id === plot.qgs_layer_id)
-        .forEach(p => {
-          p.tools.geolayer.active = active;
-          this.clearData(p);
-          plotIds.push({ id: p.id, active })
-        });
-
-      // set bbox parameter to force
-      this.state.bbox = MAP.getMapBBOX().toString();
-
-      // handle moveend map event
-
-      // which plotIds need to trigger map moveend event
-      this.state._moveend.plotIds = plotIds;
-
-      // get map moveend event just one time
-      if (!this.state._moveend.key) {
-        this.state._moveend.key = MAP.getMap().on('moveend', this.changeCharts);
-      }
-
-      this.clearData(plot);
-      // global map tool toggled status base on plot belong to geolayer show on charts
-      // return true or false based on map active geo tools
-      this.state.bbox_filter = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
-
-      return await this.getCharts({ plotIds: plotIds.map(({ id }) => id) });
-    }
 
     async togglePlot(id) {
       const plot = this.config.plots.find(p => id === p.id);
@@ -639,15 +580,7 @@
       // whether geolayer tools is show
       const has_geo = plot.tools.geolayer.show;
 
-      // get active boolean from map toggled
-      if (plot.show) {
-        plot.tools.geolayer.active = has_geo ? this.state.bbox_filter : plot.tools.geolayer.active;
-      }
-
-      // deactive geolayer tools
-      if (!plot.show) {
-        plot.tools.geolayer.active = has_geo ? false : plot.tools.geolayer.active;
-      }
+      plot.tools.geolayer.active = has_geo ? plot.show && this.state.bbox_filter : plot.tools.geolayer.active;
 
       // add current plot id in case of already register move map event
       if (plot.show && has_geo && this.state._moveend.key) {
