@@ -515,7 +515,7 @@
           container
         }}).$mount());
       } else {
-        const i = this.#CHARTS.findIndex(chart => container?.selector === chart.container.selector);
+        const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
         if (1!== i) {
           this.#CHARTS[i].$destroy();                                       // remove container
           this.#CHARTS.splice(i, 1);
