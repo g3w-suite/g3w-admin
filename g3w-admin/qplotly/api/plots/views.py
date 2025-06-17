@@ -183,7 +183,7 @@ class QplotlyTraceConfigAPIView(G3WAPIView):
 
         # instance a QplotlyFactory
         factory = QplotlyFactoring(settings, request=request, layer=None)
-        factory.build_layout()
+        #factory.build_layout()
 
         fig = go.Figure(layout=factory.layout)
         layout = fig.to_dict()['layout']

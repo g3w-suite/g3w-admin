@@ -41,9 +41,6 @@ from .models import QplotlyWidget
 
 import plotly
 
-if plotly.__version__ != '2.5.1':
-    import plotly.graph_objects as go
-
 import logging
 
 logger = logging.getLogger('django.request')
