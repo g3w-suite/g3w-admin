@@ -116,14 +116,16 @@
             </ul>`,
         }, this.config.sidebar);
 
-        sidebar.onbefore('setOpen', b => {
+        sidebar.onbefore('setOpen', async b => {
+          //need tyo close content before. In this way eventually charts on query result service are cleared
+          await GUI.closeContent();
           this.toggleChart(b);
+          GUI.once('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
           if (!b) {
             GUI.closeContent();
           }
         });
 
-        GUI.on('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
 
         // show relations (plot)
         QUERY.onafter('addActionsForLayers', (actions, layers) => {
@@ -210,7 +212,7 @@
      * @param plot object
      */
     clearData(plot) {
-      const plotIds = [];    // plotId eventually to reload
+     const plotIds = [];    // plotId eventually to reload
       plot.loaded   = false; // set loaded data to false
       plot.data     = null;  // set dat to null
 

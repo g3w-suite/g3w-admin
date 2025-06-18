@@ -309,7 +309,7 @@ export default ({
     } = {}) {
       this.service.setLoading(true);
       this.order = order;                // get new charts order
-      this.show = this.order.length > 0; // check if there are plot charts to show
+      this.show  = this.order.length > 0; // check if there are plot charts to show
 
       // loop through charts
       // TODO check other way
@@ -461,6 +461,7 @@ export default ({
 
     if (this.rel) {
       GUI.off('pop-content', this.resize);
+      this.rel = null;
     }
 
     this.service.state.bbox_filter = false;
@@ -487,6 +488,7 @@ export default ({
     this.service.state.showCharts = false;
     this.charts                   = null;
     this.order                    = null;
+    this.ids                      = null
   },
 
 });
