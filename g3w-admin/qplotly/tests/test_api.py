@@ -655,7 +655,8 @@ class QplotlyTestAPI(QdjangoTestBase):
         with open(f'{DATASOURCE_PATH}trace_config.json', 'r') as f:
             expected = json.load(f)
 
-        
+
+        print(response.content)        
         self.assertEqual(trace_config_data, expected['data'])
 
         response = self._testApiCall('qplotly-trace-plot-config-api', args=[
