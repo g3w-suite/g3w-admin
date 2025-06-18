@@ -665,8 +665,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         jcontent = json.loads(response.content)
         trace_config_data = json.loads(response.content)['data']
 
-        print(response.content)
-        
         with open(f'{DATASOURCE_PATH}trace_config_3857.json', 'r') as f:
             expected = json.load(f)
 
