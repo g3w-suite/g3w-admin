@@ -43,13 +43,11 @@
         showCharts: false, // show/hide charts
         geolayer:   false, // is geolayer
         bbox_filter: false,
+        bbox_ids: [],    // plot ids associated to bbox (moveend event)
+        bbox_key: null,  // Openlayers key event for map `moveend`
         bbox: undefined, // custom request param
         rel:  null,      // relation data
         _relNames: {},
-        _moveend: { // Openlayers key event for map `moveend`
-          key:     null,
-          plotIds: [],
-        },
       });
 
       //render charts
@@ -82,7 +80,6 @@
         layer.on('filtertokenchange', this.changeCharts)                         // reload charts after changing filter
       });
 
-      console.log(this.config.plots)
 
       QUERY.addLayersPlotIds(Array.from(new Set(this.#LAYERS.map(l => l.getId()))));
 
@@ -149,10 +146,18 @@
                       fid:       feature.attributes[G3W_FID],
                       height:    400
                     });
+                    action._container = container; // save container to action
                   } else {
                     QUERY.hideChart(container);
+                    delete action._container; // remove container from action
                   }
                 }),
+                clear({ action }) {
+                  if (action._container) {
+                    QUERY.hideChart(action._container);
+                    delete action._container;
+                  }
+                }
               });
             }
           });
@@ -178,14 +183,14 @@
         return;
       }
 
-      this.state.bbox = (this.state._moveend.plotIds.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
+      this.state.bbox = (this.state.bbox_ids.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
 
       // in case of a filter is change on showed chart it redraw the chart
 
       // plots to reload
       const reload   = [
         // whether there is a bbox filter
-        ...((this.state._moveend.plotIds || []).map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] }))),
+        ...((this.state.bbox_ids || []).map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] }))),
         // whether filtertoken is added or removed from layer
         ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
       ];
@@ -392,7 +397,7 @@
                           .join(',')
                           || undefined,
                           // in_bbox parameter (in case of tool map toggled)
-                          in_bbox: (this.state._moveend.plotIds.length > 0 ? -1 !== this.state._moveend.plotIds.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
+                          in_bbox: (this.state.bbox_ids.length > 0 ? -1 !== this.state.bbox_ids.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
                         }
                     });
                   promises.push(promise);
@@ -481,14 +486,14 @@
 
       /** @FIXME add description */
       if (!this.state.bbox_filter) {
-        this.state._moveend.plotIds = this.state._moveend.plotIds.filter(p => p.active);
+        this.state.bbox_ids = this.state.bbox_ids.filter(p => p.active);
       }
 
       // remove handler of map moveend and reset to empty
-      if (!this.state.bbox_filter && !this.state._moveend.plotIds.length && this.state._moveend.key) {
-        ol.Observable.unByKey(this.state._moveend.key);
-        this.state._moveend.key     = null;
-        this.state._moveend.plotIds = [];
+      if (!this.state.bbox_filter && !this.state.bbox_ids.length && this.state.bbox_key) {
+        ol.Observable.unByKey(this.state.bbox_key);
+        this.state.bbox_key = null;
+        this.state.bbox_ids = [];
       }
 
       return Promise.resolve({ order, charts });
@@ -552,17 +557,17 @@
       // handle moveend map event
 
       // which plotIds need to trigger map moveend event
-      this.state._moveend.plotIds = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
+      this.state.bbox_ids = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
 
       // get map moveend event just one time
-      if (this.state.bbox_filter && !this.state._moveend.key) {
-        this.state._moveend.key = MAP.getMap().on('moveend', this.changeCharts);
+      if (this.state.bbox_filter && !this.state.bbox_key) {
+        this.state.bbox_key = MAP.getMap().on('moveend', this.changeCharts);
       }
 
       // remove handler of map moveend and reset to empty
       if (!this.state.bbox_filter) {
-        ol.Observable.unByKey(this.state._moveend.key);
-        this.state._moveend.key = null;
+        ol.Observable.unByKey(this.state.bbox_key);
+        this.state.bbox_key = null;
       }
 
       try {
@@ -583,17 +588,17 @@
       plot.tools.geolayer.active = has_geo ? plot.show && this.state.bbox_filter : plot.tools.geolayer.active;
 
       // add current plot id in case of already register move map event
-      if (plot.show && has_geo && this.state._moveend.key) {
-        this.state._moveend.plotIds.push({ id: plot.id, active: this.state.bbox_filter });
+      if (plot.show && has_geo && this.state.bbox_key) {
+        this.state.bbox_ids.push({ id: plot.id, active: this.state.bbox_filter });
       }
 
       // remove map Move end from plotids keys when there is a key moveend listener 
-      if (!plot.show && has_geo && this.state._moveend.key) {
-        this.state._moveend.plotIds = this.state._moveend.plotIds.filter(p => plot.id !== p.id);
+      if (!plot.show && has_geo && this.state.bbox_key) {
+        this.state.bbox_ids = this.state.bbox_ids.filter(p => plot.id !== p.id);
       }
 
       // no plots have active geo tools
-      if (!plot.show && has_geo && !this.state._moveend.plotIds.length) {
+      if (!plot.show && has_geo && !this.state.bbox_ids.length) {
         this.state.bbox        = undefined; // set request params to undefined
         this.state.bbox_filter = false;     // un-toggle main chart map tool
       }

@@ -85,3 +85,7 @@ run_local*.sh
 /pymast
 
 /shared-volume
+
+# For Vcode
+.vscode/
+venv/

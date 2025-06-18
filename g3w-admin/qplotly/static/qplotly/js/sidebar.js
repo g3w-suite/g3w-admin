@@ -36,61 +36,46 @@ export default ({
       >
 
         <template v-for="({ chart }) in charts[plotId]">
-          <div class="g3w-chart-header">
+          <div class="g3w-chart-header skin-background-color">
 
-            <div class="skin-background-color g3w-chart-header-flex">
+            <div style="margin:auto">{{ chart.title || '' }}</div>
 
-              <div style="margin:auto">{{ chart.title || '' }}</div>
-
-              <div
-                v-if  = "!rel && (chart.tools.geolayer.show || chart.tools.selection.active)"
-                class = "plot-tools"
-              >
-                <span
-                  v-if               = "chart.tools.selection.active"
-                  style              = "margin: auto"
-                  class              = "action-button skin-tooltip-bottom"
-                  @click.stop        = "toggleFilter(chart.layerId)"
-                  :class             = "{ 'toggled': chart.tools.filter.active }"
-                  data-placement     = "bottom"
-                  data-toggle        = "tooltip"
-                  v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
-                >
-                  <span
-                    class  = "action-button-icon"
-                    :class = "$fa('filter')"
-                  ></span>
-                </span>
-
-                <span
-                  v-if               = "chart.tools.geolayer.show"
-                  style              = "margin: auto"
-                  class              = "action-button skin-tooltip-bottom"
-                  :class             = "{ 'toggled': chart.tools.geolayer.active }"
-                  @click.stop        = "toggleBBox(chart, index)"
-                  data-placement     = "bottom"
-                  data-toggle        = "tooltip"
-                  v-t-tooltip.create = "'plugins.qplotly.tooltip.show_feature_on_map'"
-                >
-                  <span
-                    class  = "action-button-icon"
-                    :class = "$fa('map')"
-                  ></span>
-                </span>
-
-              </div>
-
+            <div
+              v-if  = "!rel && (chart.tools.geolayer.show || chart.tools.selection.active)"
+              class = "plot-tools"
+            >
+              <span
+                v-if               = "chart.tools.selection.active"
+                style              = "margin: auto"
+                class              = "action-button action-button-icon fas fa-filter"
+                @click.stop        = "toggleFilter(chart.layerId)"
+                :class             = "{ 'toggled': chart.tools.filter.active }"
+                data-placement     = "bottom"
+                data-toggle        = "tooltip"
+                v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
+              ></span>
+              <span
+                v-if               = "chart.tools.geolayer.show"
+                style              = "margin: auto"
+                class              = "action-button action-button-icon far fa-map"
+                :class             = "{ 'toggled': chart.tools.geolayer.active }"
+                @click.stop        = "toggleBBox(chart, index)"
+                data-placement     = "bottom"
+                data-toggle        = "tooltip"
+                v-t-tooltip.create = "'plugins.qplotly.tooltip.show_feature_on_map'"
+              ></span>
             </div>
 
-            <ul v-if="(chart.filters || []).length > 0" class="plot-filters">
-              <li
-                v-for      = "filter in chart.filters"
-                :key       = "filter"
-                v-t-plugin = "'qplotly.filters.' + filter"
-              ></li>
-            </ul>
-
           </div>
+
+          <ul v-if="(chart.filters || []).length > 0" class="plot-filters">
+            <li
+              v-for      = "filter in chart.filters"
+              :key       = "filter"
+              v-t-plugin = "'qplotly.filters.' + filter"
+            ></li>
+          </ul>
+
           <div
             class = "plot_div_content"
             :ref  = "plotId"
@@ -176,11 +161,11 @@ export default ({
       // handle moveend map event
 
       // which plotIds need to trigger map moveend event
-      this.service.state._moveend.plotIds = plotIds;
+      this.service.state.bbox_ids = plotIds;
 
       // get map moveend event just one time
-      if (!this.service.state._moveend.key) {
-        this.service.state._moveend.key = GUI.getService('map').getMap().on('moveend', this.service.changeCharts);
+      if (!this.service.state.bbox_key) {
+        this.service.state.bbox_key = GUI.getService('map').getMap().on('moveend', this.service.changeCharts);
       }
 
       this.service.clearData(plot);
@@ -447,7 +432,7 @@ export default ({
                 style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
               >
                 <span
-                  class              = "skin-color action-button skin-tooltip-bottom"
+                  class              = "skin-color action-button"
                   v-disabled         = "service.state.loading"
                   data-placement     = "bottom"
                   data-toggle        = "tooltip"
@@ -482,11 +467,12 @@ export default ({
     this.service.state.bbox        = undefined;
 
     // remove handler of map moveend and reset to empty
-    if (this.service.state._moveend) {
-      ol.Observable.unByKey(this.service.state._moveend.key);
-      this.service.state._moveend.key     = null;
-      this.service.state._moveend.plotIds = [];
+    if (this.service.state.bbox_key) {
+      ol.Observable.unByKey(this.service.state.bbox_key);
+      this.service.state.bbox_key = null;
+      this.service.state.bbox_ids = [];
     }
+
     GUI.off('resize', this.resize);
 
     this.service.config.plots
@@ -533,11 +519,11 @@ document.head.insertAdjacentHTML(
 }
 .plot_divs_content .g3w-chart-header {
   width:100%;
-}
-.plot_divs_content .g3w-chart-header-flex {
+  position: sticky;
+  top:0;
+  z-index: 1;
+  --skin-color: #374146;
   display:flex;
-  width: 100%;
-  font-weight: bold;
   padding: 2px;
   min-height: 20px;
   font-size: 1.4em;
@@ -549,6 +535,8 @@ document.head.insertAdjacentHTML(
   padding: 2px;
   font-size: 1.0em;
   border-radius: 3px;
+  height: min-content;
+  margin: auto 0;
 }
 .plot_divs_content .plot-filters {
   color: initial;
