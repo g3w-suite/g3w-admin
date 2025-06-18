@@ -61,8 +61,7 @@ def load_dataplotly_project_settings(sender, **kwargs):
     doc.setContent(file)
 
     # Deprecated only for tests
-    # dock_id = 'DataPlotly' is for old DataPlotly plugin version
-    settings = QplotlySettings(dock_id='DataPlotly')
+    settings = QplotlySettings()
     read = settings.read_from_project(doc)
 
     file.close()
