@@ -12,15 +12,41 @@
             "plot_bgcolor": "rgb(255,255,255)",
             "showlegend": true,
             "title": {
-                "text": ""
+                "font": {
+                    "color": "#000",
+                    "family": "Arial",
+                    "size": 10
+                }
             },
             "xaxis": {
+                "gridcolor": "#bdbfc0",
+                "tickfont": {
+                    "color": "#000",
+                    "family": "Arial",
+                    "size": 10
+                },
                 "title": {
+                    "font": {
+                        "color": "#000",
+                        "family": "Arial",
+                        "size": 10
+                    },
                     "text": "NAME_IT"
                 }
             },
             "yaxis": {
+                "gridcolor": "#bdbfc0",
+                "tickfont": {
+                    "color": "#000",
+                    "family": "Arial",
+                    "size": 10
+                },
                 "title": {
+                    "font": {
+                        "color": "#000",
+                        "family": "Arial",
+                        "size": 10
+                    },
                     "text": "AREA_KM2"
                 }
             },
