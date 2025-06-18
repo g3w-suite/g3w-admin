@@ -82,7 +82,6 @@
         layer.on('filtertokenchange', this.changeCharts)                         // reload charts after changing filter
       });
 
-      console.log(this.config.plots)
 
       QUERY.addLayersPlotIds(Array.from(new Set(this.#LAYERS.map(l => l.getId()))));
 
@@ -149,10 +148,18 @@
                       fid:       feature.attributes[G3W_FID],
                       height:    400
                     });
+                    action._container = container; // save container to action
                   } else {
                     QUERY.hideChart(container);
+                    delete action._container; // remove container from action
                   }
                 }),
+                clear({ action }) {
+                  if (action._container) {
+                    QUERY.hideChart(action._container);
+                    delete action._container;
+                  }
+                }
               });
             }
           });
