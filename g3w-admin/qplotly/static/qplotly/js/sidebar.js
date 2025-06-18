@@ -10,7 +10,7 @@ export default ({
       :id        = "id"
       class      = "skin-color"
       :style     = "{
-        overflowY: overflowY,
+        overflowY: 'auto',
         height: rel?.height ? rel.height + 'px' : '100%',
       }"
     >
@@ -23,16 +23,11 @@ export default ({
     <div
       v-if   = "show"
       class  = "plot_divs_content"
-      :style = "{ height: height + '%' }"
     >
 
       <div
         v-for  = "(plotId, index) in order"
         :key   = "plotId"
-        style  = "position:relative;"
-        :style = "{
-          height: rel?.height ? rel.height + 'px' : 100 / order.length + '%',
-        }"
       >
 
         <template v-for="({ chart }) in charts[plotId]">
@@ -193,7 +188,6 @@ export default ({
       plotId,
       charts = {},
       order  = [],
-      action,
     } = {}) {
 
       this.order = order;
@@ -202,30 +196,13 @@ export default ({
 
       const show = this.show = this.order.length > 0;
 
-      if ('hide' === action) {
-        delete this.charts[plotId];
-      }
+      delete this.charts[plotId];
 
-      if ('hide' === action && show) {
+      if (show) {
         await this.setCharts({ charts, order });
       }
 
-      if ('hide' === action && !show) {
-        await this.calculateHeigths();
-        await this.resizePlots();
-      }
-
-      if ('show' === action) {
-        this.show = true;
-        await this.calculateHeigths();
-        await this.draw();
-      }
-
-      // resize already shown charts 
-      if (show) {
-        this.resize();
-      }
-
+      this.resizePlots();
     },
 
     /**
@@ -241,7 +218,6 @@ export default ({
       (
         await Promise.allSettled(
           this.order.flatMap(id => this.charts[id].map(async () => {
-            this.setHeight(id);
             if (this.$refs[`${id}`][0]) {
               await Plotly.Plots.resize(this.$refs[`${id}`][0]);
             }
@@ -270,7 +246,6 @@ export default ({
       // loop through plots ids (ordered) draw Plotly Chart
       (await Promise.allSettled(this.order.flatMap(plotId => 
         this.charts[plotId].map(async ({ chart, state }) => {
-          this.setHeight(plotId);
           // no data
           if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
             this.$refs[`${plotId}`][0].innerHTML = /* html */ `
@@ -286,6 +261,9 @@ export default ({
             }
             const { layout, config } = this.draw.configs[plotId];
             layout.title  = chart.title;
+            if (this?.rel?.height) {
+              layout.height = this?.rel?.height;
+            }
             state.loading = !this.rel;
             await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , layout, config);
           }
@@ -323,55 +301,18 @@ export default ({
       this.$nextTick();
 
       if (this.show) {
-        await this.calculateHeigths();
         await this.draw();
       }
 
       setTimeout(() => this.service.setLoading(false))
     },
 
-    /**
-     * Called when resize window browser or chart content
-     * 
-     * @returns { Promise<void> }
-     */
-    async resize() {
-      if (this._mounted) {
-        await this.resizePlots();
-      }
-    },
-
-    /**
-     * Set chart height
-     * 
-     * @param plotId of dom element
-     */
-    setHeight(plotId) {
-      const el = this.$refs[`${plotId}`][0];
-      setTimeout(() => el.style.height = ($(el).parent().outerHeight() - $(el).siblings().outerHeight()) + 'px');
-    },
-
-    /**
-     * @param { number } visible visible charts
-     * 
-     * @returns { Promise<unknown> }
-     */
-    async calculateHeigths() {
-      const visible = this.order.length ?? 0;
-
-      this.height = 100 + (this.rel?.height ? (visible > 1 ? visible * 50 : 0) : (visible > 2 ? visible - 2 : 0) * 50);
-
-      await this.$nextTick();
-
-      this.overflowY = this.height > 100 ? 'auto' : 'none';
-    },
-
   },
 
   created() {
     this.charts = {};
-    this.resize = debounce(this.resize.bind(this));
-    GUI.on('resize', this.resize);
+    this.resizePlots = debounce(this.resizePlots.bind(this));
+    GUI.on('resize', this.resizePlots);
   },
 
   /**
@@ -384,9 +325,6 @@ export default ({
     if (this.$props.container) {
       this.$props.container.append(this.$el);
     }
-
-    //set mounted false
-    this._mounted = false;
 
     await this.$nextTick();
     
@@ -405,17 +343,14 @@ export default ({
     // this.rel is passed by query result service
     // when show feature charts or relation charts feature
     if (undefined !== this.rel) {
-      GUI.on('pop-content', this.resize);
+      GUI.on('pop-content', this.resizePlots);
     }
-
-    //set mounted true
-    this._mounted = true;
 
     await this.$nextTick();
 
-    this.resize();
+    this.resizePlots();
 
-    GUI.on('resize', this.resize);
+    GUI.on('resize', this.resizePlots);
 
     // show chart in sidebar
     if (!this.$props.container) {
@@ -460,7 +395,7 @@ export default ({
     this.service.off('toggle-chart',  this.toggle);
 
     if (this.rel) {
-      GUI.off('pop-content', this.resize);
+      GUI.off('pop-content', this.resizePlots);
       this.rel = null;
     }
 
@@ -474,7 +409,7 @@ export default ({
       this.service.state.bbox_ids = [];
     }
 
-    GUI.off('resize', this.resize);
+    GUI.off('resize', this.resizePlots);
 
     this.service.config.plots
       .filter(p => p.show)

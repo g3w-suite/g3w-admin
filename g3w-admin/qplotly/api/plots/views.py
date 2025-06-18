@@ -195,7 +195,9 @@ class QplotlyTraceConfigAPIView(G3WAPIView):
                 'config': {
                     'scrollZoom': True,
                     'editable': True,
-                    'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
+                    'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio'],
+                    'responsive': True,
+                    'autosize': True, 
                 }
             }   
         }

@@ -650,7 +650,6 @@
         // update Qplotly chart component
         this.emit('toggle-chart', {
           plotId: plot.id,
-          action: 'hide',
           filter: plot.filters,
           order:  this.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []), // order of plot ids
           charts: {},
