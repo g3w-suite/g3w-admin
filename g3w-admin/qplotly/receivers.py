@@ -40,6 +40,7 @@ from .utils.models import get_qplotlywidgets4project
 from .models import QplotlyWidget
 
 import plotly
+import plotly.graph_objects as go
 
 import logging
 
@@ -146,11 +147,8 @@ def set_initconfig_value(sender, **kwargs):
         factory = QplotlyFactoring(settings, request=None, layer=None)
         factory.build_layout()
 
-        if plotly.__version__ != '2.5.1':
-            fig = go.Figure(layout=factory.layout)
-            layout = fig.to_dict()['layout']
-        else:
-            layout = factory.layout
+        fig = go.Figure(layout=factory.layout)
+        layout = fig.to_dict()['layout']
 
         plots.append({
             'id': qplotly_widget.pk,

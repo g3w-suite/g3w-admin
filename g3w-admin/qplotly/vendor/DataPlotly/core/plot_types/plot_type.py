@@ -96,8 +96,9 @@ class PlotType:
 
         # add font size parameter from the title setting
         title = settings.data_defined_title if settings.data_defined_title else settings.layout['title']
-        if isinstance(title, str):
+        if isinstance(title, str) or title is None:
             title = {"text": title}
+        
         title["font"] = {
             "size": settings.layout.get('font_title_size', 10),
             "color": settings.layout.get('font_title_color', "#000"),
