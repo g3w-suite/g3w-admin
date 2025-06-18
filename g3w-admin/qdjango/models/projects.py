@@ -817,15 +817,30 @@ class Layer(G3WACLModelMixins, models.Model):
         null=True,
     )
 
-    # minscale and maxscale and scalebasedvisibility
+    # DEPRECATED: This property will be removed in version 4.0
+    # It will be used max_scale_style
     min_scale = models.IntegerField(
         _('Layer Min Scale visibility'),
         blank=True,
         null=True,
     )
 
+    min_scale_style = models.JSONField(
+        _('Layer Max Scale visibility for layer styel'),
+        blank=True,
+        null=True,
+    )
+
+    # DEPRECATED: This property will be removed in version 4.0
+    # It will be used max_scale_style
     max_scale = models.IntegerField(
         _('Layer Max Scale visibility'),
+        blank=True,
+        null=True,
+    )
+
+    max_scale_style = models.JSONField(
+        _('Layer Max Scale visibility for layer styel'),
         blank=True,
         null=True,
     )
