@@ -239,10 +239,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- REQUIRED JS SCRIPTS -->
     <script>
-        const CURRENT_LANGUAGE_CODE = '{{ lang }}';
-        const FRONTEND              = {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %}
-        const SITE_PREFIX_URL       = {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %}
-        const STATIC_BASE_URL       = '{% static "" %}';
+      SETTINGS = {
+        CURRENT_LANGUAGE_CODE:     '{{ lang }}',
+        FRONTEND:                  {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %},
+        SITE_PREFIX_URL:           {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %},
+        STATIC_BASE_URL:           '{% static "" %}',
+        G3WADMIN_LOCAL_MORE_APPS:  ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+        FILE_FORM_UPLOAD_TEMP_URL: '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/',
+        PRIVACY_MSG:               "{% if SETTINGS.PRIVACY_MSG %} {{ SETTINGS.PRIVACY_MSG|safe }} {% else %}{% trans 'This website uses cookies to ensure you get the best experience on our website' %}.{% endif %}",
+      };
+      // DEPRECATED: since v3.10.x
+      const CURRENT_LANGUAGE_CODE = SETTINGS.CURRENT_LANGUAGE_CODE;
+      const FRONTEND              = SETTINGS.FRONTEND;
+      const SITE_PREFIX_URL       = SETTINGS.SITE_PREFIX_URL;
+      const STATIC_BASE_URL       = SETTINGS.STATIC_BASE_URL;
     </script>
     {% if SETTINGS.DEBUG %}
     <!-- build:js js/vendor.min.js -->
