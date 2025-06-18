@@ -462,7 +462,11 @@
                   p.title  = `${this.state._relNames[id]} ${p.label}`;
                   // get father filter plots
                   if (plot.filters.length && !(`relation.${plot.filters[0]}` in plot.filters)) {
-                    plot.filters.push(`relation.${plot.filters[0]}`);
+                    //set child plot filter
+                    p.filters = [(`relation.${plot.filters[0]}`)];
+                  } else {
+                    //remove eventually child plot filter
+                    p.filters = [];
                   }
                   this.#setActiveFilters(plot);
                   /** @FIXME add description */
