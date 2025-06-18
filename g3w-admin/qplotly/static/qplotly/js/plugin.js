@@ -543,7 +543,7 @@
       this.state.loading = true;
 
       if (undefined === this.state.rel) {
-        GUI.disableSideBar(true);
+        document.querySelector('#qplotly').classList.toggle('g3w-disabled', true);
         GUI.setLoadingContent(true);
       }
 
@@ -671,7 +671,7 @@
     setLoading(b) {
       this.state.loading = b;
       if (undefined === this.state.rel) {
-        GUI.disableSideBar(b);
+        document.querySelector('#qplotly').classList.toggle('g3w-disabled', b);
         GUI.setLoadingContent(b);
       }
     }
