@@ -119,8 +119,7 @@ export async function qplotlyWidgetList($datatable, $item, refresh = false) {
                   name="linked"
                   value="1"
                   ${($.inArray(parseInt(layer_pk), v.layers) != -1) ? 'checked' : ''}
-                  data-widget-type="linkWidget2Layer"
-                  data-ajax-url="/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/layer/${layer_pk}/widgets/link/${v.pk}/"
+                  onchange="fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/layer/${layer_pk}/widgets/link/${v.pk}/' + (event.target.checked ? '' : '?unlink=unlink')).catch(g3wadmin.widget.showError)"
                 />
               </td>
             </tr>`).join('')}
