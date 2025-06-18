@@ -198,8 +198,8 @@ class QplotlyTraceConfigAPIView(G3WAPIView):
                     'editable': True,
                     'responsive': True,
                     'scrollZoom': False,
-                    'toImageButtonOptions': {'filename': 'Plot - ' + layout.get('title', {}).get('text', f"Plot id [{qplotly.pk}]") },
-                    'autosize': True, 
+                    'toImageButtonOptions': {'filename': 'Plot - ' + layout.get('title', {}).get('text', f"[{qplotly.pk}]") },
+                    'autosize': True,
                 }
             }   
         }
