@@ -193,6 +193,7 @@ class QplotlyTraceConfigAPIView(G3WAPIView):
                 'type': settings.plot_type,
                 'layout': layout,
                 'config': {
+                    'displaylogo': False,
                     'displayModeBar': True,
                     'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio'],
                     'editable': True,

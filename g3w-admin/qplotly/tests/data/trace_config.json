@@ -868,6 +868,7 @@
             }
         },
         "config": {
+            "displaylogo": false,
             "displayModeBar": true,
             "modeBarButtonsToRemove": [
                 "sendDataToCloud",

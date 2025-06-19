@@ -868,6 +868,7 @@
             }
         },
         "config": {
+            "displaylogo": false,
             "displayModeBar": true,
             "modeBarButtonsToRemove": [
                 "sendDataToCloud",
@@ -879,7 +880,7 @@
             "toImageButtonOptions": {
                 "filename": "Plot - [19]"
             },
-            "autosize": true
+            "autosize": true,
         }
     }
 }
