@@ -1,6 +1,7 @@
 const { GUI }                         = g3wsdk.gui;
 const { debounce, getUniqueDomId }    = g3wsdk.core.utils;
 const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
+const { ApplicationState }            = g3wsdk.core;
 
 export default ({
 
@@ -11,7 +12,7 @@ export default ({
       class      = "plot-content"
       :class     = "{ 'bar-loader': undefined !== ids && service.state.loading }"
       :style     = "{
-        overflowY: 'auto',
+        overflow: 'hidden visible',
         height: order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
       }"
     >
@@ -25,12 +26,9 @@ export default ({
 
             <div style="margin:auto">{{ chart.title || '' }}</div>
 
-            <div
-              v-if  = "!rel && (service.state.geolayer || chart.tools.selection.active)"
-              class = "plot-tools"
-            >
+            <div class = "plot-tools">
               <span
-                v-if               = "chart.tools.selection.active"
+                v-if               = "!rel && chart.tools.selection.active"
                 style              = "margin: auto"
                 class              = "action-button action-button-icon fas fa-filter"
                 @click.stop        = "toggleFilter(chart.layerId)"
@@ -40,7 +38,7 @@ export default ({
                 v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
               ></span>
               <span
-                v-if               = "service.state.geolayer"
+                v-if               = "!rel && service.state.geolayer"
                 style              = "margin: auto"
                 class              = "action-button action-button-icon far fa-map"
                 :class             = "{ 'toggled': service.state.bbox_filter }"
@@ -49,6 +47,17 @@ export default ({
                 data-toggle        = "tooltip"
                 v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
               ></span>
+              <a
+                v-if               = "edit_url"
+                :href              = "edit_url"
+                target             = "_blank"
+                style              = "margin: auto"
+                class              = "action-button action-button-icon far fa-edit"
+                :class             = "{ 'toggled': service.state.bbox_filter }"
+                data-placement     = "bottom"
+                data-toggle        = "tooltip"
+                v-t-tooltip.create = "'Edit in admin'"
+              ></a>
             </div>
 
           </figcaption>
@@ -93,6 +102,12 @@ export default ({
     }
   },
 
+  computed: {
+    edit_url() {
+      return ApplicationState.project.getState()?.layers_url || '';
+    },
+  },
+
   methods: {
 
     /**
@@ -110,12 +125,8 @@ export default ({
      * Handle click on map icon tool (show bbox data)
      */
     async toggleBBox() {
-      this.service.state.loading = true;
 
-      if (undefined === this.service.state.rel) {
-        document.querySelector('#qplotly').classList.toggle('g3w-disabled', true);
-        GUI.setLoadingContent(true);
-      }
+      this.service.setLoading(true);
 
       this.service.state.bbox_filter = !this.service.state.bbox_filter;
 
@@ -214,12 +225,19 @@ export default ({
                 }
                 const { layout, config } = this.draw.configs[plotId];
                 layout.title  = chart.title;
-                // enable scrollbars within "relation" pages
+                // plot bg-color
+                plot_container.parentNode.style.backgroundColor = layout.plot_bgcolor || '#fff';
+                // plot height
                 if (this?.rel?.height) {
                   layout.height = this?.rel?.height;
+                  plot_container.style.height = null;
+                } else {
+                  plot_container.style.height = 
+                    (this.$el.offsetHeight / (this.order.length > 1 ? 2 : 1))
+                    - Array.from(plot_container.parentNode.children).filter(el => plot_container !== el).reduce((height, sibling) => (height += sibling.offsetHeight), 0)
+                    + 'px';
                 }
                 state.loading = !this.rel;
-                plot_container.parentNode.style.backgroundColor = layout.plot_bgcolor || '#fff';
                 if (resize && svg_container) {
                   await Plotly.Plots.resize(plot_container);
                 } else {
@@ -350,7 +368,7 @@ document.head.insertAdjacentHTML(
   text-align: center;
   color: #FFF;
 }
-.plot-content .plot-tools {
+.plot-content .plot-tools:not(:empty) {
   background-color: #FFF;
   padding: 2px;
   font-size: 1.0em;
