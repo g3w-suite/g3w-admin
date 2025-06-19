@@ -19,9 +19,9 @@ export default ({
     <template v-if = "show">
 
       <template v-for = "plotId in order">
-        <template v-for="({ chart }) in charts[plotId]">
+        <figure v-for="({ chart }) in charts[plotId]">
 
-          <div class="plot-header">
+          <figcaption>
 
             <div style="margin:auto">{{ chart.title || '' }}</div>
 
@@ -41,7 +41,7 @@ export default ({
               ></span>
             </div>
 
-          </div>
+          </figcaption>
 
           <ul v-if="(chart.filters || []).length > 0" class="plot-filters">
             <li
@@ -53,7 +53,7 @@ export default ({
 
           <div :ref = "plotId"></div>
 
-        </template>
+        </figure>
 
     </template>
 
@@ -76,8 +76,6 @@ export default ({
   data() {
     return {
       show:      true,
-      overflowY: 'none',
-      height:    100,
       charts:    {},
       order:     [], //array of ordered plot id
       plots:     this.service.config.plots,
@@ -186,8 +184,7 @@ export default ({
                 if (!plot_container.querySelector('.no_data')) {
                   plot_container.innerHTML = /* html */ `
                     <div class="no_data" style="display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
-                      <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.title ? ' - ' + chart.title : ''} </h4>
-                      <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
+                      <h4 style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</h4>
                     </div>`;
                 }
               } else {
@@ -203,7 +200,7 @@ export default ({
                   layout.height = this?.rel?.height;
                 }
                 state.loading = !this.rel;
-                plot_container.style.backgroundColor = '#fff';
+                plot_container.parentNode.style.backgroundColor = layout.plot_bgcolor || '#fff';
                 if (resize && svg_container) {
                   await Plotly.Plots.resize(plot_container);
                 } else {
@@ -343,7 +340,7 @@ document.head.insertAdjacentHTML(
   text-align: center;
   font-weight: bold;
 }
-.plot-content .plot-header {
+.plot-content figcaption {
   width:100%;
   position: sticky;
   top:0;
