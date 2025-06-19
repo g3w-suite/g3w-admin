@@ -850,6 +850,12 @@ class Layer(G3WACLModelMixins, models.Model):
         default=False,
     )
 
+    scalebasedvisibility_style = models.JSONField(
+        _('Scale based visibility for layer style'),
+        blank=True,
+        null=True,
+    )
+
     # srid
     srid = models.IntegerField(
         _('Layer SRID'),
@@ -1358,6 +1364,17 @@ class Layer(G3WACLModelMixins, models.Model):
             style = self.qgis_layer.styleManager().currentStyle()
 
         return self.min_scale_style.get(style, self.min_scale) if self.min_scale_style else self.min_scale
+    
+    def get_scalebasedvisibility_style(self, style=None):
+        """
+        Get mix_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.scalebasedvisibility_style.get(style, self.scalebasedvisibility) if self.scalebasedvisibility_style else self.scalebasedvisibility
         
 
     def __str__(self):

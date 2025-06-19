@@ -415,7 +415,32 @@ class QgisProjectLayer(XmlData):
         :return: boolean visibility by scale
         :rtype: bool
         """
+
         return self.qgs_layer.hasScaleBasedVisibility()
+
+    def _getDataScaleBasedVisibilityStyle(self):
+        """
+        Get scale based visibility property from layer attribute per layer style
+        :return: dict with a key for every layer styles
+        :rtype: dict
+        """
+
+        sbvs = {}
+
+        sm = self.qgs_layer.styleManager()
+        current_style = sm.currentStyle()
+
+        for style in sm.styles():
+
+            # Change style temporary
+            sm.setCurrentStyle(style)
+            sbvs[style] = self.qgs_layer.hasScaleBasedVisibility()
+
+
+        # Reset to current style
+        sm.setCurrentStyle(current_style)
+
+        return sbvs
 
     def _getDataSrid(self):
         """

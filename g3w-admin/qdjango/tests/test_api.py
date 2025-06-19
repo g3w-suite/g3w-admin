@@ -2808,7 +2808,7 @@ class TestVectorApiEditorformstructureFeaturecountFilter(TestVectorApiGeoFilter)
         response = self.client.get(url)
         jcontent = json.loads(response.content)
 
-        self.assertEqual(jcontent['data'],
+        self.assertEqual(jcontent['data']['editor_form_structure'],
  [
              {'alias': 'ISOCODE', 'field_name': 'ISOCODE', 'index': 0, 'showlabel': True, 'visibility_expression': None},
              {'alias': 'NAME_LOCAL', 'field_name': 'NAME_LOCAL', 'index': 1, 'showlabel': True, 'visibility_expression': None},
@@ -2819,7 +2819,7 @@ class TestVectorApiEditorformstructureFeaturecountFilter(TestVectorApiGeoFilter)
         response = self.client.get(f'{url}?style=new_style')
         jcontent = json.loads(response.content)
 
-        self.assertEqual(jcontent['data'],
+        self.assertEqual(jcontent['data']['editor_form_structure'],
  [
              {'alias': 'ISOCODE', 'field_name': 'ISOCODE', 'index': 0, 'showlabel': True, 'visibility_expression': None},
              {'alias': 'NAME_LOCAL', 'field_name': 'NAME_LOCAL', 'index': 1, 'showlabel': True, 'visibility_expression': None},
