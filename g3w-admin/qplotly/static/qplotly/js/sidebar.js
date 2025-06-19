@@ -26,7 +26,7 @@ export default ({
             <div style="margin:auto">{{ chart.title || '' }}</div>
 
             <div
-              v-if  = "!rel && chart.tools.selection.active"
+              v-if  = "!rel && (service.state.geolayer || chart.tools.selection.active)"
               class = "plot-tools"
             >
               <span
@@ -38,6 +38,16 @@ export default ({
                 data-placement     = "bottom"
                 data-toggle        = "tooltip"
                 v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
+              ></span>
+              <span
+                v-if               = "service.state.geolayer"
+                style              = "margin: auto"
+                class              = "action-button action-button-icon far fa-map"
+                :class             = "{ 'toggled': service.state.bbox_filter }"
+                @click.stop        = "toggleBBox"
+                data-placement     = "bottom"
+                data-toggle        = "tooltip"
+                v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
               ></span>
             </div>
 
@@ -99,42 +109,52 @@ export default ({
     /**
      * Handle click on map icon tool (show bbox data)
      */
-    async toggleBBox(chart, plotId) {
-      chart.tools.geolayer.active = !chart.tools.geolayer.active;
-      this.service.setLoading(true);
+    async toggleBBox() {
 
-      const active  = chart.tools.geolayer.active;
-      const order   = this.service.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []);
-      const plotIds = [{ id: plotId, active }];
-      const plot    = this.service.config.plots.find(p => p.id === plotId);
+      this.service.state.loading = true;
 
-      this.service.config.plots
-        .filter(p => p.show && p.show_in_sidebar && p.id !== plotId && p.qgs_layer_id === plot.qgs_layer_id)
-        .forEach(p => {
-          p.tools.geolayer.active = active;
-          this.service.clearData(p);
-          plotIds.push({ id: p.id, active })
-        });
+      if (undefined === this.service.state.rel) {
+        document.querySelector('#qplotly').classList.toggle('g3w-disabled', true);
+        GUI.setLoadingContent(true);
+      }
 
-      // set bbox parameter to force
-      this.service.state.bbox = GUI.getService('map').getMapBBOX().toString();
+      this.service.state.bbox_filter = !this.service.state.bbox_filter;
+
+      // set bbox parameter
+      this.service.state.bbox = this.service.state.bbox_filter ? MAP.getMapBBOX().toString() : undefined;
+
+      // get active plot related to geolayer
+      const geo_plots = this.service.config.plots.filter(p => {
+        if (p.show && p.tools.geolayer.show) {
+          p.tools.geolayer.active = !!this.service.state.bbox_filter;
+          return true;
+        }
+      });
 
       // handle moveend map event
 
       // which plotIds need to trigger map moveend event
-      this.service.state.bbox_ids = plotIds;
+      this.service.state.bbox_ids = this.service.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
 
       // get map moveend event just one time
-      if (!this.service.state.bbox_key) {
-        this.service.state.bbox_key = GUI.getService('map').getMap().on('moveend', this.service.changeCharts);
+      if (this.service.state.bbox_filter && !this.service.state.bbox_key) {
+        this.service.state.bbox_key = MAP.getMap().on('moveend', this.service.changeCharts);
       }
 
-      this.service.clearData(plot);
-      // global map tool toggled status base on plot belong to geolayer show on charts
-      // return true or false based on map active geo tools
-      this.service.state.bbox_filter = Object.values(order).reduce((b, id) => b && this.charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
+      // remove handler of map moveend and reset to empty
+      if (!this.service.state.bbox_filter) {
+        ol.Observable.unByKey(this.service.state.bbox_key);
+        this.service.state.bbox_key = null;
+      }
 
-      this.draw(await this.service.getCharts({ plotIds: plotIds.map(({ id }) => id) }))
+      try {
+        this.service.emit(
+          'change-charts',
+          await this.service.getCharts({ plotIds: geo_plots.map(p => { this.service.clearData(p); return p.id; }) })
+        );
+      } catch(e) {
+        console.warn(e);
+      }
     },
 
     /**
@@ -256,28 +276,6 @@ export default ({
       GUI.showContent({
         content: this.$el,
         title: 'plugins.qplotly.title',
-        headertools: [
-          Vue.extend({
-            data: () => ({ service: this.service }),
-            template: /* html */ `
-              <div
-                :hidden = "!service.state.geolayer && !service.state.rel"
-                class   = "qplotly-tools"
-                style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
-              >
-                <span
-                  class              = "skin-color action-button"
-                  v-disabled         = "service.state.loading"
-                  data-placement     = "bottom"
-                  data-toggle        = "tooltip"
-                  style              = "font-weight: bold; margin: 3px"
-                  :class             = "[ $fa('map'), service.state.bbox_filter ? 'toggled' : '']"
-                  @click.stop        = "service.updateCharts()"
-                  v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
-                ></span>
-              </div>`,
-          }),
-        ],
       });
     }
     this.service.state.showCharts = true;
@@ -369,6 +367,9 @@ document.head.insertAdjacentHTML(
 .plot-content.bar-loader::before {
   z-index: 2;
   background-color: #fff;
+}
+.plot-content .action-button {
+  --skin-color: #374146;
 }
 </style>`,
 );

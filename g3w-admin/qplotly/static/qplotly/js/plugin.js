@@ -533,55 +533,6 @@
       }
     }
 
-    /**
-     * Reload chart data for every charts
-     */
-    async updateCharts() {
-
-      this.state.loading = true;
-
-      if (undefined === this.state.rel) {
-        document.querySelector('#qplotly').classList.toggle('g3w-disabled', true);
-        GUI.setLoadingContent(true);
-      }
-
-      this.state.bbox_filter = !this.state.bbox_filter;
-
-      // set bbox parameter
-      this.state.bbox = this.state.bbox_filter ? MAP.getMapBBOX().toString() : undefined;
-
-      // get active plot related to geolayer
-      const geo_plots = this.config.plots.filter(p => {
-        if (p.show && p.tools.geolayer.show) {
-          p.tools.geolayer.active = !!this.state.bbox_filter;
-          return true;
-        }
-      });
-
-      // handle moveend map event
-
-      // which plotIds need to trigger map moveend event
-      this.state.bbox_ids = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
-
-      // get map moveend event just one time
-      if (this.state.bbox_filter && !this.state.bbox_key) {
-        this.state.bbox_key = MAP.getMap().on('moveend', this.changeCharts);
-      }
-
-      // remove handler of map moveend and reset to empty
-      if (!this.state.bbox_filter) {
-        ol.Observable.unByKey(this.state.bbox_key);
-        this.state.bbox_key = null;
-      }
-
-      try {
-        this.emit('change-charts', await this.getCharts({ plotIds: geo_plots.map(p => { this.clearData(p); return p.id; }) }));
-      } catch(e) {
-        console.warn(e);
-      }
-
-    }
-
     async togglePlot(id) {
       const plot = this.config.plots.find(p => id === p.id);
 
