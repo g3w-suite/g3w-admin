@@ -33,6 +33,8 @@ docs/locales/**/*.mo
 # Addons
 /g3w-admin/addons
 /g3w-admin/plugins
+/plugins
+
 
 # Bower components
 /g3w-admin/core/static/bower_components/

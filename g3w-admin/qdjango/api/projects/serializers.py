@@ -818,8 +818,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         """
 
         # Get mx and min scale from max/min-_scale_style properties
-        min_scale = instance.get_max_scale_style()
-        max_scale = instance.get_min_scale_style()
+        max_scale = instance.get_max_scale_style()
+        min_scale = instance.get_min_scale_style()
         scalebasedvisibility = ret['scalebasedvisibility']
 
         # Check if the layer has min and max scale per user

@@ -1346,7 +1346,7 @@ class Layer(G3WACLModelMixins, models.Model):
         if not style:
             style = self.qgis_layer.styleManager().currentStyle()
 
-        return self.max_scale_style.get(style, None) if self.max_scale_style else self.max_scale
+        return self.max_scale_style.get(style, self.max_scale) if self.max_scale_style else self.max_scale
     
     def get_min_scale_style(self, style=None):
         """
@@ -1357,7 +1357,7 @@ class Layer(G3WACLModelMixins, models.Model):
         if not style:
             style = self.qgis_layer.styleManager().currentStyle()
 
-        return self.min_scale_style.get(style, None) if self.min_scale_style else self.min_scale
+        return self.min_scale_style.get(style, self.min_scale) if self.min_scale_style else self.min_scale
         
 
     def __str__(self):
