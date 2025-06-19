@@ -54,7 +54,7 @@ export default ({
                 style              = "margin: auto"
                 class              = "action-button action-button-icon far fa-map"
                 :class             = "{ 'toggled': chart.tools.geolayer.active }"
-                @click.stop        = "toggleBBox(chart, index)"
+                @click.stop        = "toggleBBox(chart, plotId)"
                 data-placement     = "bottom"
                 data-toggle        = "tooltip"
                 v-t-tooltip.create = "'plugins.qplotly.tooltip.show_feature_on_map'"
@@ -100,6 +100,7 @@ export default ({
       show:      true,
       overflowY: 'none',
       height:    100,
+      charts:    {},
       order:     [], //array of ordered plot id
       plots:     this.service.config.plots,
       id:        getUniqueDomId(),
@@ -122,19 +123,17 @@ export default ({
     /**
      * Handle click on map icon tool (show bbox data)
      */
-    async toggleBBox(chart, index) {
+    async toggleBBox(chart, plotId) {
       chart.tools.geolayer.active = !chart.tools.geolayer.active;
       this.service.setLoading(true);
 
-      const id     = this.order[index];
-      const active = chart.tools.geolayer.active;
-
+      const active  = chart.tools.geolayer.active;
       const order   = this.service.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []);
-      const plotIds = [{ id, active }];
-      const plot    = this.service.config.plots.find(p => p.id === id);
+      const plotIds = [{ id: plotId, active }];
+      const plot    = this.service.config.plots.find(p => p.id === plotId);
 
       this.service.config.plots
-        .filter(p => p.show && p.show_in_sidebar && p.id !== id && p.qgs_layer_id === plot.qgs_layer_id)
+        .filter(p => p.show && p.show_in_sidebar && p.id !== plotId && p.qgs_layer_id === plot.qgs_layer_id)
         .forEach(p => {
           p.tools.geolayer.active = active;
           this.service.clearData(p);
@@ -248,10 +247,6 @@ export default ({
 
   },
 
-  created() {
-    this.charts = {};
-  },
-
   /**
    * @listens service~change-charts
    * @listens GUI~pop-content
@@ -278,7 +273,7 @@ export default ({
     await this.$nextTick();
 
     this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
-    this.resize.observe(this.$el);
+    this.resize.observe(this.$el.querySelector('.plot-content'));
 
     // show chart in sidebar
     if (!this.container) {
@@ -321,7 +316,7 @@ export default ({
 
     this.service.off('change-charts', this.draw);
 
-    this.resize.unobserve(this.$el);
+    this.resize.unobserve(this.$el.querySelector('.plot-content'));
 
     this.rel = null;
 
