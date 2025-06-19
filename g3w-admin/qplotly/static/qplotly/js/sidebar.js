@@ -480,9 +480,6 @@ document.head.insertAdjacentHTML(
   list-style-type: ' ℹ️ ';
   padding: 5px 0 0 25px;
 }
-.plot_div_content .modebar-btn {
-  font-size: 22px !important;
-}
 .plot_divs_content .plot-container.plotly + * {
   display: none !important;
 }
