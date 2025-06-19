@@ -304,6 +304,7 @@ export default ({
         ],
       });
     }
+    this.service.state.showCharts = true;
   },
 
   /**
@@ -341,7 +342,8 @@ export default ({
     this.service.state.showCharts = false;
     this.charts                   = null;
     this.order                    = null;
-    this.ids                      = null
+    this.ids                      = null;
+    this.service.state.showCharts = false;
   },
 
 });

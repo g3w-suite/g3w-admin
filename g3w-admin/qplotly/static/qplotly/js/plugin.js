@@ -179,9 +179,9 @@
      * @fires change-charts
      */
     async changeCharts({ layerId }) {
-
+      
       // change only if one of these condition is true
-      if (!this.state.showCharts && undefined !== this.state.rel && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show))) {
+      if (!this.state.showCharts || (undefined !== this.state.rel && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show)))) {
         return;
       }
 
@@ -485,8 +485,6 @@
           );
 
       });
-
-      this.state.showCharts = true;
 
       // remove inactive plot ids
 
