@@ -8,35 +8,25 @@ export default ({
     <div
       v-disabled = "service.state.loading"
       :id        = "id"
-      class      = "skin-color"
+      class      = "plot-content"
+      :class     = "{ 'bar-loader': undefined !== ids && service.state.loading }"
       :style     = "{
         overflowY: 'auto',
         height: order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
       }"
     >
 
-    <bar-loader
-      v-if     = "undefined !== ids"
-      :loading = "service.state.loading"
-    />
+    <template v-if = "show">
 
-    <div
-      v-if   = "show"
-      class  = "plot-content"
-    >
-
-      <div
-        v-for  = "(plotId, index) in order"
-        :key   = "plotId"
-      >
-
+      <template v-for = "plotId in order">
         <template v-for="({ chart }) in charts[plotId]">
+
           <div class="plot-header">
 
             <div style="margin:auto">{{ chart.title || '' }}</div>
 
             <div
-              v-if  = "!rel && (chart.tools.geolayer.show || chart.tools.selection.active)"
+              v-if  = "!rel && chart.tools.selection.active"
               class = "plot-tools"
             >
               <span
@@ -48,16 +38,6 @@ export default ({
                 data-placement     = "bottom"
                 data-toggle        = "tooltip"
                 v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
-              ></span>
-              <span
-                v-if               = "chart.tools.geolayer.show"
-                style              = "margin: auto"
-                class              = "action-button action-button-icon far fa-map"
-                :class             = "{ 'toggled': chart.tools.geolayer.active }"
-                @click.stop        = "toggleBBox(chart, plotId)"
-                data-placement     = "bottom"
-                data-toggle        = "tooltip"
-                v-t-tooltip.create = "'plugins.qplotly.tooltip.show_feature_on_map'"
               ></span>
             </div>
 
@@ -71,15 +51,13 @@ export default ({
             ></li>
           </ul>
 
-          <div
-            class = "plotly-wrapper"
-            :ref  = "plotId"
-          ></div>
+          <div :ref = "plotId"></div>
+
         </template>
 
-    </div>
+    </template>
 
-  </div>
+  </template>
 
   <div
     v-else
@@ -225,6 +203,7 @@ export default ({
                   layout.height = this?.rel?.height;
                 }
                 state.loading = !this.rel;
+                plot_container.style.backgroundColor = '#fff';
                 if (resize && svg_container) {
                   await Plotly.Plots.resize(plot_container);
                 } else {
@@ -273,7 +252,7 @@ export default ({
     await this.$nextTick();
 
     this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
-    this.resize.observe(this.$el.querySelector('.plot-content'));
+    this.resize.observe(this.$el);
 
     // show chart in sidebar
     if (!this.container) {
@@ -317,7 +296,7 @@ export default ({
 
     this.service.off('change-charts', this.draw);
 
-    this.resize.unobserve(this.$el.querySelector('.plot-content'));
+    this.resize.unobserve(this.$el);
 
     this.rel = null;
 
@@ -352,16 +331,6 @@ document.head.insertAdjacentHTML(
   'beforeend',
   /* css */`
 <style>
-.plot-content {
-  width: 100%;
-  background-color: #FFF;
-  position: relative;
-}
-.plotly-wrapper {
-  width: 95%;
-  margin: auto;
-  position: relative;
-}
 #no_plots {
   height: 100%;
   width: 100%;
@@ -399,6 +368,10 @@ document.head.insertAdjacentHTML(
   color: initial;
   list-style-type: ' ℹ️ ';
   padding: 5px 0 0 25px;
+}
+.plot-content.bar-loader::before {
+  z-index: 2;
+  background-color: #fff;
 }
 </style>`,
 );

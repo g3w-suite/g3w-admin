@@ -4,7 +4,6 @@ export default {
   no_data: "Nessun dato disponibile",
   tooltip: {
     show_all_features_on_map: "Filtra i grafici in base alle geometrie visibili sulla mappa",
-    show_feature_on_map: "Filtra i grafici in base alle geometrie visibili sulla mappa",
     filter_chart: "Filtra i grafici in base alle geometrie/record selezionati"
   },
   filters: {

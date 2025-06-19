@@ -4,7 +4,6 @@ export default {
   no_data: "Nu avem date disponibile",
   tooltip: {
     show_all_features_on_map: "Filtrează toate graficele după geometriile vizibile în hartă",
-    show_feature_on_map: "Filtrează graficul cu geometriile vizibile în hartă",
     filter_chart: "Filtrează graficele după entitățile selectate"
   },
   filters: {

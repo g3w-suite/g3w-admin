@@ -4,7 +4,6 @@ export default {
   no_data: "Aucune donnée disponible",
   tooltip: {
     show_all_features_on_map: "Filtrer ce graphique en fonction des éléments visibles sur la carte",
-    show_feature_on_map: "Filtrer tous les graphiques en fonction des éléments sélectionnés",
     filter_chart: "Filtrer tous les graphiques en fonction des éléments sélectionnés"
   },
   filters: {
