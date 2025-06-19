@@ -1336,6 +1336,29 @@ class Layer(G3WACLModelMixins, models.Model):
 
 
         return eval(self.editor_form_structure).get(style, None) if self.editor_form_structure else None
+    
+    def get_max_scale_style(self, style=None):
+        """
+        Get max_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.max_scale_style.get(style, None) if self.max_scale_style else self.max_scale
+    
+    def get_min_scale_style(self, style=None):
+        """
+        Get mix_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.min_scale_style.get(style, None) if self.min_scale_style else self.min_scale
+        
 
     def __str__(self):
         return self.name
