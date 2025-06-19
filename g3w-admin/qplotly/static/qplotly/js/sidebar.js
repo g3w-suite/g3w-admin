@@ -22,7 +22,7 @@ export default ({
 
     <div
       v-if   = "show"
-      class  = "plot_divs_content"
+      class  = "plot-content"
     >
 
       <div
@@ -31,7 +31,7 @@ export default ({
       >
 
         <template v-for="({ chart }) in charts[plotId]">
-          <div class="g3w-chart-header skin-background-color">
+          <div class="plot-header">
 
             <div style="margin:auto">{{ chart.title || '' }}</div>
 
@@ -72,7 +72,7 @@ export default ({
           </ul>
 
           <div
-            class = "plot_div_content"
+            class = "plotly-wrapper"
             :ref  = "plotId"
           ></div>
         </template>
@@ -101,7 +101,7 @@ export default ({
       overflowY: 'none',
       height:    100,
       order:     [], //array of ordered plot id
-      plots:     this.$props.service.config.plots,
+      plots:     this.service.config.plots,
       id:        getUniqueDomId(),
     }
   },
@@ -164,34 +164,6 @@ export default ({
     },
 
     /**
-     * @returns { Promise<void> }
-     */
-    async resizePlots() {
-
-      /** @FIXME add description */
-      if (undefined === this.ids) {
-        this.service.setLoading(true);
-      }
-
-      (
-        await Promise.allSettled(
-          this.order.flatMap(id => this.charts[id].map(async () => {
-            if (this.$refs[`${id}`][0]) {
-              await Plotly.Plots.resize(this.$refs[`${id}`][0]);
-            }
-            return id;
-          }))
-        )
-      ).forEach(r => this.charts[r.value].forEach(({ state }) => state.loading = false ));
-
-      /** @FIXME add description */
-      if (undefined === this.ids) {
-        this.service.setLoading(false);
-      }
-
-    },
-
-    /**
      * @param { Object } opts
      * @param { Object } opts.charts
      * @param { Array }  opts.order  ordered array of plot ids 
@@ -204,9 +176,15 @@ export default ({
       order = [],
       plotId
     } = {}) {
+      if (!order || !charts) {
+        return;
+      }
+
       this.service.setLoading(true);
-      this.order = order;                // get new charts order
-      this.show  = this.order.length > 0; // check if there are plot charts to show
+
+      const resize = this.order === order;
+      this.order   = order;                // get new charts order
+      this.show    = this.order.length > 0; // check if there are plot charts to show
 
       // remove plot
       if (plotId in this.charts) {
@@ -215,38 +193,49 @@ export default ({
 
       // loop through charts and initialize chart with plotId and get chart (set reactive state by Vue.observable)
       Object.keys(charts).forEach(id => {
-        this.charts[id] = [];
-        charts[id].forEach(c => this.charts[id].push({ chart: c, state: Vue.observable({ loading: false }) }));
+        this.charts[id] = (charts[id] || []).map(chart => ({ chart, state: Vue.observable({ loading: false }) }));
       });
-
-      await this.$nextTick();
 
       // draw all charts
       if (this.show) {
         // loop through plots ids (ordered) draw Plotly Chart
         (await Promise.allSettled(this.order.flatMap(plotId => 
           this.charts[plotId].map(async ({ chart, state }) => {
-            // no data
-            if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
-              this.$refs[`${plotId}`][0].innerHTML = /* html */ `
-                <div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
-                  <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.title ? ' - ' + chart.title : ''} </h4>
-                  <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
-                </div>`;
-            } else {
-              // retrieve "trace-config" from cache
-              this.draw.configs = this.draw.configs || {}
-              if (!this.draw.configs[plotId]) {
-                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
+            try {
+              await this.$nextTick();
+              const plot_container = this.$refs[`${plotId}`][0];
+              const svg_container = plot_container?.querySelector('.svg-container');
+              // no data
+              if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
+                if (!plot_container.querySelector('.no_data')) {
+                  plot_container.innerHTML = /* html */ `
+                    <div class="no_data" style="display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
+                      <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.title ? ' - ' + chart.title : ''} </h4>
+                      <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
+                    </div>`;
+                }
+              } else {
+                // retrieve "trace-config" from cache
+                this.draw.configs = this.draw.configs || {}
+                if (!this.draw.configs[plotId]) {
+                  this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
+                }
+                const { layout, config } = this.draw.configs[plotId];
+                layout.title  = chart.title;
+                // enable scrollbars within "relation" pages
+                if (this?.rel?.height) {
+                  layout.height = this?.rel?.height;
+                }
+                state.loading = !this.rel;
+                if (resize && svg_container) {
+                  await Plotly.Plots.resize(plot_container);
+                } else {
+                  plot_container.innerHTML = '';
+                  await Plotly.newPlot(plot_container, [chart.data] , layout, config);
+                }
               }
-              const { layout, config } = this.draw.configs[plotId];
-              layout.title  = chart.title;
-              // enable scrollbars within "relation" pages
-              if (this?.rel?.height) {
-                layout.height = this?.rel?.height;
-              }
-              state.loading = !this.rel;
-              await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , layout, config);
+            } catch (e) {
+              console.warn(e);
             }
             return plotId;
           })
@@ -262,8 +251,6 @@ export default ({
 
   created() {
     this.charts = {};
-    this.resizePlots = debounce(this.resizePlots.bind(this));
-    GUI.on('resize', this.resizePlots);
   },
 
   /**
@@ -272,8 +259,8 @@ export default ({
    */
   async mounted() {
 
-    if (this.$props.container) {
-      this.$props.container.append(this.$el);
+    if (this.container) {
+      this.container.append(this.$el);
     }
 
     await this.$nextTick();
@@ -289,20 +276,13 @@ export default ({
     // set charts
     await this.draw({ charts, order });
 
-    // this.rel is passed by query result service
-    // when show feature charts or relation charts feature
-    if (undefined !== this.rel) {
-      GUI.on('pop-content', this.resizePlots);
-    }
-
     await this.$nextTick();
 
-    this.resizePlots();
-
-    GUI.on('resize', this.resizePlots);
+    this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
+    this.resize.observe(this.$el);
 
     // show chart in sidebar
-    if (!this.$props.container) {
+    if (!this.container) {
       GUI.showContent({
         content: this.$el,
         title: 'plugins.qplotly.title',
@@ -336,16 +316,15 @@ export default ({
    * un listen all events
    */
   beforeDestroy() {
-    if (this.$props.container) {
+    if (this.container) {
       this.$el.remove();
     }
 
     this.service.off('change-charts', this.draw);
 
-    if (this.rel) {
-      GUI.off('pop-content', this.resizePlots);
-      this.rel = null;
-    }
+    this.resize.unobserve(this.$el);
+
+    this.rel = null;
 
     this.service.state.bbox_filter = false;
     this.service.state.bbox        = undefined;
@@ -357,8 +336,6 @@ export default ({
       this.service.state.bbox_ids = [];
     }
 
-    GUI.off('resize', this.resizePlots);
-
     this.service.config.plots
       .filter(p => p.show)
       .forEach(p => {
@@ -367,7 +344,6 @@ export default ({
         p.filters               = [];
       });
 
-    this._mounted                 = false;
     this.service.state.showCharts = false;
     this.charts                   = null;
     this.order                    = null;
@@ -380,12 +356,12 @@ document.head.insertAdjacentHTML(
   'beforeend',
   /* css */`
 <style>
-.plot_divs_content {
+.plot-content {
   width: 100%;
   background-color: #FFF;
   position: relative;
 }
-.plot_div_content {
+.plotly-wrapper {
   width: 95%;
   margin: auto;
   position: relative;
@@ -402,12 +378,12 @@ document.head.insertAdjacentHTML(
   text-align: center;
   font-weight: bold;
 }
-.plot_divs_content .g3w-chart-header {
+.plot-content .plot-header {
   width:100%;
   position: sticky;
   top:0;
   z-index: 1;
-  --skin-color: #374146;
+  background-color: #374146;
   display:flex;
   padding: 2px;
   min-height: 20px;
@@ -415,7 +391,7 @@ document.head.insertAdjacentHTML(
   text-align: center;
   color: #FFF;
 }
-.plot_divs_content .plot-tools {
+.plot-content .plot-tools {
   background-color: #FFF;
   padding: 2px;
   font-size: 1.0em;
@@ -423,13 +399,10 @@ document.head.insertAdjacentHTML(
   height: min-content;
   margin: auto 0;
 }
-.plot_divs_content .plot-filters {
+.plot-content .plot-filters {
   color: initial;
   list-style-type: ' ℹ️ ';
   padding: 5px 0 0 25px;
-}
-.plot_divs_content .plot-container.plotly + * {
-  display: none !important;
 }
 </style>`,
 );
