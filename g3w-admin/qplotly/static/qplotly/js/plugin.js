@@ -584,7 +584,6 @@
 
     }
 
-
     async togglePlot(id) {
       const plot = this.config.plots.find(p => id === p.id);
 
@@ -649,14 +648,11 @@
         this.#setActiveFilters(plot);
       }
 
-      // hide plot
+      // update Qplotly chart component
       if (!plot.show) {
-        // update Qplotly chart component
-        this.emit('toggle-chart', {
+        this.emit('change-charts', {
           plotId: plot.id,
-          filter: plot.filters,
           order:  this.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []), // order of plot ids
-          charts: {},
         });
       }
       GUI.emit('resize');

@@ -110,9 +110,6 @@ export default ({
 
     /**
      * toggle filter token on project layer
-     * 
-     * @param { Object } filter
-     * @param filter.layerId
      */
     async toggleFilter(layerId) {
       this.service.setLoading(true);
@@ -124,11 +121,6 @@ export default ({
 
     /**
      * Handle click on map icon tool (show bbox data)
-     * 
-     * @param { Object } tool
-     * @param tool.index
-     * 
-     * @returns { Promise<void> }
      */
     async toggleBBox(chart, index) {
       chart.tools.geolayer.active = !chart.tools.geolayer.active;
@@ -168,41 +160,7 @@ export default ({
       // return true or false based on map active geo tools
       this.service.state.bbox_filter = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
 
-
-      this.setCharts(await this.service.getCharts({ plotIds: plotIds.map(({ id }) => id) }))
-    },
-
-    /**
-     * Toggle chart - called from showPlot or hidePlot plugin service (check/uncheck) chart checkbox
-     * 
-     * @param { Object } chart
-     * @param chart.plotId
-     * @param chart.charts
-     * @param chart.order
-     * @param chart.action
-     * @param chart.filter
-     * 
-     * @returns { Promise<void> }
-     */
-    async toggle({
-      plotId,
-      charts = {},
-      order  = [],
-    } = {}) {
-
-      this.order = order;
-
-      await this.$nextTick();
-
-      const show = this.show = this.order.length > 0;
-
-      delete this.charts[plotId];
-
-      if (show) {
-        await this.setCharts({ charts, order });
-      }
-
-      this.resizePlots();
+      this.draw(await this.service.getCharts({ plotIds: plotIds.map(({ id }) => id) }))
     },
 
     /**
@@ -234,74 +192,67 @@ export default ({
     },
 
     /**
-     * Draw all charts
-     * 
-     * @returns { Promise<void> }
-     */
-    async draw() {
-      this.service.setLoading(true);
-
-      await this.$nextTick();
-
-      // loop through plots ids (ordered) draw Plotly Chart
-      (await Promise.allSettled(this.order.flatMap(plotId => 
-        this.charts[plotId].map(async ({ chart, state }) => {
-          // no data
-          if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
-            this.$refs[`${plotId}`][0].innerHTML = /* html */ `
-              <div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
-                <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.title ? ' - ' + chart.title : ''} </h4>
-                <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
-              </div>`;
-          } else {
-            // retrieve "trace-config" from cache
-            this.draw.configs = this.draw.configs || {}
-            if (!this.draw.configs[plotId]) {
-              this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
-            }
-            const { layout, config } = this.draw.configs[plotId];
-            layout.title  = chart.title;
-            if (this?.rel?.height) {
-              layout.height = this?.rel?.height;
-            }
-            state.loading = !this.rel;
-            await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , layout, config);
-          }
-          return plotId;
-        })
-      ))).forEach(({ value }) => this.charts[value].forEach(chart => { chart.state.loading = false; }));
-
-      this.service.setLoading(false);
-    },
-
-    /**
      * @param { Object } opts
      * @param { Object } opts.charts
-     * @param { Array }  opts.order ordered array of plot ids 
+     * @param { Array }  opts.order  ordered array of plot ids 
+     * @param { Array }  opts.plotId id of plot to be removed 
      * 
      * @returns { Promise<void> }
      */
-    async setCharts({
+    async draw({
       charts = {},
       order = [],
+      plotId
     } = {}) {
       this.service.setLoading(true);
       this.order = order;                // get new charts order
       this.show  = this.order.length > 0; // check if there are plot charts to show
 
-      // loop through charts
-      // TODO check other way
+      // remove plot
+      if (plotId in this.charts) {
+        delete this.charts[plotId];
+      }
 
-      // initialize chart with plotId and get chart (set reactive state by Vue.observable)
+      // loop through charts and initialize chart with plotId and get chart (set reactive state by Vue.observable)
       Object.keys(charts).forEach(id => {
         this.charts[id] = [];
         charts[id].forEach(c => this.charts[id].push({ chart: c, state: Vue.observable({ loading: false }) }));
       });
 
-      this.$nextTick();
+      await this.$nextTick();
 
+      // draw all charts
       if (this.show) {
-        await this.draw();
+        // loop through plots ids (ordered) draw Plotly Chart
+        (await Promise.allSettled(this.order.flatMap(plotId => 
+          this.charts[plotId].map(async ({ chart, state }) => {
+            // no data
+            if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
+              this.$refs[`${plotId}`][0].innerHTML = /* html */ `
+                <div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
+                  <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.title ? ' - ' + chart.title : ''} </h4>
+                  <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
+                </div>`;
+            } else {
+              // retrieve "trace-config" from cache
+              this.draw.configs = this.draw.configs || {}
+              if (!this.draw.configs[plotId]) {
+                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
+              }
+              const { layout, config } = this.draw.configs[plotId];
+              layout.title  = chart.title;
+              // enable scrollbars within "relation" pages
+              if (this?.rel?.height) {
+                layout.height = this?.rel?.height;
+              }
+              state.loading = !this.rel;
+              await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , layout, config);
+            }
+            return plotId;
+          })
+        ))).forEach(response => {
+          this.charts[response.value].forEach(chart => { chart.state.loading = false; })
+        });
       }
 
       setTimeout(() => this.service.setLoading(false))
@@ -317,7 +268,6 @@ export default ({
 
   /**
    * @listens service~change-charts
-   * @listens service~toggle-chart
    * @listens GUI~pop-content
    */
   async mounted() {
@@ -328,8 +278,7 @@ export default ({
 
     await this.$nextTick();
     
-    this.service.on('change-charts', this.setCharts);
-    this.service.on('toggle-chart', this.toggle);
+    this.service.on('change-charts', this.draw);
 
     // at mount time get Charts
     const { charts, order } = await this.service.getCharts({
@@ -338,7 +287,7 @@ export default ({
     });
     
     // set charts
-    await this.setCharts({ charts, order });
+    await this.draw({ charts, order });
 
     // this.rel is passed by query result service
     // when show feature charts or relation charts feature
@@ -391,8 +340,7 @@ export default ({
       this.$el.remove();
     }
 
-    this.service.off('change-charts', this.setCharts);
-    this.service.off('toggle-chart',  this.toggle);
+    this.service.off('change-charts', this.draw);
 
     if (this.rel) {
       GUI.off('pop-content', this.resizePlots);
