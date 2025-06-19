@@ -110,7 +110,6 @@ export default ({
      * Handle click on map icon tool (show bbox data)
      */
     async toggleBBox() {
-
       this.service.state.loading = true;
 
       if (undefined === this.service.state.rel) {
@@ -121,7 +120,7 @@ export default ({
       this.service.state.bbox_filter = !this.service.state.bbox_filter;
 
       // set bbox parameter
-      this.service.state.bbox = this.service.state.bbox_filter ? MAP.getMapBBOX().toString() : undefined;
+      this.service.state.bbox = this.service.state.bbox_filter ? GUI.getService('map').getMapBBOX().toString() : undefined;
 
       // get active plot related to geolayer
       const geo_plots = this.service.config.plots.filter(p => {
@@ -138,7 +137,7 @@ export default ({
 
       // get map moveend event just one time
       if (this.service.state.bbox_filter && !this.service.state.bbox_key) {
-        this.service.state.bbox_key = MAP.getMap().on('moveend', this.service.changeCharts);
+        this.service.state.bbox_key = GUI.getService('map').getMap().on('moveend', this.service.changeCharts);
       }
 
       // remove handler of map moveend and reset to empty
