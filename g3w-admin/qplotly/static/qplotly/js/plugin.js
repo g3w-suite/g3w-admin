@@ -134,6 +134,7 @@
             const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
             const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
             if (charts.length) {
+              let _container;
               actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
                 id:       'show-plots-relations',
                 opened:   true,
@@ -148,16 +149,16 @@
                       fid:       feature.attributes[G3W_FID],
                       height:    400
                     });
-                    action._container = container; // save container to action
+                    _container = container; // save container to action
                   } else {
                     QUERY.hideChart(container);
-                    delete action._container; // remove container from action
+                    _container = null; // remove container from action
                   }
                 }),
                 clear({ action }) {
-                  if (action._container) {
-                    QUERY.hideChart(action._container);
-                    delete action._container;
+                  if (_container) {
+                    QUERY.hideChart(_container);
+                    _container = null;
                   }
                 }
               });

@@ -17,7 +17,7 @@ export default ({
       }"
     >
 
-    <template v-if = "show">
+    <template v-if = "order.length">
 
       <template v-for = "plotId in order">
         <figure v-for="({ chart }) in charts[plotId]">
@@ -53,7 +53,6 @@ export default ({
                 target             = "_blank"
                 style              = "margin: auto"
                 class              = "action-button action-button-icon far fa-edit"
-                :class             = "{ 'toggled': service.state.bbox_filter }"
                 data-placement     = "bottom"
                 data-toggle        = "tooltip"
                 v-t-tooltip.create = "'Edit in admin'"
@@ -94,7 +93,6 @@ export default ({
 
   data() {
     return {
-      show:      true,
       charts:    {},
       order:     [], //array of ordered plot id
       plots:     this.service.config.plots,
@@ -188,7 +186,6 @@ export default ({
 
       const resize = this.order === order;
       this.order   = order;                // get new charts order
-      this.show    = this.order.length > 0; // check if there are plot charts to show
 
       // remove plot
       if (plotId in this.charts) {
@@ -200,60 +197,57 @@ export default ({
         this.charts[id] = (charts[id] || []).map(chart => ({ chart, state: Vue.observable({ loading: false }) }));
       });
 
-      // draw all charts
-      if (this.show) {
-        // loop through plots ids (ordered) draw Plotly Chart
-        (await Promise.allSettled(this.order.flatMap(plotId => 
-          this.charts[plotId].map(async ({ chart, state }) => {
-            try {
-              await this.$nextTick();
-              const plot_container = this.$refs[`${plotId}`][0];
-              const svg_container = plot_container?.querySelector('.svg-container');
-              // no data
-              if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
-                if (!plot_container.querySelector('.no_data')) {
-                  plot_container.innerHTML = /* html */ `
-                    <div class="no_data" style="display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
-                      <h4 style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</h4>
-                    </div>`;
-                }
-              } else {
-                // retrieve "trace-config" from cache
-                this.draw.configs = this.draw.configs || {}
-                if (!this.draw.configs[plotId]) {
-                  this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
-                }
-                const { layout, config } = this.draw.configs[plotId];
-                layout.title  = chart.title;
-                // plot bg-color
-                plot_container.parentNode.style.backgroundColor = layout.plot_bgcolor || '#fff';
-                // plot height
-                if (this?.rel?.height) {
-                  layout.height = this?.rel?.height;
-                  plot_container.style.height = null;
-                } else {
-                  plot_container.style.height = 
-                    (this.$el.offsetHeight / (this.order.length > 1 ? 2 : 1))
-                    - Array.from(plot_container.parentNode.children).filter(el => plot_container !== el).reduce((height, sibling) => (height += sibling.offsetHeight), 0)
-                    + 'px';
-                }
-                state.loading = !this.rel;
-                if (resize && svg_container) {
-                  await Plotly.Plots.resize(plot_container);
-                } else {
-                  plot_container.innerHTML = '';
-                  await Plotly.newPlot(plot_container, [chart.data] , layout, config);
-                }
+      // draw all charts → loop through plots ids (ordered) draw Plotly Chart
+      (await Promise.allSettled(this.order.flatMap(plotId => 
+        this.charts[plotId].map(async ({ chart, state }) => {
+          try {
+            await this.$nextTick();
+            const plot_container = this.$refs[`${plotId}`][0];
+            const svg_container = plot_container?.querySelector('.svg-container');
+            // no data
+            if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
+              if (!plot_container.querySelector('.no_data')) {
+                plot_container.innerHTML = /* html */ `
+                  <div class="no_data" style="display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
+                    <h4 style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</h4>
+                  </div>`;
               }
-            } catch (e) {
-              console.warn(e);
+            } else {
+              // retrieve "trace-config" from cache
+              this.draw.configs = this.draw.configs || {}
+              if (!this.draw.configs[plotId]) {
+                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
+              }
+              const { layout, config } = this.draw.configs[plotId];
+              layout.title  = chart.title;
+              // plot bg-color
+              plot_container.parentNode.style.backgroundColor = layout.plot_bgcolor || '#fff';
+              // plot height
+              if (this?.rel?.height) {
+                layout.height = this?.rel?.height;
+                plot_container.style.height = null;
+              } else {
+                plot_container.style.height = 
+                  (this.$el.offsetHeight / (this.order.length > 1 ? 2 : 1))
+                  - Array.from(plot_container.parentNode.children).filter(el => plot_container !== el).reduce((height, sibling) => (height += sibling.offsetHeight), 0)
+                  + 'px';
+              }
+              state.loading = !this.rel;
+              if (resize && svg_container) {
+                await Plotly.Plots.resize(plot_container);
+              } else {
+                plot_container.innerHTML = '';
+                await Plotly.newPlot(plot_container, [chart.data] , layout, config);
+              }
             }
-            return plotId;
-          })
-        ))).forEach(response => {
-          this.charts[response.value].forEach(chart => { chart.state.loading = false; })
-        });
-      }
+          } catch (e) {
+            console.warn(e);
+          }
+          return plotId;
+        })
+      ))).forEach(response => {
+        this.charts[response.value].forEach(chart => { chart.state.loading = false; })
+      });
 
       setTimeout(() => this.service.setLoading(false))
     },
