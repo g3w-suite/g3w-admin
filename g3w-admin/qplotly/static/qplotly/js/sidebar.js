@@ -128,7 +128,6 @@ export default ({
 
       const id     = this.order[index];
       const active = chart.tools.geolayer.active;
-      const charts = this.charts;
 
       const order   = this.service.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []);
       const plotIds = [{ id, active }];
@@ -158,7 +157,7 @@ export default ({
       this.service.clearData(plot);
       // global map tool toggled status base on plot belong to geolayer show on charts
       // return true or false based on map active geo tools
-      this.service.state.bbox_filter = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
+      this.service.state.bbox_filter = Object.values(order).reduce((b, id) => b && this.charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
 
       this.draw(await this.service.getCharts({ plotIds: plotIds.map(({ id }) => id) }))
     },
