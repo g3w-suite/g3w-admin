@@ -364,8 +364,8 @@
 
         // request has valid response with multiple chart plot of same plot
         if (!is_error) {
-          plot.data              = response.value.data;
-          plot.loaded            = true;
+          plot.data   = response.value.data;
+          plot.loaded = true;
         }
 
         this.#setActiveFilters(plot);
@@ -456,11 +456,11 @@
      * Called when queryResultService emit event show-chart (or open/close sidebar item)
      * 
      * @param { Object }  opts
-     * @param { boolean } opts.show true/false = show chart
-     * @param { number }  opts.id   number = id of plot to be toggled
+     * @param { boolean } opts.show whether to show charts
+     * @param { number }  opts.id   id of plot to be toggled
      * @param { Array }   opts.ids  passed by query result services
      * @param opts.container        DOM element - passed by query result service
-     * @param opts.rel              Passed by query result service
+     * @param opts.rel              relation data - Passed by query result service
      * @param {boolean} opts.bbox   whether to toggle bbox filter
      * @param opts.layerId          passed by filter token (add or remove to a specific layer)
      * 
@@ -478,163 +478,153 @@
       layerId,
     }) {
 
-      // show charts (append to DOM)
-      if (true === show) {
-        this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
-        this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
-          ids,
-          rel,
-          service: this,
-          container
-        }}).$mount());
-      }
+      try {
 
-      // hide charts (remove from DOM)
-      if (false === show) {
-        const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
-        if (1!== i) {
-          this.#CHARTS[i].$destroy();                                       // remove container
-          this.#CHARTS.splice(i, 1);
-          this.config.plots.forEach(p => p.loaded && this.clearData(plot)); // clear plot data
-        }
-      }
+        let CHARTS, PLOT_IDS;
 
-      // reload charts (after "bbox" change)
-      if (undefined !== bbox) {
-        this.state.bbox_filter = bbox;
-
-        // set bbox parameter
-        this.state.bbox = this.state.bbox_filter ? GUI.getService('map').getMapBBOX().toString() : undefined;
-
-        // get active plot related to geolayer
-        const geo_plots = this.config.plots.filter(p => p.show && p.tools.geolayer.show);
-        
-        geo_plots.forEach(p => p.tools.geolayer.active = bbox)
-
-        // handle moveend map event
-
-        // which plotIds need to trigger map moveend event
-        this.state.bbox_ids = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
-
-        // get map moveend event just one time
-        if (this.state.bbox_filter && !this.state.bbox_key) {
-          this.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.toggleCharts({ layerId: false })));
+        // show charts (append to DOM)
+        if (true === show) {
+          this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
+          this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
+            ids,
+            rel,
+            service: this,
+            container
+          }}).$mount());
         }
 
-        // remove handler of map moveend and reset to empty
-        if (!this.state.bbox_filter) {
-          ol.Observable.unByKey(this.state.bbox_key);
-          this.state.bbox_key = null;
+        // hide charts (remove from DOM)
+        if (false === show) {
+          const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
+          if (1!== i) {
+            this.#CHARTS[i].$destroy();                                       // remove container
+            this.#CHARTS.splice(i, 1);
+            this.config.plots.forEach(p => p.loaded && this.clearData(plot)); // clear plot data
+          }
         }
 
-        try {
-          this.emit(
-            'change-charts',
-            await this.getCharts({ plotIds: geo_plots.map(p => { this.clearData(p); return p.id; }) })
-          );
-        } catch(e) {
-          console.warn(e);
-        }
-      }
+        // reload charts (after "bbox" change)
+        if (undefined !== bbox) {
+          this.state.bbox_filter = bbox;
 
-      // reload charts (after "filtertoken" or "bbox" change)
-      if (undefined !== layerId && this.state.showCharts && !(undefined !== this.state.rel && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show)))) {
+          // set bbox parameter
+          this.state.bbox = this.state.bbox_filter ? GUI.getService('map').getMapBBOX().toString() : undefined;
 
-        this.state.bbox = (this.state.bbox_ids.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
+          // get active plot related to geolayer
+          const geo_plots = this.config.plots.filter(p => p.show && p.tools.geolayer.show);
+          
+          geo_plots.forEach(p => p.tools.geolayer.active = bbox)
 
-        // in case of a filter is change on showed chart it redraw the chart
+          // handle moveend map event
 
-        // plots to reload
-        const reload   = [
-          // whether there is a bbox filter
-          ...((this.state.bbox_ids || []).map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] }))),
-          // whether filtertoken is added or removed from layer
-          ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
-        ];
+          // which plotIds need to trigger map moveend event
+          this.state.bbox_ids = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
 
-        // redraw the chart
-        try {
-          this.emit('change-charts', await this.getCharts({
-            plotIds: reload.length > 0 ? reload.map(p => { this.clearData(p); return p.id; }) : undefined,
-          }));
-        } catch(e) {
-          console.warn(e);
-        }
-      }
+          // get map moveend event just one time
+          if (this.state.bbox_filter && !this.state.bbox_key) {
+            this.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.toggleCharts({ layerId: false })));
+          }
 
-      // reload charts (after "plot.id" change)
-      if (undefined !== id) {
-        const plot = this.config.plots.find(p => id === p.id);
+          // remove handler of map moveend and reset to empty
+          if (!this.state.bbox_filter) {
+            ol.Observable.unByKey(this.state.bbox_key);
+            this.state.bbox_key = null;
+          }
 
-        // whether geolayer tools is show
-        const has_geo = plot.tools.geolayer.show;
-
-        plot.tools.geolayer.active = has_geo ? plot.show && this.state.bbox_filter : plot.tools.geolayer.active;
-
-        // add current plot id in case of already register move map event
-        if (plot.show && has_geo && this.state.bbox_key) {
-          this.state.bbox_ids.push({ id: plot.id, active: this.state.bbox_filter });
+          PLOT_IDS = geo_plots.map(p => { this.clearData(p); return p.id; });
         }
 
-        // remove map Move end from plotids keys when there is a key moveend listener 
-        if (!plot.show && has_geo && this.state.bbox_key) {
-          this.state.bbox_ids = this.state.bbox_ids.filter(p => plot.id !== p.id);
+        // reload charts (after "filtertoken" or "bbox" change)
+        if (undefined !== layerId && this.state.showCharts && !(undefined !== this.state.rel && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show)))) {
+
+          this.state.bbox = (this.state.bbox_ids.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
+
+          // in case of a filter is change on showed chart it redraw the chart
+
+          // plots to reload
+          const reload   = [
+            // whether there is a bbox filter
+            ...((this.state.bbox_ids || []).map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] }))),
+            // whether filtertoken is added or removed from layer
+            ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
+          ];
+
+          PLOT_IDS = reload.length > 0 ? reload.map(p => { this.clearData(p); return p.id; }) : undefined;
         }
 
-        // no plots have active geo tools
-        if (!plot.show && has_geo && !this.state.bbox_ids.length) {
-          this.state.bbox        = undefined; // set request params to undefined
-          this.state.bbox_filter = false;     // un-toggle main chart map tool
+        // reload charts (after "plot.id" change)
+        if (undefined !== id) {
+          const plot = this.config.plots.find(p => id === p.id);
+
+          // whether geolayer tools is show
+          const has_geo = plot.tools.geolayer.show;
+
+          plot.tools.geolayer.active = has_geo ? plot.show && this.state.bbox_filter : plot.tools.geolayer.active;
+
+          // add current plot id in case of already register move map event
+          if (plot.show && has_geo && this.state.bbox_key) {
+            this.state.bbox_ids.push({ id: plot.id, active: this.state.bbox_filter });
+          }
+
+          // remove map Move end from plotids keys when there is a key moveend listener 
+          if (!plot.show && has_geo && this.state.bbox_key) {
+            this.state.bbox_ids = this.state.bbox_ids.filter(p => plot.id !== p.id);
+          }
+
+          // no plots have active geo tools
+          if (!plot.show && has_geo && !this.state.bbox_ids.length) {
+            this.state.bbox        = undefined; // set request params to undefined
+            this.state.bbox_filter = false;     // un-toggle main chart map tool
+          }
+
+            // set main map geolayer tools based on if there are plot belong to a geolayer
+          if (plot.show) {
+            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
+          }
+
+          /**
+           * @TODO make it simpler..
+           */
+          // whether there are chart to reload (in case of parent plot relations)
+          // check if other plot with the same `qgs_layer_id` has already loaded child plot
+          // show plot
+          if (plot.show && plot._rel && !this.config.plots.some(p => p.show && p.id !== plot.id && p.qgs_layer_id === plot.qgs_layer_id)) {
+            // not find a show plot with same qgs_layer_id
+            this.config.plots
+              // find a child plot show
+              .filter(p => p.show && p.show_in_sidebar && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
+              .forEach(p => {
+                // if found clear plot data to force to reload by parent plot
+                const plotIds = this.clearData(p);
+                if (plotIds.length > 0) {
+                  this.getCharts({ plotIds }).then(d => this.emit('change-charts', d));
+                }
+              });
+          }
+
+          const plotIds = plot.show ? [plot.id] : this.clearData(plot);
+
+          if (plot.show || (!plot.show && plotIds.length)) {
+            PLOT_IDS = plotIds;
+          }
+
+          if (!plot.show) {
+            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
+            this.#setActiveFilters(plot); // remove filters
+            CHARTS = {
+              plotId: plot.id,
+              order:  this.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []), // order of plot ids
+            };
+          }
         }
 
-          // set main map geolayer tools based on if there are plot belong to a geolayer
-        if (plot.show) {
-          this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
+        // redraw the charts
+        if (CHARTS || PLOT_IDS) {
+          this.emit('change-charts', CHARTS || await this.getCharts({ plotIds: PLOT_IDS }));
         }
 
-        /**
-         * @TODO make it simpler..
-         */
-        // whether there are chart to reload (in case of parent plot relations)
-        // check if other plot with the same `qgs_layer_id` has already loaded child plot
-        // show plot
-        if (plot.show && plot._rel && !this.config.plots.some(p => p.show && p.id !== plot.id && p.qgs_layer_id === plot.qgs_layer_id)) {
-          // not find a show plot with same qgs_layer_id
-          this.config.plots
-            // find a child plot show
-            .filter(p => p.show && p.show_in_sidebar && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
-            .forEach(p => {
-              // if found clear plot data to force to reload by parent plot
-              const plotIds = this.clearData(p);
-              if (plotIds.length > 0) {
-                this.getCharts({ plotIds }).then(d => this.emit('change-charts', d));
-              }
-            });
-        }
-
-        const plotIds = plot.show ? [plot.id] : this.clearData(plot);
-
-        if (plot.show || (!plot.show && plotIds.length)) {
-          this.emit('change-charts', await this.getCharts({ plotIds }));
-        }
-
-        if (!plot.show) {
-          this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
-        }
-
-        // remove filters eventually
-        if (!plot.show) {
-          this.#setActiveFilters(plot);
-        }
-
-        // update Qplotly chart component
-        if (!plot.show) {
-          this.emit('change-charts', {
-            plotId: plot.id,
-            order:  this.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []), // order of plot ids
-          });
-        }
-        GUI.emit('resize');
+      } catch (e) {
+        console.warn(e);
       }
     }
 
