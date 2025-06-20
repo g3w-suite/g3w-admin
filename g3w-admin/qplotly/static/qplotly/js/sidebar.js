@@ -123,46 +123,8 @@ export default ({
      * Handle click on map icon tool (show bbox data)
      */
     async toggleBBox() {
-
       this.service.setLoading(true);
-
-      this.service.state.bbox_filter = !this.service.state.bbox_filter;
-
-      // set bbox parameter
-      this.service.state.bbox = this.service.state.bbox_filter ? GUI.getService('map').getMapBBOX().toString() : undefined;
-
-      // get active plot related to geolayer
-      const geo_plots = this.service.config.plots.filter(p => {
-        if (p.show && p.tools.geolayer.show) {
-          p.tools.geolayer.active = !!this.service.state.bbox_filter;
-          return true;
-        }
-      });
-
-      // handle moveend map event
-
-      // which plotIds need to trigger map moveend event
-      this.service.state.bbox_ids = this.service.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
-
-      // get map moveend event just one time
-      if (this.service.state.bbox_filter && !this.service.state.bbox_key) {
-        this.service.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.service.toggleCharts({ layerId: false })));
-      }
-
-      // remove handler of map moveend and reset to empty
-      if (!this.service.state.bbox_filter) {
-        ol.Observable.unByKey(this.service.state.bbox_key);
-        this.service.state.bbox_key = null;
-      }
-
-      try {
-        this.service.emit(
-          'change-charts',
-          await this.service.getCharts({ plotIds: geo_plots.map(p => { this.service.clearData(p); return p.id; }) })
-        );
-      } catch(e) {
-        console.warn(e);
-      }
+      this.service.toggleCharts({ bbox: !this.service.state.bbox_filter })
     },
 
     /**
@@ -256,7 +218,6 @@ export default ({
 
   /**
    * @listens service~change-charts
-   * @listens GUI~pop-content
    */
   async mounted() {
 
@@ -326,7 +287,6 @@ export default ({
     this.charts                   = null;
     this.order                    = null;
     this.ids                      = null;
-    this.service.state.showCharts = false;
   },
 
 });

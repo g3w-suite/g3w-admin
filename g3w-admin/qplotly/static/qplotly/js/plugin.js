@@ -79,6 +79,50 @@
       // check if some some plot has visible geolayer 
       this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
 
+      // show relations (plot)
+      QUERY.onafter('addActionsForLayers', (actions, layers) => {
+        layers.forEach((layer, index) => {
+          const relations      = ApplicationState.project.getRelations().filter(r => r.referencedLayer === layer.id);
+          const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
+          const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
+          if (charts.length) {
+            let _container;
+            actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
+              id:       'show-plots-relations',
+              opened:   true,
+              class:    GUI.getFontClass('chart'),
+              state:    Vue.observable({ toggled: layer.features.reduce((a, _ , i ) => { a[i] = null; return a; }, {}) }),
+              hint:     'sdk.mapcontrols.query.actions.relations_charts.hint',
+              cbk: throttle((layer, feature, action, index, container) => {
+                action.state.toggled[index] = !action.state.toggled[index];
+                if (action.state.toggled[index]) {
+                  this.toggleCharts({
+                    show: true,
+                    ids: charts,
+                    container,
+                    rel: {
+                      relations,
+                      fid:       feature.attributes[G3W_FID],
+                      height:    400
+                    }
+                  });
+                  _container = container; // save container to action
+                } else {
+                  this.toggleCharts({ show: false, container });
+                  _container = null; // remove container from action
+                }
+              }),
+              clear: () => {
+                if (_container) {
+                  this.toggleCharts({ show: false, container: _container });
+                  _container = null;
+                }
+              }
+            });
+          }
+        });
+      });
+
       // setup gui
       GUI.isReady().then(async () => {
 
@@ -110,51 +154,6 @@
           if (!b) {
             GUI.closeContent();
           }
-        });
-
-
-        // show relations (plot)
-        QUERY.onafter('addActionsForLayers', (actions, layers) => {
-          layers.forEach((layer, index) => {
-            const relations      = ApplicationState.project.getRelations().filter(r => r.referencedLayer === layer.id);
-            const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
-            const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
-            if (charts.length) {
-              let _container;
-              actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
-                id:       'show-plots-relations',
-                opened:   true,
-                class:    GUI.getFontClass('chart'),
-                state:    Vue.observable({ toggled: layer.features.reduce((a, _ , i ) => { a[i] = null; return a; }, {}) }),
-                hint:     'sdk.mapcontrols.query.actions.relations_charts.hint',
-                cbk: throttle((layer, feature, action, index, container) => {
-                  action.state.toggled[index] = !action.state.toggled[index];
-                  if (action.state.toggled[index]) {
-                    this.toggleCharts({
-                      show: true,
-                      ids: charts,
-                      container,
-                      rel: {
-                        relations,
-                        fid:       feature.attributes[G3W_FID],
-                        height:    400
-                      }
-                    });
-                    _container = container; // save container to action
-                  } else {
-                    this.toggleCharts({ show: false, container });
-                    _container = null; // remove container from action
-                  }
-                }),
-                clear: () => {
-                  if (_container) {
-                    this.toggleCharts({ show: false, container: _container });
-                    _container = null;
-                  }
-                }
-              });
-            }
-          });
         });
 
         this.setReady(true);
@@ -462,7 +461,8 @@
      * @param { Array }   opts.ids  passed by query result services
      * @param opts.container        DOM element - passed by query result service
      * @param opts.rel              Passed by query result service
-     * @param layerId               passed by filter token (add or remove to a specific layer)
+     * @param {boolean} opts.bbox   whether to toggle bbox filter
+     * @param opts.layerId          passed by filter token (add or remove to a specific layer)
      * 
      * @returns { Promise<unknown> }
      * 
@@ -474,10 +474,11 @@
       ids,
       container,
       rel,
-      layerId
+      bbox,
+      layerId,
     }) {
 
-      // show all charts
+      // show charts (append to DOM)
       if (true === show) {
         this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
         this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
@@ -488,13 +489,51 @@
         }}).$mount());
       }
 
-      // hide all charts
+      // hide charts (remove from DOM)
       if (false === show) {
         const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
         if (1!== i) {
           this.#CHARTS[i].$destroy();                                       // remove container
           this.#CHARTS.splice(i, 1);
           this.config.plots.forEach(p => p.loaded && this.clearData(plot)); // clear plot data
+        }
+      }
+
+      // reload charts (after "bbox" change)
+      if (undefined !== bbox) {
+        this.state.bbox_filter = bbox;
+
+        // set bbox parameter
+        this.state.bbox = this.state.bbox_filter ? GUI.getService('map').getMapBBOX().toString() : undefined;
+
+        // get active plot related to geolayer
+        const geo_plots = this.config.plots.filter(p => p.show && p.tools.geolayer.show);
+        
+        geo_plots.forEach(p => p.tools.geolayer.active = bbox)
+
+        // handle moveend map event
+
+        // which plotIds need to trigger map moveend event
+        this.state.bbox_ids = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
+
+        // get map moveend event just one time
+        if (this.state.bbox_filter && !this.state.bbox_key) {
+          this.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.toggleCharts({ layerId: false })));
+        }
+
+        // remove handler of map moveend and reset to empty
+        if (!this.state.bbox_filter) {
+          ol.Observable.unByKey(this.service.state.bbox_key);
+          this.service.state.bbox_key = null;
+        }
+
+        try {
+          this.emit(
+            'change-charts',
+            await this.getCharts({ plotIds: geo_plots.map(p => { this.clearData(p); return p.id; }) })
+          );
+        } catch(e) {
+          console.warn(e);
         }
       }
 
@@ -525,7 +564,6 @@
 
       // reload charts (after "plot.id" change)
       if (undefined !== id) {
-        const id   = bool;
         const plot = this.config.plots.find(p => id === p.id);
 
         // whether geolayer tools is show
