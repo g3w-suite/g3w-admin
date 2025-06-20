@@ -146,7 +146,7 @@ export default ({
 
       // get map moveend event just one time
       if (this.service.state.bbox_filter && !this.service.state.bbox_key) {
-        this.service.state.bbox_key = GUI.getService('map').getMap().on('moveend', this.service.changeCharts);
+        this.service.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.service.toggleCharts({ layerId: false })));
       }
 
       // remove handler of map moveend and reset to empty
