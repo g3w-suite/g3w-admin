@@ -255,16 +255,15 @@ export default ({
    * un listen all events
    */
   beforeDestroy() {
+    this.resize.unobserve(this.$el);
+
     if (this.container) {
       this.$el.remove();
     }
 
     this.service.off('change-charts', this.draw);
 
-    this.resize.unobserve(this.$el);
-
-    this.rel = null;
-
+    this.rel                       = null;
     this.service.state.bbox_filter = false;
     this.service.state.bbox        = undefined;
 
