@@ -263,8 +263,6 @@ export default ({
     if (this.container) {
       this.container.append(this.$el);
     }
-
-    await this.$nextTick();
     
     this.service.on('change-charts', this.draw);
 
@@ -273,23 +271,23 @@ export default ({
       layerIds: this.ids, // provided by query result service otherwise is undefined
       rel:      this.rel, // provided by query result service otherwise is undefined
     });
-    
-    // set charts
-    await this.draw({ charts, order });
 
-    await this.$nextTick();
+    // show chart in sidebar
+    if (!this.container) {
+      await GUI.showContent({
+        content: this.$el,
+        title:   'plugins.qplotly.title',
+      });
+    }
 
     this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
     this.resize.observe(this.$el);
 
-    // show chart in sidebar
-    if (!this.container) {
-      GUI.showContent({
-        content: this.$el,
-        title: 'plugins.qplotly.title',
-      });
-    }
+    // set charts
+    await this.draw({ charts, order });
+    
     this.service.state.showCharts = true;
+    
   },
 
   /**
