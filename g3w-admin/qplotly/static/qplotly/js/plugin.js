@@ -523,7 +523,7 @@
 
         // remove handler of map moveend and reset to empty
         if (!this.state.bbox_filter) {
-          ol.Observable.unByKey(this.service.state.bbox_key);
+          ol.Observable.unByKey(this.state.bbox_key);
           this.state.bbox_key = null;
         }
 
