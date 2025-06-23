@@ -14,8 +14,9 @@
   new class extends Plugin {
 
     #SIDEBAR;
-    #LAYERS = [];
-    #CHARTS = [];
+    #LAYERS                 = [];
+    #CHARTS                 = [];
+    #QUERY_RELATIONS_LAYERS = [];
 
     /**
      * @fires   service~ready
@@ -52,8 +53,14 @@
       // loop over plots
       this.config.plots.forEach(plot => {
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
+        plot.show_position = plot.show_in_sidebar ? 'sidebarquery' : 'query';
 
         this.#LAYERS.push(layer);
+
+        //Add only in a plot that we must show on query
+        if (plot.show_position.includes('query')) {
+          this.#QUERY_RELATIONS_LAYERS.push(layer);
+        }
 
         plot.show = !!plot.show_on_start;
 
@@ -71,7 +78,7 @@
         layer.on('filtertokenchange', debounce(({ layerId }) => this.toggleCharts({ layerId }))) // reload charts after changing filter
       });
 
-      QUERY.addLayersPlotIds(Array.from(new Set(this.#LAYERS.map(l => l.getId()))));
+      QUERY.addLayersPlotIds(Array.from(new Set(this.#QUERY_RELATIONS_LAYERS.map(l => l.getId()))));
 
       QUERY.on('show-chart', (ids, container, rel) => { this.toggleCharts({ show: true, container, ids, rel }); });
       QUERY.on('hide-chart', container             => { this.toggleCharts({ show: false, container }); });
@@ -81,7 +88,7 @@
 
       // show relations (plot)
       QUERY.onafter('addActionsForLayers', (actions, layers) => {
-        layers.forEach((layer, index) => {
+        layers.forEach(layer => {
           const relations      = ApplicationState.project.getRelations().filter(r => r.referencedLayer === layer.id);
           const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
           const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
@@ -137,7 +144,7 @@
           data: () => ({ service: this }),
           template: /* html */ `
             <ul class="treeview-menu" style="padding: 10px; color:#FFF;">
-              <li v-for="plot in service.config.plots" :key="plot.id" :hidden="!plot.show_in.includes('sidebar')">
+              <li v-for="plot in service.config.plots" :key="plot.id" :hidden="!plot.show_position.includes('sidebar')">
                 <input type="checkbox" :id="plot.id" @change="service.toggleCharts({ id: plot.id })" v-model="plot.show" class="magic-checkbox" />
                 <label :for="plot.id" style="display:flex; justify-content: space-between;">
                   <span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.type }}
@@ -281,7 +288,7 @@
         })
       }
 
-      const order   = (layerIds ? plots : this.config.plots.filter(({ show, show_in }) => show && show_in.includes('sidebar'))).map(p => p.id); // order of plot ids
+      const order   = (layerIds ? plots : this.config.plots.filter(({ show, show_position }) => show && show_position.includes('sidebar'))).map(p => p.id); // order of plot ids
       const charts  = {}; // Object containing charts data
       const c_cache = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
       const r_cache = new Set(); // cache already loaded relationIds
@@ -340,7 +347,7 @@
                           filtertoken: ApplicationState.tokens.filtertoken || undefined,
                           // withrelations parameter (check if plot has relation child → default: undefined)
                           withrelations: plot._rel?.relations.filter(r => {
-                            if (this.config.plots.some(p => p.show && p.show_in.includes('sibebar') && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
+                            if (this.config.plots.some(p => p.show && p.show_position.includes('sidebar') && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
                               r_cache.add(r.id);
                               plot.loaded = false;
                               return true;
@@ -592,7 +599,7 @@
             // not find a show plot with same qgs_layer_id
             this.config.plots
               // find a child plot show
-              .filter(p => p.show && p.show_in.includes('sidebar') && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
+              .filter(p => p.show && p.show_position.includes('sidebar') && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
               .forEach(p => {
                 // if found clear plot data to force to reload by parent plot
                 const plotIds = this.clearData(p);
@@ -613,7 +620,7 @@
             this.#setActiveFilters(plot); // remove filters
             CHARTS = {
               plotId: plot.id,
-              order:  this.config.plots.flatMap(p => p.show && p.show_in.includes('sidebar') ? p.id : []), // order of plot ids
+              order:  this.config.plots.flatMap(p => p.show && p.show_position.includes('sidebar') ? p.id : []), // order of plot ids
             };
           }
         }
