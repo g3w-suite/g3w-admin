@@ -1023,6 +1023,8 @@ class WidgetSerializer(serializers.ModelSerializer):
                             'autocompletebox': 'autocompletefield',
                             'selectbox': 'selectfield'
                         }).get(field.get('widgettype'), field['input'].get('type')),
+                        # alternative unique layer id
+                        'alternativeuniquelayer': field.get('alternativeuniquelayer', None),
                         'options': {
                             **field['input'].get('options', {}),
                             #'values': etype(field, 'values', []),     # removed in v3.8
@@ -1033,6 +1035,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                                 'value': etype(field, 'Key'),
                                 'layer_id': etype(field, 'Layer'),
                             } if 'ValueRelation' == etype(field, 'widgetv2type') else {}),
+                            
                         },
                     },
                 } for field in body['fields']],
