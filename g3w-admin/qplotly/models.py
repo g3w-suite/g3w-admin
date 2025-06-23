@@ -27,10 +27,12 @@ class QplotlyWidget(models.Model):
         null=True,
     )
 
-    show_in_sidebar = models.BooleanField(
-        _('Show in sidebar'),
-        default=True,
-        help_text=_('Show this plot in the sidebar. If not checked, it will be shown only on results of a query.')
+    show_poistion = models.CharField(
+        _('SChart show position'),
+        max_length=100,
+        blank=True,
+        null=True,
+        default='sidebarquery'
     )
     
     def __str__(self):
