@@ -1,6 +1,7 @@
 const { GUI }                         = g3wsdk.gui;
 const { debounce, getUniqueDomId }    = g3wsdk.core.utils;
 const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
+const { ApplicationState }            = g3wsdk.core;
 
 export default ({
 
@@ -8,39 +9,26 @@ export default ({
     <div
       v-disabled = "service.state.loading"
       :id        = "id"
-      class      = "skin-color"
+      class      = "plot-content"
+      :class     = "{ 'bar-loader': undefined !== ids && service.state.loading }"
       :style     = "{
-        overflowY: 'auto',
+        overflow: 'hidden visible',
         height: order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
       }"
     >
 
-    <bar-loader
-      v-if     = "undefined !== ids"
-      :loading = "service.state.loading"
-    />
+    <template v-if = "order.length">
 
-    <div
-      v-if   = "show"
-      class  = "plot_divs_content"
-    >
+      <template v-for = "plotId in order">
+        <figure v-for="({ chart }) in charts[plotId]">
 
-      <div
-        v-for  = "(plotId, index) in order"
-        :key   = "plotId"
-      >
-
-        <template v-for="({ chart }) in charts[plotId]">
-          <div class="g3w-chart-header skin-background-color">
+          <figcaption>
 
             <div style="margin:auto">{{ chart.title || '' }}</div>
 
-            <div
-              v-if  = "!rel && (chart.tools.geolayer.show || chart.tools.selection.active)"
-              class = "plot-tools"
-            >
+            <div class = "plot-tools">
               <span
-                v-if               = "chart.tools.selection.active"
+                v-if               = "!rel && chart.tools.selection.active"
                 style              = "margin: auto"
                 class              = "action-button action-button-icon fas fa-filter"
                 @click.stop        = "toggleFilter(chart.layerId)"
@@ -50,18 +38,28 @@ export default ({
                 v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
               ></span>
               <span
-                v-if               = "chart.tools.geolayer.show"
+                v-if               = "!rel && service.state.geolayer"
                 style              = "margin: auto"
                 class              = "action-button action-button-icon far fa-map"
-                :class             = "{ 'toggled': chart.tools.geolayer.active }"
-                @click.stop        = "toggleBBox(chart, index)"
+                :class             = "{ 'toggled': service.state.bbox_filter }"
+                @click.stop        = "toggleBBox"
                 data-placement     = "bottom"
                 data-toggle        = "tooltip"
-                v-t-tooltip.create = "'plugins.qplotly.tooltip.show_feature_on_map'"
+                v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
               ></span>
+              <a
+                v-if               = "edit_url"
+                :href              = "edit_url"
+                target             = "_blank"
+                style              = "margin: auto"
+                class              = "action-button action-button-icon far fa-edit"
+                data-placement     = "bottom"
+                data-toggle        = "tooltip"
+                v-t-tooltip.create = "'Edit in admin'"
+              ></a>
             </div>
 
-          </div>
+          </figcaption>
 
           <ul v-if="(chart.filters || []).length > 0" class="plot-filters">
             <li
@@ -71,15 +69,13 @@ export default ({
             ></li>
           </ul>
 
-          <div
-            class = "plot_div_content"
-            :ref  = "plotId"
-          ></div>
-        </template>
+          <div :ref = "plotId"></div>
 
-    </div>
+        </figure>
 
-  </div>
+    </template>
+
+  </template>
 
   <div
     v-else
@@ -97,22 +93,23 @@ export default ({
 
   data() {
     return {
-      show:      true,
-      overflowY: 'none',
-      height:    100,
+      charts:    {},
       order:     [], //array of ordered plot id
-      plots:     this.$props.service.config.plots,
+      plots:     this.service.config.plots,
       id:        getUniqueDomId(),
     }
+  },
+
+  computed: {
+    edit_url() {
+      return ApplicationState.project.getState()?.layers_url || '';
+    },
   },
 
   methods: {
 
     /**
      * toggle filter token on project layer
-     * 
-     * @param { Object } filter
-     * @param filter.layerId
      */
     async toggleFilter(layerId) {
       this.service.setLoading(true);
@@ -124,281 +121,149 @@ export default ({
 
     /**
      * Handle click on map icon tool (show bbox data)
-     * 
-     * @param { Object } tool
-     * @param tool.index
-     * 
-     * @returns { Promise<void> }
      */
-    async toggleBBox(chart, index) {
-      chart.tools.geolayer.active = !chart.tools.geolayer.active;
+    async toggleBBox() {
       this.service.setLoading(true);
-
-      const id     = this.order[index];
-      const active = chart.tools.geolayer.active;
-      const charts = this.charts;
-
-      const order   = this.service.config.plots.flatMap(p => p.show && p.show_in_sidebar ? p.id : []);
-      const plotIds = [{ id, active }];
-      const plot    = this.service.config.plots.find(p => p.id === id);
-
-      this.service.config.plots
-        .filter(p => p.show && p.show_in_sidebar && p.id !== id && p.qgs_layer_id === plot.qgs_layer_id)
-        .forEach(p => {
-          p.tools.geolayer.active = active;
-          this.service.clearData(p);
-          plotIds.push({ id: p.id, active })
-        });
-
-      // set bbox parameter to force
-      this.service.state.bbox = GUI.getService('map').getMapBBOX().toString();
-
-      // handle moveend map event
-
-      // which plotIds need to trigger map moveend event
-      this.service.state.bbox_ids = plotIds;
-
-      // get map moveend event just one time
-      if (!this.service.state.bbox_key) {
-        this.service.state.bbox_key = GUI.getService('map').getMap().on('moveend', this.service.changeCharts);
-      }
-
-      this.service.clearData(plot);
-      // global map tool toggled status base on plot belong to geolayer show on charts
-      // return true or false based on map active geo tools
-      this.service.state.bbox_filter = Object.values(order).reduce((b, id) => b && charts[id].reduce((b, { chart }) => b && (chart.tools.geolayer.show ? chart.tools.geolayer.active : true), true), true);
-
-
-      this.setCharts(await this.service.getCharts({ plotIds: plotIds.map(({ id }) => id) }))
-    },
-
-    /**
-     * Toggle chart - called from showPlot or hidePlot plugin service (check/uncheck) chart checkbox
-     * 
-     * @param { Object } chart
-     * @param chart.plotId
-     * @param chart.charts
-     * @param chart.order
-     * @param chart.action
-     * @param chart.filter
-     * 
-     * @returns { Promise<void> }
-     */
-    async toggle({
-      plotId,
-      charts = {},
-      order  = [],
-    } = {}) {
-
-      this.order = order;
-
-      await this.$nextTick();
-
-      const show = this.show = this.order.length > 0;
-
-      delete this.charts[plotId];
-
-      if (show) {
-        await this.setCharts({ charts, order });
-      }
-
-      this.resizePlots();
-    },
-
-    /**
-     * @returns { Promise<void> }
-     */
-    async resizePlots() {
-
-      /** @FIXME add description */
-      if (undefined === this.ids) {
-        this.service.setLoading(true);
-      }
-
-      (
-        await Promise.allSettled(
-          this.order.flatMap(id => this.charts[id].map(async () => {
-            if (this.$refs[`${id}`][0]) {
-              await Plotly.Plots.resize(this.$refs[`${id}`][0]);
-            }
-            return id;
-          }))
-        )
-      ).forEach(r => this.charts[r.value].forEach(({ state }) => state.loading = false ));
-
-      /** @FIXME add description */
-      if (undefined === this.ids) {
-        this.service.setLoading(false);
-      }
-
-    },
-
-    /**
-     * Draw all charts
-     * 
-     * @returns { Promise<void> }
-     */
-    async draw() {
-      this.service.setLoading(true);
-
-      await this.$nextTick();
-
-      // loop through plots ids (ordered) draw Plotly Chart
-      (await Promise.allSettled(this.order.flatMap(plotId => 
-        this.charts[plotId].map(async ({ chart, state }) => {
-          // no data
-          if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
-            this.$refs[`${plotId}`][0].innerHTML = /* html */ `
-              <div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
-                <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.title ? ' - ' + chart.title : ''} </h4>
-                <div style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</div>
-              </div>`;
-          } else {
-            // retrieve "trace-config" from cache
-            this.draw.configs = this.draw.configs || {}
-            if (!this.draw.configs[plotId]) {
-              this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
-            }
-            const { layout, config } = this.draw.configs[plotId];
-            layout.title  = chart.title;
-            if (this?.rel?.height) {
-              layout.height = this?.rel?.height;
-            }
-            state.loading = !this.rel;
-            await Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , layout, config);
-          }
-          return plotId;
-        })
-      ))).forEach(({ value }) => this.charts[value].forEach(chart => { chart.state.loading = false; }));
-
-      this.service.setLoading(false);
+      this.service.toggleCharts({ bbox: !this.service.state.bbox_filter })
     },
 
     /**
      * @param { Object } opts
      * @param { Object } opts.charts
-     * @param { Array }  opts.order ordered array of plot ids 
+     * @param { Array }  opts.order  ordered array of plot ids 
+     * @param { Array }  opts.plotId id of plot to be removed 
      * 
      * @returns { Promise<void> }
      */
-    async setCharts({
+    async draw({
       charts = {},
       order = [],
+      plotId
     } = {}) {
+      if (!order || !charts) {
+        return;
+      }
+
       this.service.setLoading(true);
-      this.order = order;                // get new charts order
-      this.show  = this.order.length > 0; // check if there are plot charts to show
 
-      // loop through charts
-      // TODO check other way
+      const resize = this.order === order;
+      this.order   = order;                // get new charts order
 
-      // initialize chart with plotId and get chart (set reactive state by Vue.observable)
+      // remove plot
+      if (plotId in this.charts) {
+        delete this.charts[plotId];
+      }
+
+      // loop through charts and initialize chart with plotId and get chart (set reactive state by Vue.observable)
       Object.keys(charts).forEach(id => {
-        this.charts[id] = [];
-        charts[id].forEach(c => this.charts[id].push({ chart: c, state: Vue.observable({ loading: false }) }));
+        this.charts[id] = (charts[id] || []).map(chart => ({ chart, state: Vue.observable({ loading: false }) }));
       });
 
-      this.$nextTick();
-
-      if (this.show) {
-        await this.draw();
-      }
+      // draw all charts → loop through plots ids (ordered) draw Plotly Chart
+      (await Promise.allSettled(this.order.flatMap(plotId => 
+        this.charts[plotId].map(async ({ chart, state }) => {
+          try {
+            await this.$nextTick();
+            const plot_container = this.$refs[`${plotId}`][0];
+            const svg_container = plot_container?.querySelector('.svg-container');
+            // no data
+            if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
+              if (!plot_container.querySelector('.no_data')) {
+                plot_container.innerHTML = /* html */ `
+                  <div class="no_data" style="display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
+                    <h4 style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</h4>
+                  </div>`;
+              }
+            } else {
+              // retrieve "trace-config" from cache
+              this.draw.configs = this.draw.configs || {}
+              if (!this.draw.configs[plotId]) {
+                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
+              }
+              const { layout, config } = this.draw.configs[plotId];
+              layout.title  = chart.title;
+              // plot bg-color
+              plot_container.parentNode.style.backgroundColor = layout.plot_bgcolor || '#fff';
+              // plot height
+              if (this?.rel?.height) {
+                layout.height = this?.rel?.height;
+                plot_container.style.height = null;
+              } else {
+                plot_container.style.height = 
+                  (this.$el.offsetHeight / (this.order.length > 1 ? 2 : 1))
+                  - Array.from(plot_container.parentNode.children).filter(el => plot_container !== el).reduce((height, sibling) => (height += sibling.offsetHeight), 0)
+                  + 'px';
+              }
+              state.loading = !this.rel;
+              if (resize && svg_container) {
+                await Plotly.Plots.resize(plot_container);
+              } else {
+                plot_container.innerHTML = '';
+                await Plotly.newPlot(plot_container, [chart.data] , layout, config);
+              }
+            }
+          } catch (e) {
+            console.warn(e);
+          }
+          return plotId;
+        })
+      ))).forEach(response => {
+        this.charts[response.value].forEach(chart => { chart.state.loading = false; })
+      });
 
       setTimeout(() => this.service.setLoading(false))
     },
 
   },
 
-  created() {
-    this.charts = {};
-    this.resizePlots = debounce(this.resizePlots.bind(this));
-    GUI.on('resize', this.resizePlots);
-  },
-
   /**
    * @listens service~change-charts
-   * @listens service~toggle-chart
-   * @listens GUI~pop-content
    */
   async mounted() {
 
-    if (this.$props.container) {
-      this.$props.container.append(this.$el);
+    if (this.container) {
+      this.container.append(this.$el);
     }
-
-    await this.$nextTick();
     
-    this.service.on('change-charts', this.setCharts);
-    this.service.on('toggle-chart', this.toggle);
+    this.service.on('change-charts', this.draw);
 
     // at mount time get Charts
     const { charts, order } = await this.service.getCharts({
       layerIds: this.ids, // provided by query result service otherwise is undefined
       rel:      this.rel, // provided by query result service otherwise is undefined
     });
-    
-    // set charts
-    await this.setCharts({ charts, order });
-
-    // this.rel is passed by query result service
-    // when show feature charts or relation charts feature
-    if (undefined !== this.rel) {
-      GUI.on('pop-content', this.resizePlots);
-    }
-
-    await this.$nextTick();
-
-    this.resizePlots();
-
-    GUI.on('resize', this.resizePlots);
 
     // show chart in sidebar
-    if (!this.$props.container) {
-      GUI.showContent({
+    if (!this.container) {
+      await GUI.showContent({
         content: this.$el,
-        title: 'plugins.qplotly.title',
-        headertools: [
-          Vue.extend({
-            data: () => ({ service: this.service }),
-            template: /* html */ `
-              <div
-                :hidden = "!service.state.geolayer && !service.state.rel"
-                class   = "qplotly-tools"
-                style   = "border-radius: 3px; background-color: #FFF; font-size: 1.2em; margin-right: 5px;"
-              >
-                <span
-                  class              = "skin-color action-button"
-                  v-disabled         = "service.state.loading"
-                  data-placement     = "bottom"
-                  data-toggle        = "tooltip"
-                  style              = "font-weight: bold; margin: 3px"
-                  :class             = "[ $fa('map'), service.state.bbox_filter ? 'toggled' : '']"
-                  @click.stop        = "service.updateCharts()"
-                  v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
-                ></span>
-              </div>`,
-          }),
-        ],
+        title:   'plugins.qplotly.title',
       });
     }
+
+    this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
+    this.resize.observe(this.$el);
+
+    // set charts
+    await this.draw({ charts, order });
+    
+    this.service.state.showCharts = true;
+    
   },
 
   /**
    * un listen all events
    */
   beforeDestroy() {
-    if (this.$props.container) {
+    this.resize.unobserve(this.$el);
+
+    if (this.container) {
       this.$el.remove();
     }
 
-    this.service.off('change-charts', this.setCharts);
-    this.service.off('toggle-chart',  this.toggle);
+    this.service.off('change-charts', this.draw);
 
-    if (this.rel) {
-      GUI.off('pop-content', this.resizePlots);
-      this.rel = null;
-    }
-
+    this.rel                       = null;
     this.service.state.bbox_filter = false;
     this.service.state.bbox        = undefined;
 
@@ -409,8 +274,6 @@ export default ({
       this.service.state.bbox_ids = [];
     }
 
-    GUI.off('resize', this.resizePlots);
-
     this.service.config.plots
       .filter(p => p.show)
       .forEach(p => {
@@ -419,11 +282,10 @@ export default ({
         p.filters               = [];
       });
 
-    this._mounted                 = false;
     this.service.state.showCharts = false;
     this.charts                   = null;
     this.order                    = null;
-    this.ids                      = null
+    this.ids                      = null;
   },
 
 });
@@ -432,16 +294,6 @@ document.head.insertAdjacentHTML(
   'beforeend',
   /* css */`
 <style>
-.plot_divs_content {
-  width: 100%;
-  background-color: #FFF;
-  position: relative;
-}
-.plot_div_content {
-  width: 95%;
-  margin: auto;
-  position: relative;
-}
 #no_plots {
   height: 100%;
   width: 100%;
@@ -454,12 +306,12 @@ document.head.insertAdjacentHTML(
   text-align: center;
   font-weight: bold;
 }
-.plot_divs_content .g3w-chart-header {
+.plot-content figcaption {
   width:100%;
   position: sticky;
   top:0;
   z-index: 1;
-  --skin-color: #374146;
+  background-color: #374146;
   display:flex;
   padding: 2px;
   min-height: 20px;
@@ -467,7 +319,7 @@ document.head.insertAdjacentHTML(
   text-align: center;
   color: #FFF;
 }
-.plot_divs_content .plot-tools {
+.plot-content .plot-tools:not(:empty) {
   background-color: #FFF;
   padding: 2px;
   font-size: 1.0em;
@@ -475,16 +327,17 @@ document.head.insertAdjacentHTML(
   height: min-content;
   margin: auto 0;
 }
-.plot_divs_content .plot-filters {
+.plot-content .plot-filters {
   color: initial;
   list-style-type: ' ℹ️ ';
   padding: 5px 0 0 25px;
 }
-.plot_div_content .modebar-btn {
-  font-size: 22px !important;
+.plot-content.bar-loader::before {
+  z-index: 2;
+  background-color: #fff;
 }
-.plot_divs_content .plot-container.plotly + * {
-  display: none !important;
+.plot-content .action-button {
+  --skin-color: #374146;
 }
 </style>`,
 );

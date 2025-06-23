@@ -4,7 +4,6 @@ export default {
   no_data: "Keine Daten verfügbar",
   tooltip: {
     show_all_features_on_map: "Alle Diagramme nach den auf der Karte sichtbaren Elementen filtern",
-    show_feature_on_map: "Dieses Diagramm nach den auf der Karte sichtbaren Elementen filtern",
     filter_chart: "Diagramme nach ausgewählten Elementen filtern"
   },
   filters: {

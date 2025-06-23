@@ -868,14 +868,19 @@
             }
         },
         "config": {
-            "scrollZoom": true,
-            "editable": true,
+            "displaylogo": false,
+            "displayModeBar": true,
             "modeBarButtonsToRemove": [
                 "sendDataToCloud",
                 "editInChartStudio"
             ],
+            "editable": true,
             "responsive": true,
-            "autosize": true
+            "scrollZoom": false,
+            "toImageButtonOptions": {
+                "filename": "Plot - [19]"
+            },
+            "autosize": true,
         }
     }
 }

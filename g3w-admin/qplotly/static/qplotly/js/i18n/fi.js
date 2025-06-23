@@ -4,7 +4,6 @@ export default {
   no_data: "No Data available",
   tooltip: {
     show_all_features_on_map: "Filter all plots according to the geometries visible on the map",
-    show_feature_on_map: "Filter plot according to the geometries visible on the map",
     filter_chart: "Filter plots according to the selected geometries/records"
   },
   filters: {

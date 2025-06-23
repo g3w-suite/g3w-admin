@@ -193,11 +193,14 @@ class QplotlyTraceConfigAPIView(G3WAPIView):
                 'type': settings.plot_type,
                 'layout': layout,
                 'config': {
-                    'scrollZoom': True,
-                    'editable': True,
+                    'displaylogo': False,
+                    'displayModeBar': True,
                     'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio'],
+                    'editable': True,
                     'responsive': True,
-                    'autosize': True, 
+                    'scrollZoom': False,
+                    'toImageButtonOptions': {'filename': 'Plot - ' + layout.get('title', {}).get('text', f"[{qplotly.pk}]") },
+                    'autosize': True,
                 }
             }   
         }
