@@ -149,7 +149,7 @@ class QplotlyTestViews(QdjangoTestBase):
         })
 
         # test login required
-        response = self.client.post(url, data={'value': 'query'})
+        response = self.client.post(url, data={'value': 'query'}, content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
         jresponse = json.loads(response.content)

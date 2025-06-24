@@ -23,6 +23,7 @@ from qdjango.models import Project
 from django.utils.text import slugify
 from .models import QplotlyWidget
 from .utils.models import get_qplotlywidgets4project
+import json
 
 
 class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
@@ -76,7 +77,11 @@ class QplotlyWidgetChangeActionView(View):
     def post(self, *args, **kwargs):
 
         try:
-            self.change_status(action=kwargs['action'], value=(self.request.POST.get('value', None)))
+            if self.request.content_type == 'application/json':
+                data = json.loads(self.request.body)
+            else:
+                data = self.request.POST
+            self.change_status(action=kwargs['action'], value=data.get('value', None))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'errors_form': e})        
