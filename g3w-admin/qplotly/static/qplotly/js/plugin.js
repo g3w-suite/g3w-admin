@@ -53,7 +53,6 @@
       // loop over plots
       this.config.plots.forEach(plot => {
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
-        plot.show_position = plot.show_in_sidebar ? 'sidebarquery' : 'query';
 
         this.#LAYERS.push(layer);
 
