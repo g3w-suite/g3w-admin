@@ -104,7 +104,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
               <td>
                 <select 
                   id       = "qplotly-show-position"
-                  onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}', { method: 'POST',  body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
+                  onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}/', { method: 'POST',  body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
                 >
                   <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'select' : ''}>Sidebar Query</option>
                   <option value = "sidebar"      ${'sidebar'      === v.show_position ? 'select' : ''}>Sidebar</option>
