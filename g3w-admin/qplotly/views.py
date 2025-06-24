@@ -12,6 +12,8 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.views.generic import View, TemplateView
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from qdjango.mixins.views import QdjangoProjectViewMixin, QdjangoLayerViewMixin
 from django.core.files.base import ContentFile
 from django.http.response import JsonResponse
@@ -46,9 +48,10 @@ class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
         else:
             self.widget.layers.remove(self.layer)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class QplotlyWidgetChangeActionView(View):
     """
-    Set on true or false show_on_start_client model property.
+    Set on true or false show_on_start_client model property or value for other property.
     """
 
     _actions_map = {
