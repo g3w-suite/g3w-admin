@@ -50,7 +50,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
           <tr>
             <th style="width:180px;">${gettext('Actions')}</th>
             <th>${gettext('Active on startup')}</th>
-            <th>${gettext('Show position')}</th>
+            <th>${gettext('Position')}</th>
             <th>${gettext('Title')}</th>
             <th>${gettext('Type')}</th>
             <th>${gettext('From project')}</th>
@@ -107,7 +107,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
                   class    = "form-control select2 "
                   onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}/', { method: 'POST',  headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
                 >
-                  <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'selected' : ''}>Sidebar Query</option>
+                  <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'selected' : ''}>Sidebar, Query</option>
                   <option value = "sidebar"      ${'sidebar'      === v.show_position ? 'selected' : ''}>Sidebar</option>
                   <option value = "query"        ${'query'        === v.show_position ? 'selected' : ''}>Query</option>
                 </select>
