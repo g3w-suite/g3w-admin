@@ -50,7 +50,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
           <tr>
             <th style="width:180px;">${gettext('Actions')}</th>
             <th>${gettext('Active on startup')}</th>
-            <th>${gettext('Show in sidebar')}</th>
+            <th>${gettext('Show position')}</th>
             <th>${gettext('Title')}</th>
             <th>${gettext('Type')}</th>
             <th>${gettext('From project')}</th>
@@ -102,13 +102,14 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
                 />
               </td>
               <td>
-                <input
-                  type="checkbox"
-                  name="show_in_sidebar"
-                  value="1"
-                  ${v.show_in_sidebar ? 'checked' : ''}
-                  onchange="fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showinsidebar/${v.pk}/' + (event.target.checked ? '' : '?show=0')).catch(g3wadmin.widget.showError)"
-                />
+                <select 
+                  id       = "qplotly-show-position"
+                  onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}', { method: 'POST',  body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
+                >
+                  <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'select' : ''}>Sidebar Query</option>
+                  <option value = "sidebar"      ${'sidebar'      === v.show_position ? 'select' : ''}>Sidebar</option>
+                  <option value = "query"        ${'query'        === v.show_position ? 'select' : ''}>Query</option>
+                </select>
               </td>
               <td>${v.title}</td>
               <td>${v.type}</td>
