@@ -450,9 +450,7 @@ class QdjangoAlternativeUniqueLayerAPIView(G3WAPIView):
                 cols = l.database_columns_by_name()
 
                 # Check if field is in columns and type is the same
-                # TODO: remember to add the type condition
-                # and request.data.get('type') == cols[request.data['field']].get('type')
-                if request.data.get('field') in cols :
+                if request.data.get('field') in cols and request.data.get('type') == cols[request.data['field']].get('type'):
                     data.append({
                         'id': l.qgs_layer_id,
                         'name': l.name
