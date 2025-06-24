@@ -27,7 +27,7 @@ class QplotlyWidget(models.Model):
         null=True,
     )
 
-    show_poistion = models.CharField(
+    show_position = models.CharField(
         _('SChart show position'),
         max_length=100,
         blank=True,
