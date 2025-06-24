@@ -14,7 +14,7 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 /**
  * [data-widget-type="qplotlyWidgetList"]
  */
-export async function qplotlyWidgetList($datatable, $item, refresh = false) {
+export default async function qplotlyWidgetList($datatable, $item, refresh = false) {
   try {
 
     if (!SETTINGS.G3WADMIN_LOCAL_MORE_APPS.includes('qplotly')) {
