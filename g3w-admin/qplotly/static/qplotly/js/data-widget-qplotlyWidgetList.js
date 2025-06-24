@@ -103,12 +103,13 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
               </td>
               <td>
                 <select 
-                  id       = "qplotly-show-position"
-                  onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}/', { method: 'POST',  body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
+                  id       = "'qplotly-show-position-'${v.pk}"
+                  class    = "form-control select2 "
+                  onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}/', { method: 'POST',  headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
                 >
-                  <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'select' : ''}>Sidebar Query</option>
-                  <option value = "sidebar"      ${'sidebar'      === v.show_position ? 'select' : ''}>Sidebar</option>
-                  <option value = "query"        ${'query'        === v.show_position ? 'select' : ''}>Query</option>
+                  <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'selected' : ''}>Sidebar Query</option>
+                  <option value = "sidebar"      ${'sidebar'      === v.show_position ? 'selected' : ''}>Sidebar</option>
+                  <option value = "query"        ${'query'        === v.show_position ? 'selected' : ''}>Query</option>
                 </select>
               </td>
               <td>${v.title}</td>
