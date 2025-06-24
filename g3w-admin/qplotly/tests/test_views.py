@@ -142,28 +142,28 @@ class QplotlyTestViews(QdjangoTestBase):
         qwidget.refresh_from_db()
         self.assertFalse(qwidget.show_on_start_client)
 
-        # case showinsidebar
+        # case showposition
         url = reverse('qplotly-project-layer-widget-action-set', kwargs={
-            'action': 'showinsidebar',
+            'action': 'showposition',
             'pk': qwidget.pk
         })
 
         # test login required
-        response = self.client.get(url)
+        response = self.client.post(url, data={'value': 'query'})
         self.assertEqual(response.status_code, 200)
 
         jresponse = json.loads(response.content)
         self.assertEqual(jresponse['status'], 'ok')
 
         qwidget.refresh_from_db()
-        self.assertTrue(qwidget.show_in_sidebar)
+        self.assertEqual(qwidget.show_position, 'query')
 
-        response = self.client.get(f'{url}?show=0')
+        response = self.client.post(url, data={'value': 'sidebar'})
         self.assertEqual(response.status_code, 200)
 
         jresponse = json.loads(response.content)
         self.assertEqual(jresponse['status'], 'ok')
 
         qwidget.refresh_from_db()
-        self.assertFalse(qwidget.show_in_sidebar)
+        self.assertEqual(qwidget.show_position, 'sidebar')
 

@@ -53,23 +53,36 @@ class QplotlyWidgetChangeActionView(View):
 
     _actions_map = {
         'showonstartclient': 'show_on_start_client',
-        'showinsidebar': 'show_in_sidebar',
+        'showposition': 'show_position',
     }
 
-    def get(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
 
         self.widget = get_object_or_404(QplotlyWidget, pk=kwargs['pk'])
-        try:
 
-            self.change_status(action=kwargs['action'], show=(not 'show' in self.request.GET))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        
+        try:
+            self.change_status(action=kwargs['action'], value=(not 'show' in self.request.GET))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'errors_form': e.message})
+            return JsonResponse({'status': 'error', 'errors_form': e})
+        
+    def post(self, *args, **kwargs):
 
-    def change_status(self, action='show_on_start_client',show=True):
+        try:
+            self.change_status(action=kwargs['action'], value=(self.request.POST.get('value', None)))
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'errors_form': e})        
 
-        setattr(self.widget, self._actions_map[action], show)
-        self.widget.save()
+    def change_status(self, action='show_on_start_client',value=True):
+
+        if value is not None:
+            setattr(self.widget, self._actions_map[action], value)
+            self.widget.save()
 
 
 

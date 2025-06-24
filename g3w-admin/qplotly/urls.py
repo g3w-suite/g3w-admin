@@ -28,7 +28,7 @@ urlpatterns = [
     ),
 
     re_path(
-        r'(?P<action>showonstartclient|showinsidebar)/(?P<pk>[0-9]+)/',
+        r'(?P<action>showonstartclient|showposition)/(?P<pk>[0-9]+)/',
         login_required(QplotlyWidgetChangeActionView.as_view()),
         name='qplotly-project-layer-widget-action-set'
     ),

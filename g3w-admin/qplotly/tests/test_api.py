@@ -195,7 +195,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertFalse(plugin_plot['selected_features_only'])
         self.assertFalse(plugin_plot['visible_features_only'])
         self.assertFalse(plugin_plot['show_on_start'])
-        self.assertTrue(plugin_plot['show_in_sidebar'])
+        self.assertEqual(plugin_plot['show_position'], 'sidebarquery')
 
         #self.assertEqual(plugin_plot['plot']['type'], 'histogram')
         #self.assertTrue('layout' in plugin_plot['plot'])
@@ -655,8 +655,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         with open(f'{DATASOURCE_PATH}trace_config.json', 'r') as f:
             expected = json.load(f)
 
-
-        print(response.content)        
+     
         self.assertEqual(trace_config_data, expected['data'])
 
         response = self._testApiCall('qplotly-trace-plot-config-api', args=[
