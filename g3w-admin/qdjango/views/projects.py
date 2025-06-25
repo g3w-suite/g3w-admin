@@ -831,8 +831,8 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
     View for filter layer by user/group form
     """
 
-    form_class = FitlerByUserLayerForm
-    template_name = 'qdjango/layer_actions/fitler_by_user_layer_form.html'
+    form_class = FilterByUserLayerForm
+    template_name = 'qdjango/layer_actions/filter_by_user_layer_form.html'
 
     @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
                                                        return_403=True))
