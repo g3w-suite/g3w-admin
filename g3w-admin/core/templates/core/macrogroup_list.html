@@ -7,97 +7,158 @@
 {% load g3wadmin_tags %}
 
 {% block page_header %}
-    <h1>{% trans 'Cartographic macro groups' %}</h1>
-{% endblock %}
-
-
-{% block custom_js_links_page %}
-{% if user.is_superuser %}
-<script>
-    $("#macrogroups_list").sortable({
-        placeholder: "col-md-3 col-sm-6 sort-highlight-group",
-        handle: ".handle",
-        update: function(e, ui){
-            new_order = $(e.target).sortable("toArray");
-
-            // get current id of group moved
-            var gid = ui.item.attr('id').substring(11)
-            var url = _.template("/jx/macrogroups/<%= gid %>/setorder/")({gid: gid});
-            var data = {
-                new_order: new_order
-            }
-            ga.utils.addCsfrtokenData(data);
-
-            $.post(url, data, function(res){
-                console.log(res);
-            });
-
-        },
-    });
-    $("#groups_list").disableSelection();
-    $('.handle').hover(function() {
-        $(this).css('cursor','move');
-    });
-</script>
-{% endif %}
+  <h1>
+    {% trans 'Cartographic macro groups' %}
+    {% if perms.core.add_group %}
+      <a href="{% url 'macrogroup-add' %}" title="Add new element">
+        <i class="fa fa-plus-circle"></i>
+      </a>
+    {% endif %}
+  </h1>
 {% endblock %}
 
 {% block main_content %}
 
-
-<div id="macrogroups_list" class="row">
-{% for object in object_list %}
+<div id="groups_list">
+  {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
-    <div class="col-md-3 col-sm-6" id="macrogroup_{{ object.pk }}">
-     <div class="box box-widget widget-user" id="macrogroup_{{ object.slug }}">
-                <!-- Add the bg color to the header using any of the bg-* classes -->
-                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.logo_img }}') center center;">
-                <div class="row">
-                    <div class="col-sm-12 widget-group-title handle">
-                        <h3 class="widget-user-username">{{ object.title }}</h3>
-                    </div>
-                </div>
-                </div>
-                <div class="box-footer">
-                  <div class="row">
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                         <div class="icon">
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' object.slug %}"><i class="ion ion-eye"></i></a>
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "change_macrogroup" in userObj_perms %}
-                          <a href="{% url 'macrogroup-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                        {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "delete_macrogroup" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'macrogroup-delete' object.slug %}" data-item-selector="#macrogroup_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
-                        {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                  </div><!-- /.row -->
-                </div>
-          </div><!-- /.widget-user -->
+    <div id="group_{{ object.pk }}" class="handle col-md-3 col-sm-6">
+
+      <figure>
+        <img loading="lazy" class="bg-green-active" src="{{ MEDIA_URL }}{{ object.logo_img }}" alt="{{ object.title }}">
+        <figcaption>
+          <h3><b>{{ object.title }}</b></h3>
+        </figcaption>
+      </figure>
+
+      <a
+        href="#"
+        data-toggle="tooltip"
+        data-placement="top"
+        title="{% trans 'Show detail' %}"
+        data-widget-type="detailItem"
+        data-detail-url="{% url 'macrogroup-detail' object.slug %}"
+      >
+        <i class="fa fa-info-circle"></i>
+      </a>
+
+      {% if "change_macrogroup" in userObj_perms %}
+        <a
+          href="{% url 'macrogroup-update' object.slug %}"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Edit' %}"
+        >
+          <i class="fa fa-pencil"></i>
+        </a>
+      {% endif %}
+
+      {% if "delete_macrogroup" in userObj_perms %}
+        <a
+          href="#"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="{% trans 'Delete' %}"
+          data-widget-type="deleteItem"
+          data-delete-url="{% url 'macrogroup-delete' object.slug %}"
+          data-item-selector="#macrogroup_{{ object.slug }}"
+        >
+          <i class="fa fa-trash" style="color: red;"></i>
+        </a>
+      {% endif %}
+
     </div>
-{% endfor %}
+  {% endfor %}
 </div>
+
 {% if perms.core.add_group %}
-<div class="row">
-{% with 'macrogroup-add' as object_add_url_name %}
-    {% include 'core/include/widget_add_box.html' %}
-{% endwith %}
-</div>
+  <a
+    id="group_add"
+    href="{% url 'macrogroup-add' %}"
+    title="Add new element"
+  >
+    <i class="fa fa-plus-circle"></i>
+  </a>
 {% endif %}
 
+<script>
+document.head.insertAdjacentHTML(
+  'beforeend',
+  /* css */`
+<style>
+  #groups_list [id^="group_"] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding-bottom: 1em;
+    background-color: #fff;
+  }
+  #groups_list figure > img {
+    min-height: 200px;
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: contain;
+  }
+  #groups_list figure > figcaption {
+    background-color: #fff;
+    width: 100%;
+    padding: 10px
+  }
+  #groups_list figure > figcaption > * {
+    margin: 0;
+    color: #222d32;
+    font-weight: 400;
+    width:100%;
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
+  #groups_list [id^="group_"] i {
+    font-size: 1.5em;
+  }
+  #group_add {
+    aspect-ratio: 1;
+    margin-top: 20px;
+    display: inline-block;
+    min-width: 200px;
+    text-align: center;
+    font-size: 136px;
+    background-color: rgba(255,255,255,.7);
+    color: rgb(0,0,0,.15);
+    border: 1px dashed #ddd;
+  }
+</style>`
+);
+{% if user.is_superuser %}
+document.addEventListener("DOMContentLoaded", function() {
+  let dragged = null;
+  document.querySelectorAll('#groups_list .handle').forEach(row => {
+    row.setAttribute('draggable', true);
+    row.addEventListener('mouseover',  () => { row.style.cursor = 'move'; });
+    row.addEventListener('mouseleave', () => { row.style.cursor = null; });
+    row.addEventListener('dragstart',  () => { dragged = row; });
+    row.addEventListener('dragend',    () => { dragged = null; });
+    row.addEventListener('dragover',   e => { e.preventDefault(); row.style.border="2px dashed #000"; });
+    row.addEventListener('dragleave',  () => { row.style.border=null; });
+    row.addEventListener('drop', e => {
+      console.log(row, dragged, e);
+      if (dragged) {
+        dragged.parentNode.insertBefore(dragged, dragged == row.nextSibling ? row : row.nextSibling);
+        fetch(`/jx/macrogroups/${dragged.id.substring(6)}/setorder/`, {
+          method: 'POST',
+          body: new URLSearchParams([
+            ...Array.from(row.parentNode.children).map(tr => tr.id).filter(Boolean).map(id => ["new_order[]", id]),
+            ["csrfmiddlewaretoken", $.cookie('csrftoken')],
+          ]),
+        });
+      }
+      row.style.border=null;
+    });
+  });
+});
+{% endif %}
+</script>
 
 {% endblock %}

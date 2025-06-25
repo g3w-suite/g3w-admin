@@ -3,31 +3,62 @@
 {% load guardian_tags %}
 
 {% if results|length > 0 %}
-<div class="box">
-    <div class="box-header with-border">
-        <h3 class="box-title">{% trans 'Cartographic macro groups' %} ({{ results|length }})</h3>
-    </div>
-    <div class="box-body">
+  <details open>
+    <summary>{% trans 'Cartographic macro groups' %} ({{ results|length }})</summary>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 130px;">{% trans 'Logo' %}</th>
+          <th>{% trans 'Macro Group' %}</th>
+          <th style="width: 130px;">{% trans 'Actions' %}</th>
+          <th style="width: 130px;">{% trans 'Name' %}</th>
+          <th style="width: 50px;"></th>
+        </tr>
+      </thead>
+      <tbody>
         {% for r in results %}
-        {% if user %}
-        {% get_obj_perms user for r as "userObj_perms" %}
-        {% endif %}
-        <div class="result-search-item result-search-item-{% cycle 'odd' 'even' %} row">
-            <div class="col-sm-2 col-md-1"><img style="height: 60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ r.logo_img }}"></div>
-            <div class="col-sm-10 col-md-11">
-                <p>{{ r.title }} ({{ r.name }})</p>
-                {% if r.description %}<p>{{ r.description|safe }}</p> {% endif %}
-                {% if user %}
-                <p class="result-search-item-links">
-                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' r.slug %}"><i class="ion ion-eye"></i></a>
-                    {% if "change_macrogroup" in userObj_perms %}
-                    <a href="{% url 'macrogroup-update' r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                    {% endif %}
-                </p>
-            {% endif %}
-            </div>
-        </div>
+          {% if user %}
+            {% get_obj_perms user for r as "userObj_perms" %}
+          {% endif %}
+          <tr>
+            <td style="padding: 10px;">
+              <img style="width: 130px; object-fit: cover;" src="{{ MEDIA_URL }}{{ r.logo_img }}">
+            </td>
+            <td>
+              <h4>{{ r.title }}</h4>
+              {% if r.description %}
+                <details><summary><b>{% trans 'Description' %}</b></summary>{{ r.description|safe }}</details>
+              {% endif %}
+            </td>
+            <td style="display: flex;gap: 10px;">
+              {% if user %}
+                <a
+                  href="#"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="{% trans 'Show detail' %}"
+                  data-widget-type="detailItem"
+                  data-detail-url="{% url 'macrogroup-detail' r.slug %}"
+                >
+                  <i class="fa fa-lg fa-info-circle"></i>
+                </a>
+                {% if "change_macrogroup" in userObj_perms %}
+                  <a
+                    href="{% url 'macrogroup-update' r.slug %}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="{% trans 'Edit' %}"
+                  >
+                    <i class="fa fa-lg fa-pencil"></i>
+                  </a>
+                {% endif %}
+              {% endif %}
+            </td>
+            <td>{{ r.name }}</td>
+            <td></td>
+          </tr>
         {% endfor %}
-    </div>
-</div>
+      </tbody>
+    </table>
+  </details>
 {% endif %}

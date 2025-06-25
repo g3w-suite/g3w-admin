@@ -1,7 +1,7 @@
 from core.mixins.forms import *
 from core.utils.forms import crispyBoxBaseLayer
 from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import HTML, Div, Field
+from crispy_forms.layout import HTML, Div, Field, Fieldset
 from django import forms
 from django.core.files.base import ContentFile
 from django.urls import reverse

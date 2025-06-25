@@ -1,0 +1,7 @@
+- model: userscripts.userscript
+  fields:
+    name: "Custom JS"
+    type: "js"
+    description: "A custom JS snippet globally applied."
+    match: .*
+    run_at: "body_end"

@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block bootstrap_theme %}
-    <link rel="stylesheet" href="{% static 'bower_components/bootswatch-dist/css/bootstrap.min.css' %}" type="text/css">
+  <link rel="stylesheet" href="{% static 'css/bootswatch.css' %}" type="text/css">
 {% endblock %}
 
 {% block title %}
-    {% if name %}{{ name }} – {% endif %}G3W-Suite
+  {% if name %}{{ name }} &ndash; {% endif %}G3W-Suite
 {% endblock %}
 
 {% block branding %}

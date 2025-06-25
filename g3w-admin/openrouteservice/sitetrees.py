@@ -17,108 +17,56 @@ from core.utils.tree import G3Wtree
 # Define each available `tree` within `sitetrees` variable.
 # Then define each `items` through the `item` function.
 
-sitetrees = (
-
-    # ITALIAN
+sitetrees = tuple(
     G3Wtree(
-        'openrouteservice_it',
-        title='Openrouteservice',
+        'openrouteservice' + (f'_{tree['lang']}' if tree['lang'] != 'en' else ''),
+        title=tree['title'],
         module='openrouteservice',
         items=[
             item(
-                'Openrouteservice',
-                '#',
-                type_header=True
-            ),
-            item(
-                'ORS Progetti',
-                '#',
+                tree['routes'],
+                'ors-project-list',
                 icon_css_class='fa fa-road',
+                in_breadcrumbs=True,
+                url_as_pattern=True,
                 children=[
                     item(
-                        'Aggiungi progetto',
+                        tree['add_route'],
                         'ors-project-add',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-plus',
-                        access_by_perms=['qdjango.change_project']
+                        access_by_perms=['qdjango.change_project'],
+                        in_menu=False,
                     ),
                     item(
-                        'Lista progetti',
-                        'ors-project-list',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-list'
+                        tree['update_route'] + ' {{ object.name }}',
+                        'ors-project-update object.slug',
+                        in_menu=False,
+                        alias='route-update'
                     ),
                 ]
             ),
         ]
-    ),
-
-    # ENGLISH
-    G3Wtree(
-        'openrouteservice',
-        title='Openrouteservice',
-        module='openrouteservice',
-        items=[
-            item(
-                'Openrouteservice',
-                '#',
-                type_header=True
-            ),
-            item(
-                'ORS Projects',
-                '#',
-                icon_css_class='fa fa-road',
-                children=[
-                    item(
-                        'Add project',
-                        'ors-project-add',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-plus',
-                        access_by_perms=['qdjango.change_project']
-                    ),
-                    item(
-                        'List projects',
-                        'ors-project-list',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-list'
-                    ),
-                ]
-            ),
-        ]
-    ),
-
-    # GERMAN
-    G3Wtree(
-        'openrouteservice_de',
-        title='Openrouteservice',
-        module='openrouteservice',
-        items=[
-            item(
-                'Openrouteservice',
-                '#',
-                type_header=True
-            ),
-            item(
-                'ORS-Projekte',
-                '#',
-                icon_css_class='fa fa-road',
-                children=[
-                    item(
-                        'Projekt hinzufügen',
-                        'ors-project-add',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-plus',
-                        access_by_perms=['qdjango.change_project']
-                    ),
-                    item(
-                        'Projektliste',
-                        'ors-project-list',
-                        url_as_pattern=True,
-                        icon_css_class='fa fa-list'
-                    ),
-                ]
-            ),
-        ]
-    ),
-
+    )
+    for tree in [
+        {
+            'lang': 'en',
+            'title': 'OpenRouteService',
+            'routes': 'Routes',
+            'add_route': 'Add route',
+            'update_route': 'Update route',
+        },
+        {
+            'lang': 'it',
+            'title': 'OpenRouteService',
+            'routes': 'Percorsi',
+            'add_route': 'Aggiungi percorso',
+            'update_route': 'Aggiorna percorso',
+        },
+        {
+            'lang': 'de',
+            'title': 'OpenRouteService',
+            'routes': 'ORS-Projekte',
+            'add_route': 'Projekt hinzufügen',
+            'update_route': 'Projekt aktualisieren',
+        },
+    ]
 )

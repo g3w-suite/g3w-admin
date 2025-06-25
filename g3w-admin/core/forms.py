@@ -8,12 +8,11 @@ from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
 from django.contrib.auth.models import User, Group as AuthGroup
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
+from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field, Fieldset
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
 from django_bleach.forms import BleachField
-from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import (
     crispyBoxACL,
     userHasGroups,
@@ -28,7 +27,14 @@ from core.models import G3WSpatialRefSys
 from usersmanage.configs import *
 
 
-class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
+class GroupForm(
+    TranslationModelForm,
+    FileFormMixin,
+    G3WFormMixin,
+    G3WRequestFormMixin,
+    G3WACLForm,
+    ModelForm,
+):
     """Group form."""
 
     propagate = True
@@ -48,129 +54,56 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
-                            Div(
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('General data'))),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            HTML(
-                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
-                                            'name',
-                                            Field('title', css_class='translate'),
-                                            Field('description', css_class='wys5 translate', style="width:100%;"),
-                                            css_class='box-body',
 
-                                        ),
-                                        css_class='box box-success'
-                                    ),
-                                    css_class='col-md-6'
-                                ),
+            Div(
+                crispyBoxACL(self, **{'propagate': self.propagate if hasattr(self, 'propagate') else False}),
+                style='display: block !important;'
+            ),
 
-                                crispyBoxACL(self,
-                                             **{'propagate': self.propagate if hasattr(self, 'propagate') else False}),
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('General data')}",
+                HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                'name',
+                Field('title', css_class='translate'),
+                Field('description', css_class='wys5 translate', style="width:100%;"),
+            ),
 
-                                crispyBoxMacroGroups(self),
+            # Based on "core.utils.forms.crispyBoxMacroGroups" (v3.9)
+            Fieldset(
+                f"<i class='fa fa-map'></i> {_('MACRO Groups')}",
+                Field('macrogroups', **{'css_class': 'select2', 'multiple': 'multiple', 'style': 'width:100%;'}),
+            ) if self.request.user.is_superuser or userHasGroups(self.request.user, [G3W_EDITOR1]) else None,
 
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-globe'></i> {}</h3>".format(_('GEO data'))),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            Div(
-                                                Div(
-                                                    Field('srid', css_class='select2', style="width:100%;"),
-                                                    css_class='col-md-12'
-                                                ),
-                                                css_class='row'
-                                            ),
-                                            css_class='box-body'
-                                        ),
-                                        css_class='box box-danger'
-                                    ),
-                                    css_class='col-md-6'
-                                ),
+            Fieldset(
+                f"<i class='fa fa-globe'></i> {_('GEO data')}",
+                Field('srid', css_class='select2', style="width:100%;"),
+            ),
 
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-map'></i> {}</h3>".format(_('Base Layers and Map default features'))),
-                                            Div(
-                                                HTML("<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>"),
-                                                css_class='box-tools',
-                                            ),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            Field('mapcontrols',
-                                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
-                                                     'style': 'width:100%;'}),
-                                            Field('baselayers', **{'css_class': 'select2 col-md-12',
-                                                                   'multiple': 'multiple', 'style': 'width:100%;'}),
-                                            AppendedText('background_color', '<i></i>', css_class='colorpicker'),
-                                            css_class='box-body'
-                                        ),
-                                        css_class='box box-danger'
-                                    ),
-                                    css_class='col-md-6'
-                                ),
-                                css_class='row'
-                            ),
+            Fieldset(
+                f"<i class='fa fa-map'></i> {_('Base Layers and Map default features')}</h3>",
+                Field('mapcontrols', **{'css_class': 'select2', 'multiple': 'multiple', 'style': 'width:100%;'}),
+                Field('baselayers', **{'css_class': 'select2', 'multiple': 'multiple', 'style': 'width:100%;'}),
+                AppendedText('background_color', '<i></i>', css_class='colorpicker'),
+            ),
 
-                            Div(
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-file-image-o'></i> {}</h3>".format(_('Logo/Picture'))),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            Div(
-                                                'header_logo_img',
-                                                HTML("""{% load static %}<img class="img-responsive img-thumbnail" src={% if not form.header_logo_img.value %}"{% static 'img/'|add:SETTINGS.CLIENT_G3WSUITE_LOGO %}"{% else %}"{{ MEDIA_URL }}{{ form.header_logo_img.value }}"{% endif %}>"""),
-                                                'use_logo_client',
-                                                'form_id',
-                                                'upload_url',
-                                                css_class='col-md-12'
-                                            ),
-                                            Div(
-                                                #AppendedText('header_logo_height','px'),
-                                                'header_logo_link',
-                                                css_class='col-md-12'
-                                            ),
-                                            css_class='box-body'
-                                        ),
-                                        css_class='box box-primary'
-                                    ),
-                                    css_class='col-md-6'
-                                ),
+            Fieldset(
+                f"<i class='fa fa-file-image-o'></i> {_('Logo/Picture')}",
+                'header_logo_img',
+                HTML("""{% load static %}<img style="max-width: 300px;" class="img-responsive img-thumbnail" src={% if not form.header_logo_img.value %}"{% static 'img/'|add:SETTINGS.CLIENT_G3WSUITE_LOGO %}"{% else %}"{{ MEDIA_URL }}{{ form.header_logo_img.value }}"{% endif %}>"""),
+                'use_logo_client',
+                'form_id',
+                'upload_url',
+                #AppendedText('header_logo_height','px'),
+                'header_logo_link',
+            ),
 
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-copyright'></i> {}</h3>".format(_('Copyright'))),
-                                            Div(
-                                                HTML("<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>"),
-                                                css_class='box-tools',
-                                            ),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            Field('header_terms_of_use_text', css_class='translate'),
-                                            'header_terms_of_use_link',
-                                            css_class='box-body'
-                                        ),
-                                        css_class='box box-default {}'.format(self.checkEmptyInitialsData('header_terms_of_use_text','header_terms_of_use_link'))
-                                    ),
-                                    css_class='col-md-6'
-                                ),
-                                css_class='row'
-                            )
-                        )
+            Fieldset(
+                f"<i class='fa fa-copyright'></i> {_('Copyright')}",
+                Field('header_terms_of_use_text', css_class='translate'),
+                'header_terms_of_use_link',
+                css_class='{}'.format(self.checkEmptyInitialsData('header_terms_of_use_text','header_terms_of_use_link'))
+            ),
+        )
 
     class Meta:
         model = Group
@@ -213,7 +146,11 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
             self.instance.addPermissionsToEditor(self.request.user)
 
 
-class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
+class GeneralSuiteDataForm(
+    TranslationModelForm,
+    FileFormMixin,
+    ModelForm,
+):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
     home_description = BleachField(required=False)
@@ -229,145 +166,57 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Div(
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Frontend home data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
-                            Field('title', css_class='translate'),
-                            Field('sub_title', css_class='translate'),
-                            Field('home_description', css_class='wys5 translate', style="width:100%;"),
-                            'suite_logo',
-                            'form_id',
-                            'upload_url',
-                            HTML(
-                                """{% if form.suite_logo.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.suite_logo.value }}">{% endif %}""", ),
-                            PrependedText('url_suite_logo', '<i class="fa fa-link"></i>'),
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
-                                _('Frontend about data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            Field('about_title', css_class='translate'),
-                            Field('about_name', css_class='translate'),
-                            'about_tel',
-                            'about_email',
-                            'about_address',
-                            Field('about_description', css_class='wys5 translate', style="width:100%;"),
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
-                                _('Frontend groups map data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            Field('groups_title', css_class='translate'),
-                            Field('groups_map_description', css_class='wys5 translate', style="width:100%;"),
-                            css_class='box-body',
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
-                                _('Frontend login data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            Field('login_title', css_class='translate'),
-                            Field('login_description', css_class='wys5 translate', style="width:100%;"),
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
-                                _('Frontend social data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            PrependedText('facebook_url', '<i class="fa fa-facebook"></i>'),
-                            PrependedText('twitter_url', '<i class="fa fa-twitter"></i>'),
-                            PrependedText('googleplus_url', '<i class="fa fa-google-plus"></i>'),
-                            PrependedText('youtube_url', '<i class="fa fa-youtube"></i>'),
-                            PrependedText('instagram_url', '<i class="fa fa-instagram"></i>'),
-                            PrependedText('flickr_url', '<i class="fa fa-flickr"></i>'),
-                            PrependedText('tripadvisor_url', '<i class="fa fa-tripadvisor"></i>'),
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
-                                _('Map client data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            Field('main_map_title', css_class='translate'),
-                            Field('credits', css_class='wys5 translate', style="width:100%;"),
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-                Div(
-                    Div(
-                        Div(
-                            HTML(
-                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
-                                    _("Registration")
-                                )
-                            ),
-                            css_class="box-header with-border",
-                        ),
-                        Div(
-                            Field("registration_intro", css_class="wys5 translate", style="width:100%;"),
-                            css_class="box-body",
-                        ),
-                        css_class="box box-default",
-                    ),
-                    css_class="col-md-6",
-                ),
-                css_class='row'
-            )
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('Frontend home data')}",
+                HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                Field('title', css_class='translate'),
+                Field('sub_title', css_class='translate'),
+                Field('home_description', css_class='wys5 translate', style="width:100%;"),
+                'suite_logo',
+                'form_id',
+                'upload_url',
+                HTML("""{% if form.suite_logo.value %}<img style="max-width: 300px;" class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.suite_logo.value }}">{% endif %}"""),
+                PrependedText('url_suite_logo', '<i class="fa fa-link"></i>'),
+            ),
+            Fieldset(
+                f"<i class='fa fa-user'></i> {_('Frontend about data')}",
+                Field('about_title', css_class='translate'),
+                Field('about_name', css_class='translate'),
+                'about_tel',
+                'about_email',
+                'about_address',
+                Field('about_description', css_class='wys5 translate', style="width:100%;"),
+            ),
+            Fieldset(
+                f"<i class='fa fa-user'></i> {_('Frontend groups map data')}",
+                Field('groups_title', css_class='translate'),
+                Field('groups_map_description', css_class='wys5 translate', style="width:100%;"),
+            ),
+            Fieldset(
+                f"<i class='fa fa-user'></i> {_('Frontend login data')}",
+                Field('login_title', css_class='translate'),
+                Field('login_description', css_class='wys5 translate', style="width:100%;"),
+            ),
+            Fieldset(
+                f"<i class='fa fa-user'></i> {_('Frontend social data')}",
+                Field('login_title', css_class='translate'),
+                Field('login_description', css_class='wys5 translate', style="width:100%;"),
+                PrependedText('facebook_url', '<i class="fa fa-facebook"></i>'),
+                PrependedText('twitter_url', '<i class="fa fa-twitter"></i>'),
+                PrependedText('youtube_url', '<i class="fa fa-youtube"></i>'),
+                PrependedText('instagram_url', '<i class="fa fa-instagram"></i>'),
+                PrependedText('flickr_url', '<i class="fa fa-flickr"></i>'),
+                PrependedText('tripadvisor_url', '<i class="fa fa-tripadvisor"></i>'),
+            ),
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('Map client data')}",
+                Field('main_map_title', css_class='translate'),
+                Field('credits', css_class='wys5 translate', style="width:100%;"),
+            ),
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('Registration')}",
+                Field("registration_intro", css_class="wys5 translate", style="width:100%;"),
+            ),
         )
 
     class Meta:
@@ -375,7 +224,12 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
         fields = '__all__'
 
 
-class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelForm):
+class MacroGroupForm(
+    TranslationModelForm,
+    FileFormMixin,
+    G3WFormMixin,
+    ModelForm,
+):
     """MacroGroup form."""
 
     initial_editor_users = []
@@ -394,62 +248,36 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
-                            Div(
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
-                                                _('ACL Users'))),
-                                            Div(
-                                                HTML(
-                                                    "<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>"),
-                                                css_class='box-tools',
-                                            ),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            Field('editor_users',
-                                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
-                                                     'style': 'width:100%;'}),
-                                            css_class='box-body'
-                                        ),
-                                        css_class='box box-solid {} {}'.format('bg-purple',
-                                                                       self.checkEmptyInitialsData('editor_users'))
-                                    ),
-                                    css_class='{}'.format('col-md-12')
-                                ),
+            HTML(
+                f"<details {'' if self.checkEmptyInitialsData('editor_users') else 'open'} style='margin: 1em auto 2em 0;background: #fff;'>"
+                f"<summary style='font-size: 1.1em; padding: 1em; user-select: none; cursor: pointer; border-bottom: 1px solid #e2e8f0;background: #222d32;color: #fff;'><i class='fa fa-users'></i> <b>{_('ACL Users')}</b></summary>"
+            ),
 
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('General data'))),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            HTML(
-                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
-                                            'name',
-                                            Field('title', css_class='translate'),
-                                            HTML(_(
-                                                '<b>Attention!</b> These settings are valid only for map groups with only one MacroGroup')),
-                                            'use_title_client',
-                                            'use_logo_client',
-                                            Field('description', css_class='wys5 translate', style="width:100%;"),
-                                            'logo_img',
-                                            HTML(
-                                                """<img {% if not form.logo_img.value %}style="display:none;"{% endif %} class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.logo_img.value }}">""", ),
-                                            'form_id',
-                                            'upload_url',
-                                            'delete_url',
-                                            css_class='box-body'
-                                        ),
-                                        css_class='box box-success'
-                                    ),
-                                    css_class='col-md-12'
-                                ),
-                                css_class='row'
-                            )
-                        )
+            Div(
+                Field('editor_users', **{'css_class': 'select2', 'multiple': 'multiple', 'style': 'width:100%;'}),
+                style='padding: 1em; border: 1px solid #000;margin-top: -1px;'
+            ),
+
+            HTML(
+                f"</details>"
+            ),
+
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('General data')}",
+                HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                'name',
+                Field('title', css_class='translate'),
+                HTML(_('<b>Attention!</b> These settings are valid only for map groups with only one MacroGroup')),
+                'use_title_client',
+                'use_logo_client',
+                Field('description', css_class='wys5 translate', style="width:100%;"),
+                'logo_img',
+                HTML("""<img style="max-width: 300px;" {% if not form.logo_img.value %}hidden{% endif %} class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.logo_img.value }}">""", ),
+                'form_id',
+                'upload_url',
+                'delete_url',
+            ),
+        )
 
     class Meta:
         model = MacroGroup
@@ -469,7 +297,11 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
         return instance
 
 
-class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
+class GroupFilterForm(
+    G3WFormMixin,
+    G3WRequestFormMixin,
+    Form,
+):
     """Group filter form."""
 
     macrogroup = ModelChoiceField(label=_('Macro cartographic group'), queryset=MacroGroup.objects.all(), required=False)

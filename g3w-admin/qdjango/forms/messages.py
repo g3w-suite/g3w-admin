@@ -10,10 +10,10 @@ __date__ = '2023-03-31'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__ = 'MPL 2.0'
 
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, ValidationError, DateInput
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, HTML, Row, Field
+from crispy_forms.layout import Layout, Div, HTML, Row, Field, Fieldset
 from crispy_forms.bootstrap import PrependedText
 from django_bleach.forms import BleachField
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin, G3WProjectFormMixin, G3WGroupFormMixin
@@ -29,47 +29,23 @@ class MessageForm(G3WFormMixin, G3WRequestFormMixin, G3WGroupFormMixin, G3WProje
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['valid_from'].widget = DateInput(attrs={'type': 'date', 'dir':'rtl', 'style':'text-align:left;'})
+        self.fields['valid_to'].widget = DateInput(attrs={'type': 'date', 'dir':'rtl', 'style':'text-align:left;'})
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
-                                Div(
-                                    Div(
-                                        Div(
-                                            Div(
-                                                HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
-                                                    _('General data'))),
-                                                css_class='box-header with-border'
-                                            ),
-                                            Div(
-                                                Field('title', css_class='translate'),
-                                                Field('body', css_class='wys5 translate'),
-                                                'level',
-                                                css_class='box-body',
-                                            ),
-                                            css_class='box box-success'
-                                        ),
-                                        css_class='col-md-6'
-                                    ),
-
-                                    Div(
-                                        Div(
-                                            Div(
-                                                HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
-                                                    _('Validity'))),
-                                                css_class='box-header with-border'
-                                            ),
-                                            Div(
-                                                PrependedText('valid_from', '<i class="fa fa-calendar"></i>', css_class='datepicker'),
-                                                PrependedText('valid_to', '<i class="fa fa-calendar"></i>', css_class='datepicker'),
-                                                css_class='box-body',
-                                            ),
-                                            css_class='box box-success'
-                                        ),
-                                        css_class='col-md-6'
-                                    ),
-                                    css_class = 'row'
-                                ),
-                            )
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('Validity')}</h3>",
+                'valid_from',
+                'valid_to',
+            ),
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('General data')}",
+                Field('title', css_class='translate'),
+                Field('body', css_class='wys5 translate'),
+                'level',
+            ),
+        )
 
     def clean(self):
         cleaned_data = super().clean()

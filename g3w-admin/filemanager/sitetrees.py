@@ -13,15 +13,10 @@ sitetrees = (
         module='filemanager',
         items=[
             item(
-                'FILE MANAGER',
-                '#',
-                type_header=True
-            ),
-            item(
-                'Files',
+                'File',
                 'filemanager-home',
                 icon_css_class='fa fa-database',
-                description='Accedi al file manager...'
+                description='Accedi al gestore di file'
             ),
         ]
     ),
@@ -33,15 +28,10 @@ sitetrees = (
         module='filemanager',
         items=[
             item(
-                'FILE MANAGER',
-                '#',
-                type_header=True
-            ),
-            item(
                 'Files',
                 'filemanager-home',
                 icon_css_class='fa fa-database',
-                description='Go to file manager application...'
+                description='Go to file manager application'
             ),
         ]
     ),
@@ -52,11 +42,6 @@ sitetrees = (
         title='STRESS Navbar',
         module='filemanager',
         items=[
-            item(
-                'DATEIENVERWALTUNG',
-                '#',
-                type_header=True
-            ),
             item(
                 'Dateien',
                 'filemanager-home',
@@ -73,15 +58,10 @@ sitetrees = (
         module='filemanager',
         items=[
             item(
-                'GESTIONNAIRE DE FICHIERS',
-                '#',
-                type_header=True
-            ),
-            item(
                 'Files',
                 'filemanager-home',
                 icon_css_class='fa fa-database',
-                description='Allez dans l\'application du gestionnaire de fichiers...'
+                description='Allez dans l\'application du gestionnaire de fichiers'
             ),
         ]
     ),
@@ -93,15 +73,10 @@ sitetrees = (
         module='filemanager',
         items=[
             item(
-                'Gestionare fișiere',
-                '#',
-                type_header=True
-            ),
-            item(
                 'Fișiere',
                 'filemanager-home',
                 icon_css_class='fa fa-database',
-                description='Deschide aplicația de gestionare fișiere ...'
+                description='Deschide aplicația de gestionare fișiere'
             ),
         ]
     ),

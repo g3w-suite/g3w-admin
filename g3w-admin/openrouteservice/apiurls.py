@@ -8,14 +8,15 @@ __date__      = '2021-03-09'
 __copyright__ = 'Copyright 2021, ItOpen'
 __license__   = "MPL 2.0"
 
-from django.urls import re_path
+from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 
 from .api.views import (
     OpenrouteserviceCompatibleLayersView,
     OpenrouteServiceIsochroneView,
     OpenrouteServiceIsochroneFromLayerView,
-    OpenrouteServiceIsochroneFromLayerResultView
+    OpenrouteServiceIsochroneFromLayerResultView,
+    OpenrouteServiceVueConfigView,
 )
 
 
@@ -45,6 +46,12 @@ urlpatterns = [
         r'^api/isochrone_from_layer_result/(?P<project_id>[0-9]+)/(?P<task_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12})$',
         login_required(OpenrouteServiceIsochroneFromLayerResultView.as_view()),
         name='openrouteservice-isochrone-from-layer-result'
+    ),
+
+    path(
+        'api/vueconfig',
+        login_required(OpenrouteServiceVueConfigView.as_view()),
+        name='openrouteservice-vueconfig'
     ),
 
 ]

@@ -1,55 +1,74 @@
 {% load i18n %}
 {% load auth_extras %}
-<div class="row">
-  <div class="col-md-6">
-  <h3>{%trans 'Geografic component'%}</h3>
-    <ul class="list-unstyled">
-      <li><h4>{%trans 'Geographic coordinate system'%}</h4>
-      <li><strong>{%trans 'SRID'%}</strong>: {{ object.srid }}</li>
-      <li><strong>{%trans 'Units'%}</strong>: {{ object.units }}</li>
-      <li><h4>{%trans 'Principal map'%}</h4>
-      <li><strong>{%trans 'Max scale'%}</strong>: {{ object.max_scale }}</li>
-      <li><strong>{%trans 'Min scale'%}</strong>: {{ object.min_scale }}</li>
-      <li><h4>{%trans 'Overview Map'%}</h4>
-      <li><strong>{%trans 'Panoramic max scale'%}</strong>: {{ object.panoramic_max_scale }}</li>
-      <li><strong>{%trans 'Panoramic min scale'%}</strong>: {{ object.panoramic_min_scale }}</li>
-    </ul>
-    {%if user.is_superuser or user|has_group:"Editor Maps Groups" %}
-    	<h3>{%trans 'Users' %}:</h3>
-    	<ul class="list-unstyled">
-    	{% if user.is_superuser %}
-    		<li><strong>{%trans 'Editor level 1 user'%}</strong>: {{object.editor1|safe}}</li>
-    	{% endif %}
 
-    	{% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
-            <li><strong>{%trans 'Editor level 2 user'%}</strong>: {{object.editor2|safe}}</li>
-    		<li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
-            <li><strong>{%trans 'Editor user groups'%}</strong>: {{object.editor_user_groups|safeseq|join:", "}}</li>
-            <li><strong>{%trans 'Viewer user groups'%}</strong>: {{object.viewer_user_groups|safeseq|join:", "}}</li>
-    	{% endif %}
+<style>
+  #accordion                     { display: grid; grid-template-columns: 1fr 1fr;gap: 15px; }
+  #accordion > details > summary { cursor: pointer; font-weight: bold; font-size: 18px; border: 1px solid #ccc; padding: 10px; user-select: none; background-color: #00a65a; color: #fff; }
+  #accordion dl                  { display: grid; grid-template: auto / 1fr .5fr; margin-bottom: 0; word-break: break-all; }
+  #accordion dt                  { background: #fee; }
+  #accordion dd                  { background: hsl(220, 10%, 95%); }
+  #accordion dt, #accordion dd   { margin: 0; padding: .3em .5em; border-top: 1px solid #fff; }
+</style>
 
-    	</ul>
-    {% endif %}
-  </div>
-  <div class="col-md-6">
-  <h3>{%trans 'Interface component'%}</h3>
-    <ul class="list-unstyled">
-      <li><h4>{%trans 'Interface language'%}</h4>
-      <li><strong>{%trans 'Language'%}</strong>: {{ object.lang }}</li>
-      <li><h4>{%trans 'Associated logo'%}</h4>
-      <li><strong>{%trans 'HeaderLogoImg'%}</strong>:
-        {% if object.header_logo_img %}
-	<br />
-        <img class="thumbnail" style="width: 100%;" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" />
-        {% else %}
-        Not set
-        {% endif %}
-      </li>
-      <li><strong>{%trans 'HeaderLogoHeight'%}</strong>: {{ object.header_logo_height }}</li>
-      <li><strong>{%trans 'HeaderLogoLink'%}</strong>: {{ object.header_logo_link }}</li>
-      <li><h4>{%trans 'Terms of use'%}</h4>
-      <li><strong>{%trans 'HeaderTermsOfUseText'%}</strong>:{{ object.header_terms_of_use_text }}</li>
-      <li><strong>{%trans 'HeaderTermsOfUseLink'%}</strong>: {{ object.header_terms_of_use_link }}</li>
-    </ul>
-  </div>
+<div id="accordion">
+
+  <!-- Geographic -->
+  <details open>
+    <summary>{% trans 'Geografic component' %}</summary>
+    <div>
+      <h4>{%trans 'Geographic coordinate system'%}</h4>
+      <dl>
+        <dt>{%trans 'SRID'%}</dt><dd>{{ object.srid }}</dd>
+        <dt>{%trans 'Units'%}</dt><dd>{{ object.units }}</dd>
+      </dl>
+      <h4>{%trans 'Principal map'%}</h4>
+      <dl>
+        <dt>{%trans 'Max scale'%}</dt><dd>{{ object.max_scale }}</dd>
+        <dt>{%trans 'Min scale'%}</dt><dd>{{ object.min_scale }}</dd>
+      </dl>
+      <h4>{%trans 'Overview Map'%}</h4>
+      <dl>
+        <dt>{%trans 'Panoramic max scale'%}</dt><dd>{{ object.panoramic_max_scale }}</dd>
+        <dt>{%trans 'Panoramic min scale'%}</dt><dd>{{ object.panoramic_min_scale }}</dd>
+      </dl>
+      {%if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+        <h4>{%trans 'Users' %}:</h4>
+        <dl>
+          {% if user.is_superuser %}
+            <dt>{%trans 'Editor level 1 user'%}</dt><dd>{{object.editor1|safe}}</dd>
+          {% endif %}
+
+          {% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+            <dt>{%trans 'Editor level 2 user'%}</dt><dd>{{object.editor2|safe}}</dd>
+            <dt>{%trans 'Viewer users'%}</dt><dd>{{object.viewers|safeseq|join:", "}}</dd>
+            <dt>{%trans 'Editor user groups'%}</dt><dd>{{object.editor_user_groups|safeseq|join:", "}}</dd>
+            <dt>{%trans 'Viewer user groups'%}</dt><dd>{{object.viewer_user_groups|safeseq|join:", "}}</dd>
+          {% endif %}
+        </dl>
+      {% endif %}
+    </div>
+  </details>
+
+  <!-- Interface -->
+  <details open>
+    <summary>{% trans 'Interface component' %}</summary>
+    <div>
+      <h4>{%trans 'Interface language'%}</h4>
+      <dl>
+        <dt>{%trans 'Language'%}</dt><dd>{{ object.lang }}</dd>
+      </dl>
+      <h4>{%trans 'Associated logo'%}</h4>
+      <dl>
+          <dt>{%trans 'HeaderLogoImg'%}</dt>    <dd>{% if object.header_logo_img %}<img class="thumbnail" style="width: 100%;" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" />{% endif %}</dd>
+          <dt>{%trans 'HeaderLogoHeight'%}</dt> <dd>{% if object.header_logo_height %}{{ object.header_logo_height }}{% endif %}</dd>
+          <dt>{%trans 'HeaderLogoLink'%}</dt>   <dd>{% if object.header_logo_link %}{{ object.header_logo_link }}{% endif %}</dd>
+      </dl>
+      <h4>{%trans 'Terms of use'%}</h4>
+      <dl>
+        <dt>{%trans 'HeaderTermsOfUseText'%}</dt><dd>{{ object.header_terms_of_use_text }}</dd>
+        <dt>{%trans 'HeaderTermsOfUseLink'%}</dt><dd>{{ object.header_terms_of_use_link }}</dd>
+      </dl>
+    </div>
+  </details>
+
 </div>

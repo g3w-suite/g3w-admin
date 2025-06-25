@@ -1,0 +1,7 @@
+- model: userscripts.userscript
+  fields:
+    name: "Custom CSS"
+    type: "css"
+    description: "A custom CSS snippet globally applied."
+    match: .*
+    run_at: "head_end"

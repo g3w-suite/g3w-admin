@@ -33,24 +33,9 @@ class OpenrouteserviceProjectForm(G3WFormMixin, G3WRequestFormMixin, ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Div(
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
-                                _('Project'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            'project',
-                            Field(
-                                'services'),
-                            css_class='box-body',
-                        ),
-                        css_class='box box-success'
-                    ),
-                    css_class='col-md-12'
-                ),
-                css_class='row'
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('Project')}",
+                'project',
+                Field('services'),
             ),
         )

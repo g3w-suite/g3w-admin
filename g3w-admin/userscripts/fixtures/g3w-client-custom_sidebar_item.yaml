@@ -1,0 +1,31 @@
+- model: userscripts.userscript
+  fields:
+    name: "Custom sidebar item"
+    type: "js"
+    description: "A custom JS snippet for adding a sidebar item."
+    match: ^/([a-z]{2})/map/?
+    run_at: "body_end"
+    code: |
+      /**
+       * Custom sidebar item
+       */
+      g3wsdk.gui.GUI.once('ready', () => {
+        g3wsdk.gui.GUI.addComponent(new g3wsdk.gui.vue.Component({
+          id: 'my_custom_sidebar_item',
+          title: 'Custom Sidebar Item',
+          icon: 'pin',
+          iconColor: 'yellow',
+          collapsible: true,
+          open: true,
+          vueComponentObject: {
+            template: /* html */`
+                <ul class="treeview-menu">
+                    <li style = "color: #fff; padding: 1em;">
+                        <p style="white-space: normal;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Risus ultricies tristique nulla aliquet enim tortor at auctor. Aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices. Quis imperdiet massa tincidunt nunc pulvinar sapien. Leo vel orci porta non pulvinar. Odio euismod lacinia at quis. Congue eu consequat ac felis donec et. Pulvinar sapien et ligula ullamcorper malesuada proin libero. Suspendisse sed nisi lacus sed viverra tellus in. Dictumst quisque sagittis purus sit amet volutpat consequat mauris nunc. Purus sit amet volutpat consequat mauris nunc congue.</p>
+                    </li>
+                </ul>`,
+          },
+        }), 'sidebar', { position: 1 });
+
+        g3wsdk.gui.GUI.getComponent('my_custom_sidebar_item').onbefore('setOpen', b => console.log(`setOpen: ${b}`));
+      });

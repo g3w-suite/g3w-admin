@@ -1,33 +1,147 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
-<form method="post" id="editing_layer_form">
-    <div class="row">
-        <div class="col-md-12 error-form-message hidden">
-            <div class="alert alert-danger alert-dismissable">
-                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                    {% trans 'Some errors on form. Check it and send again.' %}
-            </div>
-        </div>
-        {% if multilayer %}
-        <div class="col-md-12">
-            <div class="alert alert-warning">
-                <h4><i class="icon fa fa-warning"></i> {% trans 'Important' %}!</h4>
-                    {% trans 'The following settings will be applied to all the layers indicated and will overwrite the settings set at the single layer level' %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-        {% crispy form %}
-        </div>
-    </div>
-    <script>
 
-        /* Set for widget initial atomic capabilities */
-        ga.Editing.widget.initial_atomic_capabilities = {{ initial_atomic_capabilities|safe }};
-        ga.Editing.widget.multilayer = {{ multilayer|lower }};
-        ga.Editing.widget.layerinfobaseurl= '/qdjango/api/info/layer/';
-        ga.Editing.widget.init();
-    </script>
+<form method="post" id="editing_layer_form">
+  <div class="error-form-message hidden">
+    <div class="alert alert-danger alert-dismissable">
+      <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+      {% trans 'Some errors on form. Check it and send again.' %}
+    </div>
+  </div>
+  {% if multilayer %}
+    <div class="alert alert-warning">
+      <h4><i class="icon fa fa-warning"></i> {% trans 'Important' %}!</h4>
+      {% trans 'The following settings will be applied to all the layers indicated and will overwrite the settings set at the single layer level' %}
+    </div>
+  {% endif %}
+  <div>
+    {% crispy form %}
+  </div>
 </form>
+
+<script>
+  (function() {
+    const CAPS = {{ initial_atomic_capabilities|safe }};
+
+    // init_active_status
+    const ACTIVE = document.querySelector('#editing_layer_form #id_active');
+    const INPUTS = document.querySelectorAll('#editing_layer_form :is(#id_scale, select:not(#id_layers), #id_visible), #editing_layer_form input:is([name^="user_add_capability_"], [name^="user_change_capability_"], [name^="user_changeattributes_capability_"], [name^="user_delete_capability_"])');
+    ACTIVE.addEventListener('change', () => INPUTS.forEach(s => s.toggleAttribute('disabled', !ACTIVE.checked)));
+    INPUTS.forEach(s => s.toggleAttribute('disabled', !ACTIVE.checked));
+
+    // table:not(:has(tbody >tr)) { display: none; }
+
+    // init_atomic_capabilities
+
+    const add_user_row = e => {
+      const data       = e.params ? e.params.data : e;
+      const caps       = CAPS.user;
+      const can_change = caps.change_layer.includes(parseInt(data.id));
+      // check if table is rendered
+      if (!$("#editing_layer_form .users_atomic_capabilities table").length) {
+        $("#editing_layer_form .users_atomic_capabilities").append(/* html */`
+          <table class="table">
+            <thead>
+              <tr>
+                <th>${gettext('User')}</th>
+                <th>${gettext('Add')}</th>
+                <th>${gettext('Update geometry')}</th>
+                <th>${gettext('Update attributes')}</th>
+                <th>${gettext('Delete')}</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        `);
+      }
+      // append table row
+      $("#editing_layer_form .users_atomic_capabilities tbody").append(/* html */`
+        <tr id="row_${data.id}">
+          <td>${data.text}</td>
+          <td><input type="checkbox" name="user_add_capability_${data.id}"              ${(!can_change || caps.add_feature.includes(parseInt(data.id))         ? 'checked' : '')}></td>
+          <td><input type="checkbox" name="user_change_capability_${data.id}"           ${(!can_change || caps.change_feature.includes(parseInt(data.id))      ? 'checked' : '')}></td>
+          <td><input type="checkbox" name="user_changeattributes_capability_${data.id}" ${(!can_change || caps.change_attr_feature.includes(parseInt(data.id)) ? 'checked' : '')}></td>
+          <td><input type="checkbox" name="user_delete_capability_${data.id}"           ${(!can_change || caps.delete_feature.includes(parseInt(data.id))      ? 'checked' : '')}></td>
+        </tr>
+      `);
+    };
+
+    const add_group_row = e => {
+      const data       = e.params ? e.params.data : e;
+      const caps       = CAPS.group;
+      const can_change = caps.change_layer.includes(parseInt(data.id));
+      // check if table is rendered
+      if (!$("#editing_layer_form .user_groups_atomic_capabilities table").length) {
+        $("#editing_layer_form .user_groups_atomic_capabilities").append(/* html */`
+          <table class="table">
+            <thead>
+              <tr>
+                <th>${gettext('User')}</th>
+                <th>${gettext('Add')}</th>
+                <th>${gettext('Update geometry')}</th>
+                <th>${gettext('Update attributes')}</th>
+                <th>${gettext('Delete')}</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        `);
+      }
+      // append table row
+      $("#editing_layer_form .user_groups_atomic_capabilities tbody").append(/* html */`
+        <tr id="row_${data.id}">
+          <td>${data.text}</td>
+          <td><input type="checkbox" name="group_add_capability_${data.id}"              ${(!can_change || caps.add_feature.includes(parseInt(data.id))         ? 'checked' : '')}></td>
+          <td><input type="checkbox" name="group_change_capability_${data.id}"           ${(!can_change || caps.change_feature.includes(parseInt(data.id))      ? 'checked' : '')}></td>
+          <td><input type="checkbox" name="group_changeattributes_capability_${data.id}" ${(!can_change || caps.change_attr_feature.includes(parseInt(data.id)) ? 'checked' : '')}></td>
+          <td><input type="checkbox" name="group_delete_capability_${data.id}"           ${(!can_change || caps.delete_feature.includes(parseInt(data.id))      ? 'checked' : '')}></td>
+        </tr>
+      `);
+    };
+
+    $("#editing_layer_form #id_viewer_users").on('select2:select', add_user_row);
+    $("#editing_layer_form #id_viewer_users").on('select2:unselect', e => { $("#editing_layer_form .users_atomic_capabilities #row_" + (e.params?.data ?? e).id).remove(); });
+    $("#editing_layer_form #id_viewer_users").select2('data').forEach(add_user_row);
+
+    $("#editing_layer_form #id_user_groups_viewer").on('select2:select', add_group_row);
+    $("#editing_layer_form #id_user_groups_viewer").on('select2:unselect', e => { $("#editing_layer_form .user_groups_atomic_capabilities #row_" + (e.params?.data ?? e).id).remove(); });
+    $("#editing_layer_form #id_user_groups_viewer").select2('data').forEach(add_group_row);
+
+    // add_edit_user_row
+    $("#editing_layer_form #id_layers").on('select2:select', async e => {
+      const data   = e.params ? e.params.data : e;
+      // check if table is rendered
+      if (!$("#editing_layer_form .add_edit_user_fields table").length) {
+        $("#editing_layer_form .add_edit_user_fields").append(/* html */`
+          <table class="table">
+            <thead>
+              <tr>
+                <th>${gettext('Layer')}</th>
+                <th>${gettext('Add logging field')}</th>
+                <th>${gettext('Update logging field')}</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        `);
+      }
+      // append table row
+      $("#editing_layer_form .add_edit_user_fields tbody").append(/* html */ `
+        <tr id="row_${data.id}">
+          <td>${data.text}</td>
+          <td><select class="select2" name="add_user_field_${data.id}"  id="add_user_field_${data.id}"><option value="">------</option></select></td>
+          <td><select class="select2" name="edit_user_field_${data.id}" id="edit_user_field_${data.id}"><option value="">------</option></select></td>
+        </tr>
+      `);
+      $("#editing_layer_form .add_edit_user_fields select").select2({ width: '100%' });
+      // For selects
+      (await (await fetch(`/qdjango/api/info/layer/${data.id}/`)).json()).database_columns.forEach(field => {
+        $('#add_user_field_' + data.id).append($(/*html*/`<option value="${field.name}">${field.name}</option>`));
+        $('#edit_user_field_' + data.id).append($(/*html*/`<option value="${field.name}">${field.name}</option>`));
+      });
+    });
+
+    // remove_add_edit_user_row
+    $("#editing_layer_form #id_layers").on('select2:unselect', e => { $("#editing_layer_form .add_edit_user_fields #row_" + (e.params?.data ?? e).id).remove(); });
+  })();
+</script>

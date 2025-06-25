@@ -23,47 +23,37 @@ class ActiveCachingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
+            HTML(f"{_('Check on uncheck to activate/deactivate caching layer capabilities:')}"),
             Div(
-                HTML(_('Check on uncheck to activate/deactivate caching layer capabilities:')),
                 Div(
-                    Div(
-                        'active',
-                        'reset_layer_cache_url',
-                        css_class='col-md-3'
-                    ),
-                    Div(
-                        Div(
-                            HTML("<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Action <span class='caret'></span></button>"),
-                            HTML("<ul class='dropdown-menu'>"
-                             "<li><a id='resetcache' href='#'><i class='fa fa-eraser'></i> {}</a></li>"
-                             "<li><a id='resetcache_for_project' href='#'><i class='fa fa-eraser'></i> {}</a></li>"
-                             "</ul>".format(_('Reset cache'), _('Reset cache for project'))),
-                            css_class='btn-group'
-                        ),
-                        css_class='col-md-9'
-                    ),
-
-                    css_class='row'
+                    'active',
+                    'reset_layer_cache_url',
                 ),
-                Div(
-                    Div(
-                        'as_base_layer',
-                        Fieldset(
-                            _('Base layer data'),
-                            'base_layer_title',
-                            'base_layer_desc',
-                            'base_layer_attr',
-                            css_class='base-layer-data',
-                            disabled='disabled'
-                        ),
-                        css_class='col-md-12 base-layer-enable'
-                    ),
-
-                    css_class='row'
+                HTML(
+                    f"""
+                    <details style="position: relative; position: relative;margin-left: 100px;">
+                        <summary class="btn btn-default">Action <span class="caret"></span></summary>
+                        <span class="message"></span>
+                        <div style="position: absolute;display: flex;flex-direction: column;left: 0;border: 1px solid #eee;">
+                            <a href="#" class="btn" style="text-align:left;" id="resetcache"><i class="fa fa-eraser"></i> { _('Reset cache') }</a>
+                            <a href="#" class="btn" style="text-align:left;" id="resetcache_for_project"><i class="fa fa-eraser"></i> { _('Reset cache for project') }</a>
+                    </div></details>
+                    """
                 ),
-
-                css_class='col-md-12'
-            )
+                style='display:flex;'
+            ),
+            Div(
+                'as_base_layer',
+                Fieldset(
+                    _('Base layer data'),
+                    'base_layer_title',
+                    'base_layer_desc',
+                    'base_layer_attr',
+                    css_class='base-layer-data',
+                    disabled='disabled'
+                ),
+                css_class='base-layer-enable'
+            ),
         )
 
     def clean_base_layer_title(self):

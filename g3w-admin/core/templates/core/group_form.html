@@ -8,47 +8,30 @@
 
 {% block page_header %}
 <h1>
-    {% trans 'Group' %}
-    <small>{{ form.instance.name }}</small>
+  {% trans 'Group' %}
+  <small>{{ form.instance.name }}</small>
 </h1>
 {% endblock %}
-
-
 
 {% block main_content %}
 
 {% if object %}
-    {% get_obj_perms user for object as "userObj_perms" %}
-    <div class="row">
-    <div class="col-md-12 col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">
-                    {% with mode_btn=True %}
-                    {% include 'core/include/add_project.html' %}
-                    {% endwith %}
-                </h3>
-            </div>
-            <div class="box-body">
-                {% trans 'Current' %} <a href="{% url 'project-list' object.slug %}">{{ object.getProjectsNumber }} {% trans 'Projects' %}</a>
-            </div>
-        </div>
-    </div>
-</div>
+  {% get_obj_perms user for object as "userObj_perms" %}
+  <fieldset style="margin-bottom: 1em;">
+    <legend hidden>{% trans 'Current projects' %}:</legend>
+    <a href="{% url 'project-list' object.slug %}">{{ object.getProjectsNumber }} {% trans 'Projects' %}</a>
+  </fieldset>
 {% endif %}
 
-<form method="post" id="group-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
-    {% if form.errors %}
-        <div class="row">
-            <div class="col-md-12">
-            <div class="alert alert-danger alert-dismissable">
-                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                    {% trans 'Some errors on form. Check it and send again.' %}
-              </div>
-            </div>
-        </div>
-    {% endif %}
-    {% crispy form %}
-    {% g3wadmin_add_button_form%}
+<form method="post" id="group-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
+  {% if form.errors %}
+    <div class="alert alert-danger alert-dismissable">
+      <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+      {% trans 'Some errors on form. Check it and send again.' %}
+      </div>
+    </div>
+  {% endif %}
+  {% crispy form %}
+  {% g3wadmin_add_button_form%}
 </form>
 {% endblock %}

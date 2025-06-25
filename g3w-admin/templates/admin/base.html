@@ -3,17 +3,21 @@
 
 
 {% block userlinks %}
-    {% if site_url %}
-        <a href="{% url 'home' %}">{% trans 'G3W-ADMIN' %}</a> /
-    {% endif %}
-    {% if user.is_active and user.is_staff %}
-        {% url 'django-admindocs-docroot' as docsroot %}
-        {% if docsroot %}
-            <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
-        {% endif %}
-    {% endif %}
-    {% if user.has_usable_password %}
-    <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
-    {% endif %}
-    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+  <br><br>
+  {% url 'django-admindocs-docroot' as docsroot %}
+  {% if site_url %}
+    <a href="{% url 'home' %}" title="Go back to g3w-admin dashboard" style="position: fixed;inset: 60px 10px auto auto;color: var(--link-fg);text-transform: capitalize;font-weight: 600;">
+      <b style="transform: rotate(180deg) translate(-1px, -3px);display: inline-block;">➜</b>
+      {% trans 'Dashboard' %}
+    </a>
+  {% endif %}
+  {% if docsroot and user.is_active and user.is_staff %}
+    / <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+  {% endif %}
+  {% if not user.is_staff and user.has_usable_password %}
+    / <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+  {% endif %}
+  {% if not user.is_staff %}
+    / <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+  {% endif %}
 {% endblock %}

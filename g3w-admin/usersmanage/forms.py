@@ -30,7 +30,7 @@ from django.contrib.contenttypes.models import ContentType
 from guardian.compat import get_user_model
 from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout,Div, HTML, Field
+from crispy_forms.layout import Layout, Fieldset, Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from django_registration.forms import RegistrationForm
 from captcha.fields import ReCaptchaField
@@ -354,109 +354,48 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         self.helper.form_tag = False
 
         args =[
-            Div(
-                Div(
-                    Div(
-                        Div(
-                            HTML(
-                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Anagraphic'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            'first_name',
-                            'last_name',
-                            'email',
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-success'
-                    ),
-                    css_class='col-md-6'
-                ),
-
-                Div(
-                    Div(
-                        Div(
-                            HTML(
-                                "<h3 class='box-title'><i class='fa fa-users'></i> {}</h3>".format(_('ACL/Roles'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            *self.__authrole_fields(),
-                            css_class='box-body'
-                        ),
-                        css_class='box box-solid bg-purple acl-box'
-                    ),
-                    css_class='col-md-6 {}'.format(self.checkFieldsVisible('is_superuser', 'is_staff', 'groups'))
-                ),
-                css_class='row'
+            HTML(
+                f"<details class='{self.checkFieldsVisible('is_superuser', 'is_staff', 'groups')}' style='margin: 1em auto 2em 0;background: #fff;'>"
+                f"<summary style='font-size: 1.1em; padding: 1em; user-select: none; cursor: pointer; border-bottom: 1px solid #e2e8f0;background: #222d32;color: #fff;'><i class='fa fa-users'></i> <b>{_('ACL/Roles')}</b></summary>"
             ),
 
-            Div(
-                Div(
-                    Div(
-                        Div(
-                            HTML(
-                                "<h3 class='box-title'><i class='fa fa-lock'></i> {}</h3>".format(_('Login data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            PrependedText('username', '<i class="fa fa-user"></i>'),
-                            PrependedText('password1', '<i class="fa fa-lock"></i>'),
-                            PrependedText('password2', '<i class="fa fa-lock"></i>'),
-                            css_class='box-body',
+            Div(*self.__authrole_fields(), style='padding: 1em; border: 1px solid #000;margin-top: -1px;'),
 
-                        ),
-                        css_class='box box-danger'
-                    ),
-                    css_class='col-md-6'
-                ),
+            HTML(
+                f"</details>"
+            ),
 
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-gear'></i> {}</h3>".format(_('User data'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            'other_info',
-                            'department',
-                            'avatar',
-                            HTML(
-                                """{% if form.avatar.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.avatar.value }}">{% endif %}""", ),
-                            'form_id',
-                            'upload_url',
-                            css_class='box-body',
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('Anagraphic')}",
+                'first_name',
+                'last_name',
+                'email',
+            ),
 
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-                css_class='row'
-            )
+            Fieldset(
+                f"<i class='fa fa-lock'></i> {_('Login data')}",
+                PrependedText('username', '<i class="fa fa-user"></i>'),
+                PrependedText('password1', '<i class="fa fa-lock"></i>'),
+                PrependedText('password2', '<i class="fa fa-lock"></i>'),
+            ),
+
+            Fieldset(
+                f"<i class='fa fa-gear'></i> {_('User data')}",
+                'other_info',
+                'department',
+                'avatar',
+                HTML(
+                    """{% if form.avatar.value %}<img style="max-width: 300px;" class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.avatar.value }}">{% endif %}""", ),
+                'form_id',
+                'upload_url',
+            ),
+
+            # add backed if user id admin01
+            Fieldset(
+                f"<i class='fa fa-gear'></i> {_('User backend')}",
+                'backend',
+            ) if self.request.user.is_superuser and self.request.user.is_staff else None,
         ]
-
-        # add backed if user id admin01
-        if self.request.user.is_superuser and self.request.user.is_staff:
-            args.append(Div(
-                Div(
-                    Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-gear'></i> {}</h3>".format(_('User backend'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            'backend',
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-default'
-                    ),
-                    css_class='col-md-6'
-                ),
-                css_class='row'
-            ))
 
         self.helper.layout = Layout(*args)
 
@@ -466,35 +405,35 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     def __authrole_fields(self):
         """ Get fields for ACL box if they are into self.fields """
 
-        fields = ['is_active']
+        fields = [Field('is_active')]
         if 'is_superuser' in self.fields:
             fields.append(
-                Field('is_superuser', **{'data_icheck_skin': 'yellow'})
+                Field('is_superuser', **{'style': 'accent-color: purple'})
             )
 
         if 'is_staff' in self.fields:
             fields.append(
-                Field('is_staff', **{'data_icheck_skin': 'yellow'})
+                Field('is_staff', **{'style': 'accent-color: purple'})
             )
 
         if 'groups' in self.fields:
             fields.append(
                 Field('groups',
-                      **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                      **{'css_class': 'select2', 'multiple': 'multiple',
                          'style': 'width:100%;'})
             )
 
         if 'user_groups_editor' in self.fields:
             fields.append(
                 Field('user_groups_editor',
-                      **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                      **{'css_class': 'select2', 'multiple': 'multiple',
                          'style': 'width:100%;'})
             )
 
         if 'user_groups_viewer' in self.fields:
             fields.append(
                 Field('user_groups_viewer',
-                      **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                      **{'css_class': 'select2', 'multiple': 'multiple',
                          'style': 'width:100%;'})
             )
 
@@ -736,11 +675,17 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
 class G3WUserUpdateForm(G3WUserForm):
 
-    password1 = forms.CharField(label=_("Password"),
-                                widget=forms.PasswordInput, required=False)
-    password2 = forms.CharField(label=_("Password confirmation"),
-                                widget=forms.PasswordInput, required=False,
-                                help_text=_("Enter the same password as above, for verification."))
+    password1 = forms.CharField(
+        label=_("Password"),
+        widget=forms.PasswordInput(attrs={'autofocus': False}),
+        required=False
+    )
+    password2 = forms.CharField(
+        label=_("Password confirmation"),
+        widget=forms.PasswordInput(attrs={'autofocus': False}),
+        required=False,
+        help_text=_("Enter the same password as above, for verification.")
+    )
 
     def clean_username(self):
         """Reject usernames that differ only in case."""
@@ -807,30 +752,12 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
         self.helper.form_tag = False
 
         args =[
-            Div(
-                Div(
-                    Div(
-                        Div(
-                            HTML(
-                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Group'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            'name',
-                            'role',
-                            'gusers',
-                            css_class='box-body',
-
-                        ),
-                        css_class='box box-success'
-                    ),
-                    css_class='col-md-12'
-                ),
-
-
-                css_class='row'
+            Fieldset(
+                f"<i class='fa fa-file'></i> {_('Group')}",
+                'name',
+                'role',
+                'gusers',
             ),
-
         ]
 
         self.helper.layout = Layout(*args)

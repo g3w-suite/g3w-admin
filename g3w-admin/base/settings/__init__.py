@@ -20,10 +20,15 @@ if SITE_PREFIX_URL:
     VECTOR_URL = '/' + SITE_PREFIX_URL + VECTOR_URL[1:]
     RASTER_URL = '/' + SITE_PREFIX_URL + RASTER_URL[1:]
 
-try:
-    INSTALLED_APPS += G3WADMIN_LOCAL_MORE_APPS
-except NameError:
-    pass
+# TODO: move into: G3WADMIN_APPS = [..., 'userscripts']
+G3WADMIN_LOCAL_MORE_APPS = [
+    'userscripts',
+] + (G3WADMIN_LOCAL_MORE_APPS if 'G3WADMIN_LOCAL_MORE_APPS' in locals() else [])
+
+# Remove any duplicated value
+G3WADMIN_LOCAL_MORE_APPS = list(set(G3WADMIN_LOCAL_MORE_APPS))
+
+INSTALLED_APPS += G3WADMIN_LOCAL_MORE_APPS
 
 try:
     if FRONTEND:

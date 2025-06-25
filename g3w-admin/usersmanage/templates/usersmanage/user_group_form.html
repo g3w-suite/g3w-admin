@@ -4,73 +4,40 @@
 {% load g3wadmin_tags %}
 {% load i18n %}
 
-
-{% block custom_js_links_page %}
-<script>
-
-    var cleaned_data = {{ cleaned_data|safe }};
-    ga.$useRoleSelect = $('#id_role');
-    var MAPPING_ROLES = {
-        'viewer': 'Viewer Level 1',
-        'editor': 'Editor Level 2'
-    }
-    ga.$useRoleSelect.on('change', function(e){
-
-        var value = $(this).val();
-        var data = {role: MAPPING_ROLES[value]};
-        ga.utils.addCsfrtokenData(data);
-        var $users_select = $("#id_gusers");
-        if (value) {
-            $.ajax({
-                method: 'get',
-                url: '{% url 'usermanage-api-users' %}',
-                data: data,
-                success:function(res){
-
-                    users = []
-                    _.each(res.results, function(u){
-                        selected = true ? _.indexOf(cleaned_data['gusers'], u.id) != -1 : false
-                        users.push({
-                            id: u.id,
-                            text: u.username,
-                            selected: selected
-                        })
-                    })
-
-                    $users_select.html('');
-                    $users_select.select2({data: users});
-                }
-            });
-        }
-
-    });
-    // to start on update
-    ga.$useRoleSelect.trigger('change');
-
-
-</script>
-{% endblock %}
-
 {% block page_header %}
 <h1>
-    {% trans 'System user groups' %}
-    <small>Stystem users list and property</small>
+  {% trans 'System user groups' %}
+  <small>Stystem users list and property</small>
 </h1>
 {% endblock %}
 
 {% block main_content %}
-        <form method="post" id="user-group-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
-            {% if form.errors %}
-                <div class="row">
-                    <div class="col-md-12">
-                    <div class="alert alert-danger alert-dismissable">
-                        <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                            {% trans 'Some errors on form. Check it and send again.' %}
-                      </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% crispy form %}
-            {% g3wadmin_add_button_form %}
-        </form>
+<form method="post" id="user-group-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
+  {% if form.errors %}
+    <div class="alert alert-danger alert-dismissable">
+      <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+      {% trans 'Some errors on form. Check it and send again.' %}
+    </div>
+  {% endif %}
+  {% crispy form %}
+  {% g3wadmin_add_button_form %}
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const DATA = {{ cleaned_data|safe }};
+
+  $('#id_role').on('change', async function(e) {
+    const role = ({ viewer: 'Viewer Level 1', editor: 'Editor Level 2' })[$(this).val()];
+    if (!role) {
+      return;
+    }
+    const res = await (await fetch('{% url 'usermanage-api-users' %}' + '?' + new URLSearchParams({ role, csrfmiddlewaretoken: $.cookie('csrftoken') }).toString())).json();
+    $("#id_gusers").html('');
+    $("#id_gusers").select2({ data: res.results.map(u => ({ id: u.id, text: u.username, selected: DATA.gusers.includes(u.id) })) });
+  });
+
+  $('#id_role').trigger('change');
+});
+</script>
 {% endblock %}

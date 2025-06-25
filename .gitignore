@@ -8,10 +8,6 @@
 # Local files
 *_local.sh
 
-# Sphinx docs
-docs/_build
-docs/locales/**/*.mo
-
 # PyCharms project file
 /.idea/
 
@@ -28,22 +24,15 @@ g3w-admin.code-workspace
 /g3w-admin/base/settings/local_settings.py.*
 /g3w-admin/base/settings/local_ldap_settings.py
 
-# Node modules
-/node_modules
-
 # Addons
 /g3w-admin/addons
 /g3w-admin/plugins
-
-# Bower components
-/g3w-admin/core/static/bower_components/
-/g3w-admin/core/static/bower_components
 
 # Coverage html test result reports
 /g3w-admin/htmlcov/
 
 # Gulp dist directory
-/dist/
+# /dist/
 
 # Media and static
 /media/

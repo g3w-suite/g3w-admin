@@ -988,7 +988,7 @@ msgstr "Nome della ricerca"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:90
 msgid "Editing properties"
-msgstr "Propietà di editing"
+msgstr "Proprietà di editing"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:101
 msgid "Scale"
