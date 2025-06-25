@@ -166,13 +166,16 @@ _.extend(g3wadmin.widget, {
             const preMessage = $item.parent().find('.pre-active-deactive-message').html();
 
             // open modal to confirm delete
+            body = gettext('Are you sure to ' + action + ' this Item')+'?';
+            if (action === 'deactivate') {
+                body += '<br/><br/>' +
+                    '<input type="checkbox" value="1" name="permanent_delete" /> ' + 
+                    gettext('Permanently delete');
+            }
+            body += (_.isUndefined(preMessage) ? '' : preMessage)
             const modal = ga.ui.buildDefaultModal({
                 modalTitle: gettext(action.charAt(0).toUpperCase() + action.slice(1) + ' item'),
-                modalBody: gettext('Are you sure to ' + action + ' this Item') +
-                    '?<br/><br/>' +
-                    '<input type="checkbox" value="1" name="permanent_delete" /> ' + 
-                    gettext('Permanently delete') + 
-                    (_.isUndefined(preMessage) ? '' : preMessage),
+                modalBody: body,
                 closeButtonText: 'No'
             });
 
