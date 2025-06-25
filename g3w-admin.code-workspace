@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"svn.ignoreMissingSvnWarning": true
+		"svn.ignoreMissingSvnWarning": true,
+		"djlint.showInstallError": false
 	}
 }
