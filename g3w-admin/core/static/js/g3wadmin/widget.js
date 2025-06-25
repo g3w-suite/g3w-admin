@@ -22,6 +22,7 @@ _.extend(g3wadmin.widget, {
      */
     _activeDeactiveItemParams: [
         'active-deactive-url',
+        'active-deactive-delete-url',
         'item-selector',
         'modal-title',
         'active-deactive-method',
@@ -166,18 +167,27 @@ _.extend(g3wadmin.widget, {
 
             // open modal to confirm delete
             const modal = ga.ui.buildDefaultModal({
-                modalTitle: gettext(action.charAt(0).toUpperCase() + action.slice(1) +' item'),
-                modalBody: gettext('Are you sure to '+ action +' this Item')+ '?' + (_.isUndefined(preMessage) ? '' : preMessage),
+                modalTitle: gettext(action.charAt(0).toUpperCase() + action.slice(1) + ' item'),
+                modalBody: gettext('Are you sure to ' + action + ' this Item') +
+                    '?<br/><br/>' +
+                    '<input type="checkbox" value="1" name="permanent_delete" /> ' + 
+                    gettext('Permanently delete') + 
+                    (_.isUndefined(preMessage) ? '' : preMessage),
                 closeButtonText: 'No'
             });
 
             // call ajax delete action (url)
             modal.setConfirmButtonAction(function () {
-                const data = {};
+                permanent_delete = $(this).parents().find('input[name="permanent_delete"]').is(':checked') ? 1 : 0;
+                const data = {
+                    'permanent_delete': permanent_delete
+                };
+                url = permanent_delete == 0 ? params['active-deactive-url'] :  params['active-deactive-delete-url']
+
                 ga.utils.addCsfrtokenData(data);
                 $.ajax({
                     method: (_.isUndefined(params['active-deactive-method']) ? 'post': params['active-decative-method']),
-                    url: params['active-deactive-url'],
+                    url: url,
                     data: data,
                     success: function (res) {
                         const $itemToDelete = $(params['item-selector']);
