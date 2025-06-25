@@ -36,3 +36,16 @@ if TESTING:
         from .tests_settings import *
     except ImportError:
         pass
+    
+# SECURITY WARNING: keep the SECRET_KEY used in production secret!
+if not 'SECRET_KEY' in locals():
+    try:
+        # Parse SECRET_KEY from SECRET_KEY_FILE environment variable
+        with open(os.getenv('SECRET_KEY_FILE', '/shared-volume/.secret_key')) as f:
+            SECRET_KEY = f.read().strip()
+    except:
+        print('[SECRET_KEY] setting not provided, fallback to a temporary random key')
+        # Generate a temporary secret key (on each reboot) until you
+        # provide a SECRET_KEY or SECRET_KEY_FILE variable 
+        from django.core.management.utils import get_random_secret_key
+        SECRET_KEY = get_random_secret_key()
