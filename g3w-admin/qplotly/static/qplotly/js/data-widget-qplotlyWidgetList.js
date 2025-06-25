@@ -45,12 +45,13 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
         <!-- add new plot -->
         <a href="#" class="btn btn-default btn-add-new-plot"><i class="fa fa-plus-circle"></i> ${gettext('New qplotly widget')}</a>
         <!-- saved plots -->
+        <p class="text-muted"><small>* ${gettext('Position options is valid for children layers of a relation')}</small></p>
         <table style="width: 100%;">
           <thead>
           <tr>
             <th style="width:180px;">${gettext('Actions')}</th>
             <th>${gettext('Active on startup')}</th>
-            <th>${gettext('Position')}</th>
+            <th>${gettext('Position')}*</th>
             <th>${gettext('Title')}</th>
             <th>${gettext('Type')}</th>
             <th>${gettext('From project')}</th>
