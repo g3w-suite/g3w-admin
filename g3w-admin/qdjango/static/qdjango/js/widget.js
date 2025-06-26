@@ -23,6 +23,9 @@ ga.Qdjango = {
         detail: "/" + SITE_PREFIX_URL + "qdjango/api/expressionrule/detail/",
       },
     },
+    search: {
+      alternativeuniqueselect: "/" + SITE_PREFIX_URL + "qdjango/api/alternativeuniquelayer/",
+    }
   },
   data: {
     viewers: [],
@@ -188,6 +191,7 @@ ga.Qdjango.widgetEditor = {
               type: inputtype, // TIPO DI CAMPO //
               options: options,
             },
+            alternativeuniquelayer: v.find(".cmpAlternativeUniqueLayerSelect").find("select").val(), // Alternative layer for unique values
             logicop: v.find("select.logic_operator").val(),
           })
         })
@@ -391,10 +395,8 @@ ga.Qdjango.widgetEditor = {
 									</select>"
     )
 
-    // si aggiunge e si fa apparire la dipendenza se seleziona
-
+    // Add and show the dependency if selected
     var cmpDependanceSelect = $('<select class="form-control" name="dependence_field">' + '<option value=""> ----- </option>' + "</select>")
-
 
     var options = that.widgettype
 
@@ -403,14 +405,23 @@ ga.Qdjango.widgetEditor = {
         widgetSelect.append('<option value="' + k + '">' + i + "</option>")
     })
 
-    // add widget types
+    // Add widget types
     if (this.layer_type != "spatialite") {
       cmpOperatorSelect.append('<option value="ILIKE">ILIKE (' + gettext("like not case sensitive") + ")</option>")
     }
 
     if (that.isset(values) && that.isset(values.filterop)) cmpOperatorSelect.val($("<div/>").html(values.filterop).text())
 
-    // add control on cmpOperatorSelect for field type:
+    // Add select for alternative layer for unique values field:
+    // add a select where you can choose a layer
+    // from which to take the unique values for the field indicated in the widget
+    // this is useful for very large layers, for example the cadastre,
+    // where performing a unique value search would be very slow
+
+    var alternativeUniqueLayerSelect = $('<select class="form-control" name="alt_unique_layer"></select>')
+
+
+    // Add control on cmpOperatorSelect for field type:
     fieldSelect.on("change", function () {
 
       var likeopts = cmpOperatorSelect.find("option[value='LIKE']")
@@ -440,6 +451,11 @@ ga.Qdjango.widgetEditor = {
       } else {
         widgetSelect.find("option[value=\"autocompletebox\"]").show();
       }
+
+      // Tringger widgetSelect change if widgetSelect 'selectbox' or 'autocompletebox' are setted
+      if (widgetSelect.val() == "selectbox" || widgetSelect.val() == "autocompletebox") {
+        widgetSelect.trigger("change")
+      } 
 
     })
 
@@ -505,6 +521,14 @@ ga.Qdjango.widgetEditor = {
 										' + gettext("This field has a 'ReletaionReference' form widget active, do you want use if for searching?") + '\
 										</div>\
 									</div>\
+                  <div class="col-md-6 cmpAlternativeUniqueLayer invisible">\
+										<div class="controls cmpAlternativeUniqueLayerSelect ">\
+											<label class="control-label">' + gettext("Use Alternative Unique Layer") + '</label>\
+										</div>\
+										<div class="help-block">\
+										' + gettext("Is possibile to select an alternative layer to use for get unique values") + '\
+										</div>\
+									</div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3">\
@@ -557,6 +581,7 @@ ga.Qdjango.widgetEditor = {
     div.find(".cmpDependanceSelect").append(cmpDependanceSelect)
     div.find(".widgetType").append(widgetSelect)
     div.find(".cmpRelationReferenceSelect").append(relationReferenceSelect)
+    div.find(".cmpAlternativeUniqueLayerSelect").append(alternativeUniqueLayerSelect)
 
     $(".rightCol").append(div)
 
@@ -578,6 +603,39 @@ ga.Qdjango.widgetEditor = {
         } else {
           div.find(".cmpRelationReference").addClass("invisible")
         }
+
+        // Show alternative unique layer select
+        div.find(".cmpAlternativeUniqueLayer").removeClass("invisible")
+
+        // Get lust of alternative layers for unique values
+        data = {
+          'field': div.find('[name="searchfield"]').val(),
+        }
+        $.each(that.layerColumns, function (i, v) {
+          if (v.name === data.field) {
+            data['type'] = v.type;
+          }
+        });
+        $.ajax({
+          url: ga.Qdjango.urls.search.alternativeuniqueselect + ga.Qdjango.localVars['project_id'] + "/" + ga.Qdjango.localVars['layer_name'] + "/",
+          type: "POST",
+          dataType: "json",
+          data: data,
+          success: function (data) {
+            var $select_alt = div.find('[name="alt_unique_layer"]');
+            $select_alt.empty();
+            $select_alt.append('<option value=""> ------ </option>');
+            $.each(data.data, function (i, v) {
+              
+              //var selected = '';
+              var selected = that.isset(values) && that.isset(values.alternativeuniquelayer) && values.alternativeuniquelayer === v.id ? "selected" : ""
+              $select_alt.append('<option value="' + v.id + '" ' + selected + '>' + v.name + "</option>");
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error("Error fetching alternative layers:", error);
+          }
+        });
 
         // On select dependance change
         $select.find("select").on("change", function(){
@@ -608,6 +666,7 @@ ga.Qdjango.widgetEditor = {
       } else {
         div.find(".cmpDependanceSelectLabel").addClass("invisible")
         div.find(".cmpRelationReference").addClass("invisible")
+        div.find(".cmpAlternativeUniqueLayer").addClass("invisible")
         $select.addClass("invisible")
         $dependence_strict.addClass("invisible");
         $numdigaut.hide()

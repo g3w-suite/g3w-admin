@@ -110,8 +110,11 @@ class QplotlyTestViews(QdjangoTestBase):
 
         self.assertFalse(qwidget.show_on_start_client)
 
-        # get download url
-        url = reverse('qplotly-project-layer-widget-showonstartclient', kwargs={
+        # Get action url
+        # action can be 'showonstartclient' or 'showinsidebar
+        # case showonstartclient
+        url = reverse('qplotly-project-layer-widget-action-set', kwargs={
+            'action': 'showonstartclient',
             'pk': qwidget.pk
         })
 
@@ -119,9 +122,8 @@ class QplotlyTestViews(QdjangoTestBase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
 
-        # test set
+        # Test set
         self.assertTrue(self.client.login(username='admin01', password='admin01'))
-        print(url)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -130,3 +132,38 @@ class QplotlyTestViews(QdjangoTestBase):
 
         qwidget.refresh_from_db()
         self.assertTrue(qwidget.show_on_start_client)
+
+        response = self.client.get(f'{url}?show=0')
+        self.assertEqual(response.status_code, 200)
+
+        jresponse = json.loads(response.content)
+        self.assertEqual(jresponse['status'], 'ok')
+
+        qwidget.refresh_from_db()
+        self.assertFalse(qwidget.show_on_start_client)
+
+        # case showposition
+        url = reverse('qplotly-project-layer-widget-action-set', kwargs={
+            'action': 'showposition',
+            'pk': qwidget.pk
+        })
+
+        # test login required
+        response = self.client.post(url, data={'value': 'query'}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        jresponse = json.loads(response.content)
+        self.assertEqual(jresponse['status'], 'ok')
+
+        qwidget.refresh_from_db()
+        self.assertEqual(qwidget.show_position, 'query')
+
+        response = self.client.post(url, data={'value': 'sidebar'})
+        self.assertEqual(response.status_code, 200)
+
+        jresponse = json.loads(response.content)
+        self.assertEqual(jresponse['status'], 'ok')
+
+        qwidget.refresh_from_db()
+        self.assertEqual(qwidget.show_position, 'sidebar')
+

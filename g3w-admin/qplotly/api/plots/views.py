@@ -22,8 +22,7 @@ from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
 from qplotly.utils.qplotly_factory import QplotlyFactoring, QplotlyFactoringRelation
 import plotly
-if plotly.__version__ != '2.5.1':
-    import plotly.graph_objects as go
+import plotly.graph_objects as go
 
 
 import logging
@@ -168,3 +167,44 @@ class QplotlyTraceAPIView(G3WAPIView):
 
 
 
+class QplotlyTraceConfigAPIView(G3WAPIView):
+    """API return plotly trace config data
+    .. note:: This is used to get the trace config data for a plotly widget.
+    """
+
+    def get(self, request, **kwargs):
+        """Get the trace config data for a plotly widget."""
+        qplotly = QplotlyWidget.objects.get(pk=kwargs['pk'])
+
+        # load settings from db
+        settings = QplotlySettings()
+        if not settings.read_from_model(qplotly):
+            raise Exception()
+
+        # instance a QplotlyFactory
+        factory = QplotlyFactoring(settings, request=request, layer=None)
+        #factory.build_layout()
+
+        fig = go.Figure(layout=factory.layout)
+        layout = fig.to_dict()['layout']
+
+        res = {
+            'data':{
+                'type': settings.plot_type,
+                'layout': layout,
+                'config': {
+                    'displaylogo': False,
+                    'displayModeBar': True,
+                    'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio'],
+                    'editable': True,
+                    'responsive': True,
+                    'scrollZoom': False,
+                    'toImageButtonOptions': {'filename': 'Plot - ' + layout.get('title', {}).get('text', f"[{qplotly.pk}]") },
+                    'autosize': True,
+                }
+            }   
+        }
+
+        self.results.results.update(res)
+
+        return Response(self.results.results)

@@ -85,13 +85,40 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.countries_plot_xml = file.read()
         file.close()
 
+        file = File(open(f'{DATASOURCE_PATH}data_plotly_settings.xml', 'r'))
+        self.countries_histogram_plot_xml = file.read()
+        file.close()
+
         file = File(open(f'{DATASOURCE_PATH}cities_histogram_plot.xml', 'r'))
         self.cities_histogram_plot_xml = file.read()
         file.close()
 
+        layer = self.project.instance.layer_set.get(qgs_layer_id='countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+        self.widget_country_histogram = QplotlyWidget.objects.create(
+            xml=self.countries_histogram_plot_xml,
+            datasource=layer.datasource,
+            project=self.project.instance,
+            type='histogram',
+            title=''
+            )
+        
+        self.widget_country_histogram.layers.add(layer)
+
+        layer = self.project_3857.instance.layer_set.get(qgs_layer_id='countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+        self.widget_country_histogram_3857 = QplotlyWidget.objects.create(
+            xml=self.countries_histogram_plot_xml,
+            datasource=layer.datasource,
+            project=self.project_3857.instance,
+            type='histogram',
+            title=''
+            )
+        
+        self.widget_country_histogram_3857.layers.add(layer)
+
 
     def tearDown(self):
         self.project.instance.delete()
+        self.project_3857.instance.delete()
         super().tearDown()
 
 
@@ -167,11 +194,12 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(plugin_plot['id'], get_qplotlywidget_for_project(self.project.instance)[0].pk)
         self.assertFalse(plugin_plot['selected_features_only'])
         self.assertFalse(plugin_plot['visible_features_only'])
-        self.assertFalse(plugin_plot['show'])
+        self.assertFalse(plugin_plot['show_on_start'])
+        self.assertEqual(plugin_plot['show_position'], 'sidebarquery')
 
-        self.assertEqual(plugin_plot['plot']['type'], 'histogram')
-        self.assertTrue('layout' in plugin_plot['plot'])
-        self.assertEqual(plugin_plot['plot']['layout']['title'], {'text': ''})
+        #self.assertEqual(plugin_plot['plot']['type'], 'histogram')
+        #self.assertTrue('layout' in plugin_plot['plot'])
+        #self.assertEqual(plugin_plot['plot']['layout']['title'], {'text': ''})
 
         # Test for users wit not permisions
         # ---------------------------------
@@ -611,6 +639,38 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         widget.delete()
 
+    def test_trace_config_api(self):
+        """/qplotly/api/trace-config/<int:pk> API"""
+
+        qplotlywidget_id = self.widget_country_histogram.pk
+        qplotlywidget_3857_id = self.widget_country_histogram_3857.pk
+
+        response = self._testApiCall('qplotly-trace-plot-config-api', args=[
+            qplotlywidget_id
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_config_data = json.loads(response.content)['data']
+
+        with open(f'{DATASOURCE_PATH}trace_config.json', 'r') as f:
+            expected = json.load(f)
+
+     
+        self.assertEqual(trace_config_data, expected['data'])
+
+        response = self._testApiCall('qplotly-trace-plot-config-api', args=[
+            qplotlywidget_3857_id
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_config_data = json.loads(response.content)['data']
+
+        with open(f'{DATASOURCE_PATH}trace_config_3857.json', 'r') as f:
+            expected = json.load(f)
+
+
+        self.assertEqual(trace_config_data, expected['data'])
+    
     def test_get_qplotlywidgets4layer(self):
         """Test for homonimous util function"""
 

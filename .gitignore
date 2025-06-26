@@ -36,7 +36,6 @@ g3w-admin.code-workspace
 /g3w-admin/plugins
 /plugins
 
-
 # Bower components
 /g3w-admin/core/static/bower_components/
 /g3w-admin/core/static/bower_components

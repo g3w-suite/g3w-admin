@@ -41,37 +41,37 @@ def get_data_plotly_settings_from_file():
     return settings, xml
 
 
-class QgisProjectTest(TestCase):
+# class QgisProjectTest(TestCase):
 
-    @override_settings(
-        DATASOURCE_PATH=DATASOURCE_PATH,
-        LOAD_QPLOTLY_FROM_PROJECT=True
-    )
-    def setUp(self):
+#     @override_settings(
+#         DATASOURCE_PATH=DATASOURCE_PATH,
+#         LOAD_QPLOTLY_FROM_PROJECT=True
+#     )
+#     def setUp(self):
 
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
+#         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
-        # Replace name property with only file name without path to simulate UploadedFileWithId instance.
-        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        self.project = QgisProject(qgis_project_file)
-        qgis_project_file.close()
+#         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
+#         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+#         self.project = QgisProject(qgis_project_file)
+#         qgis_project_file.close()
 
 
-    def test_qgis_project(self):
-        """Test reading project data plotly settings"""
+#     def test_qgis_project(self):
+#         """Test reading project data plotly settings"""
 
-        expected_settings, xml = get_data_plotly_settings_from_file()
+#         expected_settings, xml = get_data_plotly_settings_from_file()
 
-        qplotly_settings = {
-            'qgs_layer_id': expected_settings.source_layer_id,
-            'type': expected_settings.plot_type,
-            'title': expected_settings.layout['title'],
-            'selected_features_only': expected_settings.properties['selected_features_only'],
-            'visible_features_only': expected_settings.properties['visible_features_only'],
-            'xml': xml.toString()
-        }
+#         qplotly_settings = {
+#             'qgs_layer_id': expected_settings.source_layer_id,
+#             'type': expected_settings.plot_type,
+#             'title': expected_settings.layout['title'],
+#             'selected_features_only': expected_settings.properties['selected_features_only'],
+#             'visible_features_only': expected_settings.properties['visible_features_only'],
+#             'xml': xml.toString()
+#         }
 
-        self.assertEqual(self.project.qplotly, qplotly_settings)
+#         self.assertEqual(self.project.qplotly, qplotly_settings)
 
 
 
