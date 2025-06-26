@@ -26,6 +26,14 @@ class QplotlyWidget(models.Model):
         blank=True,
         null=True,
     )
+
+    show_position = models.CharField(
+        _('SChart show position'),
+        max_length=100,
+        blank=True,
+        null=True,
+        default='sidebarquery'
+    )
     
     def __str__(self):
         return self.datasource if self.datasource else str(self.pk)

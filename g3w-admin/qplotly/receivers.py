@@ -32,6 +32,7 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt.QtCore import QFile
 
 from core.signals import initconfig_plugin_start
+from base.version import get_version
 
 from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
@@ -39,9 +40,7 @@ from .utils.models import get_qplotlywidgets4project
 from .models import QplotlyWidget
 
 import plotly
-
-if plotly.__version__ != '2.5.1':
-    import plotly.graph_objects as go
+import plotly.graph_objects as go
 
 import logging
 
@@ -61,6 +60,7 @@ def load_dataplotly_project_settings(sender, **kwargs):
     file = QFile(sender.qgs_project.fileName())
     doc.setContent(file)
 
+    # Deprecated only for tests
     settings = QplotlySettings()
     read = settings.read_from_project(doc)
 
@@ -135,12 +135,6 @@ def set_initconfig_value(sender, **kwargs):
 
     plots = []
 
-    plot_config = config = {
-        'scrollZoom': True,
-        'editable': True,
-        'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
-    }
-
     qplotly_widgets = get_qplotlywidgets4project(project, sender.request.user)
 
     for qplotly_widget, qgs_layer_id in qplotly_widgets:
@@ -154,25 +148,18 @@ def set_initconfig_value(sender, **kwargs):
         factory = QplotlyFactoring(settings, request=None, layer=None)
         factory.build_layout()
 
-        if plotly.__version__ != '2.5.1':
-            fig = go.Figure(layout=factory.layout)
-            layout = fig.to_dict()['layout']
-        else:
-            layout = factory.layout
+        fig = go.Figure(layout=factory.layout)
+        layout = fig.to_dict()['layout']
 
         plots.append({
             'id': qplotly_widget.pk,
             'qgs_layer_id': qgs_layer_id,
             'selected_features_only': qplotly_widget.selected_features_only,
             'visible_features_only': qplotly_widget.visible_features_only,
-            'show': qplotly_widget.show_on_start_client,
-
-            'plot': {
-                'type': settings.plot_type,
-                'layout': layout,
-                'config': plot_config
-            }
-
+            'show_on_start': qplotly_widget.show_on_start_client,
+            'show_position': qplotly_widget.show_position,
+            'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
+            'type': settings.plot_type,
         })
 
     # no plots no 'qplotly' section
@@ -181,12 +168,25 @@ def set_initconfig_value(sender, **kwargs):
 
     return {
         'qplotly': {
+            'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'jsscripts': [
                 static('qplotly/polyfill.min.js'),
                 static('qplotly/plotly-1.52.2.min.js')
             ],
-            'plots': plots
+            'plots': plots,
+            'sidebar': {
+                'id': 'qplotly',
+                'title': 'plugins.qplotly.title',
+                'open': False,
+                'collapsible': True,
+                'icon':'chart-area',
+                'iconColor': 'red',
+                'mobile': True,
+                'sidebarOptions': {
+                    'position': 1,
+                },
+            },
         }
     }
 

@@ -1,2 +1,676 @@
-(()=>{var t=window&&window.initConfig&&window.initConfig.group&&window.initConfig.group.plugins;t&&(t.qplotly=Object.assign(t.qplotly||{},{version:"3.9.0",hash:"529ea1e",branch:"v3.9.x"}))})(),function o(n,r,a){function s(e,t){if(!r[e]){if(!n[e]){var i="function"==typeof require&&require;if(!t&&i)return i(e,!0);if(l)return l(e,!0);throw(t=new Error("Cannot find module '"+e+"'")).code="MODULE_NOT_FOUND",t}i=r[e]={exports:{}},n[e][0].call(i.exports,function(t){return s(n[e][1][t]||t)},i,i.exports,o,n,r,a)}return r[e].exports}for(var l="function"==typeof require&&require,t=0;t<a.length;t++)s(a[t]);return s}({1:[function(t,e,i){function o(t){return function(){var s=t.apply(this,arguments);return new Promise(function(r,a){return function e(t,i){try{var o=s[t](i),n=o.value}catch(t){return void a(t)}if(!o.done)return Promise.resolve(n).then(function(t){e("next",t)},function(t){e("throw",t)});r(n)}("next")})}}Object.defineProperty(i,"__esModule",{value:!0}),i.default={name:"Headeraction",computed:{showTools:function(){return this.tools.map.show}},watch:{"state.geolayer":(n=o(function*(t){yield this.$nextTick(),this.tools.map.show=t}),function(t){return n.apply(this,arguments)})}},e.exports.__esModule&&(e.exports=e.exports.default);var n,i="function"==typeof e.exports?e.exports.options:e.exports;i.render=function(){var e=this,t=e.$createElement,t=e._self._c||t;return e.showTools?t("div",{staticClass:"qplotly-tools",staticStyle:{"border-radius":"3px","background-color":"#FFFFFF","font-size":"1.2em","margin-right":"5px"}},[e.tools.map.show?t("span",{directives:[{name:"disabled",rawName:"v-disabled",value:e.state.loading,expression:"state.loading"},{name:"t-tooltip",rawName:"v-t-tooltip.create",value:"plugins.qplotly.tooltip.show_all_features_on_map",expression:"'plugins.qplotly.tooltip.show_all_features_on_map'",modifiers:{create:!0}}],staticClass:"skin-color action-button skin-tooltip-bottom",class:[e.g3wtemplate.getFontClass("map"),e.state.tools.map.toggled?"toggled":""],staticStyle:{"font-weight":"bold",margin:"3px"},attrs:{"data-placement":"bottom","data-toggle":"tooltip"},on:{click:function(t){return t.stopPropagation(),e.updateCharts(t)}}}):e._e()]):e._e()},i.staticRenderFns=[]},{}],2:[function(t,e,i){e.exports={props:{title:{type:String}},render:function(t){return t("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",height:"100%",justifyContent:"center"}},[t("h4",{style:{fontWeight:"bold",textAlign:"center"},class:{"skin-color":!0}},""+this.$props.title),t("div",{directives:[{name:"t-plugin",value:"qplotly.no_data"}],style:{fontWeight:"bold"},class:{"skin-color":!0}})])}}},{}],3:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={name:"plotheader",props:{index:{type:Number},layerId:{type:String},title:{type:String,default:""},tools:{type:Object,default:function(){return{filter:{active:!1},selection:{active:!1},geolayer:{show:!1,active:!1}}}},filters:{type:Array,default:[]}},computed:{showtools:function(){return this.tools.geolayer.show||this.tools.selection.active}},methods:{toggleFilter:function(){this.$emit("toggle-filter-tool",{layerId:this.layerId})},toggleBBoxTool:function(){this.tools.geolayer.active=!this.tools.geolayer.active,this.$emit("toggle-bbox-tool",{index:this.index,active:this.tools.geolayer.active})}}},e.exports.__esModule&&(e.exports=e.exports.default);i="function"==typeof e.exports?e.exports.options:e.exports;i.render=function(){var e=this,t=e.$createElement,i=e._self._c||t;return i("div",{staticClass:"g3w-chart-header",staticStyle:{width:"100%"}},[i("div",{staticClass:"skin-background-color",staticStyle:{display:"flex",width:"100%","font-weight":"bold",padding:"2px","min-height":"20px","font-size":"1.4em","text-align":"center",color:"#FFFFFF"}},[i("div",{staticStyle:{margin:"auto"}},[e._v("\n      "+e._s(e.title)+"\n    ")]),e._v(" "),e.showtools?i("div",{staticClass:"plot-tools",staticStyle:{"background-color":"#FFFFFF",padding:"2px","font-size":"1.0em","border-radius":"3px"}},[e.tools.selection.active?i("span",{directives:[{name:"t-tooltip",rawName:"v-t-tooltip.create",value:"plugins.qplotly.tooltip.filter_chart",expression:"'plugins.qplotly.tooltip.filter_chart'",modifiers:{create:!0}}],staticClass:"action-button skin-tooltip-bottom",class:{toggled:e.tools.filter.active},staticStyle:{margin:"auto"},attrs:{"data-placement":"bottom","data-toggle":"tooltip"},on:{click:function(t){return t.stopPropagation(),e.toggleFilter(t)}}},[i("span",{staticClass:"action-button-icon",class:e.g3wtemplate.getFontClass("filter")})]):e._e(),e._v(" "),e.tools.geolayer.show?i("span",{directives:[{name:"t-tooltip",rawName:"v-t-tooltip.create",value:"plugins.qplotly.tooltip.show_feature_on_map",expression:"'plugins.qplotly.tooltip.show_feature_on_map'",modifiers:{create:!0}}],staticClass:"action-button skin-tooltip-bottom",class:{toggled:e.tools.geolayer.active},staticStyle:{margin:"auto"},attrs:{"data-placement":"bottom","data-toggle":"tooltip"},on:{click:function(t){return t.stopPropagation(),e.toggleBBoxTool(t)}}},[i("span",{staticClass:"action-button-icon",class:e.g3wtemplate.getFontClass("map")})]):e._e()]):e._e()]),e._v(" "),0<e.filters.length?i("ul",{staticClass:"skin-color",staticStyle:{"margin-top":"5px","list-style-type":"none","background-color":"#FFFFFF","padding-left":"3px","font-weight":"bold"}},e._l(e.filters,function(t){return i("li",{directives:[{name:"t-plugin",rawName:"v-t-plugin",value:"qplotly.filters."+t,expression:"`qplotly.filters.${filter}`"}],key:t})}),0):e._e()])},i.staticRenderFns=[],i._scopeId="data-v-c1c7b9ca"},{}],4:[function(t,e,i){var t=t("./qplotly.vue"),n=(t=t)&&t.__esModule?t:{default:t};var t=g3wsdk.core.utils,r=t.base;function o(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},e=(r(this,t),t.service),i=t.ids,t=t.relationData,o=(this.title="qplotly",this.state.visible=!0,Vue.extend(n.default));this.internalComponent=new o({service:e,ids:i,relationData:t})}(0,t.inherit)(o,g3wsdk.gui.vue.Component),e.exports=o},{"./qplotly.vue":5}],5:[function(t,e,i){function o(t){return function(){var s=t.apply(this,arguments);return new Promise(function(r,a){return function e(t,i){try{var o=s[t](i),n=o.value}catch(t){return void a(t)}if(!o.done)return Promise.resolve(n).then(function(t){e("next",t)},function(t){e("throw",t)});r(n)}("next")})}}Object.defineProperty(i,"__esModule",{value:!0}),n=(n=n=t("./plotheader.vue"))&&n.__esModule?n:{default:n},p=g3wsdk.gui.GUI,g=g3wsdk.core.utils.getUniqueDomId,v=g3wsdk.gui.vue.Mixins.resizeMixin,m=t("./nodata"),y={pie:"values",scatterternary:"a",scatterpolar:"r"},i.default={name:"qplotly",mixins:[v],components:{plotheader:n.default},data:function(){return this.id=g(),this.insideCointainer=void 0!==this.$options.ids,this.relationData=this.$options.relationData,{state:this.$options.service.state,show:!0,overflowY:"none",height:100,order:[]}},methods:{handleToggleFilter:(f=o(function*(){var t=(0<arguments.length&&void 0!==arguments[0]?arguments[0]:{}).layerId;this.$options.service.setLoadingCharts(!0),yield this.$options.service.toggleLayerFilter(t)}),function(){return f.apply(this,arguments)}),handleBBoxTools:(u=o(function*(){var i=this,t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},e=t.index,t=t.active,e=(this.$options.service.setLoadingCharts(!0),this.order[e]),e=yield this.$options.service.updateMapBBOXData({id:e,active:t}),t=e.charts,e=e.order;this.state.tools.map.toggled=Object.values(this.order).reduce(function(t,e){return t&&i.charts[e].reduce(function(t,e){var e=e.chart,i=e.tools.geolayer.show&&e.tools.geolayer.active;return t&&(!e.tools.geolayer.show||i)},!0)},!0),this.setCharts({charts:t,order:e})}),function(){return u.apply(this,arguments)}),showHideChart:(h=o(function*(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},e=t.plotId,i=t.charts,o=void 0===i?{}:i,i=t.order,n=void 0===i?[]:i,i=t.action;switch(this.order=n,yield this.$nextTick(),this.show=0<this.order.length,i){case"hide":delete this.charts[e],this.show?yield this.setCharts({charts:o,order:n}):(yield this.calculateHeigths(this.order.length),yield this.resizePlots());break;case"show":this.show=!0,yield this.calculateHeigths(this.order.length),yield this.drawAllCharts()}this.show&&this.resize()}),function(){return h.apply(this,arguments)}),resizePlots:(d=o(function*(){var n=this,r=(!1===this.insideCointainer&&this.$options.service.setLoadingCharts(!0),[]);this.order.forEach(function(o){n.charts[o].forEach(function(t,e){var i=n.$refs[""+o][0];n.setChartPlotHeigth(i),r.push(new Promise(function(t){Plotly.Plots.resize(i).then(function(){t(o)})}))})}),(yield Promise.allSettled(r)).forEach(function(t){t=t.value;return n.charts[t].forEach(function(t){t.chart;return t.state.loading=!1})}),!1===this.insideCointainer&&this.$options.service.setLoadingCharts(!1)}),function(){return d.apply(this,arguments)}),drawAllCharts:(c=o(function*(){var e=this,i=(this.$options.service.setLoadingCharts(!0),yield this.$nextTick(),[]);this.order.forEach(function(t){t=e.drawPlotlyChart({plotId:t});t&&i.push(t)}),0<i.length&&(yield Promise.allSettled(i)).forEach(function(t){t=t.value;e.charts[t].forEach(function(t){t.state.loading=!1})}),this.$options.service.setLoadingCharts(!1)}),function(){return c.apply(this,arguments)}),setCharts:(l=o(function*(){var i=this,t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},e=t.charts,o=void 0===e?{}:e,e=t.order,t=void 0===e?[]:e;this.$options.service.setLoadingCharts(!0),this.order=t,this.show=0<this.order.length,Object.keys(o).forEach(function(e){i.charts[e]=[],o[e].forEach(function(t){i.charts[e].push({chart:t,state:Vue.observable({loading:!1})})})}),this.$nextTick(),this.show&&(yield this.calculateHeigths(this.order.length),yield this.drawAllCharts()),setTimeout(function(){i.$options.service.setLoadingCharts(!1)})}),function(){return l.apply(this,arguments)}),resize:(s=o(function*(){this.mounted&&(yield this.resizePlots())}),function(){return s.apply(this,arguments)}),setChartPlotHeigth:function(e){setTimeout(function(){var t=$(e);e.style.height=t.parent().outerHeight()-t.siblings().outerHeight()+"px"})},drawPlotlyChart:function(){var l=this,c=(0<arguments.length&&void 0!==arguments[0]?arguments[0]:{}).plotId,d=void 0;return this.charts[c].forEach(function(t,e){var i,o=t.chart,t=t.state,n=l.$options.service.getChartConfig(),r=l.$refs[""+c][0],a=o.data,s=o.layout;l.setChartPlotHeigth(r),a&&Array.isArray(a[y[a.type]||"x"])&&a[y[a.type]||"x"].length?(t.loading=!l.relationData,d=new Promise(function(t){setTimeout(function(){Plotly.newPlot(r,[a],s,n).then(function(){return t(c)})})})):(r.innerHTML="",i=new(i=Vue.extend(m))({propsData:{title:"Plot ["+c+"] "+(s&&s.title?" - "+s.title:"")+" "}}),setTimeout(function(){return r.appendChild(i.$mount().$el)}))}),d},calculateHeigths:(a=o(function*(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:0,t=this.relationData&&this.relationData.height?1<t?50*t:0:50*(2<t?t-2:0);this.height=100+t,yield this.$nextTick(),this.overflowY=0<t?"auto":"none"}),function(){return a.apply(this,arguments)})},beforeCreate:function(){this.delayType="debounce"},created:function(){this.charts={}},mounted:(r=o(function*(){this.mounted=!1,yield this.$nextTick(),this.$options.service.on("change-charts",this.setCharts),this.$options.service.on("show-hide-chart",this.showHideChart);var t=yield this.$options.service.getCharts({layerIds:this.$options.ids,relationData:this.relationData}),e=t.charts;yield this.setCharts({charts:e,order:t.order}),void 0!==this.relationData&&p.on("pop-content",this.resize),this.mounted=!0}),function(){return r.apply(this,arguments)}),beforeDestroy:function(){this.$options.service.off("change-charts",this.setCharts),this.$options.service.off("show-hide-chart",this.showHideChart),this.relationData&&p.off("pop-content",this.resize),this.$options.service.clearLoadedPlots(),this.charts=null,this.order=null}},e.exports.__esModule&&(e.exports=e.exports.default);var n,r,a,s,l,c,d,h,u,f,p,g,v,m,y,t="function"==typeof e.exports?e.exports.options:e.exports;t.render=function(){var o=this,t=o.$createElement,n=o._self._c||t;return n("div",{directives:[{name:"disabled",rawName:"v-disabled",value:o.state.loading,expression:"state.loading"}],staticClass:"skin-color",style:{overflowY:o.overflowY,height:o.relationData&&o.relationData.height?o.relationData.height+"px":"100%"},attrs:{id:o.id}},[o.insideCointainer?n("bar-loader",{attrs:{loading:o.state.loading}}):o._e(),o._v(" "),o.show?n("div",{staticClass:"plot_divs_content",staticStyle:{width:"100%","background-color":"#FFFFFF",position:"relative"},style:{height:o.height+"%"}},o._l(o.order,function(e,i){return n("div",{key:e,staticStyle:{position:"relative"},style:{height:o.relationData&&o.relationData.height?o.relationData.height+"px":100/o.order.length+"%"}},[o._l(o.charts[e],function(t){t=t.chart;return[n("plotheader",{attrs:{index:i,layerId:t.layerId,tools:o.relationData?void 0:t.tools,title:t.title,filters:t.filters},on:{"toggle-bbox-tool":o.handleBBoxTools,"toggle-filter-tool":o.handleToggleFilter}}),o._v(" "),n("div",{ref:""+e,refInFor:!0,staticClass:"plot_div_content",staticStyle:{width:"95%",margin:"auto",position:"relative"}})]})],2)}),0):n("div",{staticClass:"skin-color",staticStyle:{height:"100%",width:"100%",display:"flex","justify-content":"center","align-items":"center","background-color":"white"},attrs:{id:"no_plots"}},[n("h4",{directives:[{name:"t-plugin",rawName:"v-t-plugin",value:"qplotly.no_plots",expression:"'qplotly.no_plots'"}],staticStyle:{"text-align":"center","font-weight":"bold"}})])],1)},t.staticRenderFns=[],t._scopeId="data-v-3ad2fc42"},{"./nodata":2,"./plotheader.vue":3}],6:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),t=t("../../service"),o=(t=t)&&t.__esModule?t:{default:t},i.default={name:"Multiplot",data:function(){return{plots:o.default.getPlots()}},computed:{loading:function(){return o.default.state.chartsloading}},methods:{showHidePlot:function(t){setTimeout(function(){o.default[t.show?"showPlot":"hidePlot"](t)})}}},e.exports.__esModule&&(e.exports=e.exports.default);var o,t="function"==typeof e.exports?e.exports.options:e.exports;t.render=function(){var r=this,t=r.$createElement,e=r._self._c||t;return e("ul",{staticClass:"treeview-menu",staticStyle:{padding:"10px",color:"#FFFFFF"},attrs:{id:"chart_plot_multi_plot"}},r._l(r.plots,function(n){return e("li",{key:n.id},[e("input",{directives:[{name:"model",rawName:"v-model",value:n.show,expression:"plot.show"}],staticClass:"magic-checkbox",attrs:{type:"checkbox",id:n.id},domProps:{checked:Array.isArray(n.show)?-1<r._i(n.show,null):n.show},on:{change:[function(t){var e,i=n.show,t=t.target,o=!!t.checked;Array.isArray(i)?(e=r._i(i,null),t.checked?e<0&&r.$set(n,"show",i.concat([null])):-1<e&&r.$set(n,"show",i.slice(0,e).concat(i.slice(e+1)))):r.$set(n,"show",o)},function(t){return r.showHidePlot(n)}]}}),r._v(" "),e("label",{class:{"g3w-disabled":r.loading},staticStyle:{display:"flex","justify-content":"space-between","align-items":"center"},attrs:{for:n.id}},[e("span",{staticStyle:{"white-space":"pre-wrap"}},[r._v(r._s(n.label)+" ")]),r._v(" "),e("span",[r._v(r._s(n.plot.type))])])])}),0)},t.staticRenderFns=[]},{"../../service":20}],7:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0});var o=i.charts={no_subplots:["pie","ternary"]};i.default={charts:o}},{}],8:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Diagramme",pietitle:"Torten-Diagramme",no_subplots_charts:"Exklusive Diagramme",no_plots:"Kein Diagramm vorhanden. Mindestens ein Diagramm hinzufügen",no_data:"Keine Daten verfügbar",tooltip:{show_all_features_on_map:"Alle Diagramme nach den auf der Karte sichtbaren Elementen filtern",show_feature_on_map:"Dieses Diagramm nach den auf der Karte sichtbaren Elementen filtern",filter_chart:"Diagramme nach ausgewählten Elementen filtern"},filters:{in_bbox:"Die im Diagramm angezeigten Daten sind nach den auf der Karte sichtbaren Geometrien gefiltert",filtertoken:"Die im Diagramm angezeigten Daten sind nach den ausgewählten Elementen gefiltert",in_bbox_filtertoken:"Die im Diagramm angezeigten Daten sind nach den ausgewählten und auf der Karte sichtbaren Geometrien/Datensätzen gefiltert",relation:{in_bbox:"Die im Diagramm angezeigten Daten sind nach den auf der Karte sichtbaren Referenzgeometrien (Eltern) gefiltert",filtertoken:"Die im Diagramm angezeigten Daten sind nach den ausgewählten Referenzgeometrien/-datensätzen (Eltern) gefiltert.",in_bbox_filtertoken:"Die im Diagramm angezeigten Daten sind nach den ausgewählten und auf der Karte sichtbaren Referenzgeometrien/-datensätzen (Eltern) gefiltert"}}}},{}],9:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Charts",pietitle:"Pie Charts",no_subplots_charts:"Exclusive plots",no_plots:"No chart. Add at least one plot",no_data:"No Data available",tooltip:{show_all_features_on_map:"Filter all plots according to the geometries visible on the map",show_feature_on_map:"Filter plot according to the geometries visible on the map",filter_chart:"Filter plots according to the selected geometries/records"},filters:{in_bbox:"The data ​​shown in the plot are filtered according to the geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the geometries/records selected and visible on the map",relation:{in_bbox:"The data​​ shown in the plot are filtered according to the reference (parents) geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) geometries/records selected and visible on the map"}}}},{}],10:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Charts",pietitle:"Pie Charts",no_subplots_charts:"Exclusive plots",no_plots:"No chart. Add at least one plot",no_data:"No Data available",tooltip:{show_all_features_on_map:"Filter all plots according to the geometries visible on the map",show_feature_on_map:"Filter plot according to the geometries visible on the map",filter_chart:"Filter plots according to the selected geometries/records"},filters:{in_bbox:"The data ​​shown in the plot are filtered according to the geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the geometries/records selected and visible on the map",relation:{in_bbox:"The data​​ shown in the plot are filtered according to the reference (parents) geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) geometries/records selected and visible on the map"}}}},{}],11:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Graphiques",pietitle:"Cake Charts",no_subplots_charts:"Graphiques exclusifs",no_plots:"Pas de graphiques à montrer. Ajoutez au moins un graphique",no_data:"Aucune donnée disponible",tooltip:{show_all_features_on_map:"Filtrer ce graphique en fonction des éléments visibles sur la carte",show_feature_on_map:"Filtrer tous les graphiques en fonction des éléments sélectionnés",filter_chart:"Filtrer tous les graphiques en fonction des éléments sélectionnés"},filters:{in_bbox:"Les données présentées dans le graphique sont filtrées en fonction des géométries visibles sur la carte",filtertoken:"Les données affichées dans le graphique sont filtrées en fonction des géométries/enregistrements sélectionnés",in_bbox_filtertoken:"Les données présentées dans le graphique sont filtrées en fonction des géométries/enregistrements sélectionnés visibles sur la carte",relation:{in_bbox:"Les données présentées dans le graphique sont filtrées en fonction des géométries de référence (parents) visibles sur la carte",filtertoken:"Les données affichées dans le graphique sont filtrées par les géométries/enregistrements de référence sélectionnés (parents)",in_bbox_filtertoken:"Les données présentées dans le graphique sont filtrées en fonction des géométries/enregistrements de référence sélectionnés (parents) visibles sur la carte"}}}},{}],12:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0});var o=d(t("./it")),n=d(t("./en")),r=d(t("./fi")),a=d(t("./se")),s=d(t("./fr")),l=d(t("./de")),c=d(t("./ro")),t=d(t("./pl"));function d(t){return t&&t.__esModule?t:{default:t}}i.default={it:o.default,en:n.default,fi:r.default,se:a.default,fr:s.default,de:l.default,ro:c.default,pl:t.default}},{"./de":8,"./en":9,"./fi":10,"./fr":11,"./it":13,"./pl":14,"./ro":15,"./se":16}],13:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Grafici",pietitle:"Grafici Torta",no_subplots_charts:"Grafici esclusivi",no_plots:"Nessun grafico da mostrare. Aggiungi almeno un grafico",no_data:"Nessun dato disponibile",tooltip:{show_all_features_on_map:"Filtra tutti i grafici sulla base degli elementi visibili in mappa",show_feature_on_map:"Filtra questo grafico sulla base degli elementi visibili in mappa",filter_chart:"Filtra i grafici sulla base degli elementi selezionati"},filters:{in_bbox:"I dati mostrati nel grafico sono filtrati in base alle geometrie visibili sulla mappa",filtertoken:"I dati mostrati nel grafico sono filtrati in base alle geometrie/records selezionati",in_bbox_filtertoken:"I dati mostrati nel grafico sono filtrati in base alle geometrie/records selezionati e visibili sulla mappa",relation:{in_bbox:"I dati mostrati nel grafico sono filtrati in base alle geometrie di riferimento (genitori) visibili sulla mappa",filtertoken:"I dati mostrati nel grafico sono filtrati in base alle geometrie/records selezionati di riferimento (genitori)",in_bbox_filtertoken:"I dati mostrati nel grafico sono filtrati in base alle geometrie/records di riferimento (genitori) selezionati e visibili sulla mappa"}}}},{}],14:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Charts",pietitle:"Pie Charts",no_subplots_charts:"Exclusive plots",no_plots:"No chart. Add at least one plot",no_data:"No Data available",tooltip:{show_all_features_on_map:"Filter all plots according to the geometries visible on the map",show_feature_on_map:"Filter plot according to the geometries visible on the map",filter_chart:"Filter plots according to the selected geometries/records"},filters:{in_bbox:"The data ​​shown in the plot are filtered according to the geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the geometries/records selected and visible on the map",relation:{in_bbox:"The data​​ shown in the plot are filtered according to the reference (parents) geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) geometries/records selected and visible on the map"}}}},{}],15:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Grafice",pietitle:"Diagrame radiale",no_subplots_charts:"Exclusiv grafice",no_plots:"Fără grafice. Adaugă unul",no_data:"Nu avem date disponibile",tooltip:{show_all_features_on_map:"Filtrează toate graficele după geometriile vizibile în hartă",show_feature_on_map:"Filtrează graficul cu geometriile vizibile în hartă",filter_chart:"Filtrează graficele după entitățile selectate"},filters:{in_bbox:"Datele ​​prezentate în grafic sunt filtrate după geometriile vizibile pe hartă",filtertoken:"Datele ​​prezentate în grafic sunt filtrate după entitățile selectate",in_bbox_filtertoken:"Datele ​​prezentate în grafic sunt filtrate după entitățile selectate și vizibile pe hartă",relation:{in_bbox:"Datele ​​ prezentate în grafic sunt filtrate după geometriile vizibile în hartă ale entităților relaționate de tip părinte",filtertoken:"Datele ​​prezentate în grafic sunt filtrate după entitățile relaționate de tip părinte care sunt selectate",in_bbox_filtertoken:"Datele ​​prezentate în grafic sunt filtrate după entitățile relaționate de tip părinte care sunt selectate și vizibile în hartă"}}}},{}],16:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0}),i.default={title:"Charts",pietitle:"Pie Charts",no_subplots_charts:"Exclusive plots",no_plots:"No chart. Add at least one plot",no_data:"No Data available",tooltip:{show_all_features_on_map:"Filter all plots according to the geometries visible on the map",show_feature_on_map:"Filter plot according to the geometries visible on the map",filter_chart:"Filter plots according to the selected geometries/records"},filters:{in_bbox:"The data ​​shown in the plot are filtered according to the geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the geometries/records selected and visible on the map",relation:{in_bbox:"The data​​ shown in the plot are filtered according to the reference (parents) geometries visible on the map",filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) selected geometries/records",in_bbox_filtertoken:"The data ​​shown in the plot are filtered according to the reference (parents) geometries/records selected and visible on the map"}}}},{}],17:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0});var o=t("../package.json"),n=r(t("./i18n")),t=r(t("./app"));function r(t){return t&&t.__esModule?t:{default:t}}i.default={name:o.name,i18n:n.default,app:t.default}},{"../package.json":19,"./app":7,"./i18n":12}],18:[function(t,e,i){var n=function(t,e,i){return e&&o(t.prototype,e),i&&o(t,i),t};function o(t,e){for(var i=0;i<e.length;i++){var o=e[i];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(t,o.key,o)}}var r=l(t("./config")),a=l(t("./components/sidebar/Multiplot.vue")),s=l(t("./service"));function l(t){return t&&t.__esModule?t:{default:t}}function c(t){return function(){var s=t.apply(this,arguments);return new Promise(function(r,a){return function e(t,i){try{var o=s[t](i),n=o.value}catch(t){return void a(t)}if(!o.done)return Promise.resolve(n).then(function(t){e("next",t)},function(t){e("throw",t)});r(n)}("next")})}}var d=g3wsdk.core.plugin.Plugin;new((()=>{var t=o,e=d;if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);function o(){var t,e,i;if(this instanceof o)return t=r.default.name,e=r.default.i18n,(i=((t,e)=>{if(t)return!e||"object"!=typeof e&&"function"!=typeof e?t:e;throw new ReferenceError("this hasn't been initialised - super() hasn't been called")})(this,(o.__proto__||Object.getPrototypeOf(o)).call(this,{name:t,service:s.default,i18n:e}))).service.once("ready",function(){i.registerPlugin(i.config.gid)&&(i.setupGUI(),i.setReady(!0))}),i.service.init(i.config),i;throw new TypeError("Cannot call a class as a function")}return t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e),n(o,[{key:"setupGUI",value:function(){var e,i=this;this.createSideBarComponent(a.default,{id:"qplotly",title:"plugins.qplotly.title",open:!1,collapsible:!0,iconConfig:{color:"red",icon:"chart-area"},mobile:!0,events:{open:{when:"before",cb:(e=c(function*(t){yield i.service.showChart(t)}),function(t){return e.apply(this,arguments)})}},sidebarOptions:{position:1}})}},{key:"unload",value:function(){this.service.clear()}}]),o})())},{"./components/sidebar/Multiplot.vue":6,"./config":17,"./service":20}],19:[function(t,e,i){e.exports={name:"qplotly",version:"3.9.0",description:"Data plotly plugin ",main:"index.js",scripts:{},repository:{type:"git",url:"git+https://github.com/g3w-suite/g3w-client-plugin-qplotly.git"},author:"",license:"ISC",bugs:{url:"https://github.com/g3w-suite/g3w-client-plugin-qplotly/issues"},homepage:"https://github.com/g3w-suite/g3w-client-plugin-qplotly#readme"}},{}],20:[function(t,e,i){Object.defineProperty(i,"__esModule",{value:!0});var l=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var i,o=arguments[e];for(i in o)Object.prototype.hasOwnProperty.call(o,i)&&(t[i]=o[i])}return t},a=function(t,e){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t)){var i=e,o=[],n=!0,e=!1,r=void 0;try{for(var a,s=t[Symbol.iterator]();!(n=(a=s.next()).done)&&(o.push(a.value),!i||o.length!==i);n=!0);}catch(t){e=!0,r=t}finally{try{!n&&s.return&&s.return()}finally{if(e)throw r}}return o}throw new TypeError("Invalid attempt to destructure non-iterable instance")},o=t("./components/content/headeraction.vue"),c=(o=o)&&o.__esModule?o:{default:o};function d(t){if(Array.isArray(t)){for(var e=0,i=Array(t.length);e<t.length;e++)i[e]=t[e];return i}return Array.from(t)}function f(t){return function(){var s=t.apply(this,arguments);return new Promise(function(r,a){return function e(t,i){try{var o=s[t](i),n=o.value}catch(t){return void a(t)}if(!o.done)return Promise.resolve(n).then(function(t){e("next",t)},function(t){e("throw",t)});r(n)}("next")})}}var o=g3wsdk.core.utils,h=o.base,n=o.inherit,p=o.XHR,u=o.debounce,g=o.toRawType,v=g3wsdk.gui.GUI,m=g3wsdk.core.ApplicationState,o=g3wsdk.core.plugin.PluginService,y=g3wsdk.core.catalog.CatalogLayersStoresRegistry,_=t("./components/content/qplotly"),b="/qplotly/api/trace";function r(){var e,i,o,n,r=this,s=(h(this),this.mapService=v.getService("map"),this.queryResultService=v.getService("queryresults"),this.mapCrs=this.mapService.getCrs(),this.loadedplots={},this.loading=!1,this.showCharts=!1,this.state=Vue.observable({loading:!1,geolayer:!1,positions:[],tools:{map:{toggled:!1,disabled:!1}}}),this.relationData=null,this._relationIdName={},this.customParams={bbox:void 0},this.keyMapMoveendEvent={key:null,plotIds:[]},this.mainbboxtool=!1,new Set);this.init=function(){var e,a=this;this.config=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},this.chartContainers=[],this.changeChartsEventHandler=u((e=f(function*(t){var e=t.layerId;if(!0==(!0===a.showCharts&&void 0===a.relationData&&"undefined"!==a.config.plots.find(function(t){return a.customParams.bbox||t.qgs_layer_id===e&&!0===t.show}))){var i=[],t=0<a.keyMapMoveendEvent.plotIds.length;!0==t&&a.keyMapMoveendEvent.plotIds.forEach(function(e){var t=a.config.plots.find(function(t){return t.id===e.id});t.filters=[],i.push(t)}),a.setBBoxParameter(t),e&&a.getShowPlots(!0).forEach(function(t){t.qgs_layer_id===e&&i.push(t)});try{var o=void 0;0<i.length&&(o=i.map(function(t){return a.clearDataPlot(t),t.id})),yield a.getChartsAndEmit({plotIds:o})}catch(t){}}}),function(t){return e.apply(this,arguments)}),1500),this.config.plots.forEach(function(t,e){var i,o="Object"===g(t.plot.layout.title)?t.plot.layout.title.text:t.plot.layout.title,n=(a.state.positions.push(t.id),t.withrelations=null,t.data=null,t.loaded=!1,t.plot.layout._title=o,t.label=o||"Plot id ["+t.id+"]",t.plot.layout.xaxis.automargin=!0,t.plot.layout.yaxis.automargin=!0,t.filters=[],t.qgs_layer_id),o=(s.add(n),y.getLayerById(n)),r=o.isGeoLayer();t.crs=r?o.getCrs():void 0,t.tools={filter:o.getFilter(),selection:o.getSelection(),geolayer:Vue.observable({show:r,active:!1})},o.isFather()&&(i=[],o.getRelations().getArray().forEach(function(t){t.getFather()===n&&i.push({id:t.getId(),relationLayer:t.getChild()}),a._relationIdName[t.getId()]=t.getName()}),t.withrelations={relations:i,data:null}),o.on("filtertokenchange",a.changeChartsEventHandler)}),b=b+"/"+this.getGid(),this.queryResultService.addLayersPlotIds([].concat(d(s))),this.queryResultService.on("show-chart",this.showChartsOnContainer),this.queryResultService.on("hide-chart",this.clearChartContainers),this.closeComponentKeyEevent=this.queryResultService.onafter("closeComponent",this.clearChartContainers),this.setContentChartTools(),this.emit("ready")},this.showChartsOnContainer=function(t,e,i){var o=r.chartContainers.find(function(t){return e.selector===t.container.selector});void 0===o&&r.chartContainers.push({container:e,component:null}),r.config.plots.forEach(function(t){t.loaded&&r.clearDataPlot(t)}),r.showChart(void 0===o,t,e,i)},this.clearChartContainers=function(e){r.chartContainers=r.chartContainers.filter(function(t){return!(!e||e.selector===t.container.selector)||($(t.component.$el).remove(),t.component.$destroy(),!1)}),r.config.plots.forEach(function(t){t.loaded&&r.clearDataPlot(t)})},this.getNumberOfShowPlots=function(){return this.getShowPlots(!0).length},this.toggleLayerFilter=(e=f(function*(t){t=y.getLayerById(t);void 0!==t&&(yield t.toggleFilterToken())}),function(t){return e.apply(this,arguments)}),this.setActiveFilters=function(t){[].concat(d(t.filters));t.filters=[],!0===t.tools.filter.active&&t.filters.push("filtertoken"),!0===t.tools.geolayer.active&&(0<t.filters.length?t.filters.splice(0,1,"in_bbox_filtertoken"):t.filters.push("in_bbox"))},this.getChartsAndEmit=f(function*(){var t=(0<arguments.length&&void 0!==arguments[0]?arguments[0]:{}).plotIds,t=yield this.getCharts({plotIds:t}),e=t.charts;this.emit("change-charts",{charts:e,order:t.order})}),this.showPlot=(i=f(function*(i){var o=this;i.tools.geolayer.show&&(i.tools.geolayer.active=this.state.tools.map.toggled,this.keyMapMoveendEvent.key)&&this.keyMapMoveendEvent.plotIds.push({id:i.id,active:this.state.tools.map.toggled}),this.setContentChartTools(),null!==i.withrelations&&void 0===this.getShowPlots(!0).find(function(t){return t.id!==i.id&&t.qgs_layer_id===i.qgs_layer_id})&&this.getShowPlots().forEach(function(e){var t;e.id!==i.id&&void 0!==i.withrelations.relations.find(function(t){t=t.relationLayer;return e.qgs_layer_id===t})&&0<(t=o.clearDataPlot(e)).length&&o.getChartsAndEmit({plotIds:t})}),yield this.getChartsAndEmit({plotIds:[i.id]})}),function(t){return i.apply(this,arguments)}),this.hidePlot=(o=f(function*(e){e.tools.geolayer.show&&(e.tools.geolayer.active=!1,this.keyMapMoveendEvent.key&&(this.keyMapMoveendEvent.plotIds=this.keyMapMoveendEvent.plotIds.filter(function(t){return e.id!==t.id})),0===this.keyMapMoveendEvent.plotIds.length)&&(this.customParams.bbox=void 0,this.state.tools.map.toggled=!1);var t=this.clearDataPlot(e),t=(0<t.length&&this.getChartsAndEmit({plotIds:t}),this.setContentChartTools(),this.setActiveFilters(e),this.createChartsObject()),i=t.charts;this.emit("show-hide-chart",{plotId:e.id,action:"hide",filter:e.filters,charts:i,order:t.order})}),function(t){return o.apply(this,arguments)}),this.createChartsObject=function(){return{order:(0<arguments.length&&void 0!==arguments[0]?arguments[0]:{}).order||this.getShowPlots(!0).map(function(t){return t.id}),charts:{}}},this.getPlots=function(){return this.config.plots},this.clearLoadedPlots=function(){var e=this;this.state.tools.map.toggled=!1,this.customParams.bbox=void 0,this.handleKeyMapMoveendEvent({listen:!1}),this.getShowPlots(!0).forEach(function(t){e.clearDataPlot(t),!0===t.tools.geolayer.show&&(t.tools.geolayer.active=!1),t.filters=[]}),this.showCharts=!1},this.setBBoxParameter=function(){this.customParams.bbox=0<arguments.length&&void 0!==arguments[0]&&arguments[0]||!0===this.state.tools.map.toggled?this.mapService.getMapBBOX().toString():void 0},this.updateMapBBOXData=(n=f(function*(t){var e=this,i=t.id,o=t.active,n=[{id:i,active:o}],r=this.getPlotById(i);return this.getShowPlots(!0).forEach(function(t){t.id!==i&&t.qgs_layer_id===r.qgs_layer_id&&(t.tools.geolayer.active=o,e.clearDataPlot(t),n.push({id:t.id,active:o}))}),this.setBBoxParameter(!0),this.mainbboxtool=!1,this.handleKeyMapMoveendEvent({listen:!0,plotIds:n}),this.clearDataPlot(r),yield this.getCharts({plotIds:n.map(function(t){return t.id})})}),function(t){return n.apply(this,arguments)}),this.handleKeyMapMoveendEvent=function(){var t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},e=t.listen,t=t.plotIds;void 0!==e&&e?(this.keyMapMoveendEvent.plotIds=void 0===t?[]:t,null===this.keyMapMoveendEvent.key&&(this.keyMapMoveendEvent.key=this.mapService.getMap().on("moveend",this.changeChartsEventHandler))):(ol.Observable.unByKey(this.keyMapMoveendEvent.key),this.keyMapMoveendEvent.key=null,this.keyMapMoveendEvent.plotIds=[])},this.updateCharts=f(function*(){var e=this,t=0<arguments.length&&void 0!==arguments[0]&&arguments[0],i=(this.setLoadingCharts(!0),void 0),t=(this.mainbboxtool=!0,this.state.tools.map.toggled=t?!this.state.tools.map.toggled:this.state.tools.map.toggled,this.setBBoxParameter(),this.getShowPlots(!0).filter(function(t){return!0===t.tools.geolayer.show&&(t.tools.geolayer.active=t.tools.geolayer.show&&e.state.tools.map.toggled,e.state.tools.map.toggled&&t.tools.geolayer.active||!0)}));this.handleKeyMapMoveendEvent({listen:this.state.tools.map.toggled,plotIds:t.map(function(t){return{id:t.id,active:t.tools.geolayer.active}})});try{var o=t.map(function(t){return e.clearDataPlot(t),t.id}),i=yield this.getCharts({plotIds:o})}catch(t){}return i}),this.clearDataPlot=function(n){var e=this,i=[];return n.loaded=!1,(n.data=null)!==n.withrelations?null!==n.withrelations.data&&(Object.values(n.withrelations.data).forEach(function(t){t.forEach(function(t){t=t.id;e.clearDataPlot(e.getPlotById(t)),i.push(t)})}),n.withrelations.data=null):this.getShowPlots(!0).forEach(function(o){o.id!==n.id&&null!==o.withrelations&&null!==o.withrelations.data&&Object.entries(o.withrelations.data).forEach(function(t){var t=a(t,2),e=t[0],i=t[1];i.forEach(function(t,e){t.id===n.id&&i.splice(e,1)}),0===i.length&&(delete o.withrelations.data[e],0===Object.keys(o.withrelations.data).length)&&(o.withrelations.data=null)})}),i},this.setContentChartTools=function(){this.state.geolayer=void 0!==this.getShowPlots(!0).find(function(t){return t.tools.geolayer.show})},this.setLoadingCharts=function(t){this.state.loading=t,void 0===this.relationData&&(v.disableSideBar(t),v.setLoadingContent(t))},this.getShowPlots=function(){var e=!(0<arguments.length&&void 0!==arguments[0])||arguments[0];return this.config.plots.filter(function(t){return e===t.show})},this.getPlotById=function(e){return this.config.plots.find(function(t){return t.id===e})},this.getCharts=f(function*(){var h=this,t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:{},o=t.layerIds,n=t.plotIds,u=t.relationData;return this.relationData=u,new Promise(function(e){var s,l,c,i,t=void 0,d=(void 0!==o?t=h.config.plots.filter(function(t){return-1!==o.indexOf(t.qgs_layer_id)}):void 0!==n?(t=[],n.forEach(function(o){var e=h.getShowPlots(!0).find(function(i){return i.id!==o&&null!==i.withrelations&&void 0!==i.withrelations.relations.find(function(t){var e=t.id;return t.relationLayer===h.getPlotById(o).qgs_layer_id&&(null===i.withrelations.data||void 0===i.withrelations.data[e]||void 0===i.withrelations.data[e].find(function(t){return t.id===o}))})});void 0===e&&(e=h.getPlotById(o)),void 0===t.find(function(t){return t===e})&&t.push(e)})):t=h.getShowPlots(!0).filter(function(e){return void 0===h.getShowPlots(!0).find(function(t){return e.id!==t.id&&null!==t.withrelations&&void 0!==t.withrelations.relations.find(function(t){t.id;return t.relationLayer===e.qgs_layer_id})})}),h.createChartsObject({order:o&&t.map(function(t){return t.id})}));Promise.allSettled&&(s=[],l=[],c=new Set,t.forEach(function(o){var e,i,n,t,r,a=void 0;!0===o.loaded&&(null===o.withrelations||null!==o.withrelations.data&&0===h.getShowPlots(!0).filter(function(e){return void 0!==o.withrelations.relations.find(function(t){t=t.relationLayer;return e.qgs_layer_id===t})}).reduce(function(t,e){return t+=void 0!==Object.values(o.withrelations.data).find(function(t){return void 0!==t.find(function(t){t=t.id;return t===e.id})})?0:1},0))?s.push(Promise.resolve({result:!0,data:o.data,relations:o.withrelations&&o.withrelations.data})):void 0===u&&1<h.getShowPlots(!0).length&&void 0!==h.getShowPlots(!0).find(function(t){if(t.id!==o.id&&null!==t.withrelations&&null!==t.withrelations.data&&void 0!==Object.values(t.withrelations.data).find(function(t){return void 0!==t.find(function(t){if(t.id===o.id)return a=t.data,!0})}))return s.push(Promise.resolve({result:!0,data:[a]})),!0})||(t=!(0<h.keyMapMoveendEvent.plotIds.length)||-1!==h.keyMapMoveendEvent.plotIds.filter(function(t){return t.active}).map(function(t){return t.id}).indexOf(o.id),i=void 0,o.withrelations&&(i=o.withrelations.relations.filter(function(t){var e=t.id,i=t.relationLayer;if(void 0!==h.getShowPlots(!0).find(function(t){return t.qgs_layer_id===i&&!1===t.loaded})&&!1===c.has(e))return c.add(e),!(o.loaded=!1)}).map(function(t){return t.id}).join(",")||void 0),r=[void 0],n=t&&h.customParams.bbox?h.customParams.bbox:void 0,(r=void 0!==h.relationData?(t=h.relationData.relations.filter(function(t){return o.qgs_layer_id===t.referencingLayer}).map(function(t){return t.id+"|"+h.relationData.fid})).length?t:r:r).forEach(function(t){l.push(o),e=!0===o.loaded?Promise.resolve({data:o.data}):p.get({url:b+"/"+o.qgs_layer_id+"/"+o.id+"/",params:{withrelations:i,filtertoken:m.tokens.filtertoken||void 0,relationonetomany:t,in_bbox:n}}),s.push(e)}))}),Promise.allSettled(s).then((i=f(function*(t){t.forEach(function(t,e){var i,o,n;"fulfilled"===t.status&&t.value.result?(n=(t=t.value).data,i=t.relations,t.relation||((o=l[e]).data=n,o.loaded=!0,o.plot.layout.title=o.plot.layout._title,h.setActiveFilters(o),t={},d.charts[o.id]?d.charts[o.id].push(t):d.charts[o.id]=[t],t.filters=o.filters,t.layout=o.plot.layout,t.tools=o.tools,t.layerId=o.qgs_layer_id,t.title=o.plot.layout.title,t.data=n[0],i&&(null===o.withrelations.data?o.withrelations.data=i:Object.keys(i).forEach(function(t){o.withrelations.data[t]=i[t]}),Object.keys(i).forEach(function(s){i[s].forEach(function(t){var n=t.id,r=t.data,a=o.filters;h.config.plots.filter(function(t){return t.show}).find(function(t,e){var i,o;if(t.id===n)return h.setActiveFilters(t),t.loaded=!0,t.data=r,i={},d.charts[t.id]?d.charts[t.id].push(i):d.charts[t.id]=[i],(o=t.plot.layout).title=h._relationIdName[s]+" "+o._title,a.length&&t.filters.push("relation."+a[0]),i.data=r[0],i.filters=t.filters,i.layout=o,i.tools=t.tools,i.layerId=t.qgs_layer_id,i.title=t.plot.layout.title,!0})})})))):(t=d[e],h.setActiveFilters(t),n={},d.charts[t.id]?d.charts.push(n):d.charts=[n],n.filters=t.filters,n.layout=t.plot.layout,n.tools=t.tools,n.layerId=t.qgs_layer_id,n.title=t.plot.layout.title,n.data=null)}),h.showCharts=!0,h.removeInactivePlotIds(),e(d)}),function(t){return i.apply(this,arguments)})))})}),this.removeInactivePlotIds=function(){!1===this.state.tools.map.toggled&&(this.keyMapMoveendEvent.plotIds=this.keyMapMoveendEvent.plotIds.filter(function(t){return t.active}),0===this.keyMapMoveendEvent.plotIds.length)&&this.keyMapMoveendEvent.key&&this.handleKeyMapMoveendEvent({listen:!1})},this.getChartLayout=function(){return this.config.plots[0].layout},this.getChartConfig=function(){return this.config.plots[0].config},this.showChart=function(e,n,r,a){var s=this;return new Promise(function(t){!0===e?setTimeout(function(){var i,t,e=new _({service:s,ids:n,relationData:a}),o=e.getInternalComponent();void 0===r?(i=s,v.showContent({closable:!1,title:"plugins.qplotly.title",style:{title:{fontSize:"1.3em"}},headertools:[Vue.extend(l({},c.default,{data:function(){return{state:i.state,tools:{map:{show:i.state.geolayer&&!i.relationData,disabled:!0}}}},methods:{updateCharts:(t=f(function*(){var t=yield i.updateCharts(!0),e=t.charts,t=t.order;yield this.$nextTick(),i.emit("change-charts",{charts:e,order:t})}),function(){return t.apply(this,arguments)})}}))],content:e})):(o.$once("hook:mounted",f(function*(){r.append(this.$el)})),o.$mount(),s.chartContainers.find(function(t){return r.selector===t.container.selector}).component=o)}):(void 0===r?v.closeContent():s.clearChartContainers(r),t())})},this.clear=function(){var e=this;v.removeComponent("qplotly","sidebar",{position:1}),v.closeContent(),s.forEach(function(t){t=y.getLayerById(t);void 0!==t&&t.off("filtertokenchange",e.changeChartWhenFilterChange)}),this.mapService=null,this.chartContainers=[],this.queryResultService.removeListener("show-charts",this.showChartsOnContainer),this.queryResultService.un("closeComponent",this.closeComponentKeyEevent),this.closeComponentKeyEevent=null,s.clear(),this.mainbboxtool=null,this.queryResultService=null,this.emit("clear")}}n(r,o),i.default=new r},{"./components/content/headeraction.vue":1,"./components/content/qplotly":4}]},{},[18]);
-//# sourceMappingURL=plugin.js.map
+(async function() { try {
+
+  const BASE_URL = `${initConfig.group.plugins.qplotly.baseUrl}qplotly/js`;
+
+  const { G3W_FID }                     = g3wsdk.constant;
+  const { debounce, throttle, XHR }     = g3wsdk.core.utils;
+  const { GUI }                         = g3wsdk.gui;
+  const { ApplicationState }            = g3wsdk.core;
+  const { Plugin }                      = g3wsdk.core.plugin;
+  const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
+  const MAP                             = GUI.getService('map');
+  const QUERY                           = GUI.getService('queryresults');
+
+  new class extends Plugin {
+
+    #SIDEBAR;
+    #LAYERS                 = [];
+    #CHARTS                 = [];
+    #QUERY_RELATIONS_LAYERS = [];
+
+    /**
+     * @fires   service~ready
+     * @listens queryresults~show-chart
+     * @listens queryresults~hide-chart
+     * @listens queryresults~closeComponent
+     */
+    constructor() {
+
+      super({ name: 'qplotly' });
+
+      // i18n
+      const VM = new Vue();
+      const i18n = async lang => {
+        this.#SIDEBAR?.setLoading(true);
+        this.setLocale({ [lang]: (await import(`${BASE_URL}/i18n/${lang}.js`)).default });
+        this.#SIDEBAR?.setLoading(false);
+      };
+
+      VM.$watch(() => ApplicationState.language, i18n);
+
+      // state of plugin
+      this.state = Vue.observable({
+        loading:    false, // loading purpose
+        showCharts: false, // show/hide charts
+        geolayer:   false, // is geolayer
+        bbox_filter: false,
+        bbox_ids: [],    // plot ids associated to bbox (moveend event)
+        bbox_key: null,  // Openlayers key event for map `moveend`
+        bbox: undefined, // custom request param
+        rel:  null,      // relation data
+      });
+
+      // loop over plots
+      this.config.plots.forEach(plot => {
+        const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
+
+        this.#LAYERS.push(layer);
+
+        //Add only in a plot that we must show on query
+        if (plot.show_position.includes('query')) {
+          this.#QUERY_RELATIONS_LAYERS.push(layer);
+        }
+
+        plot.show = !!plot.show_on_start;
+
+        plot.tools = {
+          filter:    layer.getFilter(),                                          // reactive layer filter attribute:    { filter:    { active: <Boolean> } }
+          selection: layer.getSelection(),                                       // reactive layer selection attribute: { selection: { active: <Boolean> } }
+          geolayer:  Vue.observable({ show: layer.isGeoLayer(), active: false }) // if is geolayer show map tool
+        };
+
+        plot._rel  = layer.isFather() ? {
+          data: null,
+          relations: layer.getRelations().getArray().filter(r => r.getFather() === plot.qgs_layer_id).map(r => ({ id: r.getId(), relationLayer: r.getChild() }))
+        } : null;
+
+        layer.on('filtertokenchange', debounce(({ layerId }) => this.toggleCharts({ layerId }))) // reload charts after changing filter
+      });
+
+      QUERY.addLayersPlotIds(Array.from(new Set(this.#QUERY_RELATIONS_LAYERS.map(l => l.getId()))));
+
+      QUERY.on('show-chart', (ids, container, rel) => { this.toggleCharts({ show: true, container, ids, rel }); });
+      QUERY.on('hide-chart', container             => { this.toggleCharts({ show: false, container }); });
+
+      // check if some some plot has visible geolayer 
+      this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
+
+      // show relations (plot)
+      QUERY.onafter('addActionsForLayers', (actions, layers) => {
+        layers.forEach(layer => {
+          const relations      = ApplicationState.project.getRelations().filter(r => r.referencedLayer === layer.id);
+          const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
+          const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
+          if (charts.length) {
+            let _container;
+            actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
+              id:       'show-plots-relations',
+              opened:   true,
+              class:    GUI.getFontClass('chart'),
+              state:    Vue.observable({ toggled: layer.features.reduce((a, _ , i ) => { a[i] = null; return a; }, {}) }),
+              hint:     'sdk.mapcontrols.query.actions.relations_charts.hint',
+              cbk: throttle((layer, feature, action, index, container) => {
+                action.state.toggled[index] = !action.state.toggled[index];
+                if (action.state.toggled[index]) {
+                  this.toggleCharts({
+                    show: true,
+                    ids: charts,
+                    container,
+                    rel: {
+                      relations,
+                      fid:       feature.attributes[G3W_FID],
+                      height:    400
+                    }
+                  });
+                  _container = container; // save container to action
+                } else {
+                  this.toggleCharts({ show: false, container });
+                  _container = null; // remove container from action
+                }
+              }),
+              clear: () => {
+                if (_container) {
+                  this.toggleCharts({ show: false, container: _container });
+                  _container = null;
+                }
+              }
+            });
+          }
+        });
+      });
+
+      // setup gui
+      GUI.isReady().then(async () => {
+
+        if (!this.registerPlugin(this.config.gid)) {
+          return;
+        }
+
+        await i18n(ApplicationState.language);
+
+        // multi plot selector
+        const sidebar = this.#SIDEBAR = this.createSideBarComponent({
+          data: () => ({ service: this }),
+          template: /* html */ `
+            <ul class="treeview-menu" style="padding: 10px; color:#FFF;">
+              <li v-for="plot in service.config.plots" :key="plot.id" :hidden="!plot.show_position.includes('sidebar')">
+                <input type="checkbox" :id="plot.id" @change="service.toggleCharts({ id: plot.id })" v-model="plot.show" class="magic-checkbox" />
+                <label :for="plot.id" style="display:flex; justify-content: space-between;">
+                  <span style="white-space: pre-wrap">{{ plot.label }} </span>{{ plot.type }}
+                </label>
+              </li>
+            </ul>`,
+        }, this.config.sidebar);
+
+        sidebar.onbefore('setOpen', async b => {
+          //need tyo close content before. In this way eventually charts on query result service are cleared
+          await GUI.closeContent();
+          this.toggleCharts({ show: b });
+          GUI.once('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
+          if (!b) {
+            GUI.closeContent();
+          }
+        });
+
+        this.setReady(true);
+
+      });
+
+    }
+
+    /**
+     * @param plot object
+     */
+    clearData(plot) {
+     const plotIds = [];    // plotId eventually to reload
+      plot.loaded   = false; // set loaded data to false
+      plot.data     = null;  // set dat to null
+
+      // in case of plot father and has relation data and data related to
+      if (plot._rel?.data) {
+        Object
+          .values(plot._rel.data)
+          .forEach(d => {
+            d.forEach(({ id }) => {
+              this.clearData(this.config.plots.find(p => p.id === id));
+              plotIds.push(id);
+            })
+          });
+        plot._rel.data = null;
+      }
+
+      // check if we need to remove relation data coming from parent plot
+      if (!plot._rel) {
+        this.config.plots.filter(p => p.show && p.id !== plot.id && p._rel?.data)
+          .forEach(p => {
+            // plot has different id from current hide plot and it has relations
+            Object
+              .entries(p._rel.data)
+              .forEach(([id, data]) => {
+                data.forEach(({ id }, index) => id === plot.id && data.splice(index, 1));
+                if (0 === data.length)                                          delete p._rel.data[id];
+                if (0 === data.length && 0 === Object.keys(p._rel.data).length) p._rel.data = null;
+              });
+          });
+      }
+
+      return plotIds;
+    }
+
+    /**
+     * Get charts data from server
+     * 
+     * @param { Object } opts
+     * @param opts.layerIds          provide by query by result service otherwise is undefined
+     * @param opts.rel               provide by query by result service otherwise is undefined
+     * @param { Array } opts.plotIds plots id to show
+     * 
+     * @returns { Promise<{ order, charts }> }
+     */
+    async getCharts({
+      layerIds,
+      plotIds,
+      rel,
+    } = {}) {
+
+      // check if it has relation data
+      this.state.rel = rel;
+
+      /** @type { Array } plots that need to be get data to show charts  */
+      let plots = [];
+
+      // plots request from Query Result Service
+      if (layerIds) {
+        plots = this.config.plots.filter(p => -1 !== layerIds.indexOf(p.qgs_layer_id));
+      }
+
+      // plots that have id belong to plotIds array set by check uncheck plot on sidebar interface
+      if (!layerIds && plotIds) {
+        //loop throught plot ids
+        plotIds.forEach(plotId => {
+          // check if is child of already show plots (not equal to current plotId, relation plot)
+          const added = this.config.plots.find(p => p.show && plotId !== p.id
+            // find a plot that has relations array and with relationLayer the same layer id belong to plot qgis_layer_id
+            && p._rel?.relations.find(r =>
+              r.relationLayer === this.config.plots.find(p => plotId === p.id).qgs_layer_id
+              && (
+                null === p._rel.data
+                || undefined === p._rel?.data[r.relationLayer]
+                || undefined === p._rel?.data[r.relationLayer].find(r => r.id === plotId)
+              )
+            )
+          ) || this.config.plots.find(p => p.id === plotId)
+          // check if already (in case of parent plots) added to plots
+          if (!plots.some(p => p === added)) {
+            added.loaded = false; //need to force to se loaded false in case of father plot that has already load a child plot
+            plots.push(added);
+          }
+        });
+      }
+
+
+      // plots that have attribute show to true and not in relation with other plot show
+      // if not belong to show plot father relation
+      // is not the same plot id
+      // find a plot that relations with relationLayer the same layer id belog to plot qgis_layer_id
+      if (layerIds && plotIds) {
+        plots = this.config.plots.filter(plot => plot.show && !this.config.plots.some(p => p.show && plot.id !== p.id && p._rel?.relations.some(r => r.relationLayer === plot.qgs_layer_id)));
+      }
+
+      if (!layerIds && !plotIds) {
+        // get only plots that have attribute show to true
+        // and not in relation with other plot show
+        plots = this.config.plots.filter(({ show }) => show).filter(plot => {
+          return (
+            // and if not belong to show plot father relation
+            (undefined === this.config.plots.filter(({ show }) => show).find((_plot) =>
+            (
+              // is not the same plot id
+              (plot.id !== _plot.id) &&
+              // plat has relations
+              (null !== _plot._rel) &&
+              // find a plot that has withrelations array and with relationLayer the same
+              // layer id belog to plot qgis_layer_id
+              (undefined !== _plot._rel.relations.find(({ id, relationLayer }) => ((relationLayer === plot.qgs_layer_id))))
+            )))
+          )
+        })
+      }
+
+      const order   = (layerIds ? plots : this.config.plots.filter(({ show, show_position }) => show && show_position.includes('sidebar'))).map(p => p.id); // order of plot ids
+      const charts  = {}; // Object containing charts data
+      const c_cache = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
+      const r_cache = new Set(); // cache already loaded relationIds
+      const father_relations = this.#LAYERS.flatMap(layer => layer.isFather() ? layer.getRelations().getArray() : []); // add "withrerlations" attribute in case of father relation
+
+      // loop through array plots waiting all promises
+      (await Promise
+        .allSettled(
+          plots.flatMap(plot => {
+            const promises = []; // promises array
+            let promise;
+            // no request server request is needed plot is already loaded (show / relation)
+            if (
+              (plot.loaded && !plot._rel) ||
+              (
+                plot.loaded && !plot._rel?.data && 0 === this.config.plots
+                  .filter(p => p.show && plot._rel.relations.some(r => p.qgs_layer_id === r.relationLayer))
+                  // not child
+                  .reduce((nc, p) => {
+                    nc += (Object.values(plot._rel.data).some(d => d.some(d => d.id === p.id))) ? 0 : 1;
+                    return nc;
+                  }, 0)
+              )
+            ) {
+              return Promise.resolve({
+                result:    true,
+                data:      plot.data,
+                relations: plot._rel && plot._rel.data,
+              });
+            }
+
+            // data coming from father plots
+            let data;
+
+            // charts relations
+            if (
+              undefined !== rel ||                                 // relation data is passed by query result service
+              this.config.plots.filter(p => p.show).length <= 1 || // single plot
+              !this.config.plots.some(p => {                       // find if is a plots that belong to plot father
+                if (p.show && p.id !== plot.id && Object.values(p._rel?.data ?? {}).some(d => d.some(d => { if (d.id === plot.id) { data = d.data; return true; } }))) {
+                  promises.push(Promise.resolve({ result: true, data: [ data ] }));
+                  return true;
+                }
+              })
+            ) {
+              (layerIds ? [] : [undefined])
+                .concat(this.state?.rel?.relations.filter(r => plot.qgs_layer_id === r.referencingLayer).map(r => `${r.id}|${this.state.rel.fid}`) ?? [])
+                .forEach(r => {
+                  c_cache.push(plot);
+                  promise = plot.loaded
+                    ? Promise.resolve({ data: plot.data })
+                    : XHR.get({
+                        url: `/qplotly/api/trace/${this.config?.gid.split(':')[1]}/${plot.qgs_layer_id}/${plot.id}/`,
+                        params: {
+                          relationonetomany: r,
+                          filtertoken: ApplicationState.tokens.filtertoken || undefined,
+                          // withrelations parameter (check if plot has relation child → default: undefined)
+                          withrelations: plot._rel?.relations.filter(r => {
+                            if (this.config.plots.some(p => p.show && p.show_position.includes('sidebar') && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
+                              r_cache.add(r.id);
+                              plot.loaded = false;
+                              return true;
+                            }
+                          })
+                          .map(r => r.id)
+                          .join(',')
+                          || undefined,
+                          // in_bbox parameter (in case of tool map toggled)
+                          in_bbox: (this.state.bbox_ids.length > 0 ? -1 !== this.state.bbox_ids.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
+                        }
+                    });
+                  promises.push(promise);
+                });
+            }
+            return promises;
+        })
+      )).forEach((response, index) => {
+        const is_error = 'fulfilled' !== response.status || !response.value.result; // some error occurs during get data from server
+        const plot     = c_cache[index];
+
+        // request has valid response with multiple chart plot of same plot
+        if (!is_error) {
+          plot.data   = response.value.data;
+          plot.loaded = true;
+        }
+
+        this.#setActiveFilters(plot);
+        
+        /** In not yer gat data from a plot id, set empty array */
+        if (!charts[plot.id]) {
+          charts[plot.id] = [];
+        }
+
+        charts[plot.id].push({
+          filters: plot.filters,
+          tools:   plot.tools,
+          layerId: plot.qgs_layer_id,
+          title:   plot.label,
+          data:    (is_error ?? false) ? null : plot.data[0],
+        });
+
+        // skip on relation or invalid response
+        if (is_error || response.value.relation) {
+          return;
+        } 
+
+        // request has valid response
+        const { relations } = response.value;
+        // add data to relations
+        if (relations && !plot._rel.data) {
+          plot._rel.data = relations;
+        } else if (relations) {
+          Object.keys(relations).forEach((id) => { plot._rel.data[id] = relations[id]; });
+        }
+
+        // data has a relations attributes data
+        // loop through relations by id and get relation data filtered by only show plot
+        Object
+          .keys(relations || [])
+          .forEach(id => relations[id]
+            .forEach(r => {
+              this.config.plots
+                .filter(p => p.show && p.id === r.id)
+                .forEach(p => {
+                  p.loaded = true;
+                  p.data   = r.data;
+                  p.title  = `${father_relations.find(rel => rel.getId() === id)?.getName()} ${p.label}`;
+                  // get father filter plots
+                  if (plot.filters.length && !(`relation.${plot.filters[0]}` in plot.filters)) {
+                    //set child plot filter
+                    p.filters = [(`relation.${plot.filters[0]}`)];
+                  } else {
+                    //remove eventually child plot filter
+                    p.filters = [];
+                  }
+                  this.#setActiveFilters(plot);
+                  /** @FIXME add description */
+                  if (!charts[p.id]) {
+                    charts[p.id] = [];
+                  }
+                  charts[p.id].push({
+                    filters: p.filters,
+                    tools:   p.tools,
+                    layerId: p.qgs_layer_id,
+                    title:   p.title,
+                    data:    (is_error ?? false) ? null : p.data[0],
+                  });
+              });
+            })
+          );
+
+      });
+
+      // remove inactive plot ids
+
+      /** @FIXME add description */
+      if (!this.state.bbox_filter) {
+        this.state.bbox_ids = this.state.bbox_ids.filter(p => p.active);
+      }
+
+      // remove handler of map moveend and reset to empty
+      if (!this.state.bbox_filter && !this.state.bbox_ids.length && this.state.bbox_key) {
+        ol.Observable.unByKey(this.state.bbox_key);
+        this.state.bbox_key = null;
+        this.state.bbox_ids = [];
+      }
+
+      return Promise.resolve({ order, charts });
+    }
+
+    /**
+     * Called when queryResultService emit event show-chart (or open/close sidebar item)
+     * 
+     * @param { Object }  opts
+     * @param { boolean } opts.show whether to show charts
+     * @param { number }  opts.id   id of plot to be toggled
+     * @param { Array }   opts.ids  passed by query result services
+     * @param opts.container        DOM element - passed by query result service
+     * @param opts.rel              relation data - Passed by query result service
+     * @param {boolean} opts.bbox   whether to toggle bbox filter
+     * @param opts.layerId          passed by filter token (add or remove to a specific layer)
+     * 
+     * @returns { Promise<unknown> }
+     * 
+     * @fires change-charts
+     */
+    async toggleCharts({
+      show,
+      id,
+      ids,
+      container,
+      rel,
+      bbox,
+      layerId,
+    }) {
+
+      try {
+
+        let CHARTS, PLOT_IDS;
+
+        // show charts (append to DOM)
+        if (true === show) {
+          this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
+          this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
+            ids,
+            rel,
+            service: this,
+            container
+          }}).$mount());
+        }
+
+        // hide charts (remove from DOM)
+        if (false === show) {
+          const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
+          if (1!== i) {
+            this.#CHARTS[i].$destroy();                                       // remove container
+            this.#CHARTS.splice(i, 1);
+            this.config.plots.forEach(p => p.loaded && this.clearData(plot)); // clear plot data
+          }
+        }
+
+        // reload charts (after "bbox" change)
+        if (undefined !== bbox) {
+          this.state.bbox_filter = bbox;
+
+          // set bbox parameter
+          this.state.bbox = this.state.bbox_filter ? GUI.getService('map').getMapBBOX().toString() : undefined;
+
+          // get active plot related to geolayer
+          const geo_plots = this.config.plots.filter(p => p.show && p.tools.geolayer.show);
+          
+          geo_plots.forEach(p => p.tools.geolayer.active = bbox)
+
+          // handle moveend map event
+
+          // which plotIds need to trigger map moveend event
+          this.state.bbox_ids = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
+
+          // get map moveend event just one time
+          if (this.state.bbox_filter && !this.state.bbox_key) {
+            this.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.toggleCharts({ layerId: false })));
+          }
+
+          // remove handler of map moveend and reset to empty
+          if (!this.state.bbox_filter) {
+            ol.Observable.unByKey(this.state.bbox_key);
+            this.state.bbox_key = null;
+          }
+
+          PLOT_IDS = geo_plots.map(p => { this.clearData(p); return p.id; });
+        }
+
+        // reload charts (after "filtertoken" or "bbox" change)
+        if (undefined !== layerId && this.state.showCharts && !(undefined !== this.state.rel && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show)))) {
+
+          this.state.bbox = (this.state.bbox_ids.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
+
+          // in case of a filter is change on showed chart it redraw the chart
+
+          // plots to reload
+          const reload   = [
+            // whether there is a bbox filter
+            ...((this.state.bbox_ids || []).map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] }))),
+            // whether filtertoken is added or removed from layer
+            ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
+          ];
+
+          PLOT_IDS = reload.length > 0 ? reload.map(p => { this.clearData(p); return p.id; }) : undefined;
+        }
+
+        // reload charts (after "plot.id" change)
+        if (undefined !== id) {
+          const plot = this.config.plots.find(p => id === p.id);
+
+          // whether geolayer tools is show
+          const has_geo = plot.tools.geolayer.show;
+
+          plot.tools.geolayer.active = has_geo ? plot.show && this.state.bbox_filter : plot.tools.geolayer.active;
+
+          // add current plot id in case of already register move map event
+          if (plot.show && has_geo && this.state.bbox_key) {
+            this.state.bbox_ids.push({ id: plot.id, active: this.state.bbox_filter });
+          }
+
+          // remove map Move end from plotids keys when there is a key moveend listener 
+          if (!plot.show && has_geo && this.state.bbox_key) {
+            this.state.bbox_ids = this.state.bbox_ids.filter(p => plot.id !== p.id);
+          }
+
+          // no plots have active geo tools
+          if (!plot.show && has_geo && !this.state.bbox_ids.length) {
+            this.state.bbox        = undefined; // set request params to undefined
+            this.state.bbox_filter = false;     // un-toggle main chart map tool
+          }
+
+            // set main map geolayer tools based on if there are plot belong to a geolayer
+          if (plot.show) {
+            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
+          }
+
+          /**
+           * @TODO make it simpler..
+           */
+          // whether there are chart to reload (in case of parent plot relations)
+          // check if other plot with the same `qgs_layer_id` has already loaded child plot
+          // show plot
+          if (plot.show && plot._rel && !this.config.plots.some(p => p.show && p.id !== plot.id && p.qgs_layer_id === plot.qgs_layer_id)) {
+            // not find a show plot with same qgs_layer_id
+            this.config.plots
+              // find a child plot show
+              .filter(p => p.show && p.show_position.includes('sidebar') && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
+              .forEach(p => {
+                // if found clear plot data to force to reload by parent plot
+                const plotIds = this.clearData(p);
+                if (plotIds.length > 0) {
+                  this.getCharts({ plotIds }).then(d => this.emit('change-charts', d));
+                }
+              });
+          }
+
+          const plotIds = plot.show ? [plot.id] : this.clearData(plot);
+
+          if (plot.show || (!plot.show && plotIds.length)) {
+            PLOT_IDS = plotIds;
+          }
+
+          if (!plot.show) {
+            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
+            this.#setActiveFilters(plot); // remove filters
+            CHARTS = {
+              plotId: plot.id,
+              order:  this.config.plots.flatMap(p => p.show && p.show_position.includes('sidebar') ? p.id : []), // order of plot ids
+            };
+          }
+        }
+
+        // redraw the charts
+        if (CHARTS || PLOT_IDS) {
+          this.emit('change-charts', CHARTS || await this.getCharts({ plotIds: PLOT_IDS }));
+        }
+
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    /**
+     * Show loading charts data (loading === true) is on going
+     * 
+     * @param   { boolean } b loading
+     * @returns { undefined }
+     */
+    setLoading(b) {
+      this.state.loading = b;
+      if (undefined === this.state.rel) {
+        document.querySelector('#qplotly').classList.toggle('g3w-disabled', b);
+        GUI.setLoadingContent(b);
+      }
+    }
+
+    /**
+     * Set array of active filter on a plot (eg. map bbox or filtertoken)
+     * 
+     * @param plot
+     */
+    #setActiveFilters(plot) {
+      plot.filters   = [];
+
+      // filtertoken is active
+      if (plot.tools.filter.active) {
+        plot.filters.push('filtertoken');
+      }
+
+      // map bbox tools is active
+      if (plot.tools.geolayer.active && plot.tools.filter.active) {
+        plot.filters.splice(0, 1, 'in_bbox_filtertoken');
+      }
+
+      if (plot.tools.geolayer.active && !plot.tools.filter.active) {
+        plot.filters.push('in_bbox');
+      }
+    }
+
+  }
+
+} catch (e) { console.error(e); } })();
