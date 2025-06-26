@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 07:41+0000\n"
+"POT-Creation-Date: 2025-06-26 14:59+0000\n"
 "PO-Revision-Date: 2023-11-30 12:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -18,55 +18,55 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.4.1\n"
 
-#: core/admin.py:25
+#: core/admin.py:29
 msgid "Basic settings"
 msgstr "Configurazioni di base"
 
-#: core/admin.py:28
+#: core/admin.py:32
 msgid "Access settings"
 msgstr "Accesso configurazioni"
 
-#: core/admin.py:32
+#: core/admin.py:36
 msgid "Display settings"
 msgstr "Mostra le configurazioni"
 
-#: core/admin.py:36
+#: core/admin.py:40
 msgid "Additional settings"
 msgstr "Configurazioni accessorie"
 
-#: core/api/base/views.py:144
+#: core/api/base/views.py:148
 msgid "Data are not correct or insufficent!"
 msgstr "I dati non sono corretti o insufficienti!"
 
-#: core/api/base/views.py:150
+#: core/api/base/views.py:154
 msgid "A error server is occured!"
 msgstr "Si è verificato un errore server!"
 
-#: core/api/base/views.py:158
+#: core/api/base/views.py:162
 msgid "Not found"
 msgstr "Non trovato"
 
-#: core/api/base/views.py:164
+#: core/api/base/views.py:168
 msgid "Permission denied"
 msgstr "Permesso negato"
 
-#: core/api/views.py:49
+#: core/api/views.py:36
 msgid "Expression evaluation error."
 msgstr "Errore nella valutazione dell'espressione."
 
-#: core/api/views.py:54
+#: core/api/views.py:41
 msgid "Expression parse error."
 msgstr "Errore di analisi dell'espressione."
 
-#: core/api/views.py:60
+#: core/api/views.py:47
 msgid "Expression empty error."
 msgstr "Errore di espressione vuota."
 
-#: core/api/views.py:66
+#: core/api/views.py:53
 msgid "Expression form data error."
 msgstr "Errore nei dati del modulo di espressione."
 
-#: core/api/views.py:72
+#: core/api/views.py:59
 msgid "Layer error."
 msgstr "Errore sul layer."
 
@@ -96,13 +96,14 @@ msgstr "Logo/Immagine"
 
 #: core/forms.py:155
 msgid "Copyright"
-msgstr ""
+msgstr "Copyright"
 
 #: core/forms.py:201
 #, python-brace-format
 msgid ""
 "SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
 msgstr ""
+"SRID EPSG:{srid} non è uguale all'SRID del progetto corrente EPSG:{layer_srid}"
 
 #: core/forms.py:236
 msgid "Frontend home data"
@@ -194,26 +195,26 @@ msgstr "Identificativo"
 msgid "Internal identification Macrogroup name"
 msgstr "Identificativo interno del Macrogruppo"
 
-#: core/models.py:96 core/models.py:132 core/models.py:416
+#: core/models.py:96 core/models.py:135 core/models.py:421
 #: core/templates/core/ajax/macrogroup_detail.html:7
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
 msgstr "Titolo"
 
-#: core/models.py:97 core/models.py:133
+#: core/models.py:97 core/models.py:136
 #: core/templates/core/ajax/macrogroup_detail.html:9
 msgid "Description"
 msgstr "Descrizione"
 
-#: core/models.py:98 core/models.py:140
+#: core/models.py:98 core/models.py:143
 msgid "Logo image"
 msgstr "Immagine logo"
 
-#: core/models.py:99 core/models.py:142
+#: core/models.py:99 core/models.py:145
 msgid "Logo link"
 msgstr "Link logo"
 
-#: core/models.py:100 core/models.py:143
+#: core/models.py:100 core/models.py:146
 msgid "Enter link with http:// or https//"
 msgstr "Il link deve contenere http:// or https//"
 
@@ -221,31 +222,31 @@ msgstr "Il link deve contenere http:// or https//"
 msgid "Use title for client"
 msgstr "Utilizza il titolo per il client"
 
-#: core/models.py:102 core/models.py:167
+#: core/models.py:102 core/models.py:170
 msgid "Use logo image for client"
 msgstr "Utilizza il logo per il client"
 
-#: core/models.py:105 core/models.py:135
+#: core/models.py:105 core/models.py:138
 msgid "Slug"
-msgstr ""
+msgstr "Slug"
 
-#: core/models.py:131
+#: core/models.py:134
 msgid "Name"
 msgstr "Nome"
 
-#: core/models.py:137
+#: core/models.py:140
 msgid "Is active"
 msgstr "Attivo"
 
-#: core/models.py:159
+#: core/models.py:162
 msgid "Terms of use text"
 msgstr "Termi di utilizzo"
 
-#: core/models.py:162
+#: core/models.py:165
 msgid "Terms of use link"
 msgstr "Link termini di utilizzo"
 
-#: core/models.py:168
+#: core/models.py:171
 msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
@@ -254,137 +255,137 @@ msgstr ""
 "del gruppo corrente come logo del client, se l'opzione MacroGruppo è attiva "
 "questa opzione ha la precedenza"
 
-#: core/models.py:407 core/templates/core/group_form.html:11
+#: core/models.py:412 core/templates/core/group_form.html:11
 msgid "Group"
 msgstr "Gruppo"
 
-#: core/models.py:408
+#: core/models.py:413
 msgid "Project type"
 msgstr "Tipo di progetto"
 
-#: core/models.py:409
+#: core/models.py:414
 msgid "Project type id"
 msgstr "Id tipo di progetto"
 
-#: core/models.py:417
+#: core/models.py:422
 msgid "Subtitle"
 msgstr "Sottotitolo"
 
-#: core/models.py:418
+#: core/models.py:423
 msgid "Home description"
 msgstr "Descrizione home"
 
-#: core/models.py:419
+#: core/models.py:424
 msgid "About title"
 msgstr "Titolo sezione 'Il progetto'"
 
-#: core/models.py:420
+#: core/models.py:425
 msgid "About description"
 msgstr "Descrizione pagina 'Il progetto'"
 
-#: core/models.py:421
+#: core/models.py:426
 msgid "About name"
 msgstr "Nome del progetto"
 
-#: core/models.py:422
+#: core/models.py:427
 msgid "About phone"
 msgstr "Telefono del progetto"
 
-#: core/models.py:423
+#: core/models.py:428
 msgid "About email"
 msgstr "Email del progetto"
 
-#: core/models.py:424
+#: core/models.py:429
 msgid "About address"
 msgstr "Indirizzo del progetto"
 
-#: core/models.py:425
+#: core/models.py:430
 msgid "Groups title"
 msgstr "Titolo pagina gruppi cartografici"
 
-#: core/models.py:426
+#: core/models.py:431
 msgid "Groups map description"
 msgstr "Descrizione pagina gruppi cartografici"
 
-#: core/models.py:427
+#: core/models.py:432
 msgid "Login title"
 msgstr "Titolo sezione 'Il progetto'"
 
-#: core/models.py:428
+#: core/models.py:433
 msgid "Login description"
 msgstr "Descrizione pagina di login"
 
-#: core/models.py:429
+#: core/models.py:434
 msgid "Suite logo"
 msgstr "Logo del progetto"
 
-#: core/models.py:430
+#: core/models.py:435
 msgid "Suite logo URL"
 msgstr "URL del logo della suite"
 
-#: core/models.py:431
+#: core/models.py:436
 msgid "Registration introductory message"
-msgstr ""
+msgstr "Messaggio introduttivo di registrazione"
 
-#: core/models.py:434
+#: core/models.py:439
 msgid "Credits"
-msgstr ""
+msgstr "Crediti"
 
-#: core/models.py:437
+#: core/models.py:442
 msgid "Main map title"
 msgstr "Titolo principale della mappa"
 
-#: core/models.py:439
-msgid "Facebook link"
-msgstr ""
-
-#: core/models.py:440
-msgid "Twitter link"
-msgstr ""
-
-#: core/models.py:441
-msgid "Google+ link"
-msgstr ""
-
-#: core/models.py:442
-msgid "Youtube link"
-msgstr ""
-
-#: core/models.py:443
-msgid "Instagram link"
-msgstr ""
-
 #: core/models.py:444
-msgid "Flickr link"
-msgstr ""
+msgid "Facebook link"
+msgstr "Link Facebook"
 
 #: core/models.py:445
+msgid "Twitter link"
+msgstr "Link Twitter"
+
+#: core/models.py:446
+msgid "Google+ link"
+msgstr "Link Google+"
+
+#: core/models.py:447
+msgid "Youtube link"
+msgstr "Link Youtube"
+
+#: core/models.py:448
+msgid "Instagram link"
+msgstr "Link Instagram"
+
+#: core/models.py:449
+msgid "Flickr link"
+msgstr "Link Flickr"
+
+#: core/models.py:450
 msgid "Tripadvisor link"
-msgstr ""
-
-#: core/models.py:459
-msgid "NotSet"
-msgstr ""
-
-#: core/models.py:460
-msgid "Info"
-msgstr ""
-
-#: core/models.py:461
-msgid "Warning"
-msgstr ""
-
-#: core/models.py:462
-msgid "Debug"
-msgstr ""
-
-#: core/models.py:463
-msgid "Error"
-msgstr ""
+msgstr "Link Tripadvisor"
 
 #: core/models.py:464
+msgid "NotSet"
+msgstr "Non impostato"
+
+#: core/models.py:465
+msgid "Info"
+msgstr "Informazione"
+
+#: core/models.py:466
+msgid "Warning"
+msgstr "Avviso"
+
+#: core/models.py:467
+msgid "Debug"
+msgstr "Debug"
+
+#: core/models.py:468
+msgid "Error"
+msgstr "Errore"
+
+#: core/models.py:469
 msgid "Fatal"
-msgstr ""
+msgstr "Fatale"
 
 #: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
 msgid "error page"
@@ -412,7 +413,7 @@ msgstr "Sistema di coordinate geografiche"
 
 #: core/templates/core/ajax/group_detail.html:8
 msgid "SRID"
-msgstr ""
+msgstr "SRID"
 
 #: core/templates/core/ajax/group_detail.html:9
 msgid "Units"
@@ -484,15 +485,15 @@ msgstr "Logo associato"
 
 #: core/templates/core/ajax/group_detail.html:40
 msgid "HeaderLogoImg"
-msgstr ""
+msgstr "ImmagineLogoIntestazione"
 
 #: core/templates/core/ajax/group_detail.html:48
 msgid "HeaderLogoHeight"
-msgstr ""
+msgstr "AltezzaLogoIntestazione"
 
 #: core/templates/core/ajax/group_detail.html:49
 msgid "HeaderLogoLink"
-msgstr ""
+msgstr "LinkLogoIntestazione"
 
 #: core/templates/core/ajax/group_detail.html:50
 msgid "Terms of use"
@@ -500,15 +501,15 @@ msgstr "Condizioni di utilizzo"
 
 #: core/templates/core/ajax/group_detail.html:51
 msgid "HeaderTermsOfUseText"
-msgstr ""
+msgstr "TestoCondizioniIntestazione"
 
 #: core/templates/core/ajax/group_detail.html:52
 msgid "HeaderTermsOfUseLink"
-msgstr ""
+msgstr "LinkCondizioniIntestazione"
 
 #: core/templates/core/ajax/macrogroup_detail.html:5
 msgid "Data"
-msgstr ""
+msgstr "Dati"
 
 #: core/templates/core/ajax/macrogroup_detail.html:11
 #: core/templates/core/macrogroup_list_table.html:29
@@ -522,7 +523,7 @@ msgstr "Generale"
 
 #: core/templates/core/ajax/system_info.html:10
 msgid "DataBase"
-msgstr ""
+msgstr "Database"
 
 #: core/templates/core/ajax/system_info.html:16
 msgid "Libraries"
@@ -534,7 +535,7 @@ msgstr "Geografiche"
 
 #: core/templates/core/ajax/system_info.html:27
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #: core/templates/core/generalsuitedata_form.html:11
 msgid "General suite data"
@@ -633,17 +634,14 @@ msgstr "Modifica"
 
 #: core/templates/core/group_list.html:122
 msgid "Delete/Deactivate"
-msgstr ""
+msgstr "Elimina/Disattiva"
 
 #: core/templates/core/group_list.html:125
-#, fuzzy
-#| msgid "Warning: deleting the group will delete the projects it contains!"
 msgid ""
 "<strong>Warning</strong>: deleting the group (move to bucket) will delete "
 "the projects it contains (move to the bucket)!"
 msgstr ""
-"Attenzione: cancellando il gruppo cancellerai anche i progetti in esso "
-"contenuti!"
+"<strong>Attenzione</strong>: eliminando il gruppo (spostandolo nel cestino) verranno eliminati anche i progetti che contiene (spostati nel cestino)!"
 
 #: core/templates/core/include/add_project.html:4
 msgid "Add project"
@@ -653,15 +651,14 @@ msgstr "Aggiungi un nuovo progetto"
 #, fuzzy
 #| msgid "Select project type do add:"
 msgid "Select project type to add:"
-msgstr "Selezione il tipo di progetto da aggiungere:"
+msgstr "Seleziona il tipo di progetto da aggiungere:"
 
 #: core/templates/core/include/cookieconsent.html:11
 msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
 msgstr ""
-"Questo sito utilizza i cookie per garantire una buona usabilità "
-"all'utilizzatore finale"
+"Questo sito utilizza i cookie per garantire la migliore esperienza sul nostro sito"
 
 #: core/templates/core/include/cookieconsent.html:12
 msgid "Got it"
@@ -695,7 +692,7 @@ msgstr "Macro Gruppo cartografico"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
-msgstr ""
+msgstr "Layer"
 
 #: core/templates/core/tags/add_project.html:7
 msgid "Project"
@@ -705,11 +702,11 @@ msgstr "Progetto"
 msgid "[{} error on {}({})]-- {}"
 msgstr "[{} errore su {}({})]-- {}"
 
-#: core/utils/forms.py:23
+#: core/utils/forms.py:21
 msgid "Default base layer"
 msgstr "Layer base di default"
 
-#: core/utils/forms.py:50
+#: core/utils/forms.py:48
 msgid "MACRO Groups"
 msgstr "Macro Gruppi"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 07:41+0000\n"
+"POT-Creation-Date: 2025-06-26 14:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid ""
 "Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
 "source_layer_id}"
-msgstr ""
+msgstr "Il layer con id {layer.qgs_layer_id} non è uguale all'impostazione {settings.source_layer_id}"
 
 #: qplotly/models.py:12
 msgid "XML original settings"
@@ -31,7 +31,7 @@ msgstr "XML setting originale"
 
 #: qplotly/models.py:13
 msgid "Layer datasource"
-msgstr ""
+msgstr "Origine dati del layer"
 
 #: qplotly/models.py:14
 msgid "Use selected features only"
@@ -51,40 +51,60 @@ msgstr "Titolo del grafico"
 
 #: qplotly/models.py:19
 msgid "Set as default plot on starting map"
-msgstr ""
+msgstr "Imposta come grafico predefinito all'avvio della mappa"
 
-#: qplotly/models.py:33
+#: qplotly/models.py:24
+msgid "Order"
+msgstr "Ordine"
+
+#: qplotly/models.py:31
+msgid "SChart show position"
+msgstr "Posizione di visualizzazione SChart"
+
+#: qplotly/models.py:48
 msgid "XML is not a DataPlotly settings."
 msgstr "XML non è un setting DataPlotly"
 
-#: qplotly/models.py:39
+#: qplotly/models.py:54
 #, python-brace-format
 msgid ""
 "Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
-msgstr ""
+msgstr "Il layer con qgs_layer_id={settings.source_layer_id} non è presente nel database"
 
-#: qplotly/models.py:43
+#: qplotly/models.py:58
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
 "values."
-msgstr ""
-
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:9
-msgid "Actions"
-msgstr "Azioni"
-
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:10
-msgid "Name"
-msgstr "Nome"
-
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:11
-msgid "Type"
-msgstr "Tipo"
-
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:12
-msgid "Linked"
-msgstr "Collegato"
+msgstr "L'origine dati del layer nelle impostazioni DataPlotly non corrisponde all'origine dati nei valori."
 
 #: qplotly/templates/qplotly/layer_action.html:8
 msgid "Qplotly widgets"
-msgstr ""
+msgstr "Widget Qplotly"
+
+#: qplotly/templates/qplotly/plots_list_order.html:5
+msgid ""
+"<b>Drag</b> and <b>drop</b> the following table's rows to change the widget "
+"list order"
+msgstr "<b>Trascina</b> e <b>rilascia</b> le righe della tabella seguente per cambiare l'ordine dei widget"
+
+#: qplotly/templates/qplotly/plots_list_order.html:10
+msgid "Title"
+msgstr "Titolo"
+
+#: qplotly/templates/qplotly/plots_list_order.html:11
+msgid "Type"
+msgstr "Tipo"
+
+#: qplotly/templates/qplotly/plots_list_order_action.html:6
+#: qplotly/templates/qplotly/plots_list_order_action.html:9
+msgid "Project's Qploty Widgets order"
+msgstr "Ordine dei widget Qplotly del progetto"
+
+#~ msgid "Actions"
+#~ msgstr "Azioni"
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "Linked"
+#~ msgstr "Collegato"

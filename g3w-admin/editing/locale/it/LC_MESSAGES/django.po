@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 07:41+0000\n"
+"POT-Creation-Date: 2025-06-26 14:59+0000\n"
 "PO-Revision-Date: 2023-11-30 11:37+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -45,73 +45,77 @@ msgstr ""
 "Siamo spiacenti ma il tuo utente non ha la funzionalità \"Cambia o cambia "
 "funzionalità attributi\"."
 
-#: editing/api/base/views.py:354 editing/api/base/views.py:357
+#: editing/api/base/views.py:359 editing/api/base/views.py:362
 #, python-format
 msgid "Error adding feature: %s"
 msgstr "Errore durante l'aggiunta della funzionalità: %s"
 
-#: editing/api/base/views.py:364
+#: editing/api/base/views.py:369
 msgid "Error adding feature on Spatialite provider: "
 msgstr "Errore durante l'aggiunta della funzionalità sul provider Spatialite:"
 
-#: editing/api/base/views.py:384 editing/api/base/views.py:395
+#: editing/api/base/views.py:389 editing/api/base/views.py:400
 #, python-format
 msgid "Error changing attribute values: %s"
 msgstr "Errore durante la modifica dei valori degli attributi: %s"
 
-#: editing/api/base/views.py:390 editing/api/base/views.py:398
+#: editing/api/base/views.py:395 editing/api/base/views.py:403
 #, python-format
 msgid "Error changing geometry: %s"
 msgstr "Errore durante la modifica della geometria: %s"
 
-#: editing/api/base/views.py:498 editing/api/base/views.py:502
+#: editing/api/base/views.py:514 editing/api/base/views.py:518
 #, python-format
 msgid "Cannot delete feature: %s"
 msgstr "Impossibile eliminare la funzione: %s"
 
-#: editing/api/base/views.py:543
+#: editing/api/base/views.py:559
 #, python-format
 msgid "Layer %s is not editable!"
 msgstr "Il layer %s non è modificabile!"
 
-#: editing/api/base/views.py:620
+#: editing/api/base/views.py:637
 #, python-format
 msgid "Backend error saving layer %s: %s"
 msgstr "Errore backend durante il salvataggio del layer %s: %s"
 
-#: editing/forms.py:61 editing/forms.py:162
+#: editing/forms.py:69 editing/forms.py:233
 msgid "Active"
 msgstr "Attiva"
 
-#: editing/forms.py:62 editing/forms.py:160
+#: editing/forms.py:70 editing/forms.py:231
 msgid "Scale"
 msgstr "Scala"
 
-#: editing/forms.py:62 editing/forms.py:160
+#: editing/forms.py:70 editing/forms.py:231
 msgid "Scale after that editing mode is active"
 msgstr "Valore di scala oltre la quale la modalità di editing si attiva"
 
-#: editing/forms.py:63 editing/forms.py:163
-msgid "Viewers"
-msgstr ""
+#: editing/forms.py:71 editing/forms.py:235
+msgid "Visible"
+msgstr "Visibile"
 
-#: editing/forms.py:64 editing/forms.py:164
+#: editing/forms.py:72 editing/forms.py:237
+msgid "Viewers"
+msgstr "Visualizzatori"
+
+#: editing/forms.py:73 editing/forms.py:238
 msgid "Select user with viewer role can do editing on layer"
 msgstr "Selezione l'utente viewer che può editare i layer"
 
-#: editing/forms.py:66 editing/forms.py:166
+#: editing/forms.py:76 editing/forms.py:240
 msgid "Select VIEWER groups can do editing on layer"
 msgstr "Seleziona il viewer groups che può editare il layer"
 
-#: editing/forms.py:67 editing/forms.py:167
+#: editing/forms.py:77 editing/forms.py:241
 msgid "User viewer groups"
 msgstr "Gruppi di utenti viewers"
 
-#: editing/forms.py:70
+#: editing/forms.py:80
 msgid "User adding data field"
 msgstr "Campo di log per inserimento"
 
-#: editing/forms.py:71
+#: editing/forms.py:81
 msgid ""
 "Optional: select layer field to store username that entered the data. Showed "
 "only string field. <br>Value stored into the field it will be so structured: "
@@ -121,11 +125,11 @@ msgstr ""
 "dati. Sono mostrate solo i campi stringa. <br>Il valore salvato nel campo "
 "sarà cosi strutturato: <i>[username]</i>"
 
-#: editing/forms.py:77
+#: editing/forms.py:87
 msgid "User editing data field"
 msgstr "Campo di log per aggiornamento"
 
-#: editing/forms.py:78
+#: editing/forms.py:88
 msgid ""
 "Optional: select layer field to store username that updated the data. Showed "
 "only string field. <br>Value stored into the field it will be so structured: "
@@ -135,74 +139,183 @@ msgstr ""
 "dati. Sono mostrate solo i campi stringa. <br>Il valore salvato nel campo "
 "sarà cosi strutturato: <i>[username]</i>"
 
-#: editing/forms.py:103
+#: editing/forms.py:94
+#, fuzzy
+#| msgid "User adding data field"
+msgid "User Groups adding data field"
+msgstr "Campo di log per inserimento"
+
+#: editing/forms.py:95
+#, fuzzy
+#| msgid ""
+#| "Optional: select layer field to store username that entered the data. "
+#| "Showed only string field. <br>Value stored into the field it will be so "
+#| "structured: <i>[username]</i>"
+msgid ""
+"Optional: select layer field to store user groups name that entered the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr ""
+"Opzionale: seleziona il campo in cui salvare lo username che ha inserito i "
+"dati. Sono mostrate solo i campi stringa. <br>Il valore salvato nel campo "
+"sarà cosi strutturato: <i>[username]</i>"
+
+#: editing/forms.py:101
+#, fuzzy
+#| msgid "User editing data field"
+msgid "User Groups editing data field"
+msgstr "Campo di log per aggiornamento"
+
+#: editing/forms.py:102
+#, fuzzy
+#| msgid ""
+#| "Optional: select layer field to store username that updated the data. "
+#| "Showed only string field. <br>Value stored into the field it will be so "
+#| "structured: <i>[username]</i>"
+msgid ""
+"Optional: select layer field to store user groups name that updated the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr ""
+"Opzionale: seleziona il campo in cui salvare lo username che ha aggiornato "
+"dati. Sono mostrate solo i campi stringa. <br>Il valore salvato nel campo "
+"sarà cosi strutturato: <i>[username]</i>"
+
+#: editing/forms.py:109
+msgid "Layer'style to use"
+msgstr "Stile del layer da usare"
+
+#: editing/forms.py:110
+msgid "Select layer style to use for editing. "
+msgstr "Seleziona lo stile del layer da usare per l'editing."
+
+#: editing/forms.py:131
 #, fuzzy
 #| msgid "Check on uncheck to attive/deactive editing layer capabilities:"
 msgid "Check on uncheck to active/deactive editing layer capabilities:"
 msgstr ""
 "Spunta o despunta per attivare/deattivare la possibilità di editare il layer:"
 
-#: editing/forms.py:116 editing/forms.py:191
+#: editing/forms.py:133 editing/forms.py:260
+#, fuzzy
+#| msgid "Check on uncheck to attive/deactive editing layer capabilities:"
+msgid "Check on uncheck to show layer inside the list of layers to edit:"
+msgstr ""
+"Spunta o despunta per attivare/deattivare la possibilità di editare il layer:"
+
+#: editing/forms.py:147 editing/forms.py:268
 msgid "Select viewers with 'view permission' on project that can edit layer:"
 msgstr ""
 "Seleziona i viewer con 'permesso di visualizzazione' del progetto che "
 "possono editare il layer:"
 
-#: editing/forms.py:129
+#: editing/forms.py:159
+#, fuzzy
+#| msgid ""
+#| "'User adding data field' and 'User editing data field' cannot assume the "
+#| "same value."
 msgid ""
-"'User adding data field' and 'User editing data field' cannot assume the "
-"same value."
+"'User adding data field' and 'User editing data field' and 'User group "
+"adding data field' and 'User group editing data field' must be unique."
 msgstr ""
 "'Campo di log per inserimento' e 'Campo di log per aggiornamento' non "
 "possono assumero lo stesso valore."
 
-#: editing/forms.py:157
+#: editing/forms.py:228
 msgid "Layers"
-msgstr ""
+msgstr "Layer"
 
-#: editing/forms.py:158
+#: editing/forms.py:229
 msgid "Select layers on which to activate editing"
-msgstr ""
+msgstr "Seleziona i layer su cui attivare l'editing"
 
-#: editing/forms.py:183
+#: editing/forms.py:258
 #, fuzzy
 #| msgid "Check on uncheck to attive/deactive editing layer capabilities:"
 msgid "Check on uncheck to attive/deactive editing layers capabilities:"
 msgstr ""
 "Spunta o despunta per attivare/deattivare la possibilità di editare il layer:"
 
-#: editing/receivers.py:319
+#: editing/forms.py:298
+msgid "From User"
+msgstr "Da utente"
+
+#: editing/forms.py:299
+msgid "Select the user from which to take the permissions to copy"
+msgstr "Seleziona l'utente da cui copiare i permessi"
+
+#: editing/forms.py:301
+msgid "To users"
+msgstr "A utenti"
+
+#: editing/forms.py:302
+msgid "Select the users who will receive permissions"
+msgstr "Seleziona gli utenti che riceveranno i permessi"
+
+#: editing/forms.py:304
+msgid "From Group of User"
+msgstr "Da gruppo di utenti"
+
+#: editing/forms.py:305
+msgid "Select the group df user from which to take the permissions to copy"
+msgstr "Seleziona il gruppo di utenti da cui copiare i permessi"
+
+#: editing/forms.py:307
+msgid "To Groups of Users"
+msgstr "A gruppi di utenti"
+
+#: editing/forms.py:308
+msgid "Select the groups of users who will receive permissions"
+msgstr "Seleziona i gruppi di utenti che riceveranno i permessi"
+
+#: editing/receivers.py:306
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
 msgstr "La geometria non ricade all'interno dell'area di lavoro assegnata: %s"
 
+#: editing/templates/editing/copy_editing_permission_form.html:7
 #: editing/templates/editing/editing_layer_active_form.html:7
 msgid "Alert"
 msgstr "Attenzione"
 
+#: editing/templates/editing/copy_editing_permission_form.html:8
 #: editing/templates/editing/editing_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
 msgstr "Alcuni errori, controlla e riprova."
 
+#: editing/templates/editing/copy_editing_permission_form.html:13
 #: editing/templates/editing/editing_layer_active_form.html:14
 msgid "Important"
+msgstr "Importante"
+
+#: editing/templates/editing/copy_editing_permission_form.html:14
+msgid ""
+"The following actions will change the permissions of the selected users who "
+"will lose their previous settings."
 msgstr ""
+"Le seguenti azioni cambieranno i permessi degli utenti selezionati che perderanno le impostazioni precedenti."
 
 #: editing/templates/editing/editing_layer_active_form.html:15
 msgid ""
 "The following settings will be applied to all the layers indicated and will "
 "overwrite the settings set at the single layer level"
 msgstr ""
+"Le seguenti impostazioni saranno applicate a tutti i layer indicati e sovrascriveranno le impostazioni definite a livello di singolo layer."
 
 #: editing/templates/editing/layer_action.html:5
-#: editing/templates/editing/project_layers_action.html:5
+#: editing/templates/editing/project_layers_action.html:6
 msgid "Editing layer"
 msgstr "Layer editabile"
 
 #: editing/templates/editing/layer_action.html:8
-#: editing/templates/editing/project_layers_action.html:8
+#: editing/templates/editing/project_layers_action.html:9
 msgid "Activation layer_editing"
 msgstr "Atttivazione del layer di editing"
+
+#: editing/templates/editing/project_layers_action.html:15
+#: editing/templates/editing/project_layers_action.html:18
+msgid "Copy permissions"
+msgstr "Copia permessi"
 
 #~ msgid "Layers types must be spatialite or postgres"
 #~ msgstr "Il tipo di layer deve essere spatialite o postgis"
