@@ -57,15 +57,15 @@ msgstr "Collegato"
 
 #: qplotly/static/qplotly/js/widget.js:130
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 #: qplotly/static/qplotly/js/widget.js:131
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 #: qplotly/static/qplotly/js/widget.js:132
 msgid "Download"
-msgstr ""
+msgstr "Scarica"
 
 #: qplotly/static/qplotly/js/widget.js:152
 msgid "Update widget"
