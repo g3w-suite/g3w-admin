@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
+"POT-Creation-Date: 2025-06-27 09:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,207 +18,205 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: qplotly/static/qplotly/js/plugin.js:3
-msgid "&"
-msgstr ""
-
-#: qplotly/static/qplotly/js/plugin.js:3
-msgid "-enter"
-msgstr ""
-
-#: qplotly/static/qplotly/js/widget.js:90
-#: qplotly/static/qplotly/js/widget.js:94
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:46
 msgid "New qplotly widget"
 msgstr "Nuovo widget grafico"
 
-#: qplotly/static/qplotly/js/widget.js:108
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:48
+msgid "Position options is valid for children layers of a relation"
+msgstr "Le opzioni di posizione sono valide per i layer figli di una relazione"
+
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:52
 msgid "Actions"
 msgstr "Azioni"
 
-#: qplotly/static/qplotly/js/widget.js:109
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:53
 msgid "Active on startup"
-msgstr ""
+msgstr "Attivo all'avvio"
 
-#: qplotly/static/qplotly/js/widget.js:110
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:54
+msgid "Position"
+msgstr "Posizione"
+
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:55
 msgid "Title"
 msgstr "Titolo"
 
-#: qplotly/static/qplotly/js/widget.js:111
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:56
 msgid "Type"
 msgstr "Tipo"
 
-#: qplotly/static/qplotly/js/widget.js:112
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:57
 msgid "From project"
 msgstr "Dal progetto"
 
-#: qplotly/static/qplotly/js/widget.js:113
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:58
 msgid "Linked"
 msgstr "Collegato"
 
-#: qplotly/static/qplotly/js/widget.js:130
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:69
 msgid "Edit"
 msgstr "Modifica"
 
-#: qplotly/static/qplotly/js/widget.js:131
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:79
 msgid "Delete"
 msgstr "Elimina"
 
-#: qplotly/static/qplotly/js/widget.js:132
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:91
 msgid "Download"
 msgstr "Scarica"
 
-#: qplotly/static/qplotly/js/widget.js:152
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:140
 msgid "Update widget"
 msgstr "Aggiorna widget"
 
-#: qplotly/static/qplotly/js/widget.js:204
-msgid "Form title"
-msgstr "Titolo del form"
-
-#: qplotly/static/qplotly/js/widget.js:338
+#: static/qplotly/js/data-widget-qplotlyWidgetList.js:148
 msgid "Upload DataPlotly configuration xml file"
 msgstr "Carica file di configurazione xml di DataPlotly"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "index2"
-msgstr ""
+msgstr "indice2"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "index4"
-msgstr ""
+msgstr "indice4"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "uirevision"
-msgstr ""
+msgstr "uirevision"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "bgcolor"
-msgstr ""
+msgstr "colore di sfondo"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "bordercolor"
-msgstr ""
+msgstr "colore bordo"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "borderwidth"
-msgstr ""
+msgstr "spessore bordo"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "orientation"
-msgstr ""
+msgstr "orientamento"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "traceorder"
-msgstr ""
+msgstr "ordine tracce"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "tracegroupgap"
-msgstr ""
+msgstr "spazio gruppi tracce"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemsizing"
-msgstr ""
+msgstr "dimensionamento elementi"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemclick"
-msgstr ""
+msgstr "click elemento"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemdoubleclick"
-msgstr ""
+msgstr "doppio click elemento"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "x"
-msgstr ""
+msgstr "x"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "xanchor"
-msgstr ""
+msgstr "ancoraggio x"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "y"
-msgstr ""
+msgstr "y"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "yanchor"
-msgstr ""
+msgstr "ancoraggio y"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "valign"
-msgstr ""
+msgstr "allineamento verticale"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "title.text"
-msgstr ""
+msgstr "testo titolo"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "title.side"
-msgstr ""
+msgstr "lato titolo"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "visible"
-msgstr ""
+msgstr "visibile"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "thickness"
-msgstr ""
+msgstr "spessore"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "autorange"
-msgstr ""
+msgstr "scala automatica"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "range"
-msgstr ""
+msgstr "intervallo"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "bingroup"
-msgstr ""
+msgstr "gruppo bin"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "label"
-msgstr ""
+msgstr "etichetta"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "source"
-msgstr ""
+msgstr "sorgente"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "target"
-msgstr ""
+msgstr "destinazione"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "value"
-msgstr ""
+msgstr "valore"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "line.color"
-msgstr ""
+msgstr "colore linea"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "line.width"
-msgstr ""
+msgstr "spessore linea"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "hoverinfo"
-msgstr ""
+msgstr "informazioni al passaggio del mouse"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "hovertemplate"
-msgstr ""
+msgstr "modello di tooltip"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "color"
-msgstr ""
+msgstr "colore"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "final"
-msgstr ""
+msgstr "finale"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "delta"
-msgstr ""
+msgstr "delta"
 
-#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+#: static/qplotly/plotly-1.52.2.min.js:7
 msgid "initial"
-msgstr ""
+msgstr "iniziale"
+
+#~ msgid "Form title"
+#~ msgstr ""
