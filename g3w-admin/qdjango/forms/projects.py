@@ -513,7 +513,7 @@ class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         widgets = {'body': widgets.HiddenInput}
 
 
-class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
+class FilterByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
     """Form for Layer action filter by users/groups"""
 
     viewer_users = forms.MultipleChoiceField(

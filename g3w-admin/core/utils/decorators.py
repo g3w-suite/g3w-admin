@@ -134,7 +134,16 @@ def is_active_required(lookup_variables=None, is_active=1):
                 lookup_dict[lookup] = kwargs[view_arg]
             obj = get_object_or_404(model, **lookup_dict)
 
-            if not obj.is_active == is_active:
+            try:
+                permanent_delete = request.POST['permanent_delete']
+                if permanent_delete == '0':
+                    permanent_delete = False
+                else:   
+                    permanent_delete = True
+            except:
+                permanent_delete = False
+
+            if not permanent_delete and not obj.is_active == is_active:
                 return HttpResponseForbidden()
 
             return view_func(request, *args, **kwargs)

@@ -154,7 +154,9 @@ class QgisProjectLayer(XmlData):
         'name',
         'layerType',
         'minScale',
+        'minScaleStyle',
         'maxScale',
+        'maxScaleStyle',
         'scaleBasedVisibility',
         'srid',
         'wfsCapabilities',
@@ -339,6 +341,38 @@ class QgisProjectLayer(XmlData):
             raise Exception(
                 _('Missing or invalid type for layer')+' "%s"' % layer_type)
         return layer_type
+    
+    def _MinMaxScaleStyle(self, method='mininumScale'):
+        """
+        Get max_scale/min_scale from layer attribute fro every style of the layer
+        :return: max scale value for every layer's style
+        :rtype: dict
+        """
+
+        scales = {}
+
+        # Save for every styles associated to the layer
+        sm = self.qgs_layer.styleManager()
+        current_style = sm.currentStyle()
+
+        for style in sm.styles():
+
+            # Change style temporary
+            sm.setCurrentStyle(style)
+
+            if method == 'minimumScale':
+                denom = self.qgs_layer.minimumScale()
+            else:
+                denom = self.qgs_layer.maximumScale()
+                if denom == float("inf") or denom == float("-inf"):
+                    denom = 0
+            
+            scales[style] = int(denom)
+
+        # Reset to current style
+        sm.setCurrentStyle(current_style)
+
+        return scales
 
     def _getDataMinScale(self):
         """
@@ -347,6 +381,14 @@ class QgisProjectLayer(XmlData):
         :rtype: int
         """
         return int(self.qgs_layer.minimumScale())
+
+    def _getDataMinScaleStyle(self):
+        """
+        Get min_scale from layer attribute
+        :return: layer min scale value
+        :rtype: int
+        """
+        return self._MinMaxScaleStyle('minimumScale')
 
     def _getDataMaxScale(self):
         """
@@ -358,6 +400,14 @@ class QgisProjectLayer(XmlData):
         if denom == float("inf") or denom == float("-inf"):
             return 0
         return int(denom)
+    
+    def _getDataMaxScaleStyle(self):
+        """
+        Get max_scale from layer attribute fro every style of the layer
+        :return: max scale value for every layer's style
+        :rtype: dict
+        """
+        return self._MinMaxScaleStyle('maximumScale')
 
     def _getDataScaleBasedVisibility(self):
         """
@@ -365,7 +415,32 @@ class QgisProjectLayer(XmlData):
         :return: boolean visibility by scale
         :rtype: bool
         """
+
         return self.qgs_layer.hasScaleBasedVisibility()
+
+    def _getDataScaleBasedVisibilityStyle(self):
+        """
+        Get scale based visibility property from layer attribute per layer style
+        :return: dict with a key for every layer styles
+        :rtype: dict
+        """
+
+        sbvs = {}
+
+        sm = self.qgs_layer.styleManager()
+        current_style = sm.currentStyle()
+
+        for style in sm.styles():
+
+            # Change style temporary
+            sm.setCurrentStyle(style)
+            sbvs[style] = self.qgs_layer.hasScaleBasedVisibility()
+
+
+        # Reset to current style
+        sm.setCurrentStyle(current_style)
+
+        return sbvs
 
     def _getDataSrid(self):
         """
@@ -952,7 +1027,9 @@ class QgisProjectLayer(XmlData):
                 'layer_type': self.layerType,
                 'qgs_layer_id': self.layerId,
                 'min_scale': self.minScale,
+                'min_scale_style': self.minScaleStyle,
                 'max_scale': self.maxScale,
+                'max_scale_style': self.maxScaleStyle,
                 'scalebasedvisibility': self.scaleBasedVisibility,
                 'database_columns': columns,
                 'srid': self.srid,
@@ -979,7 +1056,9 @@ class QgisProjectLayer(XmlData):
             self.instance.layer_type = self.layerType
             self.instance.qgs_layer_id = self.layerId
             self.instance.min_scale = self.minScale
+            self.instance.min_scale_style = self.minScaleStyle
             self.instance.max_scale = self.maxScale
+            self.instance.max_scale_style = self.maxScaleStyle
             self.instance.scalebasedvisibility = self.scaleBasedVisibility
             self.instance.datasource = self.datasource
             self.instance.database_columns = columns

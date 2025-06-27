@@ -617,11 +617,19 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
     def response_editorformstructure_mode(self, request):
         """
-        Return the editor form structure for a layer by style
+        Returns layer properties dependent on layer styles
         """
 
         style = self.request_data.get('style', None)
-        self.results.update({'data': self.layer.get_editor_form_structure(style)})
+
+        self.results.update({
+                'data': {
+                    'editor_form_structure': self.layer.get_editor_form_structure(style),
+                    'minscale': self.layer.get_min_scale_style(style),
+                    'maxscale': self.layer.get_max_scale_style(style),
+                    'scalebasedvisibility': self.layer.get_scalebasedvisibility_style(style),
+                } 
+            })
 
 
     def _selection_responde_download_mode(self, qgs_request, save_options):

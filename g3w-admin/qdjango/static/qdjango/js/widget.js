@@ -2811,7 +2811,7 @@ _.extend(g3wadmin.tpl, {
 ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
   $widgetItem.find('[data-widget-type="scalevisconstraintManagerList"]').on("click", async function (e) {
     const widget = 'scalevisconstraintManagerList';
-    const a = (await import(`${STATIC_BASE_URL}components/data-widget-${widget}.js`));
+    const a = (await import(`${STATIC_BASE_URL}qdjango/js/data-widget-${widget}.js`));
     a[widget]($(this).parents("table").DataTable(), $(this));
   })
 })

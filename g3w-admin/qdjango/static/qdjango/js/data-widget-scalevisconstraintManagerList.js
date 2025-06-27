@@ -153,6 +153,7 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
             ${ '' == dt.user && '' == dt.group        ? `<h4 class="badge bg-red">${gettext("You must select a 'group' or a 'user'!")}</h4>`: '' }
             ${ '' != dt.user && '' != dt.group        ? `<h4 class="badge bg-red">${gettext("You cannot select both a 'group' and a 'user': they are mutually exclusive!")}</h4>`: '' }
             ${ '' == dt.minscale || '' == dt.maxscale ? `<h4 class="badge bg-red">${gettext("The 'maxscale' and/or 'minscale' fields cannot be empty!")}</h4>` : '' }
+            ${ dt.minscale < dt.maxscale ? `<h4 class="badge bg-red">${gettext("The 'maxscale' can not be less than the 'minscale'!")}</h4>` : '' }
           `);
 
           if (!form.$form.find(".form-errors").children().length) {

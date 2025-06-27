@@ -817,15 +817,30 @@ class Layer(G3WACLModelMixins, models.Model):
         null=True,
     )
 
-    # minscale and maxscale and scalebasedvisibility
+    # DEPRECATED: This property will be removed in version 4.0
+    # It will be used max_scale_style
     min_scale = models.IntegerField(
         _('Layer Min Scale visibility'),
         blank=True,
         null=True,
     )
 
+    min_scale_style = models.JSONField(
+        _('Layer Max Scale visibility for layer styel'),
+        blank=True,
+        null=True,
+    )
+
+    # DEPRECATED: This property will be removed in version 4.0
+    # It will be used max_scale_style
     max_scale = models.IntegerField(
         _('Layer Max Scale visibility'),
+        blank=True,
+        null=True,
+    )
+
+    max_scale_style = models.JSONField(
+        _('Layer Max Scale visibility for layer styel'),
         blank=True,
         null=True,
     )
@@ -833,6 +848,12 @@ class Layer(G3WACLModelMixins, models.Model):
     scalebasedvisibility = models.BooleanField(
         _('Layer scale based visibility'),
         default=False,
+    )
+
+    scalebasedvisibility_style = models.JSONField(
+        _('Scale based visibility for layer style'),
+        blank=True,
+        null=True,
     )
 
     # srid
@@ -1321,6 +1342,40 @@ class Layer(G3WACLModelMixins, models.Model):
 
 
         return eval(self.editor_form_structure).get(style, None) if self.editor_form_structure else None
+    
+    def get_max_scale_style(self, style=None):
+        """
+        Get max_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.max_scale_style.get(style, self.max_scale) if self.max_scale_style else self.max_scale
+    
+    def get_min_scale_style(self, style=None):
+        """
+        Get mix_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.min_scale_style.get(style, self.min_scale) if self.min_scale_style else self.min_scale
+    
+    def get_scalebasedvisibility_style(self, style=None):
+        """
+        Get mix_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.scalebasedvisibility_style.get(style, self.scalebasedvisibility) if self.scalebasedvisibility_style else self.scalebasedvisibility
+        
 
     def __str__(self):
         return self.name
