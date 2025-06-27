@@ -11,7 +11,10 @@ from django.urls import re_path, path
 from django.contrib.auth.decorators import login_required
 
 from .views import QploltyWidgetSetOrderView
-from .api.plots.views import QplotlyTraceAPIView
+from .api.plots.views import (
+    QplotlyTraceAPIView, 
+    QplotlyTraceConfigAPIView
+)
 from .api.widgets.views import (
     QplotlyWidgetList,
     QplotlyWidgetDetail,
@@ -71,6 +74,16 @@ urlpatterns = [
         'jx/widgets/setorder/',
         login_required(QploltyWidgetSetOrderView.as_view()),
         name='qplotly-widget-set-order'
+    ),
+
+
+    #############################################################
+    # Trace config API
+    #############################################################
+    path(
+        'api/trace-config/<int:pk>/',
+        QplotlyTraceConfigAPIView.as_view(),
+        name='qplotly-trace-plot-config-api'
     ),
 
 ]

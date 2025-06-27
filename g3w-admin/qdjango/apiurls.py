@@ -36,7 +36,8 @@ from .api.geoconstraints.views import (
 from .api.projects.views import (
     QdjangoWebServicesAPIview,
     QdjangoAsGeoTiffAPIview,
-    QdjangoPrjThemeAPIview
+    QdjangoPrjThemeAPIview,
+    QdjangoAlternativeUniqueLayerAPIView
 )
 from .api.column_acl.views import (
     ColumnAclList,
@@ -404,4 +405,15 @@ urlpatterns = [
          name='qdjango-api-info-layer'
      ),
 
+
+    #############################################################
+    # API for search widgets
+    #############################################################
+
+    # Only post
+    path(
+        'api/alternativeuniquelayer/<int:project_id>/<str:layer_id>/',
+        login_required(QdjangoAlternativeUniqueLayerAPIView.as_view()),
+        name='qdjango-api-alternative-unique-layer'
+    ),
 ]

@@ -18,6 +18,7 @@ from django.shortcuts import (
     Http404
 )
 from django.urls import reverse
+from django.db.models import Q
 from django.core.files.storage import default_storage
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.utils.response import send_file
@@ -412,5 +413,54 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
         except Exception as e:
             self.results.error = str(e)
             self.results.result = False
+
+        return Response(self.results.results)
+
+
+    
+
+class QdjangoAlternativeUniqueLayerAPIView(G3WAPIView):
+    """
+    Class ti get a lista of layers to use as alternative for call on unique field value
+    """
+
+    permission_classes = (
+        ProjectPermission,
+        ProjectIsActivePermission
+    )
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+
+    def post(self, request, *args, **kwargs):
+        """
+        Return a list of layers to use as alternative for call on unique field value
+        """
+        project = Project.objects.get(pk=kwargs['project_id'])
+        layers = project.layer_set.filter(
+            ~Q(qgs_layer_id=kwargs['layer_id'])
+        )
+
+        # Get only layer with the same field and field type
+        data = []
+        for l in layers:
+            try:
+                cols = l.database_columns_by_name()
+
+                # Check if field is in columns and type is the same
+                if request.data.get('field') in cols and request.data.get('type') == cols[request.data['field']].get('type'):
+                    data.append({
+                        'id': l.qgs_layer_id,
+                        'name': l.name
+                })
+            except:
+                pass
+
+
+        self.results.results.update({
+                'data': data
+            })
 
         return Response(self.results.results)

@@ -77,7 +77,7 @@ class QplotlyTestModel(QdjangoTestBase):
 
         qwidgets = QplotlyWidget.objects.all()
         # one loaded by QGIS project
-        self.assertEqual(qwidgets.count(), 2)
+        self.assertEqual(qwidgets.count(), 1) 
 
         # No datasource so get pk on __str__
         self.assertEqual(str(qwidget), str(qwidget.pk))

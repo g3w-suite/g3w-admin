@@ -12,6 +12,8 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.views.generic import View, TemplateView
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from qdjango.mixins.views import QdjangoProjectViewMixin, QdjangoLayerViewMixin
 from django.core.files.base import ContentFile
 from django.http.response import JsonResponse
@@ -21,6 +23,7 @@ from qdjango.models import Project
 from django.utils.text import slugify
 from .models import QplotlyWidget
 from .utils.models import get_qplotlywidgets4project
+import json
 
 
 class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
@@ -46,23 +49,49 @@ class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
         else:
             self.widget.layers.remove(self.layer)
 
-class QplotlyWidgetShowOnStartClientView(View):
+@method_decorator(csrf_exempt, name='dispatch')
+class QplotlyWidgetChangeActionView(View):
     """
-    Set on true or false show_on_start_client model property.
+    Set on true or false show_on_start_client model property or value for other property.
     """
-    def get(self, *args, **kwargs):
+
+    _actions_map = {
+        'showonstartclient': 'show_on_start_client',
+        'showposition': 'show_position',
+    }
+
+    def dispatch(self, request, *args, **kwargs):
 
         self.widget = get_object_or_404(QplotlyWidget, pk=kwargs['pk'])
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        
         try:
-            self.show_on_start_client(show=(not 'show' in self.request.GET))
+            self.change_status(action=kwargs['action'], value=(not 'show' in self.request.GET))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'errors_form': e.message})
+            return JsonResponse({'status': 'error', 'errors_form': e})
+        
+    def post(self, *args, **kwargs):
 
-    def show_on_start_client(self, show=True):
+        try:
+            if self.request.content_type == 'application/json':
+                data = json.loads(self.request.body)
+            else:
+                data = self.request.POST
+            self.change_status(action=kwargs['action'], value=data.get('value', None))
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'errors_form': e})        
 
-        self.widget.show_on_start_client = show
-        self.widget.save()
+    def change_status(self, action='show_on_start_client',value=True):
+
+        if value is not None:
+            setattr(self.widget, self._actions_map[action], value)
+            self.widget.save()
+
 
 
 
