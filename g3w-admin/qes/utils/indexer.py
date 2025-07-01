@@ -447,7 +447,7 @@ class QGISElasticsearchIndexer:
                         "fields": ["text_content^2", "layer_name"],
                         "type": "best_fields",
                         "fuzziness": "AUTO"
-                    }}
+                    }.update(settings.QES_SEARCH_PARAMS) if hasattr(settings, 'QES_SEARCH_PARAMS') else {}}
                 ]
             }
         }

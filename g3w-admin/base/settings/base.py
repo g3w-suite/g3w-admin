@@ -409,3 +409,9 @@ ELASTICSEARCH_DSL = {
 
 # Activate/deactivate es indexing projects
 QES_INDEXING_PROJECT = True
+
+QES_SEARCH_PARAMS = {
+    "fields": ["text_content^2", "layer_name"],
+    "type": "best_fields",
+    "fuzziness": "AUTO"
+}
