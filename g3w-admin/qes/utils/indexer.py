@@ -11,6 +11,7 @@ __date__ = '2025-04-29'
 __copyright__ = 'Copyright 2025, Gis3w'
 
 
+from django.conf import settings
 from django.urls import reverse, resolve
 from django.http import HttpRequest
 from qdjango.vector import LayerVectorView
@@ -439,15 +440,20 @@ class QGISElasticsearchIndexer:
         """
 
         # Create the base query
+
+        qparams = {
+            "query": query_text,
+            "fields": ["text_content^2", "layer_name"],
+            "type": "best_fields",
+            "fuzziness": "AUTO"
+        }
+
+        qparams.update(settings.QES_SEARCH_PARAMS if hasattr(settings, 'QES_SEARCH_PARAMS') else {})
+
         query = {
             "bool": {
                 "must": [
-                    {"multi_match": {
-                        "query": query_text,
-                        "fields": ["text_content^2", "layer_name"],
-                        "type": "best_fields",
-                        "fuzziness": "AUTO"
-                    }.update(settings.QES_SEARCH_PARAMS) if hasattr(settings, 'QES_SEARCH_PARAMS') else {}}
+                    {"multi_match": qparams}
                 ]
             }
         }
