@@ -73,7 +73,16 @@ class QGISElasticsearchIndexer:
                     "geometry_type": {"type": "keyword"},
                     #"geometry": {"type": "geo_shape"},
                     "attributes": {"type": "object", "dynamic": True},
-                    "text_content": {"type": "text", "analyzer": "standard"},
+                    "text_content": {
+                        "type": "text", 
+                        "analyzer": "standard",
+                        "fields": {
+                            "raw": {
+                            "type": "keyword",
+                            "normalizer": "lowercase_normalizer"
+                            }
+                        }
+                    },
                     "indexed_at": {"type": "date"}
                 }
             }
@@ -87,6 +96,13 @@ class QGISElasticsearchIndexer:
                             "type": "custom",
                             "tokenizer": "standard",
                             "filter": ["lowercase", "asciifolding"]
+                        }
+                    },
+                    "normalizer": {
+                        "lowercase_normalizer": {
+                            "type": "custom",
+                            "char_filter": [],
+                            "filter": ["lowercase"]
                         }
                     }
                 }
@@ -439,24 +455,21 @@ class QGISElasticsearchIndexer:
             list: List of search results
         """
 
-        # Create the base query
+        def replace_placeholder(d, placeholder, value):
+            if isinstance(d, dict):
+                return {k: replace_placeholder(v, placeholder, value) for k, v in d.items()}
+            elif isinstance(d, list):
+                return [replace_placeholder(v, placeholder, value) for v in d]
+            elif d in (placeholder, f"*{placeholder}*"):
+                if d == placeholder:
+                    return value
+                else:
+                    return f"*{value}*"
+            else:
+                return d
 
-        qparams = {
-            "query": query_text,
-            "fields": ["text_content^2", "layer_name"],
-            "type": "best_fields",
-            "fuzziness": "AUTO"
-        }
 
-        qparams.update(settings.QES_SEARCH_PARAMS if hasattr(settings, 'QES_SEARCH_PARAMS') else {})
-
-        query = {
-            "bool": {
-                "must": [
-                    {"multi_match": qparams}
-                ]
-            }
-        }
+        query = replace_placeholder(settings.QES_SEARCH_QUERY, '$query_text', query_text)
 
         # Add specific filters
         if filters:

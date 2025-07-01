@@ -410,8 +410,43 @@ ELASTICSEARCH_DSL = {
 # Activate/deactivate es indexing projects
 QES_INDEXING_PROJECT = True
 
-QES_SEARCH_PARAMS = {
-    "fields": ["text_content^2", "layer_name"],
-    "type": "best_fields",
-    "fuzziness": "AUTO"
-}
+QES_SEARCH_QUERY = {
+                    "bool": {
+                        "should": [
+                            {
+                                "match_phrase": {
+                                    "text_content": {
+                                    "query": '$query_text',
+                                    "boost": 4
+                                    }
+                                }
+                            },
+                            {
+                                "match": {
+                                    "text_content": {
+                                    "query": '$query_text',
+                                    "operator": "and",
+                                    "boost": 2
+                                    }
+                                }
+                            },
+                            {
+                                "wildcard": {
+                                    "text_content.raw": {
+                                    "value": "*$query_text*",
+                                    "boost": 1
+                                    }
+                                }
+                            },
+                            {
+                                "multi_match": {
+                                    "query": '$query_text',
+                                    "fields": ["text_content"],
+                                    "fuzziness": 1,
+                                    "boost": 1
+                                }
+                            }
+                        ],
+                        "minimum_should_match": 1
+                        }
+                    }
