@@ -134,7 +134,8 @@ class QGISElasticsearchIndexer:
 
             # Create text_content
             text_content = []
-            for v in feature['properties'].values():
+            attributes = {}
+            for k, v in feature['properties'].items():
                 if v is not None:
 
                     # Case for nested dictionaries, i.e for media file:
@@ -148,8 +149,10 @@ class QGISElasticsearchIndexer:
                         for subk, subv in v.items():
                             if subv is not None and subk == 'value':
                                 text_content.append(subv)
+                                attributes[k] = v
                     else:
                         text_content.append(str(v))
+                        attributes[k] = str(v)
 
             # Extract the attributes
             # Create ES document
@@ -164,7 +167,7 @@ class QGISElasticsearchIndexer:
                     "feature_id": feature['id'],
                     "geometry_type": "",
                     # "geometry": feature['geometry'],
-                    "attributes": feature['properties'],
+                    "attributes": attributes,
                     "text_content": " ".join(text_content),
                     "indexed_at": datetime.datetime.now().isoformat()
                 }
