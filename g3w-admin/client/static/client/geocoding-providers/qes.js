@@ -37,7 +37,7 @@
         outputs: { show: true }
       });
       //zoom to feature
-      GUI.getService('map').zoomToFeatures([data?.[0]?.features?.[0]]);
+      g3wsdk.gui.GUI.getService('map').zoomToFeatures([data?.[0]?.features?.[0]]);
     }
   });
 
