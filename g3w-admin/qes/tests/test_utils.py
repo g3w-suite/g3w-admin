@@ -122,11 +122,11 @@ class TestQesUtilsAPI(QesTesBase):
 
         self.assertEqual(data['_source']['attributes'], {
                             "ASCIINAME": "Destelbergen",
-                            "GEONAMEID": 2799496,
-                            "GTOPO30": 3,
+                            "GEONAMEID": "2799496",
+                            "GTOPO30": "3",
                             "ISO2_CODE": "BE",
                             "NAME": "Destelbergen",
-                            "POPULATION": 16853
+                            "POPULATION": "16853"
                          })
         self.assertEqual(data['_source']['text_content'], 'Destelbergen 2799496 3 BE Destelbergen 16853')
 
