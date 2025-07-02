@@ -57,7 +57,7 @@ class BaseRulePermission(BasePermission):
 
         try:
             if 'constraint_id' in view.kwargs:
-                layer = self._class.objects.get(pk=view.kwargs['constraint_id']).layer
+                layer = SingleLayerConstraint.objects.get(pk=view.kwargs['constraint_id']).layer
             # case for rule by layer_id
             elif 'layer_id' in view.kwargs:
                 layer = Layer.objects.get(id=view.kwargs['layer_id'])
