@@ -143,11 +143,20 @@ class QGISLayerVectorViewMixin(object):
 
             return relations
 
-        def build_metadata_relation(relation, qgis_layer, level=level_metadata):
+        def build_metadata_relation(relation, qgis_layer, level=level_metadata, visited=None):
+
+            if visited is None:
+                visited = set()
+            
+            layer_key = relation['referencingLayer']
+
+            if layer_key in visited:
+                return  # Avoid loop
+
+            visited.add(layer_key)
 
             # get relation layer object
-            relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
-                                                           project=self.layer.project)
+            relation_layer = self._layer_model.objects.get(qgs_layer_id=layer_key, project=self.layer.project)
 
             # qgis_layer is the referenced layer
             referenced_field_is_pk = [qgis_layer.fields().indexFromName(
@@ -160,6 +169,7 @@ class QGISLayerVectorViewMixin(object):
                 'referenced_field_is_pk': referenced_field_is_pk,
                 'level': level
             }
+
 
             # Add referenced layer id if level > 0
             if level > 0:
@@ -180,12 +190,11 @@ class QGISLayerVectorViewMixin(object):
             if sub_relations:
                 level += 1
                 for sub_relation in sub_relations:
-                    if (sub_relation['referencingLayer'] not in self.metadata_relations or
-                            sub_relation['referencingLayer'] != self.layer.qgs_layer_id):
                         build_metadata_relation(
                             sub_relation,
                             relation_layer.qgis_layer,
-                            level)
+                            level, 
+                            visited.copy())  # Pass a copy of visited to avoid loop
 
         for r in get_relations_by_layers(self.layer.qgs_layer_id):
             build_metadata_relation(r, self.layer.qgis_layer)
