@@ -145,7 +145,11 @@ class QGISLayerVectorViewMixin(object):
 
         def build_metadata_relation(relation, qgis_layer, level=level_metadata, visited=None):
 
+            if visited is None:
+                visited = set()
+            
             layer_key = relation['referencingLayer']
+
             if layer_key in visited:
                 return  # Avoid loop
 
