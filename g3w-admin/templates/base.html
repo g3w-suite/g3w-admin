@@ -226,11 +226,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- To the right -->
         <div class="pull-right hidden-xs">
         {% block footer-right %}
-          <strong>G3W-SUITE {% trans 'Version' %} {{ VERSION }}</strong>: administration GIS application.
+          {% blocktrans trimmed with version=VERSION %}
+            <strong>G3W-SUITE Version {{ version }}</strong>:
+            administration GIS application.
+          {% endblocktrans %}
         {% endblock %}
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        {% blocktrans trimmed with year=today.year %}
+          <strong>Copyright &copy; 2015 - {{ year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        {% endblocktrans %}
         {% endif %}
       </footer>
       {% include 'include/sidebar_right.html' %}
