@@ -169,8 +169,10 @@ _.extend(g3wadmin.widget, {
             body = gettext('Are you sure to ' + action + ' this Item')+'?';
             if (action === 'deactivate') {
                 body += '<br/><br/>' +
+                    '<label>' +
                     '<input type="checkbox" value="1" name="permanent_delete" /> ' + 
-                    gettext('Permanently delete');
+                    gettext('Permanently delete') +
+                    '</label>';
             }
             body += (_.isUndefined(preMessage) ? '' : preMessage)
             const modal = ga.ui.buildDefaultModal({
