@@ -57,7 +57,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                         ),
                                         Div(
                                             HTML(
-                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                                                "<p><b>{}</b>: <span class='translate translatable_fields'></span></p>".format(_('Translatable fields'))),
                                             'name',
                                             Field('title', css_class='translate'),
                                             Field('description', css_class='wys5 translate', style="width:100%;"),
@@ -237,7 +237,7 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                            HTML("<p><b>{}</b>: <span class='translate translatable_fields'></span></p>".format(_('Translatable fields'))),
                             Field('title', css_class='translate'),
                             Field('sub_title', css_class='translate'),
                             Field('home_description', css_class='wys5 translate', style="width:100%;"),
@@ -427,7 +427,7 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                         ),
                                         Div(
                                             HTML(
-                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                                                "<p><b>{}</b>: <span class='translate translatable_fields'></span></p>".format(_('Translatable fields'))),
                                             'name',
                                             Field('title', css_class='translate'),
                                             HTML(_(
