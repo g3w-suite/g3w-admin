@@ -264,7 +264,7 @@ class QplotlyFactoring(PlotFactory):
                 if x == NULL or x is None:
                     continue
             elif self.settings.properties['x_name']:
-                x = f[self.settings.properties['x_name']]
+                x = self._pyqt2py(f[self.settings.properties['x_name']])
                 if x == NULL or x is None:
                     continue
 
@@ -274,7 +274,7 @@ class QplotlyFactoring(PlotFactory):
                 if y == NULL or y is None:
                     continue
             elif self.settings.properties['y_name']:
-                y = f[self.settings.properties['y_name']]
+                y = self._pyqt2py(f[self.settings.properties['y_name']])
                 if y == NULL or y is None:
                     continue
 
@@ -284,7 +284,7 @@ class QplotlyFactoring(PlotFactory):
                 if z == NULL or z is None:
                     continue
             elif self.settings.properties['z_name']:
-                z = f[self.settings.properties['z_name']]
+                z = self._pyqt2py(f[self.settings.properties['z_name']])
                 if z == NULL or z is None:
                     continue
 

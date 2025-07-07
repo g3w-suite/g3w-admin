@@ -291,9 +291,9 @@ class G3WACLForm(forms.Form):
 
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):
 
-    department = ModelChoiceField(queryset=Department.objects.all(), required=False)
-    backend = ChoiceField(choices=USER_BACKEND_TYPES)
-    avatar = UploadedFileField(required=False)
+    department = ModelChoiceField(label=_('Department'), queryset=Department.objects.all(), required=False)
+    backend = ChoiceField(label=_('Backend'), choices=USER_BACKEND_TYPES)
+    avatar = UploadedFileField(label=_('Avatar'), required=False)
     other_info = CharField(label=_('Other informations'), widget=Textarea(), required=False)
 
     groups = ModelMultipleChoiceField(

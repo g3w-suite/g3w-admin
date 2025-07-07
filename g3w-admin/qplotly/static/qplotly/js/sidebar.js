@@ -10,7 +10,6 @@ export default ({
       v-disabled = "service.state.loading"
       :id        = "id"
       class      = "plot-content"
-      :class     = "{ 'bar-loader': undefined !== ids && service.state.loading }"
       :style     = "{
         overflow: 'hidden visible',
         height: order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
@@ -78,11 +77,12 @@ export default ({
   </template>
 
   <div
-    v-else
-    id    = "no_plots"
-    class = "skin-color"
-  >
-    <h4 v-t-plugin = "'qplotly.no_plots'"></h4>
+    v-else 
+    id        = "no_plots"
+    class     = "skin-color"
+  >  
+    <bar-loader style = "align-self: flex-start;" :loading = "service.state.loading"/>
+    <h4 v-if = "!service.state.loading"  v-t-plugin = "'qplotly.no_plots'"></h4>
   </div>
 
 </div>`,
@@ -227,12 +227,6 @@ export default ({
     
     this.service.on('change-charts', this.draw);
 
-    // at mount time get Charts
-    const { charts, order } = await this.service.getCharts({
-      layerIds: this.ids, // provided by query result service otherwise is undefined
-      rel:      this.rel, // provided by query result service otherwise is undefined
-    });
-
     // show chart in sidebar
     if (!this.container) {
       await GUI.showContent({
@@ -240,6 +234,12 @@ export default ({
         title:   'plugins.qplotly.title',
       });
     }
+
+    // at mount time get Charts
+    const { charts, order } = await this.service.getCharts({
+      layerIds: this.ids, // provided by query result service otherwise is undefined
+      rel:      this.rel, // provided by query result service otherwise is undefined
+    });
 
     this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
     this.resize.observe(this.$el);
