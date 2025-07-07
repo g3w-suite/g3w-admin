@@ -245,7 +245,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         ),
                         Div(
                             HTML(
-                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"
+                                "<p><b>{}</b>: <span class='translate translatable_fields'></span></p>".format(_('Translatable fields'))
                             ),
                             'qgis_file',
                             'qgis_file-uploads',

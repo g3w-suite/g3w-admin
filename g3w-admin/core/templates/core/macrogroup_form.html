@@ -8,7 +8,10 @@
 {% block page_header %}
 <h1>
     {% trans 'Macro Group' %}
+
+    {% if form.instance.name %}
     <small>{{ form.instance.name }}</small>
+    {% endif %}
 </h1>
 {% endblock %}
 
