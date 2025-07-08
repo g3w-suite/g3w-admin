@@ -1430,7 +1430,7 @@ class Layer(G3WACLModelMixins, models.Model):
             # Try with user's groups
             # Get viewer groups of user
             if not user.is_anonymous:
-                groups = user.groups.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
+                groups = user.groups.exclude(name__in=[G3W_VIEWER1, G3W_VIEWER2])
                 for g in groups:
                     try:
                         peruser = self.scale_visibility_layer.get(group=g)
