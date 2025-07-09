@@ -24,6 +24,7 @@ from qgis.PyQt.QtCore import QVariant
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -196,7 +197,8 @@ class BaseVectorApiView(G3WAPIView):
     """
 
     authentication_classes = (
-        CsrfExemptSessionAuthentication,
+        CsrfExemptSessionAuthentication, 
+        TokenAuthentication
     )
 
     # Parameter for locking features data into db
