@@ -3,16 +3,16 @@ import os
 import time
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.text import slugify
-from django_extensions.db.fields import AutoSlugField
 from django.db.models import UniqueConstraint
 from ordered_model.models import OrderedModel
 from core.configs import *
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from core.models import (BaseLayer, Group, GroupProjectPanoramic,
                          ProjectMapUrlAlias)
+from core.fields import AutoSlugField
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
+from core.utils.slugify import slugify
 from django.conf import settings
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User
@@ -1430,7 +1430,7 @@ class Layer(G3WACLModelMixins, models.Model):
             # Try with user's groups
             # Get viewer groups of user
             if not user.is_anonymous:
-                groups = user.groups.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
+                groups = user.groups.exclude(name__in=[G3W_VIEWER1, G3W_VIEWER2])
                 for g in groups:
                     try:
                         peruser = self.scale_visibility_layer.get(group=g)

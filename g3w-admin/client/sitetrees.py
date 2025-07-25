@@ -12,7 +12,7 @@ from core.utils.tree import G3Wtree
 # Be sure you defined `sitetrees` in your module.
 sitetrees = tuple(
     G3Wtree(
-        'client' + (f'_{tree['lang']}' if tree['lang'] != 'en' else ''),
+        'client' + (f"_{tree['lang']}" if tree['lang'] != 'en' else ''),
         title=tree['title'],
         module='client',
         items=[

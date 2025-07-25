@@ -1,582 +1,278 @@
 export default {
-  translation: {
-    error_page: {
-      error: "Erreur de connexion",
-      at_moment: "Pour le moment, il n'est pas possible d'afficher la carte",
-      f5: "Appuyez sur Ctrl+F5"
-    },
-    cookie_law: {
-      message: "Ce site utilise des cookies pour assurer une bonne convivialité pour l'utilisateur final.",
-      buttonText: "J’ai compris !"
-    },
-    default:"par défaut ",
-    sign_in: "Se connecter ",
-    layer_selection_filter: {
-      tools: {
-        filter: "Activer/Désactiver le filtre",
-        nofilter: "Supprimer le filtre ",
-        invert: "Sélection inversée ",
-        clear: "Effacer la sélection ",
-        show_features_on_map: "Mettre à jour les résultats lors du déplacement de la carte",
-        savefilter: "Sauver le Filtre",
-        filterName: "Nom du Filtre",
-      }
-    },
-    warning: {
-      not_supported_format: "Format non supporté"
-    },
-    layer_position: {
-      top: 'HAUT',
-      bottom: 'BAS',
-      message: "Position relative des couches dans la table des matières"
-    },
-    sdk: {
-      atlas: {
-        template_dialog: {
-          title: "Sélectionnez un modèle"
-        }
-      },
-      spatialbookmarks: {
-        title: "Signets spatiaux",
-        helptext: "Déplacez-vous sur l'étendue de la carte, insérez le nom et cliquez sur Ajouter",
-        input: {
-          name: "Nom"
-        },
-        sections: {
-          project:{
-            title: "Signets du projet"
-          },
-          user: {
-            title: "Signets de l'utilisateur"
-          }
-        }
-      },
-      search: {
-        all: 'TOUTES',
-        no_results: "Aucune valeur trouvée",
-        searching: "Je cherche...",
-        error_loading: "Erreur de chargement des valeurs",
-        layer_not_searchable: "La couche n’est pas recherchable",
-        layer_not_querable: "La couche n'est pas interrogeable",
-        autocomplete: {
-          inputshort: {
-            pre: "Tapez au moins",
-            post: "caractères"
-          }
-        },
-        help_filter : "Les valeurs de recherche sont limitées en fonction du filtre actif. Supprimez le filtre pour rechercher toutes les données.",
-        autofilter: "Filtrer les résultats"
-      },
-      print: {
-        no_layers: 'Aucune layer visible',
-        scale: "Échelle",
-        format: "Format",
-        rotation: "Rotation",
-        download_image: "Télécharger l'image",
-        fids_instruction: "Valeurs acceptées : de 1 à la valeur maximale indiquée par [max]. Il est également possible d'indiquer une fourchette de valeurs, par exemple 4-6",
-        fids_example: "Par exemple 1,4-6 les ids 1,4,5,6 seront imprimés",
-        help: "Les couches montrées dans l'impression peuvent être celles définies dans le projet et non celles montrées sur la carte"
-      },
-      querybuilder: {
-        search: {
-          run: "Lancer la recherche",
-          info: "Information",
-          delete: "Supprimer",
-          edit: "Modifier"
-        },
-        messages: {
-          changed: 'Enregistré correctement',
-          number_of_features: "Nombre d'entités"
-        },
-        panel: {
-          button: {
-            all: 'TOUTES',
-            save: 'SAUVEGARDER',
-            test: 'TESTER',
-            clear: 'NETTOYER',
-            run: 'EXECUTER',
-            manual: 'MANUEL'
-          },
-          layers: 'COUCHES',
-          fields: 'CHAMPS',
-          values: 'VALEURS',
-          operators: 'OPERATEURS',
-          expression: 'EXPRESSION'
-        },
-        error_run: "Une erreur s'est produite. Vérifiez si la requête est correcte",
-        error_test: "Erreur d'exécution de la requête",
-        delete: 'Voulez-vous confirmer la suppression ?',
-        additem: 'Entrer le nom de la requête'
-      },
-      errors: {
-        layers: {
-          load: "Certaines couches du projet ne sont pas disponibles actuellement et n'apparaissent donc pas dans la vue actuelle"
-        },
-        unsupported_format: 'Format non supporté',
-        add_external_layer: 'Erreur lors du chargement de la couche'
-      },
-      metadata: {
-        title: "Métadonnées",
-        groups: {
-          general: {
-            title: 'GÉNÉRAL',
-            fields: {
-              title: 'TITRE',
-              name: 'NOM',
-              description: "DESCRIPTION",
-              abstract: "ABREGE",
-              keywords: 'LISTE DE MOTS-CLÉS',
-              fees: "DROITS D'INSCRIPTION",
-              accessconstraints: "CONTRAINTES D'ACCÈS",
-              contactinformation: "CONTACTS",
-              subfields: {
-                contactinformation: {
-                  contactelectronicmailaddress: "E-mail",
-                  personprimary: 'Références',
-                  contactvoicetelephone: 'Téléphone',
-                  contactorganization: 'Organisation',
-                  ContactOrganization: 'Organisation',
-                  contactposition: 'Localisation',
-                  ContactPosition : 'Localisation',
-                  contactperson: 'Personne',
-                  ContactPerson: 'Personne',
-                }
-              },
-              wms_url: "WMS"
-            }
-          },
-          spatial:{
-            title: 'INFO SPATIALE',
-            fields : {
-              crs: 'EPSG',
-              extent: 'BBOX'
-            }
-          },
-          layers: {
-            title: 'COUCHES',
-            groups : {
-              general: 'GENERALE',
-              spatial: 'INFO SPATIALE'
-            },
-            fields: {
-              layers: 'COUCHES',
-              subfields: {
-                crs: 'EPSG',
-                bbox: 'BBOX',
-                title: "TITRE",
-                name: 'NOM',
-                geometrytype: 'GÉOMÉTRIE',
-                source: 'SOURCE',
-                attributes: 'ATTRIBUTS',
-                abstract: 'ABRÉGÉ',
-                attribution: 'ATTRIBUTION',
-                keywords: "MOTS- CLÉS",
-                metadataurl:'URL DE MÉTADONNÉES',
-                dataurl: "URL DES DONNÉES"
-              }
-            }
-          }
-        }
-      },
-      tooltips: {
-        relations: {
-          form_to_row: "Afficher le format de la ligne",
-          row_to_form: "Format du formulaire d'affichage",
-          zoomtogeometry: "Zoom sur la géométrie",
-        },
-        zoom_to_features_extent: "Zoom sur les entités",
-        copy_map_extent_url: 'Copier le lien de visualisation de la carte',
-        download_shapefile: "Télécharger le fichier Shapefile",
-        download_gpx: "Télécharger GPX",
-        download_gpkg: "Télécharger GPKG",
-        download_csv: "Télécharger CSV",
-        download_xls: "Télécharger XLS",
-        download_pdf: "Télécharger PDF",
-        show_chart: "Montrer le graphique",
-        atlas: "Imprimer l'Atlas",
-        editing: "Modifier",
-      },
-      mapcontrols: {
-        query: {
-          tooltip: 'Couche Interrogée',
-          actions: {
-            add_selection: {
-              hint: "Ajouter/supprimer une sélection"
-            },
-            zoom_to_features_extent:{
-              hint: "Zoom sur les entités"
-            },
-            add_features_to_results: {
-              hint: "Ajouter des fonctionnalités aux résultats"
-            },
-            remove_feature_from_results: {
-              hint: "Supprimer l'entité des résultats"
-            },
-            zoom_to_feature: {
-              hint: "Zoom sur les entités"
-            },
-            relations: {
-              hint: "Voir les relations"
-            },
-            relations_charts: {
-              hint: "Voir les graphiques de relations"
-            },
-            download_features_shapefile:{
-              hint: 'Télécharger les entités vers Shapefile'
-            },
-            download_shapefile: {
-              hint: 'Télécharger le Shapefile'
-            },
-            download_features_gpx: {
-              hint: "Télécharger les entités vers GPX"
-            },
-            download_features_gpkg: {
-              hint: "Télécharger les entités vers GPKG"
-            },
-            download_gpx: {
-              hint: "Télécharger le GPX"
-            },
-            download_gpkg: {
-              hint: "Télécharger le GPKG"
-            },
-            download_features_csv: {
-              hint: "Télécharger les entités vers CSV"
-            },
-            download_csv: {
-              hint: "Télécharger le CSV"
-            },
-            download_features_xls: {
-              hint: "Télécharger les entités vers XLS"
-            },
-            download_xls: {
-              hint: "Télécharger le XLS"
-            },
-            download_pdf: {
-              hint: "Télécharger le PDF"
-            },
-            atlas: {
-              hint: "Imprimer l'Atlas"
-            },
-            copy_zoom_to_fid_url: {
-              hint: "Copier l'URL de la carte avec l'extension vers cette géométrie",
-              hint_change: "Copié"
-            }
-          }
-        },
-        queryby: {
-          title: 'Query area',
-          layer: 'Selected layer:',
-          none: 'NONE',
-          new: 'TEMPORARY LAYER',
-          all: 'ALL',
-          methods: {
-            intersects: 'intersects',
-            within: 'within'
-          },
-          querybypolygon: {
-            tooltip: 'select a polygon'
-          },
-          querybydrawpolygon: {
-            tooltip: 'draw a polygon'
-          },
-          querybbox: {
-            tooltip: 'draw a rectangle'
-          },
-          querybycircle: {
-            tooltip: 'draw a circle'
-          }
-        },
-        querybypolygon: {
-          download: {
-            title: "Téléchargement des attributs",
-            choiches:{
-              feature: {
-                label: "Entités seulement",
-              },
-              feature_polygon: {
-                label: "Entités+Requête Polygon ",
-              }
-            }
-          },
-          tooltip: 'Requête par polygone',
-          no_geometry: 'La réponse ne contient pas de géométrie',
-          help: {
-            message: "<ul><li>Sélectionnez une couche de polygone dans la légende.</li><li>Vérifiez que la couche est visible dans la carte.</li><li>Cliquez sur une géométrie de la couche sélectionnée.</li></ul>"
-          }
-        },
-        querybydrawpolygon: {
-          tooltip: "Requête par polygone de dessin"
-        },
-        querybbox: {
-          tooltip: 'Requête pour BBOX',
-          nolayers_visible: "Aucune couche requêtable n'est visible. Assurez-vous qu'au moins une couche wfs est visible pour exécuter la requête",
-          help: {
-            message: "<ul><li>Dessinez un rectangle pour interroger les couches surlignées en jaune</li></ul>"
-          },
-        },
-        querybycircle: {
-          tooltip: "Query by Draw Circle ",
-          label: 'Radius',
-          help: {
-            message: "<ul><li>Click on map to draw circle</li></ul>"
-          },
-        },
-        addlayer: {
-          messages: {
-            csv: {
-              warning: "Le résultat de la carte est partiel en raison de la présence des enregistrements incorrects suivants :"
-            }
-          },
-          tooltip: 'Ajouter un layer'
-        },
-        geolocation: {
-          tooltip: 'Géolocalisation'
-        },
-        measures: {
-          length: {
-            tooltip: "Longueur",
-            help: "Cliquez sur la carte pour continuer à dessiner la ligne.<br>CANC si vous voulez supprimer le dernier vertex inséré",
-          },
-          area: {
-            tooltip: "Zone",
-            help: "Cliquez pour continuer à dessiner le polygone.<br>CANC si vous voulez supprimer le dernier vertex inséré"
-          }
-        },
-        scale: {
-          no_valid_scale: "Échelle invalide"
-        },
-        scaleline: {
-          units: {
-            metric: 'Mètre',
-            nautical: 'Mile Nautique'
-          }
-        },
-        zoomhistory: {
-          zoom_last: "Zoom Précédent",
-          zoom_next: "Zoom Suivant"
-        }
-      },
-      relations: {
-        relation_data: 'Données relationnelles',
-        no_relations_found: 'Aucune relation trouvée',
-        back_to_relations: 'Retour aux relations',
-        list_of_relations_feature: 'Liste des relations entre les entités',
-        error_missing_father_field: "Le champ concerné n'existe pas",
-        download_with_relations: "Télécharger avec les relations",
-        field: "Relation key field",
-      },
-      form: {
-        loading: 'Chargement...',
-        inputs: {
-          messages: {
-            errors: {
-              picklayer: "Aucune entité sélectionnée. Vérifier si la couche est en édition ou non visible à l'échelle actuelle"
-            }
-          },
-          tooltips: {
-            picklayer: "Obtenir la valeur de la carte",
-            lonlat: "Cliquez sur la carte pour obtenir les coordonnées"
-          },
-          input_validation_mutually_exclusive: "Champ mutuellement exclusif avec ",
-          input_validation_error: "Champ obligatoire ou type de valeur incorrect",
-          input_validation_error_type: "Type de valeur incorrect",
-          input_validation_min_field: "La valeur doit être supérieure ou égale au camp ",
-          input_validation_max_field: "La valeur doit être inférieure ou égale au champ ",
-          input_validation_exclude_values: "Le champ doit contenir une valeur différente",
-          integer: "entier",
-          bigint: "entier",
-          text: "textuel",
-          varchar: "textuel",
-          textarea: "textuel",
-          string: "chaîne",
-          date: "date",
-          datetime: "date",
-          float: "décimal",
-          table: "table"
-        },
-        footer: {
-          required_fields: "Champs obligatoires"
-        },
-        messages: {
-          qgis_input_widget_relation: "Gérer les relations via un formulaire dédié"
-        }
-      },
-      catalog: {
-        current_map_theme_prefix: "THEME",
-        choose_map_theme: "SÉLECTIONNEZ LE THÈME",
-        choose_map_theme_input_label: 'Nom du nouveau thème',
-        project_map_theme : 'Thème du projet',
-        user_map_theme: "Thème de l'utilisateur",
-        question_delete_map_theme: "Voulez-vous supprimer le thème ?",
-        delete_map_theme: "Thème supprimé avec succès",
-        saved_map_theme: "Thème enregistré avec succès",
-        updated_map_theme: "Thème mise à jour avec succès",
-        invalid_map_theme_name: "Le nom existe déjà ou est incorrect",
-        menu: {
-          layerposition: 'Position du calque',
-          setwmsopacity: "Définir l'opacité",
-          wms: {
-            title:"",
-            copy: "Cliquez ici pour copier l'url",
-            copied: "Copié"
-          },
-          download: {
-            unknow: 'Télécharger',
-            shp: 'Télécharger Shapefile',
-            gpx: 'Télécharger GPX',
-            gpkg: 'Télécharger GPKG',
-            csv: 'Télécharger CSV',
-            xls: 'Télécharger XLS',
-            geotiff: 'Télécharger GEOTIFF',
-            geotiff_map_extent: "Télécharger GEOTIFF(vue courante)"
-          }
-        }
-      },
-      wps: {
-        list_process: "Liste des processus",
-        tooltip: 'Cliquez sur la carte'
-      }
-    },
-    credits: {
-      g3wSuiteFramework: "Application construite avec le framework OS",
-      g3wSuiteDescription: "Publiez et gérez vos projets QGIS sur le Web",
-      productOf: "Framework développé par",
-    },
-    logout: "Quitter",
-    no_other_projects: "Il n'y a pas d'autres projets dans ce groupe de cartes",
-    no_other_groups: "Il n'y a pas d'autres groupes dans ce macrogroupe",
-    yes: "Oui",
-    no: "No",
-    back:"Retour",
-    backto: "Retour à ",
-    changemap: "Changer de carte",
-    change_session: "Changer de sessuib",
-    component: "Composant générique",
-    search: "Recherches",
-    no_results: "Aucun résultat trouvé",
-    print: "Imprimer",
-    create_print: "Créer une impression",
-    dosearch: "Recherche",
-    catalog: "Carte",
-    data: "Données",
-    externalwms: "WMS",
-    baselayers: "Bases",
-    tools: "Outils",
-    tree: "Strates",
-    legend: "Légende",
-    nobaselayer: "Pas de carte de base",
-    street_search: "Adresse de recherche",
-    show: "Afficher",
-    hide: "Cacher",
-    copy_form_data: "Copier les données du formulaire",
-    paste_form_data: "Coller",
-    copy_form_data_from_feature: "Copier les données de la carte",
-    error_map_loading: "Erreur de chargement de la nouvelle carte",
-    check_internet_connection_or_server_admin: "Vérifiez la connexion internet ou contactez l'administrateur",
-    could_not_load_vector_layers: "Erreur de connexion au serveur : il n'a pas été possible de charger les vecteurs demandés",
-    server_saver_error: "Erreur de sauvegarde sur le serveur",
-    server_error: "Une erreur s'est produite dans la requête au serveur",
-    save: "Sauvegarder",
-    cancel: "Supprimer",
-    update: "Mise à jour",
-    close: "Fermer",
-    /** @since 3.8.0 */
-    dont_show_again: "Ne plus afficher ce message",
-    enlange_reduce: "Agrandir / Réduire",
-    add: "Ajouter",
-    exitnosave: "Quitter sans sauvegarder",
-    annul: "Annuler",
-    layer_is_added: "Couche avec le même nom déjà ajoutée",
-    wms_layer_id_already_added: "Couche WMS déjà ajoutée",
-    wms_url_already_added: "URL WMS déjà ajouté",
-    sidebar: {
-      wms: {
-        panel: {
-          title:'Ajouter une couche WMS',
-          label: {
-            position: "Position sur la carte",
-            name: "Nom",
-            projections: 'Projection',
-            layers: 'Couches'
-          }
-        },
-        add_wms_layer: "Ajouter une couche WMS",
-        delete_wms_url: "Supprimer une url WMS",
-        layer_id_already_added: "La couche est déjà présente.",
-        url_already_added: "L'URL WMS est déjà présent.",
-        layer_add_error: "Couche WMS non ajoutée. Veuillez vérifier tous les paramètres de l'URL"
-      }
-    },
-    info: {
-      title: "Résultats",
-      list_of_relations: "Liste des relations",
-      open_link: "Ouvrir le document joint",
-      server_error: "Une erreur s'est produite dans la requête au serveur",
-      no_results: "Aucun résultat pour cette requête/recherche",
-      link_button: "Ouvrir"
-    },
-    mapcontrols: {
-      geolocation: {
-        error: "Votre position ne peut être calculée."
-      },
-      geocoding: {
-        choose_layer: "Choisissez un calque où ajouter cette entité",
-        placeholder: "Adresse ...",
-        nolayers: "Aucune couche de points modifiable trouvée sur ce projet",
-        noresults: "Aucun résultat",
-        notresponseserver: "Le serveur ne répond pas"
-      },
-      add_layer_control: {
-        header: "Ajouter une couche",
-        select_projection: "Sélectionnez le système de projection de couches",
-        select_field_to_show: "Sélectionnez le champ à afficher sur la carte",
-        select_csv_separator: "Sélectionner le séparateur",
-        select_csv_x_field: "Sélectionnez le champ X",
-        select_csv_y_field: "Sélectionnez le champ Y",
-        select_color: "Sélectionnez la couleur du layer",
-        drag_layer: "Faire glisser le layer vers cette zone"
-      },
-      query: {
-        input_relation: "Cliquez pour voir les relations"
-      },
-      length: {
-        tooltip: "Longueur"
-      },
-      area: {
-        tooltip: "Zone"
-      },
-      screenshot: {
-        error: "Erreur de création de la capture d'écran",
-        securityError: `  
-        <p><b>Erreur de sécurité</b> : une couche externe empêche l'impression de la carte. Pour vérifier, procédez comme suit :</p>
-        <ol>
-          <li>supprimer toutes les couches externes ajoutées manuellement (par exemple, les couches WMS)</li>
-          <li>forcer le rechargement de la page : <code>CTRL + F5</code></li>
-          <li>imprimer à nouveau la carte</li>
-        </ol>
-        <p>Pour plus d'informations, veuillez contacter l'administrateur du serveur à propos de : <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image" style="color: #000 !important;font -poids : gras ;">&#x2139;&#xFE0F; sécurité et toiles souillées</a></p>
-        `
-      }
-    },
-    catalog_items: {
-      helptext: "Cliquez avec le bouton droit de la souris sur les différentes couches pour accéder à des fonctionnalités supplémentaires",
-      contextmenu: {
-        zoomtolayer: "Zoom sur le layer",
-        open_attribute_table: "Ouvrir la table attributaire",
-        show_metadata: "Métadonnées",
-        styles: "Styles",
-        vector_color_menu:"Définir/changer la couleur",
-        layer_opacity: "Opacité",
-        filters: "Filters",
-      }
-    },
-    dataTable: {
-      previous: "Précédent",
-      next: "Suivant",
-      lengthMenu: "Afficher _MENU_ valeurs par page",
-      info: "_TOTAL_ résultats",
-      nodatafilterd: "Aucun résultat trouvé",
-      infoFiltered: "(Filtré par _MAX_ rangs totaux)"
-    }
-  },
+  default:"par défaut ",
+  sign_in: "Se connecter ",
+  'Logout': "Quitter",
+  'No more project for this group': "Il n'y a pas d'autres projets dans ce groupe de cartes",
+  'No more groups for this Macrogroup': "Il n'y a pas d'autres groupes dans ce macrogroupe",
+  yes: "Oui",
+  no: "No",
+  back:"Retour",
+  backto: "Retour à ",
+  changemap: "Changer de carte",
+  'Change Session': "Changer de sessuib",
+  component: "Composant générique",
+  search: "Recherches",
+  no_results: "Aucun résultat trouvé",
+  print: "Imprimer",
+  'Create Print': "Créer une impression",
+  dosearch: "Recherche",
+  catalog: "Carte",
+  data: "Données",
+  externalwms: "WMS",
+  baselayers: "Bases",
+  tools: "Outils",
+  tree: "Strates",
+  legend: "Légende",
+  nobaselayer: "Pas de carte de base",
+  'Find Address': "Adresse de recherche",
+  show: "Afficher",
+  hide: "Cacher",
+  copy_form_data: "Copier les données du formulaire",
+  paste_form_data: "Coller",
+  copy_form_data_from_feature: "Copier les données de la carte",
+  'Error occurs loading map': "Erreur de chargement de la nouvelle carte",
+  'Check internet connection or contact admin': "Vérifiez la connexion internet ou contactez l'administrateur",
+  'Connection error: Layers can be loaded': "Erreur de connexion au serveur : il n'a pas été possible de charger les vecteurs demandés",
+  'Error in server saving': "Erreur de sauvegarde sur le serveur",
+  server_error: "Une erreur s'est produite dans la requête au serveur",
+  save: "Sauvegarder",
+  cancel: "Supprimer",
+  update: "Mise à jour",
+  close: "Fermer",
+  'Don\'t show again': "Ne plus afficher ce message",
+  'Enlarge / Reduce': "Agrandir / Réduire",
+  add: "Ajouter",
+  exitnosave: "Quitter sans sauvegarder",
+  annul: "Annuler",
+  'Layer with same name already added': "Couche avec le même nom déjà ajoutée",
+  'Zoom to Layer': "Zoom sur le layer",
+  'Open Attribute Table': "Ouvrir la table attributaire",
+  'Metadata': "Métadonnées",
+  'Style': "Styles",
+  'Color':"Définir/changer la couleur",
+  'Opacity': "Opacité",
+  'Previous': "Précédent",
+  'Next': "Suivant",
+  'Show _MENU_ values per page': "Afficher _MENU_ valeurs par page",
+  '_TOTAL_ entries': "_TOTAL_ résultats",
+  'No matching records found': "Aucun résultat trouvé",
+  '(filtered from _MAX_ total records)': "(Filtré par _MAX_ rangs totaux)",
+  'Connection error': "Erreur de connexion",
+  'At the moment is not possible show map': "Pour le moment, il n'est pas possible d'afficher la carte",
+  'This website uses cookies to ensure you get the best experience on our website.': "Ce site utilise des cookies pour assurer une bonne convivialité pour l'utilisateur final.",
+  'Got It!': "J’ai compris !",
+  'Enable/Disable filter': "Activer/Désactiver le filtre",
+  'Remove Filter': "Supprimer le filtre ",
+  'Invert Selection': "Sélection inversée ",
+  'Clear Selection': "Effacer la sélection ",
+  'Update results when map moves': "Mettre à jour les résultats lors du déplacement de la carte",
+  'Save Filter': "Sauver le Filtre",
+  'Filter Name': "Nom du Filtre",
+  'Not supported format': "Format non supporté",
+  'Application based on OS framework': "Application construite avec le framework OS",
+  'Publish and manage your QGIS projects on the web': "Publiez et gérez vos projets QGIS sur le Web",
+  'Framework developed by': "Framework développé par",
+  'Name': "Nom",
+  'Projection': 'Projection',
+  'Layers': 'Couches',
+  'Add WMS layer': "Ajouter une couche WMS",
+  'A WMS connection with this name already exists': "La couche est déjà présente.",
+  'WMS URL/Name already added': "L'URL WMS est déjà présent.",
+  'WMS Layer not added. Please check all wms parameter or url': "Couche WMS non ajoutée. Veuillez vérifier tous les paramètres de l'URL",
+  'Zoom Last': "Zoom Précédent",
+  'Zoom Next': "Zoom Suivant",
+  'Invalid Scale': "Échelle invalide",
+  'Geolocation': 'Géolocalisation',
+  'The result in the map is partial due to the presence of the below incorrect records list:': "Le résultat de la carte est partiel en raison de la présence des enregistrements incorrects suivants :",
+  'Add Layer': 'Ajouter un layer',
+  'Query layer': 'Couche Interrogée',
+  'Add/Remove Selection': "Ajouter/supprimer une sélection",
+  'Zoom to features extent': "Zoom sur les entités",
+  'Add/Remove features to results': "Ajouter des fonctionnalités aux résultats",
+  'Remove feature from results': "Supprimer l'entité des résultats",
+  'Zoom to feature': "Zoom sur les entités",
+  'Show Relations': "Voir les relations",
+  'Share via link': "Copier l'URL de la carte",
+  'Bookmarks': "Signets spatiaux",
+  'Move on map extent, insert name and click Add': "Déplacez-vous sur l'étendue de la carte, insérez le nom et cliquez sur Ajouter",
+  'Project Bookmarks': "Signets du projet",
+  'User Bookmarks': "Signets de l'utilisateur",
+  'No Layer to print': 'Aucune layer visible',
+  'Scale': "Échelle",
+  'Format': "Format",
+  'Rotation': "Rotation",
+  'Download Image': "Télécharger l'image",
+  'Values accepted: from 1 to value of [max]. Is possible to insert a range ex. 4-6': "Valeurs acceptées : de 1 à la valeur maximale indiquée par [max]. Il est également possible d'indiquer une fourchette de valeurs, par exemple 4-6",
+  'Ex. 1,4-6 will be printed id 1,4,5,6': "Par exemple 1,4-6 les ids 1,4,5,6 seront imprimés",
+  'Exportable layers are defined by the administrator': "Les couches montrées dans l'impression peuvent être celles définies dans le projet et non celles montrées sur la carte",
+  'Metadata': "Métadonnées",
+  'THEME': "THEME",
+  'CHOOSE THEME': "SÉLECTIONNEZ LE THÈME",
+  'Name of new map theme': 'Nom du nouveau thème',
+  'Project Themes': 'Thème du projet',
+  'User Themes': "Thème de l'utilisateur",
+  'Do you want delete the theme?': "Voulez-vous supprimer le thème ?",
+  'Theme deleted successfully': "Thème supprimé avec succès",
+  'Theme saved successfully': "Thème enregistré avec succès",
+  'Theme updated successfully': "Thème mise à jour avec succès",
+  'Invalid or exiting name': "Le nom existe déjà ou est incorrect",
+  'Layer Position': 'Position du calque',
+  'Set Opacity': "Définir l'opacité",
+  'Copied': "Copié",
+  'GeoTiff (current view)': "Télécharger GEOTIFF(vue courante)",
+  'Row View': "Afficher le format de la ligne",
+  'Form View': "Format du formulaire d'affichage",
+  'Zoom to Geometry': "Zoom sur la géométrie",
+  'Copy share URL': 'Copier le lien de visualisation de la carte',
+  'Show Chart': "Montrer le graphique",
+  'Print Atlas': "Imprimer l'Atlas",
+  'Editing': "Modifier",
+  'Run': "Lancer la recherche",
+  'Delete': "Supprimer",
+  'Saved': 'Enregistré correctement',
+  'Features found:': "Nombre d'entités",
+  'SEARCH A VALUE': 'TOUTES',
+  'SAVE': 'SAUVEGARDER',
+  'CLEAR': 'NETTOYER',
+  'RUN': 'EXECUTER',
+  'FIELDS': 'CHAMPS',
+  'EXPRESSION': 'EXPRESSION',
+  'An error occurs. Please check the query': "Une erreur s'est produite. Vérifiez si la requête est correcte",
+  'Do you want delete it?': 'Voulez-vous confirmer la suppression ?',
+  'Insert the name of the new search': 'Entrer le nom de la requête',
+  'Some layers are not available': "Certaines couches du projet ne sont pas disponibles actuellement et n'apparaissent donc pas dans la vue actuelle",
+  'Not supported format': 'Format non supporté',
+  'Load layer error': 'Erreur lors du chargement de la couche',
+  'Relation data': 'Données relationnelles',
+  'No relations found': 'Aucune relation trouvée',
+  'Back to relations': 'Retour aux relations',
+  'List of relations of feature': 'Liste des relations entre les entités',
+  'Download with relations': "Télécharger avec les relations",
+  'Relation key field': "Relation key field",
+  'Can\'t get your position': "Votre position ne peut être calculée.",
+  'Choose a layer where to add this feature': "Choisissez un calque où ajouter cette entité",
+  'Search': "Adresse ...",
+  'No editable point layers found on this project': "Aucune couche de points modifiable trouvée sur ce projet",
+  'No results': "Aucun résultat",
+  'Add Layer': "Ajouter une couche",
+  'Projection': "Sélectionnez le système de projection de couches",
+  'field shown on map': "Sélectionnez le champ à afficher sur la carte",
+  'Delimiter': "Sélectionner le séparateur",
+  'X field': "Sélectionnez le champ X",
+  'Y field': "Sélectionnez le champ Y",
+  'Layer Color': "Sélectionnez la couleur du layer",
+  'Add your file here': "Faire glisser le layer vers cette zone",
+  'Screenshot error creation': "Erreur de création de la capture d'écran",
+  screenshot_error: `
+  <p><b>Erreur de sécurité</b> : une couche externe empêche l'impression de la carte. Pour vérifier, procédez comme suit :</p>
+  <ol>
+    <li>supprimer toutes les couches externes ajoutées manuellement (par exemple, les couches WMS)</li>
+    <li>forcer le rechargement de la page : <code>CTRL + F5</code></li>
+    <li>imprimer à nouveau la carte</li>
+  </ol>
+  <p>Pour plus d'informations, veuillez contacter l'administrateur du serveur à propos de : <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image" style="color: #000 !important;font -poids : gras ;">&#x2139;&#xFE0F; sécurité et toiles souillées</a></p>`,
+  'layer_position.top': 'HAUT',
+  'layer_position.bottom': 'BAS',
+  'layer_position.message': 'Position relative des couches dans la table des matières',
+  'info.title': 'Résultats',
+  'info.list_of_relations': 'Liste des relations',
+  'info.open_link': 'Ouvrir le document joint',
+  'info.server_error': "Une erreur s'est produite dans la requête au serveur",
+  'info.no_results': 'Aucun résultat pour cette requête/recherche',
+  'info.link_button': 'Ouvrir',
+  'scaleline_units.metric': 'Mètre',
+  'scaleline_units.nautical': 'Mile Nautique',
+  'mapcontrols.query.input_relation': "Cliquez pour voir les relations",
+  'mapcontrols.querybypolygon.download.title': "Téléchargement des attributs",
+  'mapcontrols.querybypolygon.download.choiches.feature.label': "Entités seulement",
+  'mapcontrols.querybypolygon.download.choiches.feature_polygon.label': "Entités+Requête Polygon",
+  'mapcontrols.querybypolygon.tooltip': 'Requête par polygone',
+  'mapcontrols.querybypolygon.no_geometry': 'La réponse ne contient pas de géométrie',
+  'mapcontrols.querybypolygon.help.message': "<ul><li>Sélectionnez une couche de polygone dans la légende.</li><li>Vérifiez que la couche est visible dans la carte.</li><li>Cliquez sur une géométrie de la couche sélectionnée.</li></ul>",
+  'mapcontrols.querybydrawpolygon.tooltip': "Requête par polygone de dessin",
+  'mapcontrols.querybbox.tooltip': 'Requête pour BBOX',
+  'mapcontrols.querybbox.nolayers_visible': "Aucune couche requêtable n'est visible. Assurez-vous qu'au moins une couche wfs est visible pour exécuter la requête",
+  'mapcontrols.querybbox.help.message': "<ul><li>Dessinez un rectangle pour interroger les couches surlignées en jaune</li></ul>",
+  'measure_types.length': 'Longueur',
+  'measure_types.area': 'Zone',
+  'measure_descriptions.length': "Cliquez sur la carte pour continuer à dessiner la ligne.<br>CANC si vous voulez supprimer le dernier vertex inséré",
+  'measure_descriptions.area': "Cliquez pour continuer à dessiner le polygone.<br>CANC si vous voulez supprimer le dernier vertex inséré",
+  'metadata.general.title': 'GÉNÉRAL',
+  'metadata.general.fields.title': 'TITRE',
+  'metadata.general.fields.name': 'NOM',
+  'metadata.general.fields.description': 'DESCRIPTION',
+  'metadata.general.fields.abstract': 'ABREGE',
+  'metadata.general.fields.keywords': 'LISTE DE MOTS-CLÉS',
+  'metadata.general.fields.fees': "DROITS D'INSCRIPTION",
+  'metadata.general.fields.accessconstraints': "CONTRAINTES D'ACCÈS",
+  'metadata.general.fields.contactinformation': 'CONTACTS',
+  'metadata.general.fields.subfields.contactinformation.contactelectronicmailaddress': 'E-mail',
+  'metadata.general.fields.subfields.contactinformation.personprimary': 'Références',
+  'metadata.general.fields.subfields.contactinformation.contactvoicetelephone': 'Téléphone',
+  'metadata.general.fields.subfields.contactinformation.contactorganization': 'Organisation',
+  'metadata.general.fields.subfields.contactinformation.ContactOrganization': 'Organisation',
+  'metadata.general.fields.subfields.contactinformation.contactposition': 'Localisation',
+  'metadata.general.fields.subfields.contactinformation.ContactPosition': 'Localisation',
+  'metadata.general.fields.subfields.contactinformation.contactperson': 'Personne',
+  'metadata.general.fields.subfields.contactinformation.ContactPerson': 'Personne',
+  'metadata.general.fields.wms_url': 'WMS',
+  'metadata.spatial.title': 'INFO SPATIALE',
+  'metadata.spatial.fields.crs': 'EPSG',
+  'metadata.spatial.fields.extent': 'BBOX',
+  'metadata.layers.title': 'COUCHES',
+  'metadata.layers.groups.general': 'GENERALE',
+  'metadata.layers.groups.spatial': 'INFO SPATIALE',
+  'metadata.layers.fields.layers': 'COUCHES',
+  'metadata.layers.fields.subfields.crs': 'EPSG',
+  'metadata.layers.fields.subfields.bbox': 'BBOX',
+  'metadata.layers.fields.subfields.title': 'TITRE',
+  'metadata.layers.fields.subfields.name': 'NOM',
+  'metadata.layers.fields.subfields.geometrytype': 'GÉOMÉTRIE',
+  'metadata.layers.fields.subfields.source': 'SOURCE',
+  'metadata.layers.fields.subfields.attributes': 'ATTRIBUTS',
+  'metadata.layers.fields.subfields.abstract': 'ABRÉGÉ',
+  'metadata.layers.fields.subfields.attribution': 'ATTRIBUTION',
+  'metadata.layers.fields.subfields.keywords': 'MOTS- CLÉS',
+  'metadata.layers.fields.subfields.metadataurl': 'URL DE MÉTADONNÉES',
+  'metadata.layers.fields.subfields.dataurl': 'URL DES DONNÉES',
+  'download_types.shapefile': 'Télécharger le fichier Shapefile',
+  'download_types.gpx': 'Télécharger GPX',
+  'download_types.gpkg': 'Télécharger GPKG',
+  'download_types.csv': 'Télécharger CSV',
+  'download_types.xls': 'Télécharger XLS',
+  'download_types.pdf': 'Télécharger PDF',
+  'sdk.search.all': 'TOUTES',
+  'No results': 'Aucune valeur trouvée',
+  'Searching ...': 'Je cherche...',
+  'Error Loading Data': 'Erreur de chargement des valeurs',
+  'Layer is not searchable': 'La couche n’est pas recherchable',
+  'Layer is not querable': "La couche n'est pas interrogeable",
+  'Please enter': 'Tapez au moins',
+  'or more characters': 'caractères',
+  'Search values are limited based on the active filter. Remove the filter to search all data.': 'Les valeurs de recherche sont limitées en fonction du filtre actif. Supprimez le filtre pour rechercher toutes les données.',
+  'Filter results': 'Filtrer les résultats',
+  'Loading ...': 'Chargement...',
+  'sdk.form.inputs.messages.errors.picklayer': "Aucune entité sélectionnée. Vérifier si la couche est en édition ou non visible à l'échelle actuelle",
+  'sdk.form.inputs.tooltips.picklayer': 'Obtenir la valeur de la carte',
+  'sdk.form.inputs.tooltips.lonlat': 'Cliquez sur la carte pour obtenir les coordonnées',
+  'sdk.form.inputs.input_validation_mutually_exclusive': 'Champ mutuellement exclusif avec ',
+  'sdk.form.inputs.input_validation_error': 'Champ obligatoire ou type de valeur incorrect',
+  'sdk.form.inputs.input_validation_error_type': 'Type de valeur incorrect',
+  'sdk.form.inputs.input_validation_min_field': 'La valeur doit être supérieure ou égale au camp ',
+  'sdk.form.inputs.input_validation_max_field': 'La valeur doit être inférieure ou égale au champ ',
+  'sdk.form.inputs.input_validation_exclude_values': 'Le champ doit contenir une valeur différente',
+  'sdk.form.inputs.integer': 'entier',
+  'sdk.form.inputs.bigint': 'entier',
+  'sdk.form.inputs.text': 'textuel',
+  'sdk.form.inputs.varchar': 'textuel',
+  'sdk.form.inputs.textarea': 'textuel',
+  'sdk.form.inputs.string': 'chaîne',
+  'sdk.form.inputs.date': 'date',
+  'sdk.form.inputs.datetime': 'date',
+  'sdk.form.inputs.float': 'décimal',
+  'sdk.form.inputs.table': 'table',
+  'sdk.form.footer.required_fields': 'Champs obligatoires',
+  'sdk.form.messages.qgis_input_widget_relation': 'Gérer les relations via un formulaire dédié',
+  'sdk.wps.list_process': 'Liste des processus',
+  'sdk.wps.tooltip': 'Cliquez sur la carte',
 };

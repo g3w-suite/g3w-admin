@@ -142,6 +142,12 @@ SPATIALITE_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu/mod_spatialite.so'
 
 SESSION_COOKIE_NAME = 'gis3w-admin'
 
+
+# SLUGS
+# =======================================
+SLUGIFY_FUNCTION = "core.utils.slugify.pyslugify"
+
+
 # OPENROUTESERVICE SETTINGS
 # ===============================
 # following settings work if 'openrouteservice' module is in 'G3WADMIN_LOCAL_MORE_APPS'

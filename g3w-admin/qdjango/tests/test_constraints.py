@@ -2331,6 +2331,14 @@ class TestVisibilityScaleLayerConstraintFilters(QdjangoTestBase):
             layer=self.world
         )
 
+        # For user group test_gu_viewer1
+        scvc = ScaleVisibilityLayerConstraint.objects.create(
+            group=self.test_gu_viewer1,
+            maxscale=400000,
+            minscale=600000,
+            layer=self.world
+        )
+
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.project.instance.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.project.instance.id})
 
@@ -2365,7 +2373,6 @@ class TestVisibilityScaleLayerConstraintFilters(QdjangoTestBase):
         })
 
         self.assertEqual(response.status_code, 200)
-        print(response.content)
         self.assertEqual(response.content, expected_1_feature)
 
         c.logout()
@@ -2373,31 +2380,40 @@ class TestVisibilityScaleLayerConstraintFilters(QdjangoTestBase):
         # TEST SCALE 1:1000.000
         # EXPECTED: no features
         # ----------------------
-        self.assertTrue(c.login(username=self.test_viewer1.username, password=self.test_viewer1.username))
 
-        response = c.get(ows_url, {
-            'REQUEST': 'GetFeatureInfo',
-            'SERVICE': 'WMS',
-            'VERSION': '1.3.0',
-            'LAYERS': self.world.qgs_layer_id,
-            'CRS': 'EPSG:3857',
-            'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
-            #'BBOX': '36.44,0.66,49.06,24.57',
-            'FORMAT': 'image/png',
-            'INFO_FORMAT': 'application/json',
-            'WIDTH': '652',
-            'HEIGHT': '1243',
-            'QUERY_LAYERS': self.world.qgs_layer_id,
-            'FEATURE_COUNT': 1,
-            'FI_POINT_TOLERANCE': 10,
-            'I': '326',
-            'J': '621',
-        })
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, expected_no_feature)
 
-        c.logout()
+        # Check for user and user group
+        for u in (self.test_viewer1, self.test_viewer1_2, self.test_viewer1_3):
+            
+            self.assertTrue(c.login(username=u.username, password=u.username))
+
+            response = c.get(ows_url, {
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'SERVICE': 'WMS',
+                'LAYERS': self.world.qgs_layer_id,
+                'CRS': 'EPSG:3857',
+                'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
+                #'BBOX': '36.44,0.66,49.06,24.57',
+                'FORMAT': 'image/png',
+                'INFO_FORMAT': 'application/json',
+                'WIDTH': '652',
+                'HEIGHT': '1243',
+                'QUERY_LAYERS': self.world.qgs_layer_id,
+                'FEATURE_COUNT': 1,
+                'FI_POINT_TOLERANCE': 10,
+                'I': '326',
+                'J': '621',
+            })
+
+            self.assertEqual(response.status_code, 200)
+            if u == self.test_viewer1_3:
+                self.assertEqual(response.content, expected_1_feature)
+            else:
+                self.assertEqual(response.content, expected_no_feature)
+
+            c.logout()
 
         # TEST SCALE 1:1000.000
         # EXPECTED: 1 features

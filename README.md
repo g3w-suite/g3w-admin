@@ -15,10 +15,11 @@ Software releases follow theese main branches as described in the compatibility 
 
 | Branch     | Python | Django         | QGIS          | [client]     | First release | Status         |
 |------------|--------|----------------|---------------|--------------|---------------|----------------|
-| [dev]      | 3.12   | 4.2            | 3.34          | dev          | Unreleased    | ⚠️️ Unstable    |
-| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | New release    |
+| [dev]      | 3.12   | 4.2            | 3.40          | dev          | Unreleased    | ⚠️️ Unstable    |
+| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.0        | Aug 2025      | New release    |
+| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🪲️ Bug fixing  |
 | [v.3.8.x]  | 3.10   | 3.2            | 3.34          | 3.10.3       | Sep 2024      | 🪲️ Bug fixing  |
-| [v.3.7.x]  | 3.10   | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🪲️ Bug fixing  |
+| [v.3.7.x]  | 3.10   | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🚨 End of Life |
 | [v.3.6.x]  | 3.10   | 3.2            | 3.28          | 3.8.15       | May 2023      | 🚨 End of Life |
 | [v.3.5.x]  | 3.10   | 2.2            | 3.22          | 3.7          | Nov 2022      | 🚨 End of Life |
 | [v.3.4.x]  | 3.8    | 2.2            | 3.22          | 3.4          | Mar 2022      | 🚨 End of Life |
@@ -31,6 +32,8 @@ Software releases follow theese main branches as described in the compatibility 
 
 
 [dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.10.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.10.x
+[v.3.9.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.9.x
 [v.3.8.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.8.x
 [v.3.7.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.7.x
 [v.3.6.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.6.x

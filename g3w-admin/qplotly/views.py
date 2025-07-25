@@ -20,7 +20,7 @@ from django.http.response import JsonResponse
 from django_downloadview import VirtualDownloadView
 from qdjango.utils.models import comparedbdatasource
 from qdjango.models import Project
-from django.utils.text import slugify
+from core.utils.slugify import slugify
 from .models import QplotlyWidget
 from .utils.models import get_qplotlywidgets4project
 import json

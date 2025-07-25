@@ -9,6 +9,7 @@ from core.signals import (
     load_project_layers_actions
 )
 from core.models import GroupProjectPanoramic
+from core.utils.slugify import slugify as _slugify
 
 
 register = template.Library()
@@ -147,3 +148,10 @@ def islist(o):
     """
 
     return isinstance(o, list)
+
+@register.filter(is_safe=True)
+def g3wadmin_slugify(content):
+    """
+    Slugify a given string. Complements the default Django slugify filter by allowing more complex slugify/transliteration behavior.
+    """
+    return _slugify(content)

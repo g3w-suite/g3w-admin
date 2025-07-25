@@ -8,12 +8,12 @@ from guardian.shortcuts import get_objects_for_user
 from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
-from django_extensions.db.fields import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
 from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
 from usersmanage.configs import *
 from .utils.structure import getProjectsByGroup
+from .fields import AutoSlugField
 try:
     from osgeo import osr
 except:
