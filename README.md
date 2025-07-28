@@ -238,6 +238,7 @@ Depending on the component you want to translate you can start by consulting one
 * Romanian: [tudorbarascu](https://github.com/tudorbarascu)
 * German: [r3gis](https://www.r3gis.com)
 * French: [democracy essentials](https://www.democracy-essentials.eu)
+* Bulgarian: [Ivan Ivanov (suricactus)](https://github.com/suricactus)
 
 ---
 

@@ -1,0 +1,542 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-05 20:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: OWS/utils/data.py:125
+msgid "The GetFeatureResponse response is malformed: {}"
+msgstr "Отговорът на GetFeatureResponse е невалиден: {}"
+
+#: openrouteservice/api/views.py:138
+msgid "Input layer is not a point or multipoint layer."
+msgstr "Входният слой не е слой от тип точка или мултиточка."
+
+#: openrouteservice/api/views.py:156
+msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
+msgstr "Липсва \"qgis_layer_id\", \"new_layer_name\" или \"connection_id\"."
+
+#: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
+msgid ""
+"Wrong color parameter, color must be a list of three integers (red, green, "
+"blue)."
+msgstr ""
+"Грешен параметър за цвят — цветът трябва да е списък от три цели числа "
+"(червено, зелено, синьо)."
+
+#: openrouteservice/api/views.py:182
+msgid ""
+"Missing tranparency parameter, because color was specified transparency is "
+"required."
+msgstr ""
+"Липсва параметър за прозрачност — щом е зададен цвят, прозрачността е "
+"задължителна."
+
+#: openrouteservice/api/views.py:190
+msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
+msgstr "Грешен параметър за прозрачност — стойността трябва да е между 0 и 1."
+
+#: openrouteservice/api/views.py:196
+msgid "Missing stroke_width from style definition."
+msgstr "Липсва stroke_width в дефиницията на стила."
+
+#: openrouteservice/api/views.py:212
+msgid "Layer is not compatible with ORS data."
+msgstr "Слойът не е съвместим с ORS данни."
+
+#: openrouteservice/api/views.py:225
+msgid "Wrong connection_id."
+msgstr "Грешен connection_id."
+
+#: openrouteservice/api/views.py:229
+msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
+msgstr ""
+"Трябва да има стойност или за qgis_layer_id, или за connection_id и "
+"layer_name."
+
+#: openrouteservice/api/views.py:236
+#, python-format
+msgid "Profile not found, available profiles: %s"
+msgstr "Профилът не е намерен, налични профили: %s"
+
+#: openrouteservice/api/views.py:246
+msgid "Missing \"locations\" array."
+msgstr "Липсва масив \"locations\"."
+
+#: openrouteservice/api/views.py:250
+#, python-format
+msgid "Max allowed locations: %s"
+msgstr "Максимално позволени локации: %s"
+
+#: openrouteservice/api/views.py:254
+msgid "Malformed locations array."
+msgstr "Невалиден масив от локации."
+
+#: openrouteservice/api/views.py:259
+msgid "Missing \"range\" array."
+msgstr "Липсва масив \"range\"."
+
+#: openrouteservice/api/views.py:263
+#, python-format
+msgid "Max allowed ranges: %s"
+msgstr "Максимално позволени диапазони: %s"
+
+#: openrouteservice/api/views.py:271
+msgid "Malformed range array."
+msgstr "Невалиден масив от диапазони."
+
+#: openrouteservice/api/views.py:398
+msgid "Task not found!"
+msgstr "Задачата не е намерена!"
+
+#: openrouteservice/forms.py:41
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
+msgid "Project"
+msgstr "Проект"
+
+#: openrouteservice/models.py:38
+msgid "Isochrones"
+msgstr "Изохрони"
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
+msgid "Openrouteservice Project"
+msgstr "Openrouteservice проект"
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
+msgid "Alert"
+msgstr "Известие"
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
+msgid "Some errors on form. Check it and send again."
+msgstr "Има грешки във формата. Проверете и изпратете отново."
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
+msgid "Openrouteservice Projects"
+msgstr "Openrouteservice проекти"
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
+msgid "Actions"
+msgstr "Действия"
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
+msgid "Services"
+msgstr "Услуги"
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
+msgid "Edit"
+msgstr "Редактиране"
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
+msgid "Delete"
+msgstr "Изтриване"
+
+#: openrouteservice/utils.py:494
+msgid "Cannot create temporary layer for isochrone result."
+msgstr "Не може да се създаде временен слой за изохронния резултат."
+
+#: openrouteservice/utils.py:512
+msgid ""
+"Cannot save isochrone result to destination layer: layer already exists (use "
+"\"qgis_layer_id\" instead)!"
+msgstr ""
+"Не може да се запише изохронният резултат в целевия слой: слоят вече "
+"съществува (използвайте \"qgis_layer_id\")!"
+
+#: openrouteservice/utils.py:525
+msgid "Cannot save isochrone result to destination layer: "
+msgstr "Не може да се запише изохронният резултат в целевия слой: "
+
+#: openrouteservice/utils.py:553
+msgid "Wrong connection id."
+msgstr "Грешен connection id."
+
+#: openrouteservice/utils.py:585
+msgid "Error creating destination layer connection."
+msgstr "Грешка при създаване на връзка към целевия слой."
+
+#: openrouteservice/utils.py:592
+msgid "Error creating destination layer: "
+msgstr "Грешка при създаване на целевия слой: "
+
+#: openrouteservice/utils.py:606
+msgid "Error creating destination layer: layer is not valid!"
+msgstr "Грешка при създаване на целевия слой: слоят не е валиден!"
+
+#: openrouteservice/utils.py:619
+msgid "Error saving the destination layer: could not write project!"
+msgstr "Грешка при запис на целевия слой: проектът не може да бъде записан!"
+
+#: openrouteservice/utils.py:643
+msgid "Error adding destination Layer to the project: layer already exists."
+msgstr ""
+"Грешка при добавяне на целевия слой към проекта: слоят вече съществува."
+
+#: openrouteservice/utils.py:653
+#, python-format
+msgid "Error opening destination layer %s: layer not found in QGIS project!"
+msgstr ""
+"Грешка при отваряне на целевия слой %s: слоят не е намерен в QGIS проекта!"
+
+#: openrouteservice/utils.py:670
+msgid "Error transforming geometry from 4326 to destination layer CRS."
+msgstr ""
+"Грешка при трансформиране на геометрията от 4326 към CRS на целевия слой."
+
+#: openrouteservice/utils.py:674
+msgid "No compatible features returned from isochrone."
+msgstr "Няма върнати съвместими обекти от изохроната."
+
+#: openrouteservice/utils.py:677
+msgid "Destination layer is not editable."
+msgstr "Целевият слой не може да се редактира."
+
+#: openrouteservice/utils.py:681
+msgid "Error adding features to the destination layer."
+msgstr "Грешка при добавяне на обекти към целевия слой."
+
+#: openrouteservice/utils.py:685
+msgid "Error committing features to the destination layer."
+msgstr "Грешка при запис на обекти в целевия слой."
+
+#: openrouteservice/utils.py:794
+#, python-format
+msgid "Error generating isochrone: %s."
+msgstr "Грешка при генериране на изохрона: %s."
+
+#: openrouteservice/utils.py:823
+msgid "Unknown error adding results to the destination layer."
+msgstr "Неизвестна грешка при добавяне на резултатите към целевия слой."
+
+#: templates/403.html:7
+msgid "error page"
+msgstr "страница за грешка"
+
+#: templates/403.html:15
+msgid "Access denied"
+msgstr "Достъпът е отказан"
+
+#: templates/403.html:17
+msgid "You don't have grant to access this section"
+msgstr "Нямате права за достъп до този раздел"
+
+#: templates/404.html:11
+msgid "Oops! Page not found."
+msgstr "Упс! Страницата не е намерена."
+
+#: templates/404.html:13
+msgid "We could not find the page you were looking for."
+msgstr "Не успяхме да намерим страницата, която търсите."
+
+#: templates/admin/base.html:7
+msgid "G3W-ADMIN"
+msgstr "G3W-ADMIN"
+
+#: templates/admin/base.html:12
+msgid "Documentation"
+msgstr "Документация"
+
+#: templates/admin/base.html:16
+msgid "Change password"
+msgstr "Смяна на паролата"
+
+#: templates/admin/base.html:18
+msgid "Log out"
+msgstr "Изход"
+
+#: templates/base.html:190 templates/index.html:6
+msgid "Dashboard"
+msgstr "Табло"
+
+#: templates/base.html:229
+#, python-format
+msgid ""
+"<strong>G3W-SUITE Version %(version)s</strong>: administration GIS "
+"application."
+msgstr ""
+"<strong>G3W-SUITE версия %(version)s</strong>: административно ГИС "
+"приложение."
+
+#: templates/base.html:236
+#, python-format
+msgid ""
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://www.gis3w."
+"it\">GIS3W</a>.</strong> All rights reserved."
+msgstr ""
+"<strong>Авторско право &copy; 2015 - %(year)s <a href=\"http://www.gis3w."
+"it\">GIS3W</a>.</strong> Всички права запазени."
+
+#: templates/base.html:254
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr ""
+"Този уебсайт използва бисквитки, за да гарантира, че ще получите най-доброто "
+"изживяване на нашия сайт"
+
+#: templates/base_login.html:25 templates/login.html:18
+msgid "Sign in to start your session"
+msgstr "Влезте, за да започнете сесията си"
+
+#: templates/base_login.html:29 templates/login.html:22
+#: templates/registration/password_reset_form.html:10
+#: templates/registration/username_recovery_form.html:10
+msgid "LOGIN ERROR"
+msgstr "ГРЕШКА ПРИ ВХОД"
+
+#: templates/base_login.html:30 templates/login.html:23
+msgid "Username and/or password uncorrect"
+msgstr "Потребителско име и/или парола са грешни"
+
+#: templates/base_login.html:45 templates/login.html:39
+msgid "Sign In"
+msgstr "Вход"
+
+#: templates/base_login.html:51 templates/login.html:50
+#: templates/registration/password_reset_form.html:22
+msgid "Forgot your password?"
+msgstr "Забравена парола?"
+
+#: templates/base_login.html:58 templates/login.html:62
+msgid "Sign up"
+msgstr "Регистрация"
+
+#: templates/include/login_page_version.html:2
+msgid " Version"
+msgstr " Версия"
+
+#: templates/include/navbar_right_menu.html:11
+msgid "Search"
+msgstr "Търсене"
+
+#: templates/include/navbar_right_menu.html:25
+msgid "Frontend"
+msgstr "Потребителски интерфейс"
+
+#: templates/include/navbar_right_menu.html:46
+msgid "Registered on"
+msgstr "Регистриран на"
+
+#: templates/include/navbar_right_menu.html:47
+msgid "Last login"
+msgstr "Последен вход"
+
+#: templates/include/navbar_right_menu.html:54
+msgid "Profile"
+msgstr "Профил"
+
+#: templates/include/navbar_right_menu.html:57
+msgid "Logout"
+msgstr "Изход"
+
+#: templates/include/sidebar_right.html:10
+msgid "Information"
+msgstr "Информация"
+
+#: templates/include/sidebar_right.html:13
+#: templates/include/sidebar_right.html:16
+msgid "System information"
+msgstr "Системна информация"
+
+#: templates/include/sidebar_right.html:17
+msgid "System information about QGIS-Server etc."
+msgstr "Системна информация за QGIS-Server и други"
+
+#: templates/include/sidebar_right.html:23
+msgid "Configurations"
+msgstr "Конфигурации"
+
+#: templates/include/sidebar_right.html:30
+msgid "Edit general data"
+msgstr "Редактиране на общи данни"
+
+#: templates/include/sidebar_right.html:31
+msgid "Frontend data and other"
+msgstr "Данни за интерфейса и други"
+
+#: templates/include/sidebar_right.html:39
+msgid "Django administration"
+msgstr "Django администрация"
+
+#: templates/include/sidebar_right.html:40
+msgid "Go to staff administration section"
+msgstr "Отидете в секцията за администрация"
+
+#: templates/index.html:7
+msgid "Current situation"
+msgstr "Текущо състояние"
+
+#: templates/index.html:19
+msgid "Groups"
+msgstr "Групи"
+
+#: templates/index.html:26
+msgid "Show"
+msgstr "Показване"
+
+#: templates/index.html:32
+msgid "Module widgets"
+msgstr "Модулни джаджи"
+
+#: templates/login.html:55
+#: templates/registration/username_recovery_form.html:22
+msgid "Forgot your username?"
+msgstr "Забравено потребителско име?"
+
+#: templates/registration/password_reset_complete.html:8
+msgid "Password reset complete"
+msgstr "Нулирането на паролата е завършено"
+
+#: templates/registration/password_reset_complete.html:9
+msgid "Your new password has been set. You can log in now on the"
+msgstr "Новата ви парола е зададена. Можете да влезете сега в"
+
+#: templates/registration/password_reset_complete.html:9
+msgid "log in page"
+msgstr "страницата за вход"
+
+#: templates/registration/password_reset_confirm.html:9
+msgid "Enter new password"
+msgstr "Въведете нова парола"
+
+#: templates/registration/password_reset_confirm.html:16
+msgid "New password"
+msgstr "Нова парола"
+
+#: templates/registration/password_reset_confirm.html:21
+msgid "Repeat password"
+msgstr "Повторете паролата"
+
+#: templates/registration/password_reset_confirm.html:26
+msgid "Change my password"
+msgstr "Промяна на паролата"
+
+#: templates/registration/password_reset_confirm.html:31
+msgid ""
+"The password reset link <strong>was invalid</strong>, possibly because it "
+"has already been used.  Please request a new password reset."
+msgstr ""
+"Връзката за нулиране на паролата <strong>е невалидна</strong>, възможно е да "
+"е била вече използвана. Моля, поискайте ново нулиране на паролата."
+
+#: templates/registration/password_reset_done.html:8
+#: templates/registration/username_recovery_done.html:8
+msgid "Check your inbox."
+msgstr "Проверете пощата си."
+
+#: templates/registration/password_reset_done.html:9
+msgid ""
+"We've emailed you instructions for setting your password. You should receive "
+"the email shortly!"
+msgstr ""
+"Изпратихме ви имейл с инструкции за задаване на нова парола. Скоро трябва да "
+"го получите!"
+
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+"Получавате този имейл, защото поискахте нулиране на паролата за вашия "
+"потребителски акаунт в %(site_name)s."
+
+#: templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Моля, отидете на следната страница и изберете нова парола:"
+
+#: templates/registration/password_reset_email.html:8
+msgid "Your username, in case you’ve forgotten:"
+msgstr "Вашето потребителско име, в случай че сте го забравили:"
+
+#: templates/registration/password_reset_form.html:12
+#: templates/registration/username_recovery_form.html:12
+msgid "Email no present into database"
+msgstr "Имейлът не съществува в базата данни"
+
+#: templates/registration/password_reset_form.html:15
+#: templates/registration/username_recovery_form.html:15
+msgid "Checking the CAPTCHA is required"
+msgstr "Необходимо е потвърждаване на CAPTCHA"
+
+#: templates/registration/password_reset_form.html:23
+msgid ""
+"Enter your email address below, and we'll email instructions for setting a "
+"new one."
+msgstr ""
+"Въведете вашия имейл адрес по-долу и ще ви изпратим инструкции за задаване "
+"на нова парола."
+
+#: templates/registration/password_reset_form.html:32
+msgid "Send me instruction"
+msgstr "Изпрати инструкции"
+
+#: templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
+msgstr "Нулиране на паролата в %(site_name)s"
+
+#: templates/registration/username_recovery_done.html:9
+msgid "We've emailed you your username. You should receive the email shortly!"
+msgstr ""
+"Изпратихме ви имейл с вашето потребителско име. Скоро трябва да го получите!"
+
+#: templates/registration/username_recovery_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a username recovery for "
+"your user account at %(site_name)s."
+msgstr ""
+"Получавате този имейл, защото поискахте възстановяване на потребителското "
+"име за вашия акаунт в %(site_name)s."
+
+#: templates/registration/username_recovery_email.html:4
+msgid "Your username is:"
+msgstr "Вашето потребителско име е:"
+
+#: templates/registration/username_recovery_form.html:23
+msgid "Enter your email address below, and we'll email your username."
+msgstr ""
+"Въведете вашия имейл адрес по-долу и ще ви изпратим вашето потребителско име."
+
+#: templates/registration/username_recovery_form.html:32
+msgid "Send me username"
+msgstr "Изпрати потребителско име"
+
+#: templates/registration/username_recovery_subject.txt:2
+#, python-format
+msgid "Username recovery on %(site_name)s"
+msgstr "Възстановяване на потребителско име в %(site_name)s"
+
+#: templates/search.html:6
+msgid "Search results for"
+msgstr "Резултати от търсенето за"
+
+#: templates/search.html:14
+msgid "Not results found!"
+msgstr "Няма намерени резултати!"
+
+#: templates/search.html:16
+msgid "Found "
+msgstr "Намерени "
+
+#: templates/search.html:16
+msgid " results."
+msgstr " Резултати."
+
+#~ msgid "Version"
+#~ msgstr "Версия"

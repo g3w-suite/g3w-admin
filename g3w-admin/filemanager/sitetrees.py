@@ -105,5 +105,26 @@ sitetrees = (
             ),
         ]
     ),
+
+    # BULGARIAN
+    G3Wtree(
+        'filemanager_sidebar_right',
+        title='STRESS навигационна лента',
+        module='filemanager',
+        items=[
+            item(
+                'Файлов мениджър',
+                '#',
+                type_header=True
+            ),
+            item(
+                'Файлове',
+                'filemanager-home',
+                icon_css_class='fa fa-database',
+                description='Върви в приложението на файловия мениджър...'
+            ),
+        ]
+    ),
+
 )
 
