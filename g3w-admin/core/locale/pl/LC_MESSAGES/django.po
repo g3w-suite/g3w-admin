@@ -1,0 +1,653 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-07 16:15+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
+"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
+"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#: admin.py:25
+msgid "Basic settings"
+msgstr ""
+
+#: admin.py:28
+msgid "Access settings"
+msgstr ""
+
+#: admin.py:32
+msgid "Display settings"
+msgstr ""
+
+#: admin.py:36
+msgid "Additional settings"
+msgstr ""
+
+#: api/base/views.py:144
+msgid "Data are not correct or insufficent!"
+msgstr ""
+
+#: api/base/views.py:150
+msgid "A error server is occured!"
+msgstr ""
+
+#: api/base/views.py:158
+msgid "Not found"
+msgstr ""
+
+#: api/base/views.py:164
+msgid "Permission denied"
+msgstr ""
+
+#: api/views.py:47
+msgid "Expression evaluation error."
+msgstr ""
+
+#: api/views.py:52
+msgid "Expression parse error."
+msgstr ""
+
+#: api/views.py:58
+msgid "Expression empty error."
+msgstr ""
+
+#: api/views.py:64
+msgid "Expression form data error."
+msgstr ""
+
+#: api/views.py:70
+msgid "Layer error."
+msgstr ""
+
+#: configs.py:11
+msgid "Search"
+msgstr ""
+
+#: configs.py:28
+msgid "Law"
+msgstr ""
+
+#: forms.py:48 forms.py:418
+msgid "General data"
+msgstr ""
+
+#: forms.py:73
+msgid "GEO data"
+msgstr ""
+
+#: forms.py:94
+msgid "Base Layers and Map default features"
+msgstr ""
+
+#: forms.py:121
+msgid "Logo/Picture"
+msgstr ""
+
+#: forms.py:148
+msgid "Copyright"
+msgstr ""
+
+#: forms.py:194
+#, python-brace-format
+msgid ""
+"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
+msgstr ""
+
+#: forms.py:229
+msgid "Frontend home data"
+msgstr ""
+
+#: forms.py:254
+msgid "Frontend about data"
+msgstr ""
+
+#: forms.py:275
+msgid "Frontend groups map data"
+msgstr ""
+
+#: forms.py:291
+msgid "Frontend login data"
+msgstr ""
+
+#: forms.py:309
+msgid "Frontend social data"
+msgstr ""
+
+#: forms.py:331
+msgid "Map client data"
+msgstr ""
+
+#: forms.py:349
+msgid "Registration"
+msgstr ""
+
+#: forms.py:375
+msgid "Editor users"
+msgstr ""
+
+#: forms.py:395
+msgid "ACL Users"
+msgstr ""
+
+#: forms.py:427
+msgid ""
+"<b>Attention!</b> These settings are valid only for map groups with only one "
+"MacroGroup"
+msgstr ""
+
+#: models.py:85
+msgid "Map control"
+msgstr ""
+
+#: models.py:86
+msgid "Map controls"
+msgstr ""
+
+#: models.py:94
+msgid "Identification name"
+msgstr ""
+
+#: models.py:95
+msgid "Internal identification Macrogroup name"
+msgstr ""
+
+#: models.py:96 models.py:132 models.py:416
+#: templates/core/ajax/macrogroup_detail.html:7
+#: templates/core/macrogroup_list_table.html:28
+msgid "Title"
+msgstr ""
+
+#: models.py:97 models.py:133 templates/core/ajax/macrogroup_detail.html:9
+msgid "Description"
+msgstr ""
+
+#: models.py:98 models.py:140
+msgid "Logo image"
+msgstr ""
+
+#: models.py:99 models.py:142
+msgid "Logo link"
+msgstr ""
+
+#: models.py:100 models.py:143
+msgid "Enter link with http:// or https//"
+msgstr ""
+
+#: models.py:101
+msgid "Use title for client"
+msgstr ""
+
+#: models.py:102 models.py:167
+msgid "Use logo image for client"
+msgstr ""
+
+#: models.py:105 models.py:135
+msgid "Slug"
+msgstr ""
+
+#: models.py:131
+msgid "Name"
+msgstr ""
+
+#: models.py:137
+msgid "Is active"
+msgstr ""
+
+#: models.py:159
+msgid "Terms of use text"
+msgstr ""
+
+#: models.py:162
+msgid "Terms of use link"
+msgstr ""
+
+#: models.py:168
+msgid ""
+"As for MacroGroup options is possible to use current logo group as client "
+"logo, if MacroGroup option is active this options takes precendence"
+msgstr ""
+
+#: models.py:407 templates/core/group_form.html:11
+msgid "Group"
+msgstr ""
+
+#: models.py:408
+msgid "Project type"
+msgstr ""
+
+#: models.py:409
+msgid "Project type id"
+msgstr ""
+
+#: models.py:417
+msgid "Subtitle"
+msgstr ""
+
+#: models.py:418
+msgid "Home description"
+msgstr ""
+
+#: models.py:419
+msgid "About title"
+msgstr ""
+
+#: models.py:420
+msgid "About description"
+msgstr ""
+
+#: models.py:421
+msgid "About name"
+msgstr ""
+
+#: models.py:422
+msgid "About phone"
+msgstr ""
+
+#: models.py:423
+msgid "About email"
+msgstr ""
+
+#: models.py:424
+msgid "About address"
+msgstr ""
+
+#: models.py:425
+msgid "Groups title"
+msgstr ""
+
+#: models.py:426
+msgid "Groups map description"
+msgstr ""
+
+#: models.py:427
+msgid "Login title"
+msgstr ""
+
+#: models.py:428
+msgid "Login description"
+msgstr ""
+
+#: models.py:429
+msgid "Suite logo"
+msgstr ""
+
+#: models.py:430
+msgid "Suite logo URL"
+msgstr ""
+
+#: models.py:431
+msgid "Registration introductory message"
+msgstr ""
+
+#: models.py:434
+msgid "Credits"
+msgstr ""
+
+#: models.py:437
+msgid "Main map title"
+msgstr ""
+
+#: models.py:439
+msgid "Facebook link"
+msgstr ""
+
+#: models.py:440
+msgid "Twitter link"
+msgstr ""
+
+#: models.py:441
+msgid "Google+ link"
+msgstr ""
+
+#: models.py:442
+msgid "Youtube link"
+msgstr ""
+
+#: models.py:443
+msgid "Instagram link"
+msgstr ""
+
+#: models.py:444
+msgid "Flickr link"
+msgstr ""
+
+#: models.py:445
+msgid "Tripadvisor link"
+msgstr ""
+
+#: models.py:459
+msgid "NotSet"
+msgstr ""
+
+#: models.py:460
+msgid "Info"
+msgstr ""
+
+#: models.py:461
+msgid "Warning"
+msgstr ""
+
+#: models.py:462
+msgid "Debug"
+msgstr ""
+
+#: models.py:463
+msgid "Error"
+msgstr ""
+
+#: models.py:464
+msgid "Fatal"
+msgstr ""
+
+#: templates/core/403_MGC.html:7 templates/core/403_MPC.html:7
+msgid "error page"
+msgstr ""
+
+#: templates/core/403_MGC.html:15 templates/core/403_MPC.html:15
+msgid "Access denied"
+msgstr ""
+
+#: templates/core/403_MGC.html:17
+msgid "You can't add new Group"
+msgstr ""
+
+#: templates/core/403_MPC.html:17
+msgid "You can't add new Project"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:5
+msgid "Geografic component"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:7
+msgid "Geographic coordinate system"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:8
+msgid "SRID"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:9
+msgid "Units"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:10
+msgid "Principal map"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:11
+msgid "Max scale"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:12
+msgid "Min scale"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:13
+msgid "Overview Map"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:14
+msgid "Panoramic max scale"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:15
+msgid "Panoramic min scale"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:18
+msgid "Users"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:21
+msgid "Editor level 1 user"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:25
+msgid "Editor level 2 user"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:26
+msgid "Viewer users"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:27
+msgid "Editor user groups"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:28
+msgid "Viewer user groups"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:35
+msgid "Interface component"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:37
+msgid "Interface language"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:38
+msgid "Language"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:39
+msgid "Associated logo"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:40
+msgid "HeaderLogoImg"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:48
+msgid "HeaderLogoHeight"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:49
+msgid "HeaderLogoLink"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:50
+msgid "Terms of use"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:51
+msgid "HeaderTermsOfUseText"
+msgstr ""
+
+#: templates/core/ajax/group_detail.html:52
+msgid "HeaderTermsOfUseLink"
+msgstr ""
+
+#: templates/core/ajax/macrogroup_detail.html:5
+msgid "Data"
+msgstr ""
+
+#: templates/core/ajax/macrogroup_detail.html:11
+#: templates/core/macrogroup_list_table.html:29
+msgid "Groups"
+msgstr ""
+
+#: templates/core/generalsuitedata_form.html:11
+msgid "General suite data"
+msgstr ""
+
+#: templates/core/generalsuitedata_form.html:24
+#: templates/core/group_form.html:45 templates/core/macrogroup_form.html:51
+msgid "Alert"
+msgstr ""
+
+#: templates/core/generalsuitedata_form.html:25
+#: templates/core/group_form.html:46 templates/core/macrogroup_form.html:52
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: templates/core/group_deactive_list.html:10
+msgid "Cartographic groups deactivated"
+msgstr ""
+
+#: templates/core/group_deactive_list.html:34 templates/core/group_list.html:78
+#: templates/core/search/group.html:25
+msgid "Group projects"
+msgstr ""
+
+#: templates/core/group_deactive_list.html:34 templates/core/group_form.html:33
+#: templates/core/group_list.html:78 templates/core/project_list.html:11
+msgid "Projects"
+msgstr ""
+
+#: templates/core/group_deactive_list.html:41 templates/core/group_list.html:85
+#: templates/core/macrogroup_list.html:66
+#: templates/core/macrogroup_list_table.html:37
+#: templates/core/project_list.html:75 templates/core/project_list.html:77
+#: templates/core/search/group.html:24 templates/core/search/macrogroup.html:22
+msgid "Show detail"
+msgstr ""
+
+#: templates/core/group_deactive_list.html:50
+msgid "Redo/Active"
+msgstr ""
+
+#: templates/core/group_deactive_list.html:59
+#: templates/core/macrogroup_list.html:83
+#: templates/core/macrogroup_list_table.html:43
+msgid "Delete"
+msgstr ""
+
+#: templates/core/group_deactive_list.html:62
+msgid "Warning: deleting the group will delete the projects it contains!"
+msgstr ""
+
+#: templates/core/group_form.html:33
+msgid "Current"
+msgstr ""
+
+#: templates/core/group_list.html:10 templates/core/search/group.html:9
+msgid "Cartographic groups"
+msgstr ""
+
+#: templates/core/group_list.html:66
+msgid "Add new project"
+msgstr ""
+
+#: templates/core/group_list.html:94 templates/core/macrogroup_list.html:74
+#: templates/core/macrogroup_list_table.html:40
+#: templates/core/project_list.html:82 templates/core/project_list.html:84
+#: templates/core/search/group.html:28 templates/core/search/macrogroup.html:24
+msgid "Edit"
+msgstr ""
+
+#: templates/core/group_list.html:103
+msgid "Delete/Deactivate"
+msgstr ""
+
+#: templates/core/group_list.html:106
+msgid ""
+"<strong>Warning</strong>: deleting the group (move to bucket) will delete "
+"the projects it contains (move to the bucket)!"
+msgstr ""
+
+#: templates/core/include/add_project.html:4
+msgid "Add project"
+msgstr ""
+
+#: templates/core/include/add_project.html:10
+msgid "Select project type to add:"
+msgstr ""
+
+#: templates/core/include/cookieconsent.html:11
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr ""
+
+#: templates/core/include/cookieconsent.html:12
+msgid "Got it"
+msgstr ""
+
+#: templates/core/include/form_buttons.html:7
+msgid "Save"
+msgstr ""
+
+#: templates/core/include/form_buttons.html:13
+msgid "Redo/Back"
+msgstr ""
+
+#: templates/core/macrogroup_form.html:10
+msgid "Macro Group"
+msgstr ""
+
+#: templates/core/macrogroup_form.html:24
+msgid "Current groups"
+msgstr ""
+
+#: templates/core/macrogroup_list.html:10
+#: templates/core/macrogroup_list_table.html:10
+#: templates/core/search/macrogroup.html:8
+msgid "Cartographic macro groups"
+msgstr ""
+
+#: templates/core/macrogroup_list_table.html:21
+msgid "Macro group"
+msgstr ""
+
+#: templates/core/tags/add_layer.html:3
+msgid "Layer"
+msgstr ""
+
+#: templates/core/tags/add_project.html:7
+msgid "Project"
+msgstr ""
+
+#: utils/data.py:24
+msgid "[{} error on {}({})]-- {}"
+msgstr ""
+
+#: utils/forms.py:23
+msgid "Default base layer"
+msgstr ""
+
+#: utils/forms.py:50
+msgid "MACRO Groups"
+msgstr ""
+
+#: utils/qgisapi.py:511
+msgid "Function \"{}\" is not allowed for security reasons!"
+msgstr ""
+
+#: utils/qgisapi.py:516
+msgid "Variable \"{}\" is not allowed for security reasons!"
+msgstr ""
+
+#: utils/qgisapi.py:528 utils/qgisapi.py:545
+msgid "QGIS layer with id \"{}\" could not be found!"
+msgstr ""
+
+#: utils/qgisapi.py:551
+msgid "QDjango project with id \"{}\" could not be found!"
+msgstr ""
+
+#: utils/qgisapi.py:561
+msgid "A valid QGIS layer is required to process form data!"
+msgstr ""
+
+#: utils/qgisapi.py:575
+msgid "A valid QGIS layer (parent layer) is required to process form data!"
+msgstr ""
+
+#: utils/structure.py:187
+msgid "Yes"
+msgstr ""
