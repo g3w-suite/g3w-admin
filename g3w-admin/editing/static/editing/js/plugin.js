@@ -4,9 +4,9 @@
   if (plugins) {
     plugins["editing"] = Object.assign(plugins["editing"] || {},
       {
-        version : "4.0.0-delete_feature_undo_redo",
-        hash    : "e8a655b",
-        branch  : "delete_feature_undo_redo",
+        version : "4.0.0",
+        hash    : "a68e869",
+        branch  : "v4.0.x",
       });
   }
 })();
