@@ -455,4 +455,94 @@ sitetrees = (
                ),
           ]
      ),
+
+     # BULGARIAN
+     G3Wtree(
+          'core_bg',
+          title='Меню',
+          module='core',
+          items=[
+               item(
+                    'Меню',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Табло',
+                    'home',
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-dashboard'
+               ),
+               item(
+                    'Картографска група',
+                    'group-list',
+                    icon_css_class='fa fa-globe',
+                    children=[
+                         item(
+                              'Добави група',
+                              'group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['core.add_group']
+                         ),
+                         item(
+                              'Списък групи',
+                              'group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-globe',
+                              alias='group-list',
+                              in_breadcrumbs=False
+                         ),
+                         item(
+                              'Кошче',
+                              'group-deactive-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-trash',
+                              alias='group-deactive-list',
+                              in_breadcrumbs=True
+                         ),
+                         item(
+                              'Обновяване на група {{ object.title}}',
+                              'group-update object.slug',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False,
+                              alias='group-update'
+                         ),
+                         item(
+                              'Списък проекти в {{ group.name }}',
+                              'project-list group.slug',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              in_menu=False,
+                              in_breadcrumbs=True,
+                              alias='project-list'
+                         )
+                    ]
+               ),
+               item(
+                    'Макро групи',
+                    'macrogroup-list',
+                    access_by_perms=['core.add_macrogroup'],
+                    icon_css_class='fa fa-globe',
+                    children=[
+                         item(
+                              'Добави макро група',
+                              'macrogroup-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['core.add_macrogroup']
+                         ),
+                         item(
+                              'Списък макро групи',
+                              'macrogroup-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-globe',
+                              alias='macrogroup-list',
+                              in_breadcrumbs=True
+                         ),
+                    ]
+               ),
+          ]
+     ),
 )

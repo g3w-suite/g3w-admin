@@ -162,4 +162,57 @@ sitetrees = (
                )
           ]
      ),
+
+     # BULGARIAN
+     G3Wtree(
+          'qdjango',
+          title='Qdjango',
+          module='qdjango',
+          items=[
+               item(
+                    'Добави QGIS проект {{ group.slug }}',
+                    'qdjango-project-add group.slug',
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-plus',
+                    in_menu=False,
+                    access_by_perms=['qdjango.add_project']
+               ),
+               item(
+                    'Обнови QGIS проект {{ group.slug }} {{ object.slug }}',
+                    'qdjango-project-update group.slug object.slug',
+                    url_as_pattern=True,
+                    in_menu=False,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Списък слоеве в QGIS проект {{ group.slug }} {{ object.slug }}',
+                    'qdjango-project-layers-list group.slug project_slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Съобщения в QGIS проект {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-list group.slug project.slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Добави съобщение в QGIS проект {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-add group.slug project.slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Обнови съобщение в QGIS проект {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-update group.slug project.slug object.pk',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               )
+          ]
+     ),
+
 )
