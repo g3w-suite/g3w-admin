@@ -22,8 +22,7 @@ class Command(BaseCommand):
     This command execute the indexing of the qdjango projects for every users had access to the the projects
     """
 
-    help = 'Delete db logs record older than delta days from current timestamp.' \
-           'Usefull runt it with a daily cron job.'
+    help = 'Indexing QGIS projects in Elasticsearch'
 
     def add_arguments(self, parser):
         
