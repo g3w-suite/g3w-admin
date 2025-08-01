@@ -281,4 +281,59 @@ sitetrees = (
                ),
           ]
      ),
+
+     # BULGARIAN
+     G3Wtree(
+          'acl',
+          title='Управление на достъп',
+          module='usermanage',
+          items=[
+               item(
+                    'Управление на достъп',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Потребители',
+                    '#',
+                    icon_css_class='fa fa-users',
+                    children=[
+                         item(
+                              'Добави потребител',
+                              'user-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-user-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Списък потребители',
+                              'user-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-users'
+                         ),
+                         item(
+                              'Промяна на потребител',
+                              'user-update object.pk',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False
+                         ),
+                         item(
+                              'Добави потребител в група',
+                              'user-group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Списък групи с потребители',
+                              'user-group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              access_by_perms=['auth.add_user']
+                         )
+                    ]
+               ),
+          ]
+     ),
 )

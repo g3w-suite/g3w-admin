@@ -75,6 +75,22 @@ Then in your development environment:
 3. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
 4. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
 
+##### For Ubuntu 24.04
+
+Installa *nvm* for install node at version 8.x:
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+
+# Installa Node.js 8.x
+nvm install 8.17.0
+nvm use 8.17.0
+
+# Installa Gulp
+npm install -g gulp-cli@2.3.0
+```
+
+
 After that you can clone this repository:
 
 ```sh
@@ -222,6 +238,7 @@ Depending on the component you want to translate you can start by consulting one
 * Romanian: [tudorbarascu](https://github.com/tudorbarascu)
 * German: [r3gis](https://www.r3gis.com)
 * French: [democracy essentials](https://www.democracy-essentials.eu)
+* Bulgarian: [Ivan Ivanov (suricactus)](https://github.com/suricactus)
 
 ---
 
