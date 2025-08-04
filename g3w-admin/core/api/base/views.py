@@ -28,6 +28,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.filters import IntersectsBBoxFilter
 from core.signals import (before_return_vector_data_layer,
@@ -198,7 +200,8 @@ class BaseVectorApiView(G3WAPIView):
 
     authentication_classes = (
         CsrfExemptSessionAuthentication, 
-        TokenAuthentication
+        TokenAuthentication,
+        JWTAuthentication
     )
 
     # Parameter for locking features data into db
