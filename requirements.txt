@@ -12,6 +12,7 @@ django-model-utils==4.5.1
 django-sitetree==1.17.2
 djangorestframework==3.15.2
 djangorestframework-gis==1.0
+djangorestframework-simplejwt==5.5.1
 drf-spectacular==0.25.1
 django-downloadview==2.3.0
 django-mptt==0.13.4
