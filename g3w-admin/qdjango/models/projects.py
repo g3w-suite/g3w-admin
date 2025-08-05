@@ -374,6 +374,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         help_text=_("It is possible choose if show or hide the 'Metadata' section on left bar"),
     )
 
+    sidebar_collapse = models.BooleanField(
+        _('Start left sidebar collapsed'), 
+        default=False, 
+        help_text=_('Choose if the left sidebar is collapsed on start of webgis'))
+
     layouts = models.TextField(
         _('Project layouts'),
         null=True,
