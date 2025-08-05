@@ -30,15 +30,19 @@ Settings for module:
 
 ::
 
+    # Set if editing features butto in layers list has to be shown
     EDITING_SHOW_ACTIVE_BUTTON: <if not set is True>
 
-    # set if anonynous user can do editing
+    # Set if anonynous user can do editing
     EDITING_ANONYMOUS: <if not set is False>
 
-    # set if editing activities has to be logged
+    # Set if editing activities has to be logged
     EDITING_LOGGING: <if note set is False>
 
-    # set spatila predicate for (Multi)Polygon predicate
+    # Set if editing features has to be locked
+    EDITING_LOCK_FEATURES: <if not set is True> 
+
+    # Set spatila predicate for (Multi)Polygon predicate
     EDITING_CONSTRAINT_SPATIAL_PREDICATE = 'contains' | 'intersects' (contains default)
 
     # Periodic features unlock task crontab time (in hours), defaults to 4

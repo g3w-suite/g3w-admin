@@ -115,9 +115,19 @@ def makeDatasource(datasource, layerType):
 
 def makeComposerPictureFile(file):
     """
-    For ComposerPicture rebuild for DATASOURCE_PATH
-    :param file:
-    :return:
+    Rebuilds the file path for a ComposerPicture using the DATASOURCE_PATH setting.
+
+    :param file: The file path or base64 string to process.
+    :type file: str
+
+    :return: The processed file path or the original base64 string.
+    :rtype: str
+
+    :raises AttributeError: If settings.DATASOURCE_PATH is not defined.
+
+    .. note::
+        - If the input file is a base64 string (starts with 'base64'), it is returned unchanged.
+        - Otherwise, the function reconstructs the file path using the DATASOURCE_PATH setting and returns the updated path.
     """
 
     if file.startswith('base64'):

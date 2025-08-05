@@ -179,3 +179,27 @@ class LayerLock(object):
 
         # rebuild by featureid
         self.clientLockedFeatures = {lf['featureid']: lf['lockid'] for lf in lockedFeatures}
+
+
+def enable_feature_lock(request, aucn_settings_name='EDITING_AUTH_CLASS_NO_LOCK_FEATURES', elf_setting_name='EDITING_LOCK_FEATURES'):
+    """
+    Checks whether features should be locked based on Django settings and authentication class.
+
+    :param request: The Django request object.
+    :type request: django.http.HttpRequest
+
+    :param aucn_settings_name: The authentication class name that disables feature locking.
+    :type aucn_settings_name: str, optional
+
+    :param elf_setting_name: The name of the setting to check. If this setting is set to False in Django settings, features are not locked.
+    :type elf_setting_name: str, optional
+
+    :returns: True if features should be locked; False otherwise.
+    :rtype: bool
+    """
+    if not getattr(settings, elf_setting_name, True):
+        return False
+    auth_class = request.successful_authenticator.__class__.__name__ if hasattr(request, 'successful_authenticator') else None
+    if getattr(request, 'aucn_settings_name', 'no_name') == auth_class:
+        return False
+    return True
