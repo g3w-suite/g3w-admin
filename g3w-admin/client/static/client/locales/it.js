@@ -5,6 +5,8 @@ export default {
   'Logout': "Esci",
   'No more project for this group': "Non ci sono altri progetti in questo gruppo cartografico",
   'No more groups for this Macrogroup': "Non ci sono altri gruppi in questo Macrogruppo",
+  'No other projects': 'Nessun altro progetto',
+  'No other groups': 'Nessun altro gruppo',
   yes: "Si",
   no: "No",
   back:"Indietro",
