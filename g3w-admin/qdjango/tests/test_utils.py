@@ -226,7 +226,7 @@ class QgisProjectTest(TestCase):
                     'ISO_NUM': 'ISO_NUM'
                 })
 
-                self.assertEqual(layer.aliases, aliases_to_check)
+                self.assertEqual(layer.aliases['default'], aliases_to_check)
 
                 # check columns
                 # --------------------------------------------------------
