@@ -634,6 +634,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self.results.update({
                 'data': {
                     'editor_form_structure': self.layer.get_editor_form_structure(style),
+                    'fields': self.layer.get_fields_style(style),
                     'minscale': self.layer.get_min_scale_style(style),
                     'maxscale': self.layer.get_max_scale_style(style),
                     'scalebasedvisibility': self.layer.get_scalebasedvisibility_style(style),

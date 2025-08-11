@@ -26,6 +26,7 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from qdjango.utils.models import get_constraints4layer, get_widgets4layer
 from qdjango.utils.storage import QgisFileOverwriteStorage
+from qdjango.utils.qgis import get_aliases
 from qgis.core import QgsMapLayerStyle, QgsRectangle, QgsVectorLayer
 from qgis.PyQt.QtXml import QDomDocument
 from usersmanage.configs import *
@@ -1347,6 +1348,23 @@ class Layer(G3WACLModelMixins, models.Model):
 
 
         return eval(self.editor_form_structure).get(style, None) if self.editor_form_structure else None
+    
+    def get_fields_style(self, style=None):
+        """
+        Get database_columns for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        aliases = get_aliases(self.qgis_layer)
+        fields = eval(self.database_columns)
+        for field in fields:
+            if field['name'] in aliases[style]:
+                field['label'] = aliases[style][field['name']]
+
+        return fields
     
     def get_max_scale_style(self, style=None):
         """

@@ -44,6 +44,7 @@ from .structure import *
 from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername, EmbeddedLayersValidator)
+from .qgis import get_aliases
 
 from qdjango.apps import get_qgs_project
 
@@ -594,33 +595,8 @@ class QgisProjectLayer(XmlData):
         :rtype: dict
         """
 
-        aliases = {}
-
-        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
-                return aliases
-
-        # Save for every styles associated to the layer
-        sm = self.qgs_layer.styleManager()
-
-        current_style = sm.currentStyle()
-
-        for style in sm.styles():
-
-            sm.setCurrentStyle(style)
-
-            ret = OrderedDict()
-
-            
-
-            for f in self.qgs_layer.fields():
-                ret[f.name()] = f.displayName()
-            aliases[style] = ret
+        return get_aliases(self.qgs_layer)
         
-        # Reset to current style
-        sm.setCurrentStyle(current_style)
-
-        return aliases
-
     def _getDataColumns(self):
         """
         Retrieve data about columns for db table or ogr layer type
