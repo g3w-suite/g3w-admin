@@ -10,7 +10,11 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2022-10-04'
 __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
-from qgis.core import QgsExpression
+from qgis.core import (
+    QgsExpression, 
+    QgsMapLayer
+)
+from collections import OrderedDict
 import re
 
 
@@ -36,3 +40,33 @@ def explode_expression(expression):
         filter_expression['referencing_fields'] = [g[0] for g in groups]
 
     return filter_expression
+
+def get_aliases(qgs_layer):
+    """
+    Get aliases for every field in a QGIS Vector Layer.
+    
+    """
+    aliases = {}
+
+    if qgs_layer.type() != QgsMapLayer.VectorLayer:
+            return aliases
+
+    # Save for every styles associated to the layer
+    sm = qgs_layer.styleManager()
+
+    current_style = sm.currentStyle()
+
+    for style in sm.styles():
+
+        sm.setCurrentStyle(style)
+
+        ret = OrderedDict()
+
+        for f in qgs_layer.fields():
+            ret[f.name()] = f.displayName()
+        aliases[style] = ret
+    
+    # Reset to current style
+    sm.setCurrentStyle(current_style)
+
+    return aliases

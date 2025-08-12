@@ -20,7 +20,11 @@ from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
 from qdjango.signals import load_qdjango_widget_layer
 from guardian.utils import get_anonymous_user
 from qdjango.apps import get_qgs_project
-from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
+from qdjango.utils.structure import (
+    QdjangoMetaLayer, 
+    datasourcearcgis2dict, 
+    get_attributes
+)
 from qdjango.utils.session import reset_filtertoken
 from qdjango.api.layers.serializers import FilterLayerSavedSerializer
 from core.utils.structure import mapLayerAttributes
@@ -718,22 +722,25 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :param instance: qdjango Layer model instance
         :return: list
         """
-        columns = mapLayerAttributes(
-            instance) if instance.database_columns else []
 
-        # evaluate fields to show or not by qgis project
-        column_to_exclude = self.column_to_exclude(instance)
+        return get_attributes(instance, request=self.request)
+        
+        # columns = mapLayerAttributes(
+        #     instance) if instance.database_columns else []
 
-        if self.request:
-            visible_columns = instance.visible_fields_for_user(self.request.user)
-            for column in columns:
-                column['show'] = (column['name'] in visible_columns) and (
-                    column['name'] not in column_to_exclude)
-        else:
-            for column in columns:
-                column['show'] = False if column['name'] in column_to_exclude else True
+        # # evaluate fields to show or not by qgis project
+        # column_to_exclude = self.column_to_exclude(instance)
 
-        return columns
+        # if self.request:
+        #     visible_columns = instance.visible_fields_for_user(self.request.user)
+        #     for column in columns:
+        #         column['show'] = (column['name'] in visible_columns) and (
+        #             column['name'] not in column_to_exclude)
+        # else:
+        #     for column in columns:
+        #         column['show'] = False if column['name'] in column_to_exclude else True
+
+        # return columns
 
     def get_ows(self, instance):
         """

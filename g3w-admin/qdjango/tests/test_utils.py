@@ -39,9 +39,14 @@ QGS_FILE_ORGANIZE_COLUMNS = 'g3wsuite_project_test_qgis334.qgs'
 from qgis.core import Qgis
 
 
+@override_settings(
+            DATASOURCE_PATH=DATASOURCE_PATH,
+            LANGUAGE_CODE='en',
+            LANGUAGES = (
+                ('en', 'English'),
+            ))
 class QgisProjectTest(TestCase):
 
-    @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
     def setUp(self):
 
         qgis_project_file = File(open('{}{}{}'.format(
@@ -226,7 +231,7 @@ class QgisProjectTest(TestCase):
                     'ISO_NUM': 'ISO_NUM'
                 })
 
-                self.assertEqual(layer.aliases, aliases_to_check)
+                self.assertEqual(layer.aliases['predefinito'], aliases_to_check)
 
                 # check columns
                 # --------------------------------------------------------
