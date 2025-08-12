@@ -63,6 +63,7 @@ from qdjango.api.layers.filters import (
 from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer, FilterLayerSaved
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
+from .utils.structure import get_attributes
 
 import json
 import logging
@@ -634,6 +635,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self.results.update({
                 'data': {
                     'editor_form_structure': self.layer.get_editor_form_structure(style),
+                    'fields': get_attributes(self.layer, style=style, request=request),
                     'minscale': self.layer.get_min_scale_style(style),
                     'maxscale': self.layer.get_max_scale_style(style),
                     'scalebasedvisibility': self.layer.get_scalebasedvisibility_style(style),
