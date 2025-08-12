@@ -96,8 +96,8 @@ class FidFilter(BaseFilterBackend):
         multiple = True
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
 
-        if not request.GET.get(FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)):
-            if not request.GET.get(FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM)):
+        if not request.GET.get(FILTER_FIDS_PARAM, request.data.get(FILTER_FIDS_PARAM)):
+            if not request.GET.get(FILTER_FID_PARAM, request.data.get(FILTER_FID_PARAM)):
                 return
             else:
                 multiple = False
@@ -105,12 +105,12 @@ class FidFilter(BaseFilterBackend):
         try:
             if multiple:
                 fids = [f for f in request.GET.get(
-                    FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)).split(',')]
+                    FILTER_FIDS_PARAM, request.data.get(FILTER_FIDS_PARAM)).split(',')]
                 if len(fids) == 0:
                     return
             else:
                 fid = request.GET.get(
-                    FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM))
+                    FILTER_FID_PARAM, request.data.get(FILTER_FID_PARAM))
                 if not fid:
                     return
 
