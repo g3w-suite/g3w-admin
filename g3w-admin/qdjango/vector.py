@@ -332,7 +332,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
         # add label
         if self.layer:
-            fields_layer = self.layer.database_columns_by_name()
+            fields_layer = self.layer.database_columns_by_name(style=self.style)
             for field, data in list(fields_layer.items()):
                 fields[self.layer_name]['fields'][field] = {
                     'label': data['label']}

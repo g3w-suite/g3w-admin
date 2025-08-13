@@ -1410,8 +1410,26 @@ class Layer(G3WACLModelMixins, models.Model):
             ('change_attr_feature', 'Can update features attributes into layer'),
         )
 
-    def database_columns_by_name(self):
-        return {db_col['name']: db_col for db_col in eval(self.database_columns)}
+    def database_columns_by_name(self, style=None):
+        """
+        Retrieves a dictionary mapping database column names to their definitions.
+
+        :param style: The style to use for retrieving fields. If provided, uses
+            get_fields_style(style) to get the fields for the specified style.
+            If not provided, evaluates the database_columns attribute.
+        :type style: str, optional
+
+        :return: A dictionary where each key is a column name and each value is the corresponding
+            column definition.
+        :rtype: dict
+        """
+
+        if style:
+            fields = self.get_fields_style(style)
+        else:
+            fields = eval(self.database_columns) if self.database_columns else None
+
+        return {db_col['name']: db_col for db_col in fields}
 
     def getWidgetsNumber(self):
         """

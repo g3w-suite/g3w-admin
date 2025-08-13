@@ -824,6 +824,7 @@ class BaseVectorApiView(G3WAPIView):
         # Set layer style
         # If style come from requests data
         # Change to style requested
+        self.style = None
         if 'style' in self.request_data:
             self.style = self.request_data['style']
             self.current_style = self.metadata_layer.qgis_layer.styleManager().currentStyle()
