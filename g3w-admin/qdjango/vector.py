@@ -622,23 +622,20 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         Return the feature count value for every layer style category
         """
 
-        style = self.request_data.get('style', None)
-        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,style)})
+        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer, self.style)})
 
     def response_editorformstructure_mode(self, request):
         """
         Returns layer properties dependent on layer styles
         """
 
-        style = self.request_data.get('style', None)
-
         self.results.update({
                 'data': {
-                    'editor_form_structure': self.layer.get_editor_form_structure(style),
-                    'fields': get_attributes(self.layer, style=style, request=request),
-                    'minscale': self.layer.get_min_scale_style(style),
-                    'maxscale': self.layer.get_max_scale_style(style),
-                    'scalebasedvisibility': self.layer.get_scalebasedvisibility_style(style),
+                    'editor_form_structure': self.layer.get_editor_form_structure(self.style),
+                    'fields': get_attributes(self.layer, style=self.style, request=request),
+                    'minscale': self.layer.get_min_scale_style(self.style),
+                    'maxscale': self.layer.get_max_scale_style(self.style),
+                    'scalebasedvisibility': self.layer.get_scalebasedvisibility_style(self.style),
                 } 
             })
 
