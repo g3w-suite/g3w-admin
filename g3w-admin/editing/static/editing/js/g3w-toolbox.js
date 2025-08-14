@@ -303,7 +303,7 @@ export class ToolBox extends Emitter {
     const dependencies = [
       ...layer.getChildren(),
       ...layer.getFathers()
-    ].filter(id => getCatalogLayerById(id))
+    ].filter(id => getCatalogLayerById(id).isEditable())
 
     this.state = {
       layer,

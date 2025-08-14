@@ -397,7 +397,7 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getLayerById(id) {
-    return this.getToolBoxById(id).getLayer();
+    return this.getToolBoxById(id)?.getLayer();
   }
 
   /**
