@@ -208,13 +208,8 @@ new (class extends Plugin {
   
     await GUI.isReady();
 
-    // setup GUI
-
-    // skip when:
-    // 1 - plugin is not referred to the current project id
-    // 2 - configuration of plugin, visible is set to false
-    // 3 - There aren't editable layers or all are not visible
-    if (!(!this.registerPlugin(this.config.gid) || false === this.config.visible || 0 === this.getLayers().filter(l => l.config.editing.visible).length)) {
+    // add sidebar item (left menu) 
+    if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
       this.state.editFeatureKey = GUI.onafter('editFeature', this.#onQueryResultsEditFeature.bind(this)),
       this.config.name          = this.config.name || "plugins.editing.editing_data";
       this.addToolGroup({ position: 0, title: 'EDITING' });
