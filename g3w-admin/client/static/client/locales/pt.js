@@ -314,6 +314,7 @@ export default {
   'Filter results': 'Filtrar resultados',
   'Loading ...': 'A carregar ...',
   'sdk.form.inputs.messages.errors.picklayer': 'Sem camadas selecionadas. Verifique se a camada está em edição ou visível na escala atual.',
+  'sdk.form.inputs.messages.warning.picklayer': 'O objeto selecionado é inválido',
   'sdk.form.inputs.tooltips.picklayer': 'Obter atributo da camada',
   'sdk.form.inputs.tooltips.lonlat': 'Clique no mapa para obter as coordenadas',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Atributo mutuamente exclusivo com ',
