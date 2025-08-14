@@ -48,18 +48,6 @@ const {
   PickCoordinatesInteraction
 }                                     = g3wsdk.ol.interactions;
 
-Object
-  .entries({
-    Workflow,
-    Step,
-    OpenFormStep,
-    OpenTableStep,
-    AddFeatureStep,
-    ModifyGeometryVertexStep,
-    MoveFeatureStep,
-  })
-  .forEach(([k, v]) => console.assert(undefined !== v, `${k} is undefined`));
-
 const color = 'rgb(255,89,0)';
 // Vector styles for selected relation
 const SELECTED_STYLES = {

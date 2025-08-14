@@ -1,20 +1,8 @@
-import { Workflow }                            from './g3w-workflow.js';
-import { Step }                                from './g3w-step.js';
-import { Feature }                             from './g3w-feature.js';
 import { createFeature }                       from './utils/createFeature.js';
-import { getEditingLayerById }                 from './utils/getEditingLayerById.js';
-import { setAndUnsetSelectedFeaturesStyle }    from './utils/setAndUnsetSelectedFeaturesStyle.js';
 import { addPartToMultigeometries }            from './utils/addPartToMultigeometries.js';
 import { getCatalogLayers }                    from './utils/getCatalogLayers.js';
 import { getCatalogLayerById }                 from './utils/getCatalogLayerById.js';
 import { getEditingLayer }                     from './utils/getEditingLayer.js';
-import { getEditingFields }                    from './utils/getEditingFields.js';
-import { createRelationsUrl }                  from './utils/createRelationsUrl.js';
-
-import { OpenFormStep }                        from './actions/open-form.js';
-import { AddFeatureStep }                      from './actions/add-feature.js';
-import { ToolBox }                             from './g3w-toolbox.js';
-import { IframeEditor }                        from './g3w-iframe.js';
 
 const BASE_URL                                 = `${initConfig.group.plugins.editing.baseUrl}editing/js`;
 
@@ -33,22 +21,12 @@ const {
   getResolutionFromScale,
 }                                              = g3wsdk.ol.utils;
 
-Object
-  .entries({
-    Workflow,
-    OpenFormStep,
-    AddFeatureStep,
-    ToolBox,
-  })
-  .forEach(([k, v]) => console.assert(undefined !== v, `${k} is undefined`));
-
 new (class extends Plugin {
 
   constructor() {
 
     super({
       name: 'editing',
-      // i18n,
       layersStore: { queryable: false, catalog: false },
       fontClasses: [
         { name: 'measure',   className: "fas fa-ruler-combined" },
@@ -176,7 +154,7 @@ new (class extends Plugin {
         subscribe:                        this.on.bind(this),
         unsubscribe:                      this.off.bind(this),
         getToolBoxById:                   this.getToolBoxById.bind(this),
-        getEditingLayerById:              getEditingLayerById, //@since 4.1.0
+        getEditingLayerById:              this.getLayerById.bind(this), //@since 4.1.0
         addNewFeature:                    createFeature,
         commitChanges:                    this.commit.bind(this),
         setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
@@ -195,7 +173,7 @@ new (class extends Plugin {
     });
 
     // get editable layers config from server (sorted by "index" to keep TOC order)
-    (await Promise.allSettled(
+    const LAYERS = await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
         .filter(layer => layer.isEditable())
         .map(async layer => {
@@ -206,19 +184,24 @@ new (class extends Plugin {
           }
           return ({ layer, config });
         })
-    )).forEach(({ status, value, reason }) => {
-        if ('fulfilled' === status) {
-        const toolBox                                  = new ToolBox(value.layer, value.config);
-        this.state.toolboxes.push(toolBox);
-        this.state.lock_ids[toolBox.getId()]           = [];
-        this.state.loaded_ids[toolBox.getId()]         = [];
-        this.state.uniqueFieldsValues[toolBox.getId()] = {};
-        this.state.features[toolBox.getId()]           = toolBox._collection;
-      } else {
-        this.state.layers_in_error = true;
-        console.warn(reason);
-      }
-    });
+    );
+
+    if (LAYERS.length) {
+      const { ToolBox } = (await import ('./g3w-toolbox.js'));
+      LAYERS.forEach(({ status, value, reason }) => {
+          if ('fulfilled' === status) {
+          const toolBox                                  = new ToolBox(value.layer, value.config);
+          this.state.toolboxes.push(toolBox);
+          this.state.lock_ids[toolBox.getId()]           = [];
+          this.state.loaded_ids[toolBox.getId()]         = [];
+          this.state.uniqueFieldsValues[toolBox.getId()] = {};
+          this.state.features[toolBox.getId()]           = toolBox._collection;
+        } else {
+          this.state.layers_in_error = true;
+          console.warn(reason);
+        }
+      });
+    }
 
     // after add layers to layerstore
     ApplicationState.layers['editing'].addLayers(this.getLayers());
@@ -243,7 +226,7 @@ new (class extends Plugin {
     }
 
     if (ApplicationState.iframe) {
-      new IframeEditor(this);
+      new (await import('./g3w-iframe.js')).IframeEditor(this);
     }
 
     this.setHookLoading({ loading: false });
@@ -348,7 +331,8 @@ new (class extends Plugin {
    * @since 4.1.0
    */
   getEditingFields(layerId, editable = false) {
-    return getEditingFields(this.getLayerById(layerId), editable);
+    const layer = this.getLayerById(layerId);
+    return (layer.state.editing.fields || []).filter(f => editable ? f.editable : true);
   }
 
   /**
@@ -413,7 +397,7 @@ new (class extends Plugin {
    * 
    * @param { string } id
    *
-   * @returns {*}
+   * @returns {*} editing layer by id
    * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
@@ -571,13 +555,13 @@ new (class extends Plugin {
       // show commit modal window
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 */
       if (modal) {
-        workflow = new Workflow({
+        workflow = new (await import('./g3w-workflow.js')).Workflow({
           type: 'commitfeatures',
           steps: [
             // confirm step
-            new Step({
+            new (await import('./g3w-step.js')).Step({
               run(inputs) {
-                return new Promise((resolve, reject) => {
+                return new Promise(async (resolve, reject) => {
                   const dialog = GUI.dialog.dialog({
                     message: inputs.message,
                     title:   `${_("plugins.editing.messages.commit_feature")}: "${inputs.layer.getName()}"`,
@@ -588,7 +572,11 @@ new (class extends Plugin {
                     }
                   });
                   if (inputs.features) {
-                    setAndUnsetSelectedFeaturesStyle({ promise: promise(), inputs, style: this.selectStyle });
+                    (await import('./utils/setAndUnsetSelectedFeaturesStyle.js')).setAndUnsetSelectedFeaturesStyle({
+                      promise: promise(),
+                      inputs,
+                      style: this.selectStyle,
+                    });
                   }
                 })
               },
@@ -931,7 +919,7 @@ new (class extends Plugin {
       // get session
       const session = this.getSessionById(layerId);
       // exclude an eventual attribute pk (primary key) not editable (mean autoincrement)
-      const attributes = getEditingFields(layer).filter(attr => !(attr.pk && !attr.editable));
+      const attributes = this.getEditingFields(layerId).filter(attr => !(attr.pk && !attr.editable));
       // start session (get no features but set layer in editing)
       session.start({
         filter: {
@@ -943,10 +931,10 @@ new (class extends Plugin {
 
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/easyaddfeatureworkflow.js@v3.7.1 */
       // create workflow
-      const workflow = new Workflow({
+      const workflow = new (await import('./g3w-workflow.js')).Workflow({
         type: 'addfeature',
         steps: [
-          new OpenFormStep({
+          new (await import('./actions/open-form.js')).OpenFormStep({
             push:       true,
             showgoback: false,
             saveAll:    false,
@@ -970,7 +958,7 @@ new (class extends Plugin {
 
         try {
           //set feature as g3w feature
-          feature = new Feature({ feature, properties: attributes.map(a => a.name) });
+          feature = new (await import('./g3w-feature.js')).Feature({ feature, properties: attributes.map(a => a.name) });
           //set new
           feature.setTemporaryId();
 
@@ -1113,6 +1101,8 @@ new (class extends Plugin {
    */
   async fetchVectorData(layer, options = {}, params = {}) {
     try {
+      const { Feature } = (await import('./g3w-feature.js'));
+
       let response;
 
       if (!options.filter) {
@@ -1129,7 +1119,7 @@ new (class extends Plugin {
         })
       } else if (undefined !== options.filter.fid) { // fid filter
         response = await XHR.post({
-          url:         createRelationsUrl(options.filter.fid),
+          url:         (await import('./utils/createRelationsUrl.js')).createRelationsUrl(options.filter.fid),
           contentType: 'application/json',
           data:        JSON.stringify({ formatter: 1 }),
         });
@@ -1279,12 +1269,12 @@ new (class extends Plugin {
       if (addPartTool) {
         //get workflow
         const op = addPartTool.getOperator();
-        const w = new Workflow({
+        const w = new (await import('./g3w-workflow.js')).Workflow({
           type: 'drawgeometry',
           helpMessage: 'editing.workflow.steps.draw_geometry',
           runOnce: true, // need to run once time
           steps: [
-            new AddFeatureStep({
+            new (await import('./actions/add-feature.js')).AddFeatureStep({
               add: false,
               steps: {
                 addfeature: {
@@ -1313,7 +1303,7 @@ new (class extends Plugin {
               onStop: () => w.emit('deactive', ['snap', 'measure'])
             }),
             // add part to multi geometries
-            new Step({ run: addPartToMultigeometries })
+            new (await import('./g3w-step.js')).Step({ run: addPartToMultigeometries })
           ],
           registerEscKeyEvent: true
         })
@@ -1327,11 +1317,11 @@ new (class extends Plugin {
       }
 
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
-      w = (new Workflow({
+      w = (new (await import('./g3w-workflow.js')).Workflow({
         type:        'editnopickmapfeatureattributes',
         runOnce:     true,
         helpMessage: 'editing.tools.update_feature',
-        steps:       [ new OpenFormStep() ]
+        steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
       }));
 
       await w.start({
@@ -1356,7 +1346,7 @@ new (class extends Plugin {
       Object
       .entries(relations)
       .flatMap(([ layerId, { add, delete: del, update, relations = {}}]) => {
-        const source       = getEditingLayerById(layerId).getEditor().getEditingSource();
+        const source       = this.getLayerById(layerId).getEditor().getEditingSource();
         const has_features = source.readFeatures().length > 0; // check if the relation layer has some features
         // get original values
         return [

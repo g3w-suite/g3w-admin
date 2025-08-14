@@ -18,14 +18,6 @@ const { GUI }         = g3wsdk.gui;
 const { resizeMixin } = g3wsdk.gui.vue.Mixins;
 const Media_Field     = g3wsdk.gui.vue.Fields.media_field;
 
-Object
-  .entries({
-    Workflow,
-    OpenFormStep,
-  })
-  .forEach(([k, v]) => console.assert(undefined !== v, `${k} is undefined`));
-
-
 export default ({
 
   template: /*html*/`

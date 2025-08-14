@@ -59,20 +59,6 @@ const { getScaleFromResolution, getResolutionFromScale } = g3wsdk.ol.utils;
 
 const is_defined = d => undefined !== d;
 
-Object
-  .entries({
-    Workflow,
-    OpenFormStep,
-    SelectElementsStep,
-    PickFeatureStep,
-    MoveFeatureStep,
-    RotateFeatureStep,
-    ModifyGeometryVertexStep,
-    OpenTableStep,
-    AddFeatureStep,
-  })
-  .forEach(([k, v]) => console.assert(undefined !== v, `${k} is undefined`));
-
 /**
  * ORIGINAL SOURCE: g3w-client-plugin/toolboxes/toolsfactory.js@v3.7.1
  */
