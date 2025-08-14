@@ -13,7 +13,6 @@ import { getEditingLayerById }                          from '../utils/getEditin
 import { setLayerUniqueFieldValues }                    from '../utils/setLayerUniqueFieldValues.js';
 import { getRelationsInEditingByFeature }               from '../utils/getRelationsInEditingByFeature.js';
 import { getFieldsWithValues }                          from '../utils/getFieldsWithValues.js';
-import { setFieldsWithValues }                          from '../utils/setFieldsWithValues.js';
 import { isPkField }                                    from '../utils/isPkField.js';
 import { getCatalogLayerById }                          from '../utils/getCatalogLayerById.js';
 import { getEditingFields }                             from '../utils/getEditingFields.js';
@@ -258,7 +257,7 @@ export class OpenFormStep extends Step {
                       //get features fields of form service that has value not null to set of all features
                       const fields = w.getContext().service.state.fields.filter(f => task._multi ? null !== f.value : true);
                       await Workflow.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
-                      task._features.forEach(f => setFieldsWithValues(task.getInputs().layer, f, fields));
+                      task._features.forEach(f => _setFieldsWithValues(task.getInputs().layer, f, fields));
                       const newFeatures = task._features.map(f => f.clone());
                       //Is a relation form
                       if (task._isContentChild) {
@@ -360,7 +359,7 @@ export class OpenFormStep extends Step {
                 GUI.disableContent(false);
 
                 this._features.forEach(f => {
-                  setFieldsWithValues(inputs.layer, f, fields);
+                  _setFieldsWithValues(inputs.layer, f, fields);
                   newFeatures.push(f.clone());
                 });
 
@@ -974,4 +973,24 @@ async function _getRelation1_1ChildFeature({
     feature, //feature search
     locked //locked status
   }
+}
+
+/**
+ * ORIGINAL SOURCE: g3w-client/src/map/layers/tablelayer.js@v4.0.0
+ * 
+ * create attributes from fields
+ */
+function _setFieldsWithValues(layer, feature, fields) {
+  const createAttrs = (fields = []) => fields.reduce((acc, f) => { 
+    if ('child' === f.type) {
+      acc[f.name] = createAttrs(f.fields);
+    } else if ('null' === f.value) {
+      f.value = null;
+    }
+    acc[f.name] = f.value;
+    return acc;
+  }, {});
+  const attributes = createAttrs(fields);
+  feature.setProperties(attributes);
+  return attributes;
 }
