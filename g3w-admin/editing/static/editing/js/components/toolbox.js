@@ -88,20 +88,20 @@ export default ({
       <div v-if = "!state.layer.isGeoLayer()" class = "info">
         <i :class = "g3wtemplate.font['info']"></i>
         <span v-t = "'plugins.editing.messages.toolbox_has_no_geometry'"></span>
-        <divider/>
+        <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
       <!-- HAS RELATION -->
       <div v-if="hasRelations" class="info">
         <i :class="g3wtemplate.font['info']"></i>
         <span v-t="'plugins.editing.messages.toolbox_has_relation'"></span>
-        <divider/>
+        <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
       <!-- MESSAGE -->
       <div v-if = "state.message" style = "color: #000">
         <div class = "text-justify" v-t-plugin = "state.message"></div>
-        <divider/>
+        <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
       <!-- TOOLS -->
@@ -194,7 +194,7 @@ export default ({
                 
               </div>
 
-              <divider />
+              <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
 
             </template>
 

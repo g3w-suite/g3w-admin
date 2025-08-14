@@ -170,14 +170,14 @@ export default ({
       <!-- COPY FEATURE FROM OTHER LAYER -->
       <section>
 
-        <span class = "divider"></span>
+        <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
 
         <div
           style = "align-self: center"
           v-t   = "'plugins.editing.relation.draw_or_copy'"
         ></div>
 
-        <span class = "divider"></span>
+        <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
 
         <div id = "g3w-select-editable-layers-content">
 
@@ -1740,20 +1740,6 @@ document.head.insertAdjacentHTML(
   .g3w-editing-relation .close_vector_relation_tool > .g3w-icon {
     font-weight: bold;
     cursor: pointer;
-  }
-  .g3w-editing-relation .divider {
-    display: block;
-    position: relative;
-    padding: 0;
-    margin-bottom: 5px;
-    height: 0;
-    width: 100%;
-    max-height: 0;
-    font-size: 1px;
-    line-height: 0;
-    clear: both;
-    border: none;
-    border-bottom: 2px solid #eee;
   }
 </style>`
 );
