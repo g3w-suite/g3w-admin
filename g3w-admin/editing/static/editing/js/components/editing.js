@@ -8,12 +8,12 @@ import ToolboxComponent             from '../components/toolbox.js';
 import { getCatalogLayers }         from '../utils/getCatalogLayers.js';
 import { getCatalogLayerById }      from '../utils/getCatalogLayerById.js';
 
+const { G3W_FID }                     = g3wsdk.constant
 const { GUI }                         = g3wsdk.gui;
 const {
   ApplicationState,
   ApplicationService,
 }                                     = g3wsdk.core;
-const { DataRouterService }           = g3wsdk.core.data;
 
 export default ({
 
@@ -546,13 +546,13 @@ export default ({
 
     // Show feature that is updated or created with editing on result content
     const layerIdChanges = Object.keys(this.state.featuresOnClose);
-    if (layerIdChanges.length) {
-      const inputs = {
-        layers:    [],
-        fids:      [],
-        formatter: 1
-      };
+    const inputs = {
+      layers:    [],
+      fids:      [],
+      formatter: 1
+    };
 
+    if (layerIdChanges.length) {
       layerIdChanges
         .forEach(id => {
           const fids = [...this.state.featuresOnClose[id]];
@@ -563,16 +563,49 @@ export default ({
           }
         });
 
-      const promise = inputs.layers.length ?
-        DataRouterService.getData('search:layersfids', {
-          inputs,
-          outputs: {
+      let promise = Promise.resolve();
+
+      // load many layers with each one with its fids
+      if (inputs.layers.length) {
+        promise = new Promise(async (res, rej) => {
+          try {
+            let data = (await Promise.all(
+              inputs.layers.map(async (layer, i) => {
+                let features = []; 
+                try {
+                  // convert API response to Open Layer Features
+                  features = ((layer && await layer.getFeatureByFids({ fids: inputs.fids[i], formatter: inputs.formatter })) || []).map(f => {
+                    const properties    = undefined !== f.properties ? f.properties : {}
+                    properties[G3W_FID] = f.id;
+                    const olFeat          = new ol.Feature(f.geometry && new ol.geom[f.geometry.type](f.geometry.coordinates));
+                    olFeat.setProperties(properties);
+                    olFeat.setId(f.id);
+                    return olFeat;
+                  });
+                } catch(e) {
+                  console.warn(e);
+                }
+                return {
+                  data:  [{ layer, features }],
+                  query: { type: 'search', fids },
+                };
+            }))).map(response => response.data);
+            res({
+              data,
+              query: { type: 'search' }
+            });
+          } catch(e) {
+            rej(e);
+          }
+        });
+      }
+      try {
+        if (inputs.layers.length) {
+          GUI.showData(promise, {
             title: 'plugins.editing.editing_changes',
             show:  { loading: false }
-          }
-        }) :
-        Promise.resolve();
-      try {
+          });
+        }
         await promise;
       } catch(e) { console.warn(e) }
     }

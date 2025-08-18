@@ -22,7 +22,6 @@ import { Step }                                         from '../g3w-step.js';
 
 const { GUI }                                           = g3wsdk.gui;
 const { FormService }                                   = g3wsdk.gui.vue.services;
-const { DataRouterService }                             = g3wsdk.core.data;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/openformtask.js@v3.7.1
@@ -946,7 +945,7 @@ async function _getRelation1_1ChildFeature({
     try {
       const layer = getCatalogLayerById(childLayerId);
 
-      const { data } = await DataRouterService.getData('search:features', {  // get feature of relation layer based on value of relation field
+      const { data } = await GUI.getData('search:features', {  // get feature of relation layer based on value of relation field
         inputs: {
           layer,
           formatter: 0,

@@ -1,7 +1,8 @@
 import { getFieldsWithValues } from '../utils/getFieldsWithValues.js';
 import { getParentFormData }   from '../utils/getParentFormData.js';
 
-const { DataRouterService } = g3wsdk.core.data;
+const ApplicationState      = g3w.state;
+const { XHR }               = g3wsdk.core.utils;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
@@ -44,8 +45,10 @@ export async function evaluateExpressionFields({
 
                 // Call `expression:expression_eval` to get value from expression and set it to field
                 try {
-                  field.value = await DataRouterService.getData('expression:expression_eval', {
-                    inputs: {
+                  const response = await XHR.post({
+                    url:         `/api/expression_eval/${ApplicationState.project.getId()}/`,
+                    contentType: 'application/json',
+                    data:        JSON.stringify({
                       field_name:   field.name,
                       layer_id:     undefined === field.input.options.layer_id ? inputs.layer.getId() : field.input.options.layer_id, //
                       qgs_layer_id: inputs.layer.getId(), //layer id owner of the data
@@ -57,9 +60,13 @@ export async function evaluateExpressionFields({
                         qgs_layer_id: parentData.qgs_layer_id,
                         formatter:    0
                       }
-                    },
-                    outputs: false,
+                    }),
                   });
+                  if (response.result) {
+                    field.value = response.value;
+                  } else {
+                    throw JSON.stringify(response.error);
+                  }
                 } catch(e) {
                   if (undefined !== field.input.options.default) {
                     field.value = field.input.options.default;
@@ -92,10 +99,16 @@ export async function evaluateExpressionFields({
 
                 try {
 
-                  const features = await DataRouterService.getData('expression:expression', {
-                    inputs: {
+                  let features;
+
+                  const layer_id = undefined === field.input.options.layer_id ? inputs.layer.getId() : field.input.options.layer_id;
+
+                  const response = await XHR.post({
+                    url:         `${ApplicationState.project.getUrl('vector_data')}${layer_id}/`,
+                    contentType: 'application/json',
+                    data:        JSON.stringify({
                       field_name: field.name,
-                      layer_id: undefined === field.input.options.layer_id ? inputs.layer.getId() : field.input.options.layer_id,
+                      layer_id,
                       qgs_layer_id: inputs.layer.getId(),
                       form_data: (new ol.format.GeoJSON()).writeFeatureObject(feature),
                       parent: parentData && ({
@@ -106,9 +119,13 @@ export async function evaluateExpressionFields({
                       formatter:  0,
                       expression: field.input.options.filter_expression.expression,
                       ordering:   [undefined, false].includes(field.input.options.orderbyvalue) ? field.input.options.key : field.input.options.value, //@since 3.11.0
-                    },
-                    outputs: false,
+                    }),
                   });
+                  if (response.result) {
+                    features = (response.vector.data.features || []);
+                  } else {
+                    throw JSON.stringify(response.error);
+                  }
 
                   if ('select_autocomplete' === field.input.type) {
                     field.input.options.values = [];

@@ -36,7 +36,6 @@
 const { Emitter }           = g3w;
 const { ApplicationState }  = g3wsdk.core;
 const { GUI }               = g3wsdk.gui;
-const { DataRouterService } = g3wsdk.core.data;
 const { getUniqueDomId }    = g3wsdk.core.utils;
 
 export class IframeEditor extends Emitter {
@@ -238,7 +237,7 @@ export class IframeEditor extends Emitter {
       while (!found && i < config.qgs_layer_id.length) {
         const layer = ApplicationState.project.getLayerById(qgs_layer_id[i]);
         try {
-          let data = layer && (await DataRouterService.getData('search:features', {
+          let data = layer && (await GUI.getData('search:features', {
             inputs: {
               layer,
               filter: [].concat(config.feature.value).map(v => `${config.feature.field}|eq|${encodeURIComponent(v)}`).join('|OR,')

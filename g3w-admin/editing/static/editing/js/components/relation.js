@@ -32,7 +32,6 @@ import { getCatalogLayerById }                          from '../utils/getCatalo
 import { getCatalogLayers }                             from '../utils/getCatalogLayers.js';
 
 const { ProjectsRegistry }            = g3wsdk.core.project;
-const { DataRouterService }           = g3wsdk.core.data;
 const { Geometry }                    = g3wsdk.core.geoutils;
 const _                               = g3wsdk.core.i18n.t;
 const { toRawType }                   = g3wsdk.core.utils;
@@ -1561,7 +1560,7 @@ export default ({
                                   features = convertToGeometry(
                                     options.external
                                       ? e.features                             // external layer
-                                      : ((await DataRouterService.getData('query:coordinates', { // TOC/PROJECT layer
+                                      : ((await GUI.getData('query:coordinates', { // TOC/PROJECT layer
                                         inputs: {
                                           coordinates:           e.coordinate,
                                           query_point_tolerance: ProjectsRegistry.getCurrentProject().getQueryPointTolerance(),
