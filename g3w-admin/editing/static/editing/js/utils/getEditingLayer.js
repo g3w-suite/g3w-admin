@@ -8,6 +8,6 @@ export function getEditingLayer(layer) {
     return layer;
   }
   if ('vector' === layer.getType()) {
-    return layer.getMapLayer().getOLLayer();
+    return layer.getOLLayer();
   }
 }
