@@ -48,7 +48,6 @@ const { Emitter, Layer }                                 = g3w;
 const { GEOMETRY_TYPES }                                 = g3wsdk.constant;
 const { ApplicationState }                               = g3wsdk.core;
 const { ProjectsRegistry }                               = g3wsdk.core.project;
-const { DataRouterService }                              = g3wsdk.core.data;
 const { Geometry, dissolve }                             = g3wsdk.core.geoutils;
 const { splitFeature }                                   = g3wsdk.core.geoutils;
 const { removeZValueToOLFeatureGeometry }                = g3wsdk.core.geoutils.Geometry;
@@ -966,7 +965,7 @@ export class ToolBox extends Emitter {
                                             resolve(convertToGeometry(
                                               layer.external
                                                 ? e.features                             // external layer
-                                                : ((await DataRouterService.getData('query:coordinates', { // TOC/PROJECT layer
+                                                : ((await GUI.getData('query:coordinates', { // TOC/PROJECT layer
                                                   inputs: {
                                                     coordinates:           e.coordinate,
                                                     query_point_tolerance: ProjectsRegistry.getCurrentProject().getQueryPointTolerance(),
