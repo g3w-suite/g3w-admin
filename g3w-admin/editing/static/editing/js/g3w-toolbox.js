@@ -931,8 +931,8 @@ export class ToolBox extends Emitter {
                             </section>
                           `,
                           name: 'Copyfeaturesfromotherlayers',
-                          data: () => ({ id: this.$options.layers.find(l => l.selected).id }),
-                          watch: { 'id': (id) => { this.$options.layers.forEach(l => l.selected = id === l.id); } },
+                          data() { return ({ id: this.$options.layers.find(l => l.selected).id }) },
+                          watch: { 'id'(id) { return this.$options.layers.forEach(l => l.selected = id === l.id); } },
                         }))({layers});
                         const message          = vueInstance.$mount().$el;
                         GUI.showModalDialog({
@@ -1013,7 +1013,7 @@ export class ToolBox extends Emitter {
                                     });
 
                                     return Promise.reject();
-                                  });
+                                  })();
 
                                   //@TODO check better way
                                   //Set undefined property to null otherwise on commit
