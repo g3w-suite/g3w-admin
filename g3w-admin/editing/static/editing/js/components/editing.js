@@ -24,7 +24,7 @@ export default ({
 
   <!-- OFFLINE MESSAGE -->
   <div
-    v-if  = "!appState.online"
+    v-if  = "!ApplicationState.online"
     id    = "onlineofflinemessage"
   >
     <div v-t = "'plugins.editing.messages.offline'"></div>
@@ -485,7 +485,7 @@ export default ({
   created() {
     this._selectedlayers = []; //store previous selected layers
 
-    this.appState        = ApplicationState;
+    this.ApplicationState        = ApplicationState;
 
     // Array of object setter(as a key), key to unby (as value)
     this.unByKeys        = this.unByKeys || [];

@@ -82,9 +82,9 @@ new (class extends Plugin {
       show_errors:    false,
       editFeatureKey: undefined,
       panel:          null, // editing panel
-      currentLayout:  ApplicationState.gui.layout.__current,
+      currentLayout:  ApplicationState.layout.__current,
       unwatchLayout:  Vue.watch(
-        () => ApplicationState.gui.layout.__current,
+        () => ApplicationState.layout.__current,
         layoutName => this.state.currentLayout = layoutName !== this.getName() ? layoutName : this.state.currentLayout
       ),
       onMapControlToggled: ({ target }) => {
@@ -1070,14 +1070,14 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setCurrentLayout() {
-    ApplicationState.gui.layout.__current = this.getName() ?? 'app';
+    ApplicationState.layout.__current = this.getName() ?? 'app';
   }
 
   /**
    * @since g3w-client-plugin-editing@v3.8.0
    */
   resetCurrentLayout() {
-    ApplicationState.gui.layout.__current = this.state.currentLayout ?? 'app';
+    ApplicationState.layout.__current = this.state.currentLayout ?? 'app';
   }
 
   /**
