@@ -40,7 +40,7 @@ export class OpenTableStep extends Step {
     // set current plugin layout (right content)
     GUI.getPlugin('editing').setCurrentLayout();
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       this._isContentChild = Workflow.Stack.length > 1;
       const features       = (inputs.layer.getEditor().readEditingFeatures() || []);
       const headers        = (getEditingFields(inputs.layer) || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
@@ -82,7 +82,7 @@ export class OpenTableStep extends Step {
           push:              this._isContentChild,
           service,
           state:             service.state,
-          internalComponent: new (Vue.extend(require('../components/table.js').default))({ service }),
+          internalComponent: new (Vue.extend((await import('../components/table.js')).default))({ service }),
         }),
         push:       this._isContentChild,
         showgoback: false,
