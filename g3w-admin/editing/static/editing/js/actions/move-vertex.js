@@ -11,8 +11,8 @@ import { setVertexStyle }                               from '../utils/setVertex
 import { getEditingLayer }                              from '../utils/getEditingLayer.js';
 import { Step }                                         from '../g3w-step.js';
 
-const { GUI }                                           = g3wsdk.gui;
-const { createMeasureTooltip, removeMeasureTooltip }    = g3wsdk.ol.utils;
+const { GUI }                  = g3wsdk.gui;
+const { createMeasureTooltip } = g3wsdk.ol.utils;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/modifygeometryvertextask.js@v3.7.1
@@ -117,7 +117,7 @@ export class ModifyGeometryVertexStep extends Step {
   }
 
   removeMeasureInteraction() {
-    if (this.tooltip) { removeMeasureTooltip({ map: this.getMap(), ...this.tooltip }) }
+    this.tooltip?.remove?.();
     this.tooltip = null;
   }
 
