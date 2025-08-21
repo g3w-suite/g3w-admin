@@ -12,8 +12,8 @@ import { getEditingFields }                             from '../utils/getEditin
 import { Step }                                         from '../g3w-step.js';
 import { Feature }                                      from '../g3w-feature.js';
 
-const { Geometry }                                      = g3wsdk.core.geoutils;
-const { GUI }                                           = g3wsdk.gui;
+const { Geometry }       = g3wsdk.core.geoutils;
+const { GUI }            = g3wsdk.gui;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
@@ -67,8 +67,18 @@ export class AddFeatureStep extends Step {
       setAndUnsetSelectedFeaturesStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
 
       const originalGeometryType = inputs.layer.state.editing.geometrytype;
+      let geom                   = originalGeometryType;
 
-      this.geometryType = Geometry.getOLGeometry(originalGeometryType);
+      // get open layers geometry
+      if (geom.startsWith('Line'))              { geom = 'LineString'; }
+      else if (geom.startsWith('MultiLine'))    { geom = 'MultiLineString'; }
+      else if (geom.startsWith('Point'))        { geom = 'Point'; }
+      else if (geom.startsWith('MultiPoint'))   { geom = 'MultiPoint'; }
+      else if (geom.startsWith('Polygon'))      { geom = 'Polygon'; }
+      else if (geom.startsWith('MultiPolygon')) { geom = 'MultiPolygon'; }
+      else                                      { console.warn('invalid geometry type: ', geom); }
+
+      this.geometryType = geom;
 
       const source     = getEditingLayer(inputs.layer).getSource();
       const attributes = getEditingFields(inputs.layer);
