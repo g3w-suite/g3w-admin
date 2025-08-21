@@ -47,7 +47,6 @@ import { OpenTableStep }                                from './actions/open-tab
 const { Emitter, Layer }                                 = g3w;
 const { GEOMETRY_TYPES }                                 = g3wsdk.constant;
 const { ApplicationState }                               = g3wsdk.core;
-const { ProjectsRegistry }                               = g3wsdk.core.project;
 const { Geometry, dissolve }                             = g3wsdk.core.geoutils;
 const { splitFeature }                                   = g3wsdk.core.geoutils;
 const { removeZValueToOLFeatureGeometry }                = g3wsdk.core.geoutils.Geometry;
@@ -968,7 +967,7 @@ export class ToolBox extends Emitter {
                                                 : ((await GUI.getData('query:coordinates', { // TOC/PROJECT layer
                                                   inputs: {
                                                     coordinates:           e.coordinate,
-                                                    query_point_tolerance: ProjectsRegistry.getCurrentProject().getQueryPointTolerance(),
+                                                    query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
                                                     layerIds:              [layer.id],
                                                     multilayers:           false
                                                   },
