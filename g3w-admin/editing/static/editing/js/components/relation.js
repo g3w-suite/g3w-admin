@@ -31,7 +31,6 @@ import { MoveFeatureStep }                              from '../actions/move-fe
 import { getCatalogLayerById }                          from '../utils/getCatalogLayerById.js';
 import { getCatalogLayers }                             from '../utils/getCatalogLayers.js';
 
-const { ProjectsRegistry }            = g3wsdk.core.project;
 const { Geometry }                    = g3wsdk.core.geoutils;
 const _                               = g3wsdk.core.i18n.t;
 const { toRawType }                   = g3wsdk.core.utils;
@@ -1563,7 +1562,7 @@ export default ({
                                       : ((await GUI.getData('query:coordinates', { // TOC/PROJECT layer
                                         inputs: {
                                           coordinates:           e.coordinate,
-                                          query_point_tolerance: ProjectsRegistry.getCurrentProject().getQueryPointTolerance(),
+                                          query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
                                           layerIds:              [ options.copyLayer.getId() ],
                                           multilayers:           false
                                         },
