@@ -587,7 +587,7 @@ export default ({
                 }
                 return {
                   data:  [{ layer, features }],
-                  query: { type: 'search', fids },
+                  query: { type: 'search', fids: features.map(f => f.get(G3W_FID)) },
                 };
             }))).map(response => response.data);
             res({
