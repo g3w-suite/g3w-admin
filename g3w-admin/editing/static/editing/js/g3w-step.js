@@ -407,13 +407,13 @@ export class Step extends Emitter {
             setTimeout(() => { this.onChange(this.checked); })
           },
           stop() {
-            step.removeMeasureInteraction();
+            step.measureTooltip(false);
             this.checked = false;
             this.onChange(false);
           },
           onChange(bool) {
             this.checked = bool;
-            step[bool ? 'addMeasureInteraction':  'removeMeasureInteraction']();
+            step.measureTooltip(bool);
           },
         }
       },

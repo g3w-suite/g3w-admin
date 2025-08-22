@@ -12,8 +12,10 @@ import { getEditingFields }                             from '../utils/getEditin
 import { Step }                                         from '../g3w-step.js';
 import { Feature }                                      from '../g3w-feature.js';
 
-const { Geometry }       = g3wsdk.core.geoutils;
-const { GUI }            = g3wsdk.gui;
+const GUI                      = g3w.app;
+const _                        = g3w.gettext;
+const { createMeasureTooltip } = g3w.utils;
+const { Geometry }             = g3wsdk.core.geoutils;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
@@ -21,27 +23,27 @@ const { GUI }            = g3wsdk.gui;
  */
 export class AddFeatureStep extends Step {
 
+  drawInteraction;
+
+  measeureInteraction;
+
+  drawingFeature;
+
+  /**
+   * Handle tasks that stops after `run(inputs, context)` promise (or if ESC key is pressed)
+   *
+   * @since g3w-client-plugin-editing@v3.8.0
+   */
+  _stopPromise;
+
+
   constructor(options = {}) {
     options.help = "editing.steps.help.draw_new_feature";
 
     super(options);
 
-    this._add = undefined === options.add ? true : options.add;
-
-    this.drawInteraction;
-
-    this.measeureInteraction;
-
-    this.drawingFeature;
-
-    this._snap = false === options.snap ? false : true;
-
-    /**
-     * Handle tasks that stops after `run(inputs, context)` promise (or if ESC key is pressed)
-     *
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
-    this._stopPromise;
+    this._add  = undefined === options.add ? true  : options.add;
+    this._snap = false === options.snap    ? false : true;
 
     /**
      *
@@ -124,36 +126,101 @@ export class AddFeatureStep extends Step {
   }
 
   /**
-   * Method to add Measure
+   * @param { boolean } enable whether to toggle measure tooltip
    */
-  addMeasureInteraction() {
+  measureTooltip(enable) {
+    if (!enable) {
+      if (this.measureInteraction) {
+        this.measureInteraction.clear();
+        this.removeInteraction(this.measureInteraction);
+        this.measureInteraction = null;
+      }
+      return;
+    }
+
     const is_line = Geometry.isLineGeometryType(this.geometryType);
     const is_poly = Geometry.isPolygonGeometryType(this.geometryType);
 
     //Skip in case geometry is not Line or Polygon
     if (!is_line && !is_poly) { return }
 
-    this.measureInteraction = this.addInteraction(
-      new MeasureInteraction({
-        projection:   GUI.getProjection(),
-        drawColor:   'transparent',
-        feature:      this.drawingFeature,
-        geometryType: is_line ? "LineString" : "Polygon",
-      })
-    );
+    let MEASURE;
+
+    const LAYER = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: () => [
+        new ol.style.Style({
+          stroke: new ol.style.Stroke({ lineDash: [10, 10], width: 3 }),
+          fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' })
+        })
+      ],
+    });
+
+    const interaction = new ol.interaction.Draw({
+      source: LAYER.getSource(),
+      type:  (is_line ? "LineString" : "Polygon"),
+      style: new ol.style.Style({
+        fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' }),
+        stroke: new ol.style.Stroke({ color: 'transparent', lineDash: [10, 10], width: 3 }),
+        image:  new ol.style.Circle({
+          radius: 5,
+          stroke: new ol.style.Stroke({ color: 'rgba(0, 0, 0, 0.7)' }),
+          fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' })
+        }),
+      }),
+      condition(e) {
+        // right click
+        if (2 === e.activePointers[0].buttons) {
+          interaction.removeLastPoint();
+          return false;
+        }
+        // left click
+        return true;
+      },
+    });
+
+    interaction.set('feature', this.drawingFeature);
+
+    const EVENTS = {
+      // remove last point
+      keydown: e => {
+        const geom = interaction.get('feature').getGeometry();
+        if (46 !== e.keyCode) {
+          return;
+        }
+        if ((geom instanceof ol.geom.Polygon && geom.getCoordinates()[0].length > 2) || (geom instanceof ol.geom.LineString && geom.getCoordinates().length > 1)) {
+          interaction.removeLastPoint();
+        }
+      },
+    };
+
+    interaction.on('drawstart', e => {
+      interaction.getMap().removeLayer(LAYER);
+      interaction.set('feature', e.feature);
+      $(document).on('keydown', EVENTS.keydown);
+      LAYER.getSource().clear();
+      // create measure tooltip
+      MEASURE?.remove?.();
+      MEASURE = createMeasureTooltip({ map: interaction.getMap(), feature: interaction.get('feature') });
+    });
+
+    interaction.on('drawend', () => {
+      interaction.set('feature', null);
+      $(document).off('keydown', EVENTS.keydown);
+      interaction.getMap().addLayer(LAYER);
+    });
+
+    interaction.clear = () => {
+      LAYER.getSource().clear();
+      interaction.set('feature', null);
+      $(document).off('keydown', EVENTS.keydown);
+      MEASURE?.remove?.();
+      interaction.getMap()?.removeLayer?.(LAYER);
+    };
+
+    this.measureInteraction = this.addInteraction(interaction);
 
     this.measureInteraction.setActive(true);
-  }
-
-  /**
-   * Remove Measure Interaction
-   */
-  removeMeasureInteraction() {
-    if (this.measureInteraction) {
-      this.measureInteraction.clear();
-      this.removeInteraction(this.measureInteraction);
-      this.measureInteraction = null;
-    }
   }
 
   /**
@@ -169,7 +236,7 @@ export class AddFeatureStep extends Step {
 
   stop() {
     this.removeInteraction(this.drawInteraction);
-    this.removeMeasureInteraction();
+    this.measureTooltip(false);
     this.resolve(true);
 
     this.drawInteraction = null;
@@ -181,136 +248,4 @@ export class AddFeatureStep extends Step {
     return true;
   }
 
-}
-
-class MeasureInteraction extends ol.interaction.Draw {
-
-  constructor(opts) {
-    const measureStyle     = new ol.style.Style({
-      fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' }),
-      stroke: new ol.style.Stroke({ color: opts.drawColor || 'rgba(0, 0, 0, 0.5)', lineDash: [10, 10], width: 3 }),
-      image:  new ol.style.Circle({
-        radius: 5,
-        stroke: new ol.style.Stroke({ color: 'rgba(0, 0, 0, 0.7)' }),
-        fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' })
-      }),
-    });
-    const source       = new ol.source.Vector();
-
-    super({
-      source,
-      type:  opts.geometryType || 'LineString',
-      style: measureStyle
-    });
-
-    this._helpTooltip;
-    this._featureGeometryChangelistener;
-    this._poinOnMapMoveListener;
-    this._helpTooltipElement;
-
-    this._helpMsg      = opts.help;
-    this._projection   = opts.projection;
-    this.feature       = opts.feature;
-    this._map          = null;
-    this._feature      = null;
-    this._layer        = new ol.layer.Vector({
-      source,
-      style() {
-        return [
-          new ol.style.Style({
-            stroke: new ol.style.Stroke({ lineDash: [10, 10], width: 3 }),
-            fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' })
-          })
-        ];
-      }
-    });
-
-    this.set('beforeRemove', this.clear);
-    this.set('layer',        this._layer);
-    // register event on two action
-    this.on('drawstart',     this._drawStart);
-    this.on('drawend',       this._drawEnd);
-  }
-
-  clear() {
-    this._layer.getSource().clear();
-    this._clearMessagesAndListeners();
-    if (this.measureTooltip) {
-      this.measureTooltip.remove();
-      this.measureTooltip = null;
-    }
-    if (this._map) {
-      this._map.removeLayer(this._layer);
-    }
-  }
-
-  _clearMessagesAndListeners() {
-    this._feature = null;
-    // unset tooltip so that a new one can be created
-    if (this._map) {
-      this._helpTooltipElement.innerHTML = '';
-
-      this._helpTooltipElement.classList.add('hidden');
-
-      ol.Observable.unByKey(this._featureGeometryChangelistener);
-      ol.Observable.unByKey(this._poinOnMapMoveListener);
-
-      $(document).off('keydown', this._keyDownEventHandler);
-    }
-  }
-
-  //drawStart function
-  _drawStart(e) {
-    this._map = this.getMap();
-    this._map.removeLayer(this._layer);
-    this._feature = e.feature;
-    if (this.feature) { this._feature.setGeometry(this.feature.getGeometry()) }
-    // removed last point
-    this._keyDownEventHandler = e => {
-      const geom = this._feature.getGeometry();
-      if (46 === e.keyCode) {
-        if ( geom instanceof ol.geom.Polygon && geom.getCoordinates()[0].length > 2) {
-          this.removeLastPoint();
-        } else if (geom instanceof ol.geom.LineString && geom.getCoordinates().length > 1) {
-          this.removeLastPoint();
-        }
-      }
-    };
-    $(document).on('keydown', this._keyDownEventHandler);
-    this._layer.getSource().clear();
-    this._poinOnMapMoveListener = this._map.on('pointermove', e => {
-      if (e.dragging) { return }
-      if (this._feature && this._helpMsg) {
-        this._helpTooltipElement.innerHTML = _(this._helpMsg);
-        this._helpTooltip.setPosition(e.coordinate);
-        this._helpTooltipElement.classList.remove('hidden');
-      }
-    });
-    // create help tooltip
-    if (this._helpTooltipElement) { this._helpTooltipElement.parentNode.removeChild(this._helpTooltipElement) }
-    if (this._helpTooltip) { this._map.removeOverlay(this._helpTooltip) }
-    this._helpTooltipElement           = document.createElement('div');
-    this._helpTooltipElement.className = 'mtooltip hidden';
-    this._helpTooltip                  = new ol.Overlay({
-      element:     this._helpTooltipElement,
-      offset:      [15, 0],
-      positioning: 'center-left'
-    });
-
-    this._map.addOverlay(this._helpTooltip);
-
-    // create measure tooltip
-    if (this.measureTooltip) {
-      this.measureTooltip.remove();
-    }
-
-    this.measureTooltip = createMeasureTooltip({ map: this._map, feature: this._feature });
-  }
-
-  _drawEnd() {
-    this.measureTooltip.tooltip.getElement().className = 'mtooltip mtooltip-static';
-    this.measureTooltip.tooltip.setOffset([0, -7]);
-    this._clearMessagesAndListeners();
-    this._map.addLayer(this._layer);
-  }
 }

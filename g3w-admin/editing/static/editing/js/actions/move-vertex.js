@@ -20,17 +20,16 @@ const { createMeasureTooltip } = g3wsdk.ol.utils;
  */
 export class ModifyGeometryVertexStep extends Step {
 
+  _originalStyle = null;
+
+  _feature = null;
+
+  tooltip;
+
   constructor(options = {}) {
     options.snap = undefined === options.snap || options.snap;
     options.help = "editing.steps.help.edit_feature_vertex";
-
     super(options);
-
-    this._originalStyle = null;
-
-    this._feature       = null;
-
-    this.tooltip;
   }
 
   run(inputs, context) {
@@ -110,15 +109,18 @@ export class ModifyGeometryVertexStep extends Step {
     })
   }
 
-  addMeasureInteraction() {
-    this._modifyInteraction.on('modifystart', e => {
-      this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: e.features.getArray()[0] });
-    });
-  }
-
-  removeMeasureInteraction() {
-    this.tooltip?.remove?.();
-    this.tooltip = null;
+  /**
+   * @param { boolean } enable whether to toggle measure tooltip
+   */
+  measureTooltip(enable) {
+    if (enable) {
+      this._modifyInteraction.once('modifystart', e => {
+        this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: e.features.getArray()[0] });
+      });
+    } else {
+      this.tooltip?.remove?.();
+      this.tooltip = null;
+    }
   }
 
   stop() {
