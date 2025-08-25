@@ -571,13 +571,15 @@ export default ({
           try {
             let data = (await Promise.all(
               inputs.layers.map(async (layer, i) => {
-                let features = []; 
+                let features = [];
+                const fids   = []; 
                 try {
                   // convert API response to Open Layer Features
                   features = ((layer && await layer.getFeatureByFids({ fids: inputs.fids[i], formatter: inputs.formatter })) || []).map(f => {
                     const properties    = undefined !== f.properties ? f.properties : {}
                     properties[G3W_FID] = f.id;
                     const olFeat          = new ol.Feature(f.geometry && new ol.geom[f.geometry.type](f.geometry.coordinates));
+                    fids.push(f.id);
                     olFeat.setProperties(properties);
                     olFeat.setId(f.id);
                     return olFeat;
@@ -587,7 +589,7 @@ export default ({
                 }
                 return {
                   data:  [{ layer, features }],
-                  query: { type: 'search', fids: features.map(f => f.get(G3W_FID)) },
+                  query: { type: 'search', fids },
                 };
             }))).map(response => response.data);
             res({
