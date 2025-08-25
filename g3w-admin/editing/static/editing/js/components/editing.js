@@ -18,91 +18,91 @@ const {
 export default ({
 
   template: /*html*/`
-<div class = "g3w-editing-panel">
+    <div class = "g3w-editing-panel">
 
-  <bar-loader :loading = "saving"/>
+      <bar-loader :loading = "saving"/>
 
-  <!-- OFFLINE MESSAGE -->
-  <div
-    v-if  = "!ApplicationState.online"
-    id    = "onlineofflinemessage"
-  >
-    <div v-t = "'plugins.editing.messages.offline'"></div>
-  </div>
+      <!-- OFFLINE MESSAGE -->
+      <div
+        v-if  = "!ApplicationState.online"
+        id    = "onlineofflinemessage"
+      >
+        <div v-t = "'plugins.editing.messages.offline'"></div>
+      </div>
 
-  <!-- COMMIT BAR -->
-  <div
-    v-if       = "showcommitbar"
-    v-disabled = "saving"
-    class      = "commitbar"
-  >
+      <!-- COMMIT BAR -->
+      <div
+        v-if       = "showcommitbar"
+        v-disabled = "saving"
+        class      = "commitbar"
+      >
 
-    <!-- SAVE BUTTON -->
-    <div @click.stop = "commit" :class = "['editing-button', (canCommit ? 'enabled': '')]">
-      <span :class = "['editing-icon', g3wtemplate.font['save']]"></span>
-    </div>
+        <!-- SAVE BUTTON -->
+        <div @click.stop = "commit" :class = "['editing-button', (canCommit ? 'enabled': '')]">
+          <span :class = "['editing-icon', g3wtemplate.font['save']]"></span>
+        </div>
 
-    <!-- UNDO BUTTON -->
-    <div @click.stop = "undo" :class = "['editing-button', (canUndo ? 'enabled': '')]">
-      <span :class = "['editing-icon', g3wtemplate.font['arrow-left']]"></span>
-    </div>
+        <!-- UNDO BUTTON -->
+        <div @click.stop = "undo" :class = "['editing-button', (canUndo ? 'enabled': '')]">
+          <span :class = "['editing-icon', g3wtemplate.font['arrow-left']]"></span>
+        </div>
 
-    <!-- REDO BUTTON -->
-    <div @click.stop = "redo" :class = "['editing-button', (canRedo ? 'enabled' : '')]">
-      <span :class = "['editing-icon', g3wtemplate.font['arrow-right']]"></span>
-    </div>
+        <!-- REDO BUTTON -->
+        <div @click.stop = "redo" :class = "['editing-button', (canRedo ? 'enabled' : '')]">
+          <span :class = "['editing-icon', g3wtemplate.font['arrow-right']]"></span>
+        </div>
 
-  </div>
+      </div>
 
-  <div
-    v-else
-    style = "height: 10px;"
-  ></div>
+      <div
+        v-else
+        style = "height: 10px;"
+      ></div>
 
-  <!-- LAYERS SELECT -->
-  <!-- ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1 -->
-  <div
-    v-if  = "state.showselectlayers && editinglayers.length > 1"
-    id    = "g3w-select-editable-layers-content"
-    class = "skin-color"
-  >
-    <label for = "g3w-select-editable-layers-to-show" v-t = "'Layers'"></label>
-    <select
-      id         = "g3w-select-editable-layers-to-show"
-      :multiple  = "true"
-      :clear     = "true"
-      ref        = "selectlayers"
-      v-select2  = "'selectedlayers'"
-    >
-      <option
-        v-for  = "editinglayer in editinglayers"
-        :value = "editinglayer.id"
-        :key   = "editinglayer.id"
-      >{{ editinglayer.name }}</option>
-    </select>
-  </div>
+      <!-- LAYERS SELECT -->
+      <!-- ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1 -->
+      <div
+        v-if  = "state.showselectlayers && editinglayers.length > 1"
+        id    = "g3w-select-editable-layers-content"
+        class = "skin-color"
+      >
+        <label for = "g3w-select-editable-layers-to-show" v-t = "'Layers'"></label>
+        <select
+          id         = "g3w-select-editable-layers-to-show"
+          :multiple  = "true"
+          :clear     = "true"
+          ref        = "selectlayers"
+          v-select2  = "'selectedlayers'"
+        >
+          <option
+            v-for  = "editinglayer in editinglayers"
+            :value = "editinglayer.id"
+            :key   = "editinglayer.id"
+          >{{ editinglayer.name }}</option>
+        </select>
+      </div>
 
-  <!-- TOOLBOXES -->
-  <div id = "toolboxes">
-    <toolbox
-      v-for                 = "toolbox in state.toolboxes"
-      :key                  = "toolbox.state.id"
-      :state                = "toolbox.state"
-      :resourcesurl         = "resourcesurl"
-      @setselectedtoolbox   = "selectToolBox"
-      @starttoolbox         = "startToolBox"
-      @stoptoolbox          = "stopToolBox"
-      @setactivetool        = "startTool"
-      @stopactivetool       = "stopTool"
-      @on-editing           = "updateLayersInEditing"
-      @update-filter-layers = "updateFilterLayers"
-    />
-  </div>
+      <!-- TOOLBOXES -->
+      <div id = "toolboxes">
+        <toolbox
+          v-for                 = "toolbox in state.toolboxes"
+          :key                  = "toolbox.state.id"
+          :state                = "toolbox.state"
+          :resourcesurl         = "resourcesurl"
+          @setselectedtoolbox   = "selectToolBox"
+          @starttoolbox         = "startToolBox"
+          @stoptoolbox          = "stopToolBox"
+          @setactivetool        = "startTool"
+          @stopactivetool       = "stopTool"
+          @on-editing           = "updateLayersInEditing"
+          @update-filter-layers = "updateFilterLayers"
+        />
+      </div>
 
-  <p v-if = "django_admin_url"><a :href = "django_admin_url" target = "_blank">&#x1F512; {{ $t('Locked features') }}</a></p>
-  <p v-if = "filemanager_url"><a  :href = "filemanager_url"  target = "_blank">&#x1F4C2; {{ $t('File manager') }}</a></p>
+      <p v-if = "django_admin_url"><a :href = "django_admin_url" target = "_blank">&#x1F512; {{ $t('Locked features') }}</a></p>
+      <p v-if = "filemanager_url"><a  :href = "filemanager_url"  target = "_blank">&#x1F4C2; {{ $t('File manager') }}</a></p>
 
-</div>`,
+    </div>`,
 
   name: 'Editing',
 

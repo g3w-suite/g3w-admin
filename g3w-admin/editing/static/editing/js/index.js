@@ -96,7 +96,7 @@ new (class extends Plugin {
     };
 
     // BACKOMP v3.x
-    this.setService(Object.assign(new PluginService, {
+    this.service = {
       state:                             this.state,
       config:                            this.config,
       getSession:                        this.getSession.bind(this),
@@ -125,7 +125,110 @@ new (class extends Plugin {
       stopEditing:                       this.stopEditing.bind(this),
       startEditing:                      this.startEditing.bind(this),
       addLayerFeature:                   this.addLayerFeature.bind(this),
-    }));
+      /**
+       * @param config: plugin configuration object
+       * 
+       * @virtual method need to be implemented by subclasses
+       */
+
+      resetCurrentLayout() {
+        ApplicationState.layout.__current = this.currentLayout;
+      },
+
+      
+
+      isIframe() {
+        return ApplicationState.iframe;
+      },
+
+      getCurrentProject() {
+        return ApplicationState.project;
+      },
+
+      getGid() {
+        return this.config.gid && this.config.gid.split(':')[1];
+      },
+
+      initEvents(events = []) {
+        for (let i in events) {
+          this._pluginEvents[events[i]] = {};
+        }
+      },
+
+      subscribeEvent({ name, once = false, owner, listener } = {}) {
+        this._pluginEvents[name]        = this._pluginEvents[name] ? this._pluginEvents[name] : {};
+        this._pluginEvents[name][owner] = listener;
+        if (once) {
+          this.once(name, listener);
+        } else {
+          this.on(name, listener);
+        }
+      },
+
+      triggerEvent({ name, params = {} }) {
+        this.emit(name, params);
+      },
+
+      unsubscribeEvent({ name, owner }) {
+        this.removeEvent(name, this._pluginEvents[name][owner]);
+        delete this._pluginEvents[name][owner];
+      },
+
+      unsubscribeAllEvents() {
+        for (const name in this._pluginEvents) {
+          this.removeEvent(name);
+          delete this._pluginEvents[name];
+        }
+      },
+
+      clearAllEvents() {
+        this.unsubscribeAllEvents();
+        this.unwatch();
+        this.vm            = null;
+        this._pluginEvents = null
+      },
+
+  /**
+   * @returns need to load or not the plugin
+   * 
+   * @virtual method need to be implemented by subclasses 
+   */ 
+  loadPlugin() {
+    return true
+  }
+
+  /**
+   * Called when plugin is removed to clear events and memory
+   * 
+   * @virtual method need to be implemented by subclasses
+   */
+  clear() {}
+      /** ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1 */
+      getApi() {
+        return {
+          getSession:                       this.getSession.bind(this),
+          getFeature:                       this.getFeature.bind(this),
+          subscribe:                        this.on.bind(this),
+          unsubscribe:                      this.off.bind(this),
+          getToolBoxById:                   this.getToolBoxById.bind(this),
+          getEditingLayerById:              this.getLayerById.bind(this), //@since 4.1.0
+          addNewFeature:                    createFeature,
+          commitChanges:                    this.commit.bind(this),
+          setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
+          getMapService:                    () => GUI,
+          updateLayerFeature:               noop,
+          deleteLayerFeature:               noop,
+          addLayerFeature:                  this.addLayerFeature.bind(this),
+          hidePanel:                        this.hideEditingPanel.bind(this),
+          resetDefault:                     this.resetAPIDefault.bind(this),
+          startEditing:                     this.startEditing.bind(this),
+          stopEditing:                      this.stopEditing.bind(this),
+          showPanel:                        this.showPanel.bind(this),
+          setSaveConfig:                    this.setSaveConfig.bind(this),
+          addFormComponents:                this.addFormComponents.bind(this),
+        }
+      },
+    };
 
     // set map control toggle event
     GUI.on('mapcontrol:toggled', this.state.onMapControlToggled);
@@ -145,32 +248,6 @@ new (class extends Plugin {
   async #init() {
 
     this.setHookLoading({ loading: true });
-
-    /** ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1 */
-    this.service.setApi({
-      api: {
-        getSession:                       this.getSession.bind(this),
-        getFeature:                       this.getFeature.bind(this),
-        subscribe:                        this.on.bind(this),
-        unsubscribe:                      this.off.bind(this),
-        getToolBoxById:                   this.getToolBoxById.bind(this),
-        getEditingLayerById:              this.getLayerById.bind(this), //@since 4.1.0
-        addNewFeature:                    createFeature,
-        commitChanges:                    this.commit.bind(this),
-        setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
-        getMapService:                    () => GUI,
-        updateLayerFeature:               noop,
-        deleteLayerFeature:               noop,
-        addLayerFeature:                  this.addLayerFeature.bind(this),
-        hidePanel:                        this.hideEditingPanel.bind(this),
-        resetDefault:                     this.resetAPIDefault.bind(this),
-        startEditing:                     this.startEditing.bind(this),
-        stopEditing:                      this.stopEditing.bind(this),
-        showPanel:                        this.showPanel.bind(this),
-        setSaveConfig:                    this.setSaveConfig.bind(this),
-        addFormComponents:                this.addFormComponents.bind(this),
-      }
-    });
 
     // get editable layers config from server (sorted by "index" to keep TOC order)
     const LAYERS = await Promise.allSettled(
