@@ -10,7 +10,6 @@ const { Plugin }                               = g3w;
 const { G3W_FID }                              = g3wsdk.constant;
 const { ApplicationState }                     = g3wsdk.core;
 const _                                        = g3wsdk.core.i18n.t;
-const { PluginService }                        = g3wsdk.core.plugin;
 const { XHR, noop }                            = g3wsdk.core.utils;
 const { GUI }                                  = g3wsdk.gui;
 const { Panel }                                = g3wsdk.gui.vue;
@@ -34,6 +33,9 @@ new (class extends Plugin {
         { name: 'clipboard', className: "fas fa-clipboard" }
       ],
     });
+
+    /**BACKOMP v3.x */
+    this.service = this;
 
     // i18n
     const VM = new Vue();
@@ -95,38 +97,6 @@ new (class extends Plugin {
       subscribers: this.___events,
     };
 
-    // BACKOMP v3.x
-    this.setService(Object.assign(new PluginService, {
-      state:                             this.state,
-      config:                            this.config,
-      getSession:                        this.getSession.bind(this),
-      getFeature:                        this.getFeature.bind(this),
-      subscribe:                         this.on.bind(this),
-      unsubscribe:                       this.off.bind(this),
-      fireEvent:                         this.emit.bind(this),
-      undo:                              this.undo.bind(this),
-      redo:                              this.redo.bind(this),
-      getEditingLayer:                   this.getEditingLayer.bind(this),
-      addToolBox:                        this.addToolBox.bind(this),
-      resetDefault:                      this.resetDefault.bind(this),
-      resetAPIDefault:                   this.resetAPIDefault.bind(this),
-      getLayers:                         this.getLayers.bind(this),
-      getLayerById:                      this.getLayerById.bind(this),
-      getToolBoxById:                    this.getToolBoxById.bind(this),
-      getSessionById:                    this.getSessionById.bind(this),
-      setApplicationEditingConstraints:  this.setApplicationEditingConstraints.bind(this),
-      getToolBoxes:                      this.getToolBoxes.bind(this),
-      getEditableLayers:                 this.getEditableLayers.bind(this),
-      stop:                              this.stop.bind(this),
-      saveChange:                        this.saveChange.bind(this),
-      commit:                            this.commit.bind(this),
-      undoRedoLayerUniqueFieldValues:    this.undoRedoLayerUniqueFieldValues.bind(this),
-      undoRedoRelationUniqueFieldValues: this.undoRedoRelationUniqueFieldValues.bind(this),
-      stopEditing:                       this.stopEditing.bind(this),
-      startEditing:                      this.startEditing.bind(this),
-      addLayerFeature:                   this.addLayerFeature.bind(this),
-    }));
-
     // set map control toggle event
     GUI.on('mapcontrol:toggled', this.state.onMapControlToggled);
 
@@ -137,6 +107,44 @@ new (class extends Plugin {
 
   }
 
+  /**  */
+  getService() {
+    return this;
+  }
+
+  /**BACKOMP v3.x */
+  subscribe(evt, cbk) {this.on(evt, cbk);}
+  unsubscribe(evt, cbk) { this.off(evt, cbk); }
+  fireEvent(e) { this.emit(e); }
+
+  /**BACKOMP v3.x */
+  getApi() {
+    /** ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1 */
+    return {
+      getSession:                       this.getSession.bind(this),
+      getFeature:                       this.getFeature.bind(this),
+      subscribe:                        this.subscribe.bind(this),
+      unsubscribe:                      this.subscribe.bind(this),
+      getToolBoxById:                   this.getToolBoxById.bind(this),
+      getEditingLayerById:              this.getLayerById.bind(this), //@since 4.1.0
+      addNewFeature:                    createFeature,
+      commitChanges:                    this.commit.bind(this),
+      setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
+      getMapService:                    () => GUI,
+      updateLayerFeature:               noop,
+      deleteLayerFeature:               noop,
+      addLayerFeature:                  this.addLayerFeature.bind(this),
+      hidePanel:                        this.hideEditingPanel.bind(this),
+      resetDefault:                     this.resetAPIDefault.bind(this),
+      startEditing:                     this.startEditing.bind(this),
+      stopEditing:                      this.stopEditing.bind(this),
+      showPanel:                        this.showPanel.bind(this),
+      setSaveConfig:                    this.setSaveConfig.bind(this),
+      addFormComponents:                this.addFormComponents.bind(this),
+    
+    }
+  }
+
   /**
    * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
    * 
@@ -145,32 +153,6 @@ new (class extends Plugin {
   async #init() {
 
     this.setHookLoading({ loading: true });
-
-    /** ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1 */
-    this.service.setApi({
-      api: {
-        getSession:                       this.getSession.bind(this),
-        getFeature:                       this.getFeature.bind(this),
-        subscribe:                        this.on.bind(this),
-        unsubscribe:                      this.off.bind(this),
-        getToolBoxById:                   this.getToolBoxById.bind(this),
-        getEditingLayerById:              this.getLayerById.bind(this), //@since 4.1.0
-        addNewFeature:                    createFeature,
-        commitChanges:                    this.commit.bind(this),
-        setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
-        getMapService:                    () => GUI,
-        updateLayerFeature:               noop,
-        deleteLayerFeature:               noop,
-        addLayerFeature:                  this.addLayerFeature.bind(this),
-        hidePanel:                        this.hideEditingPanel.bind(this),
-        resetDefault:                     this.resetAPIDefault.bind(this),
-        startEditing:                     this.startEditing.bind(this),
-        stopEditing:                      this.stopEditing.bind(this),
-        showPanel:                        this.showPanel.bind(this),
-        setSaveConfig:                    this.setSaveConfig.bind(this),
-        addFormComponents:                this.addFormComponents.bind(this),
-      }
-    });
 
     // get editable layers config from server (sorted by "index" to keep TOC order)
     const LAYERS = await Promise.allSettled(
