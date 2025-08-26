@@ -31,7 +31,6 @@ new (class extends Plugin {
         { name: 'clipboard', className: "fas fa-clipboard" }
       ],
     });
-    console.log(this.config)
 
     /**BACKOMP v3.x */
     this.service = this;
