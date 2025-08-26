@@ -384,7 +384,7 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
+   * Used by the following plugins: "sispi-worksite"
    * 
    * Method to apply filter editing contsraint to toolbox editing
    * Apply filter editing contsraint to toolbox editing
