@@ -4,8 +4,6 @@ import { getCatalogLayers }                    from './utils/getCatalogLayers.js
 import { getCatalogLayerById }                 from './utils/getCatalogLayerById.js';
 import { getEditingLayer }                     from './utils/getEditingLayer.js';
 
-const BASE_URL                                 = `${initConfig.group.plugins.editing.baseUrl}editing/js`;
-
 const { Plugin }                               = g3w;
 const { G3W_FID }                              = g3wsdk.constant;
 const { ApplicationState }                     = g3wsdk.core;
@@ -33,6 +31,7 @@ new (class extends Plugin {
         { name: 'clipboard', className: "fas fa-clipboard" }
       ],
     });
+    console.log(this.config)
 
     /**BACKOMP v3.x */
     this.service = this;
@@ -40,7 +39,7 @@ new (class extends Plugin {
     // i18n
     const VM = new Vue();
     const i18n = async lang => {
-      this.setLocale({ [lang]: (await import(`${BASE_URL}/i18n/${lang}.js`)).default });
+      this.setLocale({ [lang]: (await import(`${this.config.baseUrl}editing/js/i18n/${lang}.js`)).default });
     };
 
     VM.$watch(() => ApplicationState.language, i18n);
