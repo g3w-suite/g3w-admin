@@ -3302,8 +3302,8 @@ export class ToolBox extends Emitter {
         .filter(f => lockIds.includes(`${f.getId()}`))
         .map(feature => new Feature({ feature }));
 
-        //if no features locks mean another user locks all feature requests
-        if (0 === featurelocks.length || count > features.length) {
+        //if no features get from server (count === 0) and no featurelocks mean another user locks all feature requests
+        if (count > 0 && (0 === featurelocks.length || count > features.length)) {
           //It means that another user locks these features
           this._editor.featuresLockedByOtherUser(features);
         }
@@ -3336,19 +3336,19 @@ export class ToolBox extends Emitter {
           }
         });
 
-    } catch (e) {
-      console.warn(e);
-    }
+      } catch (e) {
+        console.warn(e);
+      }
 
-    this._editor.readFeatures().push(...features); // add features to original features 
-    
-    // add features from server to editing features store (cloned from original)
-    this._featuresstore.addFeatures((features || []).map(f => f.clone()));
+      this._editor.readFeatures().push(...features); // add features to original features 
+      
+      // add features from server to editing features store (cloned from original)
+      this._featuresstore.addFeatures((features || []).map(f => f.clone()));
 
-    //set all features to true if no filter is set (e.g., Table layer)
-    this.#allfeatures = !options.filter;
+      //set all features to true if no filter is set (e.g., Table layer)
+      this.#allfeatures = !options.filter;
 
-    return features;
+      return features;
     } catch(e) {
       console.warn(e);
       return Promise.reject({ message: _("info.server_error")});
