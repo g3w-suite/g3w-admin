@@ -258,6 +258,7 @@ export default {
   'Filter results': 'Filtrați rezultatele',
   'Loading ...': 'Se încarcă ...',
   'sdk.form.inputs.messages.errors.picklayer': 'Nu avem entitate selectată. Verifică dacă stratul este în editare sau vizibil la scara curentă if layer is on editing or visible at current scale',
+  'sdk.form.inputs.messages.warning.picklayer': 'Obiectul selectat este invalid',
   'sdk.form.inputs.tooltips.picklayer': 'Ia valoare din strat',
   'sdk.form.inputs.tooltips.lonlat': 'Click pe hartă pentru a prelua coordonate',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Câmp ce se exclude mutual cu ',

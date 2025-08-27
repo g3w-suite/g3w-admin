@@ -310,6 +310,7 @@ export default {
   'Filter results': 'Фільтрувати за результатами',
   'Loading ...': 'Завантаження…',
   'sdk.form.inputs.messages.errors.picklayer': "Жодного об'єкта не вибрано. Перевірте що шар у режимі редагування та видимий за поточного масштабу", 
+  'sdk.form.inputs.messages.warning.picklayer': "Вибраний об'єкт недійсний",
   'sdk.form.inputs.tooltips.picklayer': 'Отримати значення з мапи',
   'sdk.form.inputs.tooltips.lonlat': 'Клацніть по мапі щоб отримати координати',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Поле взаємовиключне з ',

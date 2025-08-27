@@ -19,8 +19,8 @@
    * @see https://learn.microsoft.com/en-us/bingmaps/rest-services/locations/find-a-location-by-query
    */
   geocoding.providers[provider].fetch = async function(opts) {
-    const { XHR }        = g3wsdk.core.utils;
-    const { vendorkeys } = g3wsdk.core.ApplicationState.keys;
+    const { XHR }        = g3w.utils;
+    const { vendorkeys } = g3w.state;
 
     // fallback to generic bing vendor key
     vendorkeys[provider] = vendorkeys[provider] || vendorkeys.bing;

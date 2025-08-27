@@ -15,7 +15,7 @@
 
   geocoding.providers[provider].fetch = async function(opts) {
 
-    const { XHR } = g3wsdk.core.utils;
+    const { XHR } = g3w.utils;
 
     if (!opts) {
       return Promise.reject();
