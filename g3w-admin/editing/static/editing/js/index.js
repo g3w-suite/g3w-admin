@@ -4,19 +4,18 @@ import { getCatalogLayers }                    from './utils/getCatalogLayers.js
 import { getCatalogLayerById }                 from './utils/getCatalogLayerById.js';
 import { getEditingLayer }                     from './utils/getEditingLayer.js';
 
-const { Plugin }                               = g3w;
-const { G3W_FID }                              = g3wsdk.constant;
-const { ApplicationState }                     = g3wsdk.core;
-const _                                        = g3wsdk.core.i18n.t;
-const { XHR, noop }                            = g3wsdk.core.utils;
-const { GUI }                                  = g3wsdk.gui;
-const { Panel }                                = g3wsdk.gui.vue;
-const { Server: serverErrorParser }            = g3wsdk.core.errors.parsers;
-const { Geometry }                             = g3wsdk.core.geoutils;
+const { Plugin, Panel }   = g3w;
+const { G3W_FID }         = g3w.constants;
+const GUI                 = g3w.app;
+const ApplicationState    = g3w.state;
+const _                   = g3w.gettext;
 const {
+  XHR,
   getScaleFromResolution,
   getResolutionFromScale,
-}                                              = g3wsdk.ol.utils;
+}                         = g3w.utils;
+const { Server: serverErrorParser } = g3wsdk.core.errors.parsers;
+const { Geometry }        = g3wsdk.core.geoutils;
 
 new (class extends Plugin {
 
@@ -30,20 +29,11 @@ new (class extends Plugin {
         { name: 'magnete',   className: "fas fa-magnet" },
         { name: 'clipboard', className: "fas fa-clipboard" }
       ],
+      i18n: `${initConfig.staticurl}editing/js/i18n/`,
     });
 
     /**BACKOMP v3.x */
     this.service = this;
-
-    // i18n
-    const VM = new Vue();
-    const i18n = async lang => {
-      this.setLocale({ [lang]: (await import(`${this.config.baseUrl}editing/js/i18n/${lang}.js`)).default });
-    };
-
-    VM.$watch(() => ApplicationState.language, i18n);
-
-    i18n(ApplicationState.language);
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
@@ -129,8 +119,8 @@ new (class extends Plugin {
       commitChanges:                    this.commit.bind(this),
       setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
       getMapService:                    () => GUI,
-      updateLayerFeature:               noop,
-      deleteLayerFeature:               noop,
+      updateLayerFeature:               () => {},
+      deleteLayerFeature:               () => {},
       addLayerFeature:                  this.addLayerFeature.bind(this),
       hidePanel:                        this.hideEditingPanel.bind(this),
       resetDefault:                     this.resetAPIDefault.bind(this),
@@ -190,7 +180,7 @@ new (class extends Plugin {
 
     // add sidebar item (left menu) 
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
-      this.state.editFeatureKey = GUI.onafter('editFeature', this.#onQueryResultsEditFeature.bind(this)),
+      this.state.editFeatureKey = GUI.onafter('editFeature', this.#onEditFeature.bind(this)),
       this.config.name          = this.config.name || "plugins.editing.editing_data";
       this.addToolGroup({ position: 0, title: 'EDITING' });
       this.addTools({
@@ -394,7 +384,7 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
+   * Used by the following plugins: "sispi-worksite"
    * 
    * Method to apply filter editing contsraint to toolbox editing
    * Apply filter editing contsraint to toolbox editing
@@ -1167,7 +1157,7 @@ new (class extends Plugin {
    *
    * Register query result action: edit selected feature from query results
    */
-  async #onQueryResultsEditFeature({ layer, feature } = {}) {
+  async #onEditFeature({ layer, feature } = {}) {
 
     const fid = feature.attributes[G3W_FID] || feature.id;
 
