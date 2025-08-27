@@ -105,7 +105,7 @@ class GeocodingControl extends ol.control.Control {
         innerHTML: /* html */`
           <div class="ol-geocoder">
             <form>
-              <input  type="search" autocomplete="off" style="font-weight: bold;" />
+              <input  type="search" autocomplete="off" style="font-weight: bold;" placeholder = "${_('Search')}" />
               <button type="reset"                         data-i18n-title="Reset search"    data-placement="bottom"                                 hidden></button>
               <button type="submit" value="search"         data-i18n-title="Submit search"   data-placement="bottom" class="btn fas fa-search"></button>
               <button type="submit" value="trash"          data-i18n-title="Clear selection" data-placement="bottom" class="btn fas fa-trash"     hidden style="color:red;"></button>
