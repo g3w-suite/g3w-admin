@@ -12,7 +12,7 @@
   // if (!provider in geocoding.providers) {
   //   return;
   // }
-
+  const config = window.initConfig.mapcontrols.geocoding.providers['qes'];
   Object.assign(window.initConfig.mapcontrols.geocoding.providers['qes'], {
     label: window.location.host,
     fetch: async (opts) => ({
@@ -24,7 +24,8 @@
       ).results.map(result => ({
         layer_id:   result.layer_id,
         feature_id: result.feature_id,
-        name:       result.attributes.name,
+        //@since 4.0.1 check if layer_id has a specific fields to show, otherwise get name attribute of the feature
+        name:       ((config.toshow ?? {})[result.layer_id] ?? ['name']).map(f => result.attributes[f] ?? '').join('<br/>'),
         type:       result.layer_name,
       })),
     }),
