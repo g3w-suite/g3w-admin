@@ -677,7 +677,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
         # Invalidate /api/config cache e invalidate QGIS project cache
         project.invalidate_cache()
-        qgis_project.read(project.qgis_file.path)
+
+        # TODO: check if this is necessary, left for safety
+        #qgis_project.read(project.qgis_file.path)
 
 
     def response_unlock_mode(self, request):
