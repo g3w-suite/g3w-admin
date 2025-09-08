@@ -217,8 +217,12 @@ export default ({
         console.warn(e);
       }
 
-      await toolbox.stop();
-
+      //Take in account an error
+      try {
+        await toolbox.stop();
+      } catch(e) {
+        console.warn(e);
+      }
       // re-enable query map control
       const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.editing.on) && GUI.getMapControlByType({ type: 'query' });
       if (control && !control.isToggled()) {
