@@ -3493,7 +3493,8 @@ export class ToolBox extends Emitter {
       commit.lockids = GUI.getPlugin('editing').state.lock_ids[layerId];
       response = await XHR.post({
         url:         `${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`,
-        data:        JSON.stringify(commit),
+        //@since 4.0.1 need to add style parameter to commit url in case of layer has a specific editing style
+        data:        JSON.stringify(Object.assign(commit, { style: this.state.layer.config?.editing?.layer_style || undefined })),
         contentType: 'application/json',
       });
     } catch(e) {
