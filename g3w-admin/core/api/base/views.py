@@ -840,8 +840,11 @@ class BaseVectorApiView(G3WAPIView):
         response = self.get_response_data(request)
 
         # Reset style
-        if self.current_style and self.style and self.style != self.current_style:
-            self.metadata_layer.qgis_layer.styleManager().setCurrentStyle(self.current_style)
+        try:
+            if self.current_style and self.style and self.style != self.current_style:
+                self.metadata_layer.qgis_layer.styleManager().setCurrentStyle(self.current_style)
+        except:
+            pass
 
         if response is None:
 

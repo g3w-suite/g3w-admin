@@ -242,6 +242,7 @@ export default {
   'Filter results': 'Filtrera resultaten',
   'Loading ...': 'Laddning...',
   'sdk.form.inputs.messages.errors.picklayer': 'Inga egenskaper har valts. Kontroller att nivån kan redigeras eller att den syns med nuvarande skala.',
+  'sdk.form.inputs.messages.warning.picklayer': 'Det valda objektet är ogiltigt',
   'sdk.form.inputs.tooltips.picklayer': 'Välj värde på kartnivå',
   'sdk.form.inputs.tooltips.lonlat': 'Click on map to get coordinates',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Fälten utesluter varandra.',

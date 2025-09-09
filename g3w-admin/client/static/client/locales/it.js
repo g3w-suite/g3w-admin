@@ -355,6 +355,7 @@ export default {
   'Whether automatically filter geometries displayed within the map<br>in order to show only those related to current search results.': 'Filtra automaticamente le geometrie visualizzate nella mappa<br>per mostrare solo quelle relative ai risultati della ricerca corrente.',
   'Loading ...': 'Caricamento ...',
   'sdk.form.inputs.messages.errors.picklayer': 'Nessuna feature selezionata. Verificare se il layer è in editing o non visibile alla scala attuale',
+  'sdk.form.inputs.messages.warning.picklayer': "L'oggetto selezionato non è valido",
   'sdk.form.inputs.tooltips.picklayer': 'Prendi valore dalla mappa',
   'sdk.form.inputs.tooltips.lonlat': 'Clicca sulla mappa per prendere le coordinate',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Campo mutualmente esclusivo con ',

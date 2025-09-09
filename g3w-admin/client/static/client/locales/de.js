@@ -251,6 +251,7 @@ export default {
   'Filter results': 'Filtern Sie die Ergebnisse',
   'Loading ...': 'Laden ...',
   'sdk.form.inputs.messages.errors.picklayer': 'Kein Feature ausgewählt. Prüfen, ob der Layer in Bearbeitung oder im aktuellen Maßstab sichtbar ist',
+  'sdk.form.inputs.messages.warning.picklayer': 'Die Feature ausgewählte ist ungültig',
   'sdk.form.inputs.tooltips.picklayer': 'Wert aus dem Layer abrufen',
   'sdk.form.inputs.tooltips.lonlat': 'Zum Abrufen der Koordinaten auf die Karte klicken',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Feld schließt sich gegenseitig aus mit ',

@@ -705,6 +705,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
         # Invalidate /api/config cache e invalidate QGIS project cache
         project.invalidate_cache()
+
+        # Refresh QGIS cache
         qgis_project.read(project.qgis_file.path)
 
 

@@ -147,7 +147,10 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
     mappingData = FIELD_TYPES_MAPPING
 
-    fields = eval(layer.database_columns) if layer.database_columns else None
+    if 'style' in kwargs:
+        fields = layer.get_fields_style(kwargs['style'])
+    else:
+        fields = eval(layer.database_columns) if layer.database_columns else None
     fieldsMapped = copy.deepcopy(fields)
 
     # exclude if set:

@@ -253,6 +253,7 @@ export default {
   'Filter results': 'Filtrer les résultats',
   'Loading ...': 'Chargement...',
   'sdk.form.inputs.messages.errors.picklayer': "Aucune entité sélectionnée. Vérifier si la couche est en édition ou non visible à l'échelle actuelle",
+  'sdk.form.inputs.messages.warning.picklayer': "La entité sélectionnée n'est pas valide",
   'sdk.form.inputs.tooltips.picklayer': 'Obtenir la valeur de la carte',
   'sdk.form.inputs.tooltips.lonlat': 'Cliquez sur la carte pour obtenir les coordonnées',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Champ mutuellement exclusif avec ',
