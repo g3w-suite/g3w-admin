@@ -12,6 +12,11 @@
   // if (!provider in geocoding.providers) {
   //   return;
   // }
+
+  const ApplicationState             = g3w.state;
+  const GUI                          = g3w.app;
+  const { XHR, getCatalogLayerById } = g3w.utils
+
   const config = window.initConfig.mapcontrols.geocoding.providers['qes'];
   Object.assign(window.initConfig.mapcontrols.geocoding.providers['qes'], {
     label: window.location.host,
