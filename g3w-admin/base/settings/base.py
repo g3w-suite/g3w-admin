@@ -451,3 +451,6 @@ QES_SEARCH_QUERY = {
                         "minimum_should_match": 1
                         }
                     }
+
+# By project id and qgis_layer_id is posssible se fileds to index
+QES_INDEXING_FIELDS = {}
