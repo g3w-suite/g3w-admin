@@ -280,8 +280,15 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                                 gp: settings.GEOCODING_PROVIDERS[gp]
                             })
                     if "qes" in settings.INSTALLED_APPS and mapcontrol.name == 'geocoding':
+
+                        qes = {}
+                        
+                        # Check for settings
+                        if hasattr(settings, 'QES_RESULTS_OPTIONS'):
+                            qes.update(settings.QES_RESULTS_OPTIONS)
+                            
                         options['providers'].update({
-                            'qes': {}
+                            'qes': qes
                         })
 
 

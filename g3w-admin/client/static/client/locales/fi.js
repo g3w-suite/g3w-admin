@@ -242,6 +242,7 @@ export default {
   'Filter results': 'Suodata tulokset',
   'Loading ...': 'Ladataan...',
   'sdk.form.inputs.messages.errors.picklayer': 'Ominaisuuksia ei valiitu. Tarkista, että taso on muokattavissa tai näkyvissä nykyisellä mittakaavalla.',
+  'sdk.form.inputs.messages.warning.picklayer': 'Feature selected is not valid',
   'sdk.form.inputs.tooltips.picklayer': 'Valitse arvo karttatasolta',
   'sdk.form.inputs.tooltips.lonlat': 'Click on map to get coordinates',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Kenttä toisensa poissulkeva.',

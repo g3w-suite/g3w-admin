@@ -44,6 +44,7 @@ from .structure import *
 from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername, EmbeddedLayersValidator)
+from .qgis import get_aliases
 
 from qdjango.apps import get_qgs_project
 
@@ -594,15 +595,8 @@ class QgisProjectLayer(XmlData):
         :rtype: dict
         """
 
-        ret = OrderedDict()
-
-        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
-            return ret
-
-        for f in self.qgs_layer.fields():
-            ret[f.name()] = f.displayName()
-        return ret
-
+        return get_aliases(self.qgs_layer)
+        
     def _getDataColumns(self):
         """
         Retrieve data about columns for db table or ogr layer type
@@ -640,16 +634,16 @@ class QgisProjectLayer(XmlData):
 
         return columns
 
-    def _addAliesToColumns(self, columns):
-        """
-        Add aliases to column original name
-        :param columns: dict layer structure columns
-        """
+    # def _addAliesToColumns(self, columns):
+    #     """
+    #     Add aliases to column original name
+    #     :param columns: dict layer structure columns
+    #     """
 
-        for column in columns:
-            if column['name'] in self.aliases:
-                column['label'] = self.aliases[column['name']
-                                               ] if self.aliases[column['name']] != "" else column['name']
+    #     for column in columns:
+    #         if column['name'] in self.aliases:
+    #             column['label'] = self.aliases[column['name']
+    #                                            ] if self.aliases[column['name']] != "" else column['name']
 
     def _getDataExcludeAttributesWMS(self):
         """
@@ -795,7 +789,7 @@ class QgisProjectLayer(XmlData):
         :rtype: dict, None
         """
 
-        def build_form_tree_object(elements):
+        def build_form_tree_object(elements, style):
             to_ret_form_structure = []
             for element in elements:
 
@@ -826,7 +820,7 @@ class QgisProjectLayer(XmlData):
                         to_ret_node.update({
                             'groupbox': element.isGroupBox(),
                             'columncount': element.columnCount(),
-                            'nodes': build_form_tree_object(element.children())
+                            'nodes': build_form_tree_object(element.children(), style)
                         })
                     else:
                         if element.type() == Qgis.AttributeEditorType.Relation:
@@ -839,9 +833,9 @@ class QgisProjectLayer(XmlData):
                                 'index': element.idx(),
                                 'field_name': element.name()
                             })
-                            if to_ret_node['name'] in self.aliases:
+                            if to_ret_node['name'] in self.aliases[style]:
                                 to_ret_node.update(
-                                    {'alias': self.aliases[to_ret_node['name']]})
+                                    {'alias': self.aliases[style][to_ret_node['name']]})
                             del (to_ret_node['name'])
                 else:
                     if element.type() == QgsAttributeEditorElement.AeTypeRelation:
@@ -853,7 +847,7 @@ class QgisProjectLayer(XmlData):
                         to_ret_node.update({
                             'groupbox': element.isGroupBox(),
                             'columncount': element.columnCount(),
-                            'nodes': build_form_tree_object(element.children())
+                            'nodes': build_form_tree_object(element.children(), style)
                         })
 
                     if element.type() == QgsAttributeEditorElement.AeTypeField:
@@ -861,9 +855,9 @@ class QgisProjectLayer(XmlData):
                             'index': element.idx(),
                             'field_name': element.name()
                         })
-                        if to_ret_node['name'] in self.aliases:
+                        if to_ret_node['name'] in self.aliases[style]:
                             to_ret_node.update(
-                                {'alias': self.aliases[to_ret_node['name']]})
+                                {'alias': self.aliases[style][to_ret_node['name']]})
                         del (to_ret_node['name'])
 
                 to_ret_form_structure.append(to_ret_node)
@@ -888,7 +882,7 @@ class QgisProjectLayer(XmlData):
 
                 tabs = self.qgs_layer.editFormConfig().tabs()
 
-                editor_from_structures[style] =  build_form_tree_object(tabs)
+                editor_from_structures[style] =  build_form_tree_object(tabs, style)
 
             else:
                 editor_from_structures[style] = None

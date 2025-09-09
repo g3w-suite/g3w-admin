@@ -249,6 +249,7 @@ export default {
   'Filter results': 'Filtruj wyniki',
   'Loading ...': 'Ładowanie ...',
   'sdk.form.inputs.messages.errors.picklayer': 'Brak wybranej funkcji. Sprawdź, czy warstwa jest w edycji lub widoczna w bieżącej skali',
+  'sdk.form.inputs.messages.warning.picklayer': 'Wybrany obiekt jest nieprawidłowy',
   'sdk.form.inputs.tooltips.picklayer': 'Uzyskaj wartość z warstwy MA',
   'sdk.form.inputs.tooltips.lonlat': 'Kliknij mapę, aby uzyskać współrzędne',
   'sdk.form.inputs.input_validation_mutually_exclusive': 'Pole wzajemnie wykluczające się z',

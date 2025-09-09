@@ -8,6 +8,7 @@ from qdjango.models import Layer
 from urllib.parse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
+from core.utils.structure import mapLayerAttributes
 from .exceptions import QgisProjectLayerException
 from qgis.core import QgsDataSourceUri
 
@@ -225,3 +226,32 @@ def apply_tree_patch(original_tree, patch_tree):
     updated_tree = deepcopy(original_tree)
     apply_patch(updated_tree, patch_tree)
     return updated_tree
+
+
+def get_attributes(layer, style=None, request=None):
+    """
+    Get attributes for layer by style if style is not None
+
+    :param layer: Layer instance
+    :param style: Style name (optional)
+    :param request: Request object (optional)
+    :return: List of attributes
+    """
+
+    columns = mapLayerAttributes(
+            layer, style=style) if layer.database_columns else []
+
+    # evaluate fields to show or not by qgis project
+    column_to_exclude = eval(layer.exclude_attribute_wms) if layer.exclude_attribute_wms else []
+
+    if request:
+        visible_columns = layer.visible_fields_for_user(request.user)
+        for column in columns:
+            column['show'] = (column['name'] in visible_columns) and (
+                column['name'] not in column_to_exclude)
+    else:
+        for column in columns:
+            column['show'] = False if column['name'] in column_to_exclude else True
+
+    return columns
+    
