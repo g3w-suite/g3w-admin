@@ -452,5 +452,13 @@ QES_SEARCH_QUERY = {
                         }
                     }
 
+# Elasticsearch default sort by layer_id ascending
+QES_SEARCH_SORT = { 
+    "layer_id": { 
+        "order": "asc" 
+    } 
+}
+
 # By project id and qgis_layer_id is posssible se fileds to index
 QES_INDEXING_FIELDS = {}
+
