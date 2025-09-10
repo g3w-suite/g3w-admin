@@ -140,8 +140,8 @@ class QGISElasticsearchIndexer:
 
                     # Check for indexing fields settings
                     # If settings.QES_INDEXING_FIELDS is set, only fields in the list are indexed
-                    if settings.QES_INDEXING_FIELDS and settings.QES_INDEXING_FIELDS[project_id].get(qlayer.id()) and \
-                       k not in settings.QES_INDEXING_FIELDS[project_id][qlayer.id()]:
+                    if settings.QES_INDEXING_FIELDS and settings.QES_INDEXING_FIELDS.get(qlayer.id()) and \
+                       k not in settings.QES_INDEXING_FIELDS[qlayer.id()]:
                         continue
 
                     # Case for nested dictionaries, i.e for media file:
@@ -244,7 +244,7 @@ class QGISElasticsearchIndexer:
                 continue
 
             # Check for indexing fields settings
-            if settings.QES_INDEXING_FIELDS and not settings.QES_INDEXING_FIELDS.get(project_id):
+            if settings.QES_INDEXING_FIELDS and not settings.QES_INDEXING_FIELDS.get(qlayer.id()):
                 continue
 
             # Get features from API
