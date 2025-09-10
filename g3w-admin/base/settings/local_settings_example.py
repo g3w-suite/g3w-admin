@@ -69,7 +69,7 @@ ORS_MAX_RANGES = 6
 ORS_MAX_LOCATIONS = 2
 
 
-ALLOWED_HOSTS = "*"
+ALLOWED_HOSTS = ["*"]
 
 LOGGING = {
     'version': 1,

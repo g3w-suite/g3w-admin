@@ -96,8 +96,8 @@ class FidFilter(BaseFilterBackend):
         multiple = True
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
 
-        if not request.GET.get(FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)):
-            if not request.GET.get(FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM)):
+        if not request.GET.get(FILTER_FIDS_PARAM, request.data.get(FILTER_FIDS_PARAM)):
+            if not request.GET.get(FILTER_FID_PARAM, request.data.get(FILTER_FID_PARAM)):
                 return
             else:
                 multiple = False
@@ -105,12 +105,12 @@ class FidFilter(BaseFilterBackend):
         try:
             if multiple:
                 fids = [f for f in request.GET.get(
-                    FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)).split(',')]
+                    FILTER_FIDS_PARAM, request.data.get(FILTER_FIDS_PARAM)).split(',')]
                 if len(fids) == 0:
                     return
             else:
                 fid = request.GET.get(
-                    FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM))
+                    FILTER_FID_PARAM, request.data.get(FILTER_FID_PARAM))
                 if not fid:
                     return
 
@@ -135,8 +135,6 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        qgis_layer = metadata_layer.qgis_layer
-
         if request.method == 'POST':
             request_data = request.data
         else:
@@ -149,7 +147,7 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
 
         try:
             expression_text = SessionTokenFilter.get_expr_for_token(
-                filtertoken, view.layer)
+                filtertoken, metadata_layer.layer)
         except Exception:
             return
 
@@ -170,15 +168,9 @@ class ColumnAclFilter(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        if request.method == 'POST':
-            request_data = request.data
-        else:
-            request_data = request.query_params
-
         try:
-            layer = Layer.objects.get(pk=metadata_layer.layer_id)
-            if layer.has_column_acl:
-                visible_attributes = layer.visible_fields_for_user(request.user)
+            if metadata_layer.layer.has_column_acl:
+                visible_attributes = metadata_layer.layer.visible_fields_for_user(request.user)
                 subset = qgis_feature_request.subsetOfAttributes()
                 # We need attribute index here
                 attr_idx = []

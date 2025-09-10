@@ -8,7 +8,7 @@ sitetrees = (
 
     # ITALIAN 
     G3Wtree(
-        'filemanager_sidebar_right',
+        'filemanager_sidebar_right_it',
         title='File Manager sidebar right',
         module='filemanager',
         items=[
@@ -28,7 +28,7 @@ sitetrees = (
 
     # ENGLISH
     G3Wtree(
-        'filemanager_sidebar_right_en',
+        'filemanager_sidebar_right',
         title='STRESS navabar',
         module='filemanager',
         items=[
@@ -42,6 +42,26 @@ sitetrees = (
                 'filemanager-home',
                 icon_css_class='fa fa-database',
                 description='Go to file manager application...'
+            ),
+        ]
+    ),
+
+    # GERMAN
+    G3Wtree(
+        'filemanager_sidebar_right_de',
+        title='STRESS Navbar',
+        module='filemanager',
+        items=[
+            item(
+                'DATEIENVERWALTUNG',
+                '#',
+                type_header=True
+            ),
+            item(
+                'Dateien',
+                'filemanager-home',
+                icon_css_class='fa fa-database',
+                description='Zur Dateiverwaltung...'
             ),
         ]
     ),

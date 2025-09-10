@@ -345,6 +345,7 @@ def add_filter_token(**kwargs):
     :return: A dict with autofilter token
     :rtype: dict, None
     """
+
     # Check if is instance of layerVectorView
     if (
         isinstance(kwargs["sender"], LayerVectorView)
@@ -360,25 +361,28 @@ def add_filter_token(**kwargs):
             if results['result'] and hasattr(kwargs["sender"], 'total_feature_ids'):
                 fids = kwargs["sender"].total_feature_ids
 
-                if fids:
-                    rkwargs = {'project_type': 'qdjango',
-                               'project_id': layer.project.pk,
-                               'layer_name': layer.qgs_layer_id,
-                               'mode_call': 'filtertoken'
-                               }
+                # Add a 'fake' fids array value for to create a filtertoken with zero results
+                if not fids:
+                    fids = ['-99999']
 
-                    url = reverse('core-vector-api', kwargs=rkwargs)
-                    req = HttpRequest()
-                    req.method = 'GET'
-                    req.COOKIES = kwargs["sender"].request.COOKIES
-                    req.user = kwargs["sender"].request.user
-                    req.resolver_match = resolve(url)
-                    req.GET['fidsin'] = ",".join(fids)
+                rkwargs = {'project_type': 'qdjango',
+                           'project_id': layer.project.pk,
+                           'layer_name': layer.qgs_layer_id,
+                           'mode_call': 'filtertoken'
+                           }
 
-                    view = LayerVectorView.as_view()
-                    res = view(req, *[], **rkwargs).render()
+                url = reverse('core-vector-api', kwargs=rkwargs)
+                req = HttpRequest()
+                req.method = 'GET'
+                req.COOKIES = kwargs["sender"].request.COOKIES
+                req.user = kwargs["sender"].request.user
+                req.resolver_match = resolve(url)
+                req.GET['fidsin'] = ",".join(fids)
 
-                    return json.loads(res.content)['data']
+                view = LayerVectorView.as_view()
+                res = view(req, *[], **rkwargs).render()
+
+                return json.loads(res.content)['data']
         except Exception as e:
             logger.error(f'[ERROR]: Error on getting FILTERTOKEN: {e}')
             return None

@@ -18,6 +18,7 @@ from qdjango.models import (
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
 from qdjango.signals import load_qdjango_widget_layer
+from guardian.utils import get_anonymous_user
 from qdjango.apps import get_qgs_project
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
 from qdjango.utils.session import reset_filtertoken
@@ -115,7 +116,19 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         map_relations = []
         for relation in relations:
             relation['type'] = RELATIONS_ONE_TO_MANY
-            map_relations.append(relation)
+
+            # Check ACL for referencedLayer and referencingLayer
+            # Send only with http requests
+
+            if self.request:
+                referencedlayer = instance.layer_set.get(qgs_layer_id=relation['referencedLayer'])
+                referencinglayer = instance.layer_set.get(qgs_layer_id=relation['referencingLayer'])
+                if (self.request.user.has_perm('qdjango.view_layer', referencedlayer) or
+                    get_anonymous_user().has_perm('qdjango.view_layer', referencedlayer)) and \
+                        (get_anonymous_user().has_perm('qdjango.view_layer', referencinglayer) or
+                         self.request.user.has_perm('qdjango.view_layer', referencinglayer)):
+                    map_relations.append(relation)
+
         return map_relations
 
     def get_map_layers_relations_from_vectorjoins(self, layer_id, vectorjoins, layers):
@@ -257,8 +270,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Check for QGIS project themes
         # -----------------------------
         map_themes = qgs_project.mapThemeCollection().mapThemes()
-        if len(map_themes) == 0:
-            return
 
         for map_theme in map_themes:
             theme = {

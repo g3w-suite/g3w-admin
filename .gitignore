@@ -15,6 +15,11 @@ docs/locales/**/*.mo
 # PyCharms project file
 /.idea/
 
+# vscode project file
+/.vscode/
+/venv/
+g3w-admin.code-workspace
+
 # temp_uploads for jqupload
 /temp_uploads/
 
@@ -29,6 +34,7 @@ docs/locales/**/*.mo
 # Addons
 /g3w-admin/addons
 /g3w-admin/plugins
+/plugins
 
 # Bower components
 /g3w-admin/core/static/bower_components/
@@ -80,3 +86,8 @@ run_local*.sh
 /pymast
 
 /shared-volume
+
+# For Vcode
+.vscode/
+venv/
+

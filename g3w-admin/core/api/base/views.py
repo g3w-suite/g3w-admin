@@ -36,6 +36,8 @@ from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 from core.utils.qgisapi import get_qgis_features, count_qgis_features, server_fid
 from qdjango.apps import QGS_APPLICATION
 
+from natsort import natsorted
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -476,12 +478,17 @@ class BaseVectorApiView(G3WAPIView):
 
         # Make sure we have all attrs we need to build the server FID
         provider = self.metadata_layer.qgis_layer.dataProvider()
-        if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
-            attrs = qgis_feature_request.subsetOfAttributes()
-            for attr_idx in provider.pkAttributeIndexes():
-                if attr_idx not in attrs:
-                    attrs.append(attr_idx)
-            qgis_feature_request.setSubsetOfAttributes(attrs)
+
+        def set_qfr_attridx(qgs_feature_request, provider):
+            """
+            Internal function to set the attribute indexes for the feature request
+            """
+            if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
+                attrs = qgis_feature_request.subsetOfAttributes()
+                for attr_idx in provider.pkAttributeIndexes():
+                    if attr_idx not in attrs:
+                        attrs.append(attr_idx)
+                qgis_feature_request.setSubsetOfAttributes(attrs)
 
         # Get feature: apply pagination if 'page' parameters is set
         self.features = get_qgis_features(
@@ -516,6 +523,7 @@ class BaseVectorApiView(G3WAPIView):
                 self.request_data.get('fformatter'))
 
             qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
+            qfield = self.metadata_layer.qgis_layer.fields()[qfieldidx]
             r_qfieldidx = qfieldidx
             qlayer = self.metadata_layer.qgis_layer
             qfeatures = self.features
@@ -621,7 +629,8 @@ class BaseVectorApiView(G3WAPIView):
                 and 'ordering' in self.request_data
                 and self.request_data['fformatter'] in self.request_data['ordering']):
                 rev = True if self.request_data['ordering'].startswith('-') else False
-                values.sort(reverse=rev, key=lambda e: (e[1] is None, e[1]))
+
+                values = natsorted(values, key=lambda v: v[1], reverse=rev)
             else:
                 values.sort()
             self.results.update({
@@ -715,7 +724,7 @@ class BaseVectorApiView(G3WAPIView):
                 'geometryType': self.metadata_layer.geometry_type
             }
 
-            # Cafe with 'autofilter' parameter: get every id from qgis_feature_request
+            # Case with 'autofilter' parameter: get every id from qgis_feature_request
             # ------------------------------------------------------------------------
             if 'autofilter' in self.request_data and str(self.request_data['autofilter']) == '1':
 
@@ -729,7 +738,9 @@ class BaseVectorApiView(G3WAPIView):
                         qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
                         qgis_feature_request.setLimit(-1)
 
-                    self.total_feature_ids = [str(f.id()) for f in get_qgis_features(
+                        set_qfr_attridx(qgis_feature_request, provider)
+
+                    self.total_feature_ids = [str(server_fid(f, provider)) for f in get_qgis_features(
                         self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
 
 
@@ -779,6 +790,12 @@ class BaseVectorApiView(G3WAPIView):
 
         # Get request data by GET or POST method
         self.request_data = request.query_params if request.method == 'GET' else request.data
+
+        # Set self.download_relations
+        try:
+            self.download_relations = int(self.request_data.get('down_with_relations', '0'))
+        except:
+            self.download_relations = 0
 
         # get results
         response = self.get_response_data(request)

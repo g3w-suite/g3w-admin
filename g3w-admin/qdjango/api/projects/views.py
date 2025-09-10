@@ -275,6 +275,9 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                 c_theme.theme = data
                 c_theme.save()
 
+            # Invalidate cache project
+            Project.objects.get(pk=self.project_id).invalidate_cache(user=self.request.user)
+
         except Exception as e:
             self.results.error = str(e)
             self.results.result = False
@@ -286,6 +289,9 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
 
         try:
             CustomerTheme.objects.get(project_id=self.project_id, user=self.request.user, name=self.theme_name).delete()
+
+            # Invalidate cache project
+            Project.objects.get(pk=self.project_id).invalidate_cache(user=self.request.user)
         except Exception as e:
             self.results.error = str(e)
             self.results.result = False

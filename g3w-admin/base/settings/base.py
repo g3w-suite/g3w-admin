@@ -407,3 +407,6 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 # For iframe
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Placehold service
+PLACEHOLD_SERVICE = 'https://placehold.co/'
