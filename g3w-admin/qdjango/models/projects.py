@@ -1335,7 +1335,11 @@ class Layer(G3WACLModelMixins, models.Model):
         if not style:
             style = self.qgis_layer.styleManager().currentStyle()
 
-        return eval(self.edittypes)[style]
+        et = eval(self.edittypes)
+        try:
+            return et[style]
+        except KeyError:
+            return et
 
     def get_editor_form_structure(self, style=None):
         """
