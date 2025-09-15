@@ -313,8 +313,11 @@ class TestColumnAcl(QdjangoTestBase):
 
         # Check that excluded attributes are None
         record = resp['vector']['data']['features'][0]['properties']
-        self.assertIsNone(record['AREA'])
-        self.assertIsNone(record['SOURCETHM'])
+        #self.assertIsNone(record['AREA'])
+        #self.assertIsNone(record['SOURCETHM'])
+
+        self.assertFalse('AREA' in record)
+        self.assertFalse('SOURCETHM' in record)
 
         # Test for /api/vector/config
         response = self._testApiCallAdmin01(
