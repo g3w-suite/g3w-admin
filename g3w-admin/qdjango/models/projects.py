@@ -1330,7 +1330,11 @@ class Layer(G3WACLModelMixins, models.Model):
         if not style:
             style = self.qgis_layer.styleManager().currentStyle()
 
-        return eval(self.edittypes)[style]
+        et = eval(self.edittypes)
+        try:
+            return et[style]
+        except KeyError:
+            return et
 
     def get_editor_form_structure(self, style=None):
         """
@@ -1342,7 +1346,16 @@ class Layer(G3WACLModelMixins, models.Model):
             style = self.qgis_layer.styleManager().currentStyle()
 
 
-        return eval(self.editor_form_structure).get(style, None) if self.editor_form_structure else None
+        if not self.editor_form_structure:
+            return None
+        
+        # This patch the upgrade from 3.8.x to 3.10.x fro style mamagement
+        efs = eval(self.editor_form_structure)
+        if isinstance(efs, dict):
+            return efs.get(style, None)
+        else:
+            return efs
+        
     
     def get_fields_style(self, style=None):
         """
