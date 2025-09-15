@@ -469,6 +469,13 @@ class BaseVectorApiView(G3WAPIView):
         # Prepare arguments for the get feature call
         kwargs = {}
 
+        # Get visible fields for user
+        visiblefields = None
+        if self.request.user:
+            visiblefields = self.layer.visible_fields_for_user(self.request.user)
+            #if len(visiblefields) != len(vector_params['fields']):
+                #pass
+
         # Apply filter backends, store original subset string
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
@@ -725,6 +732,8 @@ class BaseVectorApiView(G3WAPIView):
                 f = feature_collection['features'][i]
                 f['id'] = fids_map[f['id']]
 
+                if visiblefields:
+                    f['properties'] = {k: f['properties'][k] for k in f['properties'] if k in visiblefields}
             api_vector_data = {
                 'data': feature_collection,
                 'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
