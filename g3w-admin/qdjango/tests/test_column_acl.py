@@ -316,8 +316,8 @@ class TestColumnAcl(QdjangoTestBase):
         #self.assertIsNone(record['AREA'])
         #self.assertIsNone(record['SOURCETHM'])
 
-        self.assertIsFalse('AREA' in record)
-        self.assertIsFalse('SOURCETHM' in record)
+        self.assertFalse('AREA' in record)
+        self.assertFalse('SOURCETHM' in record)
 
         # Test for /api/vector/config
         response = self._testApiCallAdmin01(
