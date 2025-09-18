@@ -404,7 +404,7 @@ class GeocodingControl extends ol.control.Control {
             <i class="fa fa-${item.__icon}" style="color: black"   ${!['poi', 'point'].includes(item.__icon) && undefined !== item.__icon ? '' : 'hidden'}></i>
             <span style="display: flex; flex-direction: column; padding: 3px 5px; color: #000;">
               <span class = "gcd-type">${item.type ?? ''}</span>
-              <span class = "gcd-name">${item.name ?? ''}</span>
+              <span class = "gcd-name">${(item.name ?? '').replace(new RegExp(`(${q})`, 'gi'), '<b>$1</b>')}</span>
               <span class = "gcd-road">${item.address_name ?? ''}</span>
               <span class = "gcd-road">${[item.address_building ?? '', item.address_road ?? '', item.address_house_number ?? ''].join(' ')}</span>
               <span class = "gcd-city">${[item.address_postcode ?? '', item.address_city ?? '', item.address_town ?? '', item.address_village ?? ''].join(' ')}</span>

@@ -768,6 +768,7 @@ table.dataTable th.sorting_desc::after                         { color:#7a80dd; 
 .g3w-view.content .action-button.toggled-white                                   { background-color: #fff; }
 .g3w-view.content .action-button-icon.trash                                      { color:red !important; }
 .g3w-view.content .action-button-icon                                            { padding-top: 2px; font-weight: bold; text-decoration: none; }
+.is-mobile .g3w-view.content.full-size :is(.action-button-resize, .action-button-dock) { display: none; }
 .g3w-view.content                                                                { line-height: normal; float: right; overflow-wrap: break-word; height: 0; width: 0; background-color: #eee; overflow:hidden; position: relative; } 
 .g3w-view.content .contents                                                      { height: 100%; padding-left: 0; padding-right: 0; }
 .g3w-view.content.split-h                                                        { border-left: 1px solid #d6d6d6; }

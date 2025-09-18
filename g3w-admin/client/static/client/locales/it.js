@@ -153,7 +153,7 @@ export default {
   'Geolocation': 'Mostra la mia posizione',
   'The result in the map is partial due to the presence of the below incorrect records list:': "Il risultato in mappa è parziale a causa della presenza dei seguenti records non corretti:",
   'Add Layer': 'Aggiungi livello',
-  'Query layer': 'Interroga Layer',
+  'Query layer': 'Interrogazione puntuale',
   'Add/Remove Selection': "Aggiungi/Rimuovi Selezione",
   'Zoom to features extent': "Zoom sulle geometrie",
   'Add/Remove features to results': "Aggiungi elementi ai risultati",
@@ -380,4 +380,6 @@ export default {
   'sdk.form.messages.qgis_input_widget_relation': 'Gestisci le relazioni tramite form dedicato',
   'sdk.wps.list_process': 'Lista dei processi',
   'sdk.wps.tooltip': 'Clicca sulla mappa',
+  'Dock to Bottom': 'Fissa in basso',
+  'Dock to Right': 'Fissa a destra',
 };
