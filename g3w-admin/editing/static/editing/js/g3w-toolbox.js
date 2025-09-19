@@ -3247,7 +3247,7 @@ export class ToolBox extends Emitter {
           data: JSON.stringify({
             ...params,
             in_bbox:     options.filter.bbox.join(','),
-            filtertoken: this._editor.getLayer().getFilterToken(),
+            filtertoken: this._editor.getLayer().getToken(),
           }),
           contentType: 'application/json',
         })

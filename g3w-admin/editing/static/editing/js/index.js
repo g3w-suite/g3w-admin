@@ -1079,7 +1079,7 @@ new (class extends Plugin {
       } else if (undefined !== options.filter.bbox) { // bbox filter
         response = await XHR.post({
           url:  layer.getUrl('editing'),
-          data: JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getFilterToken() }),
+          data: JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getToken() }),
           contentType: 'application/json',
         })
       } else if (undefined !== options.filter.fid) { // fid filter

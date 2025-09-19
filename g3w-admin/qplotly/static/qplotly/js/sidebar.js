@@ -115,7 +115,7 @@ export default ({
       this.service.setLoading(true);
       const layer = CatalogLayersStoresRegistry.getLayerById(layerId);
       if (undefined !== layer) {
-        await layer.toggleFilterToken();
+        await layer.toggleToken();
       }
     },
 
