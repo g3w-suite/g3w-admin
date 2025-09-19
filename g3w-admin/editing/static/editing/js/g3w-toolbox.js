@@ -3516,15 +3516,13 @@ export class ToolBox extends Emitter {
         //if layer has geometry
         if (layer.isGeoLayer()) {
           commit.update.forEach(({ id, geometry } = {}) => {
-            if (layer.getOlSelectionFeature(id)) {
-              const selected = layer.getOlSelectionFeature(id);
-              if (selected) {
-                selected.feature = geometry;
-                GUI.defaultsLayers.selectionLayer
-                  .getSource()
-                  .getFeatureById(selected.feature.getId())
-                  .setGeometry(selected.feature.getGeometry());
-              }
+            const selected = layer.getOlSelectionFeature(id);
+            if (selected) {
+              selected.feature = geometry;
+              GUI.defaultsLayers.selectionLayer
+                .getSource()
+                .getFeatureById(selected.feature.getId())
+                .setGeometry(selected.feature.getGeometry());
             }
           });
         }
