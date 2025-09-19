@@ -1795,7 +1795,7 @@ export class ToolBox extends Emitter {
         //In case of legend in separate tab, need to set layers as active tab to avoid that user
         //that has open tab with layer has different legend in case of change style for editing
         GUI.getComponent('catalog').getInternalComponent().activeTab = 'layers';
-        await getCatalogLayerById(this.state.id).changeCurrentStyle(this.state.layer.config.editing.layer_style);
+        await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
       }
 
       const plugin = GUI.getPlugin('editing');
@@ -1952,7 +1952,7 @@ export class ToolBox extends Emitter {
    */
   async stop() {
     if (this.state.layer.config.editing.layer_style && this.#current_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
-      await getCatalogLayerById(this.state.id).changeCurrentStyle(this.#current_style);
+      await getCatalogLayerById(this.state.id).changeStyle(this.#current_style);
     }
 
     if (this.disableCanEditEvent) {
@@ -3528,7 +3528,7 @@ export class ToolBox extends Emitter {
         }
         commit.delete.forEach(id => {
           if (layer.isSelected(id)) {
-            layer.excludeSelectionFid(id);
+            layer.fidsOut(id);
           }
         })
       } catch(e) {
