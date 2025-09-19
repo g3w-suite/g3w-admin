@@ -3527,7 +3527,7 @@ export class ToolBox extends Emitter {
           });
         }
         commit.delete.forEach(id => {
-          if (layer.hasSelectionFid(id)) {
+          if (layer.isSelected(id)) {
             layer.excludeSelectionFid(id);
           }
         })
