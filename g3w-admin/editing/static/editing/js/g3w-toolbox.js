@@ -1951,7 +1951,7 @@ export class ToolBox extends Emitter {
    * @returns {*}
    */
   async stop() {
-    if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
+    if (this.state.layer.config.editing.layer_style && this.#current_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
       await getCatalogLayerById(this.state.id).changeCurrentStyle(this.#current_style);
     }
 
