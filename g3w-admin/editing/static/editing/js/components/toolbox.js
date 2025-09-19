@@ -334,21 +334,14 @@ export default ({
      * @fires starttoolbox
      */
     async toggleEditing() {
-      //set select
-      this.select();
-      //check if need to change style for editing and if is not equal to current layer style
-      const change       = this.currentStyle !== (this.state.layer.state.editing.layer_style ?? this.currentStyle);
       this.toggled.layer = !(this.state.editing.on || this.toggled.layer);
       if (this.toggled.layer && this.state.layer.state.editing.ready && !this.state.loading) {
         this.$emit(this.state.editing.on ? 'stoptoolbox' : 'starttoolbox', this.state.id);
       }
       if (!this.toggled.layer) {
-        //in case of change style for editing, set style before editing
-        change && await getCatalogLayerById(this.state.layer.getId()).changeCurrentStyle(this.currentStyle);
         this.$emit('stoptoolbox', this.state.id);
       }
       this.select();
-
     },
 
     /**
