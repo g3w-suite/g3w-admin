@@ -3520,7 +3520,10 @@ export class ToolBox extends Emitter {
               const selected = layer.getOlSelectionFeature(id);
               if (selected) {
                 selected.feature = geometry;
-                GUI.setSelectionFeatures('update', { feature: geometry });
+                GUI.defaultsLayers.selectionLayer
+                  .getSource()
+                  .getFeatureById(selected.feature.getId())
+                  .setGeometry(selected.feature.getGeometry());
               }
             }
           });
