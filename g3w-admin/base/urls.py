@@ -169,6 +169,9 @@ urlpatterns += [
         name="django_registration_disallowed",
     ),
     path('allauthg/', include('allauth.urls')),
+
+    # OpenIdConnect Connect
+    path('oidc/', include('mozilla_django_oidc.urls')),
 ]
 
 

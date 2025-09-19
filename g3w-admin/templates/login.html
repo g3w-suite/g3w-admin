@@ -63,6 +63,11 @@
               </div>
           </div>
           {% endif %}
+          <div class="row">
+              <div class="col-xs-12">
+                  <a class="btn btn-info btn-block btn-flat margin-bottom-small" href="{% url 'oidc_authentication_init' %}">{% trans 'Login with Keycloak' %}</a>
+              </div>
+          </div>
         </form>
   </div><!-- /.login-box-body -->
      {% include 'include/login_page_version.html' %}

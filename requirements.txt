@@ -45,3 +45,4 @@ django-allauth[socialaccount]==0.63.6
 django-elasticsearch-dsl==8.0
 natsort==8.4.0
 python-slugify[unidecode]==8.0.4
+mozilla-django-oidc==4.0.1

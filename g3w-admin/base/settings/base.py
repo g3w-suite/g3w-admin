@@ -71,6 +71,8 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.google",
     "allauth.usersessions",
+    "mozilla_django_oidc",
+
 ]
 
 G3WADMIN_APPS = [
@@ -156,8 +158,10 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
-    'allauth.account.auth_backends.AuthenticationBackend'
-)
+    'allauth.account.auth_backends.AuthenticationBackend',
+    #'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+    'usersmanage.keycloak.auth.G3WOIDCAB',
+    )
 
 GUARDIAN_RAISE_403 = True
 
