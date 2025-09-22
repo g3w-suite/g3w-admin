@@ -125,7 +125,7 @@ export default ({
 
         <!-- ADD FEATURE -->
         <span
-          v-if                      = "capabilities.includes('add_feature')"
+          v-if                      = "rcapabilities.includes('add_feature')"
           v-t-tooltip:bottom.create = "'plugins.editing.form.relations.tooltips.add_relation'"
           @click.stop               = "show_add_link ? addRelationAndLink() : null"
           class                     = "g3w-icon add-link pull-right"
@@ -1310,6 +1310,9 @@ export default ({
       GUI.getPlugin('editing').on('commit', this.onCommit);
 
       this.isVectorRelation = 'vector' === relationLayer.getType();
+
+      /** @since 4.0.2 add relation capabilities */ 
+      this.rcapabilities    = relationLayer.state.editing?.capabilities || [];
 
       // vector relation → get all layers with the same geometry
       if (this.isVectorRelation) {

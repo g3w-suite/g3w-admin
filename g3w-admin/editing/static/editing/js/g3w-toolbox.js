@@ -1570,7 +1570,7 @@ export class ToolBox extends Emitter {
           }),
         },
         // Edit Table feature (alphanumerical layer - No geometry)
-        is_table && capabilities.includes('delete_feature') && capabilities.includes('change_attr_feature') && {
+        is_table && (capabilities.includes('delete_feature') || capabilities.includes('change_attr_feature')) && {
           id:   'edittable',
           type: ['delete_feature', 'change_attr_feature'],
           name: "editing.tools.update_feature",
