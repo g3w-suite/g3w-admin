@@ -28,6 +28,7 @@
                         {% if perms.qdjango.add_project %}
                         <th style="width:70px;">{% trans 'Panoramic' %}</th>
                         {% endif %}
+                        <th style="width:70px;">{% trans 'Bookmark' %}</th>
                         <th style="width:120px">{% trans 'Actions' %}</th>
                         <th>Logo</th>
                         <th>{% trans 'QGIS project title' %}</th>
@@ -46,6 +47,16 @@
                             <input type="radio" name="panoramic_map" {% if object.id == projectPanoramic.0.project_id %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="setProjectPanoramic" data-ajax-url="{% url 'group-set-project-panoramic' group.slug 'qdjango' object.id %}"/>
                         </td>
                         {% endif %}
+                        <td>
+                            <span class="bookmark-toggle" style="cursor:pointer;" data-widget-type="setProjectBookmark"
+                                data-ajax-url="" title="{% trans 'Set bookmark' %}">
+                                <input type="checkbox"
+                                  name="bookmark_project"
+                                  {% if object.is_bookmarked %}checked="checked"{% endif %}
+                                  style="display:none;" />
+                                <i class="fa fa-bookmark{% if not object.is_bookmarked %}-o{% endif %}"></i>
+                            </span>
+                        </td>
                         <td>
                             {% if "view_project" in userObj_perms %}
                             <span class="col-xs-2 icon">
