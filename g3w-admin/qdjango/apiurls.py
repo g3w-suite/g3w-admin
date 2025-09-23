@@ -428,6 +428,6 @@ urlpatterns = [
     path(
         'api/bookmark/',
         login_required(ProjectBookmarkCRUDAPIView.as_view()),
-        name='qdjango-api-bookmark-project-list-create'
+        name='qdjango-api-bookmark-project'
     ),
 ]

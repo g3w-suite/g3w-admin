@@ -127,6 +127,8 @@ _.extend(g3wadmin, {
         // WEB Service widget
         this.ui.initShowWEBServicesWidget();
 
+        // Project bookmark widget
+        this.ui.initSetProjectBookmarkWidget();
         /**
          * @TODO try to perfom this issue server side
          */

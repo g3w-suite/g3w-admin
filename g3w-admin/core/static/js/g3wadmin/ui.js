@@ -350,6 +350,10 @@ _.extend(g3wadmin.ui, {
         this.__onClick('[data-widget-type="showWEBServices"]', function(e) { ga.widget.showWEBServices($(this)); });
     },
 
+    initSetProjectBookmarkWidget: function() {
+        this.__onClick('[data-widget-type="setProjectBookmark"]', function(e) { ga.widget.setProjectBookmark($(this)); });
+    },
+
     /**
      * build the modal jquery object
      */

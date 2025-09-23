@@ -28,7 +28,7 @@
                         {% if perms.qdjango.add_project %}
                         <th style="width:70px;">{% trans 'Panoramic' %}</th>
                         {% endif %}
-                        <th style="width:70px;">{% trans 'Bookmark' %}</th>
+                        <th style="width:30px;"></th>
                         <th style="width:120px">{% trans 'Actions' %}</th>
                         <th>Logo</th>
                         <th>{% trans 'QGIS project title' %}</th>
@@ -48,13 +48,14 @@
                         </td>
                         {% endif %}
                         <td>
-                            <span class="bookmark-toggle" style="cursor:pointer;" data-widget-type="setProjectBookmark"
-                                data-ajax-url="" title="{% trans 'Set bookmark' %}">
-                                <input type="checkbox"
-                                  name="bookmark_project"
-                                  {% if object.is_bookmarked %}checked="checked"{% endif %}
-                                  style="display:none;" />
-                                <i class="fa fa-bookmark{% if not object.is_bookmarked %}-o{% endif %}"></i>
+                            <span  class="bookmark-toggle" 
+                                    style="cursor:pointer; font-size:1.4em; color:red;" 
+                                    data-widget-type="setProjectBookmark"
+                                    data-ajax-url="{% url 'qdjango-api-bookmark-project' %}" 
+                                    data-prj-id="{{ object.pk }}"
+                                    data-bookmarked="{% if object.pk in projects_bookmarked  %}1{% else %}0{% endif %}"
+                                    title="{% if not object.pk in projects_bookmarked %}{% trans 'Set bookmark' %}{% else %}{% trans 'Remove bookmark' %}{% endif %}">
+                                <i class="fa fa-bookmark{% if not object.pk in projects_bookmarked %}-o{% endif %}"></i>
                             </span>
                         </td>
                         <td>

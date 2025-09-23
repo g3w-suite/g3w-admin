@@ -28,6 +28,7 @@ from usersmanage.decorators import user_passes_test_or_403
 from usersmanage.utils import get_users_for_object, userHasGroups
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2
 from usersmanage.models import User, Group as AuthGroup
+from qdjango.models import ProjectBookmark
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm, GroupFilterForm
 from .models import (
     Group,
@@ -84,6 +85,9 @@ class DashboardView(TemplateView):
         for widget in dashboard_widgets:
             if widget[1]:
                 context['widgets'].append(widget[1])
+
+        # Get bookmarked projects for user
+        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user)
 
         return context
 
