@@ -4,9 +4,9 @@
   if (plugins) {
     plugins["editing"] = Object.assign(plugins["editing"] || {},
       {
-        version : "4.0.0-map_modal_on_openform",
-        hash    : "83a6b36",
-        branch  : "map_modal_on_openform",
+        version : "4.0.1-HEAD",
+        hash    : "undefined",
+        branch  : "HEAD",
       });
   }
 })();
