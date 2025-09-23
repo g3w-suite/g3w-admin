@@ -653,7 +653,11 @@ class QgisProjectLayer(XmlData):
         """
 
         try:
-            return list(self.qgs_layer.excludeAttributesWms())
+            exwms = []
+            for f in self.qgs_layer.fields():
+                if Qgis.FieldConfigurationFlag.HideFromWms & f.configurationFlags():
+                    exwms.append(f.name())
+            return exwms
         except Exception as e:
             return []
 
