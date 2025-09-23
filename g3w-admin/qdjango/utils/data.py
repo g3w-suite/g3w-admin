@@ -818,7 +818,7 @@ class QgisProjectLayer(XmlData):
 
                     if isinstance(etype, Qgis.AttributeEditorContainerType):
                         to_ret_node.update({
-                            'groupbox': element.isGroupBox(),
+                            'groupbox': element.type() == Qgis.AttributeEditorContainerType.GroupBox,
                             'columncount': element.columnCount(),
                             'nodes': build_form_tree_object(element.children(), style)
                         })
