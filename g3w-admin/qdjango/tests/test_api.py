@@ -2838,3 +2838,34 @@ class TestVectorApiEditorformstructureFeaturecountFilter(TestVectorApiGeoFilter)
         self.assertEqual(jcontent['data']['maxscale'], 0)
         self.assertEqual(jcontent['data']['minscale'], 100000000)
         self.assertFalse(jcontent['data']['scalebasedvisibility'])
+
+
+class TestProjectsBookmarkAPI(QdjangoTestBase):
+    """
+    Test for /projects/bookmark api
+    """
+
+    def test_crud_bookmark(self):
+        """
+        Test CRUD for bookmark api
+        """
+
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
+
+        url = reverse('qdjango-api-bookmark-project')
+
+        # Create
+        response = self.client.post(url, {
+            'project': self.project.instance.pk,
+        }, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        jres = json.loads(response.content)
+
+        self.assertTrue('id' in jres)
+        self.assertEqual(jres['project'], self.project.instance.pk)
+        self.assertEqual(jres['user'], self.test_admin1.pk)
+
+
+       
