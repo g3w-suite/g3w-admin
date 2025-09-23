@@ -36,6 +36,7 @@ class ProjectBookmarkCRUDAPIView(DestroyModelMixin, UpdateModelMixin, ListCreate
     serializer_class = ProjectBookmarkSerializer
 
     def put(self, request, *args, **kwargs):
+
         return self.update(request, *args, **kwargs)
     
     def delete(self, request, *args, **kwargs):

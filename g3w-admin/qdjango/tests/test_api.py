@@ -2858,7 +2858,7 @@ class TestProjectsBookmarkAPI(QdjangoTestBase):
         # Create
         response = self.client.post(url, {
             'project': self.project.instance.pk,
-        }, format='json')
+        }, content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
         jres = json.loads(response.content)
@@ -2867,5 +2867,161 @@ class TestProjectsBookmarkAPI(QdjangoTestBase):
         self.assertEqual(jres['project'], self.project.instance.pk)
         self.assertEqual(jres['user'], self.test_admin1.pk)
 
+        # Create second
+        response = self.client.post(url, {
+            'project': self.project310.instance.pk,
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 201)
+        jres = json.loads(response.content)
+
+        self.assertTrue('id' in jres)
+        self.assertEqual(jres['project'], self.project310.instance.pk)
+        self.assertEqual(jres['user'], self.test_admin1.pk)
+
+        # Udate: is no important
+
+        response = self.client.put(url, {
+            'project': self.project310.instance.pk,
+        }, content_type='application/json')
+
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertTrue('id' in jres)
+        self.assertEqual(jres['project'], self.project310.instance.pk)
+        self.assertEqual(jres['user'], self.test_admin1.pk)
+
+        # Get
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['count'], 2)
+
+        # Delete
+
+        response = self.client.delete(url, {
+            'project': self.project310.instance.pk,
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 204)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['count'], 1)
+
+        self.client.logout()
+
+        # Check for other user
+        self.assertTrue(self.client.login(
+            username=self.test_viewer1.username, password=self.test_viewer1.username))
+        
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['count'], 0)
+
+        self.client.logout()
+
+    def test_exceptions(self):
+        """
+        Test exceptions for bookmark api
+        """
+
+        self.assertTrue(self.client.login(
+            username=self.test_viewer1.username, password=self.test_viewer1.username))
+
+        url = reverse('qdjango-api-bookmark-project')
+
+        # Create without project
+        response = self.client.post(url, {
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres, {
+            'result': False,
+            'error': {
+                'code': 'validation',
+                'data': {
+                    'project': [
+                        'This field is required.'
+                        ]
+                },
+                'message': 'Data are not correct or insufficent!',
+            }
+        })
+
+        # Create with invalid project
+        response = self.client.post(url, {
+            'project': '9999',
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres, {
+            'result': False,
+            'error': {
+                'code': 'validation',
+                'data': {
+                    'project': [
+                        'Invalid pk "9999" - object does not exist.'
+                        ]
+                },
+                'message': 'Data are not correct or insufficent!',
+            }
+        })
+
+
+        # Delete without project
+        response = self.client.delete(url, {
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 404)
+        jres = json.loads(response.content)
+
+
+        # Delete with invalid project
+        response = self.client.delete(url, {
+            'project': '9999',
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 404)
+        jres = json.loads(response.content)
+
+        # No permmission on project
+        response = self.client.post(url, {
+            'project': self.project.instance.pk,
+        }, content_type='application/json') 
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres, {
+            'result': False,
+            'error': {
+                'code': 'validation',
+                'data': {
+                    'project': [
+                        'You do not have permission to view this project.'
+                        ]
+                },
+                'message': 'Data are not correct or insufficent!',
+            }
+        })
+
+        self.client.logout()
+        
 
        

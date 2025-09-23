@@ -37,7 +37,7 @@ class ProjectBookmarkSerializer(ModelSerializer):
         """
 
         user = self.context['request'].user
-        if not user.has_perm('projects.view_project', value):
+        if not user.has_perm('qdjango.view_project', value):
             raise ValidationError("You do not have permission to view this project.")
         return value
 
