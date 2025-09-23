@@ -1216,7 +1216,7 @@ new (class extends Plugin {
 
       // feature has geometry → zoom to geometry
       if (geom) {
-        GUI.zoomToGeometry(geom);
+        GUI.zoomToExtent(geom?.getExtent());
       }
 
       toolBox.setSelected(true);
