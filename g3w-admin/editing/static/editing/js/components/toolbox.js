@@ -325,7 +325,10 @@ export default ({
      */
     fitZoomToScale(e) {
       if (this.state.selected && !this.canEdit) {
-        GUI.goToRes(GUI.getCenter(), getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()));
+        GUI.getMap().getView().animate(
+          { duration: 200, center: GUI.getCenter() },
+          { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+        );
       }
     },
 

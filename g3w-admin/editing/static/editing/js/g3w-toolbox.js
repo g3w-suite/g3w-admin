@@ -1851,7 +1851,10 @@ export class ToolBox extends Emitter {
           this.#events.push(
             GUI.getMap().on('click', e => {
               if (this.state.selected && !this.state.editing.canEdit) {
-                GUI.goToRes(e.coordinate, getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()));
+                GUI.getMap().getView().animate(
+                  { duration: 200, center: e.coordinate },
+                  { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+                );
               }
             })
           );
