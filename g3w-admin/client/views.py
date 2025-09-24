@@ -197,7 +197,11 @@ class ClientView(TemplateView):
 
         # choosen skin by user main role
         contextData['skin_class'] = get_adminlte_skin_by_user(self.request.user)
-        return contextData
+
+        # Sidebar collapse setting
+        contextData['sidebar_collapse'] = self.project.sidebar_collapse if hasattr(self.project, 'sidebar_collapse') else False
+        
+        return contextData  
         
     def get_template_names(self):
         return '{}/index.html'.format(self.get_client_name())
