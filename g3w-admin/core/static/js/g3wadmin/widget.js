@@ -95,13 +95,6 @@ _.extend(g3wadmin.widget, {
         'crs',
     ],
 
-    _setProjectBookmark: [  
-        'ajax-url',
-        'prj-id',
-        'bookmarked',
-        'remove-selector'
-    ],  
-
     /**
      * Widget to delete a item from database by ajax call.
      * 
@@ -871,48 +864,5 @@ _.extend(g3wadmin.widget, {
         }
 
     },
-
-    setProjectBookmark: function($item, bookmarked) {
-
-        try {
-            const params = ga.utils.getDataAttrs($item, this._setProjectBookmark);
-            if (_.isUndefined(params['ajax-url'])) {
-                throw new Error('Attribute data-ajax-url not defined');
-            }
-
-            removeSelector = (_.isUndefined(params['remove-selector']) ? null : params['remove-selector']);
-
-
-            $.ajax({
-                method: params['bookmarked'] == '1' ? 'delete' : 'post',
-                contentType: 'application/json',
-                url: params['ajax-url'],
-                data: JSON.stringify({ 'project': params['prj-id'] }),
-                success: function (res) {
-
-                    if (removeSelector) {
-                        // Remove item from list
-                        $item.parents('#'+removeSelector).toggle(300,function() { $(this).remove(); });
-                    } else  {
-                        // Update data-bookmarked attribute
-                        $item.attr('data-bookmarked', params['bookmarked'] == '1' ? '0' : '1');
-                        // Toggle bookmark icon class
-                        const $icon = $item.find('i');
-                        $icon.toggleClass('fa-bookmark fa-bookmark-o');
-                    }
-
-                    
-                },
-                error: function (xhr, textStatus, errorMessage) {
-                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
-                }
-            });
-
-
-        } catch (e) {
-            this.showError(e.message);
-        }
-    },
-
 
 });
