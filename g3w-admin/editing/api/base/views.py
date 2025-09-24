@@ -33,7 +33,8 @@ from editing.models import (
 )
 from editing.utils import (
     LayerLock, 
-    enable_feature_lock
+    enable_feature_lock, 
+    get_sessionid_from_request
 )
 from editing.utils.data import clear_session_for_uploaded_files
 from qdjango.apps import (
@@ -95,13 +96,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
     def initial(self, request, *args, **kwargs):
         super(BaseEditingVectorOnModelApiView, self).initial(
             request, *args, **kwargs)
+        
+        self.sessionid = get_sessionid_from_request(request)
 
-        # TODO: check if necessary
-        try:
-            self.sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
-                if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
-        except:
-            pass
+        # try:
+        #     self.sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
+        #         if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
+        # except:
+        #     pass
 
         # Enable/disable feature lock
         self.enable_feature_lock = enable_feature_lock(request)

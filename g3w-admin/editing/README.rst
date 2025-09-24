@@ -42,7 +42,12 @@ Settings for module:
     # Set if editing features has to be locked
     EDITING_LOCK_FEATURES: <if not set is True> 
 
-    # Set spatila predicate for (Multi)Polygon predicate
+    # Set auth classes that can edit without locking features
+    # **Important**: if EDITING_LOCK_FEATURES is False this setting is ignored!!
+    # I.e.: EDITING_AUTH_CLASS_NO_LOCK_FEATURES = ['g3wadmin.auth.G3WAdminAuth']
+    EDITING_AUTH_CLASS_NO_LOCK_FEATURES = []  # list of auth classes that can edit without locking features
+
+    # Set spatial predicate for editing constraints
     EDITING_CONSTRAINT_SPATIAL_PREDICATE = 'contains' | 'intersects' (contains default)
 
     # Periodic features unlock task crontab time (in hours), defaults to 4
