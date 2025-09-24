@@ -222,7 +222,7 @@ class QgisProjectLayer(XmlData):
         :rtype: str
         """
 
-        name = self.qgs_layer.shortName()
+        name = self.qgs_layer.serverProperties().shortName()
         if not name:
             name = self.qgs_layer.name()
         return name
@@ -653,7 +653,11 @@ class QgisProjectLayer(XmlData):
         """
 
         try:
-            return list(self.qgs_layer.excludeAttributesWms())
+            exwms = []
+            for f in self.qgs_layer.fields():
+                if Qgis.FieldConfigurationFlag.HideFromWms & f.configurationFlags():
+                    exwms.append(f.name())
+            return exwms
         except Exception as e:
             return []
 
@@ -665,7 +669,11 @@ class QgisProjectLayer(XmlData):
         """
 
         try:
-            return list(self.qgs_layer.excludeAttributesWfs())
+            exwfs = []
+            for f in self.qgs_layer.fields():
+                if Qgis.FieldConfigurationFlag.HideFromWfs & f.configurationFlags():
+                    exwfs.append(f.name())
+            return exwfs
         except Exception as e:
             return []
 
@@ -818,7 +826,7 @@ class QgisProjectLayer(XmlData):
 
                     if isinstance(etype, Qgis.AttributeEditorContainerType):
                         to_ret_node.update({
-                            'groupbox': element.isGroupBox(),
+                            'groupbox': element.type() == Qgis.AttributeEditorContainerType.GroupBox,
                             'columncount': element.columnCount(),
                             'nodes': build_form_tree_object(element.children(), style)
                         })
