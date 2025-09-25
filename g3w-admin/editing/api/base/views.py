@@ -206,7 +206,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
             if mode_editing in post_layer_data:
 
                 for geojson_feature in post_layer_data[mode_editing]:
-                    data_extra_fields = {'feature': geojson_feature}
+                    data_extra_fields = {'feature': geojson_feature}            
 
                     # Clear any old error
                     qgis_layer.dataProvider().clearErrors()
@@ -590,7 +590,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     self.metadata_layer.qgis_layer.name())
 
                 editing_layers.append(self.metadata_layer.qgis_layer)
-
 
             # Save main layer
             ref_insert_ids, ref_lock_ids, ref_update_ids = self.save_vector_data(

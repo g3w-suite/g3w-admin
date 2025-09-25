@@ -1879,6 +1879,279 @@ class EditingApiTests(ConstraintsTestsBase):
         self.assertEqual(jresult['vector']['data']['features'][0]['properties']['valure'], 123489)
 
         self.client.logout()
+    
+    @override_settings(EDITING_LOCK_FEATURES=False)
+    def test_editing_commit_mode_api_nolock_feature(self):
+        """ 
+        Test Editing API mode: MODE_COMMIT
+        With no lock feature
+        """
+
+        cities_layer_id = 'cities_54d40b01_2af8_4b17_8495_c5833485536e'
+        cities_layer = self.editing_project.instance.layer_set.filter(
+            qgs_layer_id=cities_layer_id)[0]
+
+        # TEST MODE_COMMIT
+        # ---------------------------------------------
+
+        # test with join layer
+        # ---------------------------------------------
+        # ADD
+        # ===
+        commit_path = reverse('editing-commit-vector-api',
+                            args=['commit', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        self.assertTrue(
+            self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+
+        payload = {
+            "add": [
+                {
+                    "id": "_new_1234520704661",
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNew",
+                        "population": 1234
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "lockids": [],
+            "relations": {},
+            "update": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        print(jresult)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+
+        # --------------------------------
+        # No lock feature, so no lockid returned
+        # ---------------------------------------
+        self.assertTrue('new_lockids' not in jresult)
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # UPDATE
+        # ======
+
+        payload = {
+            "update": [
+                {
+                    "id": newid,
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNewUpdate",
+                        "population": 1234
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # DELETE
+        # ======
+
+        payload = {
+            "update": [],
+            "delete": [
+                newid
+            ],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 481)
+
+        # TEST MODE_COMMIT FOR ANONYMOUS USER
+        # ---------------------------------------------
+
+        # test with join layer
+        # ---------------------------------------------
+        # ADD
+        # ===
+
+        # with editing grant to anonymous user
+        assign_perm('change_layer', get_anonymous_user(), cities_layer)
+
+        commit_path = reverse('editing-commit-vector-api',
+                            args=['commit', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        payload = {
+            "add": [
+                {
+                    "id": "_new_1234520704670",
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNewForAnonymousUser",
+                        "population": 12345
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "lockids": [],
+            "relations": {},
+            "update": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+
+        # --------------------------------
+        # No lock feature, so no lockid returned
+        # ---------------------------------------
+        self.assertTrue('new_lockids' not in jresult)
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # UPDATE
+        # ======
+
+        payload = {
+            "update": [
+                {
+                    "id": newid,
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNewForAnonymousUser",
+                        "population": 12345
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # DELETE
+        # ======
+
+        payload = {
+            "update": [],
+            "delete": [
+                newid
+            ],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 481)
 
 class ConstraintsApiTests(ConstraintsTestsBase):
     """Constraints API tests"""
@@ -2379,277 +2652,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(response.status_code, 400)
 
 
-    @override_settings(EDITING_LOCK_FEATURE=False)
-    def test_editing_commit_mode_api_nolock_feature(self):
-        """ 
-        Test Editing API mode: MODE_COMMIT
-        With no lock feature
-        """
-
-        cities_layer_id = 'cities_54d40b01_2af8_4b17_8495_c5833485536e'
-        cities_layer = self.editing_project.instance.layer_set.filter(
-            qgs_layer_id=cities_layer_id)[0]
-
-        # TEST MODE_COMMIT
-        # ---------------------------------------------
-
-        # test with join layer
-        # ---------------------------------------------
-        # ADD
-        # ===
-        commit_path = reverse('editing-commit-vector-api',
-                            args=['commit', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        self.assertTrue(
-            self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
-
-        payload = {
-            "add": [
-                {
-                    "id": "_new_1234520704661",
-                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
-                    "properties": {
-                        "geonameid": 5678,
-                        "gtopo30": 9,
-                        "iso2_code": "IT",
-                        "name": "CityTestNew",
-                        "population": 1234
-                    },
-                    "type": "Feature"
-                }
-            ],
-            "delete": [],
-            "lockids": [],
-            "relations": {},
-            "update": []
-        }
-
-        response = self.client.post(commit_path, payload, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-        self.assertTrue(jresult['result'])
-
-        newid = jresult['response']['new'][0]['id']
-
-        # --------------------------------
-        # No lock feature, so no lockid returned
-        # ---------------------------------------
-        self.assertTrue('new_lockids' not in jresult)
-
-        # check total feauture
-        data_path = reverse('core-vector-api',
-                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        response = self.client.get(data_path, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-
-        # check features
-        self.assertEqual(len(jresult['vector']['data']['features']), 482)
-
-        # UPDATE
-        # ======
-
-        payload = {
-            "update": [
-                {
-                    "id": newid,
-                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
-                    "properties": {
-                        "geonameid": 5678,
-                        "gtopo30": 9,
-                        "iso2_code": "IT",
-                        "name": "CityTestNewUpdate",
-                        "population": 1234
-                    },
-                    "type": "Feature"
-                }
-            ],
-            "delete": [],
-            "relations": {},
-            "add": []
-        }
-
-        response = self.client.post(commit_path, payload, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-        self.assertTrue(jresult['result'])
-
-        # check total feauture
-        data_path = reverse('core-vector-api',
-                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        response = self.client.get(data_path, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-
-        # check features
-        self.assertEqual(len(jresult['vector']['data']['features']), 482)
-
-        # DELETE
-        # ======
-
-        payload = {
-            "update": [],
-            "delete": [
-                newid
-            ],
-            "relations": {},
-            "add": []
-        }
-
-        response = self.client.post(commit_path, payload, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-        self.assertTrue(jresult['result'])
-
-        # check total feauture
-        data_path = reverse('core-vector-api',
-                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        response = self.client.get(data_path, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-
-        # check features
-        self.assertEqual(len(jresult['vector']['data']['features']), 481)
-
-        # TEST MODE_COMMIT FOR ANONYMOUS USER
-        # ---------------------------------------------
-
-        # test with join layer
-        # ---------------------------------------------
-        # ADD
-        # ===
-
-        # with editing grant to anonymous user
-        assign_perm('change_layer', get_anonymous_user(), cities_layer)
-
-        commit_path = reverse('editing-commit-vector-api',
-                            args=['commit', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        payload = {
-            "add": [
-                {
-                    "id": "_new_1234520704670",
-                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
-                    "properties": {
-                        "geonameid": 5678,
-                        "gtopo30": 9,
-                        "iso2_code": "IT",
-                        "name": "CityTestNewForAnonymousUser",
-                        "population": 12345
-                    },
-                    "type": "Feature"
-                }
-            ],
-            "delete": [],
-            "lockids": [],
-            "relations": {},
-            "update": []
-        }
-
-        response = self.client.post(commit_path, payload, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-        self.assertTrue(jresult['result'])
-
-        newid = jresult['response']['new'][0]['id']
-
-        # --------------------------------
-        # No lock feature, so no lockid returned
-        # ---------------------------------------
-        self.assertTrue('new_lockids' not in jresult)
-
-        # check total feauture
-        data_path = reverse('core-vector-api',
-                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        response = self.client.get(data_path, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-
-        # check features
-        self.assertEqual(len(jresult['vector']['data']['features']), 482)
-
-        # UPDATE
-        # ======
-
-        payload = {
-            "update": [
-                {
-                    "id": newid,
-                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
-                    "properties": {
-                        "geonameid": 5678,
-                        "gtopo30": 9,
-                        "iso2_code": "IT",
-                        "name": "CityTestNewForAnonymousUser",
-                        "population": 12345
-                    },
-                    "type": "Feature"
-                }
-            ],
-            "delete": [],
-            "relations": {},
-            "add": []
-        }
-
-        response = self.client.post(commit_path, payload, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-        self.assertTrue(jresult['result'])
-
-        # check total feauture
-        data_path = reverse('core-vector-api',
-                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        response = self.client.get(data_path, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-
-        # check features
-        self.assertEqual(len(jresult['vector']['data']['features']), 482)
-
-        # DELETE
-        # ======
-
-        payload = {
-            "update": [],
-            "delete": [
-                newid
-            ],
-            "relations": {},
-            "add": []
-        }
-
-        response = self.client.post(commit_path, payload, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-        self.assertTrue(jresult['result'])
-
-        # check total feauture
-        data_path = reverse('core-vector-api',
-                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
-
-        response = self.client.get(data_path, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        jresult = json.loads(response.content)
-
-        # check features
-        self.assertEqual(len(jresult['vector']['data']['features']), 481)
+    
 
 
         
