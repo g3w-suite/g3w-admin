@@ -428,7 +428,7 @@ export class OpenFormStep extends Step {
               },
               cbk: () => {
                 if (this._saveAllError) {
-                  [...Workflow.Stack._workflows]
+                  [...Workflow.Stack.items]
                     .reverse()
                     .filter(w => "function" === typeof w.getLastStep()._saveAll) // need to filter only workflow that
                     .map( w => w.getLastStep().getContext().session.undo())
