@@ -113,21 +113,10 @@ class BaseUserMediaHandler(object):
                 if file_name:
                     file_name = urllib.parse.unquote(file_name)
 
+
                 path_to_save = self.get_path_to_save()
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
                 
-                # Check if file already exists, add suffix if needed
-                if os.path.exists(path_file_to_save):
-                    base, ext = os.path.splitext(file_name)
-                    count = 1
-                    while True:
-                        new_file_name = f"{base}_{count}{ext}"
-                        new_path_file_to_save = '{}/{}'.format(path_to_save, new_file_name)
-                        if not os.path.exists(new_path_file_to_save):
-                            file_name = new_file_name
-                            path_file_to_save = new_path_file_to_save
-                            break
-                        count += 1
 
                 # Check if it is a user-media view
                 url_path = urllib.parse.urlparse(self.feature_properties[field]).path
@@ -176,6 +165,23 @@ class BaseUserMediaHandler(object):
 
                         # if not os.path.isdir(path_to_save):
                         #     os.makedirs(path_to_save)
+
+                        # Check if file already exists, add suffix if needed
+                        # This case can happen when user upload the same image or doc 
+                        # for other feature. In this case the delete_old_flag must be set to False
+                        # to avoid to delete the file just uploaded.
+                        if os.path.exists(path_file_to_save):
+                            delete_old = False
+                            base, ext = os.path.splitext(file_name)
+                            count = 1
+                            while True:
+                                new_file_name = f"{base}_{count}{ext}"
+                                new_path_file_to_save = '{}/{}'.format(path_to_save, new_file_name)
+                                if not os.path.exists(new_path_file_to_save):
+                                    file_name = new_file_name
+                                    path_file_to_save = new_path_file_to_save
+                                    break
+                                count += 1
 
                         # for upload of the same image or doc during parallel attribute editing
                         # move delete fo temp uploaded files at the end of commit workflow.
