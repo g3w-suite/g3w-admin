@@ -119,6 +119,8 @@ def invalidate_projects_cache(sender, instance, **kwargs):
     """
     Invalidate projects cache on user save
     """
-
     if hasattr(settings, 'QDJANGO_PRJ_CACHE') and settings.QDJANGO_PRJ_CACHE:
-        invalidate_user_projects_cache(instance)
+        try:
+            invalidate_user_projects_cache(instance)
+        except:
+            pass
