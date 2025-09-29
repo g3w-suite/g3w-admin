@@ -669,7 +669,7 @@ new (class extends Plugin {
 
         // In the case of vector layer need to refresh map commit changes
         if (result && 'vector' === layer.getType() ) {
-          GUI.refreshMap({ force: true });
+          GUI.refreshMap();
         }
 
         if (online) {
