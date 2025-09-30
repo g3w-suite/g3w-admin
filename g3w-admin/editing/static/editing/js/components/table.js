@@ -22,22 +22,16 @@ const { debounce }    = g3wsdk.core.utils;
 export default ({
 
   template: /*html*/`
-<div
-  id    = "editing_table"
-  class = "g3w-editing-table"
->
+<div class = "g3w-editing-table">
 
   <!-- TABLE HEADER -->
-  <div>
-    <div style = "display: flex;justify-content: space-between;align-items: baseline;">
-      <h3 style = "margin-top:0;margin-bottom: 2px;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ state.title }}</h3>
-    </div>
-    <div
-      v-if  = "state.isrelation"
-      style = "margin-bottom: 10px;font-size: 1.3em;background-color: #f5f5f5;padding: 3px;border-radius: 3px;font-weight: bold;"
-      v-t   = "'plugins.editing.relation.table.info'"
-    ></div>
-  </div>
+  <h3 style = "margin-top:0;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ state.title }}</h3>
+
+  <div
+    v-if  = "state.isrelation"
+    style = "margin-bottom: 10px;font-size: 1.3em;background-color: #f5f5f5;padding: 3px;border-radius: 3px;font-weight: bold;"
+    v-t   = "'plugins.editing.relation.table.info'"
+  ></div>
 
   <div style="display: flex;">
     <!-- PAGE SIZE -->
@@ -97,7 +91,6 @@ export default ({
                 @click.stop      = "editFeature(feature.__gis3w_feature_uid)"
               ></i>
             </span>
-
 
             <!-- COPY FEATURE -->
             <span v-t-tooltip:right = "'plugins.editing.table.copy'">
