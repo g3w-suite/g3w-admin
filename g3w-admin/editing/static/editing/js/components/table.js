@@ -4,19 +4,20 @@
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { Step }                              from '../g3w-step.js';
-import { Workflow }                          from '../g3w-workflow.js';
-import { OpenFormStep }                      from '../actions/open-form.js';
-import { cloneFeature }                      from '../utils/cloneFeature.js';
-import { getRelationsInEditing }             from '../utils/getRelationsInEditing.js';
-import { getFeatureTableFieldValue }         from '../utils/getFeatureTableFieldValue.js';
-import { addTableFeature }                   from '../utils/addTableFeature.js';
-import { getEditingLayer }                   from '../utils/getEditingLayer.js';
+import { Step }                      from '../g3w-step.js';
+import { Workflow }                  from '../g3w-workflow.js';
+import { OpenFormStep }              from '../actions/open-form.js';
+import { cloneFeature }              from '../utils/cloneFeature.js';
+import { getRelationsInEditing }     from '../utils/getRelationsInEditing.js';
+import { getFeatureTableFieldValue } from '../utils/getFeatureTableFieldValue.js';
+import { addTableFeature }           from '../utils/addTableFeature.js';
+import { getEditingLayer }           from '../utils/getEditingLayer.js';
 
 const _               = g3wsdk.core.i18n.t;
 const { GUI }         = g3wsdk.gui;
-const { resizeMixin } = g3wsdk.gui.vue.Mixins;
 const Media_Field     = g3wsdk.gui.vue.Fields.media_field;
+const { PAGELENGTHS } = g3wsdk.constant;
+const { debounce }    = g3wsdk.core.utils;
 
 export default ({
 
@@ -27,56 +28,71 @@ export default ({
 >
 
   <!-- TABLE HEADER -->
-  <div
-    ref   = "editing_table_header"
-    class = "editing_table_header"
-  >
-
-    <div class = "editing_table_header_content">
-      <h3 class = "editing_table_title">{{ state.title }}</h3>
+  <div>
+    <div style = "display: flex;justify-content: space-between;align-items: baseline;">
+      <h3 style = "margin-top:0;margin-bottom: 2px;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ state.title }}</h3>
     </div>
-
     <div
       v-if  = "state.isrelation"
-      class = "editing_table_relation_messagge"
-      v-t   = "'plugins.editing.relation.table.info'">
-    </div>
+      style = "margin-bottom: 10px;font-size: 1.3em;background-color: #f5f5f5;padding: 3px;border-radius: 3px;font-weight: bold;"
+      v-t   = "'plugins.editing.relation.table.info'"
+    ></div>
+  </div>
 
+  <div style="display: flex;">
+    <!-- PAGE SIZE -->
+    <label style="margin-top: 5px;">{{ $t('show') }} <select style = "border: 1px solid #aaa;" v-model = "search.page_size">
+      <option v-for = "l in PAGELENGTHS" :value = "l">{{ l }}</option>
+    </select> {{ $t('values per page') }}</label>
+
+    <!-- GLOBAL SEARCH -->
+    <input
+      type         = "search"
+      class        = "form-control search"
+      :placeholder = "$t('dosearch')"
+      style        = "margin-left: auto !important; margin-right: 1ch;"
+      @keyup       = "globalSearch"
+    />
   </div>
 
   <!-- TABLE CONTENT -->
-  <table
-      v-if  = "show"
-      class = "display"
-      style = "width:100%"
-  >
+  <table v-if="show">
     <thead>
 
       <tr>
         <th v-if  = "!state.isrelation" style="max-width: 60px"></th>
         <th v-if  = "state.isrelation"></th>
-        <th v-for = "header in state.headers">{{ header.label }}</th>
+        <th
+          v-for          = "(header, i) in state.headers"
+          @click.stop    = "sortColumn(i)"
+          :class         = "[i === ordering[0] ? ordering[1] : '' ]"
+          :title         = "$t('sort by:') + ' ' + header.name"
+          data-placement = "top"
+          :style         = "{'width': (100 / state.headers.length) + '%'}"
+        >{{ header.label }}</th>
       </tr>
 
     </thead>
 
     <tbody>
       <tr
-        v-for = "(feature, index) in state.rows"
-        :key  = "feature.__gis3w_feature_uid"
-        :id   = "feature.__gis3w_feature_uid"
+        v-for   = "(feature, index) in state.rows"
+        :key    = "feature.__gis3w_feature_uid"
+        :id     = "feature.__gis3w_feature_uid"
+        :index   = "index"
+        :hidden = "isColHidden(index)"
       >
 
         <td v-if = "!state.isrelation">
-          <div id = "table-editing-tools">
+          <div style="display:flex;justify-content: space-between;">
 
             <!-- EDIT FEATURE -->
-            <span v-t-tooltip:right.create = "'plugins.editing.table.edit'">
+            <span v-t-tooltip:right = "'plugins.editing.table.edit'">
               <i
                 v-if             = "showTool('change_attr_feature')"
                 :class           = "g3wtemplate.font['pencil']"
                 class            = "g3w-icon"
-                style            = "color:#30cce7;"
+                style            = "color:#30cce7;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "editFeature(feature.__gis3w_feature_uid)"
               ></i>
@@ -84,24 +100,24 @@ export default ({
 
 
             <!-- COPY FEATURE -->
-            <span v-t-tooltip:right.create = "'plugins.editing.table.copy'">
+            <span v-t-tooltip:right = "'plugins.editing.table.copy'">
               <i
                 v-if             = "showTool('add_feature')"
                 :class           = "g3wtemplate.font['copy-paste']"
                 class            = "g3w-icon"
-                style            = "color:#d98b14; padding: 5px 7px 5px 7px;"
+                style            = "color:#d98b14;margin: 5px;padding: 5px 7px 5px 7px;"
                 aria-hidden      = "true"
                 @click.stop      = "copyFeature(feature.__gis3w_feature_uid)"
               ></i>
             </span>
 
             <!-- DELETE FEATURE -->
-            <span v-t-tooltip:right.create = "'plugins.editing.table.delete'">
+            <span v-t-tooltip:right = "'plugins.editing.table.delete'">
               <i
                 v-if             = "showTool('delete_feature')"
                 :class           = "g3wtemplate.font['trash-o']"
                 class            = "g3w-icon"
-                style            = "color:red;"
+                style            = "color:red;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "deleteFeature(feature.__gis3w_feature_uid)"
               ></i>
@@ -137,31 +153,46 @@ export default ({
 
   </table>
 
-  <div
-    id    = "buttons"
-    ref   = "table_editing_footer_buttons"
-    class = "table_editing_footer_buttons"
-  >
+  <div style="display: flex; margin: 1em 0;">
+    <!-- TOTAL ELEMENTS -->
+    <span style = "margin-left: .5ch;">{{ state.rows.length }} {{ $t('entries') }}</span>
+
+    <!-- PAGINATION BUTTONS -->
+    <div style = "margin-left: auto;" >
+      <button @click.stop = "search.page = Number(search.page) - 1" class="btn" v-disabled = "1 == search.page">«</button>
+      <select
+        v-model         = "search.page"
+        style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
+        v-t-tooltip:top = "search.page + $t(' of ') + pages"
+        data-placement  = "top"
+      >
+        <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
+      </select>
+      <button @click.stop = "search.page = Number(search.page) + 1" class="btn" v-disabled = "pages == search.page">»</button>
+    </div>
+  </div>
+
+  <div style="width: 100%;display:flex;justify-content: center; gap: 10px;">
     <!-- SAVE CHANGES -->
     <button
-      v-t         = "state.isrelation ? 'plugins.editing.form.buttons.save_and_back' : 'plugins.editing.form.buttons.save'"
-      class       = "btn btn-success" style="margin-right: 10px"
-      @click.stop = "save">
-    </button>
+      v-t    = "state.isrelation ? 'plugins.editing.form.buttons.save_and_back' : 'plugins.editing.form.buttons.save'"
+      class  = "btn btn-success"
+      style  = "font-weight: bold;"
+      @click = "save"
+    ></button>
 
     <!-- DISCARD CHANGES -->
     <button
-      v-t         = "'plugins.editing.form.buttons.cancel'"
-      class       = "btn btn-danger"
-      @click.stop = "cancel">
-    </button>
+      v-t    = "'plugins.editing.form.buttons.cancel'"
+      class  = "btn btn-danger"
+      style  = "font-weight: bold;"
+      @click = "cancel"
+    ></button>
   </div>
 
 </div>`,
 
   name: 'Table',
-
-  mixins: [ resizeMixin ],
 
   components: {
     'g3w-media': Media_Field
@@ -169,45 +200,40 @@ export default ({
 
   data() {
     return {
-      dataTable: null,
       show:      true,
       state:     this.$options.service.state,
+      ordering:  [0, 'asc'],
+      PAGELENGTHS,
+      search: {
+        page:      1,              // current page
+        page_size: PAGELENGTHS[1],
+      }
     };
 
+  },
+
+  computed: {
+    /**
+     * @since 4.1.0
+     */
+    pages() {
+      return Math.ceil(this.state.rows.length / this.search.page_size);
+    },
+  },
+
+  watch: {
+    async 'search.page_size'(length) {
+      this.reload({ length });
+    },
+    async 'search.page'(page) {
+      this.reload({ page });
+    },
   },
 
   methods: {
 
     showTool(type) {
       return undefined !== this.state.capabilities.find(cap => cap === type);
-    },
-
-    async resize() {
-      // skip when an element is hidden
-      if ('none' === this.$el.style.display) {
-        return;
-      }
-
-      await this.$nextTick();
-
-      $('#editing_table  div.dataTables_scrollBody').height(
-        $(".content").height()
-        - $('.close-panel-block').outerHeight()
-        - $('#editing_table  div.dataTables_scrollHeadInner').outerHeight()
-        - $('.editing_table_title').outerHeight()
-        - $('.editing_table_header').outerHeight()
-        - $('.editing_table_relation_messagge').outerHeight()
-        - $('.dataTables_length').outerHeight()
-        - $('.dataTables_paginate.paging_simple_numbers').outerHeight()
-        - $('.dataTables_info').outerHeight()
-        - $('.dataTables_filter').outerHeight()
-        - $('.table_editing_footer_buttons').outerHeight()
-        - $('#editing_table .dataTables_paginate.paging_simple_numbers').outerHeight()
-      );
-
-      if (this.dataTable) {
-        this.dataTable.columns.adjust();
-      }
     },
 
     showValue(key) {
@@ -224,6 +250,26 @@ export default ({
         }
       }
       return isMedia;
+    },
+
+    /**
+     * @param { number } index column index
+     */
+    sortColumn(index) {
+      if (index === this.ordering[0]) {
+        this.ordering[1] = 'asc' === this.ordering[1] ? 'desc' : 'asc';
+      } else {
+        this.ordering[0] = index;
+        this.ordering[1] = 'asc';
+      }
+      this.reload({ ordering: index });
+    },
+
+    isColHidden(index) {
+      if (this.search.search) {
+        return Object.keys(this.state.rows[index]).every(key => -1 === `${this.state.rows[index][key]}`.indexOf(this.search.search));
+      }
+      return index < (this.search.page * this.search.page_size) || index >= ((this.search.page + 1) * this.search.page_size);
     },
 
     /**
@@ -258,7 +304,6 @@ export default ({
      * @returns {Promise<unknown>}
      */
     async deleteFeature(uid) {
-      const element           = $(`#editing_table table tr#${uid}`);
       const layer             = this.state.inputs.layer;
       const layerId           = layer.getId();
       const childRelations    = layer.getChildren();
@@ -289,9 +334,6 @@ export default ({
             });
           })
         );
-
-        this.dataTable.row(element).remove().draw();
-
         await this.$nextTick();
       } catch (e) {
         console.warn(e);
@@ -350,17 +392,6 @@ export default ({
           }
         })
       );
-
-      this.show = false;
-      this.dataTable.destroy();
-
-      await this.$nextTick();
-
-      this.show = true;
-
-      await this.$nextTick();
-
-      this.setDataTable();
     },
 
     /**
@@ -411,22 +442,26 @@ export default ({
       return value;
     },
 
-    setDataTable() {
-      this.dataTable = $('#editing_table table').DataTable({
-        columnDefs:     [ { orderable: false, targets: 0 }],
-        order:          [ 1, 'asc' ],
-        pageLength:     10,
-        scrollCollapse: true,
-        scrollResize:   true,
-        scrollX:        true,
-      });
-      this.resize();
+    async reload(opts) {
+      this.show = false;
+      await this.$nextTick();
+      if (undefined !== opts.ordering) {
+        const attr = this.state.headers[this.ordering[0]].name;
+        const dir  = ('asc' === this.ordering[1] ? 1 : -1);
+        this.state.rows.sort((a, b) => dir * `${a[attr]}`.localeCompare(`${b[attr]}`, undefined, { numeric: true }));
+      }
+      if (undefined !== opts.search) {
+        this.search.search = opts.search;
+      }
+      this.show = true;
     },
 
   },
 
   beforeCreate() {
-    this.delayType = 'debounce';
+    this.globalSearch = debounce(e => {
+      this.reload({ search: e.target.value });
+    });
 
     GUI.disableSideBar(true);
 
@@ -442,11 +477,9 @@ export default ({
 
     await this.$nextTick();
 
-    if (this.state.isrelation) { this._linkFeatures = [] }
-
-    this.setDataTable();
-
-    this.resize();
+    if (this.state.isrelation) {
+      this._linkFeatures = [];
+    }
 
     setTimeout( () => GUI.closeUserMessage(), 300);
   },
@@ -454,7 +487,6 @@ export default ({
   beforeDestroy() {
     this.cancel();
     this._linkFeatures = null;
-    this.dataTable.destroy();
   },
 
 });
@@ -463,52 +495,52 @@ document.head.insertAdjacentHTML(
   'beforeend',
   /* css */`
 <style>
-  .g3w-editing-table table.dataTable tbody td {
-    padding: 3px 5px;
-  }
-  .g3w-editing-table .editing_table_title {
-    margin-top:0;
-    margin-bottom: 2px;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: var(--skin-color);
-  }
-
-  .g3w-editing-table #table-editing-tools {
-    display:flex;
-    justify-content: space-between;
-  }
-
-  .g3w-editing-table #table-editing-tools i {
-      margin: 5px;
-  }
-
-  .g3w-editing-table #buttons button.btn {
-    font-weight: bold !important;
-    min-width: 80px;
-  }
-
-  .g3w-editing-table .table_editing_footer_buttons {
-    position: absolute;
-    bottom: 10px;
+  .g3w-editing-table table {
     width: 100%;
-    display:flex;
-    justify-content: center;
+    user-select: none;
+    display: block;
+    height: calc(100% - 175px);
+    overflow: auto;
+    border-collapse: separate
   }
 
-  .g3w-editing-table .editing_table_header_content {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+  .g3w-editing-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
   }
 
-  .g3w-editing-table .editing_table_relation_messagge {
-    margin-bottom: 10px;
-    font-size: 1.3em;
-    background-color: #f5f5f5;
-    padding: 3px;
-    border-radius: 3px;
-    font-weight: bold
+  .g3w-editing-table tbody > tr.selected {
+    box-shadow: inset 0 0 0 9999px rgb(13, 110, 253, .9);
+    color: #fff;
+  }
+
+  .g3w-editing-table tbody > tr:not(.selected):hover {
+    background-color: rgb(255, 255, 0, 0.15);
+  }
+
+  .g3w-editing-table :is(th, td) {
+    white-space: nowrap;
+  }
+
+  .g3w-editing-table th {
+    cursor: pointer;
+  }
+
+  .g3w-editing-table td {
+    border-top: 1px solid rgba(0,0,0,.15);
+  }
+
+  .g3w-editing-table th:is(.asc, .desc) { 
+    border-top: var(--skin-color) medium solid;
+  }
+
+  .g3w-editing-table th.asc::after {
+    content: "▴";
+  }
+
+  .g3w-editing-table th.desc::after {
+    content: "▾";
   }
 </style>`
 );
