@@ -1291,7 +1291,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # -----------------------------------------------------------------
         relation_files = []
         if self.download_relations:
-            relation_files = self._download_relations(save_options, 'gpkg', tmp_dir, request)
+            relation_files = self._download_relations(save_options, 'csv', tmp_dir, request)
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
