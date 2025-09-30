@@ -215,8 +215,8 @@ export default ({
   },
 
   watch: {
-    async 'search.page_size'(length) {
-      this.reload({ length });
+    async 'search.page_size'(page_size) {
+      this.reload({ page_size });
     },
     async 'search.page'(page) {
       this.reload({ page });
@@ -262,7 +262,9 @@ export default ({
       if (this.search.search) {
         return Object.keys(this.state.rows[index]).every(key => -1 === `${this.state.rows[index][key]}`.indexOf(this.search.search));
       }
-      return index < (this.search.page * this.search.page_size) || index >= ((this.search.page + 1) * this.search.page_size);
+      const page      = Number(this.search.page);
+      const page_size = Number(this.search.page_size);
+      return !(index >= ((page-1) * page_size) && index < (page * page_size));
     },
 
     /**
@@ -438,6 +440,10 @@ export default ({
     async reload(opts) {
       this.show = false;
       await this.$nextTick();
+      if (undefined !== opts.page_size) {
+        this.search.page      = 1;
+        this.search.page_size = opts.page_size;
+      }
       if (undefined !== opts.ordering) {
         const attr = this.state.headers[this.ordering[0]].name;
         const dir  = ('asc' === this.ordering[1] ? 1 : -1);
