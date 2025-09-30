@@ -15,7 +15,15 @@ from django.dispatch import receiver
 from django_registration.signals import user_registered
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
-from usersmanage.models import Userbackend, USER_BACKEND_DEFAULT, Group as AuthGroup, Userdata
+from django.db.models.signals import post_save
+from qdjango.utils.cache import invalidate_user_projects_cache
+from usersmanage.models import (
+    Userbackend, 
+    USER_BACKEND_DEFAULT, 
+    Group as AuthGroup, 
+    Userdata, 
+    User
+)
 from usersmanage.configs import G3W_VIEWER1
 from usersmanage.signals import after_save_user_form
 import logging
@@ -106,3 +114,13 @@ def send_email_to_user(sender, **kwargs):
     user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL, fail_silently=True)
 
 
+@receiver(post_save, sender=User)
+def invalidate_projects_cache(sender, instance, **kwargs):
+    """
+    Invalidate projects cache on user save
+    """
+    if hasattr(settings, 'QDJANGO_PRJ_CACHE') and settings.QDJANGO_PRJ_CACHE:
+        try:
+            invalidate_user_projects_cache(instance)
+        except:
+            pass
