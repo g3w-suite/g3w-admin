@@ -129,9 +129,9 @@ class GeocodingControl extends ol.control.Control {
       this.element.querySelector('button[value="toggle-sidebar"] code').style.opacity = is_sidebar_open ? 0.5 : null;
     }, { immediate: true });
 
-    GUI.on('set-layer-zindex',                           this.#setLayerZindex.bind(this));
-    GUI.onafter('removeFeatureLayerFromResult', this.#removeFeatureLayerFromResult.bind(this));
-    GUI.onafter('addActionsForLayers',          this.#addLayerActions.bind(this));
+    GUI.on('set-layer-zindex',             this.#setLayerZindex.bind(this));
+    GUI.onafter('removeFeatureFromResult', this.#removeFeatureFromResult.bind(this));
+    GUI.onafter('addActionsForLayers',     this.#addLayerActions.bind(this));
 
     // register vector layer
     GUI.getMap().addLayer(this.LAYER);
@@ -225,7 +225,7 @@ class GeocodingControl extends ol.control.Control {
       const layer = GUI.getState().layers.find(l => l.id === this.LAYER.get('id'));
       // check if marker is in query results
       if (layer) {
-        layer.features.forEach(f => GUI.removeFeatureLayerFromResult(layer, f));
+        layer.features.forEach(f => GUI.removeFeatureFromResult(layer, f));
       }
       this.clearing = false;
     }
@@ -586,7 +586,7 @@ class GeocodingControl extends ol.control.Control {
   /**
    * Remove geocoding LAYER from query results
    */
-  #removeFeatureLayerFromResult(layer, feature) {
+  #removeFeatureFromResult(layer, feature) {
     if (this.LAYER.get('id') === layer.id) {
       this.#removeItem(feature.id);
     }

@@ -912,7 +912,6 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .ol-custom-overviewmap .ol-overviewmap-box,
 .ol-scale-control span.select2-selection                               { border: 2px solid var(--skin-color); }
 
-.ol-scale-line                                                         { background: var(--skin-color); }
 .ol-box                                                                { border: 3px solid rgb(3, 169, 244); background-color: rgba(255, 255, 255, 0.50); }
 .mtooltip                                                              { background: rgba(0, 0, 0, 0.9); }
 .mtooltip-static                                                       { background-color: #ffcc33; color: black; border: 1px solid #ecbe2e; }
@@ -996,14 +995,6 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .queryresults-container .featurebox-body .attr-label                                          { width: 30%; max-width: 40%; padding: 3px 3px; font-weight: bold; }
 .queryresults-container .box-primary                                                          { border-top-width: 3px; }
 .queryresults-container .photo-preview:hover                                                  { cursor: pointer; }
-.query-relations-page                                                                         { height: 100%; font-size: 14px; }
-.query-relations-page :is(.query-relations, .query-relation)                                  { height: 100%; }
-.query-relations-page .query-relations .header                                                { margin-top: 5px; margin-bottom: 5px; }
-.query-relations-page .query-relations .table                                                 { background: transparent; }
-.query-relations-page .query-relations .table tr                                              { background: #fff; }
-.query-relations-page .relations-table td span                                                { font-size: 1.3em; font-weight: bold; }
-.query-relations-page .relationtable td                                                       { padding: 2px 5px !important; }
-.query-relations-page .relationtable td span                                                  { font-size: 1em; }
 
 .fade-enter, .fade-leave-to                                                                   { opacity: 0; }
 .fade-enter-active, .fade-leave-active                                                        { transition: opacity 0.25s ease-out; }

@@ -28,5 +28,12 @@ GUI.setupControl.zoombox = function() {
       },
     }
   });
-  GUI.getMapControlByType('zoombox').on('zoomend', e => GUI.viewer.fit(e.extent) );
+  GUI.getMapControlByType('zoombox').on('zoomend', e => {
+    const view = GUI.getMap().getView();
+    view.animate(
+      { duration: 200, center:     view.getCenter() },
+      { duration: 200, resolution: view.getResolution() }
+    );
+    view.fit(e.extent, { constrainResolution: true, size: GUI.getMap().getSize() });
+  });
 };
