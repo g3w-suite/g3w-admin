@@ -222,8 +222,11 @@ class QgisProjectLayer(XmlData):
         :rtype: str
         """
 
-        name = self.qgs_layer.serverProperties().shortName()
-        if not name:
+        try:
+            name = self.qgs_layer.serverProperties().shortName()
+            if not name:
+                name = self.qgs_layer.name()
+        except:
             name = self.qgs_layer.name()
         return name
 
