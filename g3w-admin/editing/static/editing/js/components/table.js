@@ -260,7 +260,7 @@ export default ({
 
     isColHidden(index) {
       if (this.search.search) {
-        return Object.keys(this.state.rows[index]).every(key => -1 === `${this.state.rows[index][key]}`.indexOf(this.search.search));
+        return Object.keys(this.state.rows[index]).every(key => -1 === `${this.state.rows[index][key]}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
       }
       const page      = Number(this.search.page);
       const page_size = Number(this.search.page_size);
