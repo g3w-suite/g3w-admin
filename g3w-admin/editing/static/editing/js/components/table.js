@@ -123,14 +123,14 @@ export default ({
           <input
             :id     = "'relation__' + index"
             @change = "linkFeature(index, $event)"
-            class   = "magic-checkbox"
-            type    = "checkbox">
+            type    = "checkbox"
+          >
           <label :for="'relation__' + index"></label>
         </td>
 
         <td
           v-for = "(value, key) in feature"
-          v-if  ="showValue(key)"
+          v-if  ="!!headers.find(h => key === h.name)"
           :key = "key"
         >
           <g3w-media
@@ -179,7 +179,7 @@ export default ({
       v-t    = "'plugins.editing.form.buttons.cancel'"
       class  = "btn btn-danger"
       style  = "font-weight: bold;"
-      @click = "cancel"
+      @click = "discard"
     ></button>
   </div>
 
@@ -259,10 +259,6 @@ export default ({
       return undefined !== this.inputs.layer.state.editing.capabilities.find(cap => cap === type);
     },
 
-    showValue(key) {
-      return !!this.headers.find(h => key === h.name);
-    },
-
     isMediaField(name) {
       let isMedia = false;
       for (let i = 0; i < this.headers.length; i++) {
@@ -300,16 +296,8 @@ export default ({
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
      */
-    stop() {
-      this.promise.reject();
-    },
-
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
-     */
     save() {
       this.isrelation
-        // link features (by indexes)
         ? this.promise.resolve({ features: (this._linkFeatures || []).map(i => this.features[i]) })
         : this.promise.resolve();
     },
@@ -317,7 +305,7 @@ export default ({
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
      */
-    cancel() {
+    discard() {
       this.promise.reject();
     },
 
@@ -329,39 +317,22 @@ export default ({
      * @returns {Promise<unknown>}
      */
     async deleteFeature(uid) {
-      const layer             = this.inputs.layer;
-      const layerId           = layer.getId();
-      const childRelations    = layer.getChildren();
-      const relationinediting = childRelations.length && getRelationsInEditing({
-        layerId,
-        relations: layer.getRelations().getArray()
-      }).length > 0;
-  
-      try {
-        await (
-          new Promise((resolve, reject) => {
-            GUI.dialog.confirm(
-              `<h4>${_('plugins.editing.messages.delete_feature')}</h4>
-              <div style="font-size:1.2em;">${ relationinediting ? _('plugins.editing.messages.delete_feature_relations') : ''}</div>`,
-              (result) => {
-                if (result) {
-                  const i       = this.features.findIndex(f => f.getUid() === uid);
-                  const feature = this.features[i];
-                  this.inputs.layer.getEditor().getEditingSource().removeFeature(feature);
-                  this.context.session.pushDelete(this.inputs.layer.getId(), feature);
-                  this.rows.splice(i, 1);
-                  resolve()
-                } else {
-                  reject()
-                }
-            });
-          })
-        );
-        await this.$nextTick();
-      } catch (e) {
-        console.warn(e);
-      }
-
+      const has_child_relation = this.inputs.layer.getChildren().length && getRelationsInEditing({
+        layerId:   this.inputs.layer.getId(),
+        relations: this.inputs.layer.getRelations().getArray()
+      }).length;
+      GUI.dialog.confirm(
+        `<h4>${_('plugins.editing.messages.delete_feature')}</h4>
+        <div style="font-size:1.2em;">${ has_child_relation ? _('plugins.editing.messages.delete_feature_relations') : '' }</div>`,
+        ok => {
+          if (ok) {
+            const i    = this.features.findIndex(f => f.getUid() === uid);
+            const feat = this.features[i];
+            this.inputs.layer.getEditor().getEditingSource().removeFeature(feat);
+            this.context.session.pushDelete(this.inputs.layer.getId(), feat);
+            this.rows.splice(i, 1);
+          }
+      });
     },
 
     /**
@@ -391,21 +362,14 @@ export default ({
       this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({
-          context: this.context,
-          inputs:  this.inputs
-        });
-        const feature    = outputs.features[outputs.features.length -1];
-        const newFeature = {};
+        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
+        const feature = outputs.features.at(-1);
+        const newFeat = {};
         Object.entries(this.rows[0]).forEach(([ key, _ ]) => {
-          newFeature[key] = getFeatureTableFieldValue({
-            layerId: this.layerId,
-            feature,
-            property: key
-          });
+          newFeat[key] = getFeatureTableFieldValue({ layerId: this.layerId, feature, property: key });
         });
-        newFeature.__g3w_uid = feature.getUid();
-        this.rows.push(newFeature);
+        newFeat.__g3w_uid = feature.getUid();
+        this.rows.push(newFeat);
       } catch(e) {
         console.warn(e);
       }
@@ -422,23 +386,17 @@ export default ({
   
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
       this.workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
-  
-      const inputs = this.inputs;
-  
-      inputs.features.push(feature);
+    
+      this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({ context: this.context, inputs });
+        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
         
         const feature = outputs.features[outputs.features.length -1];
         Object
           .entries(this.rows[index])
           .forEach(([key, _]) => {
-            this.rows[index][key] = getFeatureTableFieldValue({
-              layerId: this.layerId,
-              feature,
-              property: key
-            });
+            this.rows[index][key] = getFeatureTableFieldValue({ layerId: this.layerId, feature, property: key });
           });
       } catch(e) {
         console.warn(e);
@@ -447,9 +405,15 @@ export default ({
       this.workflow.stop();
     },
 
+    /**
+     * Link features (by index) 
+     */
     linkFeature(index, evt) {
-      if (evt.target.checked) { this._linkFeatures.push(index) }
-      else { this._linkFeatures = this._linkFeatures.filter(addindex => addindex !== index) }
+      if (evt.target.checked) {
+        this._linkFeatures.push(index);
+      } else {
+        this._linkFeatures = this._linkFeatures.filter(addindex => addindex !== index);
+      }
     },
 
     getValue(value) {
@@ -496,7 +460,7 @@ export default ({
   },
 
   beforeDestroy() {
-    this.cancel();
+    this.discard();
     this._linkFeatures = null;
   },
 

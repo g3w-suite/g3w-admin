@@ -146,7 +146,7 @@ export default ({
                 <input
                   id      ="g3w_editing_show_measure_tool"
                   type    = "checkbox"
-                  class   = "magic-checkbox snap_tools_of_tools"
+                  class   = "snap_tools_of_tools"
                   v-model = "tool.options.checked"
                   @change = "() => tool.options.onChange(tool.options.checked)"
                 />
@@ -164,7 +164,7 @@ export default ({
                 <div class = "item" >
                   <input
                     type    = "checkbox"
-                    class   = "magic-checkbox snap_tools_of_tools"
+                    class   = "snap_tools_of_tools"
                     :id     = "'snap_' + state.id"
                     v-model = "tool.options.checked"
                   />
@@ -178,7 +178,7 @@ export default ({
                   <input
                     v-if    = "snapAll"
                     type    = "checkbox"
-                    class   = "magic-checkbox snap_tools_of_tools"
+                    class   = "snap_tools_of_tools"
                     :id     = "'snap_all_' + state.id + '_all'"
                     v-model = "tool.options.checkedAll"
                   />

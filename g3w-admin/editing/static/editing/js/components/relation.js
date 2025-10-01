@@ -220,11 +220,11 @@ export default ({
           <tr>
             <th style="padding: 10px">
               <input
-                id     = "select_all_relations"
-                @change = "updateSelectRelations()"
-                class   = "magic-checkbox"
+                id       = "select_all_relations"
+                @change  = "updateSelectRelations()"
                 :checked = "selectall"
-                type    = "checkbox">
+                type     = "checkbox"
+              >
               <label for="select_all_relations" style = "margin:0;">&nbsp;</label>
             </th>
             <th v-t = "'tools'"></th>
@@ -242,9 +242,9 @@ export default ({
               <input
                 :id     = "'select_relation__' + index"
                 v-model = "relation.select"
-                class   = "magic-checkbox"
-                type    = "checkbox">
-                <label :for="'select_relation__' + index"></label>
+                type    = "checkbox"
+              >
+              <label :for="'select_relation__' + index"></label>
             </td>
             <td>
               <div style = "display: flex">
