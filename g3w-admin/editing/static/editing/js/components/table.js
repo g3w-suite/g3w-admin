@@ -68,7 +68,7 @@ export default ({
         :key    = "feature.__g3w_uid"
         :id     = "feature.__g3w_uid"
         :index   = "index"
-        :hidden = "isColHidden(index)"
+        :hidden = "isRowHidden(index)"
       >
 
         <td v-if = "!isrelation">
@@ -267,7 +267,7 @@ export default ({
       this.reload({ ordering: index });
     },
 
-    isColHidden(index) {
+    isRowHidden(index) {
       if (this.search.search) {
         return Object.keys(this.rows[index]).every(key => -1 === `${this.rows[index][key]}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
       }

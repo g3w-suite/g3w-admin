@@ -29,9 +29,10 @@ import { MoveFeatureStep }                  from '../actions/move-feature.js';
 import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
 import { getCatalogLayers }                 from '../utils/getCatalogLayers.js';
 
+const { PAGELENGTHS }                       = g3wsdk.constant;
 const { Geometry }                          = g3wsdk.core.geoutils;
 const _                                     = g3wsdk.core.i18n.t;
-const { toRawType }                         = g3wsdk.core.utils;
+const { toRawType, debounce }               = g3wsdk.core.utils;
 const { GUI }                               = g3wsdk.gui;
 const { FormService }                       = g3wsdk.gui.vue.services;
 const { Component, Mixins }                 = g3wsdk.gui.vue;
@@ -57,89 +58,72 @@ export default ({
 <div
     v-disabled  = "loading"
     style       = "margin-bottom: 5px;"
-    class="g3w-editing-relation"
+    class       = "g3w-editing-relation"
   >
     <bar-loader :loading = "loading" />
 
     <!-- RELATION TITLE -->
-    <div
-      ref   = "relation_header_title"
-      class = "relation_header_title box-header with-border skin-color"
-    >
+    <div class = "box-header with-border skin-color" style="width: 100%;display: flex;font-weight: bold;font-size: 1.3em;align-items: center;background-color: #fff;">
       <span v-t = "'plugins.editing.edit_relation'"></span>
       <span style = "margin-left: 2px;">: {{ relation.name.toUpperCase() }}</span>
     </div>
 
     <!-- RELATION TOOLS -->
-    <div
-      ref   = "relation_header_tools"
-      class = "relation_header_tools box-header with-border"
-    >
+    <div class = "box-header with-border" style="width: 100%; display: flex; background-color: #fff;">
 
       <!-- SEARCH BOX -->
-      <div id = "search-box">
-        <input
-          v-if         = "relationsLength"
-          type         = "text"
-          class        = "form-control"
-          id           = "filterRelation"
-          :placeholder = "placeholdersearch"
-        />
-      </div>
-      <div class = "g3w-editing-relations-add-link-tools">
+      <input
+        v-if         = "relationsLength"
+        type         = "search"
+        class        = "form-control search"
+        :placeholder = "$t('plugins.editing.search')"
+        style        = "margin-right: auto;"
+        @keyup       = "globalSearch"
+      />
+      <div class = "g3w-relation-tools">
 
-        <!-- EDIT ATTRIBUTES @since 3.9.0 -->
+        <!-- EDIT MULTI ATTRIBUTES -->
         <span
-          v-if                      = "relationsLength > 0 && capabilities.includes('change_attr_feature')"
-          v-t-tooltip:bottom.create = "'plugins.editing.tools.update_multi_features_relations'"
-          class                     = "g3w-icon"
+          v-if               = "relationsLength > 0 && capabilities.includes('change_attr_feature')"
+          v-t-tooltip:bottom = "'plugins.editing.tools.update_multi_features_relations'"
+          class              = "g3w-icon"
         >
-            <span
-
-              @click.stop               = "editAttributesRelations()"
-              v-disabled                = "relations.every(r => !r.select)"
-            >
-            <img
-              height           = "25"
-              width            = "25"
-              :src             = "resourcesurl + 'images/mActionMultiEdit.svg'"
-            />
+          <span @click.stop = "editMulti()" v-disabled  = "relations.every(r => !r.select)">
+            <img height = "25" width  = "25" :src = "resourcesurl + 'images/mActionMultiEdit.svg'" />
           </span>
         </span>
 
         <!-- CHANGE ATTRIBUTE -->
         <span
-          v-if                      = "capabilities.includes('change_attr_feature')"
-          class                     = "g3w-icon add-link"
-          align                     = "center"
-          v-t-tooltip:bottom.create = "'plugins.editing.form.relations.tooltips.link_relation'"
-          @click.stop               = "show_add_link ? linkRelation() : null"
-          :class                    = "[{ 'disabled': !show_add_link }, g3wtemplate.font['link']]"
+          v-if               = "capabilities.includes('change_attr_feature')"
+          class              = "g3w-icon add-link"
+          v-t-tooltip:bottom = "'plugins.editing.form.relations.tooltips.link_relation'"
+          @click.stop        = "show_add_link ? linkRelation() : null"
+          :class             = "[{ 'disabled': !show_add_link }, g3wtemplate.font['link']]"
         ></span>
 
         <!-- ADD FEATURE -->
         <span
-          v-if                      = "rcapabilities.includes('add_feature')"
-          v-t-tooltip:bottom.create = "'plugins.editing.form.relations.tooltips.add_relation'"
-          @click.stop               = "show_add_link ? addRelationAndLink() : null"
-          class                     = "g3w-icon add-link pull-right"
-          :class                    = "[{ 'disabled' : !show_add_link }, g3wtemplate.font['plus']]"
+          v-if               = "rcapabilities.includes('add_feature')"
+          v-t-tooltip:bottom = "'plugins.editing.form.relations.tooltips.add_relation'"
+          @click.stop        = "show_add_link ? addRelation2() : null"
+          class              = "g3w-icon add-link pull-right"
+          :class             = "[{ 'disabled' : !show_add_link }, g3wtemplate.font['plus']]"
         ></span>
 
       </div>
 
     </div>
 
-    <!-- VECTOR RELATION TOOLS -->
+    <!-- RELATION TOOLS -->
     <section
-      v-if  = "show_vector_tools"
-      ref   = "relation_vector_tools"
-      class = "relation_vector_tools"
+      v-if  = "show_tools"
+      style = "display: flex;flex-direction: column;border: 2px solid #eee;background-color: #fff;padding: 10px;"
     >
 
       <span
-        @click.stop = "closeVectorTools"
-        class       = "close_vector_relation_tool"
+        @click.stop = "closeTools"
+        style       = "align-self: self-end;"
       >
         <i class = "g3w-icon skin-color" :class = "g3wtemplate.font['close']"></i>
       </span>
@@ -147,13 +131,13 @@ export default ({
       <!-- ADD VECTOR RELATION -->
       <div>
         <div
-          class = "g3w-editing-new-relation-vector-type"
-          v-t   = "'plugins.editing.relation.draw_new_feature'">
-        </div>
+          style = "margin-bottom: 5px;font-weight: bold;"
+          v-t   = "'plugins.editing.relation.draw_new_feature'"
+        ></div>
         <button
           class       = "btn skin-button"
           style       = "width: 100%"
-          @click.stop = "addVectorRelation"
+          @click.stop = "addRelation"
         >
           <i :class = "g3wtemplate.font['pencil']"></i>
         </button>
@@ -171,10 +155,10 @@ export default ({
 
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
 
-        <div id = "g3w-select-editable-layers-content">
+        <div style = "flex-grow: 1;display: flex;flex-direction: column">
 
           <div
-            class = "g3w-editing-new-relation-vector-type"
+            style = "margin-bottom: 5px;font-weight: bold;"
             v-t   = "'plugins.editing.relation.copy_feature_from_other_layer'"
           ></div>
 
@@ -183,7 +167,7 @@ export default ({
             v-select2 = "'copylayerid'"
           >
             <option
-              v-for  = "layer in copyFeatureLayers"
+              v-for  = "layer in copyLayers"
               :key   = "layer.id"
               :value = "layer.id"
             >{{ layer.name }}</option>
@@ -191,9 +175,9 @@ export default ({
 
           <!-- COPY FEATURE FROM OTHER LAYER -->
           <button
-            v-disabled  = "0 === copyFeatureLayers.length"
+            v-disabled  = "0 === copyLayers.length"
             class       = "btn skin-button"
-            @click.stop = "copyFeatureFromOtherLayer"
+            @click.stop = "copyFromLayer"
           >
             <i :class = "g3wtemplate.font['clipboard']"></i>
           </button>
@@ -205,22 +189,14 @@ export default ({
     </section>
 
     <!-- RELATION CONTENT -->
-    <div
-      ref        = "relation_body"
-      class      = "relation_body box-body"
-      v-disabled = "disabled"
-    >
-      <table
-        v-if  = "relationsLength > 0"
-        ref   = "relationTable"
-        class = "table g3wform-relation-table table-striped nowrap"
-      >
+    <div v-disabled = "disabled">
+      <table v-if = "show && relationsLength > 0">
         <thead>
           <tr>
-            <th style="padding: 10px">
+            <th>
               <input
                 id       = "select_all_relations"
-                @change  = "updateSelectRelations()"
+                @change  = "toggleAll()"
                 :checked = "selectall"
                 type     = "checkbox"
               >
@@ -228,14 +204,22 @@ export default ({
             </th>
             <th v-t = "'tools'"></th>
             <th></th>
-            <th v-for = "attribute in relationAttributesSubset(relations[0])">{{ attribute.label }}</th>
+            <th
+              v-for          = "(attribute, i) in getAttributes(relations[0])"
+              @click.stop    = "sortColumn(i)"
+              :class         = "[i === ordering[0] ? ordering[1] : '' ]"
+              :title         = "$t('sort by:') + ' ' + attribute.label"
+              data-placement = "top"
+              :style         = "{'width': (100 / getAttributes(relations[0]).length) + '%'}"
+            >{{ attribute.label }}</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for = "(relation, index) in relations"
-            :key  = "relation.id"
-            class = "featurebox-header"
+            v-for   = "(relation, index) in relations"
+            :key    = "relation.id"
+            class   = "featurebox-header"
+            :hidden = "isRowHidden(index)"
           >
             <td style="padding-top: 0">
               <input
@@ -249,11 +233,11 @@ export default ({
               <div style = "display: flex">
                 <!-- RELATION TOOLS -->
                 <div
-                  v-for                    = "tool in (tools[index] || addTools(relations[index].id))"
-                  :key                     = "tool.state.id"
-                  :class                   = "{ enabled: true, 'toggled': tool.state.active, ['editbtn ' + tool.state.id]: true }"
-                  @click.stop              = "startTool(tool, index)"
-                  v-t-tooltip:top.create   = "'plugins.' + tool.state.name"
+                  v-for           = "tool in (tools[index] || addTools(relations[index].id))"
+                  :key            = "tool.state.id"
+                  :class          = "{ enabled: true, 'toggled': tool.state.active, ['editbtn ' + tool.state.id]: true }"
+                  @click.stop     = "startTool(tool, index)"
+                  v-t-tooltip:top = "'plugins.' + tool.state.name"
                 >
                   <img
                     height = "20px"
@@ -265,15 +249,15 @@ export default ({
             </td>
             <td class = "action-cell">
               <div
-                v-if                     = "!fieldrequired && capabilities.includes('change_attr_feature')"
-                class                    = "g3w-mini-relation-icon g3w-icon"
-                :class                   = "g3wtemplate.font['unlink']"
-                @click.stop              = "unlinkRelation(index)"
-                v-t-tooltip:right.create = "'plugins.editing.form.relations.tooltips.unlink_relation'"
-                aria-hidden              = "true"
+                v-if              = "!fieldrequired && capabilities.includes('change_attr_feature')"
+                class             = "g3w-icon"
+                :class            = "g3wtemplate.font['unlink']"
+                @click.stop       = "unlinkRelation(index)"
+                v-t-tooltip:right = "'plugins.editing.form.relations.tooltips.unlink_relation'"
+                style             = "color: var(--skin-color); cursor: pointer; font-size:12px; border-radius:5px;padding: 13px;"
               ></div>
             </td>
-            <td v-for = "attribute in relationAttributesSubset(relation)">
+            <td v-for = "attribute in getAttributes(relation)">
               <!-- MEDIA ATTRIBUTE-->
               <div
                 v-if = "isMedia(attribute.value) && getValue(attribute.value)"
@@ -296,11 +280,29 @@ export default ({
                 target    = "_blank">{{ getValue(attribute.value) }}
               </a>
               <!-- TEXTUAL ATTRIBUTE -->
-              <span v-else>{{ getValue(getRelationFeatureValue(relation.id, attribute.name)) }}</span>
+              <span v-else>{{ getValue(getFeature(relation.id, attribute.name)) }}</span>
             </td>
           </tr>
         </tbody>
       </table>
+      <div style="display: flex; margin: 1em 0;">
+        <!-- TOTAL ELEMENTS -->
+        <span style = "margin-left: .5ch;">{{ relations.length }} {{ $t('entries') }}</span>
+
+        <!-- PAGINATION BUTTONS -->
+        <div style = "margin-left: auto;" >
+          <button @click.stop = "search.page = Number(search.page) - 1" class="btn" v-disabled = "1 == search.page">«</button>
+          <select
+            v-model         = "search.page"
+            style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
+            v-t-tooltip:top = "search.page + $t(' of ') + pages"
+            data-placement  = "top"
+          >
+            <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
+          </select>
+          <button @click.stop = "search.page = Number(search.page) + 1" class="btn" v-disabled = "pages == search.page">»</button>
+        </div>
+      </div>
     </div>
 
 </div>`,
@@ -310,74 +312,151 @@ export default ({
     mixins: [
       Mixins.mediaMixin,
       Mixins.fieldsMixin,
-      Mixins.resizeMixin,
     ],
 
     data() {
       return {
-        // relation,        // ← setted by `Vue.extend` - Relation instance: information about relation from parent layer and current relation layer (ex. child, fields, relationid, etc....) main relation between layerId (current in editing)
-        // relations,       // ← setted by `Vue.extend` - array of relations object id,fields and select linked to current parent feature (that is in editing)
-        // layerId,         // ← setted by `Vue.extend`
-        loading :           false,
-        show_vector_tools:  false, // whether show vector relation tools
-        disabled:           false, //disable relatins rows
-        copylayerid:        null,  // used for vector relation layer
-        copyFeatureLayers:  [],
-        active:             false,
-        value:              null,
-        placeholdersearch:  `${_('editing.search')} ...`,
-        resourcesurl:       GUI.getResourcesUrl(),
+        // relation,  // ← setted by `Vue.extend` - Relation instance: information about relation from parent layer and current relation layer (ex. child, fields, relationid, etc....) main relation between layerId (current in editing)
+        // relations, // ← setted by `Vue.extend` - array of relations object id,fields and select linked to current parent feature (that is in editing)
+        // layerId,   // ← setted by `Vue.extend`
+        show:         true,
+        loading :     false,
+        show_tools:   false, // whether show vector relation tools
+        disabled:     false, //disable relatins rows
+        copylayerid:  null,  // used for vector relation layer
+        copyLayers:   [],
+        active:       false,
+        value:        null,
+        resourcesurl: GUI.getResourcesUrl(),
+        ordering:  [0, 'asc'],
+        PAGELENGTHS,
+        search: {
+          page:      1,              // current page
+          page_size: PAGELENGTHS[1],
+        }
       };
+    },
+
+    computed: {
+      pages() {
+        return Math.ceil(this.relations.length / this.search.page_size);
+      },
+
+      /**
+       * @returns { boolean } whehter all relations are selected
+       */
+      selectall() {
+        return this.relations.every(r => r.select);
+      },
+
+      /**
+       * @TODO find out where `this.relations` is setted
+       * 
+       * @returns { boolean }
+       */
+      relationsLength() {
+        return this.relations.length;
+      },
+
+      /**
+       * @returns { boolean } whether has external fields (relation layer fields have at least one field required)
+       */
+      fieldrequired() {
+        return getRelationFieldsFromRelation({ layerId: this._relationLayerId, relation: this.relation })
+          .ownField // own Fields is a relation Fields array of Relation Layer
+          .some(field => ((getEditingLayerById(this._relationLayerId).state.editing.fields || []).find(f => field === f.name) || { validate: { required: false } }).validate.required);
+      },
+
+      /**
+       * @returns { boolean } whether show adds link buttons
+       */
+      show_add_link() {
+        return (0 === this.relations.length || 'ONE' !== this.relation.type);
+      },
+
+    },
+
+    watch: {
+      /**
+       * In case of commit new relation to server, update temporary relation.id (__new__)
+       * to saved id on server. It is called when a new relation is saved on a relation form
+       * after click on save all disks, and when save all disks are click on a list of relation
+       * table.
+       */
+      relations(_, updatedrelations = []) {
+        // component is active (show) → need to update
+        if (updatedrelations.length) {
+            this._new_relations_ids.forEach(({ clientid, id }) => {
+            const newrelation = this.relations.find(r => clientid === r.id);
+            if (newrelation) {
+              newrelation.id = id;
+              //replace tools with new id
+              (this.tools.find(ts => ts.find(t => t.state.id.split(`${clientid}_`).length > 1)) || [])
+                .forEach(t => t.state.id = t.state.id.replace(`${clientid}_`, `${id}_`));
+            }
+          })
+        }
+      },
+      show_tools(bool) {
+        this.toggleDOM(!bool);
+        this.disabled = bool;
+      },
+      async 'search.page_size'(page_size) {
+        this.reload({ page_size });
+      },
+      async 'search.page'(page) {
+        this.reload({ page });
+      },
     },
 
     methods: {
 
-
       /**
-       * Adapt table when a window is resized
+       * @param { number } index column index
        */
-      resize() {
-        // skip when a relation form is disabled (or hidden)
-        if (!(this.active && 'none' !== this.$el.style.display)) {
-          return;
+      sortColumn(index) {
+        if (index === this.ordering[0]) {
+          this.ordering[1] = 'asc' === this.ordering[1] ? 'desc' : 'asc';
+        } else {
+          this.ordering[0] = index;
+          this.ordering[1] = 'asc';
         }
-
-        const table = this.$refs.relation_body.querySelector('div.dataTables_scrollBody');
-
-        if (table) {
-          table.style.height =
-              ((document.querySelector('.contents')                                         || {}).offsetHeight || 0)
-            - ((document.querySelector('.close-panel-block')                                || {}).offsetHeight || 0)
-            - ((document.querySelector('.g3wform_footer')                                   || {}).offsetHeight || 0)
-            - ((this.$refs.relation_header_title                                            || {}).offsetHeight || 0)
-            - ((this.$refs.relation_header_tools                                            || {}).offsetHeight || 0)
-            - ((this.$el.querySelector('.dataTables_scrollHead')                            || {}).offsetHeight || 0)
-            - ((this.$el.querySelector('.dataTables_paginate.paging_simple_numbers')        || {}).offsetHeight || 0)
-            - ((document.querySelector('.editing-save-all-form')                            || {}).offsetHeight || 0)
-            - (( this.isVectorRelation 
-                  && this.show_vector_tools 
-                  && this.$refs.relation_vector_tools                                       || {}).offsetHeight || 0)
-            - 30 //padding of g3w-view-content      
-            + 'px';
-        }
-
-        if (this.relationsTable) {
-          this.relationsTable.columns.adjust();
-        }
-
+        this.reload({ ordering: index });
       },
 
-      /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       * 
-       * Add Relation from project layer
-       */
-      copyFeatureFromOtherLayer() {
-        const copyLayer = this.copyFeatureLayers.find(l => this.copylayerid === l.id);
+      isRowHidden(index) {
+        if (this.search.search) {
+          return this.relations[index].fields.every(field => -1 === `${field.value}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
+        }
+        const page      = Number(this.search.page);
+        const page_size = Number(this.search.page_size);
+        return !(index >= ((page-1) * page_size) && index < (page * page_size));
+      },
+
+      async reload(opts) {
+        this.show = false;
+        await this.$nextTick();
+        if (undefined !== opts.page_size) {
+          this.search.page      = 1;
+          this.search.page_size = opts.page_size;
+        }
+        if (undefined !== opts.ordering) {
+          const attr = this.ordering[0];
+          const dir  = ('asc' === this.ordering[1] ? 1 : -1);
+          this.relations.sort((a, b) => dir * `${a.fields[attr].value}`.localeCompare(`${b.fields[attr].value}`, undefined, { numeric: true }));
+        }
+        if (undefined !== opts.search) {
+          this.search.search = opts.search;
+        }
+        this.show = true;
+      },
+
+      copyFromLayer() {
+        const copyLayer = this.copyLayers.find(l => this.copylayerid === l.id);
         let external    = copyLayer.external;
         let layer       = external ? GUI.getLayerById(this.copylayerid) : getCatalogLayerById(this.copylayerid);
         const is_vector =  (external || layer.isGeoLayer())
-        this.runAddRelationWorkflow({
+        this.runWorkflow({
           workflow: is_vector
             ? this._add_link_workflow.selectandcopy({
                 copyLayer: layer,
@@ -390,54 +469,50 @@ export default ({
         })
       },
 
-      /**
-       * @since g3w-client-plugin-editing@v3.8.0
-       */
-      async closeVectorTools() {
-        this.show_vector_tools = false;
-        await this.$nextTick();
-        this.resize();
+      async closeTools() {
+        this.show_tools = false;
       },
 
-      /**
-       * @FIXME add description
-       */
-      addVectorRelation() {
-        this.runAddRelationWorkflow({
+      addRelation() {
+        this.runWorkflow({
           workflow: this._add_link_workflow.add(),
           isVector: 'vector' === this._layerType,
         });
-        this.show_vector_tools = false;
+        this.show_tools = false;
+      },
+
+      async addRelation2() {
+        if (this.isVectorRelation) {
+          this.show_tools = !this.show_tools;
+        } else {
+          this.runWorkflow({
+            workflow: this._add_link_workflow.add(),
+            isVector: 'vector' === this._layerType,
+          });
+        }
+      },
+
+      toggleAll() {
+       const selected = !this.selectall || !this.relations.some(r => r.select);
+       this.relations.forEach(r => r.select = selected);
       },
 
       /**
-       * @since 3.9.0
-       * update select relation attibute
+       * Edit attributes of all relations
        */
-      updateSelectRelations() {
-       //need to declare a variable bool, otherwise this.selectall ia a compued attribute that can change during loop
-       const bool = !this.selectall || !this.relations.some(r => r.select);
-       this.relations.forEach(r => r.select = bool);
-      },
-
-      /**
-      * @since 3.9.0
-      * Edit attributes of all relations
-      */
-      async editAttributesRelations() {
+      async editMulti() {
         const workflow = new Workflow({
           type: 'editmultiattributes',
-          steps: [
-            new OpenFormStep({ multi: true }),
-          ],
-        });
-        const options = this._createWorkflowOptions({
-          features: this.relations
-            .filter(r => r.select)
-            .map(({ id }) => this.getLayer().getEditor().getEditingSource().getFeatureById(id) )
+          steps: [ new OpenFormStep({ multi: true }) ],
         });
         try {
-          await workflow.start(options);
+          await workflow.start(
+            this._createWorkflowOptions({
+              features: this.relations
+                .filter(r => r.select)
+                .map(({ id }) => this.getLayer().getEditor().getEditingSource().getFeatureById(id) )
+            })
+          );
         } catch(e) {
           console.warn(e);
         }
@@ -447,33 +522,14 @@ export default ({
       },
 
       /**
-       * @FIXME add description
-       */
-      async addRelationAndLink() {
-        if (this.isVectorRelation) {
-          this.show_vector_tools = !this.show_vector_tools;
-          await this.$nextTick();
-          this.resize();
-        } else {
-          this.runAddRelationWorkflow({
-            workflow: this._add_link_workflow.add(),
-            isVector: 'vector' === this._layerType,
-          });
-        }
-      },
-
-      /**
        * @returns { Array } attributes 
        */
-      relationAttributesSubset(relation) {
+      getAttributes(relation) {
         return relation.fields
           .map(({ label, name, value }) => ({ name, label, value }))
           .flatMap(({ name, label, value }) => Array.isArray(value) ? [] : [{ name, label, value }]);
       },
 
-      /**
-       * @FIXME add description
-       */
       getValue(value) {
         if (value && 'Object' === toRawType(value)) {
           value = value.value;
@@ -485,79 +541,10 @@ export default ({
       },
 
       /**
-       * @FIXME add description
-       */
-      _createDataTable() {
-        this.relationsTable = $(this.$refs.relationTable)
-          .DataTable({
-            autoWidth:      false,
-            columnDefs:     [ { orderable: false, targets: [0, 1] } ],
-            destroy:        true,
-            order:          [ 2, 'asc' ],
-            pageLength:     10,
-            responsive:     true,
-            scrollCollapse: true,
-            scrollResize:   true,
-            scrollX:        true,
-          });
-
-        $(".dataTables_filter, .dataTables_length").hide();
-        // set data table search
-        $('#filterRelation').on('keyup', (e) => this.relationsTable.search(e.target.value).draw())
-      },
-
-      /**
-       * @FIXME add description
-       */
-      destroyTable() {
-        if (this.relationsTable) {
-          this.relationsTable = this.relationsTable.destroy();
-          this.relationsTable = null;
-          $('#filterRelation').off();
-        }
-      },
-
-      /**
-       * @returns {Promise<void>}
-       * 
-       * @since g3w-client-plugin-editing@v3.7.0
-       */
-      async updateTable() {
-        this.destroyTable();     // destroy old table
-        await this.$nextTick();  // wait rerender
-        this._createDataTable(); // recreate table
-        setTimeout(() => this.resize())
-      },
-
-      /**
-       * In case of commit new relation to server, update temporary relation.id (__new__)
-       * to saved id on server. It is called when a new relation is saved on a relation form
-       * after click on save all disks, and when save all disks are click on a list of relation
-       * table.
-       * 
-       * @since g3w-client-plugin-editing@v3.7.4
-       */
-      updateNewRelationId() {
-        this._new_relations_ids.forEach(({ clientid, id }) => {
-          const newrelation = this.relations.find(r => clientid === r.id);
-          if (newrelation) {
-            newrelation.id = id;
-            //replace tools with new id
-            (this.tools.find(ts => ts.find(t => t.state.id.split(`${clientid}_`).length > 1)) || [])
-              .forEach(t => t.state.id = t.state.id.replace(`${clientid}_`, `${id}_`));
-          }
-        })
-
-      },
-
-      /**
        * Listen to commit on server when press disk icon saves all form
-       * 
-       * @since g3w-client-plugin-editing@v3.7.4
        */
       onCommit({ relations = {} }) {
         const relationLayer = getEditingLayerById(this.relation.child);
-
         // there is a new relation saved on server
         if (relations[relationLayer.getId()] && Array.isArray(relations[relationLayer.getId()].new)) {
           this._new_relations_ids = [
@@ -568,11 +555,9 @@ export default ({
       },
 
       /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing@v3.7.0/services/relationservice.js
-       * 
        * Get value from feature if layer has key value
        */
-      getRelationFeatureValue(featureId, property) {
+      getFeature(featureId, property) {
         return getFeatureTableFieldValue({
             layerId: this._relationLayerId,
             feature: this.getLayer().getEditor().getEditingSource().getFeatureById(featureId),
@@ -581,26 +566,18 @@ export default ({
       },
 
       /**
-       * Enable/Disable elements
-       * 
-       * @param { Boolean } bool true enabled
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
+       * @param { Boolean } bool whehter to toggle DOM elements
        */
-      enableDOMElements(bool = true) {
+      toggleDOM(bool = true) {
         document.querySelectorAll('.editing-save-all-form').forEach(c => {
           if (bool && c.classList.contains('g3w-disabled')) { c.classList.remove('g3w-disabled'); }
           if (!bool && !c.querySelector('.save-all-icon').classList.contains('g3w-disabled')) { c.classList.add('g3w-disabled'); }
         });
-        document.querySelectorAll('.g3w-editing-relations-add-link-tools, .g3wform_footer').forEach(c => c.classList.toggle('g3w-disabled', !bool))
+        document.querySelectorAll('.g3w-relation-tools, .g3wform_footer').forEach(c => c.classList.toggle('g3w-disabled', !bool))
       },
 
       /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       *
        * Add relation tools
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
        */
       addTools(id) {
         const tools = [
@@ -662,16 +639,6 @@ export default ({
         return tools;
       },
 
-      /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       * 
-       * @param relationtool
-       * @param index
-       * 
-       * @returns {Promise<unknown>}
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
-       */
       async startTool(relationtool, index) {
         try {
           relationtool.state.active = !relationtool.state.active;
@@ -829,7 +796,7 @@ export default ({
           if (['movevertex', 'movefeature'].includes(toolId)) {
             // disable modal and buttons (saveAll and back)
             GUI.setModal(false);
-            this.enableDOMElements(false);
+            this.toggleDOM(false);
             const workflow = new Workflow({
               type: relationtool.type,
               steps: [ new {
@@ -844,7 +811,7 @@ export default ({
               bool => {
                 if (!bool) {
                   //need to enable saveAll and back
-                  this.enableDOMElements(true);
+                  this.toggleDOM(true);
                   GUI.setModal(true);
                   workflow.unbindEscKeyUp();
                   workflow.stop();
@@ -888,25 +855,14 @@ export default ({
         }
       },
 
-      /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       * 
-       * @returns {*}
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
-       */
       getLayer() {
         return getEditingLayerById(this._relationLayerId);
       },
 
       /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       * 
        * Common method to add a relation
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
        */
-      async runAddRelationWorkflow({ workflow, isVector = false } = {} ) {
+      async runWorkflow({ workflow, isVector = false } = {} ) {
 
         if (isVector) {
           GUI.setModal(false);
@@ -976,7 +932,7 @@ export default ({
             )
           }
 
-          this.rollbackDependecies(options.context.session.getId(), [this._relationLayerId])
+          this.rollback(options.context.session.getId(), [this._relationLayerId])
         }
 
         workflow.stop();
@@ -985,18 +941,12 @@ export default ({
           workflow.unbindEscKeyUp();
           GUI.hideContent(false);
           GUI.setModal(true);
-          //need to resize to adjust table
-          setTimeout(() => this.resize())
         }
       },
 
 
       /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       * 
-       * Link relation (bind) to parent feature layer
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
+       * Link relation to parent feature layer
        */
       async linkRelation() {
         this.disabled = true;
@@ -1050,7 +1000,7 @@ export default ({
             showContent: true
           };
 
-          this.enableDOMElements(false);
+          this.toggleDOM(false);
 
         } else {
           await getRelationFeatures();
@@ -1082,11 +1032,11 @@ export default ({
           });
         } catch (e) {
           console.warn(e);
-          this.rollbackDependecies(options.context.session.getId(), [this._relationLayerId]);
+          this.rollback(options.context.session.getId(), [this._relationLayerId]);
         }
 
         if (is_vector) {
-          this.enableDOMElements(true);
+          this.toggleDOM(true);
         }
 
         if (response.showContent) {
@@ -1103,18 +1053,6 @@ export default ({
         this.disabled = false;
       },
 
-      /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       * 
-       * Unlink relation
-       * 
-       * @param index
-       * @param dialog
-       * 
-       * @returns JQuery Promise
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
-       */
       unlinkRelation(index, dialog = true) {
         return unlinkRelation({
           layerId:   this.layerId,
@@ -1125,10 +1063,6 @@ export default ({
         });
       },
 
-      /**
-       * @since 3.9.0
-       * @return {{layerId, editable: *[], values: *, pk: *}}
-       */
       getParent() {
         const parentLayer = this.parentWorkflow.getLayer();
         const { ownField } = getRelationFieldsFromRelation({ layerId: this.layerId, relation: this.relation });
@@ -1163,15 +1097,6 @@ export default ({
         };
       },
 
-      /**
-       * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
-       * 
-       * @param options
-       * 
-       * @returns {{parentFeature, inputs: {features: *[], layer: *}, context: {fatherValue: *, session: *, fatherField: *, excludeFields: *[]}}}
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
-       */
       _createWorkflowOptions(options = {}) {
         const fields = getRelationFieldsFromRelation({
           layerId:  this._relationLayerId,
@@ -1194,16 +1119,12 @@ export default ({
       },
 
       /**
-       * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-       * 
        * Rollback child changes of current session
        * 
-       * @param layerId 
+       * @param layerId
        * @param ids [array of child layer id]
-       * 
-       * @since g3w-client-plugin-editing@v4.1.0
        */
-      rollbackDependecies(layerId, ids) {
+      rollback(layerId, ids) {
         const toolBox = GUI.getPlugin('editing').getToolBoxById(layerId);
         ids.forEach(id => {
           const changes = [];
@@ -1221,69 +1142,10 @@ export default ({
 
     },
 
-    computed: {
-      /**
-       * @since v3.9.0
-       * @return {Boolen} Tru in case all relations are selected
-      */
-      selectall() {
-        return this.relations.every(r => r.select);
-      },
-
-      /**
-       * @TODO find out where `this.relations` is setted
-       * 
-       * @returns { boolean }
-       */
-      relationsLength() {
-        return this.relations.length;
-      },
-
-      /**
-       * @returns { boolean } whether has external fields (relation layer fields have at least one field required)
-       */
-      fieldrequired() {
-        return getRelationFieldsFromRelation({ layerId: this._relationLayerId, relation: this.relation })
-          .ownField // own Fields is a relation Fields array of Relation Layer
-          .some(field => ((getEditingLayerById(this._relationLayerId).state.editing.fields || []).find(f => field === f.name) || { validate: { required: false } }).validate.required);
-      },
-
-      /**
-       * @returns { boolean } whether show adds link buttons
-       */
-      show_add_link() {
-        return (0 === this.relations.length || 'ONE' !== this.relation.type);
-      },
-
-    },
-
-    watch: {
-
-      /**
-       * @FIXME add description
-       */
-      relations(_, updatedrelations = []) {
-        if (0 === updatedrelations.length) {
-          this.destroyTable(); // destroy the table when there are no relations
-        } else {
-          // component is active (show) → need to update
-          this.updateNewRelationId();
-          this.updateTable(); // update table when deleting / adding row relations
-        }
-
-      },
-
-      /**
-       * Toggle dom element of relation table, based on show/hide creation of vector tools
-       */
-      show_vector_tools(bool) {
-        this.enableDOMElements(!bool);
-        this.disabled = bool;
-      },
-    },
-
     beforeCreate() {
-      this.delayType = 'debounce';
+      this.globalSearch = debounce(e => {
+        this.reload({ search: e.target.value });
+      });
     },
 
     created() {
@@ -1311,7 +1173,7 @@ export default ({
       // vector relation → get all layers with the same geometry
       if (this.isVectorRelation) {
         const geometryType = relationLayer.getGeometryType();
-        this.copyFeatureLayers = [
+        this.copyLayers = [
           // project layers with same geometry of relation ayer
           ...getCatalogLayers({
             QUERYABLE: true,
@@ -1363,7 +1225,7 @@ export default ({
               if (!features[0] || !features[0].getGeometry()) { return }
               const type = features[0].getGeometry().getType();
               if (geometryType === type || (isSameBaseGeometryType(geometryType, type) && (Geometry.isMultiGeometry(geometryType) || !Geometry.isMultiGeometry(type)))) {
-                this.copyFeatureLayers.push({
+                this.copyLayers.push({
                   id:       externalLayer.get('id'),
                   name:     externalLayer.get('name'),
                   external: true,
@@ -1374,11 +1236,10 @@ export default ({
         })
       }
 
-      this.copylayerid = this.copyFeatureLayers.length ? this.copyFeatureLayers[0].id : null; // current layer = first layer found
+      this.copylayerid = this.copyLayers.length ? this.copyLayers[0].id : null; // current layer = first layer found
 
-      this.loadEventuallyRelationValuesForInputs = false;
+      this.load_values = false;
 
-      // relation related to current feature of current layer in editing
       /**
        * Current relation feature (in editing)
        * 
@@ -1507,8 +1368,7 @@ export default ({
                   },
                   stop() {
                     GUI.setModal(true);
-                    //resolve to resolve setAndUnsetSelectedFeaturesStyle
-                    this.resolve(true);
+                    this.resolve(true); // resolves to setAndUnsetSelectedFeaturesStyle
                     this.resolve = null;
                     return true;
                   },
@@ -1638,7 +1498,7 @@ export default ({
                     
                   },
                   stop() {
-                    self.show_vector_tools = false;
+                    self.show_tools = false;
                     this.setUserMessageStepDone('select');
                     GUI.closeUserMessage();
                   }
@@ -1657,51 +1517,35 @@ export default ({
     },
 
     async activated() {
-      //in the case of vector relation, the current extent of map whe is actived
-      //it used to sto an extent of the map at the moment of possibible editing (and zoom)
-      // to relation feature
+      // zoom to feature
       if (this.isVectorRelation) {
         this.mapExtent = GUI.getMapBBOX();
       }
 
-      this.show_vector_tools = false;
+      this.show_tools = false;
 
-      if (!this.loadEventuallyRelationValuesForInputs) {
+      if (!this.load_values) {
         this.loading = true;
         this.loading = false;
-        this.loadEventuallyRelationValuesForInputs = true;
+        this.load_values = true;
       }
 
       this.active = true;
-
-      await this.$nextTick();
-
-      if (!this.relationsTable && this.relations.length > 0) {
-        this._createDataTable();
-      }
-
-
-      this.resize();
     },
 
     deactivated() {
-      this.destroyTable();
       this.active = false;
-      //need to unselect relaion when click on back control form
-      this.relations.forEach(r => r.select = false);
+      this.relations.forEach(r => r.select = false); // unselect relation when click on back control form
     },
 
     beforeDestroy() {
-      this.loadEventuallyRelationValuesForInputs = true;
-      // unlisten
+      this.load_values = true;
       GUI.getPlugin('editing').off('commit', this.onCommit);
-      // In the case of vector relation, restore the beginning extent of the map;
-      // in the case we zoomed to relation feature
+      // restore initial map extent
       if (this.isVectorRelation && (null !== this.currentRelationFeatureId)) {
         GUI.zoomToExtent(this.mapExtent);
         this.mapExtent = null;
       }
-      //remove event
       if (this.addExternalLayerKey) {
         GUI.getService('catalog').un('addExternalLayer', this.addExternalLayerKey);
         this.addExternalLayerKey = null;
@@ -1714,54 +1558,66 @@ document.head.insertAdjacentHTML(
   'beforeend',
   /* css */`
 <style>
-  .g3w-editing-relation .g3w-editing-new-relation-vector-type {
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  .g3w-editing-relation .relation_header_title {
-    width: 100%;
-    display: flex;
-    font-weight: bold;
-    font-size: 1.3em;
-    align-items: center;
-    background-color: #fff;
-  }
-  .g3w-editing-relation .relation_header_tools {
-    width: 100%;
-    display: flex;
-    background-color: #fff;
-  }
-  .g3w-editing-relation .g3w-editing-relations-add-link-tools {
+  .g3w-editing-relation .g3w-relation-tools {
     display: flex;
     justify-content: flex-end
   }
-  .g3w-editing-relation .relation_vector_tools {
-    display: flex;
-    flex-direction: column;
-    border: 2px solid #eee;
-    background-color: #fff;
-    padding: 10px;
-  }
-  .g3w-editing-relation #g3w-select-editable-layers-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column
-  }
-  .g3w-editing-relation #search-box {
-    margin-right: auto;
-  }
-  .g3w-editing-relation .relation_body {
-    padding: 0;
-  }
-  .g3w-editing-relation .g3wform-relation-table {
-    width: 100%
-  }
-  .g3w-editing-relation .close_vector_relation_tool {
-    align-self: self-end;
-  }
-  .g3w-editing-relation .close_vector_relation_tool > .g3w-icon {
+
+  .g3w-editing-relation .g3w-icon {
     font-weight: bold;
     cursor: pointer;
   }
+
+  .g3w-editing-relation table {
+    width: 100%;
+    user-select: none;
+    display: block;
+    height: calc(100% - 65px);
+    overflow: auto;
+    border-collapse: separate
+  }
+
+  .g3w-editing-relation thead {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+  }
+
+  .g3w-editing-relation tbody > tr.selected {
+    box-shadow: inset 0 0 0 9999px rgb(13, 110, 253, .9);
+    color: #fff;
+  }
+
+  .g3w-editing-relation tbody > tr:not(.selected):hover {
+    background-color: rgb(255, 255, 0, 0.15);
+  }
+
+  .g3w-editing-relation :is(th, td) {
+    white-space: nowrap;
+  }
+
+  .g3w-editing-relation th {
+    cursor: pointer;
+  }
+
+  .g3w-editing-relation td {
+    border-top: 1px solid rgba(0,0,0,.15);
+  }
+
+  .g3w-editing-relation th:is(.asc, .desc) { 
+    border-top: var(--skin-color) medium solid;
+  }
+
+  .g3w-editing-relation th.asc::after {
+    content: "▴";
+  }
+
+  .g3w-editing-relation th.desc::after {
+    content: "▾";
+  }
+
+  .g3w-editing-relation td .preview .previewtype         { width: 30px; height: 30px; padding-top: 6px; }
+  .g3w-editing-relation td .preview .previewtype i,
+  .g3w-editing-relation td .preview .previewtype i.fa-2x { font-size: 1em; }
 </style>`
 );
