@@ -373,7 +373,7 @@ export default ({
       try {
         const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
         
-        const feature = outputs.features[outputs.features.length -1];
+        const feature = outputs.features.at(-1);
         Object
           .entries(this.rows[index])
           .forEach(([key, _]) => {
