@@ -72,6 +72,8 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.google",
     "allauth.usersessions",
+    "csp", # Used for Content Security Policy for G3W-SUITE inside iframe
+    "corsheaders" # Used for G3W-SUITE inside iframe
 ]
 
 G3WADMIN_APPS = [
@@ -93,6 +95,11 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+
+    # CSP and CORS
+    "csp.middleware.CSPMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
