@@ -163,8 +163,8 @@ class BaseUserMediaHandler(object):
                         # path to save media file
                         path_to_file_tmp = BaseUserMediaHandler.build_fs_path(self.feature_properties[field])
 
-                        # if not os.path.isdir(path_to_save):
-                        #     os.makedirs(path_to_save)
+                        if not os.path.isdir(path_to_save):
+                            os.makedirs(path_to_save)
 
                         # Check if file already exists, add suffix if needed
                         # This case can happen when user upload the same image or doc 
