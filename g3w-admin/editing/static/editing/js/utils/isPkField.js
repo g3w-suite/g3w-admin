@@ -1,5 +1,3 @@
-import { getEditingFields } from '../utils/getEditingFields.js';
-
 /**
  * ORIGINAL SOURCE: g3w-client/src/map/layers/tablelayer.js@v4.0.0
  * 
@@ -8,5 +6,5 @@ import { getEditingFields } from '../utils/getEditingFields.js';
  * @returns {boolean} whether field is a Primary Key
  */
 export function isPkField(layer, field) {
-  return (getEditingFields(layer).find(f => field === f.name) || {}).pk;
+  return ((layer.state.editing.fields || []).find(f => field === f.name) || {}).pk;
 }

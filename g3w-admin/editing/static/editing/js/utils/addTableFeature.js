@@ -1,7 +1,5 @@
-import { Feature }          from '../g3w-feature.js';
-
-import { getEditingLayer }  from '../utils/getEditingLayer.js';
-import { getEditingFields } from '../utils/getEditingFields.js';
+import { Feature }         from '../g3w-feature.js';
+import { getEditingLayer } from '../utils/getEditingLayer.js';
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetabletask.js@v3.7.1
@@ -17,7 +15,7 @@ export async function addTableFeature(inputs, context) {
   } else {
     feature = new Feature({
       feature: new ol.Feature(
-        getEditingFields(inputs.layer).reduce((props, f) => { props[f.name] = null; return props }, {})
+        (inputs.layer.state.editing.fields || []).reduce((props, f) => { props[f.name] = null; return props }, {})
       )
     });
     feature.setNew();

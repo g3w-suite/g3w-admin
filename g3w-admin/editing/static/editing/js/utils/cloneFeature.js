@@ -1,5 +1,3 @@
-import { getEditingFields } from '../utils/getEditingFields.js';
-
 /**
  * Clone a feature by Primary Key
  * 
@@ -13,7 +11,7 @@ import { getEditingFields } from '../utils/getEditingFields.js';
 export function cloneFeature(feature, layer) {
   const clone = feature.cloneNew();
   //check if layer has a primary key as field
-  const pk    = layer && getEditingFields(layer).find(f => f.pk); // get PK field (of value-relation widget?)
+  const pk    = layer && (layer.state.editing.fields || []).find(f => f.pk); // get PK field (of value-relation widget?)
   /**
    * In case of layer has a primary key field and is not editabe,
    *  clone feature need to set pk value to null to avoid conflict

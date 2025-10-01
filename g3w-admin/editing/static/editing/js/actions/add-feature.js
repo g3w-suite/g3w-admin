@@ -6,11 +6,10 @@
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { setAndUnsetSelectedFeaturesStyle }             from '../utils/setAndUnsetSelectedFeaturesStyle.js';
-import { getEditingLayer }                              from '../utils/getEditingLayer.js';
-import { getEditingFields }                             from '../utils/getEditingFields.js';
-import { Step }                                         from '../g3w-step.js';
-import { Feature }                                      from '../g3w-feature.js';
+import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
+import { getEditingLayer }                  from '../utils/getEditingLayer.js';
+import { Step }                             from '../g3w-step.js';
+import { Feature }                          from '../g3w-feature.js';
 
 const GUI                      = g3w.app;
 const _                        = g3w.gettext;
@@ -83,7 +82,7 @@ export class AddFeatureStep extends Step {
       this.geometryType = geom;
 
       const source     = getEditingLayer(inputs.layer).getSource();
-      const attributes = getEditingFields(inputs.layer);
+      const attributes = (inputs.layer.state.editing.fields || []);
 
       this.drawInteraction = this.addInteraction(
         new ol.interaction.Draw({

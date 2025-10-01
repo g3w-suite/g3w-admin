@@ -6,22 +6,21 @@
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { getParentFormData }                            from '../utils/getParentFormData.js';
-import { setAndUnsetSelectedFeaturesStyle }             from '../utils/setAndUnsetSelectedFeaturesStyle.js';
-import { getLayersDependencyFeatures }                  from '../utils/getLayersDependencyFeatures.js';
-import { getEditingLayerById }                          from '../utils/getEditingLayerById.js';
-import { setLayerUniqueFieldValues }                    from '../utils/setLayerUniqueFieldValues.js';
-import { getRelationsInEditingByFeature }               from '../utils/getRelationsInEditingByFeature.js';
-import { getFieldsWithValues }                          from '../utils/getFieldsWithValues.js';
-import { isPkField }                                    from '../utils/isPkField.js';
-import { getCatalogLayerById }                          from '../utils/getCatalogLayerById.js';
-import { getEditingFields }                             from '../utils/getEditingFields.js';
+import { getParentFormData }                from '../utils/getParentFormData.js';
+import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
+import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
+import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
+import { setLayerUniqueFieldValues }        from '../utils/setLayerUniqueFieldValues.js';
+import { getRelationsInEditingByFeature }   from '../utils/getRelationsInEditingByFeature.js';
+import { getFieldsWithValues }              from '../utils/getFieldsWithValues.js';
+import { isPkField }                        from '../utils/isPkField.js';
+import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
 
-import { Workflow }                                     from '../g3w-workflow.js';
-import { Step }                                         from '../g3w-step.js';
+import { Workflow }                         from '../g3w-workflow.js';
+import { Step }                             from '../g3w-step.js';
 
-const { GUI }                                           = g3wsdk.gui;
-const { FormService }                                   = g3wsdk.gui.vue.services;
+const { GUI }                               = g3wsdk.gui;
+const { FormService }                       = g3wsdk.gui.vue.services;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/openformtask.js@v3.7.1
@@ -716,7 +715,7 @@ async function _handleRelation1_1LayerFields({
         //check if child feature is already added to
         childFeature = source.readFeatures().find(f => f.get(childField) === value)
 
-        const fieldsUpdated = undefined !== getEditingFields(GUI.getPlugin('editing').getLayerById(relation.getFather()))
+        const fieldsUpdated = undefined !== (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
           .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())
           .find(({name}) => fields.find(f => name == f.name).update)
 
@@ -730,7 +729,7 @@ async function _handleRelation1_1LayerFields({
             childFeature = new g3wsdk.core.layer.features.Feature();
             childFeature.setTemporaryId();
             // set name attribute to `null`
-            getEditingFields(getCatalogLayerById(childLayerId)).forEach(field => childFeature.set(field.name, null));
+            (getCatalogLayerById(childLayerId).state.editing.fields || []).forEach(field => childFeature.set(field.name, null));
             //set father field value
             childFeature.set(childField, fields.find(f => fatherField === f.name).value);
             //add feature to a child source
@@ -749,7 +748,7 @@ async function _handleRelation1_1LayerFields({
           if (childFeature) {
             // Loop editable only field of father layerId when
             // a child relation (1:1) is bind to the current feature
-            const editiableRelatedFieldChild = getEditingFields(GUI.getPlugin('editing').getLayerById(relation.getFather()))
+            const editiableRelatedFieldChild = (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
               .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId() && f.editable);
 
             editiableRelatedFieldChild
@@ -828,7 +827,7 @@ async function _listenRelation1_1FieldChange({
     }
 
     //store original editable property of fields relation to child layer relation
-    const editableRelatedFatherChild = getEditingFields(GUI.getPlugin('editing').getLayerById(relation.getFather()))
+    const editableRelatedFatherChild = (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
       .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())
       .reduce((accumulator, field) => {
         const formField             = fields.find(f => f.name === field.name)

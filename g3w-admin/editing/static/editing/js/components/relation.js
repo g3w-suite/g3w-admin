@@ -4,47 +4,42 @@
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { Workflow }                                     from '../g3w-workflow.js';
-import { Step }                                         from '../g3w-step.js';
-import { Feature }                                      from '../g3w-feature.js';
-import { cloneFeature }                                 from '../utils/cloneFeature.js';
-import { setAndUnsetSelectedFeaturesStyle }             from '../utils/setAndUnsetSelectedFeaturesStyle.js';
-import { getRelationFieldsFromRelation }                from '../utils/getRelationFieldsFromRelation.js';
-import { getLayersDependencyFeatures }                  from '../utils/getLayersDependencyFeatures.js';
-import { getEditingLayerById }                          from '../utils/getEditingLayerById.js';
-import { convertToGeometry }                            from '../utils/convertToGeometry.js';
-import { addTableFeature }                              from '../utils/addTableFeature.js';
-import { getFeatureTableFieldValue }                    from '../utils/getFeatureTableFieldValue.js';
-import { chooseFeatureFromFeatures }                    from '../utils/chooseFeatureFromFeatures.js';
-import { isSameBaseGeometryType }                       from '../utils/isSameBaseGeometryType.js';
-import { unlinkRelation }                               from '../utils/unlinkRelation.js';
-import { getFieldsWithValues }                          from '../utils/getFieldsWithValues.js';
-import { isPkField }                                    from '../utils/isPkField.js';
-import { getEditingLayer }                              from '../utils/getEditingLayer.js';
-import { getEditingFields }                             from '../utils/getEditingFields.js';
-import { PickFeaturesInteraction }                      from '../actions/pick-feature.js';
-import { OpenFormStep }                                 from '../actions/open-form.js';
-import { OpenTableStep }                                from '../actions/open-table.js';
-import { AddFeatureStep }                               from '../actions/add-feature.js';
-import { ModifyGeometryVertexStep }                     from '../actions/move-vertex.js';
-import { MoveFeatureStep }                              from '../actions/move-feature.js';
-import { getCatalogLayerById }                          from '../utils/getCatalogLayerById.js';
-import { getCatalogLayers }                             from '../utils/getCatalogLayers.js';
+import { Workflow }                         from '../g3w-workflow.js';
+import { Step }                             from '../g3w-step.js';
+import { Feature }                          from '../g3w-feature.js';
+import { cloneFeature }                     from '../utils/cloneFeature.js';
+import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
+import { getRelationFieldsFromRelation }    from '../utils/getRelationFieldsFromRelation.js';
+import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
+import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
+import { convertToGeometry }                from '../utils/convertToGeometry.js';
+import { addTableFeature }                  from '../utils/addTableFeature.js';
+import { getFeatureTableFieldValue }        from '../utils/getFeatureTableFieldValue.js';
+import { chooseFeatureFromFeatures }        from '../utils/chooseFeatureFromFeatures.js';
+import { isSameBaseGeometryType }           from '../utils/isSameBaseGeometryType.js';
+import { unlinkRelation }                   from '../utils/unlinkRelation.js';
+import { getFieldsWithValues }              from '../utils/getFieldsWithValues.js';
+import { isPkField }                        from '../utils/isPkField.js';
+import { getEditingLayer }                  from '../utils/getEditingLayer.js';
+import { PickFeaturesInteraction }          from '../actions/pick-feature.js';
+import { OpenFormStep }                     from '../actions/open-form.js';
+import { OpenTableStep }                    from '../actions/open-table.js';
+import { AddFeatureStep }                   from '../actions/add-feature.js';
+import { ModifyGeometryVertexStep }         from '../actions/move-vertex.js';
+import { MoveFeatureStep }                  from '../actions/move-feature.js';
+import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
+import { getCatalogLayers }                 from '../utils/getCatalogLayers.js';
 
-const { Geometry }                    = g3wsdk.core.geoutils;
-const _                               = g3wsdk.core.i18n.t;
-const { toRawType }                   = g3wsdk.core.utils;
-const { GUI }                         = g3wsdk.gui;
-const { FormService }                 = g3wsdk.gui.vue.services;
-const {
-  fieldsMixin,
-  resizeMixin,
-  mediaMixin,
-}                                     = g3wsdk.gui.vue.Mixins;
+const { Geometry }                          = g3wsdk.core.geoutils;
+const _                                     = g3wsdk.core.i18n.t;
+const { toRawType }                         = g3wsdk.core.utils;
+const { GUI }                               = g3wsdk.gui;
+const { FormService }                       = g3wsdk.gui.vue.services;
+const { Mixins }                            = g3wsdk.gui.vue;
 const {
   PickFeatureInteraction,
   PickCoordinatesInteraction
-}                                     = g3wsdk.ol.interactions;
+}                                           = g3wsdk.ol.interactions;
 
 const color = 'rgb(255,89,0)';
 // Vector styles for selected relation
@@ -314,9 +309,9 @@ export default ({
     name: 'g3w-relation',
 
     mixins: [
-      mediaMixin,
-      fieldsMixin,
-      resizeMixin,
+      Mixins.mediaMixin,
+      Mixins.fieldsMixin,
+      Mixins.resizeMixin,
     ],
 
     data() {
@@ -1146,7 +1141,7 @@ export default ({
          */
         return {
           // get editable fields from parent layer editing fields
-          editable: ownField.filter(f => (getEditingFields(parentLayer).find(_f => _f.name === f) || { editable: false }).editable),
+          editable: ownField.filter(f => ((parentLayer.state.editing.fields || []).find(_f => _f.name === f) || { editable: false }).editable),
           // check if father field is a pk and is not editable
           pk,
           // Check if the parent field is editable.
@@ -1251,7 +1246,7 @@ export default ({
       fieldrequired() {
         return getRelationFieldsFromRelation({ layerId: this._relationLayerId, relation: this.relation })
           .ownField // own Fields is a relation Fields array of Relation Layer
-          .some(field => (getEditingFields(getEditingLayerById(this._relationLayerId)).find(f => field === f.name) || { validate: { required: false } }).validate.required);
+          .some(field => ((getEditingLayerById(this._relationLayerId).state.editing.fields || []).find(f => field === f.name) || { validate: { required: false } }).validate.required);
       },
 
       /**
@@ -1597,7 +1592,7 @@ export default ({
                     if (_feature) {
                       const feature = new Feature({
                         feature: _feature,
-                        properties: getEditingFields(inputs.layer).filter(attr => !attr.pk).map(attr => attr.name)
+                        properties: (inputs.layer.state.editing.fields || []).filter(attr => !attr.pk).map(attr => attr.name)
                       });
                       feature.setTemporaryId();
                       inputs.features = [feature];

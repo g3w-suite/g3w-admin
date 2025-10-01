@@ -25,10 +25,10 @@ export default ({
 <div class = "g3w-editing-table">
 
   <!-- TABLE HEADER -->
-  <h3 style = "margin-top:0;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ state.title }}</h3>
+  <h3 style = "margin-top:0;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ title }}</h3>
 
   <div
-    v-if  = "state.isrelation"
+    v-if  = "isrelation"
     style = "margin-bottom: 10px;font-size: 1.3em;background-color: #f5f5f5;padding: 3px;border-radius: 3px;font-weight: bold;"
     v-t   = "'plugins.editing.relation.table.info'"
   ></div>
@@ -54,15 +54,15 @@ export default ({
     <thead>
 
       <tr>
-        <th v-if  = "!state.isrelation" style="max-width: 60px"></th>
-        <th v-if  = "state.isrelation"></th>
+        <th v-if  = "!isrelation" style="max-width: 60px"></th>
+        <th v-if  = "isrelation"></th>
         <th
-          v-for          = "(header, i) in state.headers"
+          v-for          = "(header, i) in headers"
           @click.stop    = "sortColumn(i)"
           :class         = "[i === ordering[0] ? ordering[1] : '' ]"
           :title         = "$t('sort by:') + ' ' + header.name"
           data-placement = "top"
-          :style         = "{'width': (100 / state.headers.length) + '%'}"
+          :style         = "{'width': (100 / headers.length) + '%'}"
         >{{ header.label }}</th>
       </tr>
 
@@ -70,14 +70,14 @@ export default ({
 
     <tbody>
       <tr
-        v-for   = "(feature, index) in state.rows"
+        v-for   = "(feature, index) in rows"
         :key    = "feature.__gis3w_feature_uid"
         :id     = "feature.__gis3w_feature_uid"
         :index   = "index"
         :hidden = "isColHidden(index)"
       >
 
-        <td v-if = "!state.isrelation">
+        <td v-if = "!isrelation">
           <div style="display:flex;justify-content: space-between;">
 
             <!-- EDIT FEATURE -->
@@ -119,7 +119,7 @@ export default ({
           </div>
         </td>
 
-        <td v-if = "state.isrelation">
+        <td v-if = "isrelation">
           <input
             :id     = "'relation__' + index"
             @change = "linkFeature(index, $event)"
@@ -148,7 +148,7 @@ export default ({
 
   <div style="display: flex; margin: 1em 0;">
     <!-- TOTAL ELEMENTS -->
-    <span style = "margin-left: .5ch;">{{ state.rows.length }} {{ $t('entries') }}</span>
+    <span style = "margin-left: .5ch;">{{ rows.length }} {{ $t('entries') }}</span>
 
     <!-- PAGINATION BUTTONS -->
     <div style = "margin-left: auto;" >
@@ -168,7 +168,7 @@ export default ({
   <div style="width: 100%;display:flex;justify-content: center; gap: 10px;">
     <!-- SAVE CHANGES -->
     <button
-      v-t    = "state.isrelation ? 'plugins.editing.form.buttons.save_and_back' : 'plugins.editing.form.buttons.save'"
+      v-t    = "isrelation ? 'plugins.editing.form.buttons.save_and_back' : 'plugins.editing.form.buttons.save'"
       class  = "btn btn-success"
       style  = "font-weight: bold;"
       @click = "save"
@@ -192,9 +192,39 @@ export default ({
   },
 
   data() {
+    const {
+      inputs,
+      context,
+      isrelation,
+      promise
+    }              = this.$options;
+    const features = (inputs.layer.getEditor().readEditingFeatures() || []);
+    const headers  = (inputs.layer.state.editing.fields || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
+    const excluded = isrelation ? (context.excludeFields || []) : [];
     return {
-      show:      true,
-      state:     this.$options.service.state,
+      show: true,
+      inputs,
+      context,
+      isrelation,
+      promise,
+      headers, // column names
+      features,
+      rows: features.length > 0
+        // ordered properties
+        ? (
+          excluded.length > 0
+            ? features.filter(feat => !excluded.reduce((a, f, i) => a && context.fatherValue[i] === `${feat.get(f)}` , true))
+            : features
+        )
+          .map(f => headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
+            [header]: getFeatureTableFieldValue({ layerId: inputs.layer.getId(), feature: f, property: header }),
+            '__gis3w_feature_uid': f.getUid(), // private attribute unique value
+          }), {}))
+        // features already bind to parent feature
+        : features,
+      title:        `${inputs.layer.getName()}` || 'Link relation',
+      layerId:      inputs.layer.getId(),
+      workflow:     null,
       ordering:  [0, 'asc'],
       PAGELENGTHS,
       search: {
@@ -210,7 +240,7 @@ export default ({
      * @since 4.1.0
      */
     pages() {
-      return Math.ceil(this.state.rows.length / this.search.page_size);
+      return Math.ceil(this.rows.length / this.search.page_size);
     },
   },
 
@@ -226,17 +256,17 @@ export default ({
   methods: {
 
     showTool(type) {
-      return undefined !== this.state.capabilities.find(cap => cap === type);
+      return undefined !== this.inputs.layer.state.editing.capabilities.find(cap => cap === type);
     },
 
     showValue(key) {
-      return !!this.state.headers.find(h => key === h.name);
+      return !!this.headers.find(h => key === h.name);
     },
 
     isMediaField(name) {
       let isMedia = false;
-      for (let i = 0; i < this.state.headers.length; i++) {
-        const header = this.state.headers[i];
+      for (let i = 0; i < this.headers.length; i++) {
+        const header = this.headers[i];
         if (name === header.name && 'media' === header.input.type) {
           isMedia = true;
           break;
@@ -260,7 +290,7 @@ export default ({
 
     isColHidden(index) {
       if (this.search.search) {
-        return Object.keys(this.state.rows[index]).every(key => -1 === `${this.state.rows[index][key]}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
+        return Object.keys(this.rows[index]).every(key => -1 === `${this.rows[index][key]}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
       }
       const page      = Number(this.search.page);
       const page_size = Number(this.search.page_size);
@@ -271,24 +301,24 @@ export default ({
      * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
      */
     stop() {
-      this.state.promise.reject();
+      this.promise.reject();
     },
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
      */
     save() {
-      this.state.isrelation
+      this.isrelation
         // link features (by indexes)
-        ? this.state.promise.resolve({ features: (this._linkFeatures || []).map(i => this.state.features[i]) })
-        : this.state.promise.resolve();
+        ? this.promise.resolve({ features: (this._linkFeatures || []).map(i => this.features[i]) })
+        : this.promise.resolve();
     },
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
      */
     cancel() {
-      this.state.promise.reject();
+      this.promise.reject();
     },
 
     /**
@@ -299,7 +329,7 @@ export default ({
      * @returns {Promise<unknown>}
      */
     async deleteFeature(uid) {
-      const layer             = this.state.inputs.layer;
+      const layer             = this.inputs.layer;
       const layerId           = layer.getId();
       const childRelations    = layer.getChildren();
       const relationinediting = childRelations.length && getRelationsInEditing({
@@ -315,13 +345,11 @@ export default ({
               <div style="font-size:1.2em;">${ relationinediting ? _('plugins.editing.messages.delete_feature_relations') : ''}</div>`,
               (result) => {
                 if (result) {
-                  const index   = this.state.features.findIndex(f => f.getUid() === uid);
-                  const feature = this.state.features[index];
-                  const session = this.state.context.session;
-                  const layerId = this.state.inputs.layer.getId();
-                  this.state.inputs.layer.getEditor().getEditingSource().removeFeature(feature);
-                  session.pushDelete(layerId, feature);
-                  this.state.rows.splice(index, 1);
+                  const i       = this.features.findIndex(f => f.getUid() === uid);
+                  const feature = this.features[i];
+                  this.inputs.layer.getEditor().getEditingSource().removeFeature(feature);
+                  this.context.session.pushDelete(this.inputs.layer.getId(), feature);
+                  this.rows.splice(i, 1);
                   resolve()
                 } else {
                   reject()
@@ -346,81 +374,77 @@ export default ({
     * @returns {Promise<unknown>}
     */
     async copyFeature(uid) {
-      await (
-        new Promise(async (resolve, reject) => {
-          const feature = cloneFeature(
-            this.state.features.find(f => uid === f.getUid()),
-            getEditingLayer(this.state.inputs.layer)
-          );
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
-          this.state.workflow = new Workflow({
-            type: 'addtablefeature',
-            steps: [
-              new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
-              new OpenFormStep(),
-            ],
-          });
-          this.state.inputs.features.push(feature);
-          try {
-            const outputs = await this.state.workflow.start({
-              context: this.state.context,
-              inputs:  this.state.inputs
-            });
-            const feature    = outputs.features[outputs.features.length -1];
-            const newFeature = {};
-            Object.entries(this.state.rows[0]).forEach(([ key, _ ]) => {
-              newFeature[key] = getFeatureTableFieldValue({
-                layerId: this.state.layerId,
-                feature,
-                property: key
-              });
-            });
-            newFeature.__gis3w_feature_uid = feature.getUid();
-            this.state.rows.push(newFeature);
-            resolve(newFeature);
-          } catch(e) {
-            console.warn(e); reject(e);
-          } finally {
-            this.state.workflow.stop();
-            /** @TODO check input.features that grow in number */
-            console.log('here we are')
-          }
-        })
+      const feature = cloneFeature(
+        this.features.find(f => uid === f.getUid()),
+        getEditingLayer(this.inputs.layer)
       );
+
+      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
+      this.workflow = new Workflow({
+        type: 'addtablefeature',
+        steps: [
+          new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+          new OpenFormStep(),
+        ],
+      });
+
+      this.inputs.features.push(feature);
+
+      try {
+        const outputs = await this.workflow.start({
+          context: this.context,
+          inputs:  this.inputs
+        });
+        const feature    = outputs.features[outputs.features.length -1];
+        const newFeature = {};
+        Object.entries(this.rows[0]).forEach(([ key, _ ]) => {
+          newFeature[key] = getFeatureTableFieldValue({
+            layerId: this.layerId,
+            feature,
+            property: key
+          });
+        });
+        newFeature.__gis3w_feature_uid = feature.getUid();
+        this.rows.push(newFeature);
+      } catch(e) {
+        console.warn(e);
+      }
+
+      this.workflow.stop();
     },
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
      */
     async editFeature(uid) {
-      const index   = this.state.features.findIndex(f => uid === f.getUid());
-      const feature = this.state.features[index];
+      const index   = this.features.findIndex(f => uid === f.getUid());
+      const feature = this.features[index];
   
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
-      this.state.workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
+      this.workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
   
-      const inputs = this.state.inputs;
+      const inputs = this.inputs;
   
       inputs.features.push(feature);
 
       try {
-        const outputs = await this.state.workflow.start({ context: this.state.context, inputs });
+        const outputs = await this.workflow.start({ context: this.context, inputs });
         
         const feature = outputs.features[outputs.features.length -1];
         Object
-          .entries(this.state.rows[index])
+          .entries(this.rows[index])
           .forEach(([key, _]) => {
-            this.state.rows[index][key] = getFeatureTableFieldValue({
-              layerId: this.state.layerId,
+            this.rows[index][key] = getFeatureTableFieldValue({
+              layerId: this.layerId,
               feature,
               property: key
             });
           });
       } catch(e) {
         console.warn(e);
-      } finally {
-        this.state.workflow.stop()
       }
+
+      this.workflow.stop();
     },
 
     linkFeature(index, evt) {
@@ -445,9 +469,9 @@ export default ({
         this.search.page_size = opts.page_size;
       }
       if (undefined !== opts.ordering) {
-        const attr = this.state.headers[this.ordering[0]].name;
+        const attr = this.headers[this.ordering[0]].name;
         const dir  = ('asc' === this.ordering[1] ? 1 : -1);
-        this.state.rows.sort((a, b) => dir * `${a[attr]}`.localeCompare(`${b[attr]}`, undefined, { numeric: true }));
+        this.rows.sort((a, b) => dir * `${a[attr]}`.localeCompare(`${b[attr]}`, undefined, { numeric: true }));
       }
       if (undefined !== opts.search) {
         this.search.search = opts.search;
@@ -461,26 +485,14 @@ export default ({
     this.globalSearch = debounce(e => {
       this.reload({ search: e.target.value });
     });
-
-    GUI.disableSideBar(true);
-
-    GUI.showUserMessage({
-      type:      'loading',
-      message:   'plugins.editing.messages.loading_table_data',
-      autoclose: false,
-      closable:  false
-    });
   },
 
   async mounted() {
-
     await this.$nextTick();
 
-    if (this.state.isrelation) {
+    if (this.isrelation) {
       this._linkFeatures = [];
     }
-
-    setTimeout( () => GUI.closeUserMessage(), 300);
   },
 
   beforeDestroy() {

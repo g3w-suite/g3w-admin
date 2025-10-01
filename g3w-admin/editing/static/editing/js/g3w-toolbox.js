@@ -33,7 +33,6 @@ import { isPkField }                                    from './utils/isPkField.
 import { getCatalogLayerById }                          from './utils/getCatalogLayerById.js';
 import { getCatalogLayers }                             from './utils/getCatalogLayers.js';
 import { getEditingLayer }                              from './utils/getEditingLayer.js';
-import { getEditingFields }                             from './utils/getEditingFields.js';
 
 import { OpenFormStep }                                 from './actions/open-form.js';
 import { SelectElementsStep }                           from './actions/select-elements.js';
@@ -229,7 +228,7 @@ export class ToolBox extends Emitter {
       .filter(relation => 'ONE' === relation.getType() && layer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
       .forEach(relation => {
         const isChildEditable = undefined !== getCatalogLayerById(relation.getChild());        // check if child layerId is editable (in editing)
-        getEditingFields(getCatalogLayerById(relation.getFather()))
+        (getCatalogLayerById(relation.getFather()).state.editing.fields || [])
           .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())  // father layer fields (in editing)
           .forEach(f => { f.editable = (f.editable && isChildEditable); });      // current editable boolean value + child editable layer
       });
@@ -412,7 +411,8 @@ export class ToolBox extends Emitter {
                     layerId,
                     relations: inputs.layer.getRelations() ? inputs.layer.getRelations().getArray() : []
                   }).filter(
-                    relation => getEditingFields(getEditingLayerById(getRelationId({ layerId, relation }))) //get editing field of relation layer
+                    relation => 
+                      (getEditingLayerById(getRelationId({ layerId, relation })).state.editing.fields || []) //get editing field of relation layer
                       .filter(f => getRelationFieldsFromRelation({ relation, layerId: getRelationId({ layerId, relation }) }).ownField.includes(f.name)) //filter only relation fields
                       .every(f => !f.validate.required) // check required
                   );
@@ -809,7 +809,7 @@ export class ToolBox extends Emitter {
           }),
         },
          // @since v4.0.0 Rotate Feature. Check, in case of Point geometry, if layer has rotation input field
-         (is_line || is_poly || is_point && getEditingFields(layer).find(f => 'rotation' === f.name )) && capabilities.includes('change_feature') && {
+         (is_line || is_poly || is_point && (layer.state.editing.fields || []).find(f => 'rotation' === f.name )) && capabilities.includes('change_feature') && {
           id:           'rotatefeature',
           type:         ['change_feature'],
           name:         'editing.tools.rotate_feature',
@@ -906,7 +906,7 @@ export class ToolBox extends Emitter {
                         const geometryType     = originalLayer.getGeometryType();
                         const layerId          = originalLayer.getId();
                         //get attributes/properties from current layer in editing
-                        const attributes       = getEditingFields(originalLayer).filter(a => !a.pk);
+                        const attributes       = (originalLayer.state.editing.fields || []).filter(a => !a.pk);
                         const session          = context.session;
                         const editingLayer     = getEditingLayer(originalLayer);
                         const source           = editingLayer.getSource();
@@ -1705,7 +1705,7 @@ export class ToolBox extends Emitter {
     if (filter) {
       // in case of no features filter request check if no features_filed is present otherwise it get first field
       if (filter.nofeatures) {
-        filter.nofeatures_field = filter.nofeatures_field || getEditingFields(this.state.layer)[0].name;
+        filter.nofeatures_field = filter.nofeatures_field || (this.state.layer.state.editing.fields || [])[0].name;
       }
       this.state._getFeaturesOption = {
         filter,
@@ -3701,7 +3701,7 @@ export class ToolBox extends Emitter {
 
     const layer = this.getLayer();
 
-    getEditingFields(layer)
+    (layer.state.editing.fields || [])
       .filter(field => field.input && 'select_autocomplete' === field.input.type && !field.input.options.filter_expression && !field.input.options.usecompleter)
       /** @TODO need to avoid to call the same fnc to same event many times to avoid waste server request time */
       .forEach(async field => {
