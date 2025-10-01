@@ -71,8 +71,8 @@ export default ({
     <tbody>
       <tr
         v-for   = "(feature, index) in rows"
-        :key    = "feature.__gis3w_feature_uid"
-        :id     = "feature.__gis3w_feature_uid"
+        :key    = "feature.__g3w_uid"
+        :id     = "feature.__g3w_uid"
         :index   = "index"
         :hidden = "isColHidden(index)"
       >
@@ -88,7 +88,7 @@ export default ({
                 class            = "g3w-icon"
                 style            = "color:#30cce7;margin: 5px;"
                 aria-hidden      = "true"
-                @click.stop      = "editFeature(feature.__gis3w_feature_uid)"
+                @click.stop      = "editFeature(feature.__g3w_uid)"
               ></i>
             </span>
 
@@ -100,7 +100,7 @@ export default ({
                 class            = "g3w-icon"
                 style            = "color:#d98b14;margin: 5px;padding: 5px 7px 5px 7px;"
                 aria-hidden      = "true"
-                @click.stop      = "copyFeature(feature.__gis3w_feature_uid)"
+                @click.stop      = "copyFeature(feature.__g3w_uid)"
               ></i>
             </span>
 
@@ -112,7 +112,7 @@ export default ({
                 class            = "g3w-icon"
                 style            = "color:red;margin: 5px;"
                 aria-hidden      = "true"
-                @click.stop      = "deleteFeature(feature.__gis3w_feature_uid)"
+                @click.stop      = "deleteFeature(feature.__g3w_uid)"
               ></i>
             </span>
 
@@ -218,7 +218,7 @@ export default ({
         )
           .map(f => headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
             [header]: getFeatureTableFieldValue({ layerId: inputs.layer.getId(), feature: f, property: header }),
-            '__gis3w_feature_uid': f.getUid(), // private attribute unique value
+            '__g3w_uid': f.getUid(), // private attribute unique value
           }), {}))
         // features already bind to parent feature
         : features,
@@ -404,7 +404,7 @@ export default ({
             property: key
           });
         });
-        newFeature.__gis3w_feature_uid = feature.getUid();
+        newFeature.__g3w_uid = feature.getUid();
         this.rows.push(newFeature);
       } catch(e) {
         console.warn(e);
