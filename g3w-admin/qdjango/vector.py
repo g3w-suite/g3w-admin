@@ -1174,6 +1174,25 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self._set_filename_cookie(response, filename)
 
         return response
+    
+    def response_pdf_mode(self, request):
+        """
+        NOT IMPLEMENTED YET, WORK IN PROGRESS
+
+        Download pdf of data
+        :param request: Http Django request object
+        :return: http response with attached file
+        """
+
+        if not self.layer.download_pdf:
+            return HttpResponseForbidden()
+
+        # TODO implement pdf download with relations
+
+        # dummy response
+        response = HttpResponse()
+
+        return response
 
     def response_gpkg_mode(self, request):
         """
