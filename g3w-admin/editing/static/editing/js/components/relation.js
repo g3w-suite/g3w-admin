@@ -23,7 +23,6 @@ import { isPkField }                        from '../utils/isPkField.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 import { PickFeaturesInteraction }          from '../actions/pick-feature.js';
 import { OpenFormStep }                     from '../actions/open-form.js';
-import { OpenTableStep }                    from '../actions/open-table.js';
 import { AddFeatureStep }                   from '../actions/add-feature.js';
 import { ModifyGeometryVertexStep }         from '../actions/move-vertex.js';
 import { MoveFeatureStep }                  from '../actions/move-feature.js';
@@ -35,7 +34,7 @@ const _                                     = g3wsdk.core.i18n.t;
 const { toRawType }                         = g3wsdk.core.utils;
 const { GUI }                               = g3wsdk.gui;
 const { FormService }                       = g3wsdk.gui.vue.services;
-const { Mixins }                            = g3wsdk.gui.vue;
+const { Component, Mixins }                 = g3wsdk.gui.vue;
 const {
   PickFeatureInteraction,
   PickCoordinatesInteraction
@@ -326,7 +325,7 @@ export default ({
         copyFeatureLayers:  [],
         active:             false,
         value:              null,
-        placeholdersearch:  `${t('editing.search')} ...`,
+        placeholdersearch:  `${_('editing.search')} ...`,
         resourcesurl:       GUI.getResourcesUrl(),
       };
     },
@@ -1415,13 +1414,40 @@ export default ({
       this._add_link_workflow = ({
         table: {
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittableworkflow.js@v3.7.1 */
+          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
           link(options = {}) {
             return new Workflow({
               ...options,
               type:            'edittable',
               backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
-              steps:           [ new OpenTableStep() ],
+              steps:           [
+                new Step({
+                  help: "editing.steps.help.edit_table",
+                  run(inputs, context) {
+                    return new Promise(async (resolve, reject) => {
+                      GUI.setContent({
+                        content: new Component({
+                          title:             `${inputs.layer.getName()}`,
+                          push:              true,
+                          internalComponent: new (Vue.extend((await import('../components/table.js')).default))({
+                            inputs,
+                            context,
+                            promise:    { resolve, reject },
+                            isrelation: true,
+                          }),
+                        }),
+                        perc:       isMobile.any ? 100 : undefined,
+                        push:       true,
+                        showgoback: false,
+                        closable:   false,
+                      });
+                    })
+                  },
+                  stop() {
+                    GUI.popContent();
+                  }
+                })
+              ],
             });
           },
 

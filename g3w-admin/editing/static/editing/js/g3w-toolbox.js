@@ -41,7 +41,6 @@ import { AddFeatureStep }                               from './actions/add-feat
 import { MoveFeatureStep }                              from './actions/move-feature.js';
 import { RotateFeatureStep }                            from './actions/rotate-feature.js';
 import { ModifyGeometryVertexStep }                     from './actions/move-vertex.js';
-import { OpenTableStep }                                from './actions/open-table.js';
 
 const { Emitter, Layer }                                 = g3w;
 const { GEOMETRY_TYPES }                                 = g3wsdk.constant;
@@ -52,6 +51,7 @@ const { removeZValueToOLFeatureGeometry }                = g3wsdk.core.geoutils.
 const _                                                  = g3wsdk.core.i18n.t;
 const { XHR, debounce, toRawType, cloneDeep }            = g3wsdk.core.utils;
 const { GUI }                                            = g3wsdk.gui;
+const { Component }                                      = g3wsdk.gui.vue;
 const { getScaleFromResolution, getResolutionFromScale } = g3wsdk.ol.utils;
 
 const is_defined = d => undefined !== d;
@@ -1575,13 +1575,44 @@ export class ToolBox extends Emitter {
           type: ['delete_feature', 'change_attr_feature'],
           name: "editing.tools.update_feature",
           icon: "mActionEditTable.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittableworkflow.js@v3.7.1 */
+          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
           op: new Workflow({
             layer,
             type:            'edittable',
             backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
             runOnce:          true,
-            steps:            [ new OpenTableStep() ],
+            steps:            [
+              new Step({
+                help: "editing.steps.help.edit_table",
+                run(inputs, context) {
+                  return new Promise(async (resolve, reject) => {
+                    GUI.getPlugin('editing').setCurrentLayout();
+                    GUI.disableSideBar(true);
+                    GUI.setContent({
+                      content: new Component({
+                        title:             `${inputs.layer.getName()}`,
+                        push:              false,
+                        internalComponent: new (Vue.extend((await import('../components/table.js')).default))({
+                          inputs,
+                          context,
+                          promise:    { resolve, reject },
+                          isrelation: false,
+                        }),
+                      }),
+                      perc:       isMobile.any ? 100 : undefined,
+                      push:       false,
+                      showgoback: false,
+                      closable:   false,
+                    });
+                  })
+                },
+                stop() {
+                  GUI.disableSidebar(false);
+                  GUI.closeContent();
+                  GUI.getPlugin('editing').resetCurrentLayout();
+                }
+              })
+            ],
           }),
         },
       ].filter(Boolean).map(tool => Object.assign(new Emitter, tool)),
