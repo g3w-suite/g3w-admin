@@ -24,14 +24,8 @@ export default ({
   template: /*html*/`
 <div class = "g3w-editing-table">
 
-  <!-- TABLE HEADER -->
+  <!-- TABLE NAME -->
   <h3 style = "margin-top:0;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ title }}</h3>
-
-  <div
-    v-if  = "isrelation"
-    style = "margin-bottom: 10px;font-size: 1.3em;background-color: #f5f5f5;padding: 3px;border-radius: 3px;font-weight: bold;"
-    v-t   = "'plugins.editing.relation.table.info'"
-  ></div>
 
   <div style="display: flex;">
     <!-- PAGE SIZE -->
@@ -166,20 +160,11 @@ export default ({
   </div>
 
   <div style="width: 100%;display:flex;justify-content: center; gap: 10px;">
-    <!-- SAVE CHANGES -->
     <button
-      v-t    = "isrelation ? 'plugins.editing.form.buttons.save_and_back' : 'plugins.editing.form.buttons.save'"
-      class  = "btn btn-success"
+      v-t    = "'back'"
+      class  = "btn skin-button"
       style  = "font-weight: bold;"
-      @click = "save"
-    ></button>
-
-    <!-- DISCARD CHANGES -->
-    <button
-      v-t    = "'plugins.editing.form.buttons.cancel'"
-      class  = "btn btn-danger"
-      style  = "font-weight: bold;"
-      @click = "discard"
+      @click = "back"
     ></button>
   </div>
 
@@ -222,9 +207,10 @@ export default ({
           }), {}))
         // features already bind to parent feature
         : features,
-      title:        `${inputs.layer.getName()}` || 'Link relation',
-      layerId:      inputs.layer.getId(),
-      workflow:     null,
+      title:     `${inputs.layer.getName()}` || 'Link relation',
+      layerId:   inputs.layer.getId(),
+      workflow:  null,
+      linked:    [],
       ordering:  [0, 'asc'],
       PAGELENGTHS,
       search: {
@@ -290,14 +276,20 @@ export default ({
       return !(index >= ((page-1) * page_size) && index < (page * page_size));
     },
 
-    save() {
-      this.isrelation
-        ? this.promise.resolve({ features: (this._linkFeatures || []).map(i => this.features[i]) })
-        : this.promise.resolve();
-    },
-
-    discard() {
-      this.promise.reject();
+    back() {
+      if (this.isrelation && !this.linked.length) {
+        this.promise.reject();
+      } else {
+        GUI.dialog.confirm(
+          _('plugins.editing.messages.link_relations'),
+          ok => {
+            if (ok) {
+              this.promise.resolve(this.isrelation ? { features: this.linked.map(i => this.features[i]) } : undefined);
+            } else {
+              this.promise.reject();
+            }
+        });
+      }
     },
 
     /**
@@ -391,9 +383,9 @@ export default ({
      */
     linkFeature(index, evt) {
       if (evt.target.checked) {
-        this._linkFeatures.push(index);
+        this.linked.push(index);
       } else {
-        this._linkFeatures = this._linkFeatures.filter(addindex => addindex !== index);
+        this.linked = this.linked.filter(addindex => addindex !== index);
       }
     },
 
@@ -432,17 +424,8 @@ export default ({
     });
   },
 
-  async mounted() {
-    await this.$nextTick();
-
-    if (this.isrelation) {
-      this._linkFeatures = [];
-    }
-  },
-
   beforeDestroy() {
-    this.discard();
-    this._linkFeatures = null;
+    this.promise.reject();
   },
 
 });

@@ -103,6 +103,7 @@ export default {
     delete_feature: "Do you want delete selected feature ?",
     delete_feature_relations: "If feature has bindings relations, these relations become orphans. We suggest to handle these relations before detele this feature",
     unlink_relation: "Do you want unlink relation?",
+    link_relations: "Do you want link these relations?",
     commit_feature: "Summary of changes",
     toolbox_has_no_geometry: "this layer has no geometry",
     toolbox_has_relation: "this layer is part of a relation",
