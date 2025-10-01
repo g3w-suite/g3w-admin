@@ -1059,7 +1059,7 @@ export default ({
         let linked = false;
 
         try {
-          const outputs = await response.promise || workflow.start(options);
+          const outputs = await (response.promise || workflow.start(options));
           // loop on features selected
           (outputs.features || []).forEach(relation => {
             if (undefined === this.relations.find(rel => rel.id === relation.getId())) {
