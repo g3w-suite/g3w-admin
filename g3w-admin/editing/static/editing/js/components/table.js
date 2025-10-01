@@ -236,9 +236,6 @@ export default ({
   },
 
   computed: {
-    /**
-     * @since 4.1.0
-     */
     pages() {
       return Math.ceil(this.rows.length / this.search.page_size);
     },
@@ -293,28 +290,18 @@ export default ({
       return !(index >= ((page-1) * page_size) && index < (page * page_size));
     },
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
-     */
     save() {
       this.isrelation
         ? this.promise.resolve({ features: (this._linkFeatures || []).map(i => this.features[i]) })
         : this.promise.resolve();
     },
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
-     */
     discard() {
       this.promise.reject();
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
-     * 
      * @param uid feature uid
-     * 
-     * @returns {Promise<unknown>}
      */
     async deleteFeature(uid) {
       const has_child_relation = this.inputs.layer.getChildren().length && getRelationsInEditing({
@@ -336,14 +323,8 @@ export default ({
     },
 
     /**
-    * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
-    * 
-    * Copy feature tool from another table feature
-    * 
-    * @param uid
-    * 
-    * @returns {Promise<unknown>}
-    */
+     * @param uid feature uid
+     */
     async copyFeature(uid) {
       const feature = cloneFeature(
         this.features.find(f => uid === f.getUid()),
@@ -378,7 +359,7 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/tableservice.js@v3.7.8
+     * @param uid feature uid
      */
     async editFeature(uid) {
       const index   = this.features.findIndex(f => uid === f.getUid());
