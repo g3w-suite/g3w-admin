@@ -138,12 +138,22 @@ export async function evaluateExpressionFields({
                       })
                     }
 
+                    // see: https://github.com/g3w-suite/g3w-client/pull/856
+                    if (parentData && null !== field.value) {
+                      field.value = values.find(({ key }) => key == field.value)?.value ?? field.value;
+                    }
+
                     // see: https://github.com/g3w-suite/g3w-client/pull/843
                     if (field.value && !values.find(({ value }) => value == field.value)) {
                       values.unshift({ key: `(${field.value})`, value: field.value, });
                     }
 
                     field.input.options.values = values;
+
+                    // see: https://github.com/g3w-suite/g3w-client/pull/856
+                    if (parentData) {
+                      ApplicationState.project.getLayerById(qgs_layer_id).config.editing.fields.find(f => f.name === field.name ).input.options.values = values;
+                    }
                   }
                 } catch(e) {
                   throw e;
