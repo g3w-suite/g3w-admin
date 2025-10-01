@@ -108,7 +108,7 @@ sitetrees = (
 
     # BULGARIAN
     G3Wtree(
-        'filemanager_sidebar_right',
+        'filemanager_sidebar_right_bg',
         title='STRESS навигационна лента',
         module='filemanager',
         items=[
