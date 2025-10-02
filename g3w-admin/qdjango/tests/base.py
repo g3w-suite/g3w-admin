@@ -85,6 +85,7 @@ class QdjangoTestBase(TestCase):
         self.project.title = 'A project'
         self.project.group = self.project_group
         self.project.save()
+        qgis_project_file.close()
 
         # Make a fake vector postgis layer
         # ===================================
@@ -144,6 +145,7 @@ class QdjangoTestBase(TestCase):
         self.project310.title = 'A project QGIS 3.10'
         self.project310.group = self.project_group
         self.project310.save()
+        qgis_project_file.close()
 
 
 
