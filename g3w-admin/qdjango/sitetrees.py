@@ -165,7 +165,7 @@ sitetrees = (
 
      # BULGARIAN
      G3Wtree(
-          'qdjango',
+          'qdjango_bg',
           title='Qdjango',
           module='qdjango',
           items=[
