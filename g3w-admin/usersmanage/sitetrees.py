@@ -284,7 +284,7 @@ sitetrees = (
 
      # BULGARIAN
      G3Wtree(
-          'acl',
+          'acl_bg',
           title='Управление на достъп',
           module='usermanage',
           items=[
