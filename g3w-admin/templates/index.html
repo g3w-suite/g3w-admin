@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load  guardian_tags %}
 
 {% block page_header %}
 <h1>
@@ -27,6 +28,58 @@
         </div>
     </div>
 </div>
+{% if projects_bookmarked|length > 0 %}
+<div class="row">
+    <div class="col-md-12"><h3>{% trans 'Projects bookmarked' %}</h3></div>
+    {% for prj in projects_bookmarked %}
+        {% get_obj_perms user for prj.project as "userObj_perms" %}
+        <div class="col-md-3 col-sm-6 col-xs-12" id="prj-book-{{ prj.project.pk }}">
+          <div class="info-box">
+            <span class="info-box-icon bg-aqua">
+                <a href="{% url 'group-project-map' prj.project.group.slug 'qdjango' prj.project.pk %}" class="project-thumb" title="{% trans 'Show map' %}" target="_blank">
+                {% if prj.project.thumbnail  %}
+                <img style="height:90px;" class="img-responsive" src="{{ MEDIA_URL }}{{ prj.project.thumbnail }}" />
+                {% else %}
+                <img style="height:90px;" class="img-responsive" src="{{ SETTINGS.PLACEHOLD_SERVICE }}90x90?text=MAP" />
+                {% endif %}
+                </a>
+            </span>
+
+            <div class="info-box-content">
+              <span class="info-box-text"><h4>{{prj.project.title}}</h4></span>
+              {% if "view_project" in userObj_perms %}
+            <span class="col-xs-2 icon">
+                <a class="color-orange" href="{% url 'group-project-map' prj.project.group.slug 'qdjango' prj.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
+            </span>
+            {% endif %}
+            {% if "change_project" in userObj_perms %}
+            <span class="col-xs-2 icon">
+                <a href="{% url 'qdjango-project-layers-list' prj.project.group.slug prj.project.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i></a>
+            </span>
+            {% endif %}
+            {% if "change_project" in userObj_perms %}
+            <span class="col-xs-2 icon">
+                <a href="{% url 'qdjango-project-update' prj.project.group.slug prj.project.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+            </span>
+            {% endif %}
+            <span  class="bookmark-toggle col-xs-2 icon" 
+                    style="cursor:pointer; color:red;" 
+                    data-widget-type="setProjectBookmark"
+                    data-ajax-url="{% url 'qdjango-api-bookmark-project' %}" 
+                    data-prj-id="{{ prj.project.pk }}"
+                    data-remove-selector="prj-book-{{ prj.project.pk }}"
+                    data-bookmarked="1"
+                    title="{% trans 'Remove bookmark' %}">
+                <i class="fa fa-bookmark"></i>
+            </span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% if widgets  %}
 <div class="row">
     <div class="col-md-12"><h3>{% trans 'Module widgets' %}</h3></div>

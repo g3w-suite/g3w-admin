@@ -37,7 +37,8 @@ from qdjango.models import (
     LayerAcl,
     GeoConstraint,
     SingleLayerConstraint,
-    ColumnAcl
+    ColumnAcl, 
+    ProjectBookmark
 )
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -79,6 +80,9 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         # Get inactive projects
         context['inactive_project_list'] = get_objects_for_user(self.request.user, 'qdjango.view_project', Project) \
             .filter(group=self.group, is_active=0).order_by('order')
+        
+        # Get project bookmarked per user
+        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user, project__in=self.get_queryset()).values_list('project_id', flat=True)
 
         return context
 
