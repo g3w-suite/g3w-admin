@@ -324,7 +324,7 @@ export class IframeEditor extends Emitter {
    * @since 4.0.3
    */
   async #unlockLayer(layerId) {
-    return await fetch(`${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}${ApplicationState.project.getId()}/${layerId}/`);
+    return await fetch(`${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${layerId}/`);
   }
   /**
    * 
