@@ -47,4 +47,3 @@ django-elasticsearch-dsl==8.0
 natsort==8.4.0
 python-slugify[unidecode]==8.0.4
 django-cors-headers==4.9.0
-django-csp==4.0
