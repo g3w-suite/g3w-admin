@@ -466,6 +466,7 @@ export class IframeEditor extends Emitter {
       if (layer) {
         geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getSource().getFeatures()[0]);
         layer.getSource().clear();
+        this.#interactions.forEach(i => GUI.getMap().removeInteraction(i));
       }
       GUI.disableClickMapControls(false);
     }
