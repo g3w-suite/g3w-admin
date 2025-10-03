@@ -375,7 +375,7 @@ export class IframeEditor extends Emitter {
               "update": [],
               "delete": [],
               "relations": {},
-              lockids,
+              lockids: lock.ids,
               ...{ [method]: [ geojson ] }
             }),
           })
