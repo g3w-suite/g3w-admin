@@ -383,7 +383,7 @@ export class IframeEditor extends Emitter {
         result: commit.result,
         ...(
           commit.result
-          ? { fid: commit?.response?.new[0]?.id, geojson  }
+          ? { fid: commit?.response?.new?.at(0)?.id, geojson  }
           : { error: 'No feature ' + method }
         )
       };
