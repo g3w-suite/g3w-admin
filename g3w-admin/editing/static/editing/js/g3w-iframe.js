@@ -409,15 +409,8 @@ export class IframeEditor extends Emitter {
     if (!geojson) {
       return;
     }
-    const fid         = ((new ol.format.GeoJSON()).readFeature(geojson)).getId();
-    const { lockids } = await this.#lockFeature(qgs_layer_id, fid);
-    if (!lockids.length) {
-      return Promise.reject({
-        result: false,
-        error: 'No feature update'
-      })
-    }
-    const { result } = await this.#commitFeature({ qgs_layer_id, geojson, action: 'update', lockids });
+    const { lockids } = await this.#lockFeature(qgs_layer_id, ((new ol.format.GeoJSON()).readFeature(geojson)).getId());
+    const { result }  = lockids.length ? await this.#commitFeature({ qgs_layer_id, geojson, action: 'update', lockids }) : { result: false };
     await this.#unlockLayer(qgs_layer_id);
     GUI.refreshMap();
     return {
