@@ -355,10 +355,10 @@ export class IframeEditor extends Emitter {
             ids:     lock?.featurelocks,
             feature: lock?.vector?.data && (new ol.format.GeoJSON()).readFeatures(lock.vector.data)[0]
           };
-          if (lock.feature) {
-            //Take in account possible properties passed by geojson that can be different from actual stored feature on db 
-            Object.entries(geojson?.properties ?? {}).forEach(([key, v]) => feature.set(key, v));
-          }
+        }
+        // Take in account possible properties passed by geojson that can be different from actual stored feature on db 
+        if (lock.feature) {
+          Object.entries(geojson?.properties ?? {}).forEach(([key, v]) => lock.feature.set(key, v));
         }
       } catch(e) {
         console.warn(e);
