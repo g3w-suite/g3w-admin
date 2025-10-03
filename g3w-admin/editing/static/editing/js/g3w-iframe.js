@@ -372,166 +372,156 @@ export class IframeEditor extends Emitter {
   }
 
   /**
-   * Add new feature
+   * Remote layer editing (no UX)
    * 
-   * @param {*} qgs_layer_id 
-   * @param {*} geojson 
+   * @param {'add' | 'update' | 'delete' | 'draw' | 'save' } method - action to be performed
+   * @param { string } qgs_layer_id                                 - layer id
+   * @param {*} geojson                                             - spatial data 
    * @returns
    * 
    * @since 4.0.3
    */
-  async 'editing:add_json'({ qgs_layer_id, geojson }) {
-    if (!geojson) {
-      return;
-    }
-    const { result, response } = await this.#commitFeature({ qgs_layer_id,  action: 'add', geojson });
-    GUI.refreshMap();
-    return {
-      result,
-      ...(
-        result
-        ? { fid: response?.new[0]?.id  }
-        : { error: 'No feature add' }
-      )
-    };
-  }
+  async 'editing:json'({ qgs_layer_id, geojson, method }) {
 
-  /**
-   * Update Feature
-   * 
-   * @param {*} qgs_layer_id 
-   * @param {*} geojson 
-   * @returns 
-   * 
-   * @since 4.0.3
-   */
-  async 'editing:update_json'({ qgs_layer_id, geojson = {} }) {
-    if (!geojson) {
-      return;
-    }
-    const { lockids } = await this.#lockFeature(qgs_layer_id, ((new ol.format.GeoJSON()).readFeature(geojson)).getId());
-    const { result }  = lockids.length ? await this.#commitFeature({ qgs_layer_id, geojson, action: 'update', lockids }) : { result: false };
-    await this.#unlockLayer(qgs_layer_id);
-    GUI.refreshMap();
-    return {
-      result,
-      ...(
-        result
-        ? { geojson }
-        : { error: 'No feature update' }
-      )
-    };
-
-  }
-  /**
-   * Delete feature
-   * 
-   * @param {*} qgs_layer_id 
-   * @param {*} geojson 
-   * @returns 
-   * 
-   * @since 4.0.3
-   */
-  async 'editing:delete_json'({ qgs_layer_id, geojson = {} }) {
-    if (!geojson) {
-      return;
-    }
-    const fid         = ((new ol.format.GeoJSON()).readFeature(geojson)).getId();
-    const { lockids } = await this.#lockFeature(qgs_layer_id, fid);
-    const { result }  = await this.#commitFeature({ qgs_layer_id, action: 'delete', geojson: fid, lockids })
-    GUI.refreshMap();
-    await this.#unlockLayer(qgs_layer_id);
-    return {
-      result,
-      ...(
-        result ?
-        { geojson }
-        : { error: 'No feature delete' }
-      )
-    };
-  }
-
-  /**
-   * @param {*} qgs_layer_id 
-   * 
-   * @since 4.0.3
-   */
-  async 'editing:save_json'({ qgs_layer_id }) {
-    const layer = GUI.getMap().getLayers().getArray().find(l => qgs_layer_id === l.get('id'));
-    let geojson;
-    if (layer) {
-      geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getSource().getFeatures()[0]);
-      layer.getSource().clear();
+    // add a new feature
+    if ('add' === method) {
+      if (!geojson) {
+        return;
+      }
+      const { result, response } = await this.#commitFeature({ qgs_layer_id,  action: 'add', geojson });
       GUI.refreshMap();
-    }
-    GUI.disableClickMapControls(false);
-    return {
-      result: true,
-      geojson
-    };
-  }
-
-  /**
-   * Draw/modify feature geometry
-   * 
-   * @since 4.0.3
-   */
-  async 'editing:draw_json'({ qgs_layer_id, geojson }) {
-    let feature = null;
-    const layer = GUI.getMap().getLayers().getArray().find(l =>  qgs_layer_id === l.get('id')); // get editing layer
-    GUI.disableClickMapControls(true);
-
-    let geom  = g3wsdk.core.catalog.CatalogLayersStoresRegistry.getLayerById(qgs_layer_id).getGeometryType();
-    // get open layers geometry
-    if (geom.startsWith('Line'))              { geom = 'LineString'; }
-    else if (geom.startsWith('MultiLine'))    { geom = 'MultiLineString'; }
-    else if (geom.startsWith('Point'))        { geom = 'Point'; }
-    else if (geom.startsWith('MultiPoint'))   { geom = 'MultiPoint'; }
-    else if (geom.startsWith('Polygon'))      { geom = 'Polygon'; }
-    else if (geom.startsWith('MultiPolygon')) { geom = 'MultiPolygon'; }
-    else                                      { console.warn('invalid geometry type: ', geom); }
-
-    // change existing feature
-    if (geojson) {
-      feature = (await this.#lockFeature(
-        qgs_layer_id,
-        (new ol.format.GeoJSON()).readFeature(geojson).getId())
-      )?.feature;
+      return {
+        result,
+        ...(
+          result
+          ? { fid: response?.new[0]?.id  }
+          : { error: 'No feature add' }
+        )
+      };
     }
 
-    // add stored feature (update)
-    if (feature) {
-      layer.getSource().addFeature(feature); 
+    // update an existing feature
+    if ('update' === method) {
+      if (!geojson) {
+        return;
+      }
+      const { lockids } = await this.#lockFeature(qgs_layer_id, ((new ol.format.GeoJSON()).readFeature(geojson)).getId());
+      const { result }  = lockids.length ? await this.#commitFeature({ qgs_layer_id, geojson, action: 'update', lockids }) : { result: false };
+      await this.#unlockLayer(qgs_layer_id);
+      GUI.refreshMap();
+      return {
+        result,
+        ...(
+          result
+          ? { geojson }
+          : { error: 'No feature update' }
+        )
+      };
     }
-    
-    // add new feature (draw)
-    if (!feature){ 
-      const draw = new ol.interaction.Draw({ type: geom, source: layer.getSource() });
-      GUI.getMap().addInteraction(draw);
-      draw.on('drawstart', () => layer.getSource().clear());
-      draw.on('drawend',   e => {
-        e.feature.setId(`__new__${Date.now()}`);
+
+    // delete a feature
+    if ('delete' === method) {
+      if (!geojson) {
+        return;
+      }
+      const fid         = ((new ol.format.GeoJSON()).readFeature(geojson)).getId();
+      const { lockids } = await this.#lockFeature(qgs_layer_id, fid);
+      const { result }  = await this.#commitFeature({ qgs_layer_id, action: 'delete', geojson: fid, lockids })
+      GUI.refreshMap();
+      await this.#unlockLayer(qgs_layer_id);
+      return {
+        result,
+        ...(
+          result ?
+          { geojson }
+          : { error: 'No feature delete' }
+        )
+      };
+    }
+
+    // Draw/modify geometry
+    if ('draw' === method) {
+      let feature = null;
+      const layer = GUI.getMap().getLayers().getArray().find(l =>  qgs_layer_id === l.get('id')); // get editing layer
+      GUI.disableClickMapControls(true);
+
+      let geom  = g3wsdk.core.catalog.CatalogLayersStoresRegistry.getLayerById(qgs_layer_id).getGeometryType();
+      // get open layers geometry
+      if (geom.startsWith('Line'))              { geom = 'LineString'; }
+      else if (geom.startsWith('MultiLine'))    { geom = 'MultiLineString'; }
+      else if (geom.startsWith('Point'))        { geom = 'Point'; }
+      else if (geom.startsWith('MultiPoint'))   { geom = 'MultiPoint'; }
+      else if (geom.startsWith('Polygon'))      { geom = 'Polygon'; }
+      else if (geom.startsWith('MultiPolygon')) { geom = 'MultiPolygon'; }
+      else                                      { console.warn('invalid geometry type: ', geom); }
+
+      // change existing feature
+      if (geojson) {
+        feature = (await this.#lockFeature(
+          qgs_layer_id,
+          (new ol.format.GeoJSON()).readFeature(geojson).getId())
+        )?.feature;
+      }
+
+      // add stored feature (update)
+      if (feature) {
+        layer.getSource().addFeature(feature); 
+      }
+      
+      // add new feature (draw)
+      if (!feature){ 
+        const draw = new ol.interaction.Draw({ type: geom, source: layer.getSource() });
+        GUI.getMap().addInteraction(draw);
+        draw.on('drawstart', () => layer.getSource().clear());
+        draw.on('drawend',   e => {
+          e.feature.setId(`__new__${Date.now()}`);
+          window.parent.postMessage({
+            action: 'editing:json',
+            response : {
+              result: true,
+              method,
+              geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.feature)
+            } 
+          })
+        })
+      }
+
+      // modify
+      const modify = new ol.interaction.Modify({ source: layer.getSource() });
+      GUI.getMap().addInteraction(modify);
+      modify.on('modifyend', (e) => {
         window.parent.postMessage({
-          action: 'editing:draw_json',
-          response : { result: true, geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.feature) } 
+          action: 'editing:json',
+          response: {
+            result: true,
+            method,
+            geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.features.item(0))
+          } 
         })
       })
+
+      // snap
+      const snapInteraction = new ol.interaction.Snap({ source: layer.getSource() });
+      GUI.getMap().addInteraction(snapInteraction);
+      return { result: true }
     }
 
-    // modify
-    const modify = new ol.interaction.Modify({ source: layer.getSource() });
-    GUI.getMap().addInteraction(modify);
-    modify.on('modifyend', (e) => {
-      window.parent.postMessage({
-        action: 'editing:draw_json',
-        response: { result: true,  geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.features.item(0)) } 
-      })
-    })
-
-    // snap
-    const snapInteraction = new ol.interaction.Snap({ source: layer.getSource() });
-    GUI.getMap().addInteraction(snapInteraction);
-    return { result: true }
+    // save features (to layer)
+    if ('save' === method) {
+      const layer = GUI.getMap().getLayers().getArray().find(l => qgs_layer_id === l.get('id'));
+      let geojson;
+      if (layer) {
+        geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getSource().getFeatures()[0]);
+        layer.getSource().clear();
+        GUI.refreshMap();
+      }
+      GUI.disableClickMapControls(false);
+      return {
+        result: true,
+        method,
+        geojson
+      };
+    }
   }
 
   /**
