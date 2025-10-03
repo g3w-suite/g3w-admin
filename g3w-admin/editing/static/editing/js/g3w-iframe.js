@@ -327,10 +327,12 @@ export class IframeEditor extends Emitter {
    * @since 4.0.3
    */
   async 'editing:json'({ qgs_layer_id, geojson, method }) {
-    const fid   = geojson && ((new ol.format.GeoJSON()).readFeature(geojson)).getId();
-    const layer = qgs_layer_id && GUI.getMap().getLayers().getArray().find(l => qgs_layer_id === l.get('id')); // get editing layer
-    let lock    = {};
-    let commit  = {};
+    const VECTOR_URL = ApplicationState.project.state.vectorurl;
+    const GID        = `${ApplicationState.project.getType()}/${ApplicationState.project.getId()}`;
+    const fid        = geojson && ((new ol.format.GeoJSON()).readFeature(geojson)).getId();
+    const layer      = qgs_layer_id && GUI.getMap().getLayers().getArray().find(l => qgs_layer_id === l.get('id')); // get editing layer
+    let lock         = {};
+    let commit       = { result: true };
 
     // skip when json is missing 
     if (!fid && ['add', 'update', 'delete'].includes(method)) {
@@ -340,7 +342,7 @@ export class IframeEditor extends Emitter {
     // lock feature (by id)
     if (fid && ['update', 'delete', 'draw'].includes(method)) {
       try {
-        lock = await (await fetch(`${ApplicationState.project.state.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${qgs_layer_id}/?fids=${fid}`)).json();
+        lock = await (await fetch(`${VECTOR_URL}editing/${GID}/${qgs_layer_id}/?fids=${fid}`)).json();
         lock = {
           ids:     lock?.featurelocks,
           feature: lock?.vector?.data && (new ol.format.GeoJSON()).readFeatures(lock.vector.data)[0]
@@ -355,7 +357,7 @@ export class IframeEditor extends Emitter {
       commit = 'update' === method && !lock.ids.length
         ? { result: false }
         : await (
-          await fetch(`${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${qgs_layer_id}/`,
+          await fetch(`${VECTOR_URL}commit/${GID}/${qgs_layer_id}/`,
           {
             method:  'POST',
             headers: { "Content-Type": 'application/json' },
@@ -373,20 +375,7 @@ export class IframeEditor extends Emitter {
 
     // unlock layer
     if (['update', 'delete'].includes(method)) {
-      await fetch(`${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${qgs_layer_id}/`);
-    }
-
-    // refresh map
-    if (['add', 'update', 'delete'].includes(method)) {
-      GUI.refreshMap();
-      return {
-        result: commit.result,
-        ...(
-          commit.result
-          ? { fid: commit?.response?.new?.at(0)?.id, geojson  }
-          : { error: 'No feature ' + method }
-        )
-      };
+      await fetch(`${VECTOR_URL}unlock/${GID}/${qgs_layer_id}/`);
     }
 
     // Draw/modify geometry
@@ -419,8 +408,10 @@ export class IframeEditor extends Emitter {
             action: 'editing:json',
             response : {
               result: true,
-              method,
-              geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.feature)
+              data: {
+                method,
+                geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.feature)
+              },
             } 
           })
         })
@@ -434,8 +425,10 @@ export class IframeEditor extends Emitter {
           action: 'editing:json',
           response: {
             result: true,
-            method,
-            geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.features.item(0))
+            data: {
+              method,
+              geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.features.item(0))
+            },
           } 
         })
       })
@@ -443,26 +436,29 @@ export class IframeEditor extends Emitter {
       // snap
       const snap = new ol.interaction.Snap({ source: layer.getSource() });
       GUI.getMap().addInteraction(snap);
-      return {
-        result: true
-      };
     }
 
     // save features (to layer)
     if ('save' === method) {
-      let data;
       if (layer) {
-        data = (new ol.format.GeoJSON()).writeFeatureObject(layer.getSource().getFeatures()[0]);
+        geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getSource().getFeatures()[0]);
         layer.getSource().clear();
-        GUI.refreshMap();
       }
       GUI.disableClickMapControls(false);
-      return {
-        result: true,
-        method,
-        geojson: data,
-      };
     }
+
+    GUI.refreshMap();
+
+    if (!commit.result) {
+      throw 'No feature ' + method;
+    }
+
+    // iframe response
+    return {
+      method,
+      fid: commit?.response?.new?.at(0)?.id,
+      geojson,
+    };
   }
 
   /**
