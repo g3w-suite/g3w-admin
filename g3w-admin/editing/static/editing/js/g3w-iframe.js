@@ -417,8 +417,6 @@ export class IframeEditor extends Emitter {
           // clear layer and interactions
           if ('drawstart' === e.type) {
             layer.getSource().clear();
-            this.#interactions.forEach(i => map.removeInteraction(i));
-            this.#interactions = [];
           }
           if('drawend' === e.type) {
             e.feature.setId(`__new__${Date.now()}`);
