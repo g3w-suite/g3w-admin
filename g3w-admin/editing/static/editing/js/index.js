@@ -557,7 +557,7 @@ new (class extends Plugin {
               layer,
               message: (new (Vue.extend((await import('./components/changes.js')).default))({
                 propsData: {
-                  commits: commitItems,
+                  commits: { ...commitItems },
                   layer
                 }})).$mount().$el,
             }
