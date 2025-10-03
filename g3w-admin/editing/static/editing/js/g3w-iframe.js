@@ -51,6 +51,11 @@ export class IframeEditor extends Emitter {
     value: { qgs_layer_id: null, error: null },
   };
 
+  /**
+   * @since 4.0.3 - array of OL Interactions
+   */
+  #interactions = [];
+
   constructor(plugin) {
     super();
 
@@ -342,11 +347,19 @@ export class IframeEditor extends Emitter {
     // lock feature (by id)
     if (fid && ['update', 'delete', 'draw'].includes(method)) {
       try {
-        lock = await (await fetch(`${VECTOR_URL}editing/${GID}/${qgs_layer_id}/?fids=${fid}`)).json();
-        lock = {
-          ids:     lock?.featurelocks,
-          feature: lock?.vector?.data && (new ol.format.GeoJSON()).readFeatures(lock.vector.data)[0]
-        };
+        if (fid.startsWith('__new__')) {
+          lock.feature = (new ol.format.GeoJSON()).readFeature(geojson);
+        } else { //check if already added 
+          lock = await (await fetch(`${VECTOR_URL}editing/${GID}/${qgs_layer_id}/?fids=${fid}`)).json();
+          lock = {
+            ids:     lock?.featurelocks,
+            feature: lock?.vector?.data && (new ol.format.GeoJSON()).readFeatures(lock.vector.data)[0]
+          };
+          if (lock.feature) {
+            //Take in account possible properties passed by geojson that can be different from actual stored feature on db 
+            Object.entries(geojson?.properties ?? {}).forEach(([key, v]) => feature.set(key, v));
+          }
+        }
       } catch(e) {
         console.warn(e);
       }
@@ -400,11 +413,14 @@ export class IframeEditor extends Emitter {
       // add new feature (draw)
       if (!lock.feature) { 
         const draw = new ol.interaction.Draw({ type: geom, source: layer.getSource() });
-        GUI.getMap().addInteraction(draw);
         draw.on(['drawstart', 'drawend'], e => {
+          // clear layer and interactions
           if ('drawstart' === e.type) {
-            layer.getSource().clear()
-          } else {
+            layer.getSource().clear();
+            this.#interactions.forEach(i => map.removeInteraction(i));
+            this.#interactions = [];
+          }
+          if('drawend' === e.type) {
             e.feature.setId(`__new__${Date.now()}`);
             window.parent.postMessage({
               action: 'editing:json',
@@ -418,11 +434,12 @@ export class IframeEditor extends Emitter {
             });
           }
         });
+        GUI.getMap().addInteraction(draw);
+        this.#interactions.push(draw);
       }
 
       // modify
       const modify = new ol.interaction.Modify({ source: layer.getSource() });
-      GUI.getMap().addInteraction(modify);
       modify.on('modifyend', e => {
         window.parent.postMessage({
           action: 'editing:json',
@@ -434,10 +451,16 @@ export class IframeEditor extends Emitter {
             },
           } 
         })
-      })
+      });
 
       // snap
-      GUI.getMap().addInteraction(new ol.interaction.Snap({ source: layer.getSource() }));
+      const snap = new ol.interaction.Snap({ source: layer.getSource() });
+
+      GUI.getMap().addInteraction(modify);
+      this.#interactions.push(modify);
+
+      GUI.getMap().addInteraction(snap);
+      this.#interactions.push(snap);
     }
 
     // save features (to layer)
