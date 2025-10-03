@@ -401,26 +401,29 @@ export class IframeEditor extends Emitter {
       if (!lock.feature) { 
         const draw = new ol.interaction.Draw({ type: geom, source: layer.getSource() });
         GUI.getMap().addInteraction(draw);
-        draw.on('drawstart', () => layer.getSource().clear());
-        draw.on('drawend',   e => {
-          e.feature.setId(`__new__${Date.now()}`);
-          window.parent.postMessage({
-            action: 'editing:json',
-            response : {
-              result: true,
-              data: {
-                method,
-                geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.feature)
-              },
-            } 
-          })
-        })
+        draw.on(['drawstart', 'drawend'], e => {
+          if ('drawstart' === e.type) {
+            layer.getSource().clear()
+          } else {
+            e.feature.setId(`__new__${Date.now()}`);
+            window.parent.postMessage({
+              action: 'editing:json',
+              response : {
+                result: true,
+                data: {
+                  method,
+                  geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.feature)
+                },
+              } 
+            });
+          }
+        });
       }
 
       // modify
       const modify = new ol.interaction.Modify({ source: layer.getSource() });
       GUI.getMap().addInteraction(modify);
-      modify.on('modifyend', (e) => {
+      modify.on('modifyend', e => {
         window.parent.postMessage({
           action: 'editing:json',
           response: {
@@ -434,8 +437,7 @@ export class IframeEditor extends Emitter {
       })
 
       // snap
-      const snap = new ol.interaction.Snap({ source: layer.getSource() });
-      GUI.getMap().addInteraction(snap);
+      GUI.getMap().addInteraction(new ol.interaction.Snap({ source: layer.getSource() }));
     }
 
     // save features (to layer)
