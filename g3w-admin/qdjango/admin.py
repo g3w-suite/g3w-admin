@@ -250,3 +250,12 @@ class ScaleVisibilityLayerConstraintAdmin(admin.ModelAdmin):
     list_display = ('layer', 'user', 'group', 'minscale', 'maxscale')
 
 admin.site.register(ScaleVisibilityLayerConstraint, ScaleVisibilityLayerConstraintAdmin)
+
+
+class ProjectBookmarkAdmin(admin.ModelAdmin):
+
+    model = ProjectBookmark
+
+    list_display = ('user', 'project')
+
+admin.site.register(ProjectBookmark, ProjectBookmarkAdmin)
