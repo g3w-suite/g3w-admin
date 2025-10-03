@@ -317,17 +317,6 @@ export class IframeEditor extends Emitter {
   }
 
   /**
-   * 
-   * @param {*} qgs_layer_id
-   * @returns 
-   * 
-   * @since 4.0.3
-   */
-  async #unlockLayer(qgs_layer_id) {
-    return await fetch(`${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${qgs_layer_id}/`);
-  }
-
-  /**
    * Remote layer editing (no UX)
    * 
    * @param { 'add' | 'update' | 'delete' | 'draw' | 'save' } method - action to be performed
