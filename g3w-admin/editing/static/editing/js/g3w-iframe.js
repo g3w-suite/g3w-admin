@@ -318,25 +318,25 @@ export class IframeEditor extends Emitter {
 
   /**
    * 
-   * @param {*} layerId 
+   * @param {*} qgs_layer_id
    * @returns 
    * 
    * @since 4.0.3
    */
-  async #unlockLayer(layerId) {
-    return await fetch(`${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${layerId}/`);
+  async #unlockLayer(qgs_layer_id) {
+    return await fetch(`${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${qgs_layer_id}/`);
   }
   /**
    * 
-   * @param {*} layerId 
+   * @param {*} qgs_layer_id 
    * @param {*} fid 
    * @returns 
    * 
    * @since 4.0.3
    */
-  async #lockFeature(layerId, fid) {
+  async #lockFeature(qgs_layer_id, fid) {
     try {
-      const { featurelocks: lockids, vector: { data: features } } = await (await fetch(`${ApplicationState.project.state.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${layerId}/?fids=${fid}`)).json();
+      const { featurelocks: lockids, vector: { data: features } } = await (await fetch(`${ApplicationState.project.state.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${qgs_layer_id}/?fids=${fid}`)).json();
       return { lockids, feature: features && (new ol.format.GeoJSON()).readFeatures(features)[0] };
     } catch(e) {
       console.warn(e);
@@ -348,12 +348,12 @@ export class IframeEditor extends Emitter {
   /**
    * @since 4.0.3
    */
-  async #commitFeature({ layerId, action, lockids = [], geojson = {}} = {}) {
+  async #commitFeature({ qgs_layer_id, action, lockids = [], geojson = {}} = {}) {
     if (!action) {
       return;
     }
 
-    return await (await fetch(`${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${layerId}/`,
+    return await (await fetch(`${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${qgs_layer_id}/`,
       {
         method: 'POST',
         body: JSON.stringify({
@@ -374,17 +374,17 @@ export class IframeEditor extends Emitter {
   /**
    * Add new feature
    * 
-   * @param {*} layerId 
+   * @param {*} qgs_layer_id 
    * @param {*} geojson 
    * @returns
    * 
    * @since 4.0.3
    */
-  async 'editing:add_json'({ layerId, geojson }) {
+  async 'editing:add_json'({ qgs_layer_id, geojson }) {
     if (!geojson) {
       return;
     }
-    const { result, response } = await this.#commitFeature({ layerId,  action: 'add', geojson });
+    const { result, response } = await this.#commitFeature({ qgs_layer_id,  action: 'add', geojson });
     g3wsdk.gui.GUI.getService('map').refreshMap();
     return { result,...(result ? { fid: response?.new[0]?.id  }: { error: 'No feature add' }) };
 
@@ -393,26 +393,26 @@ export class IframeEditor extends Emitter {
   /**
    * Update Feature
    * 
-   * @param {*} layerId 
+   * @param {*} qgs_layer_id 
    * @param {*} geojson 
    * @returns 
    * 
    * @since 4.0.3
    */
-  async 'editing:update_json'({ layerId, geojson = {} }) {
+  async 'editing:update_json'({ qgs_layer_id, geojson = {} }) {
     if (!geojson) {
       return;
     }
     const fid = ((new ol.format.GeoJSON()).readFeature(geojson)).getId();
-    const { lockids }                   = await this.#lockFeature(layerId, fid);
+    const { lockids } = await this.#lockFeature(qgs_layer_id, fid);
     if (!lockids.length) {
       return Promise.reject({
         result: false,
         error: 'No feature update'
       })
     }
-    const { result  }  = await this.#commitFeature({ layerId, geojson, action: 'update', lockids });
-    await this.#unlockLayer(layerId);
+    const { result  }  = await this.#commitFeature({ qgs_layer_id, geojson, action: 'update', lockids });
+    await this.#unlockLayer(qgs_layer_id);
     g3wsdk.gui.GUI.getService('map').refreshMap();
     return { result, ...(result ? { geojson } : { error: 'No feature update' }) };
 
@@ -420,33 +420,33 @@ export class IframeEditor extends Emitter {
   /**
    * Delete feature
    * 
-   * @param {*} layerId 
+   * @param {*} qgs_layer_id 
    * @param {*} geojson 
    * @returns 
    * 
    * @since 4.0.3
    */
-  async 'editing:delete_json'({ layerId, geojson = {} }) {
+  async 'editing:delete_json'({ qgs_layer_id, geojson = {} }) {
     if (!geojson) {
       return;
     }
     const fid = ((new ol.format.GeoJSON()).readFeature(geojson)).getId();
-    const { lockids } = await this.#lockFeature(layerId, fid);
-    const { result, response }  = await this.#commitFeature({ layerId, action: 'delete', geojson: fid, lockids })
+    const { lockids } = await this.#lockFeature(qgs_layer_id, fid);
+    const { result, response }  = await this.#commitFeature({ qgs_layer_id, action: 'delete', geojson: fid, lockids })
 
     g3wsdk.gui.GUI.getService('map').refreshMap();
-    await this.#unlockLayer(layerId);
+    await this.#unlockLayer(qgs_layer_id);
     return { result, ...(result ? { geojson } : { error: 'No feature delete' }) };
   }
 
   /**
-   * @param {*} layerId 
+   * @param {*} qgs_layer_id 
    * 
    * @since 4.0.3
    */
-  async 'editing:save_json'({ layerId }) {
+  async 'editing:save_json'({ qgs_layer_id }) {
     const map = g3wsdk.gui.GUI.getService('map').getMap();
-    const layer = map.getLayers().getArray().find(l => layerId === l.get('id'));
+    const layer = map.getLayers().getArray().find(l => qgs_layer_id === l.get('id'));
     let geojson;
     if (layer) {
       geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getSource().getFeatures()[0]);
@@ -463,14 +463,14 @@ export class IframeEditor extends Emitter {
    * 
    * @since 4.0.3
    */
-  async 'editing:draw_json'({ layerId, geojson }) {
+  async 'editing:draw_json'({ qgs_layer_id, geojson }) {
     let feature = null;
     let lockids = [];
     const map = g3wsdk.gui.GUI.getService('map').getMap();
     //get editing layer
-    const layer = map.getLayers().getArray().find(l =>  layerId === l.get('id'));
+    const layer = map.getLayers().getArray().find(l =>  qgs_layer_id === l.get('id'));
     GUI.getService('map').disableClickMapControls(true);
-    let geom  = g3wsdk.core.catalog.CatalogLayersStoresRegistry.getLayerById(layerId).getGeometryType();
+    let geom  = g3wsdk.core.catalog.CatalogLayersStoresRegistry.getLayerById(qgs_layer_id).getGeometryType();
     // get open layers geometry
     if (geom.startsWith('Line'))              { geom = 'LineString'; }
     else if (geom.startsWith('MultiLine'))    { geom = 'MultiLineString'; }
@@ -484,7 +484,7 @@ export class IframeEditor extends Emitter {
     if (geojson) {
       const f   = (new ol.format.GeoJSON()).readFeature(geojson);
       const fid = f.getId();
-      const response   = (await this.#lockFeature(layerId, fid)) ?? {};
+      const response   = (await this.#lockFeature(qgs_layer_id, fid)) ?? {};
       feature = response.feature;
       lockids = response.lockids;
     }
