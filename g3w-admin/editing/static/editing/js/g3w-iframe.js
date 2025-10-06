@@ -419,7 +419,7 @@ export class IframeEditor extends Emitter {
             layer.getSource().clear();
           }
           if('drawend' === e.type) {
-            e.feature.setId(`__new__${Date.now()}`);
+            e.feature.setId(`_new_${Date.now()}`);
             window.parent.postMessage({
               action: 'editing:json',
               response : {
