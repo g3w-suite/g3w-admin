@@ -347,7 +347,7 @@ export class IframeEditor extends Emitter {
     // lock feature (by id)
     if (fid && ['update', 'delete', 'draw'].includes(method)) {
       try {
-        if (fid.startsWith('__new__')) {
+        if (fid.startsWith('_new_')) {
           lock.feature = (new ol.format.GeoJSON()).readFeature(geojson);
         } else { //check if already added 
           lock = await (await fetch(`${VECTOR_URL}editing/${GID}/${qgs_layer_id}/?fids=${fid}`)).json();
