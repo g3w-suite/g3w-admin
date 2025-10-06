@@ -475,7 +475,7 @@ export class IframeEditor extends Emitter {
     GUI.refreshMap();
 
     if (!commit.result) {
-      throw 'No feature ' + method;
+      throw commit.errors ?? 'No feature ' + method;
     }
 
     // iframe response
