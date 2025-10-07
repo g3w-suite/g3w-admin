@@ -15,8 +15,6 @@ const _       = g3wsdk.core.i18n.t;
  * @param index
  * @param dialog
  * 
- * @returns JQuery Promise
- * 
  * @since g3w-client-plugin-editing@v3.8.0
  */
 export function unlinkRelation({

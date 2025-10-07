@@ -484,8 +484,6 @@ new (class extends Plugin {
    * @param commit.done
    * @param { boolean } commit.modal
    * @param { boolean } commit.close
-   *
-   * @returns jQuery promise
    * 
    * @since g3w-client-plugin-editing@v3.8.0
    */

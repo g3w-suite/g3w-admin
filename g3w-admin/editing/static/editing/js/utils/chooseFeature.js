@@ -4,8 +4,6 @@ import { chooseFeatureFromFeatures } from '../utils/chooseFeatureFromFeatures.js
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/choosefeaturetask.js@v3.7.1
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/choosefeaturestep.js@v3.7.1
  * 
- * @returns jQuery promise
- * 
  * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function chooseFeature(inputs) {

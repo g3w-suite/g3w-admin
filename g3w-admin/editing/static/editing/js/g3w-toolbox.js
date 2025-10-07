@@ -10,7 +10,6 @@ import { Collection }                                   from './g3w-collection.j
 import { Workflow }                                     from './g3w-workflow.js';
 import { Step }                                         from './g3w-step.js';
 import { Feature }                                      from './g3w-feature.js';
-import { createEditingDataOptions }                     from './utils/createEditingDataOptions.js';
 import { setLayerUniqueFieldValues }                    from './utils/setLayerUniqueFieldValues.js';
 import { getRelationsInEditing }                        from './utils/getRelationsInEditing.js';
 import { getRelationId }                                from './utils/getRelationId.js';
@@ -18,7 +17,6 @@ import { setAndUnsetSelectedFeaturesStyle }             from './utils/setAndUnse
 import { chooseFeature }                                from './utils/chooseFeature.js';
 import { cloneFeature }                                 from './utils/cloneFeature.js';
 import { evaluateExpressionFields }                     from './utils/evaluateExpressionFields.js';
-import { getNotEditableFieldsNoPkValues }               from './utils/getNotEditableFieldsNoPkValues.js';
 import { chooseFeatureFromFeatures }                    from './utils/chooseFeatureFromFeatures.js';
 import { convertToGeometry }                            from './utils/convertToGeometry.js';
 import { addTableFeature }                              from './utils/addTableFeature.js';
@@ -1167,7 +1165,7 @@ export class ToolBox extends Emitter {
                                 /**
                                  * @todo improve client core to handle this situation on session.pushAdd not copy pk field not editable only
                                  */
-                                const noteditablefieldsvalues = getNotEditableFieldsNoPkValues({ layer, feature });
+                                const noteditablefieldsvalues = _getNotEditableFieldsNoPkValues({ layer, feature });
                                 const newFeature              = session.pushAdd(layerId, feature);
                                 // after pushAdd need to set not edit
                                 if (Object.entries(noteditablefieldsvalues).length) {
@@ -1748,7 +1746,11 @@ export class ToolBox extends Emitter {
         this.constraintFeatureFilter = filter;
       }
     } else {
-      this.state._getFeaturesOption = createEditingDataOptions('table' === this.state._layerType ? 'all': 'bbox', { layerId: this.getId() });
+      this.state._getFeaturesOption = {
+        registerEvents: true,
+        editing:        true,
+        filter: 'table' === this.state._layerType ? undefined : { bbox: GUI.getMapBBOX() }
+      };
     }
   }
 
@@ -3498,8 +3500,6 @@ export class ToolBox extends Emitter {
    * Run after server has applied changes to origin resource
    *
    * @param commit commit items
-   *
-   * @returns jQuery promise
    * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
@@ -3861,7 +3861,7 @@ function _getCoordinates(coords) {
  * 
  * @since g3w-client-plugin-editing@v3.8.0
  */
-export async function _handleSplitFeature({
+async function _handleSplitFeature({
   feature,
   inputs,
   context,
@@ -3906,7 +3906,7 @@ export async function _handleSplitFeature({
       /**
        * @todo improve client core to handle this situation on sesssion.pushAdd not copy pk field not editable only
        */
-      const noteditablefieldsvalues = getNotEditableFieldsNoPkValues({ layer, feature });
+      const noteditablefieldsvalues = _getNotEditableFieldsNoPkValues({ layer, feature });
 
       if (Object.entries(noteditablefieldsvalues).length) {
         const newFeature = session.pushAdd(layerId, feature);
@@ -3961,3 +3961,24 @@ function _isPointOnVertex({
       return false;
   }
  }
+
+/**
+ * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
+ * 
+ * @param layer,
+ * @param feature
+ *
+ * @returns Array of fields
+ */
+function _getNotEditableFieldsNoPkValues({
+  layer,
+  feature,
+}) {
+  return layer.state.editing.fields
+    .filter(f => !f.editable) // un-editable fields
+    .map(f => f.name)
+    .reduce((fields, field) => {
+      fields[field] = isPkField(layer, field) ? null : feature.get(field); // NB: Primary Key fields need to be `null`
+      return fields;
+    }, {});
+}

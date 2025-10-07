@@ -368,8 +368,6 @@ export class Step extends Emitter {
    * @param inputs
    * @param context
    * 
-   * @returns jQuery promise
-   * 
    * @fires run
    */ 
   async __run(inputs, context) {

@@ -7,7 +7,7 @@ import { setFeaturesSelectedStyle } from '../utils/setFeaturesSelectedStyle.js';
  * Method that set selected style to current editing features and
  * reset original style when workflow (tool) is done.
  * 
- * @param promise jQuery promise
+ * @param promise
  * @param { Object } inputs
  * @param { ol.style.Style }  style
  */

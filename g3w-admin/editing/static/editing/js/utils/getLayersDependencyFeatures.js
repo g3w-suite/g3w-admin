@@ -1,7 +1,6 @@
 import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRelation.js';
 import { getRelationId }                 from '../utils/getRelationId.js';
 import { getRelationsInEditing }         from '../utils/getRelationsInEditing.js';
-import { createEditingDataOptions }      from '../utils/createEditingDataOptions.js';
 
 const { ApplicationState } = g3wsdk.core;
 const { GUI }              = g3wsdk.gui;
@@ -37,8 +36,16 @@ export async function getLayersDependencyFeatures(layerId, opts = {}) {
       opts.relation    = relation;
       opts.layerId     = layerId;
       opts.filterType  = 'ONE' === (relation.getType ? relation.getType() : relation.type) ? '1:1' :  opts.filterType; // In a case of relation 1:1
-      const filterType =  opts.filterType || 'fid';
-      const options    = createEditingDataOptions(filterType, opts);
+      let filter;
+
+      switch (opts.filterType || 'fid') {
+        case 'all':   filter = undefined;                                                                                                                                                               break;
+        case 'bbox':  filter = { bbox: GUI.getMapBBOX(), };                                                                                                                                             break;
+        case 'field': filter = { field: { field: opts.field, type: 'editing' } };                                                                                                                       break;
+        case '1:1':   filter = { field: opts.relation.getChildField()[0] + '|eq|' + opts.feature.get(opts.relation.getFatherField()[0]), type: 'editing', };                                            break; // relation 1:1
+        case 'fid':   filter = 'not' !== opts.operator ? { fid: { fid: opts.feature.getId(), layer: { id: opts.layerId }, type: 'editing', relation: opts.relation.state, formatter: 0 } } : undefined; break; // get relations of current feature
+      }
+
       const toolbox    = GUI.getPlugin('editing').getToolBoxById(id);
 
       // getLayersDependencyFeaturesFromSource
@@ -60,9 +67,9 @@ export async function getLayersDependencyFeatures(layerId, opts = {}) {
 
       try {
         if (ApplicationState.online && toolbox.getSession() && !toolbox.isSessionStarted()) {
-          await toolbox.getSession().start(options);       // start session and get features
+          await toolbox.getSession().start({ filter, registerEvents: true, editing: true });       // start session and get features
         } else if (ApplicationState.online && toolbox.getSession() && !find) {
-          await toolbox.getSession().getFeatures(options); // request features from server
+          await toolbox.getSession().getFeatures({ filter, registerEvents: true, editing: true }); // request features from server
         }
       } catch(promise) {
         try { await promise } catch (e) { console.warn(e, promise); }
