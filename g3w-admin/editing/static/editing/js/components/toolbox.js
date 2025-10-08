@@ -46,10 +46,10 @@ export default ({
 
       <!-- TOGGLE RELATION LAYERS (LAYERS FILTER) -->
       <i
-        v-if                     = "father"
-        :class                   = "'filter-by-relation ' + g3wtemplate.font['relation']"
-        @click                   = "toggleFilterByRelation"
-        v-t-tooltip:right.create = "'plugins.editing.tooltip.filter_by_relation'"
+        v-if              = "father"
+        :class            = "'filter-by-relation ' + g3wtemplate.font['relation']"
+        @click            = "toggleFilterByRelation"
+        v-t-tooltip:right = "'plugins.editing.tooltip.filter_by_relation'"
       ></i>
 
       <!-- PANEL TITLE -->
@@ -150,7 +150,7 @@ export default ({
                   v-model = "tool.options.checked"
                   @change = "() => tool.options.onChange(tool.options.checked)"
                 />
-                <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right.create = "'plugins.editing.toolsoftool.measure'">
+                <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right = "'plugins.editing.toolsoftool.measure'">
                   <b :class = "g3wtemplate.font['measure']"></b>
                 </label>
               </div>
@@ -183,9 +183,9 @@ export default ({
                     v-model = "tool.options.checkedAll"
                   />
                   <label
-                    v-if                    = "snapAll"
-                    :for                    = "'snap_all_' + state.id + '_all'"
-                    v-t-tooltip:left.create = "'plugins.editing.toolsoftool.snapall'"
+                    v-if             = "snapAll"
+                    :for             = "'snap_all_' + state.id + '_all'"
+                    v-t-tooltip:left = "'plugins.editing.toolsoftool.snapall'"
                   >
                     <span :class = "g3wtemplate.font['magnete']"></span>
                     <b    :class = "g3wtemplate.font['layers']" style = "margin-left: 3px;"></b>

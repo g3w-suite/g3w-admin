@@ -27,34 +27,34 @@ export default ({
 
             <div class = "plot-tools">
               <span
-                v-if               = "!rel && chart.tools.selection.active"
-                style              = "margin: auto"
-                class              = "action-button action-button-icon fas fa-filter"
-                @click.stop        = "toggleFilter(chart.layerId)"
-                :class             = "{ 'toggled': chart.tools.filter.active }"
-                data-placement     = "bottom"
-                data-toggle        = "tooltip"
-                v-t-tooltip.create = "'plugins.qplotly.tooltip.filter_chart'"
+                v-if           = "!rel && chart.tools.selection.active"
+                style          = "margin: auto"
+                class          = "action-button action-button-icon fas fa-filter"
+                @click.stop    = "toggleFilter(chart.layerId)"
+                :class         = "{ 'toggled': chart.tools.filter.active }"
+                data-placement = "bottom"
+                data-toggle    = "tooltip"
+                v-t-tooltip    = "'plugins.qplotly.tooltip.filter_chart'"
               ></span>
               <span
-                v-if               = "!rel && service.state.geolayer"
-                style              = "margin: auto"
-                class              = "action-button action-button-icon far fa-map"
-                :class             = "{ 'toggled': service.state.bbox_filter }"
-                @click.stop        = "toggleBBox"
-                data-placement     = "bottom"
-                data-toggle        = "tooltip"
-                v-t-tooltip.create = "'plugins.qplotly.tooltip.show_all_features_on_map'"
+                v-if           = "!rel && service.state.geolayer"
+                style          = "margin: auto"
+                class          = "action-button action-button-icon far fa-map"
+                :class         = "{ 'toggled': service.state.bbox_filter }"
+                @click.stop    = "toggleBBox"
+                data-placement = "bottom"
+                data-toggle    = "tooltip"
+                v-t-tooltip    = "'plugins.qplotly.tooltip.show_all_features_on_map'"
               ></span>
               <a
-                v-if               = "edit_url"
-                :href              = "edit_url"
-                target             = "_blank"
-                style              = "margin: auto"
-                class              = "action-button action-button-icon far fa-edit"
-                data-placement     = "bottom"
-                data-toggle        = "tooltip"
-                v-t-tooltip.create = "'Edit in admin'"
+                v-if           = "edit_url"
+                :href          = "edit_url"
+                target         = "_blank"
+                style          = "margin: auto"
+                class          = "action-button action-button-icon far fa-edit"
+                data-placement = "bottom"
+                data-toggle    = "tooltip"
+                v-t-tooltip    = "'Edit in admin'"
               ></a>
             </div>
 
