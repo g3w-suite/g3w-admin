@@ -276,19 +276,16 @@ export default ({
       return !(index >= ((page-1) * page_size) && index < (page * page_size));
     },
 
-    back() {
+    async back() {
       if (this.isrelation && !this.linked.length) {
         this.promise.reject();
       } else {
-        GUI.dialog.confirm(
-          _('plugins.editing.messages.link_relations'),
-          ok => {
-            if (ok) {
-              this.promise.resolve(this.isrelation ? { features: this.linked.map(i => this.features[i]) } : undefined);
-            } else {
-              this.promise.reject();
-            }
-        });
+        const ok = await GUI.confirm(_('plugins.editing.messages.link_relations'));
+        if (ok) {
+          this.promise.resolve(this.isrelation ? { features: this.linked.map(i => this.features[i]) } : undefined);
+        } else {
+          this.promise.reject();
+        }
       }
     },
 
@@ -300,18 +297,21 @@ export default ({
         layerId:   this.inputs.layer.getId(),
         relations: this.inputs.layer.getRelations().getArray()
       }).length;
-      GUI.dialog.confirm(
-        `<h4>${_('plugins.editing.messages.delete_feature')}</h4>
-        <div style="font-size:1.2em;">${ has_child_relation ? _('plugins.editing.messages.delete_feature_relations') : '' }</div>`,
-        ok => {
-          if (ok) {
-            const i    = this.features.findIndex(f => f.getUid() === uid);
-            const feat = this.features[i];
-            this.inputs.layer.getEditor().getEditingSource().removeFeature(feat);
-            this.context.session.pushDelete(this.inputs.layer.getId(), feat);
-            this.rows.splice(i, 1);
-          }
-      });
+      const ok = await GUI.confirm(/* html */`
+        <h4>${_('plugins.editing.messages.delete_feature')}</h4>
+        <div style="font-size:1.2em;">${
+          has_child_relation
+            ? _('plugins.editing.messages.delete_feature_relations')
+            : ''
+        }</div>
+      `);
+      if (ok) {
+        const i    = this.features.findIndex(f => f.getUid() === uid);
+        const feat = this.features[i];
+        this.inputs.layer.getEditor().getEditingSource().removeFeature(feat);
+        this.context.session.pushDelete(this.inputs.layer.getId(), feat);
+        this.rows.splice(i, 1);
+      }
     },
 
     /**

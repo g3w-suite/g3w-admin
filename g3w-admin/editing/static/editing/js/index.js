@@ -525,7 +525,7 @@ new (class extends Plugin {
             new (await import('./g3w-step.js')).Step({
               run(inputs) {
                 return new Promise(async (resolve, reject) => {
-                  const dialog = GUI.dialog.dialog({
+                  const dialog = GUI.showModalDialog({
                     message: inputs.message,
                     title:   `${_("plugins.editing.messages.commit_feature")}: "${inputs.layer.getName()}"`,
                     buttons: {
@@ -574,7 +574,7 @@ new (class extends Plugin {
 
         //in case of online application
         if (online) {
-          dialog = GUI.dialog.dialog({
+          dialog = GUI.showModalDialog({
             message: `<h4 class="text-center">
                         <i style="margin-right: 5px;" class=${GUI.getFontClass('spinner')}></i>${_('plugins.editing.messages.saving')}
                       </h4>`,

@@ -436,38 +436,31 @@ export class ToolBox extends Emitter {
               // confirm step
               new Step({
                 async run(inputs) {
-
                   const editingLayer = getEditingLayer(inputs.layer);
                   const feature      = inputs.features[0];
                   const layerId      = inputs.layer.getId();
-                  const promise = new Promise((resolve, reject) => {
-                    GUI
-                      .dialog
-                      .confirm(
-                        `<h4>${_('plugins.editing.messages.delete_feature')}</h4>`
-                        + `<div style="font-size:1.2em;">`
-                        + (inputs.layer.getChildren().length && getRelationsInEditing({ layerId, relations: inputs.layer.getRelations().getArray() }).length
+                  const promise = new Promise(async (resolve, reject) => {
+                    const ok = await GUI.confirm(/* html */`
+                      <h4>${_('plugins.editing.messages.delete_feature')}</h4>
+                      <div style="font-size:1.2em;">${
+                        inputs.layer.getChildren().length && getRelationsInEditing({ layerId, relations: inputs.layer.getRelations().getArray() }).length
                           ? _('plugins.editing.messages.delete_feature_relations')
                           : ''
-                        )
-                        + `</div>`,
-                        result => {
-                          if (!result) {
-                            reject(inputs);
-                            return;
-                          }
-                          editingLayer.getSource().removeFeature(feature);
-                          // Remove unique values from unique fields of a layer (when deleting a feature)
-                          const fields = GUI.getPlugin('editing').state.uniqueFieldsValues[layerId];
-                          if (fields) {
-                            Object
-                            .keys(feature.getProperties())
-                            .filter(f => undefined !== fields[f])
-                            .forEach(f => fields[f].delete(feature.get(f)));
-                          }
-                          resolve(inputs);
-                        }
-                      );
+                      }</div>
+                    `);
+                    if (!ok) {
+                      return reject(inputs);
+                    }
+                    editingLayer.getSource().removeFeature(feature);
+                    // Remove unique values from unique fields of a layer (when deleting a feature)
+                    const fields = GUI.getPlugin('editing').state.uniqueFieldsValues[layerId];
+                    if (fields) {
+                      Object
+                      .keys(feature.getProperties())
+                      .filter(f => undefined !== fields[f])
+                      .forEach(f => fields[f].delete(feature.get(f)));
+                    }
+                    resolve(inputs);
                   });
 
                   if (inputs.features) {

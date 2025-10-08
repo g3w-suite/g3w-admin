@@ -708,56 +708,53 @@ export default ({
 
             setAndUnsetSelectedFeaturesStyle({ promise, inputs: { features: [ relationfeature ], layer: this.getLayer() }, style: selectStyle })
 
-            GUI.dialog.confirm(
-              _("plugins.editing.messages.delete_feature"),
-                res => {
-                  //confirm to delete
-                  if (res) {
-                    Workflow.Stack.current.session.pushDelete(this._relationLayerId, relationfeature);
-                    // remove feature from relation features
-                    this.relations.splice(index, 1);
-                    // remove tool from relation tools
-                    this.tools.splice(index, 1);
-                    // current relation layer fields
-                    const unique_fields        = GUI.getPlugin('editing').state.uniqueFieldsValues[this._relationLayerId];
-                    //check if relation layer has unique values stored
-                    if (undefined !== unique_fields) {
-                      Object
-                        .keys(relationfeature.getProperties())
-                        .filter(p => undefined !== unique_fields[p])
-                        .forEach(p => {
-                          const values = new Set(unique_fields[p]);
-                          //@TODO Check if we need remove
-                          values.delete(relationfeature.get(p));
-                        })
-                    }
+            const ok = await GUI.confirm(_("plugins.editing.messages.delete_feature"));
 
-                    //remove feature from source
-                    this.getLayer().getEditor().getEditingSource().removeFeature(relationfeature);
-                    // Check if relation feature delete is new.
-                    // In this case, we need to check if there are temporary changes not related to this current feature
-                    if (
-                      relationfeature.isNew()
-                      && undefined === Workflow.Stack.items.find(w => w.getSession().state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
-                    ) {
-                      Workflow.Stack.items
-                        .filter(w => w.getContext().service instanceof FormService)
-                        .forEach(w => setTimeout(() => w.getContext().service.state.update = false));
-                    } else {
-                      //set parent workflow update to enable to save all buttons
-                      Workflow.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
-                    }
+            //confirm to delete
+            if (ok) {
+              Workflow.Stack.current.session.pushDelete(this._relationLayerId, relationfeature);
+              // remove feature from relation features
+              this.relations.splice(index, 1);
+              // remove tool from relation tools
+              this.tools.splice(index, 1);
+              // current relation layer fields
+              const unique_fields        = GUI.getPlugin('editing').state.uniqueFieldsValues[this._relationLayerId];
+              //check if relation layer has unique values stored
+              if (undefined !== unique_fields) {
+                Object
+                  .keys(relationfeature.getProperties())
+                  .filter(p => undefined !== unique_fields[p])
+                  .forEach(p => {
+                    const values = new Set(unique_fields[p]);
+                    //@TODO Check if we need remove
+                    values.delete(relationfeature.get(p));
+                  })
+              }
 
-                    d.resolve(res);
-                  }
+              //remove feature from source
+              this.getLayer().getEditor().getEditingSource().removeFeature(relationfeature);
+              // Check if relation feature delete is new.
+              // In this case, we need to check if there are temporary changes not related to this current feature
+              if (
+                relationfeature.isNew()
+                && undefined === Workflow.Stack.items.find(w => w.getSession().state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
+              ) {
+                Workflow.Stack.items
+                  .filter(w => w.getContext().service instanceof FormService)
+                  .forEach(w => setTimeout(() => w.getContext().service.state.update = false));
+              } else {
+                //set parent workflow update to enable to save all buttons
+                Workflow.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+              }
 
-                  //click
-                  if (!res) {
-                    d.reject();
-                  }
+              d.resolve(ok);
+            }
 
-                }
-            )
+            //click
+            if (!ok) {
+              d.reject();
+            }
+
           }
 
           // EDIT ATTRIBUTE FEATURE RELATION
