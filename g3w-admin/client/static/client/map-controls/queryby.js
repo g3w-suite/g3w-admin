@@ -3,10 +3,10 @@
  * @since 4.1.0
  */
 
-const { GEOMETRY_TYPES, SPATIAL_METHODS } = g3w.constants;
-const ApplicationState                    = g3w.state;
-const GUI                                 = g3w.app;
-const MapControl                          = g3w.Control;
+const { GEOMETRY_TYPES, G3W_FID } = g3w.constants;
+const ApplicationState   = g3w.state;
+const GUI                = g3w.app;
+const MapControl         = g3w.Control;
 const {
   getCatalogLayerById,
   PickCoordinatesInteraction,
@@ -107,7 +107,7 @@ export class QueryBy extends MapControl {
             data: () => ({
               types:           this.types,
               type:            this.types[0],
-              methods:         SPATIAL_METHODS,
+              methods:         ['intersects', 'within'],
               method:          this.getSpatialMethod(),
               layers:          [],
               selectedLayer:   (GUI.getSelectedLayer() || { getId() { return '__ALL__'; } }).getId(), // TODO: use optional chaining instead: GUI.getSelectedLayer()?.getId() || '__ALL__'
@@ -299,6 +299,7 @@ export class QueryBy extends MapControl {
             },
             beforeDestroy: () => {
               GUI.toggleUserMessage(true);
+              this.toggle(false);
               this.types.forEach(t => {
                 CONTROLS[t].toggle(false);
                 CONTROLS[t].autorun = false;
@@ -562,91 +563,119 @@ export class QueryBy extends MapControl {
   }
 
   async runSpatialQuery(type) {
-    //@since 3.11.0 In case of error error-output-data set to true and not autorun is set
+    // @since 3.11.0 In case of error error-output-data set to true and not autorun is set
     let error = false;
     const setError = () => { error = true; this.toggle(); };
 
     GUI.once('error-output-data', setError);
 
-    try {
+    const control = CONTROLS[type];
 
-      const control = CONTROLS[type];
+    GUI.closeSideBar();
 
-      GUI.closeSideBar();
-
-      if (
-        // skip if bbox is not set
-        ('querybbox' === type && null === QUERY.bbox) ||
-        // skip when .. ?
-        ('querybypolygon' === type && [QUERY.coordinates, QUERY.feature, QUERY.layer].includes(null))
-      ) {
-        return;
-      }
-
-      //Check if some layer is selected
-      const selected       = GUI.getSelectedLayer();
-      const externalLayers = GUI.getExternalLayers('vector').map(l => l._externalLayer);
-      const project        = ApplicationState.project;
-
-      if ('querybbox' === type) {
-        await GUI.getData('query:bbox', {
-          inputs: {
-            bbox:          QUERY.bbox,
-            feature_count: project.state.feature_count || 5,
-            addExternal:   (!selected || externalLayers.some(l => l === selected)),
-            // Catalog layers (TOC) properties that need to be satisfied
-            layersFilterObject: {
-              SELECTED_OR_ALL: true, // selected or all
-              QUERYABLE:       true, // see: src/app/core/layers/layer.js#L925
-              VISIBLE:         true  // need to be visible
-            },
-            multilayers:   false, //query single layer @since 3.11.7
-            filterConfig:  { spatialMethod: control.getSpatialMethod() }, // added spatial method to polygon filter
-          }
-        });
-      }
-
-      if (['querybypolygon','querybydrawpolygon', 'querybycircle', 'querybyfreehand'].includes(type)) {
-        await GUI.getData('query:polygon', {
-          inputs: {
-            layerName:       'querybypolygon' === type ? (QUERY.layer.getName ? QUERY.layer.getName() : QUERY.layer.get('name')) : '',
-            excludeSelected: 'querybypolygon' === type || !selected,
-            feature:         (() => {
-                            switch (type) {
-                              case 'querybypolygon':     return QUERY.feature;
-                              case 'querybydrawpolygon': return QUERY.dfeature;
-                              case 'querybyfreehand':    return QUERY.dfeature;
-                              case 'querybycircle':
-                                const feat = QUERY.dfeature.clone();
-                                feat.setGeometry(ol.geom.Polygon.fromCircle(QUERY.dfeature.getGeometry(), 64));
-                                return feat;
-                            }
-                           })(),
-            external:        {
-              add:           'querybypolygon' === type || (!selected || externalLayers.some(l => l === selected)),
-              filter: {
-                SELECTED:    ['querybydrawpolygon', 'querybycircle', 'querybyfreehand'].includes(type) && !!selected, // true if some layer on TOC is selected
-              }
-            },
-            type:            (type || '').replace('queryby', '') || undefined,
-            multilayers:     false, //query single layer @since 3.11.7
-            filterConfig:    { spatialMethod: control.getSpatialMethod() }, // added spatial method to polygon filter
-          },
-          outputs: {
-            show: ({ error = false }) => !error,
-          },
-        });
-      }
-
-      //set autorun to true if no error happensd
-      control.autorun = !error;
-
-    } catch(e) {
-      console.warn('Error running spatial query: ', e);
+    // skip when feature is not set
+    if (
+      ('querybbox' === type && null === QUERY.bbox) ||
+      ('querybypolygon' === type && [QUERY.coordinates, QUERY.feature, QUERY.layer].includes(null))
+    ) {
+      return;
     }
 
-    //remove handler to error-output-data event
-    GUI.off('error-output-data', setError);
+    //Check if some layer is selected
+    const SELECTED = GUI.getSelectedLayer();
+    const EXTERNAL = GUI.getExternalLayers('vector').map(l => l._externalLayer);
+
+    const { promise, resolve, reject } = Promise.withResolvers();
+
+    GUI.showData(promise, { show: ({ error = false }) => !error });
+
+    try {
+      const layerName       = 'querybypolygon' === type ? (QUERY?.layer?.getName?.() ?? QUERY?.layer?.get?.('name')) : '';
+      const excludeSelected = 'querybbox' === type ? undefined : ('querybypolygon' === type || !SELECTED);
+      const feature         = (() => {
+        switch (type) {
+          case 'querybbox':          return QUERY.bbox;
+          case 'querybypolygon':     return QUERY.feature;
+          case 'querybydrawpolygon': return QUERY.dfeature;
+          case 'querybyfreehand':    return QUERY.dfeature;
+          case 'querybycircle':
+            const feat = QUERY.dfeature.clone();
+            feat.setGeometry(ol.geom.Polygon.fromCircle(QUERY.dfeature.getGeometry(), 64));
+            return feat;
+        }
+        })();
+
+      const filterConfig = { spatialMethod: control.getSpatialMethod() };
+
+      let data       = [];
+      const GEOMETRY = 'querybbox' === type ? ol.geom.Polygon.fromExtent(feature) : feature.getGeometry();
+      const layers   = Object
+        .values(ApplicationState.layers)
+        .flatMap(s =>
+          s.isQueryable()
+            ? s.getLayers({
+                GEOLAYER: true,
+                ...('boolean' === typeof excludeSelected ? { SELECTED: !excludeSelected } : { SELECTED_OR_ALL: true }),
+                QUERYABLE: true,
+                VISIBLE: true
+              })
+            : []
+        );
+
+      data = await Promise.allSettled(Object.values(layers).map(layers => {
+        const layer = [].concat(layers)[0];
+        return layer.query({
+          feature_count: ApplicationState.project.state.feature_count || 5,
+          filterConfig,
+          filter: {
+            config: filterConfig,
+            type:   'geometry',
+            value:  GEOMETRY,
+          },
+        });
+      }));
+
+      // show all errors
+      if (data.some(r => 'rejected' === r.status)) {
+        throw data.filter(r => 'rejected' === r.status).map(r => r.reason);
+      }
+
+      resolve({
+        result: true,
+        type: 'ows',
+        error: !GEOMETRY,
+        query: {
+          ...('querybbox' === type ? { bbox: feature } : {}),
+          ...('querybbox' === type ? {}                : { fid: GUI.getService('catalog').state.external.vector.some(l => l.selected) ? feature.getId() : feature.get(G3W_FID) }),
+          ...('querybbox' === type ? {}                : { geometry: GEOMETRY }),
+          ...('querybbox' === type ? {}                : { layerName }),
+          type: (type || '').replace('queryby', '').replace('querybbox', 'bbox') || undefined,
+          filterConfig,
+          external: {
+            add:    'querybbox' === type
+              ? (!SELECTED || EXTERNAL.some(l => l === SELECTED))
+              : ('querybypolygon' === type || (!SELECTED || EXTERNAL.some(l => l === SELECTED))),
+            // true if some layer on TOC is selected
+            filter: 'querybbox' === type
+              ? { SELECTED: !!SELECTED }
+              : { SELECTED: ['querybydrawpolygon', 'querybycircle', 'querybyfreehand'].includes(type) && !!SELECTED },
+          },
+        },
+        usermessage: 'querybbox' === type ? undefined : (!GEOMETRY && {
+          type:        'warning',
+          message:     `${layerName} - ${_('mapcontrols.querybypolygon.no_geometry')}`,
+          messagetext: true,
+          autoclose:   false
+        }),
+        data: data.filter(r => 'fulfilled' === r.status).map(r => r.value).flatMap(({ data = [] }) => data),
+      });
+    } catch (e) {
+      console.warn('Error running spatial query: ', e);
+      reject(e);
+    } finally {
+      control.autorun = !error;               // set autorun to true if no error happensd
+      GUI.off('error-output-data', setError);
+    }
 
   }
 

@@ -1,7 +1,6 @@
 @import url("../../node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css");
 @import url("../../node_modules/ol/ol.css");
 @import url("../../node_modules/select2/dist/css/select2.css");
-@import url("../../node_modules/datatables.net-dt/css/jquery.dataTables.css");
 @import url("../../node_modules/@fortawesome/fontawesome-free/css/all.css");
 @import url("../../node_modules/quill/dist/quill.snow.css");
 
@@ -113,6 +112,7 @@ address                                     { margin-bottom: 20px; font-style: n
 dialog                                      { border-width: 0; animation: slide-down 0.3s ease-out; min-width: min(50vw, 350px); box-shadow: 0 0 1px; }
 dialog::backdrop                            { background-color: rgb(0, 0, 0, .5); }
 dialog[popover=manual]::backdrop            { opacity: .25; }
+dialog.modal-gallery::backdrop              { background-color: rgb(0, 0, 0); }
 dialog > form > menu                        { background: #fff; position:sticky; bottom:0; margin: 0; padding: 10px 0; }
 dialog:has(> form)                          { padding: 0; }
 dialog form                                 { padding: 14px; }
@@ -175,7 +175,6 @@ button.close                { padding: 0; cursor: pointer; background: transpare
 .g3w-long-text               { overflow: hidden; white-space: normal; overflow-wrap: break-word; }
 .g3w-icon-toggled,
 .g3w-panel button.run_button { background-color: var(--skin-color); }
-.g3w-mini-relation-icon      { color: var(--skin-color); cursor: pointer; font-size:12px; padding:5px; border-radius:5px; }
 *:focus                      { outline: none; }
 
 /**************************************************************************************
@@ -374,50 +373,6 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .table-bordered > :is(thead, tbody, tfoot) > tr > :is(td, th)  { border: 1px solid #f4f4f4; }
 .table-bordered > thead > tr > :is(td, th)                     { border-bottom-width: 2px; }
 .table-striped > tbody > tr:nth-of-type(odd)                   { background-color: #f9f9f9; }
-
-table.dataTable > tbody > tr.child ul.dtr-details > li         { border-bottom: 0 !important; }
-table.dataTable th.sorting::after,
-table.dataTable th.sorting::before                             { font-family: Monospace; }
-
-table.dataTable th.sorting_asc::after,
-table.dataTable th.sorting_desc::before                        { display: none; }
-table.dataTable th.sorting_asc::before,
-table.dataTable th.sorting_desc::after                         { color:#7a80dd; opacity: 1; }
-
-/**************************************************************************************
-* carousel.less
-**************************************************************************************/
-
-.carousel                                    { position: relative; }
-.carousel-inner                              { position: relative; width: 100%; overflow: hidden; }
-.carousel-inner > .item                      { position: relative; display: none; transition: 0.6s ease-in-out left; }
-.carousel-inner > .item > img                { display: block; max-width: 100%; height: auto; line-height: 1; }
-@media all and (transform-3d), (-webkit-transform-3d) {
-  .carousel-inner > .item                    { transition: transform 0.6s ease-in-out; backface-visibility: hidden; perspective: 1000px; }
-  .carousel-inner > .item.active.right       { transform: translate3d(100%, 0, 0); left: 0; }
-  .carousel-inner > .item.active.left        { transform: translate3d(-100%, 0, 0); left: 0; }
-  .carousel-inner > .item.active             { transform: translate3d(0, 0, 0); left: 0; }
-}
-.carousel-inner > .active                    { display: block; }
-.carousel-inner > .active                    { left: 0; }
-.carousel-inner > .active.left               { left: -100%; }
-.carousel-inner > .active.right              { left: 100%; }
-.carousel-control                            { position: absolute; top: 0; bottom: 0; left: 0; width: 15%; font-size: 20px; color: #fff; text-align: center; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); background-color: rgba(0, 0, 0, 0); opacity: 0.5; }
-.carousel-control.right                      { right: 0; left: auto; }
-.carousel-control:hover,
-.carousel-control:focus                      { color: #fff; text-decoration: none; outline: 0; opacity: 0.9; }
-.carousel-control .glyphicon-chevron-left,
-.carousel-control .glyphicon-chevron-right   { position: absolute; top: 50%; z-index: 5; display: inline-block; margin-top: -10px; }
-.carousel-control .glyphicon-chevron-left    { left: 50%; margin-left: -10px; }
-.carousel-control .glyphicon-chevron-right   { right: 50%; margin-right: -10px; }
-@media screen and (min-width: 768px) {
-  .carousel-control .glyphicon-chevron-left,
-  .carousel-control .glyphicon-chevron-right { width: 30px; height: 30px; margin-top: -10px; font-size: 30px; }
-  .carousel-control .glyphicon-chevron-left  { margin-left: -10px;}
-  .carousel-control .glyphicon-chevron-right { margin-right: -10px; }
-}
-
-.carousel-control > .fa                      { font-size: 40px; position: absolute; top: 50%; z-index: 5; display: inline-block; margin-top: -20px; }
 
 /**************************************************************************************
 * modal.less
@@ -757,9 +712,6 @@ table.dataTable th.sorting_desc::after                         { color:#7a80dd; 
 .g3w-view.content .preview .previewtype.text                                     { color: var(--skin-primary);   border-color: var(--skin-primary); }
 .g3w-view.content .preview .previewtype.excel                                    { color: var(--skin-success);   border-color: var(--skin-success); }
 .g3w-view.content .preview .previewtype.ppt                                      { color: var(--skin-alternate); border-color: var(--skin-alternate); }
-.g3w-view.content .g3wform-relation-table tbody td .preview .previewtype         { width: 30px; height: 30px; padding-top: 6px; }
-.g3w-view.content .g3wform-relation-table tbody td .preview .previewtype i,
-.g3w-view.content .g3wform-relation-table tbody td .preview .previewtype i.fa-2x { font-size: 1em; }
 .g3w-view.content .error-message                                                 { font-weight: bold; font-size: 1.2em; color: red; padding: 5px; margin: 3px; }
 .g3w-view.content .table-header-tool                                             { padding: 10px; color: #fff; font-size: 1.3em; }
 .g3w-view.content .action-button                                                 { display:inline-block; text-align: center; padding: 3px 3px 5px 3px; cursor: pointer; border-radius: 5px; caret-color: rgba(0,0,0,0); }
@@ -1097,13 +1049,11 @@ textarea.form-control                     { height: auto; }
 .g3w_input_help                                    { font-weight: normal; text-align: justify; padding: 5px; border-radius: 3px; margin-top: 5px; }
 .g3w_input_help img                                { max-height: 50px; }
 
-.g3wform_body .dataTable.no-footer                 { border-bottom: none; }
 .g3wform_body                                      { margin-bottom: 10px; }
 
 .attr-label                                        { width: 30%; max-width: 40%; font-weight: bold; }
 .add-link                                          { margin-left: 5px; font-size: 1.8em !important; }
 .add-link span.disabled                            { opacity: 0.3; }
-.g3w-mini-relation-icon                            { padding: 13px; }
 
 .g3wform_body .editbtn                             { padding: 10px; margin: 2px; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1), 0 1px 4px 0 rgba(0,0,0,0.3); border-radius: 30%; display: inline-block; opacity: .4; cursor: not-allowed; }
 .g3wform_body .editbtn.enabled                     { opacity: 1; cursor: pointer; }
@@ -1126,8 +1076,6 @@ textarea.form-control                     { height: auto; }
 .preview .previewtype.text                         { color: var(--skin-primary); border-color: currentColor; }
 .preview .previewtype.excel                        { color: var(--skin-success); border-color: currentColor; }
 .preview .previewtype.ppt                          { color: var(--skin-alternate); border-color: currentColor; }
-
-.g3wform-relation-table tbody td                   { vertical-align: bottom; }
 
 .g3wform_body                                                    { overflow-x:hidden; overflow-y: auto; clear:both; margin-bottom: 10px; }
 .g3wform_body .divider                                           { display: block; position: relative; padding: 0; margin: 5px auto; height: 0; width: 100%; max-height: 0; font-size: 1px; line-height: 0; clear: both; border: none; border-bottom: 1px solid rgba(122, 122, 122, 0.1); }
@@ -1230,15 +1178,7 @@ textarea.form-control                     { height: auto; }
 .select2-container .select2-selection--single .select2-selection__rendered                        { padding-right: 10px; }
 
 input[type="range"]                                                       { accent-color: var(--skin-color); margin: 5px 0 5px 0; }
-table.dataTable .no-footer                                                { border-bottom: 0 !important; }
-table.dataTable thead tr                                                  { font-size:  1.1em; }
-table.dataTable thead tr th                                               { padding-top: 2px ; padding-bottom: 2px; }
-.dataTables_scroll                                                        { border: 1px solid #cccccc; }
-.dataTables_wrapper.no-footer .dataTables_scrollBody                      { border-bottom: 0; }
 
-/** @since 3.9.0 */
-.dataTables_filter input.search,
-.dataTables_length select                                                 { border-radius: 3px; }
 .bootbox.dialogFullScreen .modal-dialog                                   { width: 90% !important; height: 90% !important; }
 .bootbox.modal.in .modal-title                                            { font-weight: bold; }
 .bootbox.modal.in.modal-left .modal-dialog                                { width: 350px !important; margin-left: 0 !important; margin-top: 5px !important; }

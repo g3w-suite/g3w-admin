@@ -189,7 +189,7 @@ class GeocodingControl extends ol.control.Control {
     if ('removefeature' === e.type && !this.clearing) {
       await GUI.closeContent()
       if (len) {
-        GUI.showQueryResults('Geocoding', { data: [{ layer: this.LAYER, features: this.LAYER.getSource().getFeatures() }] });
+        GUI.showData({ data: [{ layer: this.LAYER, features: this.LAYER.getSource().getFeatures() }] }, { title: 'Geocoding' });
       }
     }
   }
@@ -239,7 +239,7 @@ class GeocodingControl extends ol.control.Control {
     if ('toggle-sidebar' == e.submitter.value) {
       const features = this.LAYER.getSource().getFeatures();
       if (!GUI.getCurrentContent() && features.length) {
-        GUI.showQueryResults('Geocoding', { data: [{ layer: this.LAYER, features }] });
+        GUI.showData({ data: [{ layer: this.LAYER, features }] }, { title: 'Geocoding' });
       } else {
         GUI.closeContent();
       }
@@ -519,7 +519,7 @@ class GeocodingControl extends ol.control.Control {
       this.LAYER.getSource().addFeature(feature);
 
       await GUI.closeContent();
-      GUI.showQueryResults('Geocoding', { data: [{ layer: this.LAYER, features: [feature] }] });
+      GUI.showData({ data: [{ layer: this.LAYER, features: [feature] }] }, { title: 'Geocoding' });
     } catch (e) {
       console.warn(e);
     }
