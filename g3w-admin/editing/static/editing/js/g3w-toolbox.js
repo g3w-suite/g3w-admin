@@ -3052,6 +3052,12 @@ export class ToolBox extends Emitter {
             }
             return;
           }
+
+          // prevent storing invalid geometry as item property, see: https://github.com/g3w-suite/g3w-client-plugin-editing/pull/174
+          if (null === item.getGeometry()) {
+            item.setGeometry(undefined);
+          }
+
           //convert feature to json ex. {geometry:{type: 'Point'}, properties:{}.....}
           const itemObj = GeoJSONFormat.writeFeatureObject(item);
           
