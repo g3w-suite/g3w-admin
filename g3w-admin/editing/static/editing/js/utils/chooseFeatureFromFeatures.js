@@ -82,8 +82,8 @@ export function chooseFeatureFromFeatures({
       }
     });
 
-    dialog.find('button.btn-success').prop('disabled', true);
+    dialog.querySelector('.button.btn-success').disabled = true;
 
-    comp.$watch('feature', feature => dialog.find('button.btn-success').prop('disabled', null === feature));
+    comp.$watch('feature', feature => dialog.querySelector('.button.btn-success') = (null === feature || null));
   })
 }

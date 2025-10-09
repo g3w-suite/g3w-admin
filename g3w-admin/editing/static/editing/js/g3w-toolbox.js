@@ -594,7 +594,7 @@ export class ToolBox extends Emitter {
                     //ser relation layer id
                     try {
                       await new Promise((resolve, reject) => {
-                        const vueInstance      = new (Vue.extend({
+                        const vueInstance = new (Vue.extend({
                           name: 'multi-relations-fetures',
                           template: /* html */`
                           <div>
@@ -637,7 +637,7 @@ export class ToolBox extends Emitter {
                               }
                             }
                           }
-                        }).on('hide.bs.modal', () => vueInstance.$destroy()); //destroy vue instance after dialog is a closed
+                        });
                         //hide user message step
                       })
                     } catch(e) {
@@ -664,7 +664,7 @@ export class ToolBox extends Emitter {
                     }
                     try {
                       await new Promise((resolve, reject) => {
-                        const vueInstance      = new (Vue.extend({
+                        const vueInstance = new (Vue.extend({
                           name: 'multi-relations-fetures',
                           template: /* html */`
                           <div>
@@ -707,7 +707,7 @@ export class ToolBox extends Emitter {
                               }
                             }
                           }
-                        }).on('hide.bs.modal', () => vueInstance.$destroy()); //destroy vue instance after dialog is a closed
+                        });
                         //hide user message step
                       })
                     } catch(e) {
@@ -923,12 +923,11 @@ export class ToolBox extends Emitter {
                           data() { return ({ id: this.$options.layers.find(l => l.selected).id }) },
                           watch: { 'id'(id) { return this.$options.layers.forEach(l => l.selected = id === l.id); } },
                         }))({layers});
-                        const message          = vueInstance.$mount().$el;
                         GUI.dialog({
                           title:      _('plugins.editing.relation.copy_feature_from_other_layer'),
                           className:  'modal-left',
                           closeButton: false,
-                          message,
+                          message:     vueInstance.$mount().$el,
                           buttons: {
                             cancel: {
                               label: 'Cancel',
@@ -1033,7 +1032,7 @@ export class ToolBox extends Emitter {
                               }
                             }
                           }
-                        }).on('hide.bs.modal', () => vueInstance.$destroy()); //destroy vue instance after dialog is a closed
+                        });
                         //hide user message step
                       });
                     },

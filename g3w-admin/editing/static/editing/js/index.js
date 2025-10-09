@@ -531,7 +531,7 @@ new (class extends Plugin {
                     buttons: {
                       SAVE:   { className: "btn-success", callback() { resolve(inputs); }, label: _("save"),   },
                       CANCEL: { className: "btn-danger",  callback() { reject({cancel : true });        }, label: _(inputs.close ? "exitnosave" : "annul") },
-                      ...(inputs.close ? { CLOSEMODAL : { className: "btn-primary", callback() { dialog.modal('hide'); }, label:  _("annul") }} : {}),
+                      ...(inputs.close ? { CLOSEMODAL : { className: "btn-primary", callback() { dialog.remove(); }, label:  _("annul") }} : {}),
                     }
                   });
                   if (inputs.features) {
@@ -652,7 +652,9 @@ new (class extends Plugin {
 
         if (result && messages && messages.success) {
           // hide saving dialog
-          if (dialog) { dialog.modal('hide') }
+          if (dialog) {
+            dialog.remove();
+          }
 
           //Show save user message
           GUI.showUserMessage({
