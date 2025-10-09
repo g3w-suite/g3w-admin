@@ -71,7 +71,7 @@ export function chooseFeatureFromFeatures({
       attributes: (inputs.layer.state.editing.fields || []).map(({ name, label }) => ({ name, label })),
     });
 
-    const dialog = g3wsdk.gui.GUI.showModalDialog({
+    const dialog = GUI.dialog({
       title:       _('plugins.editing.modal.tools.copyfeaturefromprojectlayer.title'),
       className:   'modal-left',
       closeButton: false,

@@ -615,7 +615,7 @@ export class ToolBox extends Emitter {
                           }
                         }))({ relations, relationId })
 
-                        GUI.showModalDialog({
+                        GUI.dialog({
                           title:       _('plugins.editing.relations'),
                           className:   'modal-left',
                           closeButton: false,
@@ -686,7 +686,7 @@ export class ToolBox extends Emitter {
                           watch: { action: a => action = a }
                         }))
 
-                        GUI.showModalDialog({
+                        GUI.dialog({
                           title:       _('plugins.editing.tools.update_multi_features_relations_from_parents'),
                           className:   'modal-left',
                           closeButton: false,
@@ -924,7 +924,7 @@ export class ToolBox extends Emitter {
                           watch: { 'id'(id) { return this.$options.layers.forEach(l => l.selected = id === l.id); } },
                         }))({layers});
                         const message          = vueInstance.$mount().$el;
-                        GUI.showModalDialog({
+                        GUI.dialog({
                           title:      _('plugins.editing.relation.copy_feature_from_other_layer'),
                           className:  'modal-left',
                           closeButton: false,
