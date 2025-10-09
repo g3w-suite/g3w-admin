@@ -33,7 +33,6 @@ export default ({
                 @click.stop    = "toggleFilter(chart.layerId)"
                 :class         = "{ 'toggled': chart.tools.filter.active }"
                 data-placement = "bottom"
-                data-toggle    = "tooltip"
                 v-t-tooltip    = "'plugins.qplotly.tooltip.filter_chart'"
               ></span>
               <span
@@ -43,7 +42,6 @@ export default ({
                 :class         = "{ 'toggled': service.state.bbox_filter }"
                 @click.stop    = "toggleBBox"
                 data-placement = "bottom"
-                data-toggle    = "tooltip"
                 v-t-tooltip    = "'plugins.qplotly.tooltip.show_all_features_on_map'"
               ></span>
               <a
@@ -53,7 +51,6 @@ export default ({
                 style          = "margin: auto"
                 class          = "action-button action-button-icon far fa-edit"
                 data-placement = "bottom"
-                data-toggle    = "tooltip"
                 v-t-tooltip    = "'Edit in admin'"
               ></a>
             </div>
