@@ -4,9 +4,9 @@
   if (plugins) {
     plugins["editing"] = Object.assign(plugins["editing"] || {},
       {
-        version : "4.0.2-save_feature_with_geometry_null",
-        hash    : "83e0491",
-        branch  : "save_feature_with_geometry_null",
+        version : "4.0.2",
+        hash    : "7ac1539",
+        branch  : "v4.0.x",
       });
   }
 })();
