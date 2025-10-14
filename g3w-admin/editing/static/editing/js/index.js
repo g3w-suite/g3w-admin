@@ -157,7 +157,7 @@ new (class extends Plugin {
     );
 
     if (LAYERS.length) {
-      const { ToolBox } = (await import ('./g3w-toolbox.js'));
+      const { ToolBox } = (await import('./g3w-toolbox.js'));
       LAYERS.forEach(({ status, value, reason }) => {
           if ('fulfilled' === status) {
           const toolBox                                  = new ToolBox(value.layer, value.config);
