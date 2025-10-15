@@ -860,7 +860,7 @@ export class ToolBox extends Emitter {
                   external: l.external || false,
                   selected: 0 === i,
                 }));
-                return data.tool.enabled = layers.length > 0
+                return data.tool.enabled = data.bool && layers.length > 0
               };
               return ({ bool, tool = {} }) => {
                 data.tool = tool;
