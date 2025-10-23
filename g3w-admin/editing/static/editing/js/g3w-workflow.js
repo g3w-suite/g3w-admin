@@ -388,7 +388,6 @@ export class Workflow extends Emitter {
         GUI.showUserMessage({
           title:    'plugins.editing.workflow.title.steps',
           type:     'tool',
-          position: 'left',
           size:     'small',
           closable: false,
           hooks: {

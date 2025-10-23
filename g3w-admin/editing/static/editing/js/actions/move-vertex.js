@@ -50,7 +50,6 @@ export class ModifyGeometryVertexStep extends Step {
       //Show user message to save or not vertex changes
       GUI.showUserMessage({
         type:     'tool',
-        position: 'left',
         size:     'small',
         title: 'plugins.editing.tools.update_vertex',
         closable: false,
