@@ -1165,7 +1165,7 @@ export default ({
       this.isVectorRelation = 'vector' === relationLayer.getType();
 
       /** @since 4.0.2 add relation capabilities */ 
-      this.rcapabilities    = relationLayer.state.editing?.capabilities || [];
+      this.rcapabilities = relationLayer.state.editing?.capabilities || [];
 
       // vector relation → get all layers with the same geometry
       if (this.isVectorRelation) {

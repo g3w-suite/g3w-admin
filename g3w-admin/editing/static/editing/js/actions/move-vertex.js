@@ -51,7 +51,7 @@ export class ModifyGeometryVertexStep extends Step {
       GUI.showUserMessage({
         type:     'tool',
         size:     'small',
-        title: 'plugins.editing.tools.update_vertex',
+        title:    'plugins.editing.tools.update_vertex',
         closable: false,
         hooks: {
           body: {

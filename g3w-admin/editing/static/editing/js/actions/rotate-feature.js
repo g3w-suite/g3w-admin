@@ -351,7 +351,6 @@ class RotateInteraction extends ol.interaction.Pointer {
         type:      'tool',
         title:     'Rotation',
         size:      'small',
-        autoclose: false,
         closable:  false,
         iconClass: 'refresh',
         hooks: {
