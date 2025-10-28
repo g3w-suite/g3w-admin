@@ -100,21 +100,24 @@ class QdjangoThemeTest(QdjangoTestBase):
                     "styles": {
                         "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
                         "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "predefinito"
-                    }
+                    },
+                    'default': True
                 },
                 {
                     "theme": "View2",
                     "styles": {
                         "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
                         "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "style_red_square"
-                    }
+                    },
+                    'default': False
                 },
                 {
                     "theme": "View3",
                     "styles": {
                         "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
                         "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "style_red_square"
-                    }
+                    },
+                    'default': False
                 }
             ],
             "custom": []
