@@ -1146,6 +1146,9 @@ export default ({
     },
 
     created() {
+      /** @since 4.0.4 */
+      this._current_style = null;
+
       const relationLayer = getEditingLayerById(this.relation.child);
 
       /**
@@ -1514,6 +1517,19 @@ export default ({
     },
 
     async activated() {
+
+      // set editing style on relation layer
+      try {
+        const layer = getEditingLayerById(this.relation.child);
+        this._current_style = layer.getCurrentStyle().name;
+        if (layer.config.editing.layer_style && this._current_style !== layer.config.editing.layer_style) {
+          GUI.getComponent('catalog').getInternalComponent().activeTab = 'layers'; // force active tab
+          await layer.changeStyle(layer.config.editing.layer_style);
+        }
+      } catch(e) {
+        console.warn(e);
+      }
+
       // zoom to feature
       if (this.isVectorRelation) {
         this.mapExtent = GUI.getMapBBOX();
@@ -1530,7 +1546,17 @@ export default ({
       this.active = true;
     },
 
-    deactivated() {
+    async deactivated() {
+      // reset editing style on relation layer
+      try {
+        const layer = getEditingLayerById(this.relation.child);
+        if (layer.config.editing.layer_style && this._current_style && this._current_style !== layer.config.editing.layer_style) {
+          await layer.changeStyle(this._current_style);
+        }
+      } catch(e) {
+        console.warn(e);
+      }
+
       this.active = false;
       this.relations.forEach(r => r.select = false); // unselect relation when click on back control form
     },
