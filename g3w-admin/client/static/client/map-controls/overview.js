@@ -94,11 +94,17 @@ GUI.setupControl.overview = async function() {
       Object.defineProperty(PROJECT, 'state', { get() { return PROJECT; }, configurable: false, enumerable: true });
     }
 
+    const collapseLabel = Object.assign(document.createElement('span'), { classList: "fas fa-minus", title: 'close' });
+    const label         = Object.assign(document.createElement('span'), { classList: "fas fa-globe-americas", title: 'Overview map' });
+
+    collapseLabel.dataset.placement = label.dataset.placement = 'top';
+
     GUI.createMapControl({
       id: 'overview',
       add: false,
       options: {
         ol: new ol.control.OverviewMap({
+          target: document.querySelector('.g3w-map-controls-left-bottom'),
           view:          new ol.View({
             extent:        PROJECT.state.extent,
             projection:    GUI.getProjection(),
@@ -106,10 +112,12 @@ GUI.setupControl.overview = async function() {
             maxResolution: Math.max(ol.extent.getWidth(PROJECT.state.extent) / 200,     ol.extent.getHeight(PROJECT.state.extent) / 150),     // max(xRes, yRes)
             resolution:    Math.max(ol.extent.getWidth(PROJECT.state.initextent) / 200, ol.extent.getHeight(PROJECT.state.initextent) / 150), // max(xInitRes, yInitRes)
           }), // hardcoded
-          collapsed:     false,
-          className:     'ol-overviewmap ol-custom-overviewmap',
-          collapseLabel: $(`<span class="${GUI.getFontClass('arrow-left')}"></span>`)[0],
-          label:         $(`<span class="${GUI.getFontClass('arrow-right')}"></span>`)[0],
+          rotateWithView: true,
+          collapsed:      false,
+          className:      'ol-overviewmap',
+          tipLabel:       '',
+          collapseLabel,
+          label,
           layers:        Object
             .entries(
               // group layer by multilayerId
@@ -142,17 +150,8 @@ GUI.setupControl.overview = async function() {
         }),
         position: 'bl',
       }
-    })
-    /** @since 3.10.0 Move another bottom left map controls bottom to a left of overview control**/
-    document.querySelector('.g3w-map-controls-left-bottom').style.left = '230px';
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if ("class" === mutation.attributeName) {
-          document.querySelector('.g3w-map-controls-left-bottom').style.left = mutation.target.classList.contains('ol-collapsed') ? '50px' : '230px';
-        }
-      });
     });
-    observer.observe(document.querySelector('.ol-custom-overviewmap'), { attributes: true });
+
   } catch (err) {
     console.warn(err)
   }

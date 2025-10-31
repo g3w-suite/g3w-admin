@@ -441,8 +441,9 @@ class GeocodingControl extends ol.control.Control {
       GUI.getComponent('search').actions.findLast((action) => {
         const tmp = document.createElement('li');
         tmp.style.cursor = 'pointer';
-        tmp.className= 'action-tool';
-        tmp.innerHTML = /* html */`<i class="${action.class.replace('sidebar-button', '').replace('sidebar-button-icon', '')}"></i> ${action.tooltip}`;
+        tmp.id           = 'geocoding-advanced-search';
+        tmp.className    = 'action-tool';
+        tmp.innerHTML    = /* html */`<i class="${action.class.replace('sidebar-button', '').replace('sidebar-button-icon', '')}"></i> ${action.tooltip}`;
         tmp.addEventListener('click', e => {
           e.preventDefault();
           GUI.showSidebar();

@@ -67,6 +67,43 @@ class MeasureControl extends MapControl {
           this._interaction = this.interactions[this.types[0]];
           this.getMap().addInteraction(this._interaction);      // add first interaction
         }
+        if (!toggled && this.types.length > 1) {
+          GUI.closeUserMessage();
+        } else if (this.types.length > 1) {
+          GUI.showUserMessage({
+            title:     'Measure',
+            type:      'tool',
+            size:      'small',
+            iconClass: 'measure',
+            closable:  false,
+            hooks:     {
+              body: {
+                data: () => ({ types: this.types, type: this.types[0] }),
+                template: /* html */ `
+                  <div style="width: 100%; padding: 5px;">
+                    <select ref="select" style="width: 100%" :search="false" v-select2="'type'">
+                      <option v-for="type in types" :value="type" v-t="'measure_types.' + type"></option>
+                    </select>
+                  </div>`,
+                watch: {
+                  // change measure interaction
+                  type: (ntype, otype) => {
+                    // deactivate previous interaction
+                    this.interactions[otype].setActive(false);
+                    this.interactions[otype].clear();
+                    this.getMap().removeInteraction(this.interactions[otype]);
+                    // activate new interacion
+                    this.getMap().addInteraction(this.interactions[ntype]);
+                    this.interactions[ntype].setActive(true);
+                    this._interaction = this.interactions[ntype];
+                  },
+                },
+                created()       { GUI.toggleUserMessage(false); },
+                beforeDestroy() { GUI.toggleUserMessage(true); }
+              }
+            }
+          });
+        }
       },
     });
 
@@ -176,35 +213,6 @@ class MeasureControl extends MapControl {
 
     if (!this._interaction) {
       this._interaction = this.interactions[type];
-    }
-
-    if (this.types.length > 1) {
-      this.toggledTool = this.toggledTool || {
-        __title:      'Measure',
-        __iconClass:  'measure', //@since v3.11.0
-        data: () => ({ types: this.types, type: this.types[0] }),
-        template: /* html */ `
-          <div style="width: 100%; padding: 5px;">
-            <select ref="select" style="width: 100%" :search="false" v-select2="'type'">
-              <option v-for="type in types" :value="type" v-t="'measure_types.' + type"></option>
-            </select>
-          </div>`,
-        watch: {
-          // change measure interaction
-          type: (ntype, otype) => {
-            // deactivate previous interaction
-            this.interactions[otype].setActive(false);
-            this.interactions[otype].clear();
-            this.getMap().removeInteraction(this.interactions[otype]);
-            // activate new interacion
-            this.getMap().addInteraction(this.interactions[ntype]);
-            this.interactions[ntype].setActive(true);
-            this._interaction = this.interactions[ntype];
-          },
-        },
-        created()       { GUI.toggleUserMessage(false); },
-        beforeDestroy() { GUI.toggleUserMessage(true); }
-      };
     }
   }
 

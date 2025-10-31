@@ -210,7 +210,7 @@ class AnnotationControl extends MapControl {
                 <!-- SHAPE CONSTRAINT: “Segment length (line)” -->
                 <div v-if = "'LineString' === type && !feature" style="display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
-                    <span v-t = "'Length'"></span>
+                    {{ $t('Length') }}
                     <input 
                       class   = "form-control"
                       type    = "number" 
@@ -229,7 +229,7 @@ class AnnotationControl extends MapControl {
                 <!-- SHAPE CONSTRAINT: “Segment length (polygon)” -->
                 <div v-if = "'Polygon' === type && !feature" style="display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
-                    <span v-t = "'Length'"></span>
+                    {{ $t('Length') }}
                     <input 
                       class   = "form-control"
                       type    = "number" 
@@ -248,7 +248,7 @@ class AnnotationControl extends MapControl {
                 <!-- SHAPE CONSTRAINT: “Segment width (rectangle)” -->
                 <div v-if = "'Rectangle' === type && !feature" style="display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
-                    <span v-t = "'Width Length'"></span>
+                    {{ $t('Width Length') }}
                     <input 
                       class   = "form-control"
                       type    = "number" 
@@ -267,7 +267,7 @@ class AnnotationControl extends MapControl {
                 <!-- SHAPE CONSTRAINT: “Segment height (rectangle)” -->
                 <div v-if = "'Rectangle' === type && !feature" style="display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
-                    <span v-t = "'Height Length'"></span>
+                    {{ $t('Height Length') }}
                     <input 
                       class   = "form-control"
                       type    = "number" 
@@ -286,7 +286,7 @@ class AnnotationControl extends MapControl {
                 <!-- SHAPE CONSTRAINT: “Circle radius” -->
                 <div v-if = "'Circle' === type && !feature" style="display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
-                    <span v-t = "'Radius'"></span>
+                    {{ $t('Radius') }}
                     <input 
                       class   = "form-control"
                       type    = "number" 
@@ -313,7 +313,7 @@ class AnnotationControl extends MapControl {
 
                 <!-- SHAPE LABEL (rotation) -->
                 <label v-if = "feature && 'Text' === feature.get('type')" style = "display: block;">
-                  <span v-t = "'Rotation'"></span>
+                  {{ $t('Rotation') }}
                   <input 
                     type    = "range" 
                     name    = "rotation" 
@@ -325,7 +325,7 @@ class AnnotationControl extends MapControl {
                 </label>
 
                 <label v-if = "feature && 'Text' === feature.get('type')" style = "display: block;">
-                  <span v-t = "'Font Size'"></span>
+                  {{ $t('Font Size') }}
                   <input 
                     type    = "range" 
                     name    = "fontsize" 
@@ -365,7 +365,7 @@ class AnnotationControl extends MapControl {
 
                 <!-- SHAPE RADIUS (point) -->
                 <div v-if = "feature && 'Point' === feature.get('type')">
-                  <label for = "radius" v-t = "'Radius'"></label>
+                  <label for = "radius">{{ $t('Radius') }}</label>
                   <input 
                     type    = "range" 
                     name    = "radius" 
@@ -378,7 +378,7 @@ class AnnotationControl extends MapControl {
 
                 <!-- SHAPE STROKE WIDTH -->
                 <div v-if = "feature && ['LineString', 'Polygon', 'Rectangle', 'Circle'].includes(feature.get('type'))">
-                  <label for = "stroke" v-t = "'Stroke'"></label>
+                  <label for = "stroke">{{ $t('Stroke') }}</label>
                   <input 
                     type    = "range" 
                     name    = "stroke" 
@@ -390,17 +390,17 @@ class AnnotationControl extends MapControl {
                 </div>
                 <!-- LINE DIRECTION (line) -->
                 <div v-if = "feature && 'LineString' === feature.get('type')">
-                  <label v-t = "'Direction'"></label>
+                  <label>{{ $t('Direction') }}</label>
                   <select class = "form-control" style = "margin-bottom: 5px;" v-model = "style.direction">
                     <option :value = "null">---</option>
-                    <option value  = "forward" v-t = "'Forward'"></option>
-                    <option value  = "backward" v-t = "'Backward'"></option>  
+                    <option value  = "forward">{{ $t('Forward') }}</option>
+                    <option value  = "backward">{{ $t('Backward') }}</option>  
                   </select>   
                 </div>
 
                 <!-- SHAPE OPACITY -->
                 <div v-if = "feature && ['Polygon', 'Rectangle' , 'Circle'].includes(feature.get('type'))">
-                  <label for = "opacity" v-t = "'Opacity'"></label>
+                  <label for = "opacity">{{ $t('Opacity') }}</label>
                   <input 
                     type    = "range" 
                     name    = "opacity" 
@@ -420,7 +420,7 @@ class AnnotationControl extends MapControl {
                       v-model = "show_text"
                       style   = "width: 1.25em; aspect-ratio: 1; vertical-align: sub; accent-color: var(--skin-color);"
                     />
-                    <span v-t = "'Show Text'" ></span>
+                    {{ $t('Show Text') }}
                   </label>
                   <label :hidden = "'Text' === feature.get('type')">
                     <input 
@@ -429,7 +429,7 @@ class AnnotationControl extends MapControl {
                       v-model = "show_info"
                       style   = "width: 1.25em; aspect-ratio: 1; vertical-align: sub; accent-color: var(--skin-color);"
                     />
-                    <span v-t = "'Show Info'" ></span>
+                    {{ $t('Show Info') }}
                   </label>
                 </div>
 
@@ -1198,8 +1198,7 @@ class AnnotationControl extends MapControl {
   #style(type) {
     const epsg         = ApplicationState.project.getProjection().getCode();
     const units        = ApplicationState.project.getProjection().getUnits();
-    const fill         = new ol.style.Fill({ color : '#000' });
-    const stroke       = new ol.style.Stroke({ color: '#FFF', width: 3 });
+    const stroke       = new ol.style.Stroke({ color: '#FFF', width: 4 });
     const font_family  = 'Titillium Web';
     const image        = new ol.style.Circle({ radius: 5, stroke: new ol.style.Stroke({ color: '#000', width: 3 }) });
 
@@ -1208,10 +1207,10 @@ class AnnotationControl extends MapControl {
         text: new ol.style.Text({
           text:      feat.get('text'),
           rotation:  feat.get('style')?.rotation * (Math.PI / 180),
-          fill,
-          font:  `${feat.get('style')?.fontsize}px ${font_family}`,
+          fill:      new ol.style.Fill({ color : '#000' }),
+          font:  `bold ${feat.get('style')?.fontsize}px ${font_family}`,
           placement: 'point',
-          stroke: new ol.style.Stroke({ color: '#FFF', width: 8 }),
+          stroke: new ol.style.Stroke({ color: '#FFF', width: 5 }),
         }),
       });
     }
@@ -1222,8 +1221,8 @@ class AnnotationControl extends MapControl {
           placement: 'point',
           offsetY:    -Number(feat.get('style')?.radius) - 10 + (feat.get('show_text') ? -10 : 0),
           text:      `${feat.get('show_info') && `${`${ol.coordinate.format(feat.getGeometry().getCoordinates(), '{x},{y}', 2)}`} ${feat.get('show_text') && '\n' || ''}` || '' }${feat.get('show_text') && feat.get('text') || ''}`,
-          fill,
-          font:      `${feat.get('style')?.fontsize}px ${font_family}`,
+          fill:      new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
+          font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,
           stroke,
         }),
         image: new ol.style.Circle({
@@ -1242,8 +1241,8 @@ class AnnotationControl extends MapControl {
           text: new ol.style.Text({
             placement: 'point',
             text:      `${feat.get('show_info') && (get_formatted_length(feat.getGeometry(), epsg, units) + '\n') || ''}${feat.get('show_text') && feat.get('text') || ''}`,
-            fill,
-            font:      `${feat.get('style')?.fontsize}px ${font_family}`,
+            fill:       new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
+            font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,
             stroke,
           }),
           stroke: new ol.style.Stroke({ width: feat.get('style')?.width, color: feat.get('style')?.color }),
@@ -1280,8 +1279,8 @@ class AnnotationControl extends MapControl {
           text: new ol.style.Text({
             placement: 'point',
             text:      `${feat.get('show_info') && (get_formatted_area(feat.getGeometry(), epsg, units) + '\n') || ''}${feat.get('show_text') && feat.get('text') || ''}`,
-            fill,
-            font:  `${feat.get('style')?.fontsize}px ${font_family}`,            
+            fill:      new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
+            font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,            
             stroke,
           }),
           stroke: new ol.style.Stroke({ width: feat.get('style')?.width, color: feat.get('style')?.color }),
@@ -1301,8 +1300,8 @@ class AnnotationControl extends MapControl {
           text: new ol.style.Text({
             placement: 'point',
             text:      `${feat.get('show_info') && (get_formatted_area(feat.getGeometry(), epsg, units) + '\n') || ''}${feat.get('show_text') && feat.get('text') || ''}`,
-            fill,
-            font:      `${feat.get('style')?.fontsize}px ${font_family}`,
+            fill:      new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
+            font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,
             stroke,
           }),
           stroke:   new ol.style.Stroke({ width: feat.get('style')?.width, color: feat.get('style')?.color }),
@@ -1324,8 +1323,8 @@ class AnnotationControl extends MapControl {
           text:   new ol.style.Text({
             placement: 'point',
             text:      feat.get('show_text') && feat.get('text') || '',
-            fill,
-            font:      `${feat.get('style')?.fontsize}px ${font_family}`,
+            fill:      new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
+            font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,
             stroke,
           }),
           stroke: new ol.style.Stroke({ width: feat.get('style')?.width || 3, color: feat.get('style')?.color || 'rgb(3, 169, 244)' }),
@@ -1344,8 +1343,8 @@ class AnnotationControl extends MapControl {
                 : (Math.round(feat.getGeometry().getRadius() * 100) / 100) + ' m'} \n` 
               : ''
             }`,
-            fill,
-            font:  `${feat.get('style')?.fontsize}px ${font_family}`,
+            fill:   new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
+            font:  `bold ${feat.get('style')?.fontsize}px ${font_family}`,
             stroke,
           }),
           ...(feat.get('show_info') || undefined === feat.get('show_info') 
@@ -1361,8 +1360,8 @@ class AnnotationControl extends MapControl {
             placement: 'point',
             offsetX:   20,
             text:      `${feat.get('show_info') && `${parseInt(Math.atan2(feat.getGeometry().getCenter()[0] - feat.get('endCoordinates')[0], feat.getGeometry().getCenter()[1] - feat.get('endCoordinates')[1]) * 180 / Math.PI)}°` || ''}`,
-            fill,
-            font:      `${feat.get('style')?.fontsize}px ${font_family}`,
+            fill:      new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
+            font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,
             stroke,
           }),
           geometry: () => new ol.geom.Point(feat.get('endCoordinates'))

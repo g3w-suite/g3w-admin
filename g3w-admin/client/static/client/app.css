@@ -113,6 +113,7 @@ dialog                                      { border-width: 0; animation: slide-
 dialog::backdrop                            { background-color: rgb(0, 0, 0, .5); }
 dialog[popover=manual]::backdrop            { opacity: .25; }
 dialog.modal-gallery::backdrop              { background-color: rgb(0, 0, 0); }
+dialog.modal-left                           { width: 350px; margin-left: 2px; margin-top: 3px; }
 dialog > form > menu                        { background: #fff; position:sticky; bottom:0; margin: 0; padding: 10px 0; }
 dialog:has(> form)                          { padding: 0; }
 dialog form                                 { padding: 14px; }
@@ -377,8 +378,6 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 /**************************************************************************************
 * modal.less
 **************************************************************************************/
-
-#g3w-modal-overlay { height: 100vh; }
 
 .modal-open                           { overflow: hidden; }
 .modal                                { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 1050; display: none; overflow: hidden; -webkit-overflow-scrolling: touch; outline: 0; background: rgba(0,0,0,.3); }
@@ -726,8 +725,6 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .g3w-view.content.split-h                                                        { border-left: 1px solid #d6d6d6; }
 .g3w-view.content.split-v                                                        { border-top: 1px solid #d6d6d6; }
 .g3w-view .close-panel-block span i.panel-button                                 { color: transparent; }
-.g3w-view .close-panel-block span.g3w-span-button                                { height: 1.1em; line-height: 1.1em; width: 1.1em; font-size: 1em !important; margin-top: 8px; margin-bottom: 5px; margin-right: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border-radius: 30%; caret-color: rgba(0,0,0,0); }
-.g3w-view .close-panel-block span.g3w-span-button.mobile                         { margin-top: 3px; }
 
 .g3w-view.content .action-button-icon,
 .g3w-view.content .g3w_contents_back > div                                       { color: var(--skin-color); }
@@ -805,20 +802,17 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .ol-control.ol-rotate             button .ol-compass                   { background: url(./images/compass.svg)                      no-repeat 50% center; display: block; width: 100%; height: 100%; transform: rotate(30deg); font-size: 0; }
 .ol-control.ol-annotation         button::before                       { background: url(./images/mActionCreateAnnotationLayer.svg) no-repeat center; content: ''; position: absolute; inset: 0; }
 
-.ol-control, .ol-custom-overviewmap                                    { background-color: transparent; border-radius: 0; padding: 0; }
-:is(.ol-control, .ol-custom-overviewmap) button                        { display: block; margin: 0; padding: 2px 6px; text-decoration: none; text-align: center; height: 39px; width: 39px; line-height: 1.42857143; border-radius: 3px; font-size: 25px; font-weight: 300; float:left; background-color: #fff; color: #222d32; border: 1px solid rgba(0,0,0,0.5); background-clip: padding-box; box-shadow: none !important; border-radius: 3px; }
-:is(.ol-control, .ol-custom-overviewmap) button:hover                  { text-decoration: none; }
-:is(.ol-control, .ol-custom-overviewmap) button:focus                  { text-decoration: none; outline: none; }
-.ol-overviewmap:not(.ol-collapsed) button                              { bottom: 5px; }
+.ol-control                                                            { background-color: transparent; border-radius: 0; padding: 0; }
+.ol-control button                                                     { display: block; margin: 0; padding: 2px 6px; text-decoration: none; text-align: center; height: 39px; width: 39px; line-height: 1.42857143; border-radius: 3px; font-size: 25px; font-weight: 300; float:left; background-color: #fff; color: #222d32; border: 1px solid rgba(0,0,0,0.5); background-clip: padding-box; box-shadow: none !important; border-radius: 3px; }
+.ol-control button:hover                                               { text-decoration: none; }
+.ol-control button:focus                                               { text-decoration: none; outline: none; }
+.ol-mouse-position                                                     { position: relative !important; font-weight: 700; font-size: .9em; margin-top: -2px; }
+.ol-overviewmap:not(.ol-collapsed)                                     { border: 1px solid rgba(0,0,0,.5); border-radius: 3px; }
+.ol-overviewmap:not(.ol-collapsed) button                              { scale: .7; }
+.ol-overviewmap                                                        { bottom: 0 !important; }
 .ol-overviewmap:hover                                                  { background-color: rgba(255,255,255, 1) !important; }
-.ol-mouse-position                                                     { position: relative !important; height: 20px; font-weight: bold; font-size: 0.9em; margin-left: 8px; }
-.ol-mouse-position-default                                             { right: 50px; border-radius: 4px; z-index: 1; }
-.ol-mouse-position-default                                             { color: #fff; }
-.ol-custom-overviewmap                                                 { border-radius: 5px; }
-.ol-custom-overviewmap button                                          { display: inline-block;     left: 3px; bottom: 8px; width: 30px; height: 30px; }
-.ol-custom-overviewmap button span                                     { font-size: 15px; font-weight: bold; position: absolute; margin: -6px; }
-.ol-custom-overviewmap .ol-overviewmap-map                             { border: none; height: 150px; width: 200px; }
-.ol-custom-overviewmap.ol-collapsed                                    { border: 0; }
+.ol-overviewmap .ol-overviewmap-map                                    { border: none; height: 150px; width: 200px; }
+.ol-overviewmap .ol-overviewmap-box                                    { border: 3px solid var(--skin-color); }
 .ol-control-tl                                                         { top: 0;     left: 7px; }
 .ol-control-bl                                                         { bottom: 40px; left: 7px; }
 .ol-control-tr                                                         { top: 7px;     right: 7px; }
@@ -856,12 +850,14 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .g3w-map-controls .ol-zoom                                             { top:0; left:0; }
 .g3w-map-controls .ol-zoom .ol-zoom-in                                 { float: none; margin-bottom: 6px; }
 .g3w-map-controls .ol-zoom-extent                                      { top:0; left:0; }
-:is(.ol-control, .ol-custom-overviewmap) button:hover                  { background-color:var(--skin-color); }
-:is(.ol-control, .ol-custom-overviewmap) button:focus                  { background-color:#e5e5e5; }
-.ol-mouse-position-default                                             { background: var(--skin-color); }
 
-.ol-custom-overviewmap,
-.ol-custom-overviewmap .ol-overviewmap-box,
+.g3w-map-controls-left-bottom .ol-control                              { position: relative; }
+.g3w-map-controls-left-bottom                                          { display: flex; gap: 5px; bottom: 35px !important; }
+.ol-zoom-history                                                       { align-items: end; order: 1; }
+
+.ol-control button:hover                                               { background-color:var(--skin-color); }
+.ol-control button:focus                                               { background-color:#e5e5e5; }
+
 .ol-scale-control span.select2-selection                               { border: 2px solid var(--skin-color); }
 
 .ol-box                                                                { border: 3px solid rgb(3, 169, 244); background-color: rgba(255, 255, 255, 0.50); }
@@ -874,7 +870,6 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .tool_mapcontrol_button                                                { background-color: var(--skin-color); }
 .g3w-ol-toggled                                                        { background-color: var(--skin-color) !important; }
 
-.ol-mouse-position,
 .ol-attribution li a                                                                           { color: hsl(from var(--skin-color) h s calc(l - 20)); }
 #scale-control .select2-selection__rendered                                                    { color: hsl(from var(--skin-color) h s calc(l - 20)) !important; }
 #scale-control .select2-selection__arrow b                                                     { border-top-color: hsl(from var(--skin-color) h s calc(l - 20)) !important; }
@@ -1179,10 +1174,6 @@ textarea.form-control                     { height: auto; }
 
 input[type="range"]                                                       { accent-color: var(--skin-color); margin: 5px 0 5px 0; }
 
-.bootbox.dialogFullScreen .modal-dialog                                   { width: 90% !important; height: 90% !important; }
-.bootbox.modal.in .modal-title                                            { font-weight: bold; }
-.bootbox.modal.in.modal-left .modal-dialog                                { width: 350px !important; margin-left: 0 !important; margin-top: 5px !important; }
-
 .c3-title                                                                 { font-weight: bold; top: 5px; font-size: 2em; }
 .select2-dropdown                                                         { color: #444 !important; }
 .table.mobile thead tr th,
@@ -1200,7 +1191,6 @@ input[type="range"]                                                       { acce
 body .tooltip .tooltip-inner                                              { max-width: 100% !important; }
 
 :is(.magic-checkbox, .magic-radio) + label                                          { display: inline-flex !important; width: calc(100% - 1.5em);}
-.bootbox.modal.in .modal-title                                                      { color: var(--skin-color); }
 .c3-title                                                                           { fill: var(--skin-color); }
 .select2-container--default .select2-results__option--highlighted[aria-selected]    { background-color: var(--skin-color) !important; }
 .select2-container--default .select2-selection--multiple .select2-selection__choice { background-color: var(--skin-color); border-color: var(--skin-color); }
