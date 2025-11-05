@@ -201,7 +201,7 @@ LANGUAGES = (
     ('se', 'Swedish'), # FIXME: correct language code should be "sv"
     ('ro', 'Romanian'),
     ('de', 'Deutsch'),
-    ('bg', 'Bulgarian'),
+    #('bg', 'Bulgarian'), # TODO: to add when g3w-client is ready translated
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
