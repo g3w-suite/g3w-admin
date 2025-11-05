@@ -29,7 +29,7 @@ export default ({
 
   <div style="display: flex;">
     <!-- PAGE SIZE -->
-    <label style="margin-top: 5px;">{{ $t('show') }} <select style = "border: 1px solid #aaa;" v-model = "search.page_size">
+    <label style="margin-top: 5px;"><select style = "border: 1px solid #aaa;" v-model = "search.page_size">
       <option v-for = "l in PAGELENGTHS" :value = "l">{{ l }}</option>
     </select> {{ $t('values per page') }}</label>
 
