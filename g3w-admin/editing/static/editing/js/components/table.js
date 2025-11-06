@@ -28,10 +28,9 @@ export default ({
   <h3 style = "margin-top:0;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ title }}</h3>
 
   <div style="display: flex;">
-    <!-- PAGE SIZE -->
-    <label style="margin-top: 5px;"><select style = "border: 1px solid #aaa;" v-model = "search.page_size">
-      <option v-for = "l in PAGELENGTHS" :value = "l">{{ l }}</option>
-    </select> {{ $t('values per page') }}</label>
+
+    <!-- TOTAL ELEMENTS -->
+    <span style = "margin-left: .5ch;">{{ rows.length }} {{ $t('entries') }}</span>
 
     <!-- GLOBAL SEARCH -->
     <input
@@ -141,8 +140,11 @@ export default ({
   </table>
 
   <div style="display: flex; margin: 1em 0;">
-    <!-- TOTAL ELEMENTS -->
-    <span style = "margin-left: .5ch;">{{ rows.length }} {{ $t('entries') }}</span>
+
+    <!-- PAGE SIZE -->
+    <label style="margin-top: 5px;"><select style = "border: 1px solid #aaa;" v-model = "search.page_size">
+      <option v-for = "l in PAGELENGTHS" :value = "l">{{ l }}</option>
+    </select> {{ $t('values per page') }}</label>
 
     <!-- PAGINATION BUTTONS -->
     <div style = "margin-left: auto;" >
@@ -155,8 +157,8 @@ export default ({
         <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
       </select>
       {{ $t(' of ') + pages }}
-      <button title="Backward" data-placement="top" @click.stop = "search.page = Number(search.page) - 1" class="btn" v-disabled = "1 == search.page">🞀</button>
-      <button title="Forward"  data-placement="top" @click.stop = "search.page = Number(search.page) + 1" class="btn" v-disabled = "pages == search.page">🞂</button>
+      <button v-if="pages > 1" title="Backward" data-placement="top" @click.stop = "search.page = Number(search.page) - 1" class="btn" v-disabled = "1 == search.page">🞀</button>
+      <button v-if="pages > 1" title="Forward"  data-placement="top" @click.stop = "search.page = Number(search.page) + 1" class="btn" v-disabled = "pages == search.page">🞂</button>
     </div>
   </div>
 
