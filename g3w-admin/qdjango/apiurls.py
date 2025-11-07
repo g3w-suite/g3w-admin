@@ -49,6 +49,10 @@ from .api.layerscaleconstraints.views import (
     ScaleVisibilityLayerConstraintDetail
 )
 
+from .api.bookmarks.views import (
+    ProjectBookmarkCRUDAPIView,
+)
+
 from .views import ProjectSetOrderView
 
 
@@ -415,5 +419,15 @@ urlpatterns = [
         'api/alternativeuniquelayer/<int:project_id>/<str:layer_id>/',
         login_required(QdjangoAlternativeUniqueLayerAPIView.as_view()),
         name='qdjango-api-alternative-unique-layer'
+    ),
+
+    #############################################################
+    # API for project bookmaprk
+    #############################################################
+
+    path(
+        'api/bookmark/',
+        login_required(ProjectBookmarkCRUDAPIView.as_view()),
+        name='qdjango-api-bookmark-project'
     ),
 ]

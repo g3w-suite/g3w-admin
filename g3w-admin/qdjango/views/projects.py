@@ -17,6 +17,7 @@ from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
 from core.utils.decorators import project_type_permission_required, is_active_required
+from core.models import GroupProjectPanoramic
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -37,7 +38,8 @@ from qdjango.models import (
     LayerAcl,
     GeoConstraint,
     SingleLayerConstraint,
-    ColumnAcl
+    ColumnAcl, 
+    ProjectBookmark
 )
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -79,6 +81,9 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         # Get inactive projects
         context['inactive_project_list'] = get_objects_for_user(self.request.user, 'qdjango.view_project', Project) \
             .filter(group=self.group, is_active=0).order_by('order')
+        
+        # Get project bookmarked per user
+        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user, project__in=self.get_queryset()).values_list('project_id', flat=True)
 
         return context
 
@@ -486,6 +491,13 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
         if 'qdjango' in settings.CACHES:
             caches['qdjango'].delete(
                 settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+            
+        # Remove panoramic options if is set
+        try:
+            gpano = GroupProjectPanoramic.objects.get(project_id=self.object.id, group=self.object.group, project_type='qdjango')
+            gpano.delete()
+        except:
+            pass
 
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
 

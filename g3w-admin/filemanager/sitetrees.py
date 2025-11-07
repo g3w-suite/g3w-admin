@@ -108,7 +108,7 @@ sitetrees = (
 
     # BULGARIAN
     G3Wtree(
-        'filemanager_sidebar_right',
+        'filemanager_sidebar_right_bg',
         title='STRESS навигационна лента',
         module='filemanager',
         items=[
@@ -126,5 +126,25 @@ sitetrees = (
         ]
     ),
 
+
+    # PORTUGUESE
+    G3Wtree(
+        'filemanager_sidebar_right_pt',
+        title='STRESS navabar',
+        module='filemanager',
+        items=[
+            item(
+                'Gestor de Ficheiros',
+                '#',
+                type_header=True
+            ),
+            item(
+                'Ficheiros',
+                'filemanager-home',
+                icon_css_class='fa fa-database',
+                description='Go to file manager application...'
+            ),
+        ]
+    ),
 )
 

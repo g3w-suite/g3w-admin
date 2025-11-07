@@ -647,16 +647,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         try:
 
-            users = User.objects.all() if user == None else [user]
-
             # Invalidate project cache
             pre_keys = (
                 f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.slug}_{'qdjango'}_{self.pk}",
                 f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
             )
 
-            # Invalidate every cache for every user
-            users = User.objects.all()
+            users = User.objects.all() if user == None else [user]
             for user in users:
                 for pre_key in pre_keys:
                     d = cache.delete(f"{pre_key}_{str(user.pk)}")

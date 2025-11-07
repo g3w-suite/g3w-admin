@@ -251,9 +251,10 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['layout'] = {}
 
         # add legend settings if set to layout
-        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', None)
+        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', settings.BASE_G3W_CLIENT_LEGEND)
         if layout_legend:
-            ret['layout']['legend'] = layout_legend
+            settings.BASE_G3W_CLIENT_LEGEND.update(layout_legend)
+            ret['layout']['legend'] = settings.BASE_G3W_CLIENT_LEGEND
 
         # Check if G3W_CLIENT_LEGEND['layertitle'] set it tu false
         if self.project.legend_position == 'toc':

@@ -165,7 +165,7 @@ sitetrees = (
 
      # BULGARIAN
      G3Wtree(
-          'qdjango',
+          'qdjango_bg',
           title='Qdjango',
           module='qdjango',
           items=[
@@ -215,4 +215,56 @@ sitetrees = (
           ]
      ),
 
+
+     # PORTUGUESE
+     G3Wtree(
+          'qdjango_pt',
+          title='Qdjango',
+          module='qdjango',
+          items=[
+               item(
+                    'Adicionar projecto QGIS {{ group.slug }}',
+                    'qdjango-project-add group.slug',
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-plus',
+                    in_menu=False,
+                    access_by_perms=['qdjango.add_project']
+               ),
+               item(
+                    'Actualizar projecto QGIS {{ group.slug }} {{ object.slug }}',
+                    'qdjango-project-update group.slug object.slug',
+                    url_as_pattern=True,
+                    in_menu=False,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Lista camada do projecto QGIS {{ group.slug }} {{ object.slug }}',
+                    'qdjango-project-layers-list group.slug project_slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Lista de mensagens do projecto QGIS {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-list group.slug project.slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Adcionar mensagem ao projecto QGIS {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-add group.slug project.slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Actualizar mensagem do projecto QGIS {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-update group.slug project.slug object.pk',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               )
+          ]
+     ),
 )

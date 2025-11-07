@@ -1,0 +1,93 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-12 16:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: qplotly/api/widgets/serializers.py:44
+#, python-brace-format
+msgid ""
+"Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
+"source_layer_id}"
+msgstr ""
+"A camada com o ID {layer.qgs_layer_id} não é igual à configuração {settings."
+"source_layer_id}"
+
+#: qplotly/models.py:12
+msgid "XML original settings"
+msgstr "Configurações originais XML"
+
+#: qplotly/models.py:13
+msgid "Layer datasource"
+msgstr "Fonte de dados da camada"
+
+#: qplotly/models.py:14
+msgid "Use selected features only"
+msgstr "Usar apenas entidades selecionadas"
+
+#: qplotly/models.py:15
+msgid "Use visible features only"
+msgstr "Usar apenas entidades visíveis"
+
+#: qplotly/models.py:16
+msgid "Plot type"
+msgstr "Tipo de gráfico"
+
+#: qplotly/models.py:17
+msgid "Plot title"
+msgstr "Título do gráfico"
+
+#: qplotly/models.py:19
+msgid "Set as default plot on starting map"
+msgstr "Definir como gráfico padrão no início do mapa"
+
+#: qplotly/models.py:33
+msgid "XML is not a DataPlotly settings."
+msgstr "O XML não é uma configuração do DataPlotly."
+
+#: qplotly/models.py:39
+#, python-brace-format
+msgid ""
+"Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
+msgstr ""
+"A camada com qgs_layer_id={settings.source_layer_id} não está presente na base de dados"
+
+#: qplotly/models.py:43
+msgid ""
+"Layer DataPlotly settings layer datasource is not equal to datasource into "
+"values."
+msgstr ""
+"A fonte de dados da camada nas configurações do DataPlotly não é igual à fonte de dados nos valores."
+
+#: qplotly/templates/qplotly/ajax/layer_widgets.html:9
+msgid "Actions"
+msgstr "Ações"
+
+#: qplotly/templates/qplotly/ajax/layer_widgets.html:10
+msgid "Name"
+msgstr "Nome"
+
+#: qplotly/templates/qplotly/ajax/layer_widgets.html:11
+msgid "Type"
+msgstr "Tipo"
+
+#: qplotly/templates/qplotly/ajax/layer_widgets.html:12
+msgid "Linked"
+msgstr "Ligado"
+
+#: qplotly/templates/qplotly/layer_action.html:8
+msgid "Qplotly widgets"
+msgstr "Widgets Qplotly"
