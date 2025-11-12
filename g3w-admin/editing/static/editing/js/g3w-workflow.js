@@ -417,7 +417,7 @@ export class Workflow extends Emitter {
                     ></button>
                   </span>
                   <template v-else>
-                    <i :class = "g3wtemplate.getFontClass(step.done ? 'success' : 'empty-circle')"></i>
+                    <i :class = "$fa(step.done ? 'success' : 'empty-circle')"></i>
                     <span v-t-plugin = "step.description"></span>
                   </template>
                 </li>
