@@ -719,6 +719,7 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .g3w-view.content .action-button.toggled-white                                   { background-color: #fff; }
 .g3w-view.content .action-button-icon.trash                                      { color:red !important; }
 .g3w-view.content .action-button-icon                                            { padding-top: 2px; font-weight: bold; text-decoration: none; }
+.g3w-view.content .action-button.action-button-icon                              { padding-top: 6px; }
 .is-mobile .g3w-view.content.full-size :is(.action-button-resize, .action-button-dock) { display: none; }
 .g3w-view.content                                                                { line-height: normal; float: right; overflow-wrap: break-word; height: 0; width: 0; background-color: #eee; overflow:hidden; position: relative; } 
 .g3w-view.content .contents                                                      { height: 100%; padding-left: 0; padding-right: 0; }
@@ -756,6 +757,8 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 #tools.single .g3w-tools              { background-color: transparent; }
 #tools.single li                      { color: #fff; font-weight: bold; border-left: 3px solid transparent; }
 #tools.single li:hover                { border-left-color: #e99611; background: hsl(from var(--bgcolor) h s (l - 2)); }
+/* hide #search menu entry when there is no saved searches for current project */
+body:has(.ol-geocoder) #search:not(:has(.g3w-search)):not(:has(.action + .action)) { display: none; }
 
 /**************************************************************************************
  * 7. Map Controls

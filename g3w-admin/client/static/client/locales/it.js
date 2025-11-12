@@ -390,4 +390,5 @@ export default {
   'Advanced settings': 'Impostazioni avanzate',
   'Resolution': 'Risoluzione',
   'Overview map': 'Mappa panoramica',
+  'Downloads': 'Esporta',
 };

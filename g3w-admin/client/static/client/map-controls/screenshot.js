@@ -392,8 +392,9 @@ template: /*html*/`
     template: {
       immediate: true,
       handler() {
-        const has_previous = this.atlas || 0 === this.maps?.length;
-        const print        = this.print.find(p => p.name === this.template);
+        //avery time that change template need to clear print area
+        this._clearPrint();
+        const print = this.print.find(p => p.name === this.template);
 
         if (!print) {
           this.showPrintArea(false);
@@ -415,14 +416,13 @@ template: /*html*/`
           atlas_values: [],
         });
 
+        //In case of current atlas template just init select
         if (this.atlas) {
-          this._clearPrint();
           this.initSelect2Field();
-        } else if (has_previous) {
-          this.showPrintArea(true);
-        } else {
-          this._setPrintArea();
+          return;
         }
+        this.showPrintArea(!this.is_screenshot);
+        
       }
     },
 
@@ -776,12 +776,28 @@ template: /*html*/`
       if (0 === this.print.length)   {
         return;
       }
+      //Initialize scales 
+      if (show && !this._initialized) {
+        const view = GUI.getMap().getView();
+        this._setScales(view.getMaxResolution());
+        this._initialized = true;
+        const resolution  = view.getResolution();
+        // set current scale
+        Object
+          .entries(this.resolutions)
+          .find(([scala, res]) => {
+            if (resolution <= res) {
+              this.scale = scala;
+              return true
+            }
+          });
+      }
       GUI.getMap().once('postrender', () => {
         if (!show) {
           return this._clearPrint();
         }
         this.moveKey = GUI.getMap().on('moveend', this._setPrintArea.bind(this));
-        this._initPrintConfig();
+        
         // show print area if is not atlas template and have maps
         if (undefined === this.atlas && this._setPrintArea()) {
           GUI.setModal(true);
@@ -830,25 +846,6 @@ template: /*html*/`
       const above    = scales.findLast(s => s.value >= mapScale);        // first scale above mapScale
       this.scales    = (above ? [above] : []).concat(below);
       this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units))
-    },
-
-    _initPrintConfig() {
-      const view = GUI.getMap().getView();
-      if (!this._initialized) {
-        this._setScales(view.getMaxResolution());
-        this._initialized = true;
-      }
-      const resolution = view.getResolution();
-
-      // set current scale
-      Object
-        .entries(this.resolutions)
-        .find(([scala, res]) => {
-          if (resolution <= res) {
-            this.scale = scala;
-            return true
-          }
-        });
     },
 
     initSelect2Field() {
@@ -940,7 +937,7 @@ template: /*html*/`
   },
 
   beforeMount() {
-    const button = GUI.getComponent('print')?.internalComponent;
+    const button  = GUI.getComponent('print')?.internalComponent;
     const control = GUI.getMapControlByType('screenshot');
     if (button) {
       button.state.open = true;
@@ -960,7 +957,6 @@ template: /*html*/`
     if (this.atlas) {
       this.initSelect2Field();
     }
-    this.showPrintArea(true);
 
     document.body.appendChild(this.$refs.dialog);
 
@@ -975,7 +971,7 @@ template: /*html*/`
     this.$refs.dialog.close();
     this.$refs.dialog.remove();
 
-    const button = GUI.getComponent('print')?.internalComponent;
+    const button  = GUI.getComponent('print')?.internalComponent;
     const control = GUI.getMapControlByType('screenshot');
     if (button) {
       button.state.open = false;
