@@ -96,7 +96,10 @@ class UploadFileView(View):
 
         self.save_session(request, to_ret[file_field]['value'])
 
-        return JsonResponse(to_ret)
+        return JsonResponse({
+            'result': True,
+            'data': to_ret[file_field]
+        })
 
     def handle_file(self, f):
 
