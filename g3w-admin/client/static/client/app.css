@@ -898,7 +898,6 @@ body:has(.ol-geocoder) #search:not(:has(.g3w-search)):not(:has(.action + .action
 .queryresults-container                                                                       { height: 100%; overflow-y: auto; position: relative; }
 .queryresults-container .query-results-not-found                                              { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #fff; border-radius: 3px; }
 .queryresults-container .sub-group .group > .row                                              { margin-left: -2px; margin-right: -2px; }
-.queryresults-container .box-features-action                                                  { display: flex; }
 .queryresults-container .field_value :is(.field_link, img):focus                              { box-shadow: none; }
 .queryresults-container .field_value .field_link                                              { border-radius: 5px; min-width: 50px; font-weight: bold; }
 .queryresults-container .field_value .field_link:hover                                        { color:#FFF; }
