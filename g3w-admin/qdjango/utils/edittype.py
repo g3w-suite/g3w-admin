@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import reverse
 import re
 from core.utils.structure import FORM_FIELD_TYPE_CHECK, FORM_FIELD_TYPE_SELECT, FORM_FIELD_TYPE_SELECT_AUTOCOMPLETE
@@ -227,8 +228,8 @@ class QgisEditTypeExternalResource(QgisEditType):
                 'options': {
                     'editable': True if self.fieldEditable == '1' else False,
                     'uploadurl': upload_url,
-                    'default': self.default if hasattr(self, 'default') else None
-
+                    'default': self.default if hasattr(self, 'default') else None,
+                    'allowed_types': settings.G3WFILE_FORM_UPLOAD_FORMATS
                 }
             }
         }

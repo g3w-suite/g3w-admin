@@ -322,8 +322,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 if 'editing' in settings.G3WADMIN_LOCAL_MORE_APPS:
                     if fieldType == FIELD_TYPE_IMAGE:
                         toRes[field.name()].update({
-                            'uploadurl': reverse('editing-upload'),
-                            'types_allowed': settings.G3WFILE_FORM_UPLOAD_FORMATS,
+                            'uploadurl': reverse('editing-upload')
                         })
 
                 # update with fields configs data
