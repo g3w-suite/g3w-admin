@@ -657,13 +657,12 @@ export class QueryBy extends MapControl {
         .filter(({ count = 0 }) => count )
         .flatMap(({ count, data = [], params }) => { 
           const id = data?.[0]?.layer?.getId(); 
-          pagination.getData.params[id] = { // filter applyed for request
-            ...params,
-            filter: {
+          pagination.getData.params[id] = {
+            download: { 
               geo_filter_mode: params?.geo_filter_mode,
-              geo_filter_wkt: params?.geo_filter_wkt,  
-            }
-          };
+              geo_filter_wkt:  params?.geo_filter_wkt, 
+            } 
+          };         
           counts[id]  = count; //count features 
           return data; 
         });
@@ -682,6 +681,11 @@ export class QueryBy extends MapControl {
           layer:         layers.find(l => id === l.getId()),
           count,
         };
+
+        pagination.getData.params[id] = {
+          ...pagination.getData.params[id],
+          ...params
+        }
         
       });
       resolve({
