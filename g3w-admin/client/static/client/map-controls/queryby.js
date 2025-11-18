@@ -643,8 +643,7 @@ export class QueryBy extends MapControl {
       if (data.some(r => 'rejected' === r.status)) {
         throw data.filter(r => 'rejected' === r.status).map(r => r.reason);
       }
-      data = data.filter(r => 'fulfilled' === r.status).map(r => r.value).filter(({ count = 0 }) => count ).flatMap(({ count, data = [] }) => { counts[data?.[0]?.layer?.getId()] = count; return data; });
-      
+
       const pagination = {
         /** data object used to perform subsequent pagination request */
         getData: {
@@ -652,6 +651,22 @@ export class QueryBy extends MapControl {
           method: 'query',
         }
       };
+
+      data = data.filter(r => 'fulfilled' === r.status)
+        .map(r => r.value)
+        .filter(({ count = 0 }) => count )
+        .flatMap(({ count, data = [], params }) => { 
+          const id = data?.[0]?.layer?.getId(); 
+          pagination.getData.params[id] = { // filter applyed for request
+            ...params,
+            filter: {
+              geo_filter_mode: params?.geo_filter_mode,
+              geo_filter_wkt: params?.geo_filter_wkt,  
+            }
+          };
+          counts[id]  = count; //count features 
+          return data; 
+        });
 
       Object.entries(counts).forEach(([id, count]) => {
         pagination[id] = {
@@ -667,7 +682,7 @@ export class QueryBy extends MapControl {
           layer:         layers.find(l => id === l.getId()),
           count,
         };
-        pagination.getData.params[id] = params;
+        
       });
       resolve({
         result: true,
