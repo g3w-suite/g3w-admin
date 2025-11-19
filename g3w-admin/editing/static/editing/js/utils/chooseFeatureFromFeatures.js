@@ -39,7 +39,7 @@ export function chooseFeatureFromFeatures({
                     name        = "radio"
                     type        = "radio"
                   >
-                  <label :for = "'choose_feature_' + index" style="color: transparent;">id</label>
+                  <label :for = "'choose_feature_' + index" style = "color: transparent;">id</label>
                 </div>
 
                 <!-- ZOOM TO FEATURE -->

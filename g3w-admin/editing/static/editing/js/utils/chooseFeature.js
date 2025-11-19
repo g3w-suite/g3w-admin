@@ -13,7 +13,7 @@ export async function chooseFeature(inputs) {
       inputs.features = [feature];
     }
     return inputs;
-  } catch (e) {
+  } catch(e) {
     console.warn(e);
     return Promise.reject(e);
   }

@@ -26,7 +26,7 @@ export async function addPartToMultigeometries(inputs, context) {
 
   // evaluated geometry expression
   try { await evaluateExpressionFields({ inputs, context, feature });}
-  catch (e) { console.warn(e); }
+  catch(e) { console.warn(e); }
 
   context.session.pushUpdate(inputs.layer.getId(), feature, originalFeature);
 
