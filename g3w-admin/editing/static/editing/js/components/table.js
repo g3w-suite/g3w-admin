@@ -178,10 +178,10 @@ export default ({
 
   <div style = "width: 100%;display:flex;justify-content: center; gap: 10px;">
     <button
-      v-t    = "'back'"
-      class  = "btn skin-button"
-      style  = "font-weight: bold;"
-      @click = "back"
+      v-t         = "'back'"
+      class       = "btn skin-button"
+      style       = "font-weight: bold;"
+      @click.stop = "back"
     ></button>
   </div>
 
