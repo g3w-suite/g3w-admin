@@ -1597,7 +1597,7 @@ export class ToolBox extends Emitter {
                   })
                 },
                 stop() {
-                  GUI.disableSidebar(false);
+                  GUI.disableSideBar(false);
                   GUI.closeContent();
                   GUI.getPlugin('editing').resetCurrentLayout();
                 }
