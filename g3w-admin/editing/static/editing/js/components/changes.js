@@ -34,7 +34,7 @@ template: /*html*/`
             <dl v-if = "hasValue(item, key)">
               <dt>{{ key }}:</dt>
               <dd>
-                <template v-if="isEdited(item, key)">
+                <template v-if = "isEdited(item, key)">
                   <del ref = "value">{{ getValue(item, key) }}</del> ← <ins ref = "value">{{ getEditingValue(item, key) }}</ins>
                 </template>
                 <span v-else ref = "value">{{ getEditingValue(item, key) || getValue(item, key) }}</span>
@@ -152,8 +152,8 @@ template: /*html*/`
      * @returns { string } layer type or empty string when geometry is undefined (alphanumerical layer)
      */
     getType(item) {
-      const feat = this.getEditingFeature(item) || this.getFeature(item); // when deleted fallbacks to original feature
-      return (feat && feat.getGeometry && feat.getGeometry()) ? feat.getGeometry().getType() : ''
+      // when deleted fallbacks to original feature
+      return (this.getEditingFeature(item) || this.getFeature(item))?.getGeometry?.()?.getType() || '';
     },
 
     /**
@@ -170,8 +170,8 @@ template: /*html*/`
     },
 
     getAttrs(item) {
-      const feat = this.getEditingFeature(item) || this.getFeature(item); // when deleted fallbacks to original feature
-      return Object.entries(feat ? feat.getProperties() : {}).sort((a, b) => a[0] > b[0])
+      // when deleted fallbacks to original feature
+      return Object.entries((this.getEditingFeature(item) || this.getFeature(item))?.getProperties() || {}).sort((a, b) => a[0] > b[0]);
     },
 
     getLayerById(id) {
@@ -190,46 +190,46 @@ template: /*html*/`
 document.head.insertAdjacentHTML(
   'beforeend',
   /* css */`
-<style>
-  .editing-changes summary {
-    display: list-item;
-    font-weight: bold;
-    padding: 0.5em;
-    cursor: pointer;
-    background-color: rgb(255, 255, 0, 0.25);
-    font-size: medium;
-    user-select: none;
-  }
-  .editing-changes ul {
-    list-style: none;
-    padding-left: 0;
-  }
-  .editing-changes ul > li {
-    margin-bottom: 8px;
-  }
-  .editing-changes ins {
-    background-color: lime;
-    text-decoration-line: none;
-  }
-  .editing-changes del {
-    background-color: tomato;
-  }
-  .editing-changes dl {
-    display: grid;
-    grid-template: auto / .5fr 1fr;
-    margin-bottom: 0;
-    word-break: break-all;
-  }
-  .editing-changes dt {
-    background: #fee;
-  }
-  .editing-changes dd {
-    background: hsl(220, 10%, 95%);
-  }
-  .editing-changes dt, .editing-changes dd {
-    margin: 0;
-    padding: .3em .5em;
-    border-top: 1px solid #fff;
-  }
-</style>`
+  <style>
+    .editing-changes summary {
+      display: list-item;
+      font-weight: bold;
+      padding: 0.5em;
+      cursor: pointer;
+      background-color: rgb(255, 255, 0, 0.25);
+      font-size: medium;
+      user-select: none;
+    }
+    .editing-changes ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .editing-changes ul > li {
+      margin-bottom: 8px;
+    }
+    .editing-changes ins {
+      background-color: lime;
+      text-decoration-line: none;
+    }
+    .editing-changes del {
+      background-color: tomato;
+    }
+    .editing-changes dl {
+      display: grid;
+      grid-template: auto / .5fr 1fr;
+      margin-bottom: 0;
+      word-break: break-all;
+    }
+    .editing-changes dt {
+      background: #fee;
+    }
+    .editing-changes dd {
+      background: hsl(220, 10%, 95%);
+    }
+    .editing-changes dt, .editing-changes dd {
+      margin: 0;
+      padding: .3em .5em;
+      border-top: 1px solid #fff;
+    }
+  </style>`
 );
