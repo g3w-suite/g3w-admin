@@ -3553,7 +3553,7 @@ export class ToolBox extends Emitter {
               GUI.defaultsLayers.selectionLayer
                 .getSource()
                 .getFeatureById(`${layerId}_${id}`)
-                .setGeometry(geometry);
+                .setGeometry((new ol.format.GeoJSON()).readGeometry(geometry));
             }
           });
         }
