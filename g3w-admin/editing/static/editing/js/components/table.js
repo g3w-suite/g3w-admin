@@ -322,7 +322,7 @@ export default ({
     save() {
       this.state.isrelation
         // link features (by indexes)
-        ? this.promise.resolve({ features: (this._linkFeatures || []).map(i => this.features[i]) })
+        ? this.promise.resolve({ features: (this.linked || []).map(i => this.features[i]) })
         : this.promise.resolve();
     },
   
