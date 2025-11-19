@@ -1582,7 +1582,7 @@ export class ToolBox extends Emitter {
                       content: new Component({
                         title:             `${inputs.layer.getName()}`,
                         push:              false,
-                        internalComponent: new (Vue.extend((await import('../components/table.js')).default))({
+                        internalComponent: new (Vue.extend((await import('../js/components/table.js')).default))({
                           inputs,
                           context,
                           promise:    { resolve, reject },
