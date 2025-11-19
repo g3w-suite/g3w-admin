@@ -92,9 +92,9 @@ export default ({
       </div>
 
       <!-- HAS RELATION -->
-      <div v-if="hasRelations" class="info">
-        <i :class="g3wtemplate.font['info']"></i>
-        <span v-t="'plugins.editing.messages.toolbox_has_relation'"></span>
+      <div v-if = "hasRelations" class = "info">
+        <i :class = "g3wtemplate.font['info']"></i>
+        <span v-t = "'plugins.editing.messages.toolbox_has_relation'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
