@@ -2091,14 +2091,7 @@ export class ToolBox extends Emitter {
           reject(response);
           return;
         }
-
-        const { relations = {} } = response.response; // check if relations are saved on server
-
-        // sync server data with local data (apply commit response to current editing relation layer)
-        for (const id in relations) {
-          ToolBox._sessions[id]._editor.applyCommitResponse({ response: relations[id], result: true });
-        }
-
+      
         this.clearHistory();
 
         /** @since v3.9.0 After commit get new unique values */
@@ -3026,7 +3019,7 @@ export class ToolBox extends Emitter {
       if (key !== id) {
         isRelation            = true; //set true because these changes belong to features relation items
         //check lock ids of relation layer
-        const lockids =  ToolBox._sessions[key]?._editor?.()?.getLockIds?.() || [];
+        const lockids =  ToolBox._sessions[key]?._editor?.getLockIds?.() || [];
         //create a relation object
         commitObj.relations[key] = {
           lockids,
