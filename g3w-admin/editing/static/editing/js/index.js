@@ -258,7 +258,7 @@ new (class extends Plugin {
     //update unique values of relations after undo
     this.undoRedoRelationUniqueFieldValues({ relationSessionItems, action: 'undo' });
     // undo relations
-    Object.entries(undoItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).undo(items); });
+    Object.entries(relationSessionItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).undo(items); });
   }
 
   /**
@@ -276,7 +276,7 @@ new (class extends Plugin {
     // update unique values of relations after redo
     this.undoRedoRelationUniqueFieldValues({ relationSessionItems, action: 'redo' });
     // redo relations
-    Object.entries(redoItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).redo(items); });
+    Object.entries(relationSessionItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).redo(items); });
   }
 
   /**
