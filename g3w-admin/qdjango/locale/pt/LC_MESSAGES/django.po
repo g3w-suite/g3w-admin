@@ -1,0 +1,3 @@
+#: qdjango/models/projects.py:180
+msgid "Into TOC layers"
+msgstr "Para as camadas do TOC"
