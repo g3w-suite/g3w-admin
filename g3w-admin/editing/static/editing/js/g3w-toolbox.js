@@ -1553,6 +1553,7 @@ export class ToolBox extends Emitter {
           op:   new Workflow({
             layer,
             type: 'addtablefeature',
+            runOnce: true,
             steps: [
               new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
               new OpenFormStep(),
