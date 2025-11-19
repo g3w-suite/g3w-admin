@@ -27,7 +27,7 @@ export default ({
   <!-- TABLE NAME -->
   <h3 style = "margin-top:0;font-size: 1.5em;font-weight: bold;color: var(--skin-color);">{{ title }}</h3>
 
-  <div style="display: flex;">
+  <div style = "display: flex;">
 
     <!-- TOTAL ELEMENTS -->
     <span style = "margin-left: .5ch;">{{ rows.length }} {{ $t('entries') }}</span>
@@ -43,7 +43,7 @@ export default ({
   </div>
 
   <!-- TABLE CONTENT -->
-  <table v-if="show">
+  <table v-if = "show">
     <thead>
 
       <tr>
@@ -66,12 +66,12 @@ export default ({
         v-for   = "(feature, index) in rows"
         :key    = "feature.__g3w_uid"
         :id     = "feature.__g3w_uid"
-        :index   = "index"
+        :index  = "index"
         :hidden = "isRowHidden(index)"
       >
 
         <td v-if = "!isrelation">
-          <div style="display:flex;justify-content: space-between;">
+          <div style = "display:flex;justify-content: space-between;">
 
             <!-- EDIT FEATURE -->
             <span v-t-tooltip:right = "'plugins.editing.table.edit'">
@@ -118,13 +118,13 @@ export default ({
             @change = "linkFeature(index, $event)"
             type    = "checkbox"
           >
-          <label :for="'relation__' + index"></label>
+          <label :for = "'relation__' + index"></label>
         </td>
 
         <td
           v-for = "(value, key) in feature"
           v-if  ="!!headers.find(h => key === h.name)"
-          :key = "key"
+          :key  = "key"
         >
           <g3w-media
             v-if   = "getValue(value) && isMediaField(key)"
@@ -139,12 +139,14 @@ export default ({
 
   </table>
 
-  <div style="display: flex; margin: 1em 0;">
+  <div style = "display: flex; margin: 1em 0;">
 
     <!-- PAGE SIZE -->
-    <label style="margin-top: 5px;"><select style = "border: 1px solid #aaa;" v-model = "search.page_size">
-      <option v-for = "l in PAGELENGTHS" :value = "l">{{ l }}</option>
-    </select> {{ $t('values per page') }}</label>
+    <label style = "margin-top: 5px;">
+      <select style = "border: 1px solid #aaa;" v-model = "search.page_size">
+        <option v-for = "l in PAGELENGTHS" :value = "l">{{ l }}</option>
+      </select> {{ $t('values per page') }}
+    </label>
 
     <!-- PAGINATION BUTTONS -->
     <div style = "margin-left: auto;" >
@@ -157,12 +159,24 @@ export default ({
         <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
       </select>
       {{ $t(' of ') + pages }}
-      <button v-if="pages > 1" title="Backward" data-placement="top" @click.stop = "search.page = Number(search.page) - 1" class="btn" v-disabled = "1 == search.page">🞀</button>
-      <button v-if="pages > 1" title="Forward"  data-placement="top" @click.stop = "search.page = Number(search.page) + 1" class="btn" v-disabled = "pages == search.page">🞂</button>
+      <button 
+        v-if           = "pages > 1" 
+        title          = "Backward" 
+        data-placement = "top" 
+        @click.stop    = "search.page = Number(search.page) - 1" 
+        class          ="btn" 
+        v-disabled     = "1 == search.page">🞀</button>
+      <button 
+        v-if           = "pages > 1" 
+        title          = "Forward"  
+        data-placement = "top" 
+        @click.stop    = "search.page = Number(search.page) + 1" 
+        class          = "btn" 
+        v-disabled     = "pages == search.page">🞂</button>
     </div>
   </div>
 
-  <div style="width: 100%;display:flex;justify-content: center; gap: 10px;">
+  <div style = "width: 100%;display:flex;justify-content: center; gap: 10px;">
     <button
       v-t    = "'back'"
       class  = "btn skin-button"
@@ -242,7 +256,7 @@ export default ({
   methods: {
 
     showTool(type) {
-      return undefined !== this.inputs.layer.state.editing.capabilities.find(cap => cap === type);
+      return undefined !== this.inputs.layer.state.editing.capabilities.find(c => type === c);
     },
 
     isMediaField(name) {
