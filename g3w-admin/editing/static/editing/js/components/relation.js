@@ -69,7 +69,7 @@ export default ({
     </div>
 
     <!-- RELATION TOOLS -->
-    <div class = "box-header with-border" style="width: 100%; display: flex; background-color: #fff;">
+    <div class = "box-header with-border" style = "width: 100%; display: flex; background-color: #fff;">
 
       <!-- SEARCH BOX -->
       <input
@@ -221,13 +221,13 @@ export default ({
             class   = "featurebox-header"
             :hidden = "isRowHidden(index)"
           >
-            <td style="padding-top: 0">
+            <td style = "padding-top: 0">
               <input
                 :id     = "'select_relation__' + index"
                 v-model = "relation.select"
                 type    = "checkbox"
               >
-              <label :for="'select_relation__' + index"></label>
+              <label :for = "'select_relation__' + index"></label>
             </td>
             <td>
               <div style = "display: flex">
@@ -285,7 +285,7 @@ export default ({
           </tr>
         </tbody>
       </table>
-      <div style="display: flex; margin: 1em 0;">
+      <div style = "display: flex; margin: 1em 0;">
         <!-- TOTAL ELEMENTS -->
         <span style = "margin-left: .5ch;">{{ relations.length }} {{ $t('entries') }}</span>
 
@@ -300,8 +300,20 @@ export default ({
             <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
           </select>
           {{ $t(' of ') + pages }}
-          <button v-if="pages > 1" title="Backward" data-placement="top" @click.stop = "search.page = Number(search.page) - 1" class="btn" v-disabled = "1 == search.page">🞀</button>
-          <button v-if="pages > 1" title="Forward"  data-placement="top" @click.stop = "search.page = Number(search.page) + 1" class="btn" v-disabled = "pages == search.page">🞂</button>
+          <button 
+            v-if           = "pages > 1" 
+            title          = "Backward" 
+            data-placement = "top" 
+            @click.stop    = "search.page = Number(search.page) - 1" 
+            class          = "btn" 
+            v-disabled     = "1 == search.page">🞀</button>
+          <button 
+            v-if           = "pages > 1" 
+            title          = "Forward"  
+            data-placement = "top" 
+            @click.stop    = "search.page = Number(search.page) + 1" 
+            class          = "btn" 
+            v-disabled     = "pages == search.page">🞂</button>
         </div>
       </div>
     </div>
@@ -329,7 +341,7 @@ export default ({
         active:       false,
         value:        null,
         resourcesurl: GUI.getResourcesUrl(),
-        ordering:  [0, 'asc'],
+        ordering:     [0, 'asc'],
         PAGELENGTHS,
         search: {
           page:      1,              // current page
