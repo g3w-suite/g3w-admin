@@ -378,10 +378,7 @@ export default ({
             reject(e);
           } finally {
             if (unlock) {
-              layerIds.forEach(layerId => {
-                const layer = GUI.getPlugin('editing').getLayerById(layerId);
-                XHR.post({ url: layer.getUrl('unlock') });
-              });
+              layerIds.forEach(id => XHR.post({ url: GUI.getPlugin('editing').getLayerById(id).getUrl('unlock') }));
             }
             // always reset items to null
             try      { window.localStorage.setItem('EDITING_CHANGES', "{}"); }
@@ -487,12 +484,12 @@ export default ({
   },
 
   created() {
-    this._selectedlayers = []; //store previous selected layers
+    this._selectedlayers   = []; //store previous selected layers
 
-    this.ApplicationState        = ApplicationState;
+    this.ApplicationState  = ApplicationState;
 
     // Array of object setter(as a key), key to unby (as value)
-    this.unByKeys        = this.unByKeys || [];
+    this.unByKeys          = this.unByKeys || [];
 
     // in case of starting panel editing check if there are some chenging pending
     // if true, it has to commit changes on server and unlock all layers features temporarily locked
