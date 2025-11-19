@@ -327,7 +327,7 @@ export class ToolBox extends Emitter {
           /** temporary change not save on history */
           changes:     [],
         },
-        history      : new Proxy({}, { get: (_, prop) => this.#constrains[prop] }),
+        history      : this.#constrains,
         on           : false,
         dependencies,
         relations    : Object.values(layer.isFather() && dependencies.length ? layer.getRelations().getRelations() : {}),
@@ -3549,13 +3549,11 @@ export class ToolBox extends Emitter {
         //if layer has geometry
         if (layer.isGeoLayer()) {
           commit.update.forEach(({ id, geometry } = {}) => {
-            const selected = layer.getOlSelectionFeature(id);
-            if (selected) {
-              selected.feature = geometry;
+            if (layer.isSelected(id)) {
               GUI.defaultsLayers.selectionLayer
                 .getSource()
-                .getFeatureById(selected.feature.getId())
-                .setGeometry(selected.feature.getGeometry());
+                .getFeatureById(`${layerId}_${id}`)
+                .setGeometry(geometry);
             }
           });
         }
