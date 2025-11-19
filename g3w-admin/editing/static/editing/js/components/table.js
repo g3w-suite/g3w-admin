@@ -176,13 +176,38 @@ export default ({
     </div>
   </div>
 
+
   <div style = "width: 100%;display:flex;justify-content: center; gap: 10px;">
+    <!-- BACK  -->
     <button
+      v-if        = "isrelation"
       v-t         = "'back'"
       class       = "btn skin-button"
       style       = "font-weight: bold;"
       @click.stop = "back"
     ></button>
+
+  <template v-else>
+    <div>
+      <!-- SAVE CHANGES -->
+      <button
+        v-if        = "!isrelation"
+        v-t-plugin  = "'editing.form.buttons.save_and_back'"
+        class       = "btn btn-success" 
+        style       = "margin-right: 10px; font-weight: bold;"
+        @click.stop = "save">
+      </button>
+
+      <!-- DISCARD CHANGES -->
+      <button
+        v-t-plugin  = "'editing.form.buttons.cancel'"
+        class       = "btn btn-danger"
+        style       = "font-weight: bold;"
+        @click.stop = "cancel">
+      </button>
+    </div>
+  </template>  
+    
   </div>
 
 </div>`,
@@ -291,6 +316,18 @@ export default ({
       const page      = Number(this.search.page);
       const page_size = Number(this.search.page_size);
       return !(index >= ((page-1) * page_size) && index < (page * page_size));
+    },
+
+    
+    save() {
+      this.state.isrelation
+        // link features (by indexes)
+        ? this.promise.resolve({ features: (this._linkFeatures || []).map(i => this.features[i]) })
+        : this.promise.resolve();
+    },
+  
+    cancel() {
+      this.promise.reject();
     },
 
     async back() {
