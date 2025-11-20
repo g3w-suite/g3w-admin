@@ -55,7 +55,7 @@ const SELECTED_STYLES = {
 export default ({
 
   template: /*html*/`
-<div
+  <div
     v-disabled  = "loading"
     style       = "margin-bottom: 5px;"
     class       = "g3w-editing-relation"
@@ -63,7 +63,7 @@ export default ({
     <bar-loader :loading = "loading" />
 
     <!-- RELATION TITLE -->
-    <div class = "box-header with-border skin-color" style="width: 100%;display: flex;font-weight: bold;font-size: 1.3em;align-items: center;background-color: #fff;">
+    <div class = "box-header with-border skin-color" style = "width: 100%;display: flex;font-weight: bold;font-size: 1.3em;align-items: center;background-color: #fff;">
       <span v-t = "'plugins.editing.edit_relation'"></span>
       <span style = "margin-left: 2px;">: {{ relation.name.toUpperCase() }}</span>
     </div>
@@ -88,7 +88,7 @@ export default ({
           v-t-tooltip:bottom = "'plugins.editing.tools.update_multi_features_relations'"
           class              = "g3w-icon"
         >
-          <span @click.stop = "editMulti()" v-disabled  = "relations.every(r => !r.select)">
+          <span @click.stop = "editMulti()" v-disabled = "relations.every(r => !r.select)">
             <img height = "25" width  = "25" :src = "resourcesurl + 'images/mActionMultiEdit.svg'" />
           </span>
         </span>
@@ -200,7 +200,7 @@ export default ({
                 :checked = "selectall"
                 type     = "checkbox"
               >
-              <label for="select_all_relations" style = "margin:0;">&nbsp;</label>
+              <label for = "select_all_relations" style = "margin:0;">&nbsp;</label>
             </th>
             <th v-t = "'tools'"></th>
             <th></th>
@@ -318,7 +318,7 @@ export default ({
       </div>
     </div>
 
-</div>`,
+    </div>`,
 
     name: 'g3w-relation',
 
@@ -341,7 +341,7 @@ export default ({
         active:       false,
         value:        null,
         resourcesurl: GUI.getResourcesUrl(),
-        ordering:     [0, 'asc'],
+        ordering:       [0, 'asc'],
         PAGELENGTHS,
         search: {
           page:      1,              // current page
@@ -390,26 +390,7 @@ export default ({
     },
 
     watch: {
-      /**
-       * In case of commit new relation to server, update temporary relation.id (__new__)
-       * to saved id on server. It is called when a new relation is saved on a relation form
-       * after click on save all disks, and when save all disks are click on a list of relation
-       * table.
-       */
-      relations(_, updatedrelations = []) {
-        // component is active (show) → need to update
-        if (updatedrelations.length) {
-            this._new_relations_ids.forEach(({ clientid, id }) => {
-            const newrelation = this.relations.find(r => clientid === r.id);
-            if (newrelation) {
-              newrelation.id = id;
-              //replace tools with new id
-              (this.tools.find(ts => ts.find(t => t.state.id.split(`${clientid}_`).length > 1)) || [])
-                .forEach(t => t.state.id = t.state.id.replace(`${clientid}_`, `${id}_`));
-            }
-          })
-        }
-      },
+    
       show_tools(bool) {
         this.toggleDOM(!bool);
         this.disabled = bool;
@@ -564,6 +545,16 @@ export default ({
             ...(this._new_relations_ids || []),
             ...relations[relationLayer.getId()].new.map(({ clientid, id }) => ({ clientid, id }))
           ]
+
+          this._new_relations_ids.forEach(({ clientid, id }) => {
+            const newrelation = this.relations.find(r => clientid === r.id);
+            if (newrelation) {
+              newrelation.id = id;
+              //replace tools with new id
+              (this.tools.find(ts => ts.find(t => t.state.id.split(`${clientid}_`).length > 1)) || [])
+                .forEach(t => t.state.id = t.state.id.replace(`${clientid}_`, `${id}_`));
+            }
+          })
         }
       },
 

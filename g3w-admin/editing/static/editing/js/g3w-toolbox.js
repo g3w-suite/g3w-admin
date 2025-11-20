@@ -3203,7 +3203,7 @@ export class ToolBox extends Emitter {
   /**
    * Get features from server (by editor)
    */
-  async __getFeatures(options={}) {
+  async __getFeatures(options = {}) {
     if (!this.#allfeatures) {
       this.#allfeatures = !options.filter;
       const features    = await this._editor.getFeatures(options);
@@ -3624,11 +3624,29 @@ export class ToolBox extends Emitter {
 
     });
 
+    //Handle relations commit to server and update loacally with properties and new id
+    Object.entries(response.response.relations || {}).forEach(([ id, opts = { new : [], new_lockids: [], update: []}] ) => {
+      const source = ToolBox._sessions[id]._featuresstore;
+      //new relations
+      (opts?.new || []).forEach(({ clientid, id, properties = {} } = {}) => {
+        const feat = source.getFeatureById(clientid);
+        if (feat) {
+          feat.setId(id);
+          feat.setProperties(properties);
+        }
+      });
+      //update relations
+      (opts?.update || []).forEach(({ id, properties = {} } = {}) => source.getFeatureById(id)?.setProperties(properties));
+    
+      GUI.getPlugin('editing').state.lock_ids[id] = [...new Set(GUI.getPlugin('editing').state.lock_ids[id].concat(...response.response.new_lockids))]
+      GUI.getPlugin('editing').state.lock_ids[id].forEach(({ featureid }) => GUI.getPlugin('editing').state.loaded_ids[id].push(featureid));
+    })
+
     const features = this._featuresstore.readFeatures();
 
-    features.forEach(f => f.clearState());          // reset state of the editing features (update, new etc..)
+    features.forEach(f => f.clearState()); // reset state of the editing features (update, new etc..)
 
-    this._editor.getLayer().setFeatures([...features]);         // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
+    this._editor.getLayer().setFeatures([...features]); // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
 
     // add lock ids
     GUI.getPlugin('editing').state.lock_ids[layerId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[layerId].concat(...response.response.new_lockids))]
