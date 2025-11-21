@@ -929,7 +929,8 @@ export default ({
           // in case of save all pressed on openformtask
           if (inputs && inputs.relationFeatures) {
             this.relations.push(
-              ...(inputs.relationFeatures.newFeatures || []).map(f => ({ id: f.getId(), fields: getFieldsWithValues(this.getLayer(), f, { relation: true }) }))
+              //@since 4.1.0 replace temporary id with real id from server
+              ...(inputs.relationFeatures.newFeatures || []).map(f => ({ id: this._new_relations_ids.find(({_, clientid }) => clientid === f.getId())?.id, fields: getFieldsWithValues(this.getLayer(), f, { relation: true }) }))
             )
           }
 
