@@ -596,7 +596,7 @@ export class ToolBox extends Emitter {
                           name: 'multi-relations-fetures',
                           template: /* html */`
                           <div>
-                            <select v-select2 = "'relationId'" :dropdownParent = "true">
+                            <select v-select2 = "'relationId'" :dropdownParent="true">
                               <option v-for = "relation in relations" 
                                 :key   = "relation.state.id" 
                                 :value = "relation.state.id">
@@ -666,7 +666,7 @@ export class ToolBox extends Emitter {
                         name: 'multi-relations-fetures',
                         template: /* html */`
                         <div>
-                          <select v-select2 = "'action'">
+                          <select v-select2 = "'action'" :dropdownParent="true">
                             <option v-for = "a in actions" 
                               :key   = "a" 
                               :value = "a">
@@ -905,8 +905,9 @@ export class ToolBox extends Emitter {
                             <section>
                               <div id = "g3w-select-editable-layers-content">
                                 <select
-                                  id        = "g3w-select-editable-layers-to-copy"
-                                  v-select2 = "'id'"
+                                  id              = "g3w-select-editable-layers-to-copy"
+                                  v-select2       = "'id'"
+                                  :dropdownParent = "true"
                                 >
                                   <option
                                     v-for  = "layer in $options.layers"
