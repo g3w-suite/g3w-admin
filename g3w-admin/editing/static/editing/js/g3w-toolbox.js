@@ -3631,12 +3631,13 @@ export class ToolBox extends Emitter {
         if (feat) {
           feat.setId(id);
           feat.setProperties(properties);
+          feat.clearState();
         }
       });
       //update relations
       (opts?.update || []).forEach(({ id, properties = {} } = {}) => source.getFeatureById(id)?.setProperties(properties));
     
-      GUI.getPlugin('editing').state.lock_ids[id] = [...new Set(GUI.getPlugin('editing').state.lock_ids[id].concat(...response.response.new_lockids))]
+      GUI.getPlugin('editing').state.lock_ids[id] = [...new Set(GUI.getPlugin('editing').state.lock_ids[id].concat(...opts.new_lockids))]
       GUI.getPlugin('editing').state.lock_ids[id].forEach(({ featureid }) => GUI.getPlugin('editing').state.loaded_ids[id].push(featureid));
     })
 
