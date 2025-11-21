@@ -722,7 +722,7 @@ export default ({
               // remove tool from relation tools
               this.tools.splice(index, 1);
               // current relation layer fields
-              const unique_fields        = GUI.getPlugin('editing').state.uniqueFieldsValues[this._relationLayerId];
+              const unique_fields = GUI.getPlugin('editing').state.uniqueFieldsValues[this._relationLayerId];
               //check if relation layer has unique values stored
               if (undefined !== unique_fields) {
                 Object
@@ -927,7 +927,7 @@ export default ({
           console.warn(inputs);
 
           // in case of save all pressed on openformtask
-          if (inputs && inputs.relationFeatures) {
+          if (inputs?.relationFeatures) {
             this.relations.push(
               //@since 4.1.0 replace temporary id with real id from server
               ...(inputs.relationFeatures.newFeatures || []).map(f => ({ id: this._new_relations_ids.find(({_, clientid }) => clientid === f.getId())?.id, fields: getFieldsWithValues(this.getLayer(), f, { relation: true }) }))
