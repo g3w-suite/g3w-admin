@@ -4,9 +4,9 @@
   if (plugins) {
     plugins["editing"] = Object.assign(plugins["editing"] || {},
       {
-        version : "4.0.4-issue_179",
-        hash    : "699d1d8",
-        branch  : "issue_179",
+        version : "4.0.5-HEAD",
+        hash    : "undefined",
+        branch  : "HEAD",
       });
   }
 })();
