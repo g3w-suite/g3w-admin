@@ -596,7 +596,7 @@ export class ToolBox extends Emitter {
                           name: 'multi-relations-fetures',
                           template: /* html */`
                           <div>
-                            <select v-select2 = "'relationId'">
+                            <select v-select2 = "'relationId'" :dropdownParent = "true">
                               <option v-for = "relation in relations" 
                                 :key   = "relation.state.id" 
                                 :value = "relation.state.id">
