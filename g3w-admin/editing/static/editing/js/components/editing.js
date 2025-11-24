@@ -224,7 +224,7 @@ export default ({
         console.warn(e);
       }
       // re-enable query map control
-      const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.editing.on) && GUI.getMapControlByType({ type: 'query' });
+      const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.editing.on) && GUI.getMapControl('query');
       if (control && !control.isToggled()) {
         control.toggle();
       }
@@ -618,7 +618,7 @@ export default ({
     GUI.getPlugin('editing').getToolBoxes().forEach(t => t.resetDefault());
 
     // re-enable query map control
-    const control = GUI.getMapControlByType({ type: 'query' });
+    const control = GUI.getMapControl('query');
     if (control && !control.isToggled()) {
       control.toggle();
     }
