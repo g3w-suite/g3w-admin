@@ -20,57 +20,59 @@ msgstr ""
 
 #: usersmanage/forms.py:96
 msgid "Editor1 user"
-msgstr ""
+msgstr "Utilisateur Editeur1"
 
 #: usersmanage/forms.py:97
 msgid "Set Editor Level 1 owner"
-msgstr ""
+msgstr "Choisir le propriétaire Editeur niveau 1"
 
 #: usersmanage/forms.py:100
 msgid "Editor2 user"
-msgstr ""
+msgstr "Utilisateur Editeur2"
 
 #: usersmanage/forms.py:103
 msgid "Viewer users"
-msgstr ""
+msgstr "Utilisateur en visualisation"
 
 #: usersmanage/forms.py:110
 msgid "Editor user groups"
-msgstr ""
+msgstr "Groupes d'utilisateur Editeur"
 
 #: usersmanage/forms.py:117
 msgid "Viewer user groups"
-msgstr ""
+msgstr "Groupes d'utilisateur en visualisation"
 
 #: usersmanage/forms.py:123
 msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
-msgstr ""
+msgstr "Propager les permissions des <b>nouveaux</b> observateurs and groupes d'observateurs"
 
 #: usersmanage/forms.py:294
 msgid "Select roles for this user"
-msgstr ""
+msgstr "Selectionner les rôles pour cet utilisateur"
 
 #: usersmanage/forms.py:295
 msgid "Main roles"
-msgstr ""
+msgstr "Rôles principaux"
 
 #: usersmanage/forms.py:302
 msgid ""
 "Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
 msgstr ""
+"Sélectionner <b>groupes EDITEUR</b> pour cet utilisateur, seul le rôle Editeur Niveau 2 peut être ajouté"
 
 #: usersmanage/forms.py:303
 msgid "User editor groups"
-msgstr ""
+msgstr "Groupes des utilisateur Editeur"
 
 #: usersmanage/forms.py:310
 msgid ""
 "Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
 msgstr ""
+"Sélectionner <b>groupes CONSULTATION</b> pour cet utilisateur, seul le rôle Consultation Niveau 1 peut être ajouté"
 
 #: usersmanage/forms.py:311
 msgid "User viewer groups"
-msgstr ""
+msgstr "Groupes d'utilisateur en consultation"
 
 #: usersmanage/forms.py:351
 msgid "Anagraphic"
@@ -78,169 +80,169 @@ msgstr ""
 
 #: usersmanage/forms.py:370
 msgid "ACL/Roles"
-msgstr ""
+msgstr "Rôles/ACL"
 
 #: usersmanage/forms.py:389
 msgid "Login data"
-msgstr ""
+msgstr "Données de connexion"
 
 #: usersmanage/forms.py:407
 msgid "User data"
-msgstr ""
+msgstr "Données utilisateur"
 
 #: usersmanage/forms.py:435
 msgid "User backend"
-msgstr ""
+msgstr "Backed utilisateur"
 
 #: usersmanage/forms.py:602
 msgid "User can't be Editor level 1 and at same time Editor level 2"
-msgstr ""
+msgstr "Un utilisateur ne peut pas être en même temps Editeur niveau 1 et Editeur niveau 2"
 
 #: usersmanage/forms.py:616
 msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
-msgstr ""
+msgstr "Un utilisateur ne peut pas appartenir à un **groupe Editeur** s'il n'est pas Editeur niveau 2"
 
 #: usersmanage/forms.py:630
 msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
-msgstr ""
+msgstr "Un utilisateur ne peut pas appartenir à un **groupe Consultation** s'il n'est pas Consultant niveau 1"
 
 #: usersmanage/forms.py:648
 msgid "Avatar is no a valid image"
-msgstr ""
+msgstr "L'avatar choisi n'est pas une image valide"
 
 #: usersmanage/forms.py:676
 msgid "Password"
-msgstr ""
+msgstr "Mot de passe"
 
 #: usersmanage/forms.py:678
 msgid "Password confirmation"
-msgstr ""
+msgstr "Confirmation du mot de passe"
 
 #: usersmanage/forms.py:680
 msgid "Enter the same password as above, for verification."
-msgstr ""
+msgstr "Saisir le même mot de passe que ci-dessus, pour vérification."
 
 #: usersmanage/forms.py:706
 #: usersmanage/templates/usersmanage/user_group_list.html:29
 msgid "Role"
-msgstr ""
+msgstr "Rôle"
 
 #: usersmanage/forms.py:720
 #: usersmanage/templates/usersmanage/ajax/user_group_detail.html:5
 msgid "Group"
-msgstr ""
+msgstr "Groupe"
 
 #: usersmanage/models.py:21
 msgid "Avatar"
-msgstr ""
+msgstr "Avatar"
 
 #: usersmanage/models.py:53
 msgid "Group role"
-msgstr ""
+msgstr "Rôle Groupe"
 
 #: usersmanage/templates/usersmanage/ajax/user_detail.html:5
 #: usersmanage/templates/usersmanage/user_list.html:20
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: usersmanage/templates/usersmanage/user_form.html:81
 msgid "System users"
-msgstr ""
+msgstr "Utilisateurs Système"
 
 #: usersmanage/templates/usersmanage/user_form.html:92
 #: usersmanage/templates/usersmanage/user_group_form.html:20
 msgid "Alert"
-msgstr ""
+msgstr "Alerte"
 
 #: usersmanage/templates/usersmanage/user_form.html:93
 #: usersmanage/templates/usersmanage/user_group_form.html:21
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Il y a des erreurs dans formulaire. Veuillez vérifier et l'envoyer de nouveau."
 
 #: usersmanage/templates/usersmanage/user_group_form.html:9
 msgid "System user groups"
-msgstr ""
+msgstr "Groupes d'utilisateur système"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:10
 #: usersmanage/templates/usersmanage/user_list.html:31
 msgid "User groups"
-msgstr ""
+msgstr "Groupes utilisateur"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:20
 msgid "User group"
-msgstr ""
+msgstr "Groupe utilisateur"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:27
 #: usersmanage/templates/usersmanage/user_list.html:27
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:28
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:30
 #: usersmanage/templates/usersmanage/user_list.html:10
 msgid "Users"
-msgstr ""
+msgstr "Utilisateurs"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:31
 #: usersmanage/templates/usersmanage/user_list.html:44
 msgid "Created"
-msgstr ""
+msgstr "Date de création"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:39
 #: usersmanage/templates/usersmanage/user_list.html:57
 msgid "Show detail"
-msgstr ""
+msgstr "Voir le détail"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:43
 #: usersmanage/templates/usersmanage/user_list.html:62
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:48
 #: usersmanage/templates/usersmanage/user_list.html:67
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: usersmanage/templates/usersmanage/user_list.html:28
 msgid "Username"
-msgstr ""
+msgstr "Nom utilisateur"
 
 #: usersmanage/templates/usersmanage/user_list.html:30
 msgid "Roles"
-msgstr ""
+msgstr "Rôles"
 
 #: usersmanage/templates/usersmanage/user_list.html:33
 msgid " Macro groups"
-msgstr ""
+msgstr "Groupes Macro"
 
 #: usersmanage/templates/usersmanage/user_list.html:38
 msgid "Superuser"
-msgstr ""
+msgstr "Super admin"
 
 #: usersmanage/templates/usersmanage/user_list.html:39
 msgid "Staff"
-msgstr ""
+msgstr "Responsable"
 
 #: usersmanage/templates/usersmanage/user_list.html:42
 msgid "First name"
-msgstr ""
+msgstr "Prénom"
 
 #: usersmanage/templates/usersmanage/user_list.html:43
 msgid "Last name"
-msgstr ""
+msgstr "Nom"
 
 #: usersmanage/templates/usersmanage/user_list.html:46
 msgid "Backend"
-msgstr ""
+msgstr "Backend"
 
 #: usersmanage/utils.py:231
 msgid "ACL Users"
-msgstr ""
+msgstr "Utilisateurs ACL"
 
 #: usersmanage/views.py:228
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
-msgstr ""
+msgstr "Impossible de trouver %(verbose_name)s correspondant à la requête"

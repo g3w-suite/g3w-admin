@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
+"POT-Creation-Date: 2025-10-08 21:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,56 +18,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:13
+#: static/dist/js/g3wadmin.min.js:20 static/js/g3wadmin/tpl.js:15
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:14
+#: static/dist/js/g3wadmin.min.js:20 static/js/g3wadmin/tpl.js:16
 msgid "Content"
-msgstr ""
+msgstr "Contenu"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:19
-#: core/static/js/g3wadmin/widget.js:166 core/static/js/g3wadmin/widget.js:872
+#: static/dist/js/g3wadmin.min.js:20 static/dist/js/g3wadmin.min.js:34
+#: static/js/g3wadmin/tpl.js:21 static/js/g3wadmin/widget.js:244
+#: static/js/g3wadmin/widget.js:852
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:107
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:117
 msgid "Delete item"
-msgstr ""
+msgstr "Supprimer l'objet"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:108
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:118
 msgid "Are you sure to delete this Item"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir supprimer cet objet"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:163
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:169
+msgid "Are you sure to "
+msgstr "Êtes-vous sûr de "
+
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:174
+msgid "Permanently delete"
+msgstr "Supprimer définitivement"
+
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:179
+msgid " item"
+msgstr " objet"
+
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:241
 msgid "Detail object"
-msgstr ""
+msgstr "Détail de l'objet"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:300
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:373
 msgid "Form title"
-msgstr ""
+msgstr "Titre du formulaire"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:368
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:434
 msgid "Upload file"
-msgstr ""
+msgstr "Téléverser un fichier"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:400
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:462
 msgid "Drag&Drop files here"
-msgstr ""
+msgstr "Glisser&Déposer les fichiers ici"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:401
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:463
 msgid "Browse Files"
-msgstr ""
+msgstr "Explorer les fichiers"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:480
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:534
 msgid "ERROR"
-msgstr ""
+msgstr "ERREUR"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:842
-#: core/static/js/g3wadmin/widget.js:860
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:830
+#: static/js/g3wadmin/widget.js:840
 msgid "Access"
-msgstr ""
+msgstr "Accès"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:869
+#: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:849
 msgid "WEB Services"
-msgstr ""
+msgstr "Services WEB"
