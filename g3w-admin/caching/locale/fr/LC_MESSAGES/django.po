@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-08 21:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: forms.py:11
+msgid "Active"
+msgstr "Actif"
+
+#: forms.py:14
+msgid "Save as base layer"
+msgstr "Sauvegarder comme couche de base"
+
+#: forms.py:15
+msgid "Base layer title"
+msgstr "Titre de la couche de base"
+
+#: forms.py:16
+msgid "Base layer description"
+msgstr "Description de la couche de base"
+
+#: forms.py:17
+msgid "Base layer attribution"
+msgstr "Attribution de la couche de base"
+
+#: forms.py:27
+msgid "Check on uncheck to activate/deactivate caching layer capabilities:"
+msgstr "Cocher/Décocher pour activer/désactiver les capacités de cache de la couche:"
+
+#: forms.py:40
+msgid "Reset cache"
+msgstr "Réinitialiser le cache"
+
+#: forms.py:40
+msgid "Reset cache for project"
+msgstr "Réintialise le cache pour le projet"
+
+#: forms.py:52
+msgid "Base layer data"
+msgstr "Données de la couche de base"
+
+#: forms.py:74
+msgid "This field is required"
+msgstr "Ce champ est requis"
+
+#: templates/caching/caching_layer_active_form.html:7
+msgid "Alert"
+msgstr "Alerte"
+
+#: templates/caching/caching_layer_active_form.html:8
+msgid "Some errors on form. Check it and send again."
+msgstr "Des erreurs sont présentes dans le formulaire. Veuillez vérifier et envoyer à nouveau."
+
+#: templates/caching/layer_action.html:7
+msgid "Caching layer"
+msgstr "Mise en cache de la couche"
+
+#: templates/caching/layer_action.html:9
+msgid "Activation layer caching"
+msgstr "Activation de la mise en cache de la couche"
+
+#: views.py:201
+msgid "Cache erased!"
+msgstr "Cache effacé!"
