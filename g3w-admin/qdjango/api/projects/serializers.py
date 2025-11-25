@@ -47,7 +47,9 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsCoordinateTransformContext,
-    QgsExpression
+    QgsExpression, 
+    QgsLayerTreeModel, 
+    QgsMapThemeCollection
 )
 from qgis.server import QgsServerProjectUtils
 from qgis.PyQt.QtCore import QVariant, QDate, QDateTime, Qt
@@ -274,11 +276,19 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Check for QGIS project themes
         # -----------------------------
         map_themes = qgs_project.mapThemeCollection().mapThemes()
+        
+        # Check for current theme active
+        # Alessandro Pasotti (elpaso) snippet
+        ltr = qgs_project.layerTreeRoot()
+        model = QgsLayerTreeModel(ltr)
+
+        cur_theme = QgsMapThemeCollection.createThemeFromCurrentState( ltr, model )
 
         for map_theme in map_themes:
             theme = {
                 'theme': map_theme,
-                'styles': {}
+                'styles': {},
+                'default': cur_theme == qgs_project.mapThemeCollection().mapThemeState(map_theme)
             }
 
             for r in qgs_project.mapThemeCollection().mapThemeState(map_theme).layerRecords():
