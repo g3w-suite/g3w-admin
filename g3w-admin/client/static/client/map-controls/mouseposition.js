@@ -22,8 +22,8 @@ GUI.setupControl.mouseposition = function() {
     target:           'mouse-position-control'})
   ), { offline: true }), false);
   if ('EPSG:4326' !== mapEpsg) {
-    GUI.getMapControlByType('mouseposition').on('change:epsg',
-      e => GUI.getMapControlByType('mouseposition').setCoordinateFormat(coordinateFormat.bind(null, e.epsg))
+    GUI.getMapControl('mouseposition').on('change:epsg',
+      e => GUI.getMapControl('mouseposition').setCoordinateFormat(coordinateFormat.bind(null, e.epsg))
     );
   }
 };

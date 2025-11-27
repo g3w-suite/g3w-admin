@@ -25,8 +25,8 @@ GUI.setupControl.querybyfreehand = function(type) {
   if (isMobile.any) {
     return;
   }
-  if (GUI.getMapControlByType('queryby')) {
-    GUI.getMapControlByType('queryby').addType(type)
+  if (GUI.getMapControl('queryby')) {
+    GUI.getMapControl('queryby').addType(type)
   } else {
     GUI.addControl('queryby', new QueryBy({ types: [type] }));
   }

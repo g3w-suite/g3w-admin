@@ -672,7 +672,7 @@ template: /*html*/`
                 }).reduce((a, k) => { a.append(k[0], k[1]); return a; }, new FormData())
               })).blob();
           // handle click when app is within iframe (ref: "g3w-iframe" → overwriteOnClickEvent)
-          (GUI.getMapControlByType('screenshot')?._onclick || saveBlob)(blob, `map_${Date.now()}`);
+          (GUI.getMapControl('screenshot')?._onclick || saveBlob)(blob, `map_${Date.now()}`);
         }
 
         // ATLAS PRINT
@@ -938,7 +938,7 @@ template: /*html*/`
 
   beforeMount() {
     const button  = GUI.getComponent('print')?.internalComponent;
-    const control = GUI.getMapControlByType('screenshot');
+    const control = GUI.getMapControl('screenshot');
     if (button) {
       button.state.open = true;
     }
@@ -972,7 +972,7 @@ template: /*html*/`
     this.$refs.dialog.remove();
 
     const button  = GUI.getComponent('print')?.internalComponent;
-    const control = GUI.getMapControlByType('screenshot');
+    const control = GUI.getMapControl('screenshot');
     if (button) {
       button.state.open = false;
     }
@@ -1006,7 +1006,7 @@ const toggleUserMessage = (toggle, type) => {
 // wait for map ready
 GUI.setupControl.screenshot = 
 GUI.setupControl.geoscreenshot = function(type) {
-  if (!isMobile.any && !GUI.getMapControlByType('screenshot')) {
+  if (!isMobile.any && !GUI.getMapControl('screenshot')) {
     /**
      * @FIXME prevent tainted canvas error
      * 

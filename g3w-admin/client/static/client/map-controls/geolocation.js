@@ -10,7 +10,7 @@ const { throttle } = g3w.utils;
 // wait for map ready
 GUI.setupControl.geolocation = function() {
   GUI.addControl('geolocation', new GeolocationControl());
-  GUI.getMapControlByType('geolocation').on('click', throttle(e => GUI.showMarker(e.coordinates)));
+  GUI.getMapControl('geolocation').on('click', throttle(e => GUI.showMarker(e.coordinates)));
 };
 
 class GeolocationControl extends MapControl {

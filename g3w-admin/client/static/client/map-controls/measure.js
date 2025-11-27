@@ -31,8 +31,8 @@ GUI.setupControl.length = GUI.setupControl.area = function() {
     .filter(type => ['length', 'area'].includes(type))
     .forEach(type => {
       if (!isMobile.any && type in window.initConfig.mapcontrols) {
-        if (GUI.getMapControlByType('measure')) {
-          GUI.getMapControlByType('measure').addType(type)
+        if (GUI.getMapControl('measure')) {
+          GUI.getMapControl('measure').addType(type)
         } else {
           GUI.addControl('measure', new MeasureControl({
               name: "measure",

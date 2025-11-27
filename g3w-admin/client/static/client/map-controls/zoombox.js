@@ -28,7 +28,7 @@ GUI.setupControl.zoombox = function() {
       },
     }
   });
-  GUI.getMapControlByType('zoombox').on('zoomend', e => {
+  GUI.getMapControl('zoombox').on('zoomend', e => {
     const view = GUI.getMap().getView();
     view.animate(
       { duration: 200, center:     view.getCenter() },

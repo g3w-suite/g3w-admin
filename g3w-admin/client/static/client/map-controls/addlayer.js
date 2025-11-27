@@ -7,7 +7,7 @@ const GUI = g3w.app;
 
 // wait for map ready
 GUI.setupControl.addlayer = GUI.setupControl.addlayers = function () {
-  if (!isMobile.any && !GUI.getMapControlByType('addlayer')) {
+  if (!isMobile.any && !GUI.getMapControl('addlayer')) {
     GUI.createMapControl({
       id: 'addlayer',
       options: {

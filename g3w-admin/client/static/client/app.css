@@ -1239,11 +1239,6 @@ body .tooltip .tooltip-inner                                              { max-
 .skin-button.lighten                { background:       hsl(from var(--skin-color) h s calc(l + 30)) !important; }
 .skin-color-dark                    { color:            hsl(from var(--skin-color) h s calc(l - 20)) !important; }
 
-/* Catalog */
-.catalog-context-menu li:hover      { background: hsl(from var(--skin-color) h s calc(l + 10)); }
-
-.catalog-context-menu .sub-contex-menu { border: 1px solid #eee; border-left: 0; }
-
 .tooltip .tooltip-inner             { font-weight: 700; font-size: 1.25rem; padding: 8px; background-color: #222; }
 
 
