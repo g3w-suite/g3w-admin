@@ -113,7 +113,7 @@ GUI.setupControl.overview = async function() {
             resolution:    Math.max(ol.extent.getWidth(PROJECT.state.initextent) / 200, ol.extent.getHeight(PROJECT.state.initextent) / 150), // max(xInitRes, yInitRes)
           }), // hardcoded
           rotateWithView: true,
-          collapsed:      false,
+          collapsed:      ApplicationState.project.state.baselayers.length > 0,
           className:      'ol-overviewmap',
           tipLabel:       '',
           collapseLabel,

@@ -812,8 +812,8 @@ body:has(.ol-geocoder) #search:not(:has(.g3w-search)):not(:has(.action + .action
 .ol-mouse-position                                                     { position: relative !important; font-weight: 700; font-size: .9em; margin-top: -2px; }
 .ol-overviewmap:not(.ol-collapsed)                                     { border: 1px solid rgba(0,0,0,.5); border-radius: 3px; }
 .ol-overviewmap:not(.ol-collapsed) button                              { scale: .7; }
-.ol-overviewmap                                                        { bottom: 0 !important; }
-.ol-overviewmap:hover                                                  { background-color: rgba(255,255,255, 1) !important; }
+.ol-overviewmap                                                        { bottom: 0 !important; display: flex; align-items: end; }
+.ol-overviewmap:not(.ol-collapsed):hover                               { background-color: rgba(255,255,255, 1) !important; }
 .ol-overviewmap .ol-overviewmap-map                                    { border: none; height: 150px; width: 200px; }
 .ol-overviewmap .ol-overviewmap-box                                    { border: 3px solid var(--skin-color); }
 .ol-control-tl                                                         { top: 0;     left: 7px; }
@@ -855,7 +855,7 @@ body:has(.ol-geocoder) #search:not(:has(.g3w-search)):not(:has(.action + .action
 .g3w-map-controls .ol-zoom-extent                                      { top:0; left:0; }
 
 .g3w-map-controls-left-bottom .ol-control                              { position: relative; }
-.g3w-map-controls-left-bottom                                          { display: flex; gap: 5px; bottom: 35px !important; }
+.g3w-map-controls-left-bottom                                          { display: flex; gap: 5px; align-items: end; bottom: 35px !important; }
 .ol-zoom-history                                                       { align-items: end; order: 1; }
 
 .ol-control button:hover                                               { background-color:var(--skin-color); }

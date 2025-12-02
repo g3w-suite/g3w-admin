@@ -280,7 +280,7 @@ template: /*html*/`
   <!-- PREVIEW MODAL -->
   <dialog
     ref    = "dialog"
-    style  = "max-width: max(70vw, 800px);"
+    :style = "'max-width: max(70vw, 800px);' + (['pdf', 'geopdf'].includes(format) ? 'width: 100vw; height: 100vh;' : '')"
     @click = "$event.target === $event.target.closest('dialog') && $event.target.closest('dialog').close()"
   >
     <form method="dialog">
@@ -305,7 +305,7 @@ template: /*html*/`
       <iframe
         v-if   = "layers && ['pdf', 'geopdf'].includes(format)"
         :src   = "url"
-        style  = "border:0; width:100%; height:100%;"
+        style  = "border:0; width:100%; height:87vh; margin-top: 20px;"
       ></iframe>
 
       <!-- PRINT as PNG, JPG, SVG -->
