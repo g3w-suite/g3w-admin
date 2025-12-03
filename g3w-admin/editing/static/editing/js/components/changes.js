@@ -80,7 +80,7 @@ template: /*html*/`
 
   data() {
     return {
-      features:  this.layer.readFeatures(),                    // original features
+      features:  this.layer.getEditor().readFeatures(),                    // original features
       efeatures: this.layer.getEditor().readEditingFeatures(), // edited features,
     };
   },
