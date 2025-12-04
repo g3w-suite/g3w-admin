@@ -78,7 +78,7 @@ class BaseLayerControl extends ol.control.Control {
             this.layers.map(layer => /* html */`
               <li data-mapTypeId = "${layer.getId()}">
                 <label style="display:block;">
-                  <img loading = "lazy" src = "${this.#getImgURL(layer.getId())}" style = "width: 50px; height: 50px; border-radius: 5px; object-fit: cover; margin: 0 4px; border: 2px solid #000" />
+                  <img onerror = "this.src = '${GUI.getResourcesUrl()}images/no-image.svg'" loading = "lazy" src = "${this.#getImgURL(layer.getId())}" style = "width: 50px; height: 50px; border-radius: 5px; object-fit: cover; margin: 0 4px; border: 2px solid #000" />
                   ${ layer.getName() }
                 </label>
               </li>`
@@ -122,7 +122,7 @@ class BaseLayerControl extends ol.control.Control {
     if (baseLayer?.icon) {
       image = baseLayer.icon;
     }
-    return `${GUI.getResourcesUrl()}images/${image || 'no-image.svg'}`;
+    return `${GUI.getResourcesUrl()}images/${image || 'nobaselayer.svg'}`;
   }
 
   /** Keep layer visibility/checked status in sync */
