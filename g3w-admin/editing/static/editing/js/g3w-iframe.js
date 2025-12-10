@@ -40,13 +40,13 @@ const { getUniqueDomId }    = g3wsdk.core.utils;
 
 export class IframeEditor extends Emitter {
 
-  pending = {};
+  pending    = {};
 
-  isRunning = false;
+  isRunning  = false;
 
   #listeners = [];
 
-  #promise = {
+  #promise   = {
     cb:    null, // resolve or reject
     value: { qgs_layer_id: null, error: null },
   };

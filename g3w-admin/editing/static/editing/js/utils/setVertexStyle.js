@@ -12,9 +12,9 @@ export function setVertexStyle({
   feature,
   vertexColor = 'red',
   lineColor   = 'yellow',
-  fillVertex= false,
-  strokeWidth= 3,
-  radius     = 4,
+  fillVertex  = false,
+  strokeWidth = 3,
+  radius      = 4,
 } = {}) {
   const geometryType = feature.getGeometry().getType();
   feature.setStyle(() => [

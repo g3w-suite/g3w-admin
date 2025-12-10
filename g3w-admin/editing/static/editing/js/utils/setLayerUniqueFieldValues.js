@@ -24,7 +24,6 @@ export async function setLayerUniqueFieldValues(layerId) {
       return;
     }
     try {
-
       // get widget data
       const response = await XHR.get({
         url:    layer.getUrl('widget').unique,

@@ -26,7 +26,7 @@ export class Feature extends ol.Feature {
     // check if it has to set only some properties or all feature properties
     if (opts.feature && opts.properties && Array.isArray(opts.properties)) {
       opts.properties.forEach(p => this.set(p, opts.feature.get(p)));
-    } else if(opts.feature) {
+    } else if (opts.feature) {
       this.setProperties(opts.feature.getProperties());
     }
 
@@ -35,7 +35,7 @@ export class Feature extends ol.Feature {
       this.setGeometryName(opts.feature.getGeometryName());
     }
 
-    const geometry = opts.feature && opts.feature.getGeometry();
+    const geometry = opts?.feature.getGeometry?.();
 
     //check if feature has geometry
     if (geometry) {
@@ -74,7 +74,7 @@ export class Feature extends ol.Feature {
   cloneNew(pk) {
     const clone = this.clone();
     //set new unique id
-    clone._uid = getUniqueDomId();
+    clone._uid  = getUniqueDomId();
     clone.setTemporaryId();
     //in the case of send pk field object set temporary new value
     //to avoid duplicate pk when save clone feature on server
@@ -187,6 +187,5 @@ export class Feature extends ol.Feature {
   setVisible(bool = true) {
     this.state.visible = bool;
   }
-
 
 }

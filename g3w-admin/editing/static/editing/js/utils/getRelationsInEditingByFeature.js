@@ -26,8 +26,8 @@ export function getRelationsInEditingByFeature({
   let relationsinediting = [];
   let relationinediting;
   relations.forEach(relation => {
-    const child  = relation.getChild ? relation.getChild() : relation.child;
-    const father = relation.getFatherField ? relation.getFatherField() : relation.fatherField;
+    const child           = relation.getChild ? relation.getChild() : relation.child;
+    const father          = relation.getFatherField ? relation.getFatherField() : relation.fatherField;
     const relationLayerId = (child === layerId) ? father: child; // get relation LayerId
     //check if the layer is editable
     if (GUI.getPlugin('editing').getLayerById(relationLayerId)) {

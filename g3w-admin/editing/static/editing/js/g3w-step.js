@@ -33,9 +33,9 @@ export class Step extends Emitter {
     this._options = options;
 
     //store promise of current running step when call run
-    this._run  = (options.run  || this.run  || (async () => true)).bind(this);
+    this._run    = (options.run  || this.run  || (async () => true)).bind(this);
     //store promise of current running step when call stop
-    this._stop = (options.stop || this.stop || (async () => true)).bind(this);
+    this._stop   = (options.stop || this.stop || (async () => true)).bind(this);
 
     /**
      * @FIXME add description
