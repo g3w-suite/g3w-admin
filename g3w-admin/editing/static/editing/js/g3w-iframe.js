@@ -100,7 +100,7 @@ export class IframeEditor extends Emitter {
           action: message.data.action,
           response: {
             result: false,
-            data: e
+            data:   e
           }
         }, '*');
       }
@@ -191,12 +191,12 @@ export class IframeEditor extends Emitter {
         // just one time
         if (this.#listeners.every(e => 'canUndo' !== e.event)) {
           this.#onPlugin('canUndo', bool => {
-            //set currenttoolbocx id in editing to null
+            //set currenttoolbox id in editing to null
             if (false === bool) {
               this.#promise.value = { qgs_layer_id: null, error: null };
             }
             activeTool.setEnabled(!bool);
-            disableToolboxes.forEach(toolbox => toolbox.setEditing(!bool))
+            disableToolboxes.forEach(t => t.setEditing(!bool))
           });
           this.#onPlugin('cancelform', () => { e1(); }); // runs callback 
         }
@@ -494,7 +494,7 @@ export class IframeEditor extends Emitter {
     this.isRunning      = false;
     this.#promise.cb    = null;
     this.#promise.value = { qgs_layer_id: null, error: null };
-    this.#listeners.forEach(d => { GUI.getPlugin('editing').off(d.event, d.listener); });
+    this.#listeners.forEach(d => GUI.getPlugin('editing').off(d.event, d.listener) );
     this.emit('clear');
   }
 
