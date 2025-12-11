@@ -11,7 +11,7 @@ export class Collection {
 
   constructor(is_ol) {
     this._is_ol  = is_ol;
-    this._store  = is_ol ? new ol.Collection([]) : []
+    this._store  = is_ol ? new ol.Collection([]) : [];
   }
 
   getArray() {
@@ -46,7 +46,7 @@ export class Collection {
     if (-1 === index) {
       return;
     }
-    if(this._is_ol) {
+    if (this._is_ol) {
       this._store.removeAt(index);
       this._store.dispatchEvent('change');
     } else {
