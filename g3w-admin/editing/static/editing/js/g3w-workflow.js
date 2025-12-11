@@ -54,7 +54,7 @@ export class Workflow extends Emitter {
     super();
 
     /** @since g3w-client-plugin-editing@v3.8.0*/
-    this._type = undefined !== options.type ? options.type : null;
+    this._type = options?.type || null;
 
     /**
      * @since g3w-client-plugin-editing@v3.8.0
@@ -69,17 +69,17 @@ export class Workflow extends Emitter {
     /**
      * Mandatory inputs to work with editing
      */
-    this._inputs = undefined !== options.inputs ? options.inputs : null;
+    this._inputs = options?.inputs || null;
 
     /**
      * @FIXME add description
      */
-    this._context = undefined !== options.context ? options.context : null;
+    this._context = options?.context || null;
 
     /**
      * All steps of flow
      */
-    this._steps = options.steps || [];
+    this._steps = options?.steps || [];
 
     /**
      * Whether is child of another workflow
@@ -94,7 +94,7 @@ export class Workflow extends Emitter {
     /**
      * Stop when flow stop
      */
-    this.runOnce = options.runOnce || false;
+    this.runOnce = options?.runOnce || false;
 
     /**
      * @FIXME add description
@@ -116,7 +116,7 @@ export class Workflow extends Emitter {
      * 
      * @since 3.9.0
      */
-    this.backbuttonlabel = undefined !== options.backbuttonlabel ? options.backbuttonlabel : null;
+    this.backbuttonlabel = options?.backbuttonlabel || null;
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
@@ -600,9 +600,9 @@ export class Workflow extends Emitter {
    * 
    * @since g3w-client-editing@v3.8.0
    */
-  startFromLastStep(options = {}) {
+  startFromLastStep(opts = {}) {
     this.setSteps([ this.getSteps().pop() ]);
-    return this.start(options);
+    return this.start(opts);
   }
 
   /**

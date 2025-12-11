@@ -56,7 +56,7 @@ export class Step extends Emitter {
      * Dynamic state of a step
      */
     this.state = {
-      id:      options.id || null,
+      id:      options.id   || null,
       name:    options.name || null,
       help:    options.help || null,    // help to show what the user has to do
       running: false,                   // running
@@ -402,7 +402,7 @@ export class Step extends Emitter {
         options: {
           checked: false,
           run() {
-            setTimeout(() => { this.onChange(this.checked); })
+            setTimeout(() => this.onChange(this.checked))
           },
           stop() {
             step.measureTooltip(false);
