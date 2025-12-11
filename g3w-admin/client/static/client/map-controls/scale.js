@@ -149,7 +149,7 @@ class ScaleControl extends ol.control.Control {
 
     // set element of control (it is necessary to visualize it)
     this.element = div;
-    $(this.element).css('height', '20px');
+    div.style.height = '20px';
 
     this.layout(map);
     super.setMap(map);
