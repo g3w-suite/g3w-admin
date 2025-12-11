@@ -24,7 +24,7 @@ export class Feature extends ol.Feature {
     this._geometry  = false;
 
     // check if it has to set only some properties or all feature properties
-    if (opts.feature && opts.properties && Array.isArray(opts.properties)) {
+    if (opts.feature && Array.isArray(opts?.properties)) {
       opts.properties.forEach(p => this.set(p, opts.feature.get(p)));
     } else if (opts.feature) {
       this.setProperties(opts.feature.getProperties());
@@ -97,7 +97,7 @@ export class Feature extends ol.Feature {
       feature.setGeometry(feature.getGeometry().clone());
     }
     const clone = new Feature({ feature });
-    clone._uid = this.getUid();
+    clone._uid  = this.getUid();
     clone.setState(this.getState());
     if (this.isNew()) {
       clone.setNew();
