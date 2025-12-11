@@ -20,7 +20,7 @@ export class PickFeaturesInteraction extends ol.interaction.Pointer {
     let features = []; // picked features
 
     const featuresAtPixel = ({ pixel, map } = {}) => map.getFeaturesAtPixel(pixel, {
-      layerFilter: l => opts.layer === l,
+      layerFilter:  l => opts.layer === l,
       hitTolerance: (isMobile && isMobile.any) ? 10 : 0,
     });
 
@@ -52,7 +52,7 @@ export class PickFeatureStep extends Step {
   constructor(options = {}) {
     options.help      = "editing.steps.help.pick_feature";
     options.highlight = options.highlight || false;
-    options.multi     = options.multi || false;
+    options.multi     = options.multi     || false;
     super(options);
   }
 

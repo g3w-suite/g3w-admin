@@ -128,7 +128,7 @@ export class OpenFormStep extends Step {
 
       GUI.getPlugin('editing').setCurrentLayout();
 
-      const layerName        = inputs.layer.getName();
+      const layerName = inputs.layer.getName();
 
       // create a child relation feature set a father relation field value
       if (this._isContentChild) {
@@ -151,7 +151,7 @@ export class OpenFormStep extends Step {
       Workflow.Stack.current.setInput({ key: 'fields', value: fields });
 
       // whether disable relations editing (ref: "editmultiattributes")
-      const feature = !this._multi && inputs.features && inputs.features[inputs.features.length - 1];
+      const feature = !this._multi && inputs?.features?.[inputs.features.length - 1];
       const layerId = !this._multi && inputs.layer.getId();
 
       // @since g3w-client-plugin-editing@v3.7.2
@@ -385,7 +385,7 @@ export class OpenFormStep extends Step {
                   };
                 }
 
-                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures});
+                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
 
                 newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
 

@@ -229,7 +229,7 @@ export class AddFeatureStep extends Step {
     try {
       if (this.drawInteraction) { this.drawInteraction.removeLastPoint() }
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     }
   }
 

@@ -22,12 +22,12 @@ export class ModifyGeometryVertexStep extends Step {
 
   _originalStyle = null;
 
-  _feature = null;
+  _feature       = null;
 
   tooltip;
 
   constructor(options = {}) {
-    options.snap = undefined === options.snap || options.snap;
+    options.snap =  options?.snap ?? true;
     options.help = "editing.steps.help.edit_feature_vertex";
     super(options);
   }

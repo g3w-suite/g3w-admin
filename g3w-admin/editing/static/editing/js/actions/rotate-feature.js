@@ -36,7 +36,7 @@ function _setCursor(elt, cursor) {
  */
 const CURSORS = {
   'default':   'auto',
-  'select': '   pointer',
+  'select':    'pointer',
   'rotate':    'move',
 };
 
@@ -370,13 +370,13 @@ class RotateInteraction extends ol.interaction.Pointer {
             },
            
             created() {
-              feature.on('propertychange', e => this.rotation = e.target.get('rotation') )
+              feature.on('propertychange', e => this.rotation = e.target.get('rotation') );
             },
             beforeDestroy: () => {
               if (this.change) {
                 this.dispatchEvent({ type: 'rotateend', feature });
               }
-              this.change_ = false;
+              this.change_   = false;
               this.pdegrees_ = null;
             }
           }
@@ -437,22 +437,22 @@ class RotateInteraction extends ol.interaction.Pointer {
       this.overlayLayer_.getSource().clear();
       return false;
     }
-    this.opt_          = sel.option;
-    this.constraint_   = sel.constraint;
-    this.oriStyle      = feature.getStyle();
+    this.opt_            = sel.option;
+    this.constraint_     = sel.constraint;
+    this.oriStyle        = feature.getStyle();
     // Save info
     // Get coordinate of the handle (for snapping)
-    this.coordinate_   = feature.get('handle') ? feature.getGeometry().getCoordinates() : evt.coordinate;
-    this.pixel_        = this.getMap().getCoordinateFromPixel(this.coordinate_); // evt.pixel;
-    this.geoms_        = [];
-    this.rotatedGeoms_ = [];
-    let extent         = ol.extent.createEmpty();
+    this.coordinate_     = feature.get('handle') ? feature.getGeometry().getCoordinates() : evt.coordinate;
+    this.pixel_          = this.getMap().getCoordinateFromPixel(this.coordinate_); // evt.pixel;
+    this.geoms_          = [];
+    this.rotatedGeoms_   = [];
+    let extent           = ol.extent.createEmpty();
     this.geoms_.push(this.selection_.item(0).getGeometry().clone());
     extent = ol.extent.extend(extent, this.selection_.item(0).getGeometry().getExtent());
-    this.extent_ = (ol.geom.Polygon.fromExtent(extent)).getCoordinates()[0];
-    this.center_  = this.getCenter() || ol.extent.getCenter(extent);
+    this.extent_         = (ol.geom.Polygon.fromExtent(extent)).getCoordinates()[0];
+    this.center_         = this.getCenter() || ol.extent.getCenter(extent);
     // we are now rotating (cursor down on rotate mode), so apply the grabbing cursor
-    const element = evt.map.getTargetElement();
+    const element        = evt.map.getTargetElement();
     _setCursor(element, CURSORS.rotate);
     this.previousCursor_ = element.style.cursor;
     this.angle_          = Math.atan2(this.center_[1] - evt.coordinate[1], this.center_[0] - evt.coordinate[0]);
