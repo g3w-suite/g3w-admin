@@ -16,45 +16,24 @@
   <style>{{ CLIENT_CUSTOM_CSS | safe }}</style>
   {% endif %}
   <style>
-
-    /* 
-      @keyframes sk-bounce              { 0%, 100% { transform: scale(0.0); } 50% { transform: scale(1.0); } }
-      #startingspinner                  { position: fixed; z-index: 100000; height: 10em; width: 10em; overflow: show; margin: auto; inset: 0; }
-      #startingspinner .double-bounce1,
-      #startingspinner .double-bounce2  { width: 100%; height: 100%; border-radius: 50%; background-color: var(--skin-color); opacity: .6; position: absolute; top: 0; left: 0; animation: sk-bounce 2.0s infinite ease-in-out; }
-      #startingspinner .double-bounce2  { animation-delay: -1.0s; } 
-    */
-    
-    #startingspinner {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    @keyframes pulse { 0% { transform: scale(1);} 50% { transform: scale(1.1);} 100% { transform: scale(1);} }
-    
-    .pulse {
-      animation: pulse 2s infinite;
-      margin: 0 auto;
-      display: table;
-      margin-top: 50px;
-      animation-direction: alternate;
-      -webkit-animation-name: pulse;
-      animation-name: pulse;
-    }   
-        
+    @keyframes sk-bounce              { 0%, 100% { transform: scale(0.0); } 50% { transform: scale(1.0); } }
+    #startingspinner                  { position: fixed; z-index: 100000; height: 10em; width: 10em; overflow: show; margin: auto; inset: 0; }
+    #startingspinner .double-bounce1,
+    #startingspinner .double-bounce2  { width: 100%; height: 100%; border-radius: 50%; background-color: var(--skin-color); opacity: .6; position: absolute; top: 0; left: 0; animation: sk-bounce 2.0s infinite ease-in-out; }
+    #startingspinner .double-bounce2  { animation-delay: -1.0s; }
   </style>
 </head>
 <body class="{% if sidebar_collapse %} sidebar-collapse {% endif %}">
   {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
   {% endif %}
-  <app id = "app"></app>
-  <!-- <div id="startingspinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div> -->
-  <div id = "startingspinner"">
-    <img src = "/static/client/images/logo_gis3w_156_85.png" alt = "" class = "g3w-suite-logo pulse">
+  <app id="app"></app>
+  <div id="startingspinner">
+    <div class="double-bounce1"></div>
+    <div class="double-bounce2"></div>
+    <a href="https://g3wsuite.it/" target="_blank" style="position: fixed;right: 20px;bottom: 20px;"><img alt="g3w-suite" style="filter: opacity(0.7);width: 95px;" src="/static/client/images/g3wsuite_logo.png"></a>
   </div>
+
   <script>{{ group_config | safe }}</script>
 
   <script src="{% with client_default|add:"/vendor.min.js" as vendor_js %}{% static vendor_js %}{% endwith %}"></script>
