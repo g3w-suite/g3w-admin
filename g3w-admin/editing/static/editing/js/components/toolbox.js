@@ -658,7 +658,7 @@ document.head.insertAdjacentHTML(
   }
   .toolbox .panel:not(.toolboxactive) .panel-heading {
     border-radius: 3px;
-    filter: grayscale(.8);
+    filter: grayscale(1);
   }
   .toolbox .panel:not(.geolayer) .panel-body {
     padding-top: 0;
