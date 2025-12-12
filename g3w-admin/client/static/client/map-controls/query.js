@@ -29,7 +29,7 @@ GUI.setupControl.query = function() {
             await GUI.getData('query:coordinates', {
               inputs: {
                 coordinates,
-                feature_count:         project.state.feature_count || 5,
+                feature_count:         project.state?.feature_count ?? 5,
                 query_point_tolerance: project.getQueryPointTolerance(),
                 multilayers:           [].concat(project.state.querymultilayers).includes(this.name),
               }
@@ -40,8 +40,8 @@ GUI.setupControl.query = function() {
         });
         this.setEventKey({ eventType: 'picked', eventKey: this.on('picked', this.runQuery) });
         if ('after' === setter) {
-          this.getInteraction().on('picked', throttle(async evt => {
-            this.dispatchEvent({ type: 'picked', coordinates: evt.coordinate });
+          this.getInteraction().on('picked', throttle(async e => {
+            this.dispatchEvent({ type: 'picked', coordinates: e.coordinate });
           }));
         }
       }

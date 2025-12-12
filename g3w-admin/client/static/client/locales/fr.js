@@ -1,4 +1,5 @@
 export default {
+  confirm: "Confirmer",
   default:"par défaut ",
   sign_in: "Se connecter ",
   'Logout': "Quitter",

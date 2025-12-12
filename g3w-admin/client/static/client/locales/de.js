@@ -1,4 +1,5 @@
 export default {
+  confirm: "Bestätigen",
   default:"default",
   sign_in: "Anmelden",
   'Toggle color scheme': "Farbschema umschalten",

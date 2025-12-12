@@ -5,7 +5,7 @@
 
 (function() {
 
-  const geocoding = window.initConfig.mapcontrols.geocoding || {};
+  const geocoding = window.initConfig?.mapcontrols?.geocoding ?? {};
   const provider  = document.currentScript.src.split('/').reverse()[0].replace('.js', '') || 'nominatim';
 
   // skip when disabled
@@ -24,11 +24,11 @@
     return {
       provider,
       label: 'Nominatim (OSM)',
-      icon:  undefined !== opts.icon ? opts.icon : 'road',
+      icon:  opts.icon ?? 'road',
       results:
         (
           await XHR.get({
-            url:              opts.url || 'https://nominatim.openstreetmap.org/search',
+            url:              opts?.url ?? 'https://nominatim.openstreetmap.org/search',
             params: {
               q:              opts.query, // textual search
               format:         'json',

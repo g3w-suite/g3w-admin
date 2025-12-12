@@ -1,4 +1,5 @@
 export default {
+  confirm: "Потвърждаване",
   default: "по подразбиране",
   sign_in: "Вход",
   'Toggle color scheme': "Превключи цветова схема",

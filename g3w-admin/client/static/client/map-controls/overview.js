@@ -71,7 +71,7 @@ GUI.setupControl.overview = async function() {
         const config = Object.assign({}, l, {
           crs:               normalizeEpsg(l.crs || PROJECT.crs, false), // @v4.0 Fix In case of missing layer crs, set project crs
           projection:        l.crs ? ApplicationState.projections.get(l.crs) : PROJECT.getProjection(),
-          ows_method:        PROJECT.ows_method || 'GET',
+          ows_method:        PROJECT?.ows_method ?? 'GET',
           wms_use_layer_ids: PROJECT.wms_use_layer_ids,
           //@since v4.0.0 - original config to maintain
           styles:            l.styles && l.styles.map(s => ({...s})), // v4.0.0 pass a copy of styles
@@ -81,7 +81,7 @@ GUI.setupControl.overview = async function() {
           if (!['OSM', 'Bing'].includes(config.servertype)) { // skip base layers
             return new Layer(config, { project: PROJECT });
           }
-        } catch (e) {
+        } catch(e) {
           console.warn(e);
         }
         return [];
@@ -123,7 +123,7 @@ GUI.setupControl.overview = async function() {
               // group layer by multilayerId
               Object
                 .values(PROJECT._layers)
-                .filter(l => l.isGeoLayer() && !l.isBaseLayer() && l.isVisible())
+                .filter(l => !l.isBaseLayer() && l.isGeoLayer() && l.isVisible())
                 .reduce((group, l) => {
                   const id = l.getMultiLayerId();
                   group[id] = group[id] || [];
@@ -131,9 +131,9 @@ GUI.setupControl.overview = async function() {
                   return group;
                 }, {}) || []
             ).map(([id, layers]) => new ol.layer.Image({
-              id:            `overview_layer_${id}`,
-              opacity:       1.0,
-              source:        new ol.source.ImageWMS({
+              id:           `overview_layer_${id}`,
+              opacity:      1.0,
+              source:       new ol.source.ImageWMS({
                 ratio:      1,
                 url:        layers?.at(-1)?.getWmsUrl?.() ?? `${window.initConfig.urls.baseurl}${window.initConfig.urls.ows}/${window.initConfig.id}/${CONFIG.type}/${CONFIG.id}/`,
                 params:     Object.fromEntries(
@@ -152,7 +152,7 @@ GUI.setupControl.overview = async function() {
       }
     });
 
-  } catch (err) {
-    console.warn(err)
+  } catch(e) {
+    console.warn(e)
   }
 };

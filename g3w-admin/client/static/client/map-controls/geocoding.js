@@ -49,7 +49,7 @@ const {
  * VENDOR_KEYS['my_custom_provider'] = 'super.secret.key'
  * ```
  */
-const PROVIDERS = window.initConfig.mapcontrols.geocoding ? window.initConfig.mapcontrols.geocoding.providers : {};
+const PROVIDERS = window.initConfig.mapcontrols?.geocoding?.providers ?? {};
 Object
   .keys(PROVIDERS)
   .forEach(function(p) {
@@ -69,8 +69,8 @@ class GeocodingControl extends ol.control.Control {
   RESULTS = [];
 
   LAYER = new ol.layer.Vector({
-    id: '__g3w_marker',
-    name: 'Geocoding',
+    id:    '__g3w_marker',
+    name:  'Geocoding',
     source: new ol.source.Vector(),
     style(feature) {
       // a coordinate search
@@ -103,17 +103,17 @@ class GeocodingControl extends ol.control.Control {
     super({
       element: Object.assign(document.createElement('template'), {
         innerHTML: /* html */`
-          <div class="ol-geocoder">
+          <div class = "ol-geocoder">
             <form>
-              <input  type="search" autocomplete="off" style="font-weight: bold;" placeholder = "${_('Search')}" />
-              <button type="reset"                         data-i18n-title="Reset search"    data-placement="bottom"                                 hidden></button>
-              <button type="submit" value="search"         data-i18n-title="Submit search"   data-placement="bottom" class="btn fas fa-search"></button>
-              <button type="submit" value="trash"          data-i18n-title="Clear selection" data-placement="bottom" class="btn fas fa-trash"     hidden style="color:red;"></button>
-              <button type="submit" value="toggle-layer"   data-i18n-title="Toggle layer"    data-placement="bottom" class="btn far fa-eye-slash" hidden></button>
-              <button type="submit" value="toggle-sidebar" data-i18n-title="Toggle sidebar"  data-placement="bottom" class="btn"                  hidden><code></code></button>
+              <input  type = "search" autocomplete = "off" style = "font-weight: bold;" placeholder = "${_('Search')}" />
+              <button type = "reset"                         data-i18n-title = "Reset search"    data-placement = "bottom"                                 hidden></button>
+              <button type = "submit" value="search"         data-i18n-title = "Submit search"   data-placement = "bottom" class = "btn fas fa-search"></button>
+              <button type = "submit" value="trash"          data-i18n-title = "Clear selection" data-placement = "bottom" class = "btn fas fa-trash"     hidden style = "color:red;"></button>
+              <button type = "submit" value="toggle-layer"   data-i18n-title = "Toggle layer"    data-placement = "bottom" class = "btn far fa-eye-slash" hidden></button>
+              <button type = "submit" value="toggle-sidebar" data-i18n-title = "Toggle sidebar"  data-placement = "bottom" class = "btn"                  hidden><code></code></button>
             </form>
             <!-- SEARCH RESULTS -->
-            <ul popover="manual"></ul>
+            <ul popover = "manual"></ul>
           </div>
       `.trim()}).content.firstChild
     });
@@ -158,7 +158,7 @@ class GeocodingControl extends ol.control.Control {
 
   #onLayerVisible() {
     const visible = this.LAYER.getVisible();
-    const btn = this.element.querySelector('button[value="toggle-layer"]')
+    const btn     = this.element.querySelector('button[value="toggle-layer"]')
     btn.classList.toggle('fa-eye-slash', visible);
     btn.classList.toggle('fa-eye', !visible);
   }
@@ -222,7 +222,7 @@ class GeocodingControl extends ol.control.Control {
       this.clearing = true;
       this.LAYER.getSource().clear(); // clear layer features marker
       this.RESULTS.forEach(i => i.__selected = false);
-      const layer = GUI.getState().layers.find(l => l.id === this.LAYER.get('id'));
+      const layer = GUI.getState().layers.find(l => this.LAYER.get('id') === l.id);
       // check if marker is in query results
       if (layer) {
         layer.features.forEach(f => GUI.removeFeatureFromResult(layer, f));
@@ -248,12 +248,12 @@ class GeocodingControl extends ol.control.Control {
 
   #filterPropsByPrefix(obj, prefix = '___') {
     const extracted = {};
-    const filtered = {};
+    const filtered  = {};
     Object.entries(obj).forEach(([key, value]) => {
       if (key.startsWith(prefix)) {
-          extracted[key] = value;
+        extracted[key] = value;
       } else {
-          filtered[key] = value;
+        filtered[key] = value;
       }
     });
     return { filtered, extracted };
@@ -279,11 +279,11 @@ class GeocodingControl extends ol.control.Control {
     let transform      = false;
     const [x, y, epsg] = (q || '').split(',');
     // get projection of coordinates is pass as third value
-    const projection   = epsg && await ApplicationState.projections.set(`EPSG:${epsg.trim()}`);
+    const projection     = epsg && await ApplicationState.projections.set(`EPSG:${epsg.trim()}`);
     const update_on_move = this.element?.querySelector?.('input[name="update_on_move"]')?.checked;
 
     /** @TODO add a checkbox to let user choose whether include searches only from current map extent */
-    const extent       = ol.proj.transformExtent(
+    const extent = ol.proj.transformExtent(
       Object.keys(PROVIDERS).filter(p => 'nominatim' != p).length > 0
         ? GUI.getMapExtent()
         : (GUI.getProject().state.initextent || GUI.getProject().state.extent),
@@ -300,9 +300,9 @@ class GeocodingControl extends ol.control.Control {
     try {
       if (projection) {
         coordinates = ol.proj.transform(coordinates, projection.getCode(), 'EPSG:4326');
-        transform = true;
+        transform   = true;
       }
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
     }
 
@@ -344,8 +344,8 @@ class GeocodingControl extends ol.control.Control {
             extent,
           }))
       ))
-        .filter(p => 'fulfilled' === p.status)
-        .forEach((p) => {
+        .filter(p  => 'fulfilled' === p.status)
+        .forEach(p => {
 
           // heading
           RESULTS.push({
@@ -392,17 +392,17 @@ class GeocodingControl extends ol.control.Control {
           ${update_on_move && item.__selected ? 'hidden' : '' }
         >
           <!-- GEOCODING PROVIDER (eg. "Nominatim OSM") -->
-          ${item.__heading ? `<b style="padding: 5px; color: #FFF;">${ item.label }</b>` : ''}
+          ${item.__heading ? `<b style = "padding: 5px; color: #FFF;">${ item.label }</b>` : ''}
             
           <!-- NO RESULTS -->
           ${!item.__heading && item.__no_results ? `<span>${_('No results')}</span>` : ''}
 
           <!-- RESULTS -->
           ${!item.__heading && !item.__no_results ? /* html */`
-            <input type="checkbox" style="pointer-events: none; margin: 0;" ${item.__selected ? 'checked' : ''} />
-            <img class="gcd-icon" src="/static/client/images/pushpin.svg" width="24" height="24" ${['poi', 'point'].includes(item.__icon) ? '' : 'hidden'}/>
-            <i class="fa fa-${item.__icon}" style="color: black"   ${!['poi', 'point'].includes(item.__icon) && undefined !== item.__icon ? '' : 'hidden'}></i>
-            <span style="display: flex; flex-direction: column; padding: 3px 5px; color: #000;">
+            <input type = "checkbox" style = "pointer-events: none; margin: 0;" ${item.__selected ? 'checked' : ''} />
+            <img class = "gcd-icon" src = "/static/client/images/pushpin.svg" width = "24" height = "24" ${['poi', 'point'].includes(item.__icon) ? '' : 'hidden'}/>
+            <i class = "fa fa-${item.__icon}" style = "color: black"   ${!['poi', 'point'].includes(item.__icon) && undefined !== item.__icon ? '' : 'hidden'}></i>
+            <span style = "display: flex; flex-direction: column; padding: 3px 5px; color: #000;">
               <span class = "gcd-type">${item.type ?? ''}</span>
               <span class = "gcd-name">${(item.name ?? '').replace(new RegExp(`(${q})`, 'gi'), '<b>$1</b>')}</span>
               <span class = "gcd-road">${item.address_name ?? ''}</span>
@@ -421,14 +421,14 @@ class GeocodingControl extends ol.control.Control {
 
       if (SAVED_SEARCHES.length) {
         this.element.querySelector('ul').insertAdjacentHTML('beforeend', /* html */`
-          ${SAVED_SEARCHES.length ? /* html */`<li class="skin-background-color"><b style="padding: 5px; color: #FFF;">Saved searches</b></li>` : ''}
+          ${SAVED_SEARCHES.length ? /* html */`<li class = "skin-background-color"><b style = "padding: 5px; color: #FFF;">Saved searches</b></li>` : ''}
         `);
       }
 
       SAVED_SEARCHES.forEach(li => {
-        const tmp = document.createElement('li');
+        const tmp        = document.createElement('li');
         tmp.style.cursor = 'pointer';
-        tmp.innerHTML = /* html */`<i class="far fa-circle"></i> ${li.textContent}`;
+        tmp.innerHTML    = /* html */`<i class = "far fa-circle"></i> ${li.textContent}`;
         tmp.addEventListener('click', e => {
           e.preventDefault();
           (li.querySelector('.search-tools') || li).click();
@@ -455,9 +455,9 @@ class GeocodingControl extends ol.control.Control {
       });
 
       this.element.querySelector('ul').insertAdjacentHTML('beforeend', /* html */`
-        <li style="position: sticky;bottom: 0;background: #fff;margin-bottom: -10px;" hidden>
-          <label style="cursor: pointer;">
-            <input type="checkbox" name="update_on_move" ${update_on_move ? 'checked' : ''}> Update results when map moves
+        <li style = "position: sticky;bottom: 0;background: #fff;margin-bottom: -10px;" hidden>
+          <label style = "cursor: pointer;">
+            <input type = "checkbox" name = "update_on_move" ${update_on_move ? 'checked' : ''}> Update results when map moves
           </label>
         </li>
       `);
@@ -521,7 +521,7 @@ class GeocodingControl extends ol.control.Control {
 
       await GUI.closeContent();
       GUI.showData({ data: [{ layer: this.LAYER, features: [feature] }] }, { title: 'Geocoding' });
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
     }
   }

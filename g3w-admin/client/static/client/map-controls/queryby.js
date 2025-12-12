@@ -17,9 +17,9 @@ const {
 } = g3w.utils;
 
 // wait for map ready
-GUI.setupControl.querybypolygon = 
-GUI.setupControl.querybbox = 
-GUI.setupControl.querybycircle = 
+GUI.setupControl.querybypolygon     = 
+GUI.setupControl.querybbox          = 
+GUI.setupControl.querybycircle      = 
 GUI.setupControl.querybydrawpolygon = 
 GUI.setupControl.querybyfreehand = function(type) {
   if (isMobile.any) {
@@ -83,13 +83,13 @@ export class QueryBy extends MapControl {
 
     this.types = [];
 
-    (opts.types || []).forEach(type => this.addType(type));
+    (opts.types || []).forEach(t => this.addType(t));
 
     // no type set, hide control
     if (0 === this.types.length) {
       this.setVisible(false);
     } else {
-      this.element.classList.add('ol-' + this.types[0]);
+      this.element.classList.add(`ol-${this.types[0]}`);
     }
 
     CONTROLS['queryby'] = this;
@@ -129,20 +129,20 @@ export class QueryBy extends MapControl {
                   <i :class = "$fa('external-link')"></i>
                 </a>
                 <!-- SPATIAL METHOD -->
-                <div style="padding: 5px;">
-                  <select :search="false" v-select2="'method'">
-                    <option v-for="method in methods" :value="method" v-t="'mapcontrols.queryby.methods.' + method"></option>
+                <div style = "padding: 5px;">
+                  <select :search = "false" v-select2 = "'method'">
+                    <option v-for = "method in methods" :value = "method" v-t = "'mapcontrols.queryby.methods.' + method"></option>
                   </select>
                 </div>
                 <!-- QUERY TYPE -->
-                <div style="padding: 5px;">
-                  <select :search="false" v-select2="'type'" :templateSelection="templateType" :templateResult="templateType">
-                    <option v-for="type in types" :value="type" v-t="'mapcontrols.queryby.' + type + '.tooltip'"></option>
+                <div style = "padding: 5px;">
+                  <select :search = "false" v-select2 = "'type'" :templateSelection = "templateType" :templateResult = "templateType">
+                    <option v-for = "type in types" :value = "type" v-t = "'mapcontrols.queryby.' + type + '.tooltip'"></option>
                   </select>
                 </div>
                 <!-- RADIUS TYPE IN METERS-->
-                <div v-if="'querybycircle' === type" style="padding: 5px;">
-                  <label for="g3w_querybycircle_radius" v-t:pre="'mapcontrols.querybycircle.label'">[m]</label>
+                <div v-if = "'querybycircle' === type" style = "padding: 5px;">
+                  <label for = "g3w_querybycircle_radius" v-t:pre = "'mapcontrols.querybycircle.label'">[m]</label>
                   <div style = "display: flex">
                     <input
                       id      = "g3w_querybycircle_radius"
@@ -163,17 +163,24 @@ export class QueryBy extends MapControl {
                 </div>
                 <!-- SELECTED LAYER -->
                 <div style = "padding: 5px;">
-                  <label v-t="'mapcontrols.queryby.layer'"></label>
-                  <select v-if="!reloading" ref="layer" :select2_value = "selectedLayer" v-select2="'selectedLayer'" :templateSelection="templateLayer" :templateResult="templateLayer">
-                    <option v-t="all" :value ="'__ALL__'"></option>
-                    <option v-for="layer in layers" :value="layer.getId()" :selected="selectedLayer === layer.getId()">{{ layer.get('name') }}</option>
-                    <option :value="'__NEW__'" v-t="'mapcontrols.queryby.new'"></option>
+                  <label v-t = "'mapcontrols.queryby.layer'"></label>
+                  <select v-if = "!reloading" ref = "layer" :select2_value = "selectedLayer" v-select2 = "'selectedLayer'" :templateSelection = "templateLayer" :templateResult = "templateLayer">
+                    <option v-t = "all" :value = "'__ALL__'"></option>
+                    <option v-for = "layer in layers" :value = "layer.getId()" :selected = "selectedLayer === layer.getId()">{{ layer.get('name') }}</option>
+                    <option :value = "'__NEW__'" v-t = "'mapcontrols.queryby.new'"></option>
                   </select>
                 </div>
                 <!-- HELP TEXT -->
-                <div ref="help" v-t="help"></div>
+                <div ref = "help" v-t = "help"></div>
                 <!-- CLEAR SELECTION -->
-                <button v-if = "!['__ALL__', '__NEW__'].includes(selectedLayer)" style="color: #FFF; background-color: var(--skin-color)" class="clear-selected-layer btn btn-block"  @click.stop="selectedLayer = '__ALL__'"><i :class = "$fa('clear')"></i> <span v-t="'Clear Selection'"></span></button>
+                <button 
+                  v-if        = "!['__ALL__', '__NEW__'].includes(selectedLayer)" 
+                  style       = "color: #FFF; background-color: var(--skin-color)" 
+                  class       = "clear-selected-layer btn btn-block"  
+                  @click.stop = "selectedLayer = '__ALL__'"
+                >
+                  <i :class = "$fa('clear')"></i> <span v-t = "'Clear Selection'"></span>
+                </button>
               </div>`,
             computed: {
               control()   { return CONTROLS[this.type]; },
@@ -411,7 +418,6 @@ export class QueryBy extends MapControl {
         }
 
         if ('querybypolygon' === type) {
-
           this._interaction.on('picked', throttle(async e => {
             QUERY.coordinates = e.coordinate;
             this.dispatchEvent({ type: 'picked', coordinates: QUERY.coordinates });
@@ -437,7 +443,7 @@ export class QueryBy extends MapControl {
                   outputs: {
                     // whether to show picked coordinates on map
                     show({ data = [], query }) {
-                      const show = data.length === 0;
+                      const show = 0 === data.length;
                       // set query coordinates to null in case to avoid `externalvector` added to query response
                       query.coordinates = show ? query.coordinates : null;
                       return show;
@@ -506,13 +512,13 @@ export class QueryBy extends MapControl {
     }
 
     if (this.usermessage) {
-      this.usermessage.selectedLayer = layer ? layer.getId() : '__ALL__';
+      this.usermessage.selectedLayer = layer?.getId?.() ?? '__ALL__';
     }
 
     this.types.forEach(t => {
       const control = CONTROLS[t];
 
-      const selected  = layer && control.layers.find(l => l === layer);
+      const selected  = layer && control.layers.find(l => layer === l);
       const queryable = layer && layer.isQueryable() && (control.getGeometryTypes() || []).includes(layer.getGeometryType());
 
       if (['querybbox', 'querybydrawpolygon', 'querybycircle'].includes(t)) {
@@ -552,8 +558,8 @@ export class QueryBy extends MapControl {
    */
   onRemoveExternalLayer(layer) {
     this.types.forEach(t => {
-      const control = CONTROLS[t];
-      control.layers = _getAvailableLayers(t).filter(l => l.getId() !== layer.getId());
+      const control  = CONTROLS[t];
+      control.layers = _getAvailableLayers(t).filter(l => layer.getId() !== l.getId());
       control.setEnable(control.isToggled() && _hasVisible(CONTROLS[t]));
       control._interaction.setActive(control.getEnable());
     });
@@ -721,7 +727,7 @@ export class QueryBy extends MapControl {
         } || undefined,
         data,
       });
-    } catch (e) {
+    } catch(e) {
       console.warn('Error running spatial query: ', e);
       reject(e);
     } finally {

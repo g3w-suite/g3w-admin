@@ -5,7 +5,7 @@
 
 (function() {
 
-  const geocoding = window.initConfig.mapcontrols.geocoding || {};
+  const geocoding = window.initConfig?.mapcontrols?.geocoding ?? {};
   const provider  = document.currentScript.src.split('/').reverse()[0].replace('.js', '') || 'bing_streets';
 
   // skip when disabled
@@ -25,7 +25,7 @@
     // fallback to generic bing vendor key
     vendorkeys[provider] = vendorkeys[provider] || vendorkeys.bing;
 
-    const key            = undefined !== vendorkeys.bing ? vendorkeys.bing : opts && (new URL(opts.url)).searchParams.get('key');
+    const key            = vendorkeys?.bing ?? (opts && (new URL(opts.url)).searchParams.get('key'));
 
     // whether can fetch data from Bing Locations API
     if (!opts || !key /*|| !active*/) {
@@ -51,7 +51,7 @@
       icon:  undefined !== opts.icon ? opts.icon : 'road',
       results: 200 === response.statusCode
         ? response.resourceSets[0].resources
-          .filter(({ point: { coordinates } })=> ol.extent.containsXY(opts.extent, coordinates[1], coordinates[0]))
+          .filter(({ point: { coordinates } }) => ol.extent.containsXY(opts.extent, coordinates[1], coordinates[0]))
           .map(result => {
             return {
               name:        result.name,

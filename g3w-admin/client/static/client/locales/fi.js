@@ -1,4 +1,5 @@
 export default {
+  confirm: "Vahvista",
   default:"oletuksena",
   sign_in:"Kirjaudu sisään",
   'Toggle color scheme': "Toggle color scheme",

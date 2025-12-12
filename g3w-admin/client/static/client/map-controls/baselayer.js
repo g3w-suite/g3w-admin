@@ -24,7 +24,7 @@ class BaseLayerControl extends ol.control.Control {
   constructor(layers) {
     super({
       element: Object.assign(document.createElement('div'), { className: 'ol-baselayer-control ol-unselectable ol-control ol-control-tl' }),
-      target: document.querySelector('.g3w-map-controls-left-bottom'),
+      target:  document.querySelector('.g3w-map-controls-left-bottom'),
     });
 
     // retrieve global map instance (open layers)
@@ -77,7 +77,7 @@ class BaseLayerControl extends ol.control.Control {
           ${
             this.layers.map(layer => /* html */`
               <li data-mapTypeId = "${layer.getId()}">
-                <label style="display:block;">
+                <label style = "display:block;">
                   <img onerror = "this.src = '${GUI.getResourcesUrl()}images/no-image.svg'" loading = "lazy" src = "${this.#getImgURL(layer.getId())}" style = "width: 50px; height: 50px; border-radius: 5px; object-fit: cover; margin: 0 4px; border: 2px solid #000" />
                   ${ layer.getName() }
                 </label>
@@ -119,7 +119,7 @@ class BaseLayerControl extends ol.control.Control {
   }
 
   #getImgURL(layerId) {
-    const baseLayer = this.layers.find(l => l.getId() === layerId)?.state;
+    const baseLayer = this.layers.find(l => layerId === l.getId())?.state;
     let image;
     if ('OSM' === baseLayer?.servertype) {
       image = 'osm.png';

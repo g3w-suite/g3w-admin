@@ -13,7 +13,7 @@ GUI.setupControl.zoom = function() {
     options: {
       ol: new ol.control.Zoom({
         zoomInTipLabel: _('Zoom in'),
-        zoomOutLabel: _('Zoom out'),
+        zoomOutLabel:   _('Zoom out'),
       }),
     }
   });

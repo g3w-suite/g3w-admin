@@ -1,4 +1,5 @@
 export default {
+  confirm: "Bekräfta",
   default: "standard",
   sign_in:"Logga in",
   'Toggle color scheme': "Toggle color scheme",

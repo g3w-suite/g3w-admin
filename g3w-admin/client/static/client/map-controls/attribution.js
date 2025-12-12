@@ -16,15 +16,15 @@ GUI.isMapReady().then(() => {
   // set layers attribution
   const attribution = text
     ? link
-      ? `<a href="${link}">${text}</a>`
-      : `<span class="skin-color" style="font-weight: bold">${text}</span>`
+      ? `<a href = "${link}">${text}</a>`
+      : `<span class = "skin-color" style = "font-weight: bold">${text}</span>`
     : false;
 
   GUI.getMapLayers().forEach(l => l.getOLLayer().getSource().setAttributions(attribution));
 
   const has_baselayer = attribution || Object.values(ApplicationState.layers)
     .flatMap(s => s.isQueryable() ? s.getLayers() : [])
-    .filter(l => l.isGeoLayer() && l.isBaseLayer()).length;
+    .filter(l =>  l.isGeoLayer() && l.isBaseLayer()).length;
 
   // check if a base layer is set. If true, add attribution control
   if (has_baselayer) {

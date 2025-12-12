@@ -2,11 +2,12 @@
  * @file ORIGINAL SOURCE: src/map/controls/annotation.js@v4.0.0
  * @since 4.1.0
  */
-
 const ApplicationState = g3w.state;
 const GUI              = g3w.app;
 const idb              = g3w.idb;
 const MapControl       = g3w.Control;
+const _                = g3w.gettext;
+
 const {
   createMeasureTooltip,
   get_formatted_area,
@@ -115,7 +116,7 @@ class AnnotationControl extends MapControl {
     
     this._interactions.modify = new ol.interaction.Modify({
       features:              this._interactions.select.getFeatures(),
-      insertVertexCondition: () => this._annotation.feature && 'Rectangle' !== this._annotation.feature.get('type'),
+      insertVertexCondition: () => 'Rectangle' !== this._annotation?.feature?.get?.('type'),
     });
 
     // monkey patch: "ol.interaction.Modify~handleDragEvent"
@@ -144,7 +145,7 @@ class AnnotationControl extends MapControl {
           body: {
             data: () => this._annotation,
             template: /* html */ `
-              <div style="width: 100%; padding: 5px; max-height: 80vh; overflow-y: auto;">
+              <div style = "width: 100%; padding: 5px; max-height: 80vh; overflow-y: auto;">
 
                 <!-- DOCS URL -->
                 <a
@@ -246,7 +247,7 @@ class AnnotationControl extends MapControl {
                 </div>
 
                 <!-- SHAPE CONSTRAINT: “Segment width (rectangle)” -->
-                <div v-if = "'Rectangle' === type && !feature" style="display: flex; align-items: end;">
+                <div v-if = "'Rectangle' === type && !feature" style = "display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
                     {{ $t('Width Length') }}
                     <input 
@@ -265,7 +266,7 @@ class AnnotationControl extends MapControl {
                 </div>
 
                 <!-- SHAPE CONSTRAINT: “Segment height (rectangle)” -->
-                <div v-if = "'Rectangle' === type && !feature" style="display: flex; align-items: end;">
+                <div v-if = "'Rectangle' === type && !feature" style = "display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
                     {{ $t('Height Length') }}
                     <input 
@@ -284,7 +285,7 @@ class AnnotationControl extends MapControl {
                 </div>
 
                 <!-- SHAPE CONSTRAINT: “Circle radius” -->
-                <div v-if = "'Circle' === type && !feature" style="display: flex; align-items: end;">
+                <div v-if = "'Circle' === type && !feature" style = "display: flex; align-items: end;">
                   <label style = "margin: 0; width: 100%">
                     {{ $t('Radius') }}
                     <input 
@@ -412,7 +413,7 @@ class AnnotationControl extends MapControl {
                 </div>
 
                 <!-- SHAPE INFO -->
-                <div v-if="feature" style = "display: flex; justify-content: space-between;">
+                <div v-if = "feature" style = "display: flex; justify-content: space-between;">
                   <label :hidden = "'Text' === feature.get('type')">
                     <input 
                       name    = "feature-text"
@@ -464,16 +465,16 @@ class AnnotationControl extends MapControl {
                 })[type]}.svg`;
               },
               showAll() {
-                this.type             = null;
+                this.type = null;
                 if (this.feature) {
                   this.feature.selected = false;
                   this.feature          = null;
                 }
                 this.layer.changed();
               },
-              remove(feature) {
-                if (feature) {
-                  this.layer.getSource().removeFeature(feature);
+              remove(feat) {
+                if (feat) {
+                  this.layer.getSource().removeFeature(feat);
                   return;
                 }
                 this.feature = null;
@@ -1067,16 +1068,16 @@ class AnnotationControl extends MapControl {
 
     // Circle → coords[0] = circle center, coords[1] = mouse position 
     if ('Circle' === this._annotation.type) {
-      geometry = geometry || new ol.geom.Circle(0, 0);
+      geometry = geometry ?? new ol.geom.Circle(0, 0);
       geometry.setCenterAndRadius(
         coords.at(0),
-        this._interaction.radius || Math.sqrt((coords.at(0)[0] - coords.at(-1)[0]) ** 2 + (coords.at(0)[1] - coords.at(-1)[1])** 2)
+        this._interaction.radius ?? Math.sqrt((coords.at(0)[0] - coords.at(-1)[0]) ** 2 + (coords.at(0)[1] - coords.at(-1)[1])** 2)
       );
     }
 
     // Linestring → coords = line vertex
     if ('LineString' === this._annotation.type) {
-      geometry = geometry || new ol.geom.LineString([]);
+      geometry = geometry ?? new ol.geom.LineString([]);
       if (this._interaction.length) {
         coords.push(...this.#updateLength(coords.splice(-2), this._interaction.length));
       } 
@@ -1084,7 +1085,7 @@ class AnnotationControl extends MapControl {
     }
 
     if ('Polygon' === this._annotation.type) {
-      geometry = geometry || new ol.geom.Polygon([]);
+      geometry = geometry ?? new ol.geom.Polygon([]);
       if (this._interaction.length) {
         coords[0].push(...this.#updateLength(coords[0].splice(-2), this._interaction.length));
         coords = [coords[0]];
@@ -1176,7 +1177,7 @@ class AnnotationControl extends MapControl {
     }
     
     //get first coordinate (start)
-    let curr = [coords[0]];
+    let curr        = [coords[0]];
     const segments  = [coords[0]];
     for (let i = 1; i < coords.length; i++) {
       const ratio = (length - ol.sphere.getLength(new ol.geom.LineString(curr))) / (ol.sphere.getLength(new ol.geom.LineString([...curr, coords[i]])) - ol.sphere.getLength(new ol.geom.LineString(curr)));
@@ -1208,9 +1209,9 @@ class AnnotationControl extends MapControl {
           text:      feat.get('text'),
           rotation:  feat.get('style')?.rotation * (Math.PI / 180),
           fill:      new ol.style.Fill({ color : '#000' }),
-          font:  `bold ${feat.get('style')?.fontsize}px ${font_family}`,
+          font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,
           placement: 'point',
-          stroke: new ol.style.Stroke({ color: '#FFF', width: 5 }),
+          stroke:    new ol.style.Stroke({ color: '#FFF', width: 5 }),
         }),
       });
     }
@@ -1219,7 +1220,7 @@ class AnnotationControl extends MapControl {
       return feat => new ol.style.Style({
         text: new ol.style.Text({
           placement: 'point',
-          offsetY:    -Number(feat.get('style')?.radius) - 10 + (feat.get('show_text') ? -10 : 0),
+          offsetY:   -Number(feat.get('style')?.radius) - 10 + (feat.get('show_text') ? -10 : 0),
           text:      `${feat.get('show_info') && `${`${ol.coordinate.format(feat.getGeometry().getCoordinates(), '{x},{y}', 2)}`} ${feat.get('show_text') && '\n' || ''}` || '' }${feat.get('show_text') && feat.get('text') || ''}`,
           fill:      new ol.style.Fill({ color : feat.get('style')?.color ?? '#000' }),
           font:      `bold ${feat.get('style')?.fontsize}px ${font_family}`,
@@ -1256,12 +1257,12 @@ class AnnotationControl extends MapControl {
             styles.push(new ol.style.Style({
               geometry: new ol.geom.Point('forward' === feat.get('style')?.direction ? end : start),
               image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({ color: feat.get('style')?.color }),
-                points: 3,
-                radius: 8,
+                fill:         new ol.style.Fill({ color: feat.get('style')?.color }),
+                points:       3,
+                radius:       8,
                 displacement: [0, 0],
-                rotation: -Math.atan2(dy, dx),
-                angle: ('forward' === feat.get('style')?.direction ? 1 : -1) * Math.PI / 2 // rotate 90°
+                rotation:     -Math.atan2(dy, dx),
+                angle:        ('forward' === feat.get('style')?.direction ? 1 : -1) * Math.PI / 2 // rotate 90°
               })
             }));
           })
@@ -1378,13 +1379,13 @@ class AnnotationControl extends MapControl {
     const dialog = Object.assign(document.createElement('template'), {
       innerHTML: /* html */`
         <dialog>
-          <form method="dialog">
-            <label for="file_input" style="font-size: 1.25em;">Upload a JSON File</label>
-            <input id="file_input" type="file" accept="application/json" style="margin: 1em 0;" />
-            <pre id="file_preview" hidden style="margin-top: 1em;" contenteditable></pre>
-            <menu style="display: flex; justify-content: space-between;">
-              <button type="submit" value="cancel" class="btn btn-secondary">Cancel</button>
-              <button id="confirm_button" disabled type="submit" value="confirm" class="btn btn-success">Confirm</button>
+          <form method = "dialog">
+            <label for = "file_input" style = "font-size: 1.25em;">Upload a JSON File</label>
+            <input id = "file_input" type = "file" accept = "application/json" style = "margin: 1em 0;" />
+            <pre id = "file_preview" hidden style = "margin-top: 1em;" contenteditable></pre>
+            <menu style = "display: flex; justify-content: space-between;">
+              <button type = "submit" value = "cancel" class = "btn btn-secondary">${_('cancel')}</button>
+              <button id = "confirm_button" disabled type ="submit" value = "confirm" class = "btn btn-success">${_('confirm')}</button>
             </menu>
           </form>
         </dialog>
@@ -1399,12 +1400,12 @@ class AnnotationControl extends MapControl {
       if (e.target.files[0]) {
         try {
           preview.textContent = JSON.stringify(JSON.parse(await e.target.files[0].text()), null, 2); // Validate JSON
-          preview.hidden = false;
-          confirm.disabled = false;
-        } catch (e) {
+          preview.hidden      = false;
+          confirm.disabled    = false;
+        } catch(e) {
           console.warn(e);
           alert('Invalid JSON file. Please upload a valid JSON.');
-          preview.hidden = true;
+          preview.hidden   = true;
           confirm.disabled = true;
         }
       }

@@ -1,4 +1,5 @@
 export default {
+  confirm: "Confirmă",
   default:"Implicit",
   sign_in: "Logare",
   'Toggle color scheme': "Comutare schemă de culori",

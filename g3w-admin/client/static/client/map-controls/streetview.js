@@ -140,7 +140,7 @@ class StreetViewControl extends MapControl {
 
     this.#sv
       .getPanorama({ location: position }, this.processStreetViewServiceData.bind(this))
-      .then(response => { if (undefined === response) GUI.closeContent(); })
+      .then(r => { if (undefined === r) GUI.closeContent(); })
       .catch(() => this.toggle())
   }
 
@@ -238,7 +238,7 @@ class StreetViewControl extends MapControl {
     if (this.key) {
       GUI.setContent({
         title:   'StreetView',
-        content: `<div id="streetview" style="height:100%; width:100%;">` + (this.keyError ? `<div
+        content: `<div id = "streetview" style="height:100%; width:100%;">` + (this.keyError ? `<div
           style = "display: flex;justify-content: center;align-items: center;font-weight: bold;height: 100%;padding: 10px;background-color: #FFF;"
           class = "skin-color"
         >${ this.keyError }</div>` : '') +`</div>`,

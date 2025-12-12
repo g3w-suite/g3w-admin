@@ -6,7 +6,7 @@
 const GUI = g3w.app;
 
 // wait for map ready
-GUI.setupControl.addlayer = GUI.setupControl.addlayers = function () {
+GUI.setupControl.addlayer = GUI.setupControl.addlayers = function() {
   if (!isMobile.any && !GUI.getMapControl('addlayer')) {
     GUI.createMapControl({
       id: 'addlayer',
@@ -14,7 +14,7 @@ GUI.setupControl.addlayer = GUI.setupControl.addlayers = function () {
         tipLabel: 'Add Layer',
         onSetMap(e) {
           if ('after' === e.setter) {
-            this.element.addEventListener('click', () => { GUI.showAddLayerModal(); });
+            this.element.addEventListener('click', () => GUI.showAddLayerModal() );
           }
         }
       },

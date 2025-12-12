@@ -1,4 +1,5 @@
 export default {
+  confirm: "Confirm",
   default:"default",
   sign_in: "Sign in",
   yes: 'Yes',

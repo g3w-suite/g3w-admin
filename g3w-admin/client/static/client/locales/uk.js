@@ -1,4 +1,5 @@
 export default {
+  confirm: "Підтвердити",
   default: "за замовчанням",
   sign_in: "Вхід",
   'Toggle color scheme': "Перемкнути колірну схему",

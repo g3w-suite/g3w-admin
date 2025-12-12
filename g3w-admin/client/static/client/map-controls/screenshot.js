@@ -57,7 +57,7 @@ const state = {
 
 const vueComp = ({
 template: /*html*/`
-<div class="print-modal">
+<div class = "print-modal">
   <div v-show = "loading" class = "bar-loader"></div>
 
   <form
@@ -78,7 +78,7 @@ template: /*html*/`
     </select>
 
     <!-- ADVANCED SETTINGS -->
-    <details v-if="is_customizable" class="custom-settings">
+    <details v-if = "is_customizable" class = "custom-settings">
       <summary>{{ $t('Advanced settings') }}</summary>
 
       <!-- PRINT ROTATION -->
@@ -94,12 +94,12 @@ template: /*html*/`
         type       = "range"
         list       = "print-rotation-markers"
       />
-      <datalist id="print-rotation-markers" style="display: flex; justify-content: space-between;">
-        <option value="0" style="margin-left: 6px;">0</option>
-        <option value="90" style="margin-left: 10px;">90</option>
-        <option value="180" style="margin-left: 6px;">180</option>
-        <option value="270">270</option>
-        <option value="360">360</option>
+      <datalist id = "print-rotation-markers" style = "display: flex; justify-content: space-between;">
+        <option value = "0"   style = "margin-left: 6px;">0</option>
+        <option value = "90"  style = "margin-left: 10px;">90</option>
+        <option value = "180" style = "margin-left: 6px;">180</option>
+        <option value = "270">270</option>
+        <option value = "360">360</option>
       </datalist>
 
       <!-- PRINT SCALE -->
@@ -143,7 +143,7 @@ template: /*html*/`
         :createTag     = "true"
         ref            = "dpi"
       >
-        <option v-for = "dpi in dpis" :value="dpi">{{ dpi }} dpi</option>
+        <option v-for = "dpi in dpis" :value = "dpi">{{ dpi }} dpi</option>
       </select>
 
       <!-- PRINT LABEL -->
@@ -182,7 +182,7 @@ template: /*html*/`
 
     <!-- PRINT ATLAS -->
     <!-- ORIGINAL SOURCE: src/components/PrintFidAtlasValues.vue@v3.9.3 -->
-    <template v-if="!is_screenshot && atlas && !has_autocomplete">
+    <template v-if = "!is_screenshot && atlas && !has_autocomplete">
       <label><span>fids [max: {{ atlas.feature_count - 1 }}]</span></label>
       <input class = "form-control" v-model = "atlas_values" @keydown.space.prevent>
       <div id = "fid-print-atals-instruction">
@@ -192,7 +192,7 @@ template: /*html*/`
     </template>
 
     <!-- SCREENSHOT FORMAT -->
-    <template v-if="is_screenshot">
+    <template v-if = "is_screenshot">
       <label for = "format">{{ $t('Format') }}</label>
       <select
         id        = "format"
@@ -228,7 +228,7 @@ template: /*html*/`
         user-select:none
       "
     >
-      <legend style="
+      <legend style = "
         width: 15px;
         height: 15px;
         border: 1px solid;
@@ -253,18 +253,18 @@ template: /*html*/`
             width: 100%;
           "
         >
-          <span style="text-overflow: ellipsis;overflow: hidden;">{{ $t('Exportable layers are defined by the administrator') }}</span>
-          <i class="far fa-eye"></i>
+          <span style = "text-overflow: ellipsis;overflow: hidden;">{{ $t('Exportable layers are defined by the administrator') }}</span>
+          <i class = "far fa-eye"></i>
         </summary>
-        <hr style="margin: 10px 0;border-style: dotted;color:black;">
-        <div style="white-space: wrap; line-height: 25px;" v-t="'print_help'"></div>
+        <hr style = "margin: 10px 0;border-style: dotted;color:black;">
+        <div style = "white-space: wrap; line-height: 25px;" v-t = "'print_help'"></div>
       </details>
     </fieldset>
 
   </form>
 
   <!-- DOCS URL -->
-  <div v-if="is_staff && !is_screenshot" style = "padding: 1em;text-align: center;">
+  <div v-if = "is_staff && !is_screenshot" style = "padding: 1em;text-align: center;">
     <b>
       <a
         :href           = "'https://docs.qgis.org/3.34/' + lang + '/docs/training_manual/map_composer/map_composer.html'"
@@ -283,10 +283,10 @@ template: /*html*/`
     :style = "'max-width: max(70vw, 800px);' + (['pdf', 'geopdf'].includes(format) ? 'width: 100vw; height: 100vh;' : '')"
     @click = "$event.target === $event.target.closest('dialog') && $event.target.closest('dialog').close()"
   >
-    <form method="dialog">
+    <form method = "dialog">
       <div v-show = "loading && layers" class = "bar-loader"></div>
       <h4 v-if = "!layers"><b>{{ $t('No Layer to print') }}</b></h4>
-      <menu style="position: sticky;top: 0;">
+      <menu style = "position: sticky;top: 0;">
         <a
           v-if       = "layers && !['pdf', 'geopdf'].includes(format)"
           :href      = "url"
@@ -394,7 +394,7 @@ template: /*html*/`
       handler() {
         //avery time that change template need to clear print area
         this._clearPrint();
-        const print = this.print.find(p => p.name === this.template);
+        const print = this.print.find(p => this.template === p.name);
 
         if (!print) {
           this.showPrintArea(false);
@@ -493,7 +493,7 @@ template: /*html*/`
         if (!response.ok) {
           throw response.statusText;
         }
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
         GUI.showUserMessage({ type: 'alert', message: e || _("info.server_error") });
       } finally {
@@ -615,7 +615,7 @@ template: /*html*/`
             this.downloading = false;
           });
         }
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
       }
     },

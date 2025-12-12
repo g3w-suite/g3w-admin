@@ -1,4 +1,5 @@
 export default {
+  confirm: "Conferma",
   default:"predefinito",
   sign_in: "Accedi",
   'Toggle color scheme': "Cambia colore",

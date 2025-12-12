@@ -615,7 +615,7 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .main-sidebar .close-pane-button .panel-icon                       { color: #fff; padding: 10px; }
 .main-sidebar .treeview-label                                      { font-size: 1.1em; font-weight: bold; margin-left: 5px; }
 .main-sidebar .menu-items                                          { padding: 10px 15px; }
-.main-sidebar .menu-items li                                       { background-color: hsl(from var(--bgcolor) h s calc(l + 10)); border-radius: .25rem; padding: 2px; margin-bottom: 2px; color: #FFF; cursor: pointer; }
+.main-sidebar .menu-items li                                       { border-radius: .25rem; padding: 2px; margin-bottom: 2px; color: #FFF; cursor: pointer; }
 .main-sidebar .menu-items li.toggled                               { color: #374850; background-color: #fff; }
 .main-sidebar .menu-items li.toggled:hover                         { background-color: #fff; }
 .main-sidebar .menu-items li:hover                                 { background-color: hsl(from var(--bgcolor) h s calc(l + 15)); }

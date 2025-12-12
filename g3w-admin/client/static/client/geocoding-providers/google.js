@@ -21,9 +21,9 @@
     const { vendorkeys } = g3w.state;
 
     // fallback to generic google vendor key
-    vendorkeys[provider] = vendorkeys[provider] || vendorkeys.google;
+    vendorkeys[provider] = vendorkeys[provider] ?? vendorkeys.google;
 
-    const key            = undefined !== vendorkeys[provider] ? vendorkeys[provider] : opts && (new URL(opts.url)).searchParams.get('key');
+    const key            = vendorkeys[provider] ?? (opts && (new URL(opts.url)).searchParams.get('key'));
 
     // whether can fetch data from Google Geocode API
     if (!opts || !active || !key) {
@@ -52,11 +52,11 @@
 
     return {
       provider,
-      label: 'Google',
-      icon:  undefined !== opts.icon ? opts.icon : 'poi',
+      label:   'Google',
+      icon:    opts?.icon ?? 'poi',
       results: 'OK' === response.status
         ? response.results
-          .filter(({ geometry: { location } })=> ol.extent.containsXY(opts.extent, location.lng, location.lat))
+          .filter(({ geometry: { location } }) => ol.extent.containsXY(opts.extent, location.lng, location.lat))
           .map(result => {
             let name, city, country;
             result.address_components.forEach(({ types, long_name }) => {
@@ -69,11 +69,11 @@
               lat  : result.geometry.location.lat,
               address: {
                 name,
-                road: undefined,
-                postcode: '',
                 city,
-                state: undefined,
+                postcode:  '',
+                road:      undefined,
                 country,
+                state:     undefined,
                 formatted: result.display_name,
               },
               google: result,
