@@ -53,7 +53,7 @@ export default ({
         v-t-tooltip:right = "'plugins.editing.tooltip.filter_by_relation'"
       />
       <!-- PANEL TITLE -->
-      <span class="panel-title">{{ state.title }}</span>
+      <span class = "panel-title">{{ state.title }}</span>
 
       <!-- TOGGLE EDITING -->
       <span
@@ -62,10 +62,10 @@ export default ({
         :data-i18n-title = "editDisabled ? '⚠️ Stop active editing tool': 'plugins.editing.tooltip.edit_layer'"
       > 
         <img 
-          height     = "40"
-          width      = "40"
+          height      = "40"
+          width       = "40"
           @click.stop = "toggleEditing"
-          :src       = "resourcesurl + 'images/mActionToggleEditing.svg'"
+          :src        = "resourcesurl + 'images/mActionToggleEditing.svg'"
           class       = "start-editing editbtn skin-tooltip-left" 
           :class      = "{
             'pull-right':       !isMobile(),
