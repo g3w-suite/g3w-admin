@@ -640,8 +640,8 @@ document.head.insertAdjacentHTML(
     padding-bottom: 5px;
   }
   .toolbox .panel {
-    border: 0 !important;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    background-color: transparent !important;
   }
   .toolbox .panel-heading {
     border-bottom: 1px solid transparent;
@@ -651,7 +651,7 @@ document.head.insertAdjacentHTML(
     width:100%;
   }
   .toolbox .toolboxselected {
-    box-shadow: 0px 0px 0px 3px var(--skin-color);
+    box-shadow: 0 0 0 3px var(--skin-color);
   }
   .toolbox .panel:not(.toolboxselected) .info {
     opacity: .4;
@@ -736,6 +736,7 @@ document.head.insertAdjacentHTML(
   }
   .toolbox .panel-body {
     padding: 15px;
+    background-color: #fff;
   }
   .toolbox .panel-body.disabled {
     opacity: .7;
