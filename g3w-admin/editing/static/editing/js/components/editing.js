@@ -39,17 +39,29 @@ export default ({
 
         <!-- SAVE BUTTON -->
         <div @click.stop = "commit" :class = "['editing-button', (canCommit ? 'enabled': '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['save']]"></span>
+          <img
+            v-disabled = "!canCommit"
+            :src       = "resourcesurl + 'images/mActionSaveAllEdits.svg'"
+            class      = "editing-icon" 
+          />
         </div>
 
         <!-- UNDO BUTTON -->
         <div @click.stop = "undo" :class = "['editing-button', (canUndo ? 'enabled': '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['arrow-left']]"></span>
+          <img
+            v-disabled = "!canUndo"
+            :src       = "resourcesurl + 'images/mActionUndo.svg'"
+            class      = "editing-icon" 
+          />
         </div>
 
         <!-- REDO BUTTON -->
         <div @click.stop = "redo" :class = "['editing-button', (canRedo ? 'enabled' : '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['arrow-right']]"></span>
+           <img
+            v-disabled = "!canRedo"
+            :src       = "resourcesurl + 'images/mActionRedo.svg'"
+            class      = "editing-icon" 
+          />
         </div>
 
       </div>
