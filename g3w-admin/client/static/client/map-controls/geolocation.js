@@ -97,7 +97,7 @@ class GeolocationControl extends MapControl {
       const coordinates = this._geolocation.getPosition();
       if (coordinates) {
         toggledKeyEvent = this.on('toggled', () => { this._showMarker({ map, coordinates: this._geolocation.getPosition(), show: this.isToggled() }); });
-        $(this.element).removeClass('g3w-ol-disabled');
+        this.element.classList.remove('g3w-ol-disabled');
         this._showMarker({ map, coordinates, show: this.isToggled() })
       }
     });

@@ -159,10 +159,7 @@ class MeasureControl extends MapControl {
       // remove last point
       keydown: e => {
         const geom = interaction.get('feature').getGeometry();
-        if (46 !== e.keyCode) {
-          return;
-        }
-        if ((geom instanceof ol.geom.Polygon && geom.getCoordinates()[0].length > 2) || (geom instanceof ol.geom.LineString && geom.getCoordinates().length > 1)) {
+        if ('Delete' === e.key && ((geom instanceof ol.geom.Polygon && geom.getCoordinates()[0].length > 2) || (geom instanceof ol.geom.LineString && geom.getCoordinates().length > 1))) {
           interaction.removeLastPoint();
         }
       },
@@ -179,7 +176,7 @@ class MeasureControl extends MapControl {
     interaction.on('drawstart', e => {
       interaction.getMap().removeLayer(LAYER);
       interaction.set('feature', e.feature);
-      $(document).on('keydown', EVENTS.keydown);
+      document.addEventListener('keydown', EVENTS.keydown);
       LAYER.getSource().clear();
       interaction.getMap().on('pointermove', EVENTS.pointermove);
       // create measure tooltip
@@ -193,7 +190,7 @@ class MeasureControl extends MapControl {
       MEASURE.tooltip.getElement().className = 'mtooltip mtooltip-static';
       MEASURE.tooltip.setOffset([0, -7]);
       interaction.getMap().un('pointermove', EVENTS.pointermove);
-      $(document).off('keydown', EVENTS.keydown);
+      document.removeEventListener('keydown', EVENTS.keydown);
       interaction.getMap().addLayer(LAYER);
     });
 
@@ -202,7 +199,7 @@ class MeasureControl extends MapControl {
       interaction.set('feature', null);
       HELP.setMap(null);
       interaction.getMap().un('pointermove', EVENTS.pointermove);
-      $(document).off('keydown', EVENTS.keydown);
+      document.removeEventListener('keydown', EVENTS.keydown);
       MEASURE?.remove?.();
       interaction.getMap()?.removeLayer?.(LAYER);
     };
