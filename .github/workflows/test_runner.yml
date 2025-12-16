@@ -61,10 +61,6 @@ jobs:
       run: |
         docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt --break-system-packages"
 
-    - name: Installing Openrouteservice Python requirements
-      run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt --break-system-packages && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt --break-system-packages"
-
     - name: Building g3w-suite
       run: |
         docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
@@ -112,10 +108,6 @@ jobs:
     - name:  Running g3w-admin qplotly tests
       run: |
         docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplotly"
-
-    - name:  Running g3w-admin openrouteservice tests
-      run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice"
 
     - name:  Running g3w-admin qtimeseries tests
       run: |

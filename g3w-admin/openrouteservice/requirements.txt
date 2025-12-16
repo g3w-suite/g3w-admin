@@ -1,2 +1,0 @@
-requests==2.32.4
-django-multiselectfield==0.1.12

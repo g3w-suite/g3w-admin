@@ -1,3 +1,0 @@
-# Requirements for testing
-vcrpy==6.0.2
-vcrpy-unittest==0.1.7
