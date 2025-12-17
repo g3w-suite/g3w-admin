@@ -36,13 +36,13 @@ export class AddFeatureStep extends Step {
   _stopPromise;
 
 
-  constructor(options = {}) {
-    options.help = "editing.steps.help.draw_new_feature";
+  constructor(opts = {}) {
+    opts.help = "editing.steps.help.draw_new_feature";
 
-    super(options);
+    super(opts);
 
-    this._add  = undefined === options.add ? true  : options.add;
-    this._snap = false === options.snap    ? false : true;
+    this._add  = opts.add ?? true;
+    this._snap = false !== opts.snap;
 
     /**
      *
@@ -71,7 +71,7 @@ export class AddFeatureStep extends Step {
       let geom                   = originalGeometryType;
 
       // get open layers geometry
-      if (geom.startsWith('Line'))              { geom = 'LineString'; }
+      if      (geom.startsWith('Line'))         { geom = 'LineString'; }
       else if (geom.startsWith('MultiLine'))    { geom = 'MultiLineString'; }
       else if (geom.startsWith('Point'))        { geom = 'Point'; }
       else if (geom.startsWith('MultiPoint'))   { geom = 'MultiPoint'; }
@@ -128,12 +128,10 @@ export class AddFeatureStep extends Step {
    * @param { boolean } enable whether to toggle measure tooltip
    */
   measureTooltip(enable) {
-    if (!enable) {
-      if (this.measureInteraction) {
-        this.measureInteraction.clear();
-        this.removeInteraction(this.measureInteraction);
-        this.measureInteraction = null;
-      }
+    if (!enable && this.measureInteraction) {
+      this.measureInteraction.clear();
+      this.removeInteraction(this.measureInteraction);
+      this.measureInteraction = null;
       return;
     }
 
@@ -141,7 +139,7 @@ export class AddFeatureStep extends Step {
     const is_poly = Geometry.isPolygonGeometryType(this.geometryType);
 
     //Skip in case geometry is not Line or Polygon
-    if (!is_line && !is_poly) { return }
+    if (!is_line && !is_poly) { return; }
 
     let MEASURE;
 
@@ -227,8 +225,8 @@ export class AddFeatureStep extends Step {
    */
   removeLastPoint() {
     try {
-      if (this.drawInteraction) { this.drawInteraction.removeLastPoint() }
-    } catch (e) {
+      if (this.drawInteraction) { this.drawInteraction.removeLastPoint(); }
+    } catch(e) {
       console.warn(e);
     }
   }
