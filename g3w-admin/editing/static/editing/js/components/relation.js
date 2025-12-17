@@ -268,7 +268,7 @@ export default ({
                     class  = "previewtype"
                     :class = "getMediaType(attribute.value.mime_type).type"
                   >
-                    <i class = "fa-2x" :class="g3wtemplate.font[getMediaType(attribute.value.mime_type).type]"></i>
+                    <i class = "fa-2x" :class = "g3wtemplate.font[getMediaType(attribute.value.mime_type).type]"></i>
                   </div>
                 </a>
                 <div class = "filename">{{ getValue(attribute.value).split('/').pop() }}</div>
@@ -341,7 +341,7 @@ export default ({
         active:       false,
         value:        null,
         resourcesurl: GUI.getResourcesUrl(),
-        ordering:       [0, 'asc'],
+        ordering:     [0, 'asc'],
         PAGELENGTHS,
         search: {
           page:      1,              // current page
@@ -420,14 +420,14 @@ export default ({
 
       isRowHidden(index) {
         if (this.search.search) {
-          return this.relations[index].fields.every(field => -1 === `${field.value}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
+          return this.relations[index].fields.every(f => -1 === `${f.value}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
         }
         const page      = Number(this.search.page);
         const page_size = Number(this.search.page_size);
         return !(index >= ((page-1) * page_size) && index < (page * page_size));
       },
 
-      async reload(opts) {
+      async reload(opts = {}) {
         this.show = false;
         await this.$nextTick();
         if (undefined !== opts.page_size) {
@@ -449,7 +449,7 @@ export default ({
         const copyLayer = this.copyLayers.find(l => this.copylayerid === l.id);
         let external    = copyLayer.external;
         let layer       = external ? GUI.getLayerById(this.copylayerid) : getCatalogLayerById(this.copylayerid);
-        const is_vector =  (external || layer.isGeoLayer())
+        const is_vector = external || layer.isGeoLayer();
         this.runWorkflow({
           workflow: is_vector
             ? this._add_link_workflow.selectandcopy({
@@ -459,7 +459,7 @@ export default ({
                 external,
               })
             : undefined,
-          isVector: is_vector
+          isVector: is_vector,
         })
       },
 
@@ -563,10 +563,10 @@ export default ({
        */
       getFeature(featureId, property) {
         return getFeatureTableFieldValue({
-            layerId: this._relationLayerId,
-            feature: this.getLayer().getEditor().getEditingSource().getFeatureById(featureId),
-            property,
-          });
+          layerId: this._relationLayerId,
+          feature: this.getLayer().getEditor().getEditingSource().getFeatureById(featureId),
+          property,
+        });
       },
 
       /**
@@ -846,7 +846,7 @@ export default ({
 
           try {
             await promise;
-          } catch (e) {
+          } catch(e) {
             console.trace('START TOOL FAILED', e);
           } finally {
             relationtool.state.active = false;
@@ -910,7 +910,7 @@ export default ({
                   //set value to relation field
                   setRelationFieldValue({
                     field:  evt.key,
-                    value:  evt.target.get(evt.key)
+                    value:  evt.target.get(evt.key),
                   });
                 }
               } else {
@@ -934,7 +934,7 @@ export default ({
             )
           }
 
-          this.rollback(options.context.session.getId(), [this._relationLayerId])
+          this.rollback(options.context.session.getId(), [this._relationLayerId]);
         }
 
         workflow.stop();
@@ -951,10 +951,10 @@ export default ({
        * Link relation to parent feature layer
        */
       async linkRelation() {
-        this.disabled = true;
+        this.disabled   = true;
 
         const is_vector = 'vector' === this._layerType;
-        const workflow = this._add_link_workflow.link( is_vector ? {
+        const workflow  = this._add_link_workflow.link( is_vector ? {
           selectStyle: SELECTED_STYLES[this.getLayer().getGeometryType()]
         } : {});
         const options  = this._createWorkflowOptions();
@@ -985,13 +985,13 @@ export default ({
         });
 
         let response = {
-          promise: undefined,
+          promise:     undefined,
           showContent: false,
         };
 
         if (is_vector) {
           options.context.beforeRun = async () => {
-            await new Promise((resolve) => setTimeout(resolve));
+            await new Promise((r) => setTimeout(r));
             await getRelationFeatures();
           };
 
@@ -1032,7 +1032,7 @@ export default ({
               GUI.notify.warning(_("plugins.editing.relation_already_added"));
             }
           });
-        } catch (e) {
+        } catch(e) {
           console.warn(e);
           this.rollback(options.context.session.getId(), [this._relationLayerId]);
         }
@@ -1066,7 +1066,7 @@ export default ({
       },
 
       getParent() {
-        const parentLayer = this.parentWorkflow.getLayer();
+        const parentLayer  = this.parentWorkflow.getLayer();
         const { ownField } = getRelationFieldsFromRelation({ layerId: this.layerId, relation: this.relation });
 
         const pk = ownField.find(f => isPkField(parentLayer, f))
@@ -1099,7 +1099,7 @@ export default ({
         };
       },
 
-      _createWorkflowOptions(options = {}) {
+      _createWorkflowOptions(opts = {}) {
         const fields = getRelationFieldsFromRelation({
           layerId:  this._relationLayerId,
           relation: this.relation
@@ -1114,8 +1114,8 @@ export default ({
             fatherField:   parent.map(([field]) => fields.ownField[fields.relationField.findIndex(rField => field === rField)]), //children fields
           },
           inputs: {
-            features: options.features || [],
-            layer:    this.getLayer()
+            features: opts.features || [],
+            layer:    this.getLayer(),
           }
         };
       },
@@ -1126,7 +1126,7 @@ export default ({
        * @param layerId
        * @param ids [array of child layer id]
        */
-      rollback(layerId, ids) {
+      rollback(layerId, ids = []) {
         const toolBox = GUI.getPlugin('editing').getToolBoxById(layerId);
         ids.forEach(id => {
           const changes = [];
@@ -1145,9 +1145,7 @@ export default ({
     },
 
     beforeCreate() {
-      this.globalSearch = debounce(e => {
-        this.reload({ search: e.target.value });
-      });
+      this.globalSearch = debounce(e => this.reload({ search: e.target.value }) );
     },
 
     created() {
@@ -1163,9 +1161,9 @@ export default ({
        *
        * @since g3w-client-plugin-editing@v3.7.2
        */
-      this._new_relations_ids       =  [];
+      this._new_relations_ids =  [];
 
-      this.onCommit = this.onCommit.bind(this);
+      this.onCommit           = this.onCommit.bind(this);
 
       /** @since 3.7.2 Listen commit when is click on save all button disk icon*/
       GUI.getPlugin('editing').on('commit', this.onCommit);
@@ -1182,7 +1180,7 @@ export default ({
           // project layers with same geometry of relation ayer
           ...getCatalogLayers({
             QUERYABLE: true,
-            GEOLAYER: true,
+            GEOLAYER:  true,
           })
             .filter(l => ((
                 l.getGeometryType &&
@@ -1227,7 +1225,7 @@ export default ({
             const externalLayer = GUI.getExternalLayers().find(l => layer.id === l.get('id'));
             if (externalLayer) {
               const features = externalLayer.getSource().getFeatures() || [];
-              if (!features[0] || !features[0].getGeometry()) { return }
+              if (!features[0] || !features[0].getGeometry()) { return; }
               const type = features[0].getGeometry().getType();
               if (geometryType === type || (isSameBaseGeometryType(geometryType, type) && (Geometry.isMultiGeometry(geometryType) || !Geometry.isMultiGeometry(type)))) {
                 this.copyLayers.push({
@@ -1241,7 +1239,7 @@ export default ({
         })
       }
 
-      this.copylayerid = this.copyLayers.length ? this.copyLayers[0].id : null; // current layer = first layer found
+      this.copylayerid = this.copyLayers?.[0]?.id ?? null; // current layer = first layer found
 
       this.load_values = false;
 
@@ -1281,9 +1279,9 @@ export default ({
         table: {
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
-          link(options = {}) {
+          link(opts = {}) {
             return new Workflow({
-              ...options,
+              ...opts,
               type:            'edittable',
               backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
               steps:           [
@@ -1318,9 +1316,9 @@ export default ({
           },
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
-          add(options = {}) {
+          add(opts = {}) {
             return new Workflow({
-              ...options,
+              ...opts,
               type:  'addtablefeature',
               steps: [
                 new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
@@ -1333,19 +1331,19 @@ export default ({
         vector: {
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/linkrelationworkflow.js@v3.7.1 */
-          link(options = {}) {
+          link(opts = {}) {
             return new Workflow({
               type:  'linkrelation',
               steps: [
                 new Step({
-                  ...options,
+                  ...opts,
                   help: "editing.steps.help.select_feature_to_relation",
                   run(inputs, context) {
                     return new Promise(async (resolve, reject) => {
                       //create a promise for setAndUnsetSelectedFeaturesStyle;
                       const promise = new Promise(r => this.resolve = r);
                       GUI.setModal(false);
-                      const editingLayer        = getEditingLayer(inputs.layer);
+                      const editingLayer = getEditingLayer(inputs.layer);
                       try {
                         if (context.beforeRun && 'function' === typeof context.beforeRun) {
                           await context.beforeRun();
@@ -1354,7 +1352,7 @@ export default ({
                         setAndUnsetSelectedFeaturesStyle({
                           promise,
                           inputs:  { layer: inputs.layer, features },
-                          style:   this.selectStyle
+                          style:   this.selectStyle,
                         });
 
                         this.addInteraction(
@@ -1383,16 +1381,16 @@ export default ({
           },
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addfeatureworkflow.js@v3.7.1 */
-          add: (options = {}) => {
+          add: (opts = {}) => {
             const addStep = new AddFeatureStep({
-              ...options,
+              ...opts,
               steps: {
                 draw: {
                   description: `editing.steps.help.draw_new_feature`,
                   done:        false,
                 }
               },
-              tools: ['snap', 'measure']
+              tools: ['snap', 'measure'],
             })
 
             addStep.on('stop', () => {
@@ -1401,24 +1399,24 @@ export default ({
             })
 
             return new Workflow({
-              ...options,
+              ...opts,
               type:  'addfeature',
               steps: [
                 addStep,
-                new OpenFormStep(options),
+                new OpenFormStep(opts),
               ],
               registerEscKeyEvent: true,
             })
           },
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/selectandcopyfeaturesfromotherlayerworkflow.js@v3.7.1 */
-          selectandcopy(options = {}) {
+          selectandcopy(opts = {}) {
             return new Workflow({
               type:  'selectandcopyfeaturesfromotherlayer',
               steps: [
                 // pick project layer features
                 new Step({
-                  ...options,
+                  ...opts,
                   help:  "editing.steps.help.pick_feature",
                   steps: {
                     select: {
@@ -1428,7 +1426,7 @@ export default ({
                   },
                   async run(inputs, context) {
                     /** @TODO Create a component that ask which project layer would like to query */
-                    if (!options.copyLayer) {
+                    if (!opts.copyLayer) {
                       return Promise.resolve();
                     }
                   
@@ -1437,23 +1435,23 @@ export default ({
                     const geometryType = inputs.layer.getGeometryType();
 
                     /** @TODO NO VECTOR LAYER */
-                    if (options.isVector) {
+                    if (opts.isVector) {
                       await (new Promise(async resolve => {
                         this.addInteraction(
-                          options.external
-                            ? new PickFeaturesInteraction({ layer: options.copyLayer })
+                          opts.external
+                            ? new PickFeaturesInteraction({ layer: opts.copyLayer })
                             : new PickCoordinatesInteraction(), {
                               'picked': async e => {
                                 try {
                                   features = convertToGeometry(
-                                    options.external
+                                    opts.external
                                       ? e.features                             // external layer
                                       : ((await GUI.getData('query:coordinates', { // TOC/PROJECT layer
                                         inputs: {
                                           coordinates:           e.coordinate,
                                           query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
-                                          layerIds:              [ options.copyLayer.getId() ],
-                                          multilayers:           false
+                                          layerIds:              [ opts.copyLayer.getId() ],
+                                          multilayers:           false,
                                         },
                                         outputs: null
                                       })).data[0] || { features: [] }).features,
@@ -1462,7 +1460,7 @@ export default ({
                                 } catch(e) {
                                   console.warn(e);
                                 } finally {
-                                  resolve()
+                                  resolve();
                                 }
                               }
                           }
@@ -1476,13 +1474,13 @@ export default ({
                       _feature = features.length > 1
                         ? await chooseFeatureFromFeatures({ features, inputs })
                         : features[0];
-                    } catch (e) {
+                    } catch(e) {
                       console.warn(e);
                     }
 
                     if (_feature) {
                       const feature = new Feature({
-                        feature: _feature,
+                        feature:    _feature,
                         properties: (inputs.layer.state.editing.fields || []).filter(attr => !attr.pk).map(attr => attr.name)
                       });
                       feature.setTemporaryId();
@@ -1499,7 +1497,7 @@ export default ({
                       autoclose: true
                     });
 
-                      return Promise.reject();
+                    return Promise.reject();
                     
                   },
                   stop() {
@@ -1508,7 +1506,7 @@ export default ({
                     GUI.closeUserMessage();
                   }
                 }),
-                new OpenFormStep(options),
+                new OpenFormStep(opts),
               ],
               registerEscKeyEvent: true,
             });
@@ -1525,7 +1523,7 @@ export default ({
 
       // set editing style on relation layer
       try {
-        const layer = getEditingLayerById(this.relation.child);
+        const layer         = getEditingLayerById(this.relation.child);
         this._current_style = layer.getCurrentStyle().name;
         if (layer.config.editing.layer_style && this._current_style !== layer.config.editing.layer_style) {
           GUI.getComponent('catalog').getInternalComponent().activeTab = 'layers'; // force active tab
@@ -1543,8 +1541,8 @@ export default ({
       this.show_tools = false;
 
       if (!this.load_values) {
-        this.loading = true;
-        this.loading = false;
+        this.loading     = true;
+        this.loading     = false;
         this.load_values = true;
       }
 

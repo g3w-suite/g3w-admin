@@ -225,7 +225,7 @@ export default ({
         if (toolbox.state.editing.history.commit) {
           await GUI.getPlugin('editing').commit();
         }
-      } catch e) {
+      } catch(e) {
         console.warn(e);
       }
 
