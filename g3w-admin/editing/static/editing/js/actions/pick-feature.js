@@ -30,7 +30,7 @@ export class PickFeaturesInteraction extends ol.interaction.Pointer {
         return features;
       },
       handleUpEvent(e) {
-        if (features && features.length > 0) {
+        if (features?.length > 0) {
           this.dispatchEvent({ type: 'picked', features, coordinate: e.coordinate, layer: opts.layer });
         }
         return true;
@@ -49,11 +49,11 @@ export class PickFeaturesInteraction extends ol.interaction.Pointer {
  */
 export class PickFeatureStep extends Step {
 
-  constructor(options = {}) {
-    options.help      = "editing.steps.help.pick_feature";
-    options.highlight = options.highlight || false;
-    options.multi     = options.multi     || false;
-    super(options);
+  constructor(opts = {}) {
+    opts.help      = "editing.steps.help.pick_feature";
+    opts.highlight = opts?.highlight ?? false;
+    opts.multi     = opts?.multi     ?? false;
+    super(opts);
   }
 
   async run(inputs) {
@@ -65,7 +65,7 @@ export class PickFeatureStep extends Step {
               inputs.features   = e.features;
               inputs.coordinate = e.coordinate;
             }
-            if (this._steps) { this.setUserMessageStepDone('select') }
+            if (this._steps) { this.setUserMessageStepDone('select'); }
             resolve(inputs);
           },
         });

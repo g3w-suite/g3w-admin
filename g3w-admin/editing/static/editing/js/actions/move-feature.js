@@ -16,10 +16,10 @@ import { Step }                                         from '../g3w-step.js';
  */
 export class MoveFeatureStep extends Step {
 
-  constructor(options = {}) {
-    options.help = "editing.steps.help.move";
+  constructor(opts = {}) {
+    opts.help = "editing.steps.help.move";
 
-    super(options);
+    super(opts);
 
     this.drawInteraction = null;
     this.promise; // need to be set here in case of picked features
@@ -53,10 +53,11 @@ export class MoveFeatureStep extends Step {
           const feature = e.features.getArray()[0];
           if (isGeometryChange) {
             // evaluated geometry expression
-            evaluateExpressionFields({ inputs, context, feature }).finally(() => {
-              context.session.pushUpdate(layerId, feature.clone(), originalFeature);
-              resolve(inputs);
-            });
+            evaluateExpressionFields({ inputs, context, feature })
+              .finally(() => {
+                context.session.pushUpdate(layerId, feature.clone(), originalFeature);
+                resolve(inputs);
+              });
           } else {
             resolve(inputs);
           }

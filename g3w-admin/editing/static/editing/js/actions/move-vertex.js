@@ -26,10 +26,10 @@ export class ModifyGeometryVertexStep extends Step {
 
   tooltip;
 
-  constructor(options = {}) {
-    options.snap =  options?.snap ?? true;
-    options.help = "editing.steps.help.edit_feature_vertex";
-    super(options);
+  constructor(opts = {}) {
+    opts.snap =  opts?.snap ?? true;
+    opts.help = "editing.steps.help.edit_feature_vertex";
+    super(opts);
   }
 
   run(inputs, context) {
@@ -40,9 +40,7 @@ export class ModifyGeometryVertexStep extends Step {
       const originalFeature = feature.clone();
       this._originalStyle = getEditingLayer(inputs.layer).getStyle();
       //set state to enable/disable save button changes
-      const state         = {
-        modified: false
-      }
+      const state         = { modified: false, };
 
       //set vertex style to editing feature
       setVertexStyle({ feature });
@@ -58,11 +56,11 @@ export class ModifyGeometryVertexStep extends Step {
             template: /* html */`
               <div style = "display: flex; justify-content: space-between; padding: 10px;"> 
                 <button v-disabled = "false === state.modified" @click.stop = "resolve" v-t = "'save'" class = "btn btn-success"></button>
-                <button @click.stop = "reject"  v-t = "'cancel'" class = "btn btn-danger"></button>
+                <button @click.stop = "reject" v-t = "'cancel'" class = "btn btn-danger"></button>
               </div>
             `,
             data() {
-              return { state }
+              return { state };
             },
             methods: {
               resolve() {

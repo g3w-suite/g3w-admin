@@ -28,18 +28,18 @@ const { FormService }                       = g3wsdk.gui.vue.services;
  */
 export class OpenFormStep extends Step {
 
-  constructor(options = {}) {
+  constructor(opts = {}) {
 
-    options.help = "editing.steps.help.insert_attributes_feature";
+    opts.help = "editing.steps.help.insert_attributes_feature";
 
-    super(options);
+    super(opts);
 
     /**
      * Show saveAll button
      *
      * @since v3.7
      */
-    this._saveAll = false === options.saveAll ? options.saveAll : async () => {};
+    this._saveAll = false === opts.saveAll ? opts.saveAll : async () => {};
 
      /**
      * In case of commit error from saveAll methods, need to set it to true to undo changes
@@ -51,7 +51,7 @@ export class OpenFormStep extends Step {
     /**
      * Whether it can handle multi edit features
      */
-    this._multi = options.multi || false;
+    this._multi = opts.multi || false;
 
     /**
      * @FIXME set a default value + add description
@@ -102,7 +102,7 @@ export class OpenFormStep extends Step {
   async run(inputs, context) {
     //@since 3.9.0 can set isContentChild attribute to force it
     // (case edit relation features from multi-parent features)
-    this._isContentChild   = undefined === context.isContentChild ? Workflow.Stack.length > 1 : context.isContentChild;
+    this._isContentChild   = context?.isContentChild ?? Workflow.Stack.length > 1;
     this.layerId           = inputs.layer.getId();
     this._features         = this._multi ? inputs.features : [inputs.features[inputs.features.length - 1]];
     this._originalFeatures = this._features.map(f => f.clone());
@@ -186,7 +186,7 @@ export class OpenFormStep extends Step {
         formStructure:   inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
         modal:           true,
         push:            this._options.push || this._isContentChild, /** @since v3.7 force push content on top without clear previous content */
-        showgoback:      undefined === this._options.showgoback ? !this._isContentChild : this._options.showgoback, /** @since v3.7 force show back button */
+        showgoback:      this._options?.showgoback ?? !this._isContentChild, /** @since v3.7 force show back button */
         /** @TODO make it straightforward: `headerComponent` vs `buttons` ? */
         headerComponent: this._saveAll && {
           template: /* html */ `
@@ -550,7 +550,7 @@ export class OpenFormStep extends Step {
 const sortAlphabeticallyArray = (arr) => arr.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 
 /* Sort an array of numbers (natural order) */
-const sortNumericArray = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
+const sortNumericArray        = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getFormFields.js@v3.7.1
@@ -577,7 +577,7 @@ function _getFormFields({
     feature,
     {
       exclude:           context.excludeFields, // add exclude fields
-      get_default_value: undefined === context.get_default_value ? false : context.get_default_value,
+      get_default_value: context?.get_default_value ?? false,
     }
   );
 
@@ -633,6 +633,7 @@ function _getFormFields({
 
   //event when insert/edit form button is pressed
   const editing = GUI.getPlugin('editing');
+
   editing.once(`savedfeature_${layerId}`, savedfeatureFnc);
   // unsubscribe event event when close form layer
   editing.once(`closeform_${layerId}`, () => editing.off(`savedfeature_${layerId}`, savedfeatureFnc));
@@ -672,18 +673,18 @@ function _handleMulti(fields, multi) {
 async function _handleRelation1_1LayerFields({
   layerId,
   features = [],
-  fields = [],
+  fields   = [],
   task
 } = {}) {
 
   // skip when no features
-  if (features.length === 0) { return }
+  if (0 === features.length) { return; }
 
   // Get layer relation 1:1
   const promises = getCatalogLayerById(layerId)
     .getRelations()
     .getArray()
-    .filter(relation => 'ONE' === relation.getType())
+    .filter(r => 'ONE' === r.getType())
     .map(relation => {
       return new Promise(async (resolve, reject) => {
         // skip when layer is not a father layer (1:1 relation)
@@ -708,7 +709,7 @@ async function _handleRelation1_1LayerFields({
           reject();
           return;
         }
-        const source       = GUI.getPlugin('editing').getLayerById(childLayerId).getEditor().getEditingSource();
+        const source = GUI.getPlugin('editing').getLayerById(childLayerId).getEditor().getEditingSource();
         let childFeature; // original child feature
         let newChild; //eventually child feature cloned with changes
 
@@ -717,7 +718,7 @@ async function _handleRelation1_1LayerFields({
 
         const fieldsUpdated = undefined !== (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
           .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())
-          .find(({name}) => fields.find(f => name == f.name).update)
+          .find(({ name }) => fields.find(f => name == f.name).update)
 
         const isNewChildFeature = undefined === childFeature;
 
@@ -828,9 +829,9 @@ async function _listenRelation1_1FieldChange({
 
     //store original editable property of fields relation to child layer relation
     const editableRelatedFatherChild = (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
-      .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())
+      .filter(f => f.vectorjoin_id && relation.getId() === f.vectorjoin_id)
       .reduce((accumulator, field) => {
-        const formField             = fields.find(f => f.name === field.name)
+        const formField             = fields.find(f => field.name === f.name)
         accumulator[formField.name] = formField.editable;
         return accumulator;
       }, {});
@@ -877,7 +878,7 @@ async function _listenRelation1_1FieldChange({
                 fatherFormRelationField,
               })
 
-            } catch (e) {
+            } catch(e) {
               console.warn(e);
             }
           }
@@ -892,9 +893,7 @@ async function _listenRelation1_1FieldChange({
                 ? false
                 : editableRelatedFatherChild[fn];
               //need to check if feature is new and not locked ot not present on a source
-              field.value = feature
-                ? feature.get(field.name.replace(relation.getPrefix(), ''))
-                : null
+              field.value = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null;
               //@since 3.9.0 call change input to run eventually default expression
               formService.changeInput(field);
             });
@@ -945,7 +944,7 @@ async function _getRelation1_1ChildFeature({
 
     await getLayersDependencyFeatures(fatherLayerId, {
       feature:   new ol.Feature({ [fatherFormRelationField.name]: fatherFormRelationField.value }),
-      relations: [relation]
+      relations: [relation],
     });
 
     //remove listener
@@ -974,13 +973,13 @@ async function _getRelation1_1ChildFeature({
           formatter: 0,
           filter:    g3wsdk.core.utils.createFilterFormInputs({
             layer,
-            inputs:          [{ attribute: childField, value: fatherFormRelationField.value, }]
+            inputs:  [{ attribute: childField, value: fatherFormRelationField.value, }]
           }),
         },
         outputs: false,
       });
 
-      if (data && data[0] && 1 === data[0].features.length) {                // NB: length == 1, due to 1:1 relation type
+      if (data?.[0] && 1 === data[0].features.length) {                // NB: length == 1, due to 1:1 relation type
         //locked
         locked = true;
         feature = data[0].features[0];
@@ -993,7 +992,7 @@ async function _getRelation1_1ChildFeature({
   //return
   return {
     feature, //feature search
-    locked //locked status
+    locked, //locked status
   }
 }
 

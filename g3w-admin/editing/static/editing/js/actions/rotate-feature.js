@@ -24,7 +24,7 @@ const { GUI }                               = g3wsdk.gui;
  */
 
 function _setCursor(elt, cursor) {
-  if (elt instanceof ol.Map) elt = elt.getTargetElement()
+  if (elt instanceof ol.Map) { elt = elt.getTargetElement(); }
   // prevent flashing on mobile device
   if (!('ontouchstart' in window) && elt instanceof Element) {
     elt.style.cursor = cursor;
@@ -45,12 +45,12 @@ const CURSORS = {
  * 
  * @extends ol.interaction.Pointer
  * 
- * @param { Object } options
- * @param { Array } options.features collection of feature to transform,
+ * @param { Object } opts
+ * @param { Array } opts.features collection of feature to transform,
  */
 class RotateInteraction extends ol.interaction.Pointer {
 
-  constructor(options = {}) {
+  constructor(opts = {}) {
 
     super({
       handleDownEvent: e => this.handleDownEvent_(e),
@@ -81,7 +81,7 @@ class RotateInteraction extends ol.interaction.Pointer {
     });
 
     // Collection of feature to transform
-    this.features_ = new ol.Collection(options.features);
+    this.features_ = new ol.Collection(opts.features);
 
     //Is updating geometry
     this._change   = false;
@@ -152,7 +152,7 @@ class RotateInteraction extends ol.interaction.Pointer {
    * @api stable
    */
   setActive(b) {
-    this.select(null)
+    this.select(null);
     if (this.overlayLayer_) {
       this.overlayLayer_.setVisible(b);
     }
@@ -193,13 +193,13 @@ class RotateInteraction extends ol.interaction.Pointer {
         }) 
       ],
       'arrow': feat => new ol.style.Style({
-                        image: new ol.style.Icon({
-                        src: `${GUI.getResourcesUrl()}images/Arrow.svg`,
-                        width	: 50,
-                        height: 50,
-                        rotation: ((feat.get('rotation')) * Math.PI) / 180,
-                      }),
-                    }),       
+                 image:    new ol.style.Icon({
+                 src:      `${GUI.getResourcesUrl()}images/Arrow.svg`,
+                 width	:   50,
+                 height:   50,
+                 rotation: ((feat.get('rotation')) * Math.PI) / 180,
+               }),
+      }),       
     }
     this.drawSketch_();
   }
@@ -211,9 +211,9 @@ class RotateInteraction extends ol.interaction.Pointer {
    * @api stable
    */
   setStyle(style, olstyle) {
-    if (!olstyle) { return }
-    if (olstyle instanceof Array) { this.style[style] = olstyle }
-    else { this.style[style] = [olstyle] }
+    if (!olstyle) { return; }
+    if (olstyle instanceof Array) { this.style[style] = olstyle; }
+    else { this.style[style] = [olstyle]; }
     
     for (let i = 0; i < this.style[style].length; i++) {
       const im = this.style[style][i].getImage();
@@ -222,7 +222,7 @@ class RotateInteraction extends ol.interaction.Pointer {
       }
         
       if (im && this.isTouch) {
-        im.setScale(1.8)
+        im.setScale(1.8);
       }
 
       const tx = this.style[style][i].getText();
@@ -301,7 +301,7 @@ class RotateInteraction extends ol.interaction.Pointer {
       if (!this.ispt_) {
         this.overlayLayer_.getSource().addFeature(new ol.Feature({ geometry: new ol.geom.Point(this.center_)}));
         geom = ol.geom.Polygon.fromExtent(ext);
-        f = new ol.Feature(geom);
+        f    = new ol.Feature(geom);
         this.overlayLayer_.getSource().addFeature(f);
       }
     } else {
@@ -318,9 +318,7 @@ class RotateInteraction extends ol.interaction.Pointer {
       geom = keepRectangle ? new ol.geom.Polygon([coords]) : ol.geom.Polygon.fromExtent(ext);
   
       // Add sketch
-      this.overlayLayer_.getSource().addFeatures([
-        new ol.Feature(geom),
-      ]);
+      this.overlayLayer_.getSource().addFeatures([ new ol.Feature(geom) ]);
     }
   }
 
@@ -335,10 +333,10 @@ class RotateInteraction extends ol.interaction.Pointer {
   select(feature) {
     if (!feature && this.selection_) {
       this.selection_.clear();
-      return false
+      return false;
     }
     // Check if feature is already selected
-    if (!feature || !feature.getGeometry || !feature.getGeometry()) { return }
+    if (!feature || !feature.getGeometry || !feature.getGeometry()) { return; }
 
     // Add to selection
     this.selection_.push(feature)
@@ -357,7 +355,7 @@ class RotateInteraction extends ol.interaction.Pointer {
           body: {
             template: /* html */`
               <div id = "rotation-feature-point-tool">
-                <input class = "form-control" type="number" min = "0" max = "360" :value = "rotation" @input = "change"/>
+                <input class = "form-control" type = "number" min = "0" max = "360" :value = "rotation" @input = "change"/>
               </div>
             `,
             data() {
@@ -366,7 +364,7 @@ class RotateInteraction extends ol.interaction.Pointer {
               }
             },
             methods: {
-              change: evt => this._pointRotation({ feature, rotation: evt.target.value })
+              change: e => this._pointRotation({ feature, rotation: e.target.value })
             },
            
             created() {
@@ -458,7 +456,7 @@ class RotateInteraction extends ol.interaction.Pointer {
     this.angle_          = Math.atan2(this.center_[1] - evt.coordinate[1], this.center_[0] - evt.coordinate[0]);
     this.dispatchEvent({
       type:       'rotatestart',
-      feature:    this.selection_.item(0)
+      feature:    this.selection_.item(0),
     });
     this._change = true
 
@@ -539,7 +537,7 @@ class RotateInteraction extends ol.interaction.Pointer {
 
     this.dispatchEvent({
       type:     'rotateend',
-      feature
+      feature,
     })
 
     return false;
@@ -574,10 +572,10 @@ class RotateInteraction extends ol.interaction.Pointer {
  */
 export class RotateFeatureStep extends Step {
 
-  constructor(options = {}) {
-    options.help = "editing.steps.help.rotate";
+  constructor(opts = {}) {
+    opts.help = "editing.steps.help.rotate";
 
-    super(options);
+    super(opts);
 
     this.isChange          = false; // changed if geometry or rotaion for Poin geometry is changed
     this._feature          = null;
