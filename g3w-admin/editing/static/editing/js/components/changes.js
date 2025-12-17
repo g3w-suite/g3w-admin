@@ -94,8 +94,8 @@ template: /*html*/`
         return `(${ feat.get(key).getFlatCoordinates().length / 2 })`;
       }
       return getFeatureTableFieldValue({
-        layerId: this.layer.getId(),
-        feature: feat,
+        layerId:  this.layer.getId(),
+        feature:  feat,
         property: key
       });
     },

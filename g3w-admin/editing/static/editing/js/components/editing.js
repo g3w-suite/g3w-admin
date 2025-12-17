@@ -143,7 +143,7 @@ export default ({
   },
 
   transitions: {
-    'addremovetransition': 'showhide'
+    'addremovetransition': 'showhide',
   },
 
   methods: {
@@ -176,11 +176,11 @@ export default ({
     },
 
     undo() {
-      if (this.canUndo) { GUI.getPlugin('editing').undo() }
+      if (this.canUndo) { GUI.getPlugin('editing').undo(); }
     },
 
     redo() {
-      if (this.canRedo) { GUI.getPlugin('editing').redo() }
+      if (this.canRedo) { GUI.getPlugin('editing').redo(); }
     },
 
     /**
@@ -225,7 +225,7 @@ export default ({
         if (toolbox.state.editing.history.commit) {
           await GUI.getPlugin('editing').commit();
         }
-      } catch (e) {
+      } catch e) {
         console.warn(e);
       }
 
@@ -316,7 +316,7 @@ export default ({
       try {
         if (toolbox.isDirty() && toolbox.hasDependencies()) {
           await GUI.getPlugin('editing').commit({ toolbox });
-          console.info('[EDITING] committed dirty')
+          console.info('[EDITING] committed dirty');
         }
       } catch (e) {
         // revert changes (clear history and session)
@@ -379,7 +379,7 @@ export default ({
             layerIds.push(layerId);
             const toolbox     = GUI.getPlugin('editing').getToolBoxById(layerId);
             const commitItems = changes[layerId];
-            promises.push(GUI.getPlugin('editing').commit({ toolbox, commitItems, modal }))
+            promises.push(GUI.getPlugin('editing').commit({ toolbox, commitItems, modal }));
           }
 
           try {
@@ -565,7 +565,7 @@ export default ({
       formatter: 1
     };
 
-    if (layerIdChanges.length) {
+    if (layerIdChanges.length > 0) {
       layerIdChanges
         .forEach(id => {
           const fids = [...this.state.featuresOnClose[id]];
@@ -579,7 +579,7 @@ export default ({
       let promise = Promise.resolve();
 
       // load many layers with each one with its fids
-      if (inputs.layers.length) {
+      if (inputs.layers.length > 0) {
         promise = new Promise(async (res, rej) => {
           try {
             let data = (await Promise.all(
@@ -589,9 +589,9 @@ export default ({
                 try {
                   // convert API response to Open Layer Features
                   features = ((layer && await layer.getFeatureByFids({ fids: inputs.fids[i], formatter: inputs.formatter })) || []).map(f => {
-                    const properties    = undefined !== f.properties ? f.properties : {}
+                    const properties    = f.properties ?? {};
                     properties[G3W_FID] = f.id;
-                    const olFeat          = new ol.Feature(f.geometry && new ol.geom[f.geometry.type](f.geometry.coordinates));
+                    const olFeat        = new ol.Feature(f.geometry && new ol.geom[f.geometry.type](f.geometry.coordinates));
                     fids.push(f.id);
                     olFeat.setProperties(properties);
                     olFeat.setId(f.id);
@@ -604,7 +604,7 @@ export default ({
                   data:  [{ layer, features }],
                   query: { type: 'search', fids },
                 };
-            }))).map(response => response.data);
+            }))).map(r => r.data);
             res({
               data,
               query: { type: 'search' }
@@ -622,7 +622,7 @@ export default ({
           });
         }
         await promise;
-      } catch(e) { console.warn(e) }
+      } catch(e) { console.warn(e); }
     }
 
     this.state.featuresOnClose = {};
