@@ -47,7 +47,7 @@ export default ({
     <thead>
 
       <tr>
-        <th v-if  = "!isrelation" style="max-width: 60px"></th>
+        <th v-if  = "!isrelation" style = "max-width: 60px"></th>
         <th v-if  = "isrelation"></th>
         <th
           v-for          = "(header, i) in headers"
@@ -353,7 +353,7 @@ export default ({
       }).length;
       const ok = await GUI.confirm(/* html */`
         <h4>${_('plugins.editing.messages.delete_feature')}</h4>
-        <div style="font-size:1.2em;">${
+        <div style = "font-size:1.2em;">${
           has_child_relation
             ? _('plugins.editing.messages.delete_feature_relations')
             : ''
@@ -452,7 +452,7 @@ export default ({
       return value;
     },
 
-    async reload(opts) {
+    async reload(opts = {}) {
       this.show = false;
       await this.$nextTick();
       if (undefined !== opts.page_size) {
@@ -473,9 +473,7 @@ export default ({
   },
 
   beforeCreate() {
-    this.globalSearch = debounce(e => {
-      this.reload({ search: e.target.value });
-    });
+    this.globalSearch = debounce(e => this.reload({ search: e.target.value }));
   },
 
   beforeDestroy() {

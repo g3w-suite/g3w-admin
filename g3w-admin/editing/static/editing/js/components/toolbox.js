@@ -239,7 +239,7 @@ export default ({
         relation: false, //click on relation icon
         layer:    false, //click on pencil icon
       },
-      snapAll:     false,
+      snapAll:    false,
     };
   },
 
@@ -325,7 +325,7 @@ export default ({
      * 
      * @since g3w-client-plugin-editing@v3.9.0 
      */
-    fitZoomToScale(e) {
+    fitZoomToScale() {
       if (this.state.selected && !this.canEdit) {
         GUI.getMap().getView().animate(
           { duration: 200, center: GUI.getCenter() },
@@ -427,7 +427,7 @@ export default ({
           !(bs && ba) && this.handleSnapInteractionFeatures({
             tool,
             active: bs || ba,
-            all:    ba
+            all:    ba,
           })
         }
       ));
@@ -449,7 +449,7 @@ export default ({
           .forEach(d => {
             Object
               .keys(d.settersAndKeys)
-              .forEach(event => d.source.un(event, d.settersAndKeys[event]));
+              .forEach(e => d.source.un(e, d.settersAndKeys[e]));
             ol.Observable.unByKey(d.olKey)
           });
 
@@ -573,7 +573,7 @@ export default ({
 
     'state.toolsoftool'(nts = [], ots = []) {
       //no tools
-      if (nts.length === ots.length) { return }
+      if (nts.length === ots.length) { return; }
 
       //no new tools
       if (0 === nts.length && ots.find(t => 'snap' === t.type)) {
