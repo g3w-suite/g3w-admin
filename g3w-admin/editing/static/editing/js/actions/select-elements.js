@@ -27,10 +27,10 @@ const _                                                 = g3wsdk.core.i18n.t;
  */
 export class SelectElementsStep extends Step {
 
-  constructor(options = {}, chain) {
-    options.help = options.help || "editing.steps.help.select_elements";
+  constructor(opts = {}, chain) {
+    opts.help = opts.help ?? "editing.steps.help.select_elements";
 
-    super(options);
+    super(opts);
 
     this._selectInteractions    = [];
     this.multipleselectfeatures = [];
@@ -50,7 +50,7 @@ export class SelectElementsStep extends Step {
    */
   run(inputs, context) {
     const layer      = inputs.layer;
-    const type       = this._options.type || 'bbox'; // 'single' 'bbox' 'multiple';
+    const type       = this._options?.type ?? 'bbox'; // 'single' 'bbox' 'multiple';
     const buttonnext = 'multiple' === type && !!this._steps.select.buttonnext;
 
     return new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ export class SelectElementsStep extends Step {
         //check if it has already done handler function;
         const { done } = this._steps.select.buttonnext;
         this._steps.select.buttonnext.done = () => {
-          if (done && done instanceof Function) { done() }
+          if (done && done instanceof Function) { done(); }
           resolve(inputs);
         }
       }
@@ -110,7 +110,7 @@ export class SelectElementsStep extends Step {
               this._originalStyle = setFeaturesSelectedStyle(features);
               if (this._steps) { this.setUserMessageStepDone('select') }
               setTimeout(() => resolve(inputs), 500);
-            } else { reject() }
+            } else { reject(); }
           }
         });
       }
@@ -132,7 +132,7 @@ export class SelectElementsStep extends Step {
               inputs.features     = features;
               this._originalStyle = setFeaturesSelectedStyle(features);
 
-              if (this._steps) { this.setUserMessageStepDone('select') }
+              if (this._steps) { this.setUserMessageStepDone('select'); }
 
               resolve(inputs);
             } else {
@@ -177,7 +177,7 @@ export class SelectElementsStep extends Step {
               if (attr.pk || 'media' === attr.input.type || undefined === e.feature.get(attr.name)) {
                 e.feature.set(attr.name, null);
               }
-              return attr.name
+              return attr.name;
             })
           });
 
