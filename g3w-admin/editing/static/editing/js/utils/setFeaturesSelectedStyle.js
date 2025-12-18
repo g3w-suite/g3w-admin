@@ -12,13 +12,15 @@ export function setFeaturesSelectedStyle(features = []) {
     const feats = features.flat();     // flat nested features
     let style   = feats[0].getStyle(); // selected style
 
-    if (['LineString', 'MultiLineString'].includes(feats[0].getGeometry())) {
+    const gtype = feats[0].getGeometry().getType();
+
+    if (['LineString', 'MultiLineString'].includes(gtype)) {
       style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }) });
     }
-    if (['Point', 'MultiPoint'].includes(feats[0].getGeometry())) {
+    if (['Point', 'MultiPoint'].includes(gtype)) {
       style = new ol.style.Style({ image: new ol.style.Circle({ radius: 6, fill: new ol.style.Fill({ color: 'rgb(255,255,0)' }) }), zIndex: Infinity });
     }
-    if (['Polygon', 'MultiPolygon'].includes(feats[0].getGeometry())) {
+    if (['Polygon', 'MultiPolygon'].includes(gtype)) {
       style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }), fill: new ol.style.Fill({ color: 'rgba(255,255,0,0.25)' }) });
     }
 
