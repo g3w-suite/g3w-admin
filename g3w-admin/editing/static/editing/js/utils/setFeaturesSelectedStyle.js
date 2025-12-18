@@ -9,9 +9,11 @@
  */
 export function setFeaturesSelectedStyle(features = []) {
   if (features.length > 0) {
-    const feats = features.flat();     // flat nested features
-    let style   = feats[0].getStyle(); // selected style
+    const feats  = features.flat();     // flat nested features
+    const ostyle = feats[0].getStyle(); //original style
     const gtype = feats[0].getGeometry().getType(); //get geometry type
+
+    let style; // selected style 
 
     if (['LineString', 'MultiLineString'].includes(gtype)) {
       style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }) });
@@ -25,6 +27,6 @@ export function setFeaturesSelectedStyle(features = []) {
 
     feats.forEach(f => f.setStyle(style));
 
-    return feats[0].getStyle();
+    return ostyle;
   }
 }
