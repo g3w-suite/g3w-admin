@@ -11,8 +11,7 @@ export function setFeaturesSelectedStyle(features = []) {
   if (features.length > 0) {
     const feats = features.flat();     // flat nested features
     let style   = feats[0].getStyle(); // selected style
-
-    const gtype = feats[0].getGeometry().getType();
+    const gtype = feats[0].getGeometry().getType(); //get geometry type
 
     if (['LineString', 'MultiLineString'].includes(gtype)) {
       style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }) });
