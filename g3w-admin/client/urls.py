@@ -42,10 +42,19 @@ urlpatterns = [
     #############################################################
     # Media reading upload
     #############################################################
+
+    # Just left for backward compatibility
     re_path(
         r'^{}/(?P<project_type>[-_\w\d]+)/(?P<layer_id>[0-9]+)/(?P<file_name>[\(\)"\'-_. \w\d]+)'.format(USER_MEDIA_PREFIX),
         user_media_view,
         name='user-media'
+    ),
+
+    # 20025-12-19: new route with layer_md5_source to avoid problems on change original datasource
+    re_path(
+        r'^{}/(?P<project_type>[-_\w\d]+)/(?P<layer_md5_source>[\w\d]+)/(?P<file_name>[\(\)"\'-_. \w\d]+)'.format(USER_MEDIA_PREFIX),
+        user_media_view,
+        name='user-media-md5'
     ),
 
     path(

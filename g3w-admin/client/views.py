@@ -228,19 +228,22 @@ class ClientView(TemplateView):
         return response
 
 
-def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs):
+def user_media_view(request, project_type, ds_layer_id, file_name, *args, **kwargs):
     """
     View to return media checking user project permissions
     :param request: Django request object.
     :param project_type: G3W-USITE map project, default 'qdjango'.
-    :param layer_id: Django model Layer pk value.
+    :param ds_layer_id: Django model Layer pk value or md5 key.
     :param file_name: File name to render.
     :return: HttpRensponse or a HttpResponseForbidden instance.
     """
 
     # get model by project_type
-    Layer = apps.get_app_config(project_type).get_model('layer')
-    layer = Layer.objects.get(pk=layer_id)
+    try:
+        Layer = apps.get_app_config(project_type).get_model('layer')
+        layer = Layer.objects.get(pk=layer_id)
+    except Layer.DoesNotExist:
+        layer = None
 
 
     # check permission
