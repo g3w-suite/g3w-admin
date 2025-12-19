@@ -82,6 +82,7 @@ run_local*.sh
 /g3w-admin/eleprofile/
 /g3w-admin/simplereporting/
 /g3w-admin/ws_trento/
+/g3w-admin/idrogeo/
 .gitmodules
 
 /pymast
