@@ -36,7 +36,7 @@ export class PickFeaturesInteraction extends ol.interaction.Pointer {
         return true;
       },
       handleMoveEvent(e) {
-        e.map.getTargetElement().style.cursor = featuresAtPixel(e) ? 'pointer': '';
+        e.map.getTargetElement().style.cursor = (featuresAtPixel(e) ?? []).length > 0 ? 'pointer' : '';
       }
     });
   }
