@@ -348,7 +348,6 @@ class RotateInteraction extends ol.interaction.Pointer {
       GUI.showUserMessage({
         type:      'tool',
         title:     'Rotation',
-        size:      'small',
         closable:  false,
         iconClass: 'refresh',
         hooks: {
