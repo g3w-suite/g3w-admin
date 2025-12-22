@@ -100,7 +100,7 @@ class BaseUserMediaHandler(object):
         # 2025-12-19: use layer_md5_source to avoid porblems on change original datasource
         return reverse('user-media', kwargs={
                                 'project_type': self.type,
-                                'layer_id': self.layer.pk,
+                                'ds_layer_id': self.layer_md5_source,
                                 'file_name': file_name
                                 })
 

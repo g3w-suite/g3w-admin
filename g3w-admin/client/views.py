@@ -241,13 +241,13 @@ def user_media_view(request, project_type, ds_layer_id, file_name, *args, **kwar
     # get model by project_type
     try:
         Layer = apps.get_app_config(project_type).get_model('layer')
-        layer = Layer.objects.get(pk=layer_id)
-    except Layer.DoesNotExist:
+        layer = Layer.objects.get(pk=ds_layer_id)
+    except Exception:
         layer = None
 
 
     # check permission
-    return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name).send_file()
+    return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name, ds_md5=ds_layer_id).send_file()
 
 
 def credits(request, * args, **kwargs):
