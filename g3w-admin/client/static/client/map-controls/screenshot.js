@@ -986,12 +986,12 @@ template: /*html*/`
 
 const toggleUserMessage = (toggle, type) => {
   state.template = type ?? print[0]?.name;
-
   if (toggle) {
+    //untoggle other map controls eventually toggled
+    GUI.getCurrentToggledMapControl()?.toggle?.(false);
     GUI.showUserMessage({
       title:     'print',
       type:      'tool',
-      size:      'small',
       iconClass: 'print',
       closable:  true,
       hooks: {

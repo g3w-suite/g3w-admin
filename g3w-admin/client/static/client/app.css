@@ -115,7 +115,7 @@ dialog[popover=manual]::backdrop            { opacity: .25; }
 dialog.modal-gallery::backdrop              { background-color: rgb(0, 0, 0); }
 dialog.modal-left                           { width: 350px; margin-left: 2px; margin-top: 3px; }
 dialog > form > menu                        { background: #fff; position:sticky; bottom:0; margin: 0; padding: 10px 0; }
-dialog:has(> form)                          { padding: 0; }
+dialog:has(> form, > .modal)                { padding: 0; }
 dialog form                                 { padding: 14px; }
 
 @keyframes slide-down                       { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -154,7 +154,7 @@ dialog form                                 { padding: 14px; }
   .col-md-1  { grid-column: span 1; }
 }
 
-.fade                       { opacity: 0; transition: opacity 0.15s linear; }
+.fade:not(.modal)           { opacity: 0; transition: opacity 0.15s linear; }
 .fade.in                    { opacity: 1; }
 .collapse                   { display: none; }
 .collapse.in                { display: block; }
@@ -209,6 +209,7 @@ button.close                { padding: 0; cursor: pointer; background: transpare
 .bar-loader:before                    { background-color: hsl(from var(--skin-color) h s calc(l - 20)); display: block; position: absolute; content: ''; left: -200px; width: 200px; height: 4px; animation: loading 1s linear infinite; }
 
 /* Animation */
+@keyframes fade      { 0% { opacity: 0; } 100% { opacity: 1; } }
 @keyframes circle    { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
 @keyframes loading   { from { left: -200px; width: 30%; } 50% { width: 30%; } 70% { width: 70%; } 80% { left: 50%; } 95% { left: 120%; } to { left: 100%; } }
 
@@ -379,40 +380,12 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 * modal.less
 **************************************************************************************/
 
-.modal-open                           { overflow: hidden; }
-.modal                                { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 1050; display: none; overflow: hidden; -webkit-overflow-scrolling: touch; outline: 0; background: rgba(0,0,0,.3); }
-.modal.fade .modal-dialog             { transform: translate(0, -25%); transition: transform 0.3s ease-out; }
-.modal.in .modal-dialog               { transform: translate(0, 0); }
-.modal-open .modal                    { overflow-x: hidden; overflow-y: auto; }
-.modal-dialog                         { position: relative; width: auto; margin: 10px; }
-.modal-content                        { position: relative; background-color: #fff; background-clip: padding-box; box-shadow: 0 2px 3px rgba(0,0,0,0.125); outline: 0; }
-.modal-backdrop                       { position: fixed; z-index: 1 !important; inset: 0; background-color: #000; }
-.modal-backdrop.fade                  { opacity: 0; }
-.modal-backdrop.in                    { opacity: 0.5; }
-.modal-header                         { padding: 15px; border-bottom: 1px solid #f4f4f4; }
-.modal-header .close                  { margin-top: -2px; }
-.modal-title                          { margin: 0; line-height: 1.42857143; }
-.modal-body                           { position: relative; padding: 15px; }
-.modal-footer                         { padding: 15px; text-align: right; border-top: 1px solid #f4f4f4; }
-.modal-footer .btn + .btn             { margin-bottom: 0; margin-left: 5px; }
-.modal-scrollbar-measure              { position: absolute; top: -9999px; width: 50px; height: 50px; overflow: scroll; }
-
-/* Modal variants */
-.modal-primary .modal-body                       { color: #fff !important; background-color: #3c8dbc !important; }
-.modal-warning .modal-body                       { color: #fff !important; background-color: var(--skin-warning) !important; }
-.modal-info    .modal-body                       { color: #fff !important; background-color: #00c0ef !important; }
-.modal-success .modal-body                       { color: #fff !important; background-color: var(--skin-success) !important; }
-.modal-danger  .modal-body                       { color: #fff !important; background-color: var(--skin-danger) !important; }
-
-.modal-primary :is(.modal-header, .modal-footer) { color: #fff !important; background-color: #357ca5 !important;                                     border-color: hsl(202, 50%, 40%); }
-.modal-warning :is(.modal-header, .modal-footer) { color: #fff !important; background-color: hsl(from var(--skin-warning) h s calc(l - 5)) !important; border-color: hsl(37, 87%, 39%); }
-.modal-info    :is(.modal-header, .modal-footer) { color: #fff !important; background-color: #00a7d0 !important;                                     border-color: #0097bc; }
-.modal-success :is(.modal-header, .modal-footer) { color: #fff !important; background-color: hsl(from var(--skin-success) h s calc(l - 5)) !important; border-color: hsl(152, 100%, 23%); }
-.modal-danger  :is(.modal-header, .modal-footer) { color: #fff !important; background-color: hsl(from var(--skin-danger) h s calc(l - 5)) !important;  border-color: hsl(7, 71%, 45%); }
+:not(dialog) > .modal { display: none; }
 
 @media (min-width: 768px) {
-  .modal-dialog                       { width: 600px; margin: 30px auto; }
-  .modal-content                      { box-shadow: 0 2px 3px rgba(0,0,0,0.125); }
+  .modal-dialog {
+    width: 600px;
+  }
 }
 
 /**************************************************************************************
@@ -474,7 +447,6 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .btn.quick-action:hover                   { color: #888; border-color: var(--skin-primary); background-color: transparent; }
 .g3w-icon                                 { box-shadow: 0 2px 4px rgba(0,0,0,0.2); padding: 5px; font-size: 1.3em; border-radius: 30%; cursor: pointer; }
 .g3w-icon.trash                           { color:red !important; }
-.modal-footer button                      { font-weight: bold; min-width: 70px; }
 
 
 .tooltip                             { position: absolute; z-index: 1070; display: block; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-style: normal; font-weight: 400; line-height: 1.42857143; line-break: auto; text-align: left; text-align: start; text-decoration: none; text-shadow: none; text-transform: none; letter-spacing: normal; word-break: normal; word-spacing: normal; word-wrap: normal; white-space: normal; font-size: 12px; opacity: 0; }

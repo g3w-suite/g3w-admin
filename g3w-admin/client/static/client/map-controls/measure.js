@@ -73,7 +73,6 @@ class MeasureControl extends MapControl {
           GUI.showUserMessage({
             title:     'Measure',
             type:      'tool',
-            size:      'small',
             iconClass: 'measure',
             closable:  false,
             hooks:     {

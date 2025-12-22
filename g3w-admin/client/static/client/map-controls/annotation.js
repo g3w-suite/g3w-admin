@@ -138,7 +138,6 @@ class AnnotationControl extends MapControl {
       GUI.showUserMessage({
         title:     'Annotation',
         type:      'tool',
-        size:      'small',
         iconClass: 'annotation',
         closable:  false,
         hooks: {
