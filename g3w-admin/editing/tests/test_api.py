@@ -2376,3 +2376,81 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         url_layer = reverse('editing-api-info-layer', args=[9999999])
         response = client.get(url_layer, {}, format='json')
         self.assertEqual(response.status_code, 400)
+
+    @override_settings(G3WFILE_FORM_UPLOAD_FORMATS=['jpg', 'png', 'pdf'])
+    def test_upload_file_view(self):
+        """Test UploadFileView for file upload"""
+        from io import BytesIO
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        client = APIClient()
+        
+        # Test without authentication (should work due to csrf_exempt)
+        url = reverse('editing-upload')
+        
+        # Test 1: No file uploaded
+        response = client.post(url, {}, format='multipart')
+        self.assertEqual(response.status_code, 500)
+        self.assertIn('No FILES are uploaded', response.content.decode())
+        
+        # Test 2: Upload valid file with authentication
+        self.assertTrue(client.login(
+            username=self.test_user_admin1.username, 
+            password=self.test_user_admin1.username))
+        
+        # Create a simple test image
+        image_content = BytesIO(b'fake_image_content')
+        test_file = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=image_content.read(),
+            content_type='image/jpeg'
+        )
+        
+        response = client.post(url, {'file': test_file}, format='multipart')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        
+        self.assertTrue(jcontent['result'])
+        self.assertIn('data', jcontent)
+        self.assertIn('value', jcontent['data'])
+        self.assertIn('mime_type', jcontent['data'])
+        self.assertIn('test_image.jpg', jcontent['data']['value'])
+        
+        # Check session
+        self.assertIn('g3wsuite_updaded_files', client.session)
+        self.assertIsInstance(client.session['g3wsuite_updaded_files'], list)
+        self.assertGreater(len(client.session['g3wsuite_updaded_files']), 0)
+        
+        # Test 3: Upload file with invalid format
+        invalid_file = SimpleUploadedFile(
+            name='test_file.exe',
+            content=b'fake_executable',
+            content_type='application/x-msdownload'
+        )
+        
+        response = client.post(url, {'file': invalid_file}, format='multipart')
+        self.assertEqual(response.status_code, 403)
+        jcontent = json.loads(response.content)
+        
+        self.assertFalse(jcontent['result'])
+        self.assertIn('error', jcontent)
+        self.assertIn('File type not allowed', jcontent['error'])
+        self.assertIn('exe', jcontent['error'])
+        
+        # Test 4: Upload another valid file (test session append)
+        pdf_content = BytesIO(b'%PDF-1.4 fake pdf content')
+        pdf_file = SimpleUploadedFile(
+            name='test_document.pdf',
+            content=pdf_content.read(),
+            content_type='application/pdf'
+        )
+        
+        initial_session_len = len(client.session['g3wsuite_updaded_files'])
+        response = client.post(url, {'file': pdf_file}, format='multipart')
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify session was updated
+        new_session_len = len(client.session['g3wsuite_updaded_files'])
+        self.assertEqual(new_session_len, initial_session_len + 1)
+        
+        client.logout()
