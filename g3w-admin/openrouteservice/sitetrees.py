@@ -154,4 +154,38 @@ sitetrees = (
             ),
         ]
     ),
+    # PORTUGUESE
+    G3Wtree(
+        'openrouteservice_pt',
+        title='Openrouteservice',
+        module='openrouteservice',
+        items=[
+            item(
+                'Openrouteservice',
+                '#',
+                type_header=True
+            ),
+            item(
+                'Projectos ORS',
+                '#',
+                icon_css_class='fa fa-road',
+                children=[
+                    item(
+                        'Adicionar projecto',
+                        'ors-project-add',
+                        url_as_pattern=True,
+                        icon_css_class='fa fa-plus',
+                        access_by_perms=['qdjango.change_project']
+                    ),
+                    item(
+                        'Listar projectos',
+                        'ors-project-list',
+                        url_as_pattern=True,
+                        icon_css_class='fa fa-list'
+                    ),
+                ]
+            ),
+        ]
+    ),
+
 )

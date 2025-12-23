@@ -137,9 +137,10 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
         # Check if layer ha geometry or not
         if self.layer.geometrytype != 'NoGeometry':
             layout_args.append('scale')
-            layout_args.append('style')
+            
 
         layout_args += [
+            'style',
             Field('add_user_field', css_class='select2', style="width:100%;"),
             Field('edit_user_field', css_class='select2', style="width:100%;"),
             Field('add_user_group_field', css_class='select2', style="width:100%;"),

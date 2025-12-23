@@ -209,6 +209,7 @@ LANGUAGES = (
     ('ro', 'Romanian'),
     ('de', 'Deutsch'),
     ('bg', 'Bulgarian'),
+    ('pt', 'Portuguese'),
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'

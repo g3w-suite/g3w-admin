@@ -11,3 +11,7 @@ G3WSUITE_POWERD_BY = True
 G3W_CLIENT_RIGHT_PANEL = {
     'width': 45
 }
+
+BASE_G3W_CLIENT_LEGEND = {
+   'transparent': True,
+}
