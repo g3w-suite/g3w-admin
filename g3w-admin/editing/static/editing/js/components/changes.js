@@ -37,7 +37,7 @@ template: /*html*/`
                 <template v-if = "isEdited(item, key)">
                   <del ref = "value">{{ getValue(item, key) }}</del> ← <ins ref = "value">{{ getEditingValue(item, key) }}</ins>
                 </template>
-                <span v-else ref = "value">{{ getEditingValue(item, key) || getValue(item, key) }}</span>
+                <span v-else ref = "value">{{ [undefined, null].includes(getEditingValue(item, key)) ? getValue(item, key) : getEditingValue(item, key) }}</span>
                 <i v-if = "'geometry' === key"><code>&lt;coords&gt;</code></i>
               </dd>
             </dl>
@@ -182,7 +182,7 @@ template: /*html*/`
 
   async mounted() {
     // insert a visual reference for `<empty>` values
-    (this.$refs.value || []).filter(d => !d.textContent).forEach(d => d.innerHTML = `<i><code>&lt;empty&gt;</code></i>`);
+    (this.$refs.value || []).filter(d =>  [null, undefined].includes(d.textContent)).forEach(d => d.innerHTML = `<i><code>&lt;empty&gt;</code></i>`);
   },
 
 });
