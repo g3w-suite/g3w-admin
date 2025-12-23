@@ -70,8 +70,8 @@ export default ({
             'g3w-icon-toggled': state.editing.on,
             [g3wtemplate.font[(state.editing.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
           }"
-          />
-      </span>  
+        ></i>
+      </span>
 
     </div>
 
