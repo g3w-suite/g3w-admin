@@ -45,13 +45,13 @@ export default ({
     >
 
       <!-- TOGGLE RELATION LAYERS (LAYERS FILTER) -->
-      <img 
-        v-if              = "father" 
-        style             = "cursor: pointer;"
-        :src              = "resourcesurl + 'images/mIconBrowserRelations.svg'"
-         @click           = "toggleFilterByRelation"
+      <i
+        v-if              = "father"
+        :class            = "'filter-by-relation ' + g3wtemplate.font['relation']"
+        @click            = "toggleFilterByRelation"
         v-t-tooltip:right = "'plugins.editing.tooltip.filter_by_relation'"
-      />
+      ></i>
+
       <!-- PANEL TITLE -->
       <span class = "panel-title">{{ state.title }}</span>
 
@@ -70,7 +70,7 @@ export default ({
             'g3w-icon-toggled': state.editing.on,
             [g3wtemplate.font[(state.editing.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
           }"
-        ></i>
+          />
       </span>  
 
     </div>
