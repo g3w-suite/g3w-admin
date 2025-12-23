@@ -220,6 +220,7 @@ class BaseUserMediaHandler(object):
 
     def send_file(self):
         """ Send current media saved """
+        
         if self.layer:
             self.set_layer_md5_source()
             file_path = '{}/{}'.format(self.get_path_to_save(), self.file_name)
