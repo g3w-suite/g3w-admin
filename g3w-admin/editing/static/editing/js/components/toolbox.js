@@ -57,22 +57,20 @@ export default ({
 
       <!-- TOGGLE EDITING -->
       <span
-        v-disabled       = "editDisabled"
         style            = "margin-left: auto"
         :data-i18n-title = "editDisabled ? '⚠️ Stop active editing tool': 'plugins.editing.tooltip.edit_layer'"
       > 
-        <img 
-          height      = "40"
-          width       = "40"
-          @click.stop = "toggleEditing"
-          :src        = "resourcesurl + 'images/mActionToggleEditing.svg'"
-          class       = "start-editing editbtn skin-tooltip-left" 
-          :class      = "{
+        <i
+          v-disabled              = "editDisabled"
+          @click.stop             = "toggleEditing"
+          class                   = "start-editing editbtn skin-tooltip-left"
+          :class                  = "{
             'pull-right':       !isMobile(),
             'enabled':          isLayerReady,
             'g3w-icon-toggled': state.editing.on,
+            [g3wtemplate.font[(state.editing.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
           }"
-        />
+        ></i>
       </span>  
 
     </div>
