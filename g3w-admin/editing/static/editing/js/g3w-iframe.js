@@ -33,10 +33,10 @@
  * ```
  */
 
-const { Emitter }           = g3w;
-const { ApplicationState }  = g3wsdk.core;
-const { GUI }               = g3wsdk.gui;
-const { getUniqueDomId }    = g3wsdk.core.utils;
+const { Emitter }        = g3w;
+const ApplicationState   = g3w.state;
+const GUI                = g3w;
+const { getUniqueDomId } = g3w.utils;
 
 export class IframeEditor extends Emitter {
 
