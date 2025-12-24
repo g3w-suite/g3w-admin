@@ -3,8 +3,8 @@
  * @since 4.1.0
  */
 
-const { GEOMETRY_FIELDS } = g3wsdk.constant;
-const { getUniqueDomId }  = g3wsdk.core.utils;
+const { GEOMETRY_FIELDS } = g3w.constants;
+const { getUniqueDomId }  = g3w.utils;
 
 export class Feature extends ol.Feature {
 
