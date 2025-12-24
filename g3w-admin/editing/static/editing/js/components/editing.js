@@ -8,12 +8,11 @@ import ToolboxComponent             from '../components/toolbox.js';
 import { getCatalogLayers }         from '../utils/getCatalogLayers.js';
 import { getCatalogLayerById }      from '../utils/getCatalogLayerById.js';
 
-const { G3W_FID }                     = g3wsdk.constant
-const { GUI }                         = g3wsdk.gui;
-const {
-  ApplicationState,
-  ApplicationService,
-}                                     = g3wsdk.core;
+const { G3W_FID }            = g3w.constants;
+const GUI                    = g3w.app;
+const ApplicationState       = g3w.state;
+
+const { ApplicationService } = g3wsdk.core;
 
 export default ({
 

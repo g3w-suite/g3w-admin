@@ -7,7 +7,7 @@
 import { areCoordinatesEqual }       from '../utils/areCoordinatesEqual.js';
 import { getFeatureTableFieldValue } from '../utils/getFeatureTableFieldValue.js';
 
-const { GUI } = g3wsdk.gui;
+const GUI = g3w.app;
 
 export default ({
 

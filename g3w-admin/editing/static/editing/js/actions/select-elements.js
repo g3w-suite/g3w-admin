@@ -15,11 +15,12 @@ import { getEditingLayer }                              from '../utils/getEditin
 import { Step }                                         from '../g3w-step.js';
 import { Feature }                                      from '../g3w-feature.js';
 
-const { ApplicationState }                              = g3wsdk.core;
-const { convertSingleMultiGeometry }                    = g3wsdk.core.geoutils;
+const ApplicationState                                  = g3w.state;
+const GUI                                               = g3w.app;
+const _                                                 = g3w.gettext;
+const { convertSingleMultiGeometry }                    = g3w.utils;
+
 const { removeZValueToOLFeatureGeometry }               = g3wsdk.core.geoutils.Geometry;
-const { GUI }                                           = g3wsdk.gui;
-const _                                                 = g3wsdk.core.i18n.t;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/selectelementstask.js@v3.7.1

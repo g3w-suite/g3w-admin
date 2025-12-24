@@ -7,9 +7,10 @@
 import { setVertexStyle }      from '../utils/setVertexStyle.js';
 import { getCatalogLayerById } from '../utils/getCatalogLayerById.js';
 
-const { GUI }                    = g3wsdk.gui;
-const { getResolutionFromScale } = g3wsdk.ol.utils;
-const _                          = g3wsdk.core.i18n.t;
+const ApplicationState           = g3w.state;
+const GUI                        = g3w.app;
+const { getResolutionFromScale } = g3w.utils;
+const _                          = g3w.gettext;
 
 let snapInteraction;
 const snapFeatures = new ol.Collection([]);
@@ -302,7 +303,7 @@ export default ({
      * @since g3w-client-plugin-editing@v3.9.0
      */
     get_tool_title() {
-      return title => g3wsdk.core.ApplicationState.language && _(`plugins.${title}`);
+      return title => ApplicationState.language && _(`plugins.${title}`);
     },
 
   },

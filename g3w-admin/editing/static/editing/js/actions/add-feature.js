@@ -14,6 +14,7 @@ import { Feature }                          from '../g3w-feature.js';
 const GUI                      = g3w.app;
 const _                        = g3w.gettext;
 const { createMeasureTooltip } = g3w.utils;
+
 const { Geometry }             = g3wsdk.core.geoutils;
 
 /**

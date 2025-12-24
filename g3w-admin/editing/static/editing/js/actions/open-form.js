@@ -19,7 +19,7 @@ import { getCatalogLayerById }              from '../utils/getCatalogLayerById.j
 import { Workflow }                         from '../g3w-workflow.js';
 import { Step }                             from '../g3w-step.js';
 
-const { GUI }                               = g3wsdk.gui;
+const GUI                                   = g3w.app;
 const { FormService }                       = g3wsdk.gui.vue.services;
 
 /**

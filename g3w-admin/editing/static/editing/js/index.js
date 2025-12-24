@@ -14,8 +14,9 @@ const {
   getScaleFromResolution,
   getResolutionFromScale,
 }                         = g3w.utils;
+
 const { Server: serverErrorParser } = g3wsdk.core.errors.parsers;
-const { Geometry }        = g3wsdk.core.geoutils;
+const { Geometry }                  = g3wsdk.core.geoutils;
 
 new (class extends Plugin {
 
