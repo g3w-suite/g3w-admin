@@ -1,6 +1,7 @@
 import { isSameBaseGeometryType }    from '../utils/isSameBaseGeometryType.js';
 
-const { convertSingleMultiGeometry } = g3wsdk.core.geoutils;
+const { convertSingleMultiGeometry } = g3w.utils;
+
 const {
   is3DGeometry,
   removeZValueToOLFeatureGeometry,

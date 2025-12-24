@@ -1,4 +1,4 @@
-const { GUI } = g3wsdk.gui;
+const GUI = g3w.app;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
