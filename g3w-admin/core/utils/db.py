@@ -53,7 +53,11 @@ def build_dango_connection_name(datasource):
     :return: string
     """
     usingmd5 = hashlib.md5()
-    usingmd5.update(datasource.encode('utf-8'))
+    # Convert to bytes if it's a string, otherwise use as-is
+    if isinstance(datasource, str):
+        usingmd5.update(datasource.encode('utf-8'))
+    else:
+        usingmd5.update(datasource)
     return usingmd5.hexdigest()
 
 
