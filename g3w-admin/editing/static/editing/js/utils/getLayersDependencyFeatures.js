@@ -2,8 +2,8 @@ import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRel
 import { getRelationId }                 from '../utils/getRelationId.js';
 import { getRelationsInEditing }         from '../utils/getRelationsInEditing.js';
 
-const { ApplicationState } = g3wsdk.core;
-const { GUI }              = g3wsdk.gui;
+const ApplicationState = g3w.state;
+const GUI              = g3w.app;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8

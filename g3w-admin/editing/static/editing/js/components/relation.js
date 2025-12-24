@@ -29,17 +29,20 @@ import { MoveFeatureStep }                  from '../actions/move-feature.js';
 import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
 import { getCatalogLayers }                 from '../utils/getCatalogLayers.js';
 
-const { PAGELENGTHS }                       = g3wsdk.constant;
-const { Geometry }                          = g3wsdk.core.geoutils;
-const _                                     = g3wsdk.core.i18n.t;
-const { toRawType, debounce }               = g3wsdk.core.utils;
-const { GUI }                               = g3wsdk.gui;
-const { FormService }                       = g3wsdk.gui.vue.services;
-const { Component, Mixins }                 = g3wsdk.gui.vue;
+const { Component }              = g3w;
+const { PAGELENGTHS }            = g3w.constants;
+const GUI                        = g3w.app;
+const _                          = g3w.gettext;
 const {
-  PickFeatureInteraction,
-  PickCoordinatesInteraction
-}                                           = g3wsdk.ol.interactions;
+  debounce,
+  PickCoordinatesInteraction,
+}                                = g3w.utils;
+
+const { Geometry }               = g3wsdk.core.geoutils;
+const { toRawType }              = g3wsdk.core.utils;
+const { FormService }            = g3wsdk.gui.vue.services;
+const { Mixins }                 = g3wsdk.gui.vue;
+const { PickFeatureInteraction } = g3wsdk.ol.interactions;
 
 const color = 'rgb(255,89,0)';
 // Vector styles for selected relation

@@ -1,4 +1,4 @@
-const { ApplicationState } = g3wsdk.core;
+const ApplicationState = g3w.state;
 
 /**
  * ORIGINAL SOURCE: g3w-client/src/utils/getCatalogLayers.js@v4.0.0

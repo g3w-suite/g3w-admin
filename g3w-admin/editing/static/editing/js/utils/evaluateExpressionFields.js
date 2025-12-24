@@ -1,8 +1,8 @@
 import { getFieldsWithValues } from '../utils/getFieldsWithValues.js';
 import { getParentFormData }   from '../utils/getParentFormData.js';
 
-const ApplicationState      = g3w.state;
-const { XHR }               = g3wsdk.core.utils;
+const ApplicationState = g3w.state;
+const { XHR }          = g3w.utils;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1

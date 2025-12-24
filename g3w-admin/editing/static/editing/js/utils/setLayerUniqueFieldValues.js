@@ -1,5 +1,5 @@
-const { GUI } = g3wsdk.gui;
-const { XHR } = g3wsdk.core.utils;
+const GUI     = g3w.app;
+const { XHR } = g3w.utils;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8

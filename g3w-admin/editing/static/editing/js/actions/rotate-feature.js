@@ -11,7 +11,7 @@ import { evaluateExpressionFields }         from '../utils/evaluateExpressionFie
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { Step }                             from '../g3w-step.js';
 
-const { GUI }                               = g3wsdk.gui;
+const GUI = g3w.app;
 
 /**
  * @file Initially based on: https://github.com/Viglino/ol-ext/blob/v4.0.30/src/interaction/Transform.js

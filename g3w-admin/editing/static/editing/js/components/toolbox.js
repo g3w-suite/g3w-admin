@@ -7,9 +7,10 @@
 import { setVertexStyle }      from '../utils/setVertexStyle.js';
 import { getCatalogLayerById } from '../utils/getCatalogLayerById.js';
 
-const { GUI }                    = g3wsdk.gui;
-const { getResolutionFromScale } = g3wsdk.ol.utils;
-const _                          = g3wsdk.core.i18n.t;
+const ApplicationState           = g3w.state;
+const GUI                        = g3w.app;
+const { getResolutionFromScale } = g3w.utils;
+const _                          = g3w.gettext;
 
 let snapInteraction;
 const snapFeatures = new ol.Collection([]);
@@ -45,35 +46,33 @@ export default ({
     >
 
       <!-- TOGGLE RELATION LAYERS (LAYERS FILTER) -->
-      <img 
-        v-if              = "father" 
-        style             = "cursor: pointer;"
-        :src              = "resourcesurl + 'images/mIconBrowserRelations.svg'"
-         @click           = "toggleFilterByRelation"
+      <i
+        v-if              = "father"
+        :class            = "'filter-by-relation ' + g3wtemplate.font['relation']"
+        @click            = "toggleFilterByRelation"
         v-t-tooltip:right = "'plugins.editing.tooltip.filter_by_relation'"
-      />
+      ></i>
+
       <!-- PANEL TITLE -->
       <span class = "panel-title">{{ state.title }}</span>
 
       <!-- TOGGLE EDITING -->
       <span
-        v-disabled       = "editDisabled"
         style            = "margin-left: auto"
         :data-i18n-title = "editDisabled ? '⚠️ Stop active editing tool': 'plugins.editing.tooltip.edit_layer'"
       > 
-        <img 
-          height      = "40"
-          width       = "40"
-          @click.stop = "toggleEditing"
-          :src        = "resourcesurl + 'images/mActionToggleEditing.svg'"
-          class       = "start-editing editbtn skin-tooltip-left" 
-          :class      = "{
+        <i
+          v-disabled              = "editDisabled"
+          @click.stop             = "toggleEditing"
+          class                   = "start-editing editbtn skin-tooltip-left"
+          :class                  = "{
             'pull-right':       !isMobile(),
             'enabled':          isLayerReady,
             'g3w-icon-toggled': state.editing.on,
+            [g3wtemplate.font[(state.editing.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
           }"
-        />
-      </span>  
+        ></i>
+      </span>
 
     </div>
 
@@ -304,7 +303,7 @@ export default ({
      * @since g3w-client-plugin-editing@v3.9.0
      */
     get_tool_title() {
-      return title => g3wsdk.core.ApplicationState.language && _(`plugins.${title}`);
+      return title => ApplicationState.language && _(`plugins.${title}`);
     },
 
   },

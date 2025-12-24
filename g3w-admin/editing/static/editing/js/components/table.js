@@ -13,11 +13,12 @@ import { getFeatureTableFieldValue } from '../utils/getFeatureTableFieldValue.js
 import { addTableFeature }           from '../utils/addTableFeature.js';
 import { getEditingLayer }           from '../utils/getEditingLayer.js';
 
-const _               = g3wsdk.core.i18n.t;
-const { GUI }         = g3wsdk.gui;
+const { PAGELENGTHS } = g3w.constants;
+const GUI             = g3w.app;
+const _               = g3w.gettext;
+const { debounce }    = g3w.utils;
+
 const Media_Field     = g3wsdk.gui.vue.Fields.media_field;
-const { PAGELENGTHS } = g3wsdk.constant;
-const { debounce }    = g3wsdk.core.utils;
 
 export default ({
 

@@ -11,8 +11,8 @@ import { setVertexStyle }                               from '../utils/setVertex
 import { getEditingLayer }                              from '../utils/getEditingLayer.js';
 import { Step }                                         from '../g3w-step.js';
 
-const { GUI }                  = g3wsdk.gui;
-const { createMeasureTooltip } = g3wsdk.ol.utils;
+const GUI                      = g3w.app;
+const { createMeasureTooltip } = g3w.utils;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/modifygeometryvertextask.js@v3.7.1

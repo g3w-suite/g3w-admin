@@ -9,8 +9,9 @@
 import { getEditingLayer } from './utils/getEditingLayer.js';
 
 const { Emitter }             = g3w;
+const GUI                     = g3w.app;
+
 const { isPointGeometryType } = g3wsdk.core.geoutils.Geometry;
-const { GUI }                 = g3wsdk.gui;
 
 export class Step extends Emitter {
 

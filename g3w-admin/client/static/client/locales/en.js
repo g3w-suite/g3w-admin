@@ -171,6 +171,7 @@ export default {
   'sdk.form.inputs.datetime': 'date',
   'sdk.form.inputs.float': 'float',
   'sdk.form.inputs.table': 'table',
+  'sdk.form.inputs.boolean': 'boolean',
   'sdk.form.footer.required_fields': 'Required fields',
   'sdk.form.messages.qgis_input_widget_relation': 'Use relation specific form to work with relation',
   'sdk.wps.list_process': 'List of process',

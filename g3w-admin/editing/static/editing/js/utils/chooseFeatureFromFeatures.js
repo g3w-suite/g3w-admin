@@ -1,5 +1,5 @@
-const { GUI } = g3wsdk.gui;
-const _       = g3wsdk.core.i18n.t;
+const GUI = g3w.app;
+const _   = g3w.gettext;
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1

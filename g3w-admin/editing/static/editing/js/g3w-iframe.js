@@ -33,10 +33,10 @@
  * ```
  */
 
-const { Emitter }           = g3w;
-const { ApplicationState }  = g3wsdk.core;
-const { GUI }               = g3wsdk.gui;
-const { getUniqueDomId }    = g3wsdk.core.utils;
+const { Emitter }        = g3w;
+const ApplicationState   = g3w.state;
+const GUI                = g3w.app;
+const { getUniqueDomId } = g3w.utils;
 
 export class IframeEditor extends Emitter {
 
@@ -395,7 +395,7 @@ export class IframeEditor extends Emitter {
     if ('draw' === method) {
       GUI.disableClickMapControls(true);
 
-      let geom  = g3wsdk.core.catalog.CatalogLayersStoresRegistry.getLayerById(qgs_layer_id).getGeometryType();
+      let geom  = g3w.utils.getCatalogLayerById(qgs_layer_id).getGeometryType();
       // get open layers geometry
       if (geom.startsWith('Line'))              { geom = 'LineString'; }
       else if (geom.startsWith('MultiLine'))    { geom = 'MultiLineString'; }
