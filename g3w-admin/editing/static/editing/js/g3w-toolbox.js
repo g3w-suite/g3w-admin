@@ -51,10 +51,10 @@ const {
   getResolutionFromScale,
 }                                                        = g3w.utils;
 
-const { GEOMETRY_TYPES }                                 = g3wsdk.constant;
-const { Geometry, dissolve, splitFeature }               = g3wsdk.core.geoutils;
-const { removeZValueToOLFeatureGeometry }                = g3wsdk.core.geoutils.Geometry;
-const { toRawType, cloneDeep }                           = g3wsdk.core.utils;
+const { GEOMETRY_TYPES }                                        = g3wsdk.constant;
+const { Geometry, dissolve, splitFeature, areCoordinatesEqual } = g3wsdk.core.geoutils;
+const { removeZValueToOLFeatureGeometry }                       = g3wsdk.core.geoutils.Geometry;
+const { toRawType, cloneDeep }                                  = g3wsdk.core.utils;
 
 const is_defined = d => undefined !== d;
 
@@ -951,7 +951,7 @@ export class ToolBox extends Emitter {
                                       this.addInteraction(
                                         layer.external
                                           ? new PickFeaturesInteraction({ layer: GUI.getLayerById(layer.id) })
-                                          : new g3wsdk.ol.interactions.PickCoordinatesInteraction(), {
+                                          : new g3w.utils.PickCoordinatesInteraction(), {
                                         'picked': async e => {
                                           try {
                                             resolve(convertToGeometry(
@@ -3952,7 +3952,7 @@ function _isPointOnVertex({
  }) {
   const geometry = feature.getGeometry();
   const type     = geometry.getType();
-  const coords   = c => g3wsdk.core.geoutils.areCoordinatesEqual(coordinates, c); // whether element have same coordinates
+  const coords   = c => areCoordinatesEqual(coordinates, c); // whether element have same coordinates
  
   switch (type) {
     case 'Polygon':
@@ -3967,7 +3967,7 @@ function _isPointOnVertex({
       return geometry.getPolygons().some(poly => poly.getCoordinates().flat().some(coords));
  
     case 'Point':
-      return g3wsdk.core.geoutils.areCoordinatesEqual(coordinates, geometry.getCoordinates());
+      return areCoordinatesEqual(coordinates, geometry.getCoordinates());
  
     default:
       return false;

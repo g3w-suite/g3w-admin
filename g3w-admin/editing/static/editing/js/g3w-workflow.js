@@ -9,7 +9,7 @@
 import { Step } from './g3w-step.js';
 
 const { Emitter } = g3w;
-const { GUI }     = g3wsdk.gui;
+const GUI         = g3w.app;
 
 /**
  * Workflow Class (manage flow of steps)
