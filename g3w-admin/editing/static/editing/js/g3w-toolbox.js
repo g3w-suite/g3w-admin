@@ -40,17 +40,21 @@ import { MoveFeatureStep }                              from './actions/move-fea
 import { RotateFeatureStep }                            from './actions/rotate-feature.js';
 import { ModifyGeometryVertexStep }                     from './actions/move-vertex.js';
 
-const { Emitter, Layer }                                 = g3w;
+const { Emitter, Layer, Component }                      = g3w;
+const ApplicationState                                   = g3w.state;
+const GUI                                                = g3w;
+const _                                                  = g3w.gettext;
+const {
+  XHR,
+  debounce,
+  getScaleFromResolution,
+  getResolutionFromScale,
+}                                                        = g3w.utils;
+
 const { GEOMETRY_TYPES }                                 = g3wsdk.constant;
-const { ApplicationState }                               = g3wsdk.core;
-const { Geometry, dissolve }                             = g3wsdk.core.geoutils;
-const { splitFeature }                                   = g3wsdk.core.geoutils;
+const { Geometry, dissolve, splitFeature }               = g3wsdk.core.geoutils;
 const { removeZValueToOLFeatureGeometry }                = g3wsdk.core.geoutils.Geometry;
-const _                                                  = g3wsdk.core.i18n.t;
-const { XHR, debounce, toRawType, cloneDeep }            = g3wsdk.core.utils;
-const { GUI }                                            = g3wsdk.gui;
-const { Component }                                      = g3wsdk.gui.vue;
-const { getScaleFromResolution, getResolutionFromScale } = g3wsdk.ol.utils;
+const { toRawType, cloneDeep }                           = g3wsdk.core.utils;
 
 const is_defined = d => undefined !== d;
 
