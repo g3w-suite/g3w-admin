@@ -25,7 +25,8 @@ class BaseUserMediaHandler(object):
 
         return f"{settings.MEDIA_ROOT}{property.replace(settings.MEDIA_URL, '')}"
 
-    def __init__(self, file_name=None, layer=None, metadata_layer=None, feature=None, request=None):
+    def __init__(self, file_name=None, layer=None, metadata_layer=None, feature=None, request=None, ds_md5=None):
+        """ Initialize class with parameters """
 
         self.file_name = file_name
 
@@ -43,6 +44,9 @@ class BaseUserMediaHandler(object):
         self.feature = feature
 
         self.request = request
+
+        # Md5 of layer datasource
+        self.ds_md5 = ds_md5
 
 
     def set_layer_md5_source(self):
@@ -69,6 +73,7 @@ class BaseUserMediaHandler(object):
 
     def get_path_to_save(self):
         """ Get and build local path to save media """
+
         return '{}{}/{}'.format(settings.USER_MEDIA_ROOT, self.type, self.layer_md5_source)
 
     def get_domain(self):
@@ -92,9 +97,10 @@ class BaseUserMediaHandler(object):
     def _new_path(self, file_name):
         """ Build new path to save media file """
 
+        # 2025-12-19: use layer_md5_source to avoid porblems on change original datasource
         return reverse('user-media', kwargs={
                                 'project_type': self.type,
-                                'layer_id': self.layer.pk,
+                                'ds_layer_id': self.layer_md5_source,
                                 'file_name': file_name
                                 })
 
@@ -214,8 +220,14 @@ class BaseUserMediaHandler(object):
 
     def send_file(self):
         """ Send current media saved """
-        self.set_layer_md5_source()
-        file_path = '{}/{}'.format(self.get_path_to_save(), self.file_name)
+        
+        if self.layer:
+            self.set_layer_md5_source()
+            file_path = '{}/{}'.format(self.get_path_to_save(), self.file_name)
+        else:
+
+            # Case layer not found, try to search create path by self_ds_md5
+            file_path = f'{settings.USER_MEDIA_ROOT}{self.type}/{self.ds_md5}/{self.file_name}'
         return send_file(self.file_name, file_path_mime(file_path), file_path, False)
 
 
