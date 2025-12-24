@@ -35,7 +35,7 @@
 
 const { Emitter }        = g3w;
 const ApplicationState   = g3w.state;
-const GUI                = g3w;
+const GUI                = g3w.app;
 const { getUniqueDomId } = g3w.utils;
 
 export class IframeEditor extends Emitter {

@@ -42,7 +42,7 @@ import { ModifyGeometryVertexStep }                     from './actions/move-ver
 
 const { Emitter, Layer, Component }                      = g3w;
 const ApplicationState                                   = g3w.state;
-const GUI                                                = g3w;
+const GUI                                                = g3w.app;
 const _                                                  = g3w.gettext;
 const {
   XHR,
