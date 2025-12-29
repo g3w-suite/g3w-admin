@@ -58,7 +58,7 @@ class QesIndexingTest(QesTesBase):
         self.project.save()
 
         # Check
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
         self.assertEqual(len(data), 2)
 
         expected_indexes = [f'qgis_features_{self.test_admin1.pk}', f'qgis_features_{self.test_admin2.pk}']
@@ -70,7 +70,7 @@ class QesIndexingTest(QesTesBase):
 
         self.project.instance.save()
 
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
         expected_indexes.append(f'qgis_features_{self.test_viewer1.pk}')
         self.assertEqual(len(data), 3)
         self.assertIn(data[0]['index'], expected_indexes)
@@ -80,11 +80,11 @@ class QesIndexingTest(QesTesBase):
 
         # Check on delete
         self.project.instance.delete()
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
         self.assertEqual(len(data), 3)
 
         for index in expected_indexes:
-            data = self._query_es(f'/{index}/_count')
+            data = self._query_es(f'{index}/_count')
             self.assertEqual(data['count'], 0)
 
 
