@@ -59,7 +59,7 @@ class QesEditingIndexingTest(QesTesBase):
         self.reset_db_data()
 
     def _query_es_get_docs_by_layer_name(self):
-        data = self._query_es(f'/qgis_features_{self.test_user1.pk}/_search', method='POST', **{
+        data = self._query_es(f'qgis_features_{self.test_user1.pk}/_search', method='POST', **{
             "data": {
                 "query": {
                     "term": {
@@ -89,7 +89,7 @@ class QesEditingIndexingTest(QesTesBase):
         editing_layer = project.instance.layer_set.get(qgs_layer_id=editing_layer_id)
 
         # Check
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
         self.assertEqual(len(data), 2)
 
         data = self._query_es_get_docs_by_layer_name()
@@ -143,7 +143,7 @@ class QesEditingIndexingTest(QesTesBase):
 
         # Check for specific new document
         _id = f"{project.instance.pk}_{editing_layer_id}_{newid}"
-        data = self._query_es(f'/qgis_features_{self.test_user1.pk}/_doc/{_id}')
+        data = self._query_es(f'qgis_features_{self.test_user1.pk}/_doc/{_id}')
         self.assertEqual(data['_source']['attributes']['name'], 'ES 1')
 
         # UPDATE
@@ -185,7 +185,7 @@ class QesEditingIndexingTest(QesTesBase):
 
         # Check for specific new document
         _id = f"{project.instance.pk}_{editing_layer_id}_{newid}"
-        data = self._query_es(f'/qgis_features_{self.test_user1.pk}/_doc/{_id}')
+        data = self._query_es(f'qgis_features_{self.test_user1.pk}/_doc/{_id}')
         self.assertEqual(data['_source']['attributes']['name'], 'ES 1 updated')
 
         # DELETE
