@@ -44,30 +44,6 @@ import requests
 import json
 
 
-class TestView(View):
-
-    def get(self, request, *args, **kwargs):
-        from django.http.request import QueryDict
-        from qdjango.ows import OWSRequestHandler
-        q = QueryDict('', mutable=True)
-        q['SERVICE'] = 'WFS'
-        q['VERSION'] = '1.0.0'
-        q['REQUEST'] = 'GetFeature'
-        q['TYPENAME'] = 'sita:listacomunirtpoly'
-        q['PROPERTYNAME'] = 'ncom'
-        q['PROPERTYNAME'] = 'ncom=VOLTERRA'
-        q['OUTPUFORMAT'] = 'application/json'
-
-        class Object(object):
-            pass
-
-        request = Object()
-        request.method = 'GET'
-        request.body = ''
-        response = OWSRequestHandler.baseDoRequest(q, request)
-        return response
-
-
 class DashboardView(TemplateView):
     template_name = "index.html"
 
