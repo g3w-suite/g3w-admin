@@ -314,7 +314,7 @@ export default {
   'metadata.general.fields.name': 'NOME',
   'metadata.general.fields.description': 'DESCRIZIONE',
   'metadata.general.fields.abstract': 'ABSTRACT',
-  'metadata.general.fields.keywords': 'LISTA DELLE PAROLE CHIAVE',
+  'metadata.general.fields.keywords': 'PAROLE CHIAVE',
   'metadata.general.fields.fees': 'CANONI',
   'metadata.general.fields.accessconstraints': 'VINCOLI DI ACCESSO',
   'metadata.general.fields.contactinformation': 'CONTATTI',
