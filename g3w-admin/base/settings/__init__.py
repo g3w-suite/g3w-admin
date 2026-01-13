@@ -31,6 +31,13 @@ try:
 except:
     pass
 
+# For client settings
+try:
+    BASE_G3W_CLIENT_LEGEND.update(G3W_CLIENT_LEGEND)
+    G3W_CLIENT_LEGEND = BASE_G3W_CLIENT_LEGEND
+except:
+    pass
+
 if TESTING:
     try:
         from .tests_settings import *
