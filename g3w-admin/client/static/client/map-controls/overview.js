@@ -94,8 +94,8 @@ GUI.setupControl.overview = async function() {
       Object.defineProperty(PROJECT, 'state', { get() { return PROJECT; }, configurable: false, enumerable: true });
     }
 
-    const collapseLabel = Object.assign(document.createElement('span'), { classList: "fas fa-minus", title: 'close' });
-    const label         = Object.assign(document.createElement('span'), { classList: "fas fa-globe-americas", title: 'Overview map' });
+    const collapseLabel = Object.assign(document.createElement('span'), { classList: "fas fa-minus", title: 'close', ariaHidden: true });
+    const label         = Object.assign(document.createElement('span'), { classList: "fas fa-globe-americas", title: 'Overview map', ariaHidden: true });
 
     collapseLabel.dataset.placement = label.dataset.placement = 'top';
 

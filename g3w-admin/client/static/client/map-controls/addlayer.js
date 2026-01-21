@@ -14,7 +14,7 @@ GUI.setupControl.addlayer = GUI.setupControl.addlayers = function() {
         tipLabel: 'Add Layer',
         onSetMap(e) {
           if ('after' === e.setter) {
-            this.element.addEventListener('click', () => GUI.showAddLayerModal() );
+            this.element.querySelector('button').addEventListener('click', () => GUI.showAddLayerModal() );
           }
         }
       },

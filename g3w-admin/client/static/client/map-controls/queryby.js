@@ -76,7 +76,7 @@ export class QueryBy extends MapControl {
     super({
       ...opts,
       name:        'queryby',
-      tipLabel:    "mapcontrols.queryby.title",
+      tipLabel:    'Query area',
       enabled:     true,
       cursorClass: null, //store cursorClass of a current sub control enabled (querybbox, etc..)
     });
@@ -100,7 +100,7 @@ export class QueryBy extends MapControl {
         return GUI.closeUserMessage();
       }
       GUI.showUserMessage({
-        title:     'mapcontrols.queryby.title',
+        title:     'Query area',
         type:      'tool',
         iconClass: 'info',
         closable:  false,

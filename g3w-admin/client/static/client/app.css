@@ -177,6 +177,7 @@ button.close                { padding: 0; cursor: pointer; background: transpare
 .g3w-icon-toggled,
 .g3w-panel button.run_button { background-color: var(--skin-color); }
 *:focus                      { outline: none; }
+:root :focus-visible         { outline: 3px solid #007bff; outline-offset: 4px; }
 
 /**************************************************************************************
  * 0. Fonts
@@ -743,22 +744,6 @@ body:has(.ol-geocoder) #search:not(:has(.g3w-search)):not(:has(.action + .action
 .ol-viewport.ol-grabbing                                               { cursor: grabbing; }
 .ol-viewport.ol-grab                                                   { cursor: grab; }
 
-.ol-control button:is(.ol-zoom-in, .ol-zoom-out),
-.ol-control:is(
-  .ol-addlayer,
-  .ol-geolocation,
-  .ol-maptoimage,
-  .ol-streetview,
-  .ol-zoombox,
-  .ol-zoom-extent,
-  .ol-query,
-  .ol-queryby,
-  .ol-querybbox,
-  .ol-querybypolygon,
-  .ol-querybydrawpolygon,
-  .ol-measure
-  .ol-annotation
-)                                 button                               { position: relative; font-size: 0; }
 .ol-control                       button.ol-zoom-in::before            { background: url(./images/mActionZoomIn.svg)                no-repeat center; content: ''; position: absolute; inset: 0; }
 .ol-control                       button.ol-zoom-out::before           { background: url(./images/mActionZoomOut.svg)               no-repeat center; content: ''; position: absolute; inset: 0; }
 .ol-control.ol-addlayer           button::before                       { background: url(./images/addlayer.svg)                     no-repeat center; content: ''; position: absolute; inset: 0; }
@@ -779,6 +764,8 @@ body:has(.ol-geocoder) #search:not(:has(.g3w-search)):not(:has(.action + .action
 
 .ol-control                                                            { background-color: transparent; border-radius: 0; padding: 0; }
 .ol-control button                                                     { display: block; margin: 0; padding: 2px 6px; text-decoration: none; text-align: center; height: 39px; width: 39px; line-height: 1.42857143; border-radius: 3px; font-size: 25px; font-weight: 300; float:left; background-color: #fff; color: #222d32; border: 1px solid rgba(0,0,0,0.5); background-clip: padding-box; box-shadow: none !important; border-radius: 3px; }
+.ol-control > button                                                   { position: relative; font-size: 0; }
+.ol-control > button > *                                               { position: relative; font-size: 25px; }
 .ol-control button:hover                                               { text-decoration: none; }
 .ol-control button:focus                                               { text-decoration: none; outline: none; }
 .ol-mouse-position                                                     { position: relative !important; font-weight: 700; font-size: .9em; margin-top: -2px; }
