@@ -1833,9 +1833,6 @@ export class ToolBox extends Emitter {
       plugin.state.showselectlayers = options.showselectlayers ?? true;
       plugin.state.toolboxselected  = (options.selected ?? true) ? this : plugin.state.toolboxselected;
 
-      // set selected
-      this.setSelected(options.selected ?? true);
-
       const constraints = plugin.state.constraints.toolboxes[id];
 
       // set title
