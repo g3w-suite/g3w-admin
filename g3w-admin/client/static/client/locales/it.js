@@ -17,6 +17,7 @@ export default {
   component: "Componente Generico",
   search: "Ricerche",
   alerts: 'Avvisi',
+  help: 'Aiuto',
   no_results: "Nessun risultato trovato",
   print: "Stampa",
   print_help: `<p>Se non vedi qualche livello nel file di stampa:</p>
