@@ -20,31 +20,31 @@ msgstr ""
 
 #: usersmanage/forms.py:96
 msgid "Editor1 user"
-msgstr "Utilisateur Editeur1"
+msgstr "Éditeur de niveau 1"
 
 #: usersmanage/forms.py:97
 msgid "Set Editor Level 1 owner"
-msgstr "Choisir le propriétaire Editeur niveau 1"
+msgstr "Choisir comme propriétaire l'utilisateur avec le rôle d'éditeur niveau 1"
 
 #: usersmanage/forms.py:100
 msgid "Editor2 user"
-msgstr "Utilisateur Editeur2"
+msgstr "Utilisateur avec le rôle d'éditeur de niveau 2"
 
 #: usersmanage/forms.py:103
 msgid "Viewer users"
-msgstr "Utilisateur en visualisation"
+msgstr "Utilisateurs ayant accès au groupe cartographique"
 
 #: usersmanage/forms.py:110
 msgid "Editor user groups"
-msgstr "Groupes d'utilisateur Editeur"
+msgstr "Groupes d'utilisateurs pour l'édition du groupe cartographique"
 
 #: usersmanage/forms.py:117
 msgid "Viewer user groups"
-msgstr "Groupes d'utilisateur en visualisation"
+msgstr "Groupes d'utilisateurs ayant accès au groupe cartographique"
 
 #: usersmanage/forms.py:123
 msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
-msgstr "Propager les permissions des <b>nouveaux</b> observateurs and groupes d'observateurs"
+msgstr "Propager les permissions des <b>NOUVEAUX</b> utilisateurs et groupes d'utilisateurs"
 
 #: usersmanage/forms.py:294
 msgid "Select roles for this user"
@@ -58,17 +58,17 @@ msgstr "Rôles principaux"
 msgid ""
 "Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
 msgstr ""
-"Sélectionner <b>groupes EDITEUR</b> pour cet utilisateur, seul le rôle Editeur Niveau 2 peut être ajouté"
+"Sélectionner les <b>groupes éditeurs</b> pour cet utilisateur. Seul le rôle éditeur de niveau 2 peut être ajouté"
 
 #: usersmanage/forms.py:303
 msgid "User editor groups"
-msgstr "Groupes des utilisateur Editeur"
+msgstr "Groupes des utilisateurs avec le rôle éditeur"
 
 #: usersmanage/forms.py:310
 msgid ""
 "Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
 msgstr ""
-"Sélectionner <b>groupes CONSULTATION</b> pour cet utilisateur, seul le rôle Consultation Niveau 1 peut être ajouté"
+"Sélectionner les <b>groupes en consultation</b> pour cet utilisateur, seul le rôle consultation de niveau 1 peut être ajouté"
 
 #: usersmanage/forms.py:311
 msgid "User viewer groups"
@@ -76,7 +76,7 @@ msgstr "Groupes d'utilisateur en consultation"
 
 #: usersmanage/forms.py:351
 msgid "Anagraphic"
-msgstr ""
+msgstr "Chronologique"
 
 #: usersmanage/forms.py:370
 msgid "ACL/Roles"
@@ -92,7 +92,7 @@ msgstr "Données utilisateur"
 
 #: usersmanage/forms.py:435
 msgid "User backend"
-msgstr "Backed utilisateur"
+msgstr "BackOffice"
 
 #: usersmanage/forms.py:602
 msgid "User can't be Editor level 1 and at same time Editor level 2"
@@ -208,7 +208,7 @@ msgstr "Supprimer"
 
 #: usersmanage/templates/usersmanage/user_list.html:28
 msgid "Username"
-msgstr "Nom utilisateur"
+msgstr "Nom d'utilisateur"
 
 #: usersmanage/templates/usersmanage/user_list.html:30
 msgid "Roles"
@@ -240,7 +240,7 @@ msgstr "Backend"
 
 #: usersmanage/utils.py:231
 msgid "ACL Users"
-msgstr "Utilisateurs ACL"
+msgstr "Droits des utilisateurs"
 
 #: usersmanage/views.py:228
 #, python-format
