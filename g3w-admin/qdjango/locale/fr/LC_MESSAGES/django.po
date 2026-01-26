@@ -1453,13 +1453,13 @@ msgstr "%s Expression: %s"
 #: utils/validators.py:212
 #, python-format
 msgid "Project SRID (%s) and group SRID (%s) must be the same"
-msgstr ""
+msgstr "Le SRID du projet (%s) and celui du groupe (%s) doivent être identiques"
 
 #: utils/validators.py:232
 #, python-format
 msgid ""
 "Layer \"%s\" is embedded from project \"%s\" but the project does not exist"
-msgstr ""
+msgstr "La couche \"%s\" est embarquée dans le projet \"%s\" mais celui-ci n'existe pas"
 
 #: utils/validators.py:236
 #, python-format
@@ -1467,57 +1467,58 @@ msgid ""
 "Layer \"%s\" is embedded from project \"%s\" but the project does not "
 "contain this layer"
 msgstr ""
+"La couche \"%s\" est embarquée dans le projet \"%s\" mais celui-ci ne contient pas cette couche"
 
 #: utils/validators.py:270
 msgid "A project with the same title already exists"
-msgstr ""
+msgstr "Un autre projet existant porte déjà ce nom"
 
 #: utils/validators.py:294
 msgid "Title project not empty"
-msgstr ""
+msgstr "Le titre de projet ne peut être vide"
 
 #: utils/validators.py:307
 msgid "More than one layer with same name/shortname: {}"
-msgstr ""
+msgstr "Plus d'une couche avec le même nom / nom court : {}"
 
 #: utils/validators.py:333
 msgid "Check WMS start extent project property: {} didn't set"
-msgstr ""
+msgstr "Vérifiez la propriété du projet de l'extension WMS initiale : {} non définie"
 
 #: utils/validators.py:338
 msgid "xmax smaller then xmin "
-msgstr ""
+msgstr "Xmax est plus petit que Xmin "
 
 #: utils/validators.py:340
 msgid "ymax smaller then ymin "
-msgstr ""
+msgstr "Ymax est plus petit que Ymin "
 
 #: utils/validators.py:379
 msgid "Cannot connect to Postgis raster layer {} "
-msgstr ""
+msgstr "Connexion impossible à la couche Raster PostGIS {}"
 
 #: utils/validators.py:389
 msgid "Missing data file for MESH layer {} "
-msgstr ""
+msgstr "Fichier manquant pour la couche Mesh {}"
 
 #: utils/validators.py:391 utils/validators.py:399
 msgid "which should be located at {}"
-msgstr ""
+msgstr "qui devrait être stocké ici {}"
 
 #: utils/validators.py:397
 msgid "Missing data file for layer {} "
-msgstr ""
+msgstr "Fichier manquant pour la couche {}"
 
 #: utils/validators.py:420
 msgid ""
 "The follow fields name of layer {} contains white spaces and/or special "
 "characters: {}"
-msgstr ""
+msgstr "Les champs suivants de la couche {} contiennent des espaces et/ou des caractères spéciaux : {}"
 
 #: utils/validators.py:423
 msgid "Please use 'Alias' fields in QGIS project"
-msgstr ""
+msgstr "Veuillez utiliser les champs 'Alias' dans les propriétés du projet QGIS"
 
 #: views/projects.py:140
 msgid "The project has been modified by G3W-Suite after it was uploaded."
-msgstr ""
+msgstr "Le projet a été modifié dans g3w-suite après avoir été téléversé"
