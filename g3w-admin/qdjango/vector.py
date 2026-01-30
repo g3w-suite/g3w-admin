@@ -27,7 +27,7 @@ from core.api.base.views import (
     MODE_GPKG,
     IntersectsBBoxFilter,
     MODE_FEATURE_COUNT,
-    MODE_EDITORFORMSTRUCTURE_COUNT
+    MODE_EDITORFORMSTRUCTURE_COUNT, 
 )
 from core.api.filters import (
     IntersectsBBoxFilter,
@@ -45,7 +45,11 @@ from core.utils.qgisapi import (
     get_qgis_featurecount,
     get_layer_fids_from_server_fids
 )
-from core.utils.structure import mapLayerAttributesFromQgisLayer
+from core.utils.structure import (
+    mapLayerAttributesFromQgisLayer, 
+    RELATIONS_ONE_TO_ONE, 
+    RELATIONS_ONE_TO_MANY
+)
 from core.utils.vector import BaseUserMediaHandler
 
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
@@ -102,7 +106,7 @@ class QGISLayerVectorViewMixin(object):
 
         # get relations on project
         self.relations = {} if not self.layer.project.relations else \
-            {r['id']: r for r in eval(self.layer.project.relations)}
+            {r['id']: {**r, 'type': RELATIONS_ONE_TO_MANY} for r in eval(self.layer.project.relations)}
 
         # get relations on layer
         if self.layer.vectorjoins:
@@ -122,7 +126,8 @@ class QGISLayerVectorViewMixin(object):
                         'fieldRef': {
                             'referencedField': join['targetFieldName'],
                             'referencingField': join['joinFieldName']
-                        }
+                        },
+                        'type': RELATIONS_ONE_TO_ONE
                     }
                 except Exception as e:
                     logger.error(
@@ -168,7 +173,8 @@ class QGISLayerVectorViewMixin(object):
                 'referencing_field': relation['fieldRef']['referencingField'],
                 'layer_id': relation_layer.pk,
                 'referenced_field_is_pk': referenced_field_is_pk,
-                'level': level
+                'level': level,
+                'type':relation['type']
             }
 
 
@@ -811,7 +817,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
             # Only the more proximity relations
             cdb, dfs = metadata_relation.layer.can_be_downloaded()
-            if metadata_relation.level == 0 and cdb:
+            if metadata_relation.level == 0 and cdb and metadata_relation.type == RELATIONS_ONE_TO_MANY:
 
                 # get QgsRelation object
                 qgs_prj = self.layer.project.qgis_project

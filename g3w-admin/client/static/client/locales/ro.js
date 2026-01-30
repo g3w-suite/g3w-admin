@@ -277,6 +277,7 @@ export default {
   'sdk.form.inputs.datetime': 'data',
   'sdk.form.inputs.float': 'float - nr. cu zecimale',
   'sdk.form.inputs.table': 'tabelă',
+  'sdk.form.inputs.boolean': 'boolean',
   'sdk.form.footer.required_fields': 'Câmpuri necesare',
   'sdk.form.messages.qgis_input_widget_relation': 'Folosește formular specific de relații pentru a lucra cu relația',
   'sdk.wps.list_process': 'Lista de procese',

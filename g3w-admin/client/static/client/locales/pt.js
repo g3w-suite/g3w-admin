@@ -333,6 +333,7 @@ export default {
   'sdk.form.inputs.datetime': 'data',
   'sdk.form.inputs.float': 'float',
   'sdk.form.inputs.table': 'tabela',
+  'sdk.form.inputs.boolean': 'boolean',
   'sdk.form.footer.required_fields': 'Atributos necessários',
   'sdk.form.messages.qgis_input_widget_relation': 'Utilize o formulário específico para trabalhar com relações',
   'sdk.wps.list_process': 'Listar processo',

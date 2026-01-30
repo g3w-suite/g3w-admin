@@ -329,6 +329,7 @@ export default {
   'sdk.form.inputs.datetime': 'date',
   'sdk.form.inputs.float': 'float',
   'sdk.form.inputs.table': 'table',
+  'sdk.form.inputs.boolean': 'boolean',
   'sdk.form.footer.required_fields': "Обов'язкові поля", 
   'sdk.form.messages.qgis_input_widget_relation': 'Керуйте відношеннями за допомогою спеціальної форми',
   'sdk.wps.list_process': 'Список процесів',

@@ -261,6 +261,7 @@ export default {
   'sdk.form.inputs.datetime': 'päiväys',
   'sdk.form.inputs.float': 'liukuluku',
   'sdk.form.inputs.table': 'taulukko',
+  'sdk.form.inputs.boolean': 'boolean',
   'sdk.form.footer.required_fields': 'Vaaditut kentät',
   'sdk.form.messages.qgis_input_widget_relation': 'Käytä relaatioiden määrittämiseen tähän tarkoitettua toimintoa',
   'sdk.wps.list_process': 'Lista prosesseista',

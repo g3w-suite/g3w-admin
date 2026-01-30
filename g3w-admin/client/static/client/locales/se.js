@@ -261,6 +261,7 @@ export default {
   'sdk.form.inputs.datetime': 'datum',
   'sdk.form.inputs.float': 'flyttal',
   'sdk.form.inputs.table': 'tabell',
+  'sdk.form.inputs.boolean': 'boolean',
   'sdk.form.footer.required_fields': 'Obligatoriska fält',
   'sdk.form.messages.qgis_input_widget_relation': 'Använd den specifika funktinen för att bestämma relationer',
   'sdk.wps.list_process': 'Lista på processer',
