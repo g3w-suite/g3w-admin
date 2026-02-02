@@ -40,8 +40,8 @@ class UsermanageUsersAPITest(APITestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
 
-        self.assertEqual(res.data['count'], 12)
-        self.assertEqual(res.data['results'][0], {
+        self.assertEqual(len(res.data), 12)
+        self.assertEqual(res.data[0], {
             "id": 1,
             "first_name": "",
             "last_name": "",
@@ -55,7 +55,7 @@ class UsermanageUsersAPITest(APITestCase):
             "backend": ""
         })
 
-        self.assertEqual(res.data['results'][1], {
+        self.assertEqual(res.data[1], {
             "id": 2,
             "first_name": "",
             "last_name": "",
@@ -77,7 +77,7 @@ class UsermanageUsersAPITest(APITestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
 
-        self.assertEqual(res.data['count'], 0)
+        self.assertEqual(len(res.data), 0)
 
         # Add editor grant on a user
         assign_perm('auth.change_user', self.test_editor1, self.test_viewer1)
@@ -89,9 +89,9 @@ class UsermanageUsersAPITest(APITestCase):
         res = self.client.get(f"{url}?order=id")
         self.assertEqual(res.status_code, 200)
 
-        self.assertEqual(res.data['count'], 3)
+        self.assertEqual(len(res.data), 3)
 
-        self.assertEqual(res.data['results'][0], {
+        self.assertEqual(res.data[0], {
             "id": 7,
             "first_name": "",
             "last_name": "",
@@ -105,7 +105,7 @@ class UsermanageUsersAPITest(APITestCase):
             "backend": "g3wsuite"
         })
 
-        self.assertEqual(res.data['results'][1], {
+        self.assertEqual(res.data[1], {
             "id": 10,
             "first_name": "",
             "last_name": "",
