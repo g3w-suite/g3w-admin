@@ -111,13 +111,14 @@ class AnnotationControl extends MapControl {
     
     this._interactions.select = new ol.interaction.Select({
       layers: [this._annotation.layer],
-      style:  feature => this.#style(feature.get('type'))(feature)
+      style:  feature => this.#style(feature.get('type'))(feature),
     });
-    
+
     this._interactions.modify = new ol.interaction.Modify({
       features:              this._interactions.select.getFeatures(),
       insertVertexCondition: () => 'Rectangle' !== this._annotation?.feature?.get?.('type'),
     });
+    
 
     // monkey patch: "ol.interaction.Modify~handleDragEvent"
     this._interactions.modify.handleDragEvent = new Proxy(this._interactions.modify.handleDragEvent, {
@@ -539,23 +540,26 @@ class AnnotationControl extends MapControl {
                * Hange add remove annotation feature for modify purpose
                * @param {Feature} f 
                */
-              feature: f => {               
-                //In case of feature and no select features (no added to selected)
-                if (f && 0 === this._interactions.select.getFeatures().getArray().length) {
-                  this._interactions.select.getFeatures().push(f);
-                }
-                //In case of no feature and select has features 
-                if (!f && this._interactions.select.getFeatures().getArray().length) {
-                  this._interactions.select.getFeatures().clear();
-                }
+              feature: {
+                immediate: true,
+                handler: f => {               
+                  //In case of feature and no select features (no added to selected)
+                  if (f && 0 === this._interactions.select.getFeatures().getArray().length) {
+                    this._interactions.select.getFeatures().push(f);
+                  }
+                  //In case of no feature and select has features 
+                  if (!f && this._interactions.select.getFeatures().getArray().length) {
+                    this._interactions.select.getFeatures().clear();
+                  }
 
-                //remove eventally measure tooltip
-                if (this._measureTooltip) {
-                  this._measureTooltip.remove();
-                  this._measureTooltip = null;
-                };
+                  //remove eventally measure tooltip
+                  if (this._measureTooltip) {
+                    this._measureTooltip.remove();
+                    this._measureTooltip = null;
+                  };
 
-                this._interactions.modify.setActive(!!f);
+                  this._interactions.modify.setActive(!!f);
+                }
               },
               style: {
                 deep: true,
@@ -595,13 +599,22 @@ class AnnotationControl extends MapControl {
               },
             }, 
             created() {
+              const map = CONTROL.getMap();
               // layer has annotations
               if (this.layer.getSource().getFeatures().length > 0) {
                 CONTROL.changeType();
               }
-              CONTROL.getMap().addInteraction(CONTROL._interactions.select);
-              CONTROL.getMap().addInteraction(CONTROL._interactions.modify);
+              map.addInteraction(CONTROL._interactions.select);
+              map.addInteraction(CONTROL._interactions.modify);
               CONTROL._interactions.select.setActive(true);
+              // change cursor on feature hover
+              this.cursorKey = map.on('pointermove', e => {
+                map.getTargetElement().style.cursor = (map.getFeaturesAtPixel(map.getPixelFromCoordinate(e.coordinate), {
+                  layerFilter:  l => this.layer === l,
+                  hitTolerance: (isMobile && isMobile.any) ? 10 : 0,
+                }) ?? []).find(f => { if (this.feature) { return this.feature === f } return f; }) ? 'pointer' : '';
+              });
+
             },
             beforeDestroy() { 
               CONTROL.changeType();
@@ -610,6 +623,11 @@ class AnnotationControl extends MapControl {
               // unselect all features
               this.layer.getSource().getFeatures().forEach(f => f.selected = false);
               this.layer.changed();
+              //remove cursor change event
+              ol.Observable.unByKey(this.cursorKey);
+              this.cursorKey = null;
+              //reset cursor
+              CONTROL.getMap().getTargetElement().style.cursor = '';
             }
           }
         }

@@ -508,6 +508,7 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .navbar                                                      { background-color: var(--skin-color); }
 .navbar .sidebar-toggle                                      { color: #fff; }
 .navbar .sidebar-toggle:hover                                { background-color: hsl(from var(--skin-color) h s calc(l - 5)); }
+.is-iframe .navbar                                           { display: none !important; }
 
 .wrapper,
 .main-sidebar                                                { background-color: var(--bgcolor); }
