@@ -76,4 +76,4 @@ msgstr "Activation de la mise en cache de la couche"
 
 #: views.py:201
 msgid "Cache erased!"
-msgstr "Cache effacé!"
+msgstr "Cache effacé !"

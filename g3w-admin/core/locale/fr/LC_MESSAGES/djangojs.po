@@ -66,7 +66,7 @@ msgstr "Téléverser un fichier"
 
 #: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:462
 msgid "Drag&Drop files here"
-msgstr "Glisser&Déposer les fichiers ici"
+msgstr "Glisser/Déposer les fichiers ici"
 
 #: static/dist/js/g3wadmin.min.js:34 static/js/g3wadmin/widget.js:463
 msgid "Browse Files"

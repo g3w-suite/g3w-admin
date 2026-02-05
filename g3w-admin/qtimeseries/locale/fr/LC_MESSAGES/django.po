@@ -20,24 +20,24 @@ msgstr ""
 
 #: qtimeseries/forms.py:22
 msgid "Active"
-msgstr ""
+msgstr "Actif"
 
 #: qtimeseries/forms.py:31
 msgid "Check on uncheck to attive/deactive time series layer capabilities:"
-msgstr ""
+msgstr "Cocher la case pour activer les capacités de séries temporelles"
 
 #: qtimeseries/templates/qtimeseries/layer_action.html:5
 msgid "Time series"
-msgstr ""
+msgstr "Séries temporelles"
 
 #: qtimeseries/templates/qtimeseries/layer_action.html:7
 msgid "Activation raster time series"
-msgstr ""
+msgstr "Activation raster des séries temporelles"
 
 #: qtimeseries/templates/qtimeseries/raster_layer_active_form.html:7
 msgid "Alert"
-msgstr ""
+msgstr "Alerte"
 
 #: qtimeseries/templates/qtimeseries/raster_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Le formulaire contient des erreurs. Veuillez vérifier avant de le resoumettre."

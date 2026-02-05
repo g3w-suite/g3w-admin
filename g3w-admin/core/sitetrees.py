@@ -224,7 +224,7 @@ sitetrees = (
                               in_breadcrumbs=False
                          ),
                          item(
-                              'Pouble',
+                              'Corbeille',
                               'group-deactive-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-trash',
