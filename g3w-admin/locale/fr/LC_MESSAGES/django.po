@@ -33,7 +33,7 @@ msgstr "Ce fichier doit avoir une extension en '.csv'"
 
 #: bforest/forms/admin.py:109
 msgid "Input data has not HEADERS column."
-msgstr "Les données en entrées n'ont pas de colonne HEADERS."
+msgstr "Les données en entrée n'ont pas de colonne HEADERS."
 
 #: bforest/forms/admin.py:121
 msgid "The follows fields are required: {\", \".join(field_intersect)}"
@@ -79,7 +79,7 @@ msgstr "ARBRES"
 
 #: bforest/models/admin.py:37
 msgid "CSV file to upload"
-msgstr "FIchier CSV à téléverser"
+msgstr "Fichier CSV à téléverser"
 
 #: bforest/models/admin.py:38
 #: bforest/templates/bforest/admin/project_list.html:25
@@ -196,7 +196,7 @@ msgstr "Cliquer pour exécuter une analyse statistique de zone"
 #: bforest/templates/bforest/admin/raster_analysis.html:51
 #: bforest/templates/bforest/admin/raster_analysis.html:69
 msgid "Last 5 analysys done"
-msgstr "5 dernières analyses faites"
+msgstr "Les 5 dernières analyses"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:66
 msgid "RUN RECALCULATION ANALISYS"
@@ -212,7 +212,7 @@ msgstr "Informations générales"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:6
 msgid "File extention support: .csv"
-msgstr "Extension de fichier supportée: .csv"
+msgstr "Format de fichier supporté : .csv"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:10
 msgid "Important"
@@ -280,15 +280,15 @@ msgstr "Service BR"
 
 #: eleprofile/forms.py:92
 msgid "DTM Layer and pth layers"
-msgstr "Couche DTM et couches path"
+msgstr "Couche MNT et couches path"
 
 #: eleprofile/models.py:33
 msgid "Select DTM project layer to use for sampling"
-msgstr "Sélectionner une couche du projet DTM à utiliser pour l'échantillonnage"
+msgstr "Sélectionner une couche du projet MNT à utiliser pour l'échantillonnage"
 
 #: eleprofile/models.py:34
 msgid "Sampling DTM step"
-msgstr "Pas d'échantillonnage du DTM"
+msgstr "Pas d'échantillonnage du MNT"
 
 #: eleprofile/models.py:35
 msgid "Sampling step in map units, default 10"
@@ -316,26 +316,26 @@ msgid ""
 "Layer {layer.name} must be one geometry type of 'LineString' or "
 "'MultiLineString"
 msgstr ""
-"La couche {layer.name} doit avoir une géomtrie de type 'LineString' ou "
+"La couche {layer.name} doit avoir une géométrie de type 'LineString' ou "
 "'MultiLineString'"
 
 #: eleprofile/templates/eleprofile/dtm_form.html:11
 #: eleprofile/templates/eleprofile/dtm_form.html:14
 msgid "DTM Layer and Path layers"
-msgstr "Couche DTM et couches Path"
+msgstr "Couche MNT et couches Path"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:11
 msgid "DTM layer and path layers of project "
-msgstr "Couche DTM et couches Path du projet "
+msgstr "Couche MNT et couches Path du projet "
 
 #: eleprofile/templates/eleprofile/dtms_list.html:23
 #: eleprofile/templates/eleprofile/projects_list.html:40
 msgid "DTM layer and Path layers"
-msgstr "Couche DTM et couches Path"
+msgstr "Couche MNT et couches Path"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:33
 msgid "DTM layer"
-msgstr "Couche DTM"
+msgstr "Couche MNT"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:34
 msgid "Path layers"
@@ -347,7 +347,7 @@ msgstr "Projet de profil d'élévation"
 
 #: eleprofile/templates/eleprofile/projects_list.html:8
 msgid "Elevation Profile Projects"
-msgstr "Projets de profile d'élévation"
+msgstr "Projets de profil d'élévation"
 
 #: iam_bari/templates/_login.html:30
 msgid "Sign Out"
@@ -363,7 +363,7 @@ msgstr "La couche en entrée n'est pas une couche de point ou de multipoint."
 
 #: openrouteservice/api/views.py:156
 msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
-msgstr "\"qgis_layer_id\", \"new_layer_name\" or \"connection_id\" manquant."
+msgstr "\"qgis_layer_id\", \"new_layer_name\" ou \"connection_id\" manquant."
 
 #: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
 msgid ""
@@ -398,7 +398,7 @@ msgstr "Mauvaise valeur pour 'connection_id'"
 
 #: openrouteservice/api/views.py:229
 msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
-msgstr "Soit qgis_layer_id soit connection_id ET layer_name doivent avoir une valeur."
+msgstr "qgis_layer_id OU connection_id avec layer_name doit être rempli."
 
 #: openrouteservice/api/views.py:236
 #, python-format
@@ -416,7 +416,7 @@ msgstr "Nombre maximum autorisé de lieux: %s"
 
 #: openrouteservice/api/views.py:254
 msgid "Malformed locations array."
-msgstr "Tableau de lieux mal formé"
+msgstr "Tableau de lieux mal formaté"
 
 #: openrouteservice/api/views.py:259
 msgid "Missing \"range\" array."
@@ -433,7 +433,7 @@ msgstr "Tableau d'intervalles mal formé"
 
 #: openrouteservice/api/views.py:394
 msgid "Task not found!"
-msgstr "Tâche non trouvée!"
+msgstr "Tâche non trouvée !"
 
 #: openrouteservice/models.py:38
 msgid "Isochrones"
@@ -477,24 +477,24 @@ msgstr "Erreur lors de la création de la connexion à la couche cible."
 
 #: openrouteservice/utils.py:592
 msgid "Error creating destination layer: "
-msgstr "Erreur lors de la création de la couche cible: "
+msgstr "Erreur lors de la création de la couche cible : "
 
 #: openrouteservice/utils.py:606
 msgid "Error creating destination layer: layer is not valid!"
-msgstr "Erreur lors de la création de la couche cible: la couche n'est pas valide!"
+msgstr "Erreur lors de la création de la couche cible : la couche n'est pas valide !"
 
 #: openrouteservice/utils.py:619
 msgid "Error saving the destination layer: could not write project!"
-msgstr "Erreur à la sauvegarde de la couche cible: impossible d'écrire le projet!"
+msgstr "Erreur à la sauvegarde de la couche cible : impossible d'écrire le projet !"
 
 #: openrouteservice/utils.py:643
 msgid "Error adding destination Layer to the project: layer already exists."
-msgstr "Erreur à l'ajout de la couche cible au projet: la couche existe déjà."
+msgstr "Erreur à l'ajout de la couche cible au projet : la couche existe déjà."
 
 #: openrouteservice/utils.py:653
 #, python-format
 msgid "Error opening destination layer %s: layer not found in QGIS project!"
-msgstr "Erreur à l'ouverture de la couche cible %s: la couche est absente du projet QGIS!"
+msgstr "Erreur à l'ouverture de la couche cible %s : la couche est absente du projet QGIS !"
 
 #: openrouteservice/utils.py:670
 msgid "Error transforming geometry from 4326 to destination layer CRS."
@@ -531,7 +531,7 @@ msgstr "Image"
 
 #: portal/forms.py:67
 msgid "Author and style data"
-msgstr "Auteur et Style"
+msgstr "Données sur l'auteur et le style"
 
 #: portal/models.py:20 portal/templates/portal/picture_form.html:11
 #: portal/templates/portal/picture_form.html:14
@@ -556,7 +556,7 @@ msgstr "Auteur"
 
 #: portal/models.py:25
 msgid "Author URL"
-msgstr "URL auteur"
+msgstr "URL de l'auteur"
 
 #: portal/templates/portal/picture_list.html:10
 msgid "Portal pictures"
@@ -592,7 +592,7 @@ msgstr "Vous n'avez pas le droit d'accéder à cette section"
 
 #: templates/404.html:11
 msgid "Oops! Page not found."
-msgstr "Oups! Page non trouvée."
+msgstr "Oups ! Page non trouvée."
 
 #: templates/404.html:13
 msgid "We could not find the page you were looking for."
@@ -616,7 +616,7 @@ msgstr "Interface"
 
 #: templates/include/navbar_right_menu.html:45
 msgid "Registered on"
-msgstr "Enregistré le"
+msgstr "Inscrit(e) le"
 
 #: templates/include/navbar_right_menu.html:46
 msgid "Last login"
@@ -676,7 +676,7 @@ msgstr "Erreur de connexion"
 
 #: templates/login.html:26
 msgid "Username and/or password uncorrect"
-msgstr "Utilisateur et/ou mot de passe incorrect"
+msgstr "Utilisateur et/ou mot de passe incorrect(s)"
 
 #: templates/login.html:47 templates/registration/password_reset_form.html:31
 msgid "Forgot your password?"
@@ -688,7 +688,7 @@ msgstr "Mot de passe oublié ?"
 #: templates/registration/password_reset_done.html:26
 #: templates/registration/password_reset_form.html:45
 msgid " Version"
-msgstr "Version"
+msgstr " Version"
 
 #: templates/registration/password_reset_complete.html:22
 msgid "Password reset complete"
@@ -704,7 +704,7 @@ msgstr "la page de connexion"
 
 #: templates/registration/password_reset_confirm.html:22
 msgid "Enter new password"
-msgstr ""
+msgstr "Saisir un nouveau mot de passe"
 
 #: templates/registration/password_reset_confirm.html:29
 msgid "New password"
@@ -736,7 +736,7 @@ msgid ""
 "the email shortly!"
 msgstr ""
 "Nous vous avons envoyé un mail avec les instructions pour définir votre mot de passe. Vous devriez "
-"recevoir le mail rapidement!"
+"recevoir le mail rapidement !"
 
 #: templates/registration/password_reset_form.html:25
 msgid "Email no present into database"
@@ -752,7 +752,7 @@ msgstr ""
 
 #: templates/registration/password_reset_form.html:40
 msgid "Send me instruction"
-msgstr "Envoyez moi les instructions"
+msgstr "Envoyez-moi les instructions"
 
 #: templates/search.html:6
 msgid "Search results for"
@@ -760,11 +760,11 @@ msgstr "Résultats de recherche pour"
 
 #: templates/search.html:14
 msgid "Not results found!"
-msgstr "Aucun résultat trouvé!"
+msgstr "Aucun résultat trouvé !"
 
 #: templates/search.html:16
 msgid "Found "
-msgstr "Trouvé "
+msgstr "Trouvé"
 
 #: templates/search.html:16
 msgid " results."
