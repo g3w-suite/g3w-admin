@@ -704,11 +704,11 @@ new (class extends Plugin {
         }
       }
 
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
 
       // hide saving dialog
-      if (dialog) { dialog.modal('hide') }
+      if (dialog) { dialog.remove(); }
 
       // rollback
       //@TODO check if it is usefull
