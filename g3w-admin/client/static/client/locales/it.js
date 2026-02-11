@@ -29,7 +29,7 @@ export default {
   </ol>`,
   'Create Print': "Crea Stampa",
   dosearch: "Cerca",
-  catalog: "Mappa",
+  catalog: "Livelli",
   data: "Dati",
   externalwms: "WMS",
   'EXTERNAL LAYERS': "LIVELLI ESTERNI",

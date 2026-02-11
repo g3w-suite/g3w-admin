@@ -20,7 +20,7 @@ export default {
     <li>make sure the item is actually checked within layers list</li>
   </ol>`,
   dosearch: "Search",
-  catalog: "Map",
+  catalog: "Layers",
   data: "Data",
   externalwms: "WMS",
   baselayers: "Base",
