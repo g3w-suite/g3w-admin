@@ -69,16 +69,16 @@ class StreetViewControl extends MapControl {
     style: (feature, resolution) => [
       new ol.style.Style({
         text: new ol.style.Text({
-          text: '\ue905',
-          font: 'bold 18px icomoon',
-          fill: new ol.style.Fill({ color: '#ff0' }),
-          stroke: new ol.style.Stroke({ color: '#000' })
+          text:  '\ue905',
+          font:  'bold 18px icomoon',
+          fill:   new ol.style.Fill({ color: '#ff0' }),
+          stroke: new ol.style.Stroke({ color: '#000' }),
         })
       }),
       new ol.style.Style({
         image: new ol.style.Icon({
-          src: '/static/client/images/streetviewarrow.png',
-          rotation: this.#iconRotation
+          src:      '/static/client/images/streetviewarrow.png',
+          rotation: this.#iconRotation,
         })
       })
     ]
@@ -110,9 +110,9 @@ class StreetViewControl extends MapControl {
         params: {
           location: 0,
           size:     '456x456',
-          key:      this.key
+          key:      this.key,
         }
-      }).catch((e) => { console.warn(e); this.keyError = e.responseText });
+      }).catch(e => { console.warn(e); this.keyError = e.responseText });
     }
 
     // get script
@@ -190,13 +190,13 @@ class StreetViewControl extends MapControl {
 
     // recenter map if marker is outside map bounds (15 = pixel padding)
     if (
-      pixel[0] > this.#map.getSize()[0] - 15 ||
-      pixel[1] > this.#map.getSize()[1] - 15 ||
-      pixel[0] < 15 ||
-      pixel[1] < 15
-      ) {
-      this.#map.getView().setCenter(lnglat);
-    }
+      pixel[0] > this.#map.getSize()[0] - 15
+      || pixel[1] > this.#map.getSize()[1] - 15
+      || pixel[0] < 15
+      || pixel[1] < 15
+    ) {
+        this.#map.getView().setCenter(lnglat);
+      }
   }
 
   /**
@@ -253,7 +253,7 @@ class StreetViewControl extends MapControl {
   }
 
   clearMarker() {
-    this.#streetViewFeature.setGeometry(null)
+    this.#streetViewFeature.setGeometry(null);
   }
 
   clear() {

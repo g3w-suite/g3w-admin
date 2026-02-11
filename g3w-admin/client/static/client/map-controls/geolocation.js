@@ -44,7 +44,7 @@ class GeolocationControl extends MapControl {
      * @type { ol.Geolocation }
      */
     this._geolocation = new ol.Geolocation({
-      trackingOptions: { enableHighAccuracy: true }
+      trackingOptions: { enableHighAccuracy: true },
     });
 
     this.on('controlclick', e => {
@@ -98,7 +98,7 @@ class GeolocationControl extends MapControl {
       if (coordinates) {
         toggledKeyEvent = this.on('toggled', () => { this._showMarker({ map, coordinates: this._geolocation.getPosition(), show: this.isToggled() }); });
         this.element.classList.remove('g3w-ol-disabled');
-        this._showMarker({ map, coordinates, show: this.isToggled() })
+        this._showMarker({ map, coordinates, show: this.isToggled() });
       }
     });
 

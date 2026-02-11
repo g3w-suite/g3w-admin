@@ -145,7 +145,7 @@ class BaseLayerControl extends ol.control.Control {
       base.querySelector('img').classList.toggle('skin-border-color', ApplicationState.baseLayerId == base.getAttribute('data-mapTypeId'));
     }
     ApplicationState.project.setBaseLayer(ApplicationState.baseLayerId);
-    this.element.style.setProperty('--img-url', `url(${this.#getImgURL(this.#activeLayer?.getId())})`)
+    this.element.style.setProperty('--img-url', `url(${this.#getImgURL(this.#activeLayer?.getId())})`);
   }
 
 }

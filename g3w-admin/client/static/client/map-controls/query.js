@@ -35,7 +35,7 @@ GUI.setupControl.query = function() {
               }
             });
           } catch(e) {
-            console.warn('Error running spatial query: ', e)
+            console.warn('Error running spatial query: ', e);
           }
         });
         this.setEventKey({ eventType: 'picked', eventKey: this.on('picked', this.runQuery) });

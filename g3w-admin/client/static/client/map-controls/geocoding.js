@@ -52,9 +52,9 @@ const {
 const PROVIDERS = window.initConfig.mapcontrols?.geocoding?.providers ?? {};
 Object
   .keys(PROVIDERS)
-  .forEach(function(p) {
+  .forEach(p => {
       const script = document.createElement('script');
-      script.src   = window.initConfig.staticurl + 'client/geocoding-providers/'+ p + '.js';
+      script.src   = `${window.initConfig.staticurl}client/geocoding-providers/${p}.js`;
       script.async = true;
       document.head.appendChild(script);
   });
@@ -274,10 +274,10 @@ class GeocodingControl extends ol.control.Control {
 
     q = q.trim();
 
-    const isNumber     = value => 'number' === typeof value && !Number.isNaN(value);
-    let coordinates    = null;
-    let transform      = false;
-    const [x, y, epsg] = (q || '').split(',');
+    const isNumber       = value => 'number' === typeof value && !Number.isNaN(value);
+    let coordinates      = null;
+    let transform        = false;
+    const [x, y, epsg]   = (q || '').split(',');
     // get projection of coordinates is pass as third value
     const projection     = epsg && await ApplicationState.projections.set(`EPSG:${epsg.trim()}`);
     const update_on_move = this.element?.querySelector?.('input[name="update_on_move"]')?.checked;
@@ -737,10 +737,10 @@ function _makeDraggable(dialog) {
   dialog.addEventListener('mousedown', e => {
     const rect          = dialog.getBoundingClientRect();
     const is_backdrop = (
-      e.clientY < rect.top - 20 ||
-      e.clientY > rect.top + rect.height ||
-      e.clientX < rect.left ||
-      e.clientX > rect.left + rect.width - 20
+      e.clientY < rect.top - 20
+      || e.clientY > rect.top + rect.height
+      || e.clientX < rect.left
+      || e.clientX > rect.left + rect.width - 20
     );
     const is_interactive = ['label', 'button', 'select', 'input', 'textarea'].some(i => e.target.closest(i));
     if (is_backdrop || is_interactive || !e.target.closest('li.skin-background-color')) {
@@ -751,7 +751,7 @@ function _makeDraggable(dialog) {
       Object.assign(dialog.style, {
         margin: 0,
         left: `${clientX - e.clientX + rect.left}px`,
-        top: `${clientY - e.clientY + rect.top}px`,
+        top:  `${clientY - e.clientY + rect.top}px`,
       })
     };
     const mouseup = () => {
@@ -765,10 +765,10 @@ function _makeDraggable(dialog) {
   dialog.addEventListener('mousemove', e => {
     const rect          = dialog.getBoundingClientRect();
     const is_backdrop   = (
-      e.clientY < rect.top ||
-      e.clientY > rect.top + rect.height ||
-      e.clientX < rect.left ||
-      e.clientX > rect.left + rect.width
+      e.clientY < rect.top
+      || e.clientY > rect.top + rect.height
+      || e.clientX < rect.left
+      || e.clientX > rect.left + rect.width
     );
     dialog.style.cursor = is_backdrop ? null : 'move';
   });

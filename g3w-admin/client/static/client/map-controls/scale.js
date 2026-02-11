@@ -17,7 +17,7 @@ GUI.setupControl.scale = function() {
   GUI.addControl('scale', new ScaleControl({
     coordinateFormat: ol.coordinate.createStringXY(4),
     projection:       GUI.getCrs(),
-    isMobile:         isMobile.any
+    isMobile:         isMobile.any,
   }), false);
 };
 
@@ -54,12 +54,12 @@ class ScaleControl extends ol.control.Control {
             newTag = {
               id:    scale,
               text: `1:${params.term}`,
-              new:   true
+              new:   true,
             };
-            deleteLastCustomScale()
+            deleteLastCustomScale();
           }
         }
-        return newTag
+        return newTag;
       }
     });
     //get change mapsize to close
@@ -84,7 +84,7 @@ class ScaleControl extends ol.control.Control {
         addCustomTag({
           id:    scale,
           text: `1:${scale}`,
-          new:   true
+          new:   true,
         });
         isMapResolutionChanged = false;
       } else {

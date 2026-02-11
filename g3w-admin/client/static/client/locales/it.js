@@ -336,7 +336,7 @@ export default {
   'FILTERABLE': 'FILTRABILE',
   'CAPABILITIES': 'PERMESSI',
   'VISIBILITY RANGE': 'INTERVALLO  DI VISIBILITÀ',
-  'LAST MODIFIED': 'ULTIMA REVISIONE',
+  'LAST MODIFIED': 'ULTIMA MODIFICA',
   'Restrictions applied to user': 'Restrizioni applicate all’utente',
   'download_types.shapefile': 'Scarica Shapefile',
   'download_types.gpx': 'Scarica GPX',

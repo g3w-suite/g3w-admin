@@ -26,7 +26,7 @@ GUI.setupControl.querybyfreehand = function(type) {
     return;
   }
   if (GUI.getMapControl('queryby')) {
-    GUI.getMapControl('queryby').addType(type)
+    GUI.getMapControl('queryby').addType(type);
   } else {
     GUI.addControl('queryby', new QueryBy({ types: [type] }));
   }
@@ -297,9 +297,9 @@ export class QueryBy extends MapControl {
                 })[state.id] }"></i>&nbsp;&nbsp;${state.text}</span>`);
               },
               templateLayer(state) {
-                if (!state.id || '__NEW__' === state.id) { return state.text }
+                if (!state.id || '__NEW__' === state.id) { return state.text; }
                 const externalLayers = GUI.getExternalLayers('vector').map(l => l._externalLayer);
-                const layer = getCatalogLayerById(state.id) || externalLayers.find(l => l.get('id') === state.id);
+                const layer = getCatalogLayerById(state.id) || externalLayers.find(l => state.id === l.get('id'));
                 /** @FIXME layer is undefined when removing an external layer */
                 const icon = ('__ALL__' === state.id || !layer ? '' : /*html */ `<i class="${ GUI.getFontClass( layer.isVisible() ? 'eye' : 'eye-close') }"></i>&nbsp;&nbsp;`)
                 return $(/*html*/`<span>${ icon }${ state.text }</span>`);  
@@ -316,7 +316,7 @@ export class QueryBy extends MapControl {
               this.types.forEach(t => {
                 CONTROLS[t].toggle(false);
                 CONTROLS[t].autorun = false;
-                CONTROLS['queryby'].element.classList.toggle(`ol-${t}`, t === this.types[0]);
+                CONTROLS['queryby'].element.classList.toggle(`ol-${t}`, this.types[0] === t);
               });
             }
           }
@@ -384,7 +384,7 @@ export class QueryBy extends MapControl {
           }));
           this.setEventKey({
             eventType: 'bboxend',
-            eventKey:  this.on('bboxend', () => CONTROLS['queryby'].runSpatialQuery('querybbox'))
+            eventKey:  this.on('bboxend', () => CONTROLS['queryby'].runSpatialQuery('querybbox')),
           });
         }
 
@@ -392,7 +392,7 @@ export class QueryBy extends MapControl {
           this._interaction.on('drawstart', e => {
             const geometry = e.feature.getGeometry();
             geometry.setRadius(QUERY.radius);
-            geometry.on('change', () => QUERY.radius = geometry.getRadius())
+            geometry.on('change', () => QUERY.radius = geometry.getRadius());
             if (QUERY.radius > 0) {
               this._interaction.finishDrawing();
             }
@@ -416,7 +416,7 @@ export class QueryBy extends MapControl {
 
           this.setEventKey({
             eventType: 'drawend',
-            eventKey:   this.on('drawend', () => CONTROLS['queryby'].runSpatialQuery(type))
+            eventKey:   this.on('drawend', () => CONTROLS['queryby'].runSpatialQuery(type)),
           });
         }
 
@@ -457,7 +457,7 @@ export class QueryBy extends MapControl {
                 if (data.length && data[0].features.length) {
                   QUERY.feature = data[0].features[0];
                   QUERY.layer   = data[0].layer;
-                  CONTROLS['queryby'].runSpatialQuery('querybypolygon')
+                  CONTROLS['queryby'].runSpatialQuery('querybypolygon');
                 }
               } catch(e) {
                 console.warn('Error running spatial query:', e);
@@ -488,14 +488,14 @@ export class QueryBy extends MapControl {
       ...this.types.flatMap(t => {
         const control = CONTROLS[t];
         return (control.layers || []).map(layer => Vue.watch(
-          () => layer.state ? layer.state.visible : layer.visible,
+          () => layer.state?.visible ?? layer.visible,
           () => {
             // toggle "eye" / "eye-close" icon
             if (this.usermessage) {
               $(this.usermessage.$refs.layer).trigger('change');
             }
             // toggle control interaction
-            control.setEnable(control.isToggled() && _hasVisible(control))
+            control.setEnable(control.isToggled() && _hasVisible(control));
             control._interaction.setActive(control.getEnable());
           })
         )
@@ -521,11 +521,11 @@ export class QueryBy extends MapControl {
     this.types.forEach(t => {
       const control = CONTROLS[t];
 
-      const selected  = layer && control.layers.find(l => layer === l);
-      const queryable = layer && layer.isQueryable() && (control.getGeometryTypes() || []).includes(layer.getGeometryType());
+      const selected  = control.layers.find(l => layer === l);
+      const queryable = layer?.isQueryable() && (control.getGeometryTypes() || []).includes(layer?.getGeometryType());
 
       if (['querybbox', 'querybydrawpolygon', 'querybycircle'].includes(t)) {
-        control.setEnable(control.isToggled() && (layer ? (selected && selected.isVisible()) : _hasVisible(control)));
+        control.setEnable(control.isToggled() && (selected?.isVisible() ?? _hasVisible(control)));
       }
 
       if ('querybypolygon' === t) {
@@ -646,6 +646,7 @@ export class QueryBy extends MapControl {
           value:  GEOMETRY,
         }
       };  
+
       data = await Promise.allSettled(Object.values(layers).map(layers => [].concat(layers)[0].query(params) ));
 
       // show all errors
@@ -693,7 +694,7 @@ export class QueryBy extends MapControl {
 
         pagination.getData.params[id] = {
           ...pagination.getData.params[id],
-          ...params
+          ...params,
         }
         
       });

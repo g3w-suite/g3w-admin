@@ -13,7 +13,7 @@ const LAYER = new ol.layer.Vector({
   style: () => [
     new ol.style.Style({
       stroke: new ol.style.Stroke({ lineDash: [10, 10], width: 3 }),
-      fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' })
+      fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' }),
     })
   ],
 });
@@ -21,7 +21,7 @@ const LAYER = new ol.layer.Vector({
 const HELP = new ol.Overlay({
   element: Object.assign(document.createElement('div'), { className: 'mtooltip' }),
   offset: [15, 0],
-  positioning: 'center-left'
+  positioning: 'center-left',
 });
 
 // wait for map ready
@@ -32,7 +32,7 @@ GUI.setupControl.length = GUI.setupControl.area = function() {
     .forEach(type => {
       if (!isMobile.any && type in window.initConfig.mapcontrols) {
         if (GUI.getMapControl('measure')) {
-          GUI.getMapControl('measure').addType(type)
+          GUI.getMapControl('measure').addType(type);
         } else {
           GUI.addControl('measure', new MeasureControl({
               name: "measure",
@@ -47,7 +47,7 @@ GUI.setupControl.length = GUI.setupControl.area = function() {
 
 class MeasureControl extends MapControl {
 
-  types = [];
+  types        = [];
 
   interactions = {};
 
@@ -79,9 +79,9 @@ class MeasureControl extends MapControl {
               body: {
                 data: () => ({ types: this.types, type: this.types[0] }),
                 template: /* html */ `
-                  <div style="width: 100%; padding: 5px;">
-                    <select ref="select" style="width: 100%" :search="false" v-select2="'type'">
-                      <option v-for="type in types" :value="type" v-t="'measure_types.' + type"></option>
+                  <div style = "width: 100%; padding: 5px;">
+                    <select ref = "select" style = "width: 100%" :search = "false" v-select2 = "'type'">
+                      <option v-for = "type in types" :value = "type" v-t = "'measure_types.' + type"></option>
                     </select>
                   </div>`,
                 watch: {
@@ -98,7 +98,7 @@ class MeasureControl extends MapControl {
                   },
                 },
                 created()       { GUI.toggleUserMessage(false); },
-                beforeDestroy() { GUI.toggleUserMessage(true); }
+                beforeDestroy() { GUI.toggleUserMessage(true); },
               }
             }
           });

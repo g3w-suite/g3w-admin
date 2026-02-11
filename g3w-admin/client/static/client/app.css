@@ -435,9 +435,6 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .chart                                    { position: relative; overflow: hidden; width: 100%; }
 .chart :is(svg, canvas)                   { width: 100%!important; }
 
- /* Fixed layout */
-.main-sidebar                             { position: fixed; }
-
  /* Content */
 
 .btn                                      { border-radius: 3px; }
@@ -542,7 +539,8 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 
 .main-sidebar,
 .sidebar-aside-toggle                                                       { transition: left .3s ease-in-out, width .3s ease-in-out; }
-.main-sidebar                                                               { padding-bottom: 0; }
+.main-sidebar                                                               { position: fixed; padding-bottom: 0; color: #fff; z-index: 1 !important; width: 350px; overflow-y: auto;}
+.main-sidebar.mobile                                                        { width: 300px; }
 .sidebar-menu                                                               { list-style: none; margin: 0; padding: 0; }
 .sidebar-menu > li                                                          { margin: 0; padding: 0;}
 .sidebar-menu > li > a                                                      { padding: 12px 5px 12px 10px; display: block; }
@@ -577,8 +575,6 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .treeview-menu > li.active > a,
 .treeview-menu > li > a:hover                                      { color: #fff; }
 
-.main-sidebar                                                      { z-index: 1 !important; width: 350px; overflow-y: auto; }
-.main-sidebar.mobile                                               { width: 300px; }
 .is-iframe .main-sidebar                                           { margin-top: 0; }
 .is-iframe .main-sidebar a.sidebar-aside-toggle                    { top: 0! important; }
 .g3w-sidebarpanel                                                  { position: relative; color: #FFF; padding: 10px 15px 10px 15px; }

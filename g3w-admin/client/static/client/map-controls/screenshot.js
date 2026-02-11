@@ -445,7 +445,7 @@ template: /*html*/`
         }
         const validate = n => (n && Number.isInteger(1 * n) && 1 * n >= 0 && 1 * n < this.atlas.feature_count) || null;
         const values = new Set();
-        const value = (vals ? vals[0] : '') || '';
+        const value  = (vals ? vals[0] : '') || '';
         value
           .split(',')
           .filter(v => v)
@@ -455,7 +455,7 @@ template: /*html*/`
               return;
             }
             const _values = value.split('-');
-            const range = _values.filter(v => validate(v) !== null);
+            const range   = _values.filter(v => validate(v) !== null);
             if (range.length === _values.length && range.reduce((bool, value, i) => bool && ((0 === i) || range[i-1] <= value), true)) {
               for (let i = 1; i < range.length; i++) {
                 for (let j = range[i-1]; j < range[i]; j++ ) { values.add(j+''); }
@@ -464,7 +464,7 @@ template: /*html*/`
             }
           });
         this._skip_atlas_check = true;
-        this.atlas_values = Array.from(values);
+        this.atlas_values      = Array.from(values);
         await this.$nextTick();
         this._skip_atlas_check = false;
         this.disabled = '' === value.trim();
@@ -608,7 +608,7 @@ template: /*html*/`
               resolve();
             };
             img.onerror = reject;
-            img.src = this.url;
+            img.src     = this.url;
           });
           setTimeout(() => {
             GUI.disableSideBar(false);
@@ -749,7 +749,7 @@ template: /*html*/`
         } else {
           GUI.showUserMessage({
             type: 'alert',
-            message: e || _("info.server_error")
+            message: e || _("info.server_error"),
           });
         }
       } finally {
@@ -788,7 +788,7 @@ template: /*html*/`
           .find(([scala, res]) => {
             if (resolution <= res) {
               this.scale = scala;
-              return true
+              return true;
             }
           });
       }
@@ -845,7 +845,7 @@ template: /*html*/`
       const below    = scales.filter(s => s.value < mapScale);           // all scales below mapScale
       const above    = scales.findLast(s => s.value >= mapScale);        // first scale above mapScale
       this.scales    = (above ? [above] : []).concat(below);
-      this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units))
+      this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units));
     },
 
     initSelect2Field() {
@@ -995,7 +995,7 @@ const toggleUserMessage = (toggle, type) => {
       iconClass: 'print',
       closable:  true,
       hooks: {
-        body: Vue.extend(vueComp)
+        body: Vue.extend(vueComp),
       }
     });
   } else {
