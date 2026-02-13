@@ -1821,9 +1821,6 @@ export class ToolBox extends Emitter {
 
       //@since 4.0.1 change layer style
       if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
-        //In case of legend in separate tab, need to set layers as active tab to avoid that user
-        //that has open tab with layer has different legend in case of change style for editing
-        GUI.getComponent('catalog').getInternalComponent().activeTab = 'layers';
         await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
       }
 

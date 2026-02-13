@@ -1529,7 +1529,6 @@ export default ({
         const layer         = getEditingLayerById(this.relation.child);
         this._current_style = layer.getCurrentStyle().name;
         if (layer.config.editing.layer_style && this._current_style !== layer.config.editing.layer_style) {
-          GUI.getComponent('catalog').getInternalComponent().activeTab = 'layers'; // force active tab
           await layer.changeStyle(layer.config.editing.layer_style);
         }
       } catch(e) {
