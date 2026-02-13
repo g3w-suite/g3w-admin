@@ -637,7 +637,7 @@ document.head.insertAdjacentHTML(
     margin: 5px;
     width: 45px;
     height: 45px;
-    border-radius: 30%;
+    border-radius: 3px;
     text-align: center;
   }
   .g3w-editing-panel .editing-button.enabled .editing-icon {
