@@ -259,7 +259,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'Wartość musi być mniej/równa wartości pola',
   'sdk.form.inputs.input_validation_exclude_values': 'Wartość musi być wyjątkowa',
   'sdk.form.inputs.integer': 'liczba całkowita',
-  'sdk.form.inputs.bigint': 'liczba całkowita',
+  'sdk.form.inputs.bigint': 'liczba całkowita (64bit)',
   'sdk.form.inputs.text': 'tekst',
   'sdk.form.inputs.varchar': 'tekst',
   'sdk.form.inputs.textarea': 'tekst',

@@ -252,7 +252,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'Arvon tulee olla pienempi tai yhtäsuuri kuin kentän arvo.',
   'sdk.form.inputs.input_validation_exclude_values': 'Arvon tulee olla uniikki.',
   'sdk.form.inputs.integer': 'kokonaisluku',
-  'sdk.form.inputs.bigint': 'kokonaisluku',
+  'sdk.form.inputs.bigint': 'kokonaisluku (64bit)',
   'sdk.form.inputs.text': 'teksti',
   'sdk.form.inputs.varchar': 'teksti',
   'sdk.form.inputs.textarea': 'teksti',

@@ -261,7 +261,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'Der Wert muss kleiner/gleich sein als der Feldwert ',
   'sdk.form.inputs.input_validation_exclude_values': 'Wert muss einmalig sein',
   'sdk.form.inputs.integer': 'integer',
-  'sdk.form.inputs.bigint': 'integer',
+  'sdk.form.inputs.bigint': 'integer (64bit)',
   'sdk.form.inputs.text': 'text',
   'sdk.form.inputs.varchar': 'text',
   'sdk.form.inputs.textarea': 'text',
