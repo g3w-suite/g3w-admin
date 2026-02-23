@@ -252,7 +252,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'Värdet ska vara mindre eller lika stort som värdet i fältet.',
   'sdk.form.inputs.input_validation_exclude_values': 'Värdet ska vara unikt.',
   'sdk.form.inputs.integer': 'heltal',
-  'sdk.form.inputs.bigint': 'heltal',
+  'sdk.form.inputs.bigint': 'heltal (64bit)',
   'sdk.form.inputs.text': 'text',
   'sdk.form.inputs.varchar': 'text',
   'sdk.form.inputs.textarea': 'text',

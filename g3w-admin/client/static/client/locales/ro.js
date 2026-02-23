@@ -268,7 +268,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'Valoarea trebuie să fie mai mică/egală cu valoare câmpului ',
   'sdk.form.inputs.input_validation_exclude_values': 'Valoarea trebuie să fie unică',
   'sdk.form.inputs.integer': 'integer - nr. întreg',
-  'sdk.form.inputs.bigint': 'integer - nr. întreg',
+  'sdk.form.inputs.bigint': 'integer - nr. întreg (64bit)',
   'sdk.form.inputs.text': 'text',
   'sdk.form.inputs.varchar': 'text',
   'sdk.form.inputs.textarea': 'text',

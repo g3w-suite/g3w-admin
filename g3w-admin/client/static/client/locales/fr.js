@@ -263,7 +263,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'La valeur doit être inférieure ou égale au champ ',
   'sdk.form.inputs.input_validation_exclude_values': 'Le champ doit contenir une valeur différente',
   'sdk.form.inputs.integer': 'entier',
-  'sdk.form.inputs.bigint': 'entier',
+  'sdk.form.inputs.bigint': 'entier (64bit)',
   'sdk.form.inputs.text': 'textuel',
   'sdk.form.inputs.varchar': 'textuel',
   'sdk.form.inputs.textarea': 'textuel',

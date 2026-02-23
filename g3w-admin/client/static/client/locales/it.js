@@ -365,7 +365,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'Valore deve essere minore uguale a quello del campo ',
   'sdk.form.inputs.input_validation_exclude_values': 'Campo deve contenere un valore diverso',
   'sdk.form.inputs.integer': 'intero',
-  'sdk.form.inputs.bigint': 'intero',
+  'sdk.form.inputs.bigint': 'intero (64bit)',
   'sdk.form.inputs.text': 'testuale',
   'sdk.form.inputs.varchar': 'testuale',
   'sdk.form.inputs.textarea': 'testuale',

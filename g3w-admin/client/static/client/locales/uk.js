@@ -320,7 +320,7 @@ export default {
   'sdk.form.inputs.input_validation_max_field': 'Значення повинно бути менше або дорівнювати значенню поля ',
   'sdk.form.inputs.input_validation_exclude_values': 'Значення повинні бути унікальними',
   'sdk.form.inputs.integer': 'integer',
-  'sdk.form.inputs.bigint': 'integer',
+  'sdk.form.inputs.bigint': 'integer (64bit)',
   'sdk.form.inputs.text': 'text',
   'sdk.form.inputs.varchar': 'text',
   'sdk.form.inputs.textarea': 'text',
