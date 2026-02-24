@@ -64,7 +64,7 @@ export default ({
         <i
           v-disabled              = "editDisabled"
           @click.stop             = "toggleEditing"
-          class                   = "start-editing editbtn skin-tooltip-left"
+          class                   = "start-editing editbtn"
           :class                  = "{
             'pull-right':       !isMobile(),
             'enabled':          isLayerReady,
