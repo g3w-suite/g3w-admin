@@ -94,8 +94,11 @@ GUI.setupControl.overview = async function() {
       Object.defineProperty(PROJECT, 'state', { get() { return PROJECT; }, configurable: false, enumerable: true });
     }
 
-    const collapseLabel = Object.assign(document.createElement('span'), { classList: "fas fa-minus", title: 'close', ariaHidden: true });
-    const label         = Object.assign(document.createElement('span'), { classList: "fas fa-globe-americas", title: 'Overview map', ariaHidden: true });
+    const collapseLabel = Object.assign(document.createElement('span'), { title: 'close' });
+    const label         = Object.assign(document.createElement('span'), { title: 'Overview map' });
+
+    collapseLabel.insertAdjacentHTML('afterbegin', /* html */`<i aria-hidden = "true" class = "fas fa-minus"></i><span hidden>close<span>`);
+    label        .insertAdjacentHTML('afterbegin', /* html */`<i aria-hidden = "true" class = "fas fa-globe-americas"></i><span hidden>Overview map<span>`);
 
     collapseLabel.dataset.placement = label.dataset.placement = 'top';
 

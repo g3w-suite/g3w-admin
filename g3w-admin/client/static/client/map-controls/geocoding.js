@@ -428,7 +428,7 @@ class GeocodingControl extends ol.control.Control {
       SAVED_SEARCHES.forEach(li => {
         const tmp        = document.createElement('li');
         tmp.style.cursor = 'pointer';
-        tmp.innerHTML    = /* html */`<i class = "far fa-circle"></i> ${li.textContent}`;
+        tmp.innerHTML    = /* html */`<i class = "${li.querySelector('i')?.className || 'far fa-circle'}"></i> ${li.textContent}`;
         tmp.addEventListener('click', e => {
           e.preventDefault();
           (li.querySelector('.search-tools') || li).click();
@@ -436,22 +436,6 @@ class GeocodingControl extends ol.control.Control {
           this.element.querySelector('input[type="search"]').blur();
         });
         this.element.querySelector('ul').append(tmp);
-      });
-
-      GUI.getComponent('search').actions.findLast((action) => {
-        const tmp = document.createElement('li');
-        tmp.style.cursor = 'pointer';
-        tmp.id           = 'geocoding-advanced-search';
-        tmp.className    = 'action-tool';
-        tmp.innerHTML    = /* html */`<i class="${action.class.replace('sidebar-button', '').replace('sidebar-button-icon', '')}"></i> ${action.tooltip}`;
-        tmp.addEventListener('click', e => {
-          e.preventDefault();
-          GUI.showSidebar();
-          action.fnc()
-          this.element.querySelector('button[type="reset"]').click();
-          this.element.querySelector('input[type="search"]').blur();
-        });
-        this.element.querySelector('ul').insertAdjacentElement('beforeend', tmp);
       });
 
       this.element.querySelector('ul').insertAdjacentHTML('beforeend', /* html */`
@@ -628,7 +612,7 @@ class GeocodingControl extends ol.control.Control {
     actions[layer.id] = actions[layer.id] || [];
     actions[layer.id].push({
       id:         'choose_layer',
-      class:      GUI.getFontClass('pencil'),
+      class:      "fas fa-pencil-alt",
       state:      Vue.observable({ toggled: Array(layer.features.length).fill(null) }),
       toggleable: true,
       hint:       'Choose a layer',
@@ -679,7 +663,7 @@ class GeocodingControl extends ol.control.Control {
                   class       = "btn skin-button"
                   @click.stop = "() => config.cbk(layerId, feature)"
                 >
-                  <span :class = "g3wtemplate.getFontClass(config.icon)"></span>
+                  <span :class = "$fa(config.icon)"></span>
                 </button>
               </div>
             </section>`,
