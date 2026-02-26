@@ -219,7 +219,7 @@ button.close                { padding: 0; cursor: pointer; background: transpare
  * 2. Core
  **************************************************************************************/
 
-.wrapper         { height: 100%; width: 100%; overflow: hidden; }
+#app             { height: 100%; width: 100%; overflow: hidden; }
 .content-wrapper { display: flex; transition: transform .3s ease-in-out, margin .3s ease-in-out; margin-left: var(--sidebar-width); background-color: #ecf0f5; position: relative; overflow: hidden; }
 
 .cookie-banner       { position:fixed; overflow:hidden; box-sizing:border-box; z-index:9999; width:100%; display:flex; justify-content:space-between; background:#424851; color:#fff; padding:1.250em; bottom:0; left:0; right:0; gap: 1em;}
@@ -506,7 +506,7 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .navbar .sidebar-toggle:hover                                { background-color: hsl(from var(--skin-color) h s calc(l - 5)); }
 .is-iframe .navbar                                           { display: none !important; }
 
-.wrapper,
+#app,
 .main-sidebar                                                { background-color: var(--bgcolor); }
 
 /*Navbar toggle button*/
@@ -625,7 +625,7 @@ ul.sidebar-menu > li a:hover                                       { color: hsl(
   .sidebar-open .nav-links                                    { --bgcolor: #212c31; background-color: var(--bgcolor)!important; flex-direction: column !important; }
   .sidebar-open .project_title                                { position: fixed !important; inset: 0 !important; background-color: var(--skin-color); padding-left: 4px; max-width: unset !important; z-index: 2; }
   .sidebar-open .main-sidebar                                 { position: relative !important; inset: 0 !important; }
-  .sidebar-open, .sidebar-open .wrapper                       { overflow-y: visible; }
+  .sidebar-open, .sidebar-open #app                           { overflow-y: visible; }
   .sidebar-open:has(#g3w-menu:not([hidden])) .sidebar-panel:not([hidden]),
   .sidebar-open :is(.main-sidebar, .content-wrapper)          { height: auto !important; }
   .sidebar-open .navbar                                       { display: block !important; height: auto !important; }
@@ -1209,33 +1209,33 @@ dialog:is(.usermessage-alert, .usermessage-info, .usermessage-warning, .usermess
 /* hide caret icon when there is no saved searches for current project */
 #search:has(ul.g3w-search > li:only-child) .fas.fa-angle-left { display: none; }
 
-#catalog ul                                         { line-height: 1.75em; list-style-type: none; }
-#catalog button[type="button"]                      { border: unset; background-color: unset; box-shadow: rgba(0,0,0,0.3) 0 2px 5px; padding: 0; border-radius: 3px; margin: 0 3px; font-weight: bold; color: #fff !important; }
-#catalog button[type="button"] > i                  { padding: 5px; }
-#catalog button[type="button"].active               { box-shadow: none; background-color: #384247; }
+#catalog ul                                         { line-height: 1.75em; list-style-type: none; display: flex; flex-direction: column; width: 100%; }
 #catalog > a                                        { display: none !important; }
 
-.tree-item                                          { cursor: pointer; margin-bottom: 3px; position: relative; }
+.tree-item                                          { cursor: pointer; margin-bottom: 3px; position: relative; display: flex; flex-wrap: wrap; gap: 1ch; align-items: flex-start; }
 .tree-item.selected                                 { background-color: var(--skin-color); }
 .tree-item.selected ul.layer-categories             { background-color: var(--bgcolor); }
 .tree-item.group > .tree-node-title                 { font-weight: bold; }
-.tree-node-title                                    { padding-left: 3px; cursor: pointer; width: 75%; display: inline-flex; justify-content: space-between; user-select: none; }
-.tree-node-title.disabled                           { color: #999; }
+.tree-node-title                                    { flex: 1; user-select: none; }
 .tree-item.disabled .tree-toggler > i               { color: #999; }
 .tree-item.disabled > span                          { color: #999; }
-.tree-item .fa-table                                { margin-left: 24px; }
-.tree-item .fa-layer-group                          { margin-left: 5px; }
+.tree-item > i                                      { margin-top: 5px; }
+.tree-item .fa-table                                { margin-left: 28px; }
 .bold                                               { font-weight: bold; color: #fff; }
-.tree-root                                          { padding-left: 0; margin: 13px 3px; }
-.tree-root li.tree-item.group > ul.group            { padding-left: 17px; padding-top: 2px; }
+.tree-root                                          { padding-left: 0; padding: 13px 3px; }
+.tree-root li.tree-item.group > ul.group            { padding-left: 21px; margin-top: -.5ch; }
 .tree-toggler                                       { box-shadow: none !important; background: none; width: 15px; }
-.tree-legend                                        { padding: 3px 0 0 43px; background-color: var(--bgcolor); }
+.tree-legend                                        { padding: 0 0 0 43px; width:100%; background-color: var(--bgcolor); margin-top: -1ch; }
 .tree-root + .tree-root                             { border-top: 2px solid var(--skin-color); padding-top: 12px; }
 
-#catalog .tree-item > .toggle-context-menu                   { opacity: 0; position: absolute; inset: 0 4px auto auto; padding: 0; border: 1px solid; border-radius: 3px; }
-#catalog .tree-item > .toggle-context-menu > i               { padding: 4px 8px; }
-#catalog .tree-item:not(.group):hover > .toggle-context-menu { opacity: 1; }
-.tree-item input[type="checkbox"]                   { appearance: none; width: unset; margin: unset; vertical-align: unset; }
+.tree-item button.toggle-context-menu             { opacity: 0; padding: 0; border: 1px solid; border-radius: 3px; }
+.tree-item button.toggle-context-menu > i         { padding: 4px 8px; }
+.tree-item:not(.group):hover > button.toggle-context-menu,
+.tree-item:not(.group) > button.toggle-context-menu:focus-visible { opacity: 1; }
+.tree-item button                                   { border: unset; background-color: unset; box-shadow: rgba(0,0,0,0.3) 0 2px 5px; padding: 0; border-radius: 3px; margin: 0 3px; font-weight: bold; color: #fff !important; }
+.tree-item button > i                               { padding: 5px; }
+.tree-item button.active                            { box-shadow: none; background-color: #384247; }
+.tree-item input[type="checkbox"]                   { appearance: none; width: unset; margin: unset; margin-top: 2px; }
 .tree-item input[type="checkbox"]::before           { font-family: "Font Awesome 5 Free"; font-weight: 400; content: "\f0c8"; }
 .tree-item input[type="checkbox"]:checked::before   { content: "\f14a"; }
 
