@@ -93,7 +93,6 @@ export default ({
           @stoptoolbox          = "stopToolBox"
           @setactivetool        = "startTool"
           @stopactivetool       = "stopTool"
-          @on-editing           = "updateLayersInEditing"
           @update-filter-layers = "updateFilterLayers"
         />
       </div>
@@ -149,17 +148,6 @@ export default ({
       }
 
       $(this.$refs.selectlayers).val(this.selectedlayers).trigger('change');
-    },
-
-    /**
-     * Handle editing state of toolbox layer
-     * 
-     * @param bool
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
-    updateLayersInEditing(bool) {
-      this.layersInEditing += bool ? 1 : -1;
     },
 
     undo() {
@@ -390,6 +378,13 @@ export default ({
   },
 
   computed: {
+    /**
+     * @since 4.1.0 Listen changes of each layers
+     * @returns 
+     */
+    changes() {
+      return this.state.toolboxes.filter(t => t.state.editing.history.commit).length > 0;
+    },
 
     canCommit() {
       
@@ -445,13 +440,14 @@ export default ({
     },
 
     /**
-     * @param { Number } n number of layer in editing
+     * @param { Boolean } bool true if at least one layer has changes. false if all layer haven't changes
      * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
-    layersInEditing(n) {
-      ApplicationState.sidebar.btn_close     = !n;
-      ApplicationState.sidebar.tooltip_close = n ? '⚠️ Confirm changes (✅) on each level to close' : '';
+    changes(bool) {
+      ApplicationState.sidebar.btn_close     = !bool;
+      ApplicationState.sidebar.tooltip_close = bool ? '⚠️ Confirm changes (✅) on each level to close' : '';
+      console.log(ApplicationState.sidebar.tooltip_close)
     },
 
     /**

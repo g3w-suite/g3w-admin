@@ -560,16 +560,7 @@ export default ({
       await this.$nextTick();
       this.helpmessage = tool && (tool.messages.help || tool.name);
     },
-
-    /**
-     * Watch toolbox in editing state
-     * 
-     * @fires on-editing
-     */
-    'state.editing.on'(bool) {
-      this.$emit('on-editing', bool);
-    },
-
+    
     'state.toolsoftool'(nts = [], ots = []) {
       //no tools
       if (nts.length === ots.length) { return; }
