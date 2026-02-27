@@ -1216,9 +1216,10 @@ dialog:is(.usermessage-alert, .usermessage-info, .usermessage-warning, .usermess
 .tree-item.selected                                 { background-color: var(--skin-color); }
 .tree-item.selected ul.layer-categories             { background-color: var(--bgcolor); }
 .tree-item.group > .tree-node-title                 { font-weight: bold; }
-.tree-node-title                                    { flex: 1; user-select: none; }
-.tree-item.disabled .tree-toggler > i               { color: #999; }
-.tree-item.disabled > span                          { color: #999; }
+.tree-node-title                                    { flex: 1; user-select: none; white-space: normal; word-break: break-all; }
+.tree-item.disabled .tree-toggler                   { opacity: .5; }
+.tree-item.disabled input[type="checkbox"]          { opacity: .5; }
+.tree-item.disabled > span                          { opacity: .7; font-style: italic; }
 .tree-item > i                                      { margin-top: 5px; }
 .tree-item .fa-table                                { margin-left: 28px; }
 .bold                                               { font-weight: bold; color: #fff; }
@@ -1235,9 +1236,7 @@ dialog:is(.usermessage-alert, .usermessage-info, .usermessage-warning, .usermess
 .tree-item button                                   { border: unset; background-color: unset; box-shadow: rgba(0,0,0,0.3) 0 2px 5px; padding: 0; border-radius: 3px; margin: 0 3px; font-weight: bold; color: #fff !important; }
 .tree-item button > i                               { padding: 5px; }
 .tree-item button.active                            { box-shadow: none; background-color: #384247; }
-.tree-item input[type="checkbox"]                   { appearance: none; width: unset; margin: unset; margin-top: 2px; }
-.tree-item input[type="checkbox"]::before           { font-family: "Font Awesome 5 Free"; font-weight: 400; content: "\f0c8"; }
-.tree-item input[type="checkbox"]:checked::before   { content: "\f14a"; }
+.tree-item input[type="checkbox"]                   { accent-color: currentColor; width: unset; margin: unset; margin-top: 3px; }
 
 #g3w-themes                            { display: none; padding: 0; }
 #g3w-themes.menu-open                  { display: block; }

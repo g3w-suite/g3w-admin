@@ -389,4 +389,6 @@ export default {
   'Resolution': 'Risoluzione',
   'Overview map': 'Mappa panoramica',
   'Downloads': 'Esporta',
+  'Project settings': 'Configura progetto',
+  'Layers settings': 'Configura livelli',
 };
