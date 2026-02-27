@@ -447,7 +447,6 @@ export default ({
     changes(bool) {
       ApplicationState.sidebar.btn_close     = !bool;
       ApplicationState.sidebar.tooltip_close = bool ? '⚠️ Confirm changes (✅) on each level to close' : '';
-      console.log(ApplicationState.sidebar.tooltip_close)
     },
 
     /**
