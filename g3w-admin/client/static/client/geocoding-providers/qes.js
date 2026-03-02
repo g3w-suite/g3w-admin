@@ -12,6 +12,11 @@
   // if (!provider in geocoding.providers) {
   //   return;
   // }
+
+  const ApplicationState             = g3w.state;
+  const GUI                          = g3w.app;
+  const { XHR, getCatalogLayerById } = g3w.utils
+
   const config = window.initConfig.mapcontrols.geocoding.providers['qes'];
   Object.assign(window.initConfig.mapcontrols.geocoding.providers['qes'], {
     label: window.location.host,
@@ -20,7 +25,7 @@
       icon:     'layer-group',
       results:
       (
-        await g3wsdk.core.utils.XHR.get({ url: `${initConfig.baseurl}qes/api/search/${g3wsdk.core.ApplicationState.project.getId()}/?q=${opts.query}&in_bbox=${opts.extent}` })
+        await XHR.get({ url: `${initConfig.baseurl}qes/api/search/${ApplicationState.project.getId()}/?q=${opts.query}&in_bbox=${opts.extent}` })
       ).results.map(result => ({
         layer_id:   result.layer_id,
         feature_id: result.feature_id,
@@ -30,15 +35,15 @@
       })),
     }),
     fetch_geom: async item => {
-      const { data = [] }  = await g3wsdk.core.data.DataRouterService.getData('search:fids', {
+      const { data = [] }  = await GUI.getData('search:fids', {
         inputs: {
-          layer: g3wsdk.core.catalog.CatalogLayersStoresRegistry.getLayerById(item.layer_id),
+          layer: getCatalogLayerById(item.layer_id),
           fids:  [item.feature_id]
         },
         outputs: { show: true }
       });
-      //zoom to feature
-      g3wsdk.gui.GUI.getService('map').zoomToFeatures([data?.[0]?.features?.[0]]);
+      // zoom to feature
+      GUI.zoomToFeatures([data?.[0]?.features?.[0]]);
     }
   });
 

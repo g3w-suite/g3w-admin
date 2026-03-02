@@ -22,7 +22,6 @@
      * @fires   service~ready
      * @listens queryresults~show-chart
      * @listens queryresults~hide-chart
-     * @listens queryresults~closeComponent
      */
     constructor() {
 

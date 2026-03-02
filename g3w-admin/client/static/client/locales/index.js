@@ -8,6 +8,7 @@ import ro from './ro.js';
 import pl from './pl.js';
 import uk from './uk.js';
 import pt from './pt.js';
+import bg from './bg.js';
 
 const translations = {
   it,
@@ -20,6 +21,7 @@ const translations = {
   pl,
   uk,
   pt,
+  bg,
 };
 
 export default translations;
