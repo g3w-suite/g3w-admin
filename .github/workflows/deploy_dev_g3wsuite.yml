@@ -15,4 +15,5 @@ jobs:
           command: cd /home/g3w-suite-docker && sh update-deploy.sh
           host: ${{ secrets.HOST_DEV_G3WSUITE }}
           username: ${{ secrets.user_DEV_G3WSUITE }}
-          privateKey: ${{ secrets.PRIVATE_KEY}}
+          privateKey: ${{ secrets.PRIVATE_KEY_PASS}}
+          passphrase: ${{ secrets.PASSPRHASE_KEY_PASS }}
