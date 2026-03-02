@@ -1222,6 +1222,7 @@ dialog:is(.usermessage-alert, .usermessage-info, .usermessage-warning, .usermess
 .tree-item.disabled > span                          { opacity: .7; font-style: italic; }
 .tree-item > i                                      { margin-top: 5px; }
 .tree-item .fa-table                                { margin-left: 28px; }
+.tree-item .tree-toggler[hidden]:first-child + input[type="checkbox"] { margin-left: 28px; }
 .bold                                               { font-weight: bold; color: #fff; }
 .tree-root                                          { padding-left: 0; padding: 13px 3px; }
 .tree-root li.tree-item.group > ul.group            { padding-left: 21px; margin-top: -.5ch; }
@@ -1236,7 +1237,7 @@ dialog:is(.usermessage-alert, .usermessage-info, .usermessage-warning, .usermess
 .tree-item button                                   { border: unset; background-color: unset; box-shadow: rgba(0,0,0,0.3) 0 2px 5px; padding: 0; border-radius: 3px; margin: 0 3px; font-weight: bold; color: #fff !important; }
 .tree-item button > i                               { padding: 5px; }
 .tree-item button.active                            { box-shadow: none; background-color: #384247; }
-.tree-item input[type="checkbox"]                   { accent-color: currentColor; width: unset; margin: unset; margin-top: 3px; }
+.tree-item input[type="checkbox"]                   { accent-color: currentColor; width: unset; margin: unset; margin-top: 5px; }
 
 #g3w-themes                            { display: none; padding: 0; }
 #g3w-themes.menu-open                  { display: block; }
