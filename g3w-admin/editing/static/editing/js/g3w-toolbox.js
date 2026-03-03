@@ -229,7 +229,7 @@ export class ToolBox extends Emitter {
       .getArray()
       .filter(relation => 'ONE' === relation.getType() && layer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
       .forEach(relation => {
-        const isChildEditable = undefined !== getCatalogLayerById(relation.getChild());        // check if child layerId is editable (in editing)
+        const isChildEditable = getCatalogLayerById(relation.getChild()).isEditable();        // check if child layerId is editable (in editing)
         (getCatalogLayerById(relation.getFather()).state.editing.fields || [])
           .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())  // father layer fields (in editing)
           .forEach(f => { f.editable = (f.editable && isChildEditable); });      // current editable boolean value + child editable layer
