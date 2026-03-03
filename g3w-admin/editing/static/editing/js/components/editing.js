@@ -187,7 +187,7 @@ export default ({
       if (layerId) {
         await this.commit_dirty(layerId);
       }
-      toolbox.start();
+      await toolbox.start();
     },
 
     /**
