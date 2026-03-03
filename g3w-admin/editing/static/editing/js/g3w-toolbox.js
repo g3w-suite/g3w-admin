@@ -1662,7 +1662,9 @@ export class ToolBox extends Emitter {
    *
    */
   _stopSessionChildren(layerId) {
-    const layer   = GUI.getPlugin('editing').getLayerById(layerId);
+    const layer = GUI.getPlugin('editing').getLayerById(layerId);
+     //add parent layerId to chain layerId stop
+    GUI.getPlugin('editing').state.stopChain.add(layerId);
     getRelationsInEditing({
       layerId,
       relations: layer.getRelations() ? layer.getRelations().getArray() : [],
@@ -1671,7 +1673,7 @@ export class ToolBox extends Emitter {
       .forEach(relation => {
         const relationId = getRelationId({ layerId, relation });
         // In case of no editing is started (click on pencil of relation layer) need to stop (unlock) features
-        if (!GUI.getPlugin('editing').getToolBoxById(relationId).inEditing()) {
+        if (!GUI.getPlugin('editing').state.stopChain.has(relationId) && !GUI.getPlugin('editing').getToolBoxById(relationId).inEditing()) {
           ToolBox._sessions[relationId].stop();
         }
       })
@@ -2024,6 +2026,8 @@ export class ToolBox extends Emitter {
       this._stopSessionChildren(this.state.id);
       // clear layer unique field values
       GUI.getPlugin('editing').state.uniqueFieldsValues[this.getId()] = {};
+      //clear chain
+      GUI.getPlugin('editing').state.stopChain.clear();
       return;
     }
 
@@ -2039,6 +2043,8 @@ export class ToolBox extends Emitter {
       this.emit('stop-editing');
       // clear layer unique field values
       GUI.getPlugin('editing').state.uniqueFieldsValues[this.getId()] = {};
+      //clear chain
+      GUI.getPlugin('editing').state.stopChain.clear();
       return true;
     } catch(e) {
       console.warn(e);
