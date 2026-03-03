@@ -3345,14 +3345,16 @@ export class ToolBox extends Emitter {
         .readFeatures('string' === typeof data ? JSON.parse(data) : data)
         .filter(f => lockIds.includes(`${f.getId()}`))
         .map(feature => new Feature({ feature }));
+
         //if no features get from server (count === 0) and no featurelocks mean another user locks all feature requests
         if (count > 0 && (0 === featurelocks.length || count > features.length)) {
           //It means that another user locks these features
           this._editor.featuresLockedByOtherUser(features);
         }
-
+        //get already loaded feature id locked by current user
+        const fids = lockIds.map(({ featureid }) => featureid);
         featurelocks
-          .filter(({ featureid }) => !lockIds.includes(featureid)) //exclude features already locked by current user
+          .filter(({ featureid }) => !fids.includes(featureid)) //exclude features already locked by current user
           .forEach(fl => GUI.getPlugin('editing').state.lock_ids[layerId].push(fl)) //update lockIds based on a featurelocks array from response
 
         //store features locked by another user
@@ -3378,7 +3380,7 @@ export class ToolBox extends Emitter {
           }
         });
 
-      } catch(e) {
+      } catch (e) {
         console.warn(e);
       }
 
