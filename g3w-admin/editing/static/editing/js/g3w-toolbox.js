@@ -152,8 +152,10 @@ export class ToolBox extends Emitter {
     }
 
     if ('image' === _layer.getType()) {
-      layer = new Layer(_layer.state, { TYPE: 'vector' });
+      //Need to set always visible otherwise if catalog layer is not visible no fetaures are visible on map
+      layer = new Layer({..._layer.state, ...{ visible: true } }, { TYPE: 'vector' });
     }
+
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
