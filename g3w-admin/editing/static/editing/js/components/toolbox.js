@@ -113,7 +113,7 @@ export default ({
           :key                = "tool.id"
           v-if                = "tool.visible"
           @click.prevent.stop = "tool.enabled && toggleTool(tool.active ? undefined : tool.id)"
-          :class              = "{ 'enabled' : tool.enabled, 'toggled' : tool.active, ['editbtn ' + tool.id]: true }"
+          :class              = "{ 'enabled' : !loading && tool.enabled, 'toggled' : tool.active, ['editbtn ' + tool.id]: true }"
         >
           <img
             height = "25"

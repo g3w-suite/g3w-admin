@@ -2007,6 +2007,11 @@ export class ToolBox extends Emitter {
     if (!is_started) { return true }
 
     if (!ApplicationState.online) { return; }
+    
+    //start loading only for root editing layer
+    if (0 === GUI.getPlugin('editing').state.stopChain.size) {
+      this.startLoading();
+    }
 
     const layerId = this.state.id;
 
@@ -2020,6 +2025,7 @@ export class ToolBox extends Emitter {
     });
 
     if (fathersInEditing.length > 0) {
+      this.stopLoading();
       this.stopActiveTool();
       this.enableTools(false);
       this.clearToolboxMessages();
