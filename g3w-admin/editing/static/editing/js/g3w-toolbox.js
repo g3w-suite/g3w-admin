@@ -2827,15 +2827,11 @@ export class ToolBox extends Emitter {
     if (this.state.editing.session.changes.length > 0) {
       //@since 3.9.1 get array of uniqueIds
       //case of modify vertex. Multi changes in one save
-      const uniqueIds = [];
-      await Promise.allSettled(this.state.editing.session.changes.map(c => {
-        const uniqueId = options.id || Date.now();
-        uniqueIds.push(uniqueId);
-        return this.__add(uniqueId, [c]);
-      }));
+      const uniqueId = options.id || Date.now();
+      await this.__add(uniqueId, this.state.editing.session.changes);
       // clear to temporary changes
       this.state.editing.session.changes = [];
-      return uniqueIds;
+      return [uniqueId];
     }
     return null;
     
@@ -2917,6 +2913,7 @@ export class ToolBox extends Emitter {
    * @since g3w-client-plugin-editing@v4.1.0
    */
   __setChanges(items = [], reverse = true) {
+    console.log(items, reverse)
     /** known actions */
     const Actions = {
       'add':    { fnc: 'addFeature',    opposite: 'delete' },
@@ -3894,7 +3891,6 @@ async function _handleSplitFeature({
   const layerId                  = layer.getId();
   const oriFeature               = feature.clone();
   const splittedGeometriesLength = splittedGeometries.length;
-
   for (let index = 0; index < splittedGeometriesLength; index++) {
     const splittedGeometry = splittedGeometries[index];
     if (0 === index) {
