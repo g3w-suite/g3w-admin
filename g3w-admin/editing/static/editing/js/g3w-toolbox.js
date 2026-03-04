@@ -1823,11 +1823,6 @@ export class ToolBox extends Emitter {
       //get current style of layer
       this.#current_style = this.state.layer.getCurrentStyle().name;
 
-      //@since 4.0.1 change layer style
-      if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
-        await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
-      }
-
       const plugin = GUI.getPlugin('editing');
       const id     = this.getId();
 
@@ -1958,6 +1953,11 @@ export class ToolBox extends Emitter {
       // disablemapcontrols in conflict
       if (options.disablemapcontrols ?? false) {
         GUI.disableClickMapControls(true);
+      }
+
+      //@since 4.0.1 change layer style
+      if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
+        await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
       }
 
     });
