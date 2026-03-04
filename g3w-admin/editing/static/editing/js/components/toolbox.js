@@ -378,25 +378,25 @@ export default ({
      */
     _initSnap(tool) {
 
-      //@since 3.9.1
-      this.uids          = this.state.activetool.getOperator().getInputs().features.map(f => f._uid);
+      //@since 4.1.0 store current selected features uid and relative style
+      this.uidsstyles    = []
 
       /**
        * @FIXME add description
        */
-      this.snapEvents    = [];
+      this.snapEvents     = [];
 
       /**
        * editing toolboxes dependencies
        */
-      this.snapToolboxes = [];
+      this.snapToolboxes  = [];
 
       /**
        * unwatched function
        */
-      this.snapUnwatches = [];
+      this.snapUnwatches  = [];
 
-      this.checkbox      = {
+      this.checkbox       = {
         bs: false,
         ba: false
       }
@@ -470,9 +470,14 @@ export default ({
      */
     clearSnapFeatures() {
       //reset style
-      snapFeatures.getArray().forEach(f => f.setStyle(null));
+      snapFeatures
+        .getArray()
+        //reset styles
+        .forEach(f => f.setStyle((this.uidsstyles.find(({ uid }) => uid === f._uid))?.style || null) );
       //clear source features
       snapFeatures.clear();
+      //clear
+      this.uidsstyles.splice(0);
     },
 
     /**
@@ -481,15 +486,21 @@ export default ({
      * @since g3w-client-plugin-editing@v3.8.0
      */
     addSnapFeatures(features = []) {
+      //get current uid and style of selected features
+      this.uidsstyles = this.state.activetool.getOperator().getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
       features
-        .filter(f => !this.uids.includes(f._uid))
-        .forEach(f => {
+        .forEach(f => {       
           setVertexStyle({
             feature: f,
-            vertexColor: 'black',
-            fillVertex:  true,
-            lineColor:   'black',
-          })
+            ...(this.uidsstyles.find(({ uid }) => uid === f._uid) //in case of current selected feature add just vertex
+              ? {} 
+              : {
+                vertexColor: 'black',
+                fillVertex:  true,
+                lineColor:   'black',
+              }
+            )
+          });
           snapFeatures.push(f);
         });
     },
