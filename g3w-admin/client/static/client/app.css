@@ -257,7 +257,6 @@ button.close                { padding: 0; cursor: pointer; background: transpare
 .box-header .box-title                             { display: inline-block; font-size: 18px; margin: 0; line-height: 1; }
 .box-header > :is(.fa, .glyphicon, .ion)           { margin-right: 5px; }
 .box-header > .box-tools                           { position: absolute; right: 10px; top: 5px; }
-.box-header > .box-tools [data-toggle="tooltip"]   { position: relative; }
 .box-header > .box-tools.pull-right .dropdown-menu { right: 0; left: auto; }
 .btn-box-tool                                      { padding: 5px; font-size: 12px; background: transparent; color: #97a0b3; }
 .open .btn-box-tool,
@@ -445,25 +444,7 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .g3w-icon                                 { box-shadow: 0 2px 4px rgba(0,0,0,0.2); padding: 5px; font-size: 1.3em; border-radius: 30%; cursor: pointer; }
 .g3w-icon.trash                           { color:red !important; }
 
-
-.tooltip                             { position: absolute; z-index: 1070; display: block; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-style: normal; font-weight: 400; line-height: 1.42857143; line-break: auto; text-align: left; text-align: start; text-decoration: none; text-shadow: none; text-transform: none; letter-spacing: normal; word-break: normal; word-spacing: normal; word-wrap: normal; white-space: normal; font-size: 12px; opacity: 0; }
-.tooltip.in                          { opacity: 0.9; }
-.tooltip.top                         { padding: 5px 0; margin-top: -3px; }
-.tooltip.right                       { padding: 0 5px; margin-left: 3px; }
-.tooltip.bottom                      { padding: 5px 0; margin-top: 3px; }
-.tooltip.left                        { padding: 0 5px; margin-left: -3px; }
-.tooltip.top          .tooltip-arrow { bottom: 0;   left:   50%; margin-left:   -5px; border-width: 5px 5px 0;     border-top-color:    #000; }
-.tooltip.top-left     .tooltip-arrow { right:  5px; bottom: 0;   margin-bottom: -5px; border-width: 5px 5px 0;     border-top-color:    #000; }
-.tooltip.top-right    .tooltip-arrow { bottom: 0;   left:   5px; margin-bottom: -5px; border-width: 5px 5px 0;     border-top-color:    #000; }
-.tooltip.right        .tooltip-arrow { top:    50%; left:   0;   margin-top:    -5px; border-width: 5px 5px 5px 0; border-right-color:  #000; }
-.tooltip.left         .tooltip-arrow { top:    50%; right:  0;   margin-top:    -5px; border-width: 5px 0 5px 5px; border-left-color:   #000; }
-.tooltip.bottom       .tooltip-arrow { top:    0;   left:   50%; margin-left:   -5px; border-width: 0 5px 5px;     border-bottom-color: #000; }
-.tooltip.bottom-left  .tooltip-arrow { top:    0;   right:  5px; margin-top:    -5px; border-width: 0 5px 5px;     border-bottom-color: #000; }
-.tooltip.bottom-right .tooltip-arrow { top:    0;   left:   5px; margin-top:    -5px; border-width: 0 5px 5px;     border-bottom-color: #000; }
-.tooltip-inner                       { max-width: 200px; padding: 3px 8px; color: #fff; text-align: center; background-color: #000; border-radius: 4px; }
-.tooltip-arrow                       { position: absolute; width: 0; height: 0; border-color: transparent; border-style: solid; }
-
-.divider                             { display: block; position: relative; padding: 0; margin-bottom: 5px; height: 0; width: 100%; max-height: 0; font-size: 1px; line-height: 0; clear: both; border: none; border-bottom: 2px solid #eee; }
+.divider                                  { display: block; position: relative; padding: 0; margin-bottom: 5px; height: 0; width: 100%; max-height: 0; font-size: 1px; line-height: 0; clear: both; border: none; border-bottom: 2px solid #eee; }
 
 /**************************************************************************************
  * 3. Header
@@ -862,7 +843,6 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .queryresults-container ul > li .box-header.mobile                                            { padding: 5px; }
 .queryresults-container ul > li .box-header .box-title                                        { margin: auto; margin-left: 0; font-weight: bold !important; font-size: 1.2em !important; }
 .queryresults-container ul > li .box-header .box-title.query-layer-title                      { padding: 5px 5px 5px 0; overflow: hidden; white-space: normal; text-overflow: ellipsis; }
-.queryresults-container .tooltip.top .tooltip-inner                                           { margin-left: 100px; }
 .queryresults-container .divider                                                              { display: block; position: relative; padding: 0; margin: 8px auto; height: 0; width: 100%; max-height: 0; font-size: 1px; line-height: 0; clear: both; border: none; border-bottom: 1px solid rgba(65, 86, 96, 0.3); }
 .queryresults-container table                                                                 { table-layout: fixed; }
 .queryresults-container table thead th                                                        { border-bottom: none; padding: 2px; }
@@ -1136,7 +1116,6 @@ input[type="range"]                                                       { acce
 
 .ql-tooltip[data-mode="link"]                                             { left: 0 !important; }
 .ql-container                                                             { height: auto; }
-body .tooltip .tooltip-inner                                              { max-width: 100% !important; }
 
 :is(.magic-checkbox, .magic-radio) + label                                          { display: inline-flex !important; width: calc(100% - 1.5em);}
 .c3-title                                                                           { fill: var(--skin-color); }
@@ -1184,9 +1163,6 @@ body .tooltip .tooltip-inner                                              { max-
 .skin-background-color.lighten      { background-color: hsl(from var(--skin-color) h s calc(l + 30)) !important; }
 .skin-button.lighten                { background:       hsl(from var(--skin-color) h s calc(l + 30)) !important; }
 .skin-color-dark                    { color:            hsl(from var(--skin-color) h s calc(l - 20)) !important; }
-
-.tooltip .tooltip-inner             { font-weight: 700; font-size: 1.25rem; padding: 8px; background-color: #222; }
-
 
 /**************************************************************************************
  * 15. Print
