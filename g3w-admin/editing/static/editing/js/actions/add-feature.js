@@ -27,6 +27,8 @@ export class AddFeatureStep extends Step {
 
   tooltip;
 
+  keyTooltip;
+
   drawingFeature;
 
   /**
@@ -129,12 +131,31 @@ export class AddFeatureStep extends Step {
    * @param { boolean } enable whether to toggle measure tooltip
    */
   measureTooltip(enable) {
-    if (enable) {
+
+    //case enable and already start draw feature
+    if (enable && this.drawingFeature) {
       this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.drawingFeature });
-    } else {
+    } 
+
+    //enable but not yet start to draw feature
+    if (enable && !this.drawingFeature) {
+      this.keyTooltip = this.drawInteraction.once('drawstart', () => {
+        this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.drawingFeature });
+      })
+    }
+
+    //disable and listen draw start to creare tooltip
+    if (!enable && this.keyTooltip) {
+      ol.Observable.unByKey(this.keyTooltip);
+      this.keyTooltip = null;
+    }
+
+    //disable and alraedy create tooltip
+    if (!enable && this.tooltip) {
       this.tooltip?.remove?.();
       this.tooltip = null;
     }
+
   }
 
   /**
