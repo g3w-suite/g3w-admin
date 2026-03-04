@@ -1184,7 +1184,7 @@ new (class extends Plugin {
       // needs to go to scale setting by layer editing constraint
       if (scale) {
         const units        = GUI.getMapUnits();
-        const resolution   = GUI.getMapUnits();
+        const resolution   = GUI.getResolution();
         const map          = GUI.getMap();
         const currentScale = parseInt(getScaleFromResolution(resolution, units));
         if (currentScale > scale) {
