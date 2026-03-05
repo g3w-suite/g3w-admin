@@ -400,21 +400,24 @@ export class Workflow extends Emitter {
                   :style = "{ display: step.buttonnext && 'inline-flex' }"
                   :class = "{ 'done': step.done }"
                 >
-                  <span v-if = "step.buttonnext" class="button-step">
+                  <span v-if = "step.buttonnext" class = "button-step">
                     <span
                       v-t-plugin = "step.description"
                       class      = "description"
                     ></span>
                     <span
-                      v-if  = "step.dynamic"
-                      class = "dynamic-step"
+                      class  = "dynamic-step"
+                      style  = "font-weight: bold; height: 100%;"
+                      :style = "{ color: step.buttonnext.disabled ? 'grey' : 'black' }"
                     >{{ step.dynamic }}</span>
                     <button
-                      @click = "completeStep(step)"
-                      :class = "'btn btn-success' + (step.buttonnext.disabled ? ' g3w-disabled' : '' )"
-                      style  = "margin-left: 10px;"
-                      v-t    = "'plugins.editing.workflow.next'"
-                    ></button>
+                      @click          = "completeStep(step)"
+                      :class          = "'btn btn-success' + (step.buttonnext.disabled ? ' g3w-disabled' : '' )"
+                      style           = "margin-left: 10px;"
+                      v-t-tooltip:top = "'plugins.editing.workflow.next'"
+                    >
+                      <i style = "font-weight: bold; font-size: 1.3em;" class = "fas fa-arrow-right"></i>
+                    </button>
                   </span>
                   <template v-else>
                     <i :class = "$fa(step.done ? 'success' : 'empty-circle')"></i>
@@ -437,7 +440,7 @@ export class Workflow extends Emitter {
                     .steps-list li.done > .description                { font-weight: bold; }
                     .steps-list .dynamic-step                         { padding: 10px; font-size: 1.2em; }
                     .steps-list .button-step                          { display: inline-flex; align-items: center; }
-                    .steps-list :is(.button-step, button.btn-success) { font-weight: bold; align-self: normal; }
+                    .steps-list :is(.button-step, button.btn-success) { align-self: normal; }
                   </style>`
                 );
               },
