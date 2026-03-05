@@ -2913,7 +2913,6 @@ export class ToolBox extends Emitter {
    * @since g3w-client-plugin-editing@v4.1.0
    */
   __setChanges(items = [], reverse = true) {
-    console.log(items, reverse)
     /** known actions */
     const Actions = {
       'add':    { fnc: 'addFeature',    opposite: 'delete' },
