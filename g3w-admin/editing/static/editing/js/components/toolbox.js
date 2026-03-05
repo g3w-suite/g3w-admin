@@ -440,51 +440,6 @@ export default ({
      * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
-    _unloadSnap() {
-      try {
-        // stops event listeners
-        this
-          .snapEvents
-          .forEach(d => {
-            Object
-              .keys(d.settersAndKeys)
-              .forEach(e => d.source.un(e, d.settersAndKeys[e]));
-            ol.Observable.unByKey(d.olKey)
-          });
-
-        this.snapUnwatches.forEach(uw => uw());
-
-        this.snapUnwatches = [];
-        this.snapToolboxes = [];
-        this.snapEvents    = [];
-
-        this.clearSnapFeatures();
-
-      } catch(e) {
-        console.warn(e);
-      }
-    },
-
-    /**
-     * @since 3.9.1 Clear snap features
-     */
-    clearSnapFeatures() {
-      //reset style
-      snapFeatures
-        .getArray()
-        //reset styles
-        .forEach(f => f.setStyle((this.uidsstyles.find(({ uid }) => uid === f._uid))?.style || null) );
-      //clear source features
-      snapFeatures.clear();
-      //clear
-      this.uidsstyles.splice(0);
-    },
-
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
     addSnapFeatures(features = []) {
       //get current uid and style of selected features
       this.uidsstyles = this.state.activetool.getOperator().getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
@@ -516,12 +471,19 @@ export default ({
     },
 
     clearSnap() {
-      this.clearSnapFeatures();
+      //reset style
+      snapFeatures
+        .getArray()
+        //reset styles
+        .forEach(f => f.setStyle((this.uidsstyles.find(({ uid }) => uid === f._uid))?.style || null) );
+      //clear source features
+      snapFeatures.clear();
+      //clear
+      this.uidsstyles.splice(0);
       if (snapInteraction) {
         GUI.removeInteraction(snapInteraction);
         snapInteraction = null;
       }
-
     },
 
     /**
@@ -569,7 +531,7 @@ export default ({
 
     async 'state.activetool'(tool) {
       await this.$nextTick();
-      this.helpmessage = tool && (tool.messages.help || tool.name);
+      this.helpmessage = tool?.messages?.help || tool?.name;
     },
     
     'state.toolsoftool'(nts = [], ots = []) {
@@ -578,8 +540,26 @@ export default ({
 
       //no new tools
       if (0 === nts.length && ots.find(t => 'snap' === t.type)) {
-        this.clearSnap();
-        this._unloadSnap();
+        try {
+          // stops event listeners
+          this
+            .snapEvents
+            .forEach(d => {
+              Object
+                .keys(d.settersAndKeys)
+                .forEach(e => d.source.un(e, d.settersAndKeys[e]));
+              ol.Observable.unByKey(d.olKey)
+            });
+
+          this.snapUnwatches.forEach(uw => uw());
+
+          this.snapUnwatches = [];
+          this.snapToolboxes = [];
+          this.snapEvents    = [];
+
+        } catch(e) {
+          console.warn(e);
+        }
       }
 
       //no old tools
