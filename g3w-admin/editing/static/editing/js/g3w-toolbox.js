@@ -1044,6 +1044,7 @@ export class ToolBox extends Emitter {
                   }),
                   openFormStep,
                 ],
+                helpMessage: "editing.tools.pastefeaturesfromotherlayers",
                 registerEscKeyEvent: true
               });
             })(),
@@ -1200,6 +1201,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ].filter(Boolean),
+            helpMessage: "editing.tools.copy",
             registerEscKeyEvent: true,
           }),
         },
@@ -1358,10 +1360,10 @@ export class ToolBox extends Emitter {
         },
         // Split Feature
         (is_line || is_poly) && capabilities.includes('change_feature') && {
-          id:    'splitfeature',
-          type:  ['change_feature'],
-          name: "editing.tools.split",
-          icon: "mActionSplitFeatures.svg",
+          id:          'splitfeature',
+          type:        ['change_feature'],
+          name:        "editing.tools.split",
+          icon:        "mActionSplitFeatures.svg",
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/splitfeatureworkflow.js@v3.7.1 */
           op: new Workflow({
             layer,
@@ -1454,6 +1456,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ],
+            helpMessage: 'editing.tools.split',
             registerEscKeyEvent: true,
           }),
         },
@@ -1545,6 +1548,7 @@ export class ToolBox extends Emitter {
                 },
               }),
             ],
+            helpMessage: 'editing.tools.merge',
             registerEscKeyEvent: true
           }),
         },

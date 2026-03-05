@@ -382,13 +382,14 @@ export class Workflow extends Emitter {
       //for each step assign current workflow to _workflow
       (this._steps || []).forEach(s => s._workflow = this);
   
-      const showUserMessage = Object.keys(this._userMessageSteps).length > 0;
-  
+      const showUserMessage = Object.keys(this._userMessageSteps).length > 0;  
       if (showUserMessage) {
         GUI.showUserMessage({
-          title:    'plugins.editing.workflow.title.steps',
-          type:     'tool',
-          closable: false,
+          title:     'plugins.editing.workflow.title.steps',
+          type:      'tool',
+          closable:  false,
+          iconClass: 'tasks',
+          subtitle:  this.helpMessage?.help && `plugins.${this.helpMessage?.help}`,
           hooks: {
             body: {
               template: /* html */`
