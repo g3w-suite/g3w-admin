@@ -646,7 +646,7 @@ document.head.insertAdjacentHTML(
     cursor: pointer;
   }
   .g3w-editing-panel .editbtn {
-    border-radius: 30%;
+    border-radius: 3px;
     padding: 10px;
     display: inline-block;
     opacity: 0.4;

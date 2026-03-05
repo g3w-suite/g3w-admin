@@ -391,4 +391,6 @@ export default {
   'Downloads': 'Esporta',
   'Project settings': 'Configura progetto',
   'Layers settings': 'Configura livelli',
+  'layers selected': 'livelli selezionati',
+  'Type to search layers': 'Inizia a digitare per cercare i livelli',
 };
