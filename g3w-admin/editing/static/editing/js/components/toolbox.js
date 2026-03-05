@@ -80,7 +80,7 @@ export default ({
 
     <div
       v-if       = "!state.changingtools && (state.editing.on || toggled.layer)"
-      :class     = "{ 'panel-body':true, disabled: (!isLayerReady || !canEdit) }"
+      :class     = "{ 'panel-body':true, disabled: (loading || !isLayerReady || !canEdit) }"
       :style     = "{ cursor: toolboxCursor, padding: '15px' }"
       @click     = "fitZoomToScale"
     >
@@ -113,7 +113,7 @@ export default ({
           :key                = "tool.id"
           v-if                = "tool.visible"
           @click.prevent.stop = "tool.enabled && toggleTool(tool.active ? undefined : tool.id)"
-          :class              = "{ 'enabled' : !loading && tool.enabled, 'toggled' : tool.active, ['editbtn ' + tool.id]: true }"
+          :class              = "{ 'enabled' : tool.enabled, 'toggled' : tool.active, ['editbtn ' + tool.id]: true }"
         >
           <img
             height = "25"
