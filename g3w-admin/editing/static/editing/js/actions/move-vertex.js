@@ -110,9 +110,7 @@ export class ModifyGeometryVertexStep extends Step {
    */
   measureTooltip(enable) {
     if (enable) {
-      this._modifyInteraction.once('modifystart', e => {
-        this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: e.features.getArray()[0] });
-      });
+      this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this._feature });
     } else {
       this.tooltip?.remove?.();
       this.tooltip = null;

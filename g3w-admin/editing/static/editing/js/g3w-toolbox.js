@@ -152,8 +152,10 @@ export class ToolBox extends Emitter {
     }
 
     if ('image' === _layer.getType()) {
-      layer = new Layer(_layer.state, { TYPE: 'vector' });
+      //Need to set always visible otherwise if catalog layer is not visible no fetaures are visible on map
+      layer = new Layer({..._layer.state, ...{ visible: true } }, { TYPE: 'vector' });
     }
+
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
@@ -1042,6 +1044,7 @@ export class ToolBox extends Emitter {
                   }),
                   openFormStep,
                 ],
+                helpMessage: "editing.tools.pastefeaturesfromotherlayers",
                 registerEscKeyEvent: true
               });
             })(),
@@ -1198,6 +1201,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ].filter(Boolean),
+            helpMessage: "editing.tools.copy",
             registerEscKeyEvent: true,
           }),
         },
@@ -1356,10 +1360,10 @@ export class ToolBox extends Emitter {
         },
         // Split Feature
         (is_line || is_poly) && capabilities.includes('change_feature') && {
-          id:    'splitfeature',
-          type:  ['change_feature'],
-          name: "editing.tools.split",
-          icon: "mActionSplitFeatures.svg",
+          id:          'splitfeature',
+          type:        ['change_feature'],
+          name:        "editing.tools.split",
+          icon:        "mActionSplitFeatures.svg",
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/splitfeatureworkflow.js@v3.7.1 */
           op: new Workflow({
             layer,
@@ -1452,6 +1456,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ],
+            helpMessage: 'editing.tools.split',
             registerEscKeyEvent: true,
           }),
         },
@@ -1543,6 +1548,7 @@ export class ToolBox extends Emitter {
                 },
               }),
             ],
+            helpMessage: 'editing.tools.merge',
             registerEscKeyEvent: true
           }),
         },
@@ -1821,11 +1827,6 @@ export class ToolBox extends Emitter {
       //get current style of layer
       this.#current_style = this.state.layer.getCurrentStyle().name;
 
-      //@since 4.0.1 change layer style
-      if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
-        await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
-      }
-
       const plugin = GUI.getPlugin('editing');
       const id     = this.getId();
 
@@ -1956,6 +1957,11 @@ export class ToolBox extends Emitter {
       // disablemapcontrols in conflict
       if (options.disablemapcontrols ?? false) {
         GUI.disableClickMapControls(true);
+      }
+
+      //@since 4.0.1 change layer style
+      if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
+        await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
       }
 
     });
@@ -2825,15 +2831,11 @@ export class ToolBox extends Emitter {
     if (this.state.editing.session.changes.length > 0) {
       //@since 3.9.1 get array of uniqueIds
       //case of modify vertex. Multi changes in one save
-      const uniqueIds = [];
-      await Promise.allSettled(this.state.editing.session.changes.map(c => {
-        const uniqueId = options.id || Date.now();
-        uniqueIds.push(uniqueId);
-        return this.__add(uniqueId, [c]);
-      }));
+      const uniqueId = options.id || Date.now();
+      await this.__add(uniqueId, this.state.editing.session.changes);
       // clear to temporary changes
       this.state.editing.session.changes = [];
-      return uniqueIds;
+      return [uniqueId];
     }
     return null;
     
@@ -3891,9 +3893,7 @@ async function _handleSplitFeature({
   const source                   = getEditingLayer(layer).getSource();
   const layerId                  = layer.getId();
   const oriFeature               = feature.clone();
-  inputs.features                = splittedGeometries.length ? [] : inputs.features;
   const splittedGeometriesLength = splittedGeometries.length;
-
   for (let index = 0; index < splittedGeometriesLength; index++) {
     const splittedGeometry = splittedGeometries[index];
     if (0 === index) {

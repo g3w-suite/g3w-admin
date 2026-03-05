@@ -457,11 +457,9 @@ export class Step extends Emitter {
    * @fires stop
    */
   async __stop() {
+    this._workflow?._toolsoftool?.forEach?.(t => t.options.stop());
     await this._stop(this._inputs, this._context);   // stop task
     this.state.running = false;                // remove running state
-    if (this._workflow) {
-      this._workflow._toolsoftool.forEach(t => t.options.stop());
-    }
     this.emit('stop');
   }
 

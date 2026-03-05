@@ -35,7 +35,7 @@ export class Feature extends ol.Feature {
       this.setGeometryName(opts.feature.getGeometryName());
     }
 
-    const geometry = opts?.feature.getGeometry?.();
+    const geometry = opts?.feature?.getGeometry?.();
 
     //check if feature has geometry
     if (geometry) {

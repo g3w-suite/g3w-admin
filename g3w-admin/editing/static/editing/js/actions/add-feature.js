@@ -25,7 +25,9 @@ export class AddFeatureStep extends Step {
 
   drawInteraction;
 
-  measeureInteraction;
+  tooltip;
+
+  keyTooltip;
 
   drawingFeature;
 
@@ -129,96 +131,31 @@ export class AddFeatureStep extends Step {
    * @param { boolean } enable whether to toggle measure tooltip
    */
   measureTooltip(enable) {
-    if (!enable && this.measureInteraction) {
-      this.measureInteraction.clear();
-      this.removeInteraction(this.measureInteraction);
-      this.measureInteraction = null;
-      return;
+
+    //case enable and already start draw feature
+    if (enable && this.drawingFeature) {
+      this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.drawingFeature });
+    } 
+
+    //enable but not yet start to draw feature
+    if (enable && !this.drawingFeature) {
+      this.keyTooltip = this.drawInteraction.once('drawstart', () => {
+        this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.drawingFeature });
+      })
     }
 
-    const is_line = Geometry.isLineGeometryType(this.geometryType);
-    const is_poly = Geometry.isPolygonGeometryType(this.geometryType);
+    //disable and listen draw start to creare tooltip
+    if (!enable && this.keyTooltip) {
+      ol.Observable.unByKey(this.keyTooltip);
+      this.keyTooltip = null;
+    }
 
-    //Skip in case geometry is not Line or Polygon
-    if (!is_line && !is_poly) { return; }
+    //disable and alraedy create tooltip
+    if (!enable && this.tooltip) {
+      this.tooltip?.remove?.();
+      this.tooltip = null;
+    }
 
-    let MEASURE;
-
-    const LAYER = new ol.layer.Vector({
-      source: new ol.source.Vector(),
-      style: () => [
-        new ol.style.Style({
-          stroke: new ol.style.Stroke({ lineDash: [10, 10], width: 3 }),
-          fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' })
-        })
-      ],
-    });
-
-    const interaction = new ol.interaction.Draw({
-      source: LAYER.getSource(),
-      type:  (is_line ? "LineString" : "Polygon"),
-      style: new ol.style.Style({
-        fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' }),
-        stroke: new ol.style.Stroke({ color: 'transparent', lineDash: [10, 10], width: 3 }),
-        image:  new ol.style.Circle({
-          radius: 5,
-          stroke: new ol.style.Stroke({ color: 'rgba(0, 0, 0, 0.7)' }),
-          fill:   new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)' })
-        }),
-      }),
-      condition(e) {
-        // right click
-        if (2 === e.activePointers[0].buttons) {
-          interaction.removeLastPoint();
-          return false;
-        }
-        // left click
-        return true;
-      },
-    });
-
-    interaction.set('feature', this.drawingFeature);
-
-    const EVENTS = {
-      // remove last point
-      keydown: e => {
-        const geom = interaction.get('feature').getGeometry();
-        if (46 !== e.keyCode) {
-          return;
-        }
-        if ((geom instanceof ol.geom.Polygon && geom.getCoordinates()[0].length > 2) || (geom instanceof ol.geom.LineString && geom.getCoordinates().length > 1)) {
-          interaction.removeLastPoint();
-        }
-      },
-    };
-
-    interaction.on('drawstart', e => {
-      interaction.getMap().removeLayer(LAYER);
-      interaction.set('feature', e.feature);
-      $(document).on('keydown', EVENTS.keydown);
-      LAYER.getSource().clear();
-      // create measure tooltip
-      MEASURE?.remove?.();
-      MEASURE = createMeasureTooltip({ map: interaction.getMap(), feature: interaction.get('feature') });
-    });
-
-    interaction.on('drawend', () => {
-      interaction.set('feature', null);
-      $(document).off('keydown', EVENTS.keydown);
-      interaction.getMap().addLayer(LAYER);
-    });
-
-    interaction.clear = () => {
-      LAYER.getSource().clear();
-      interaction.set('feature', null);
-      $(document).off('keydown', EVENTS.keydown);
-      MEASURE?.remove?.();
-      interaction.getMap()?.removeLayer?.(LAYER);
-    };
-
-    this.measureInteraction = this.addInteraction(interaction);
-
-    this.measureInteraction.setActive(true);
   }
 
   /**

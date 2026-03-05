@@ -23,7 +23,7 @@ export function setVertexStyle({
         radius,
         ...(fillVertex
           ? { fill: new ol.style.Fill({ color: vertexColor }) }
-          : { stroke: new ol.style.Stroke({ color: vertexColor, width: 3 }) }
+          : { stroke: new ol.style.Stroke({ color: vertexColor, width: strokeWidth }) }
         )
 
       }),

@@ -1083,11 +1083,6 @@ document.head.insertAdjacentHTML(
   margin-bottom: 5px;
 }
 
-.print-modal .print-labels-content > .labels-input-content {
-  max-height: 120px;
-  overflow-y: auto
-}
-
 .print-modal #fids_intruction {
   white-space: pre-line;
 }
