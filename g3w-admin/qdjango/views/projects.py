@@ -39,7 +39,8 @@ from qdjango.models import (
     GeoConstraint,
     SingleLayerConstraint,
     ColumnAcl, 
-    ProjectBookmark
+    ProjectBookmark,
+    ScaleVisibilityLayerConstraint
 )
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -309,6 +310,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                 expconstraints = SingleLayerConstraint.objects.filter(layer=l)
                 hiddenlayers = LayerAcl.objects.filter(layer=l)
                 hiddenfields = ColumnAcl.objects.filter(layer=l)
+                scaleconstraints = ScaleVisibilityLayerConstraint.objects.filter(layer=l)
 
                 # Geoconstrain
                 gc = {
@@ -334,6 +336,21 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     'users': [],
                     'ugroups': []
                 }
+
+                # Scalevisibility constraints
+                sv = {
+                    'layer': l,
+                    'constraints': [],
+                }
+
+                for svc in scaleconstraints:
+                    sv['constraints'].append(svc)
+
+                if len(sv['constraints']) > 0:
+                    if 'scaleconstraints' not in ctx:
+                        ctx['scaleconstraints'] = [sv]
+                    else:
+                        ctx['scaleconstraints'].append(sv)
 
                 def dl_capabilities_by_layer(l):
                     toret = []
