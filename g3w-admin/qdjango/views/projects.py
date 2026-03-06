@@ -301,6 +301,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
             project_user_groups_viewers = [v for v in project_user_groups_viewers]
 
             widgets = []
+            dl_capabilities = []
             for l in self.object.layer_set.all():
 
                 # Get geoconstraints by layer id
@@ -333,6 +334,24 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     'users': [],
                     'ugroups': []
                 }
+
+                def dl_capabilities_by_layer(l):
+                    toret = []
+                    for dlf in ('', '_xls', '_gpx', '_csv', '_gpkg', '_pdf'):
+                        if getattr(l, f'download{dlf}', False):
+                            if dlf == '':
+                                toret.append('SHP/GEOTIFF')
+                            else:
+                                toret.append(dlf[1:].upper())
+                    return toret
+
+                dl = {
+                    'layer': l,
+                    'dl_capabilities': dl_capabilities_by_layer(l)
+                }
+
+                if len(dl['dl_capabilities']) > 0:
+                    dl_capabilities.append(dl)
 
                 # Widgets
                 for w in get_widgets4layer(l):
@@ -419,6 +438,9 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                 if widgets:
                     ctx['widgets'] = widgets
+
+            if dl_capabilities:
+                ctx['dl_capabilities'] = dl_capabilities
 
         return ctx
 
