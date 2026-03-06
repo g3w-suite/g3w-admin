@@ -164,7 +164,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     CLIENT_TOC_TABS = Choices(
         ('layers', _('Layers')),
-        ('baselayers', _('Base layers')),
         ('legend', _('Legend'))
     )
 
@@ -416,7 +415,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     wms_getmap_format = models.CharField(
         _('WMS GetMap image format'),
-        default='image/png; mode=8bit',
+        default='image/png',
         max_length=255,
         null=True,
         choices=WMS_GETMAP_FORMAT,
