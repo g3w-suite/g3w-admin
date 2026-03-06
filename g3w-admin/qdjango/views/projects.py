@@ -20,6 +20,7 @@ from core.utils.decorators import project_type_permission_required, is_active_re
 from core.models import GroupProjectPanoramic
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
+from qplotly.utils.models import get_qplotlywidgets4project
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.models import Group as AuthGroup
 from usersmanage.decorators import user_passes_test_or_403
@@ -28,6 +29,9 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
+
+if 'editing' in settings.INSTALLED_APPS:
+    from qplotly.utils.models import get_qplotlywidgets4layer
 
 from qdjango.signals import load_qdjango_widgets_data
 from qdjango.mixins.views import *
@@ -455,6 +459,21 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                 if widgets:
                     ctx['widgets'] = widgets
+
+                # QPlotly widgets
+                if 'qplotly' in settings.INSTALLED_APPS:
+                    
+                    qp = {
+                        'layer': l,
+                        'plots': get_qplotlywidgets4layer(l),
+                    }
+
+                    if qp['plots']:
+                            if 'plots' not in ctx:
+                                ctx['plots'] = [qp]
+                            else:
+                                ctx['plots'].append(qp)
+
 
             if dl_capabilities:
                 ctx['dl_capabilities'] = dl_capabilities
