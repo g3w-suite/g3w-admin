@@ -135,6 +135,7 @@ export class ToolBox extends Emitter {
       geometrytype: _config.vector.geometrytype,                 // whether is a vector layer,
       visible:      _config.vector.editing?.visible ?? true,     // whether a layer should be editable directly (true) or through relation layer (false)
       layer_style:  _config.vector.editing?.layer_style ?? null, // @since v4.0.0 check if has a layer style to for editing form
+      inediting:    false, //@since 4.1.0 add in editng attribute when open editting panel
     };
 
     // set vector layer color 
@@ -2204,7 +2205,7 @@ export class ToolBox extends Emitter {
     this.setEnable(bool);
     this.state.editing.on = bool;
     this.enableTools(bool);
-    this.state.layer.setInEditing(bool);
+    this.state.layer.state.editing.inediting = bool;
   }
 
   /**
