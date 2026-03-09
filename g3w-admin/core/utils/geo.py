@@ -1,3 +1,4 @@
+from django.conf import settings
 from qgis.core import \
     QgsCoordinateReferenceSystem,  \
     QgsCoordinateReferenceSystem, \
@@ -31,6 +32,11 @@ def get_crs_bbox(crs):
     :param crs: A QgsCoordinateReferenceSystem instance
     :return: CRS bounds as list as map units
     """
+
+    # Patch for Proj4 > 4.9.3 version
+    # Get from settings is custom
+    if crs in settings.G3W_PROJ4_EPSG.keys():
+        return settings.G3W_PROJ4_EPSG[crs]['extent']
 
     if not isinstance(crs, QgsCoordinateReferenceSystem):
         crs = QgsCoordinateReferenceSystem(f'EPSG:{crs}')
