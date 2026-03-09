@@ -1258,7 +1258,7 @@ msgstr "Gestisci gli stili del layer"
 
 #: templates/qdjango/layers_list.html:220
 msgid "Scale visibility layer by Users/Groups"
-msgstr "Nascondi layer per Utenti/Gruppi di utenti"
+msgstr "Scala di visibilità del layer per Utenti/Gruppi di utenti"
 
 #: templates/qdjango/layers_list.html:257
 #: templates/qdjango/project_list.html:100
