@@ -24,6 +24,7 @@ from core.signals import (
     load_project_layers_actions,
     post_create_maplayerattributes
 )
+from base.version import get_version
 from qdjango.vector import LayerVectorView, MODE_CONFIG
 from qdjango.models import GeoConstraintRule
 from usersmanage.utils import get_user_groups
@@ -176,6 +177,7 @@ def set_initconfig_value(sender, **kwargs):
     toret = {
         "editing": {
             "gid": "{}:{}".format(kwargs["projectType"], kwargs["project"]),
+            "version": get_version(),
         },
     }
 
