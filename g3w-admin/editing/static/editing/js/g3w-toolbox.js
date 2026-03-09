@@ -135,6 +135,7 @@ export class ToolBox extends Emitter {
       geometrytype: _config.vector.geometrytype,                 // whether is a vector layer,
       visible:      _config.vector.editing?.visible ?? true,     // whether a layer should be editable directly (true) or through relation layer (false)
       layer_style:  _config.vector.editing?.layer_style ?? null, // @since v4.0.0 check if has a layer style to for editing form
+      inediting:    false, //@since 4.1.0 add in editng attribute when open editting panel
     };
 
     // set vector layer color 
@@ -1044,6 +1045,7 @@ export class ToolBox extends Emitter {
                   }),
                   openFormStep,
                 ],
+                helpMessage: "editing.tools.pastefeaturesfromotherlayers",
                 registerEscKeyEvent: true
               });
             })(),
@@ -1200,6 +1202,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ].filter(Boolean),
+            helpMessage: "editing.tools.copy",
             registerEscKeyEvent: true,
           }),
         },
@@ -1358,10 +1361,10 @@ export class ToolBox extends Emitter {
         },
         // Split Feature
         (is_line || is_poly) && capabilities.includes('change_feature') && {
-          id:    'splitfeature',
-          type:  ['change_feature'],
-          name: "editing.tools.split",
-          icon: "mActionSplitFeatures.svg",
+          id:          'splitfeature',
+          type:        ['change_feature'],
+          name:        "editing.tools.split",
+          icon:        "mActionSplitFeatures.svg",
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/splitfeatureworkflow.js@v3.7.1 */
           op: new Workflow({
             layer,
@@ -1454,6 +1457,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ],
+            helpMessage: 'editing.tools.split',
             registerEscKeyEvent: true,
           }),
         },
@@ -1545,6 +1549,7 @@ export class ToolBox extends Emitter {
                 },
               }),
             ],
+            helpMessage: 'editing.tools.merge',
             registerEscKeyEvent: true
           }),
         },
@@ -2200,7 +2205,7 @@ export class ToolBox extends Emitter {
     this.setEnable(bool);
     this.state.editing.on = bool;
     this.enableTools(bool);
-    this.state.layer.setInEditing(bool);
+    this.state.layer.state.editing.inediting = bool;
   }
 
   /**
@@ -2913,7 +2918,6 @@ export class ToolBox extends Emitter {
    * @since g3w-client-plugin-editing@v4.1.0
    */
   __setChanges(items = [], reverse = true) {
-    console.log(items, reverse)
     /** known actions */
     const Actions = {
       'add':    { fnc: 'addFeature',    opposite: 'delete' },
