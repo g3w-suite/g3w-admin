@@ -1196,11 +1196,10 @@ new (class extends Plugin {
       await toolBox.start({ filter: { fids: fid } });
 
       const _layer    = toolBox.getLayer();
-      const source    = getEditingLayer(_layer).getSource();
       const is_vector = 'vector' === _layer.getType();
 
       // get feature from an Editing layer source (with styles)
-      const features = is_vector ? source.getFeatures() : source.readFeatures();
+      const features = is_vector ? getEditingLayer(_layer).getSource().getFeatures() : getEditingLayer(_layer).getEditor().readEditingFeatures();
       const feature  = features.find(f => fid == f.getId());
 
       // no feature is get from server (locked feature) 
