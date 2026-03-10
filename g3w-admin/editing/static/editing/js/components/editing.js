@@ -502,7 +502,7 @@ export default ({
 
     // open editing panel state
     this.state.open = false;
-    getCatalogLayers({ EDITABLE: true }).forEach(l => l.setInEditing(true));
+    getCatalogLayers({ EDITABLE: true }).forEach(l => l.state.editing.inediting = true);
 
     GUI.on('opencontent',  this._enableEditingButtons);
     GUI.on('closeform',    this._enableEditingButtons);
@@ -528,7 +528,7 @@ export default ({
 
     // reset editing panel state
     this.state.open = false;
-    getCatalogLayers({ EDITABLE: true }).forEach(l => l.setInEditing(false));
+    getCatalogLayers({ EDITABLE: true }).forEach(l => l.state.editing.inediting = false);
 
     GUI.off('opencontent',  this._enableEditingButtons);
     GUI.off('closeform',    this._enableEditingButtons);
