@@ -416,10 +416,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
-        # Patch for Proj4 > 4.9.3 version
-        if instance.group.srid.auth_srid in settings.G3W_PROJ4_EPSG.keys():
-            ret['extent'] = settings.G3W_PROJ4_EPSG[instance.group.srid.auth_srid]['extent']
-
 
         # Check Geoconstraint rule whit autozoom flagged and calculate new initentext
         try:
