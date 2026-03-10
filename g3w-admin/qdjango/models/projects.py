@@ -364,13 +364,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     autozoom_query = models.BooleanField(
         _('Automatic zoom to query result features'),
-        default=False,
+        default=True,
         help_text=_('Automatic zoom on query result features for only one layer'),
     )
 
     show_metadata_section = models.BooleanField(
         _("Show the 'Metadata' section on left bar"),
-        default=True,
+        default=False,
         help_text=_("It is possible choose if show or hide the 'Metadata' section on left bar"),
     )
 
