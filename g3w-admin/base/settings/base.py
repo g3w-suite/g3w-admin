@@ -229,7 +229,7 @@ REST_FRAMEWORK = {
     'UNICODE_JSON': False,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
+        'core.api.authentication.BasicAuthentication403',
         'rest_framework.authentication.SessionAuthentication',
     ]
 }

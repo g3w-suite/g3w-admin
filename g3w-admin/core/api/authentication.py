@@ -17,6 +17,7 @@ class AutenticationWith403Mixin(object):
     Mixin to return 403 instead of 401 when the token is invalid.
     """
     def authenticate_header(self, request):
+        print ('------------------------- passa ------------------------------')
         return None
 
 class TokenAuthentication403(AutenticationWith403Mixin, TokenAuthentication):

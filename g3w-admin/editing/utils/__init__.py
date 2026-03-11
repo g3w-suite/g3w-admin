@@ -220,7 +220,7 @@ def get_sessionid_from_request(request):
     except:
         # Check for other authentication methods
         auth_class = request.successful_authenticator.__class__.__name__ if hasattr(request, 'successful_authenticator') else None
-        if auth_class in ['JWTAuthentication', 'TokenAuthentication']:
+        if auth_class in ['JWTAuthentication403', 'TokenAuthentication403']:
             # for JWT and Token authentication use a hash of user id as sessionid
             if not request.user.is_anonymous:
                 sessionid = hashlib.md5()
