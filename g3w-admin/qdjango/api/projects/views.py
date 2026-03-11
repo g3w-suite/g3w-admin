@@ -334,6 +334,11 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
 
             map_theme = theme_collections.mapThemeState(self.theme_name)
 
+            # Get layer to exclude from toc:
+            layers_to_exclude_from_toc = []
+            for layer in project.layer_set.filter(exclude_from_toc=True):
+                layers_to_exclude_from_toc.append(layer.qgs_layer_id)
+
             # Get node group expanded anche checked
             node_group_expanded = map_theme.expandedGroupNodes()
             node_group_checked = map_theme.checkedGroupNodes()
@@ -375,7 +380,8 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                         # try for layer node
                         toRetLayer.update({
                             'id': node.layerId(),
-                            'visible': True if node.layerId() in node_layerids_checked else False
+                            'visible': True if node.layerId() in node_layerids_checked else False,
+                            'toc': False if node.layerId() in layers_to_exclude_from_toc else True
                         })
 
                         # Add `showFeatureCount` custom property per Vector layer only

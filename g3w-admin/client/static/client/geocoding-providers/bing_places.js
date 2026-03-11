@@ -19,13 +19,13 @@
    * @see https://learn.microsoft.com/en-us/bingmaps/rest-services/locations/local-search
    */
   geocoding.providers[provider].fetch = async function(opts) {
-    const { XHR }        = g3wsdk.core.utils;
-    const { vendorkeys } = g3wsdk.core.ApplicationState.keys;
+    const { XHR }        = g3w.utils;
+    const { vendorkeys } = g3w.state;
 
     // fallback to generic bing vendor key
-    vendorkeys[provider] = vendorkeys[provider] || vendorkeys.bing;
+    vendorkeys[provider] = vendorkeys[provider] ?? vendorkeys.bing;
 
-    const key            = undefined !== vendorkeys[provider] ? vendorkeys[provider] : opts && (new URL(opts.url)).searchParams.get('key');
+    const key            = vendorkeys[provider] ?? (opts && (new URL(opts.url)).searchParams.get('key'));
 
     // whether can fetch data from Bing Local Search API
     if (!opts || !key) {
@@ -51,7 +51,7 @@
       icon:  undefined !== opts.icon ? opts.icon : 'poi',
       results: 200 === response.statusCode
         ? response.resourceSets[0].resources
-          .filter(({ point: { coordinates } })=> ol.extent.containsXY(opts.extent, coordinates[1], coordinates[0]))
+          .filter(({ point: { coordinates } }) => ol.extent.containsXY(opts.extent, coordinates[1], coordinates[0]))
           .map(result => {
             return {
               name:        result.name,

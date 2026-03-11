@@ -233,15 +233,26 @@ class ClientBranchManagerView(View):
 
             SELF.run_command("npm install || yarn install")                       # 1. npm install
             SELF.clone_package_json()                                             # 2. fix package.json
-            SELF.run_command("npx gulp clone:plugins || yarn gulp clone:plugins") # 3. clone default plugins
 
-            # Set safe directory
-            plugins_dir = os.path.join(REPO_FOLDER, 'src', 'plugins')
-            for plugin in os.listdir(plugins_dir):
-                SELF.run_command(f"git config --global --add safe.directory {os.path.join(plugins_dir, plugin)}")
+            # clone default plugins (G3W-CLIENT < v4.1.x)
+            try:
+                SELF.run_command("npx gulp clone:plugins || yarn gulp clone:plugins")
 
-            SELF.run_command("npx gulp build:plugins || yarn gulp build:plugins", env={**os.environ, "G3W_PLUGINS": "editing"})
-            SELF.run_command("npx gulp build:client || yarn gulp build:client")
+                # Set safe directory
+                plugins_dir = os.path.join(REPO_FOLDER, 'src', 'plugins')
+                for plugin in os.listdir(plugins_dir):
+                    SELF.run_command(f"git config --global --add safe.directory {os.path.join(plugins_dir, plugin)}")
+
+                SELF.run_command("npx gulp build:plugins || yarn gulp build:plugins", env={**os.environ, "G3W_PLUGINS": "editing"})
+                SELF.run_command("npx gulp build:client || yarn gulp build:client")
+            except Exception as e:
+                LOGGER.error(f"Exception: {e}")
+
+            # build app (G3W-CLIENT >= 4.1.x)
+            try:
+                SELF.run_command("npm run build:ci || yarn run build:ci")
+            except Exception as e:
+                LOGGER.error(f"Exception: {e}")
 
         except Exception as e:
             LOGGER.error(f"Exception: {e}")
@@ -350,6 +361,7 @@ class ClientBranchManagerView(View):
         except Exception as e:
             print(f"Error while cloning and updating config.template.js: {e}")
 
+        # update gulpfile (G3W-CLIENT < v4.1.x)
         try:
             with open(os.path.join(REPO_FOLDER, 'gulpfile.js'), 'r') as file:
                 config_data = file.read()

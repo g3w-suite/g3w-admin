@@ -46,14 +46,14 @@ class TestQesUtilsAPI(QesTesBase):
         # Clear indexes
         indexer.delete_all_indexes()
 
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
         self.assertEqual(len(data), 0)
 
         # Indexing
         indexer.index_project(self.project310.instance)
 
         # Check
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
 
         #print(data)
         self.assertEqual(len(data), 1)
@@ -64,7 +64,7 @@ class TestQesUtilsAPI(QesTesBase):
         res = indexer.delete_documents(self.project310.instance)
 
         # Check
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
 
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
@@ -76,14 +76,14 @@ class TestQesUtilsAPI(QesTesBase):
         # Clear indexes
         indexer.delete_all_indexes()
 
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
         self.assertEqual(len(data), 0)
 
         # Indexing
         indexer.index_project(self.project310.instance, layer_cities)
 
         # Check
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
 
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
@@ -92,7 +92,7 @@ class TestQesUtilsAPI(QesTesBase):
         # Test delete layer level
         res = indexer.delete_documents(self.project310.instance, layer_cities)
 
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
 
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
@@ -105,20 +105,20 @@ class TestQesUtilsAPI(QesTesBase):
         # Clear indexes
         indexer.delete_all_indexes()
 
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
         self.assertEqual(len(data), 0)
 
         # Indexing
         indexer.index_project(self.project310.instance, layer_cities, [1,2,3])
 
         # Check
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
 
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
         self.assertEqual(data[0]['docs.count'], '3')
 
-        data = self._query_es(f'/qgis_features_{self.test_admin1.pk}/_doc/{self.project310.instance.pk}_{layer_cities.qgs_layer_id}_1')
+        data = self._query_es(f'qgis_features_{self.test_admin1.pk}/_doc/{self.project310.instance.pk}_{layer_cities.qgs_layer_id}_1')
 
         self.assertEqual(data['_source']['attributes'], {
                             "ASCIINAME": "Destelbergen",
@@ -133,7 +133,7 @@ class TestQesUtilsAPI(QesTesBase):
         # Test delete features level
         res = indexer.delete_documents(self.project310.instance, layer_cities, [1,2,3])
 
-        data = self._query_es('/_cat/indices')
+        data = self._query_es('_cat/indices')
 
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')

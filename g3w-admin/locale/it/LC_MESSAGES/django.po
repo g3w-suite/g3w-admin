@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 14:59+0000\n"
+"POT-Creation-Date: 2026-02-17 10:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,520 +18,512 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: OWS/utils/data.py:125
-msgid "The GetFeatureResponse response is malformed: {}"
-msgstr "La risposta GetFeatureResponse non è valida: {}"
+#: rl_dbsync/forms/admin.py:46
+msgid "QGIS project to sync"
+msgstr ""
 
-#: openrouteservice/api/views.py:138
-msgid "Input layer is not a point or multipoint layer."
-msgstr "Il layer di input non è un layer di punti o multipunti."
-
-#: openrouteservice/api/views.py:156
-msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
-msgstr "Manca \"qgis_layer_id\", \"new_layer_name\" o \"connection_id\"."
-
-#: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
+#: rl_dbsync/models.py:28
 msgid ""
-"Wrong color parameter, color must be a list of three integers (red, green, "
-"blue)."
-msgstr "Parametro colore errato, il colore deve essere una lista di tre interi (rosso, verde, blu)."
+"Upload the project file: .qgs or .qgz. The layers contained in the project "
+"file will be synchronized to the target database."
+msgstr ""
 
-#: openrouteservice/api/views.py:182
-msgid ""
-"Missing tranparency parameter, because color was specified transparency is "
-"required."
-msgstr "Parametro trasparenza mancante: avendo specificato il colore, la trasparenza è obbligatoria."
+#: rl_dbsync/models.py:34
+msgid "The new project file generated after synchronization."
+msgstr ""
 
-#: openrouteservice/api/views.py:190
-msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
-msgstr "Parametro trasparenza errato, la trasparenza deve essere compresa tra 0 e 1."
+#: rl_dbsync/templates/rl_dbsync/sync_add.html:8
+msgid "RLDbsync"
+msgstr ""
 
-#: openrouteservice/api/views.py:196
-msgid "Missing stroke_width from style definition."
-msgstr "Manca stroke_width nella definizione dello stile."
+#: rl_dbsync/templates/rl_dbsync/sync_add.html:9
+msgid "syncronization data and rewrite QGIS project"
+msgstr ""
 
-#: openrouteservice/api/views.py:212
-msgid "Layer is not compatible with ORS data."
-msgstr "Il layer non è compatibile con i dati ORS."
-
-#: openrouteservice/api/views.py:225
-msgid "Wrong connection_id."
-msgstr "connection_id errato."
-
-#: openrouteservice/api/views.py:229
-msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
-msgstr "Devi specificare qgis_layer_id oppure connection_id + layer_name."
-
-#: openrouteservice/api/views.py:236
-#, python-format
-msgid "Profile not found, available profiles: %s"
-msgstr "Profilo non trovato, profili disponibili: %s"
-
-#: openrouteservice/api/views.py:246
-msgid "Missing \"locations\" array."
-msgstr "Manca l'array \"locations\"."
-
-#: openrouteservice/api/views.py:250
-#, python-format
-msgid "Max allowed locations: %s"
-msgstr "Numero massimo di locations consentite: %s"
-
-#: openrouteservice/api/views.py:254
-msgid "Malformed locations array."
-msgstr "Array locations non valido."
-
-#: openrouteservice/api/views.py:259
-msgid "Missing \"range\" array."
-msgstr "Manca l'array \"range\"."
-
-#: openrouteservice/api/views.py:263
-#, python-format
-msgid "Max allowed ranges: %s"
-msgstr "Numero massimo di range consentiti: %s"
-
-#: openrouteservice/api/views.py:271
-msgid "Malformed range array."
-msgstr "Array range non valido."
-
-#: openrouteservice/api/views.py:398
-#, fuzzy
-#| msgid "Oops! Page not found."
-msgid "Task not found!"
-msgstr "Attività non trovata!"
-
-#: openrouteservice/forms.py:41
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
-msgid "Project"
-msgstr "Progetto"
-
-#: openrouteservice/models.py:38
-msgid "Isochrones"
-msgstr "Isochrone"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
-msgid "Openrouteservice Project"
-msgstr "Progetto Openrouteservice"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
+#: rl_dbsync/templates/rl_dbsync/sync_add.html:19
 msgid "Alert"
 msgstr "Attenzione"
 
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
+#: rl_dbsync/templates/rl_dbsync/sync_add.html:20
 msgid "Some errors on form. Check it and send again."
 msgstr "Alcuni errori nel form. Controlla e invia di nuovo."
 
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
-msgid "Openrouteservice Projects"
-msgstr "Progetti Openrouteservice"
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:9
+msgid "Regione Lazio DB Sync"
+msgstr ""
 
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:20
+msgid "Sync data between Regione Lazio databases (testing and production)"
+msgstr ""
+
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:30
+msgid "Sync"
+msgstr ""
+
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:38
 #, fuzzy
 #| msgid "Adminstration"
 msgid "Actions"
 msgstr "Azioni"
 
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
-msgid "Services"
-msgstr "Servizi"
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:39
+msgid "State"
+msgstr ""
 
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
-msgid "Edit"
-msgstr "Modifica"
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:40
+#, fuzzy
+#| msgid "Project"
+msgid "Project IN File"
+msgstr "Progetto"
 
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:41
+#, fuzzy
+#| msgid "Project"
+msgid "Project OUT File"
+msgstr "Progetto"
+
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:42
+msgid "Create"
+msgstr ""
+
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:43
+msgid "Taks ID"
+msgstr ""
+
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:55
 msgid "Delete"
 msgstr "Elimina"
 
-#: openrouteservice/utils.py:494
-msgid "Cannot create temporary layer for isochrone result."
-msgstr "Impossibile creare un layer temporaneo per il risultato dell'isochrone."
-
-#: openrouteservice/utils.py:512
-msgid ""
-"Cannot save isochrone result to destination layer: layer already exists (use "
-"\"qgis_layer_id\" instead)!"
-msgstr "Impossibile salvare il risultato isochrone nel layer di destinazione: il layer esiste già (usa \"qgis_layer_id\" invece)!"
-
-#: openrouteservice/utils.py:525
-msgid "Cannot save isochrone result to destination layer: "
-msgstr "Impossibile salvare il risultato isochrone nel layer di destinazione: "
-
-#: openrouteservice/utils.py:553
-msgid "Wrong connection id."
-msgstr "ID connessione errato."
-
-#: openrouteservice/utils.py:585
-msgid "Error creating destination layer connection."
-msgstr "Errore nella creazione della connessione al layer di destinazione."
-
-#: openrouteservice/utils.py:592
-msgid "Error creating destination layer: "
-msgstr "Errore nella creazione del layer di destinazione: "
-
-#: openrouteservice/utils.py:606
-msgid "Error creating destination layer: layer is not valid!"
-msgstr "Errore nella creazione del layer di destinazione: il layer non è valido!"
-
-#: openrouteservice/utils.py:619
-msgid "Error saving the destination layer: could not write project!"
-msgstr "Errore nel salvataggio del layer di destinazione: impossibile scrivere il progetto!"
-
-#: openrouteservice/utils.py:643
-msgid "Error adding destination Layer to the project: layer already exists."
-msgstr "Errore nell'aggiunta del layer di destinazione al progetto: il layer esiste già."
-
-#: openrouteservice/utils.py:653
-#, python-format
-msgid "Error opening destination layer %s: layer not found in QGIS project!"
-msgstr "Errore nell'apertura del layer di destinazione %s: layer non trovato nel progetto QGIS!"
-
-#: openrouteservice/utils.py:670
-msgid "Error transforming geometry from 4326 to destination layer CRS."
-msgstr "Errore nella trasformazione della geometria da 4326 al sistema di riferimento del layer di destinazione."
-
-#: openrouteservice/utils.py:674
-msgid "No compatible features returned from isochrone."
-msgstr "Nessuna feature compatibile restituita dall'isochrone."
-
-#: openrouteservice/utils.py:677
-msgid "Destination layer is not editable."
-msgstr "Il layer di destinazione non è modificabile."
-
-#: openrouteservice/utils.py:681
-msgid "Error adding features to the destination layer."
-msgstr "Errore nell'aggiunta delle feature al layer di destinazione."
-
-#: openrouteservice/utils.py:685
-msgid "Error committing features to the destination layer."
-msgstr "Errore nel salvataggio delle feature nel layer di destinazione."
-
-#: openrouteservice/utils.py:794
-#, python-format
-msgid "Error generating isochrone: %s."
-msgstr "Errore nella generazione dell'isochrone: %s."
-
-#: openrouteservice/utils.py:823
-msgid "Unknown error adding results to the destination layer."
-msgstr "Errore sconosciuto nell'aggiunta dei risultati al layer di destinazione."
-
-#: templates/403.html:7
-msgid "error page"
-msgstr "Pagina di errore"
-
-#: templates/403.html:15
-msgid "Access denied"
-msgstr "Accesso negato"
-
-#: templates/403.html:17
-msgid "You don't have grant to access this section"
-msgstr "Non hai i privilegi per accedere a questa sezione"
-
-#: templates/404.html:11
-msgid "Oops! Page not found."
-msgstr "Ops! Pagina non trovata"
-
-#: templates/404.html:13
-msgid "We could not find the page you were looking for."
-msgstr "Non abbiamo trovato la pagina che stavi cercando."
-
-#: templates/admin/base.html:7
-msgid "G3W-ADMIN"
-msgstr "G3W-ADMIN"
-
-#: templates/admin/base.html:12
-#, fuzzy
-#| msgid "Current situation"
-msgid "Documentation"
-msgstr "Documentazione"
-
-#: templates/admin/base.html:16
-#, fuzzy
-#| msgid "Change my password"
-msgid "Change password"
-msgstr "Cambia password"
-
-#: templates/admin/base.html:18
-#, fuzzy
-#| msgid "Sign out"
-msgid "Log out"
-msgstr "Esci"
-
-#: templates/base.html:190 templates/index.html:6
-msgid "Dashboard"
-msgstr "Scrivania"
-
-#: templates/base.html:229
-#, fuzzy
-#| msgid " Version"
-msgid "Version"
-msgstr "Versione"
-
-#: templates/base.html:249
-msgid ""
-"This website uses cookies to ensure you get the best experience on our "
-"website"
-msgstr "Questo sito utilizza i cookie per garantirti la migliore esperienza."
-
-#: templates/base_login.html:25 templates/login.html:18
-msgid "Sign in to start your session"
-msgstr "Accedi per iniziare la tua sessione di lavoro"
-
-#: templates/base_login.html:29 templates/login.html:22
-#: templates/registration/password_reset_form.html:10
-#: templates/registration/username_recovery_form.html:10
-msgid "LOGIN ERROR"
-msgstr "ERRORE DI LOGIN"
-
-#: templates/base_login.html:30 templates/login.html:23
-msgid "Username and/or password uncorrect"
-msgstr "Username e/o password non corretti"
-
-#: templates/base_login.html:45 templates/login.html:39
-msgid "Sign In"
-msgstr "Accedi"
-
-#: templates/base_login.html:51 templates/login.html:50
-#: templates/registration/password_reset_form.html:22
-msgid "Forgot your password?"
-msgstr "Hai dimenticato la password?"
-
-#: templates/base_login.html:58 templates/login.html:62
-#, fuzzy
-#| msgid "Sign out"
-msgid "Sign up"
-msgstr "Registrati"
-
-#: templates/include/login_page_version.html:2
-msgid " Version"
-msgstr "Versione"
-
-#: templates/include/navbar_right_menu.html:11
-msgid "Search"
-msgstr "Cerca"
-
-#: templates/include/navbar_right_menu.html:25
-msgid "Frontend"
-msgstr "Frontend"
-
-#: templates/include/navbar_right_menu.html:46
-msgid "Registered on"
-msgstr "Registrato il"
-
-#: templates/include/navbar_right_menu.html:47
-msgid "Last login"
-msgstr "Ultimo accesso"
-
-#: templates/include/navbar_right_menu.html:54
-msgid "Profile"
-msgstr "Profilo"
-
-#: templates/include/navbar_right_menu.html:57
-msgid "Logout"
-msgstr "Esci"
-
-#: templates/include/sidebar_right.html:10
-msgid "Information"
-msgstr "Informazioni"
-
-#: templates/include/sidebar_right.html:13
-#: templates/include/sidebar_right.html:16
-msgid "System information"
-msgstr "Informazioni di sistema"
-
-#: templates/include/sidebar_right.html:17
-msgid "System information about QGIS-Server etc."
-msgstr "Informazioni di sistema su QGIS-Server ecc."
-
-#: templates/include/sidebar_right.html:23
-msgid "Configurations"
-msgstr "Configurazioni"
-
-#: templates/include/sidebar_right.html:30
-msgid "Edit general data"
-msgstr "Modifica i dati generali"
-
-#: templates/include/sidebar_right.html:31
-msgid "Frontend data and other"
-msgstr "Dati del frontend e altro"
-
-#: templates/include/sidebar_right.html:39
-#, fuzzy
-#| msgid "Adminstration"
-msgid "Django administration"
-msgstr "Amministrazione Django"
-
-#: templates/include/sidebar_right.html:40
-#, fuzzy
-#| msgid "Login to go backend administration system"
-msgid "Go to staff administration section"
-msgstr "Vai alla sezione di amministrazione dello staff"
-
-#: templates/index.html:7
-msgid "Current situation"
-msgstr "Situazione attuale"
-
-#: templates/index.html:19
-#, fuzzy
-#| msgid "Groups list"
-msgid "Groups"
-msgstr "Gruppi"
-
-#: templates/index.html:26
-msgid "Show"
-msgstr "Mostra"
-
-#: templates/index.html:32
-msgid "Module widgets"
-msgstr "Widget modulo"
-
-#: templates/login.html:55
-#: templates/registration/username_recovery_form.html:22
-#, fuzzy
-#| msgid "Forgot your password?"
-msgid "Forgot your username?"
-msgstr "Hai dimenticato il tuo username?"
-
-#: templates/registration/password_reset_complete.html:8
-msgid "Password reset complete"
-msgstr "Reimpostazione password completata"
-
-#: templates/registration/password_reset_complete.html:9
-msgid "Your new password has been set. You can log in now on the"
-msgstr "La tua nuova password è stata impostata. Ora puoi accedere alla"
-
-#: templates/registration/password_reset_complete.html:9
-msgid "log in page"
-msgstr "pagina di accesso"
-
-#: templates/registration/password_reset_confirm.html:9
-msgid "Enter new password"
-msgstr "Inserisci una nuova password"
-
-#: templates/registration/password_reset_confirm.html:16
-msgid "New password"
-msgstr "Nuova password"
-
-#: templates/registration/password_reset_confirm.html:21
-msgid "Repeat password"
-msgstr "Ripeti la password"
-
-#: templates/registration/password_reset_confirm.html:26
-msgid "Change my password"
-msgstr "Cambia la mia password"
-
-#: templates/registration/password_reset_confirm.html:31
-msgid ""
-"The password reset link <strong>was invalid</strong>, possibly because it "
-"has already been used.  Please request a new password reset."
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:59
+msgid "Logs"
 msgstr ""
-"Il link per reimpostare la password <strong>non è valido</strong>, è possibile che sia già stato usato. Per favore esegui una nuova richiesta di reimpostazione password."
 
-#: templates/registration/password_reset_done.html:8
-#: templates/registration/username_recovery_done.html:8
-msgid "Check your inbox."
-msgstr "Controlla la tua casella di posta"
+#: rl_dbsync/templates/rl_dbsync/sync_list.html:85
+#, fuzzy
+#| msgid "Project"
+msgid "New Project File"
+msgstr "Progetto"
 
-#: templates/registration/password_reset_done.html:9
-msgid ""
-"We've emailed you instructions for setting your password. You should receive "
-"the email shortly!"
+#: rl_dbsync/templates/rl_dbsync/sync_task_info.html:11
+msgid "Synchronization Results"
 msgstr ""
-"Ti abbiamo inviato le istruzioni per reimpostare la tua password. Dovresti ricevere una email a breve!"
 
-#: templates/registration/password_reset_email.html:2
+#: rl_dbsync/templates/rl_dbsync/sync_task_info.html:36
+msgid "Datasources updated"
+msgstr ""
+
+#: rl_dbsync/templates/rl_dbsync/sync_task_info.html:61
+msgid "Download Results"
+msgstr ""
+
+#~ msgid "The GetFeatureResponse response is malformed: {}"
+#~ msgstr "La risposta GetFeatureResponse non è valida: {}"
+
+#~ msgid "Input layer is not a point or multipoint layer."
+#~ msgstr "Il layer di input non è un layer di punti o multipunti."
+
+#~ msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
+#~ msgstr "Manca \"qgis_layer_id\", \"new_layer_name\" o \"connection_id\"."
+
+#~ msgid ""
+#~ "Wrong color parameter, color must be a list of three integers (red, "
+#~ "green, blue)."
+#~ msgstr ""
+#~ "Parametro colore errato, il colore deve essere una lista di tre interi "
+#~ "(rosso, verde, blu)."
+
+#~ msgid ""
+#~ "Missing tranparency parameter, because color was specified transparency "
+#~ "is required."
+#~ msgstr ""
+#~ "Parametro trasparenza mancante: avendo specificato il colore, la "
+#~ "trasparenza è obbligatoria."
+
+#~ msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
+#~ msgstr ""
+#~ "Parametro trasparenza errato, la trasparenza deve essere compresa tra 0 e "
+#~ "1."
+
+#~ msgid "Missing stroke_width from style definition."
+#~ msgstr "Manca stroke_width nella definizione dello stile."
+
+#~ msgid "Layer is not compatible with ORS data."
+#~ msgstr "Il layer non è compatibile con i dati ORS."
+
+#~ msgid "Wrong connection_id."
+#~ msgstr "connection_id errato."
+
+#~ msgid ""
+#~ "Either qgis_layer_id or connection_id + layer_name must have a value."
+#~ msgstr "Devi specificare qgis_layer_id oppure connection_id + layer_name."
+
 #, python-format
-msgid ""
-"You're receiving this email because you requested a password reset for your "
-"user account at %(site_name)s."
-msgstr "Hai ricevuto questa email perché hai richiesto la reimpostazione della password per il tuo account su %(site_name)s."
+#~ msgid "Profile not found, available profiles: %s"
+#~ msgstr "Profilo non trovato, profili disponibili: %s"
 
-#: templates/registration/password_reset_email.html:4
-msgid "Please go to the following page and choose a new password:"
-msgstr "Vai alla seguente pagina e scegli una nuova password:"
+#~ msgid "Missing \"locations\" array."
+#~ msgstr "Manca l'array \"locations\"."
 
-#: templates/registration/password_reset_email.html:8
-msgid "Your username, in case you’ve forgotten:"
-msgstr "Il tuo username, nel caso lo avessi dimenticato:"
+#, python-format
+#~ msgid "Max allowed locations: %s"
+#~ msgstr "Numero massimo di locations consentite: %s"
 
-#: templates/registration/password_reset_form.html:12
-#: templates/registration/username_recovery_form.html:12
-msgid "Email no present into database"
-msgstr "Email non presente nel sistema"
+#~ msgid "Malformed locations array."
+#~ msgstr "Array locations non valido."
 
-#: templates/registration/password_reset_form.html:15
-#: templates/registration/username_recovery_form.html:15
-msgid "Checking the CAPTCHA is required"
-msgstr "Il controllo CAPTCHA è obbligatorio"
+#~ msgid "Missing \"range\" array."
+#~ msgstr "Manca l'array \"range\"."
 
-#: templates/registration/password_reset_form.html:23
-msgid ""
-"Enter your email address below, and we'll email instructions for setting a "
-"new one."
-msgstr "Inserisci il tuo indirizzo email qui sotto e ti invieremo le istruzioni per impostarne una nuova."
+#, python-format
+#~ msgid "Max allowed ranges: %s"
+#~ msgstr "Numero massimo di range consentiti: %s"
 
-#: templates/registration/password_reset_form.html:32
-msgid "Send me instruction"
-msgstr "Inviami le istruzioni"
+#~ msgid "Malformed range array."
+#~ msgstr "Array range non valido."
 
-#: templates/registration/password_reset_subject.txt:2
+#, fuzzy
+#~| msgid "Oops! Page not found."
+#~ msgid "Task not found!"
+#~ msgstr "Attività non trovata!"
+
+#~ msgid "Isochrones"
+#~ msgstr "Isochrone"
+
+#~ msgid "Openrouteservice Project"
+#~ msgstr "Progetto Openrouteservice"
+
+#~ msgid "Openrouteservice Projects"
+#~ msgstr "Progetti Openrouteservice"
+
+#~ msgid "Services"
+#~ msgstr "Servizi"
+
+#~ msgid "Edit"
+#~ msgstr "Modifica"
+
+#~ msgid "Cannot create temporary layer for isochrone result."
+#~ msgstr ""
+#~ "Impossibile creare un layer temporaneo per il risultato dell'isochrone."
+
+#~ msgid ""
+#~ "Cannot save isochrone result to destination layer: layer already exists "
+#~ "(use \"qgis_layer_id\" instead)!"
+#~ msgstr ""
+#~ "Impossibile salvare il risultato isochrone nel layer di destinazione: il "
+#~ "layer esiste già (usa \"qgis_layer_id\" invece)!"
+
+#~ msgid "Cannot save isochrone result to destination layer: "
+#~ msgstr ""
+#~ "Impossibile salvare il risultato isochrone nel layer di destinazione: "
+
+#~ msgid "Wrong connection id."
+#~ msgstr "ID connessione errato."
+
+#~ msgid "Error creating destination layer connection."
+#~ msgstr "Errore nella creazione della connessione al layer di destinazione."
+
+#~ msgid "Error creating destination layer: "
+#~ msgstr "Errore nella creazione del layer di destinazione: "
+
+#~ msgid "Error creating destination layer: layer is not valid!"
+#~ msgstr ""
+#~ "Errore nella creazione del layer di destinazione: il layer non è valido!"
+
+#~ msgid "Error saving the destination layer: could not write project!"
+#~ msgstr ""
+#~ "Errore nel salvataggio del layer di destinazione: impossibile scrivere il "
+#~ "progetto!"
+
+#~ msgid "Error adding destination Layer to the project: layer already exists."
+#~ msgstr ""
+#~ "Errore nell'aggiunta del layer di destinazione al progetto: il layer "
+#~ "esiste già."
+
+#, python-format
+#~ msgid "Error opening destination layer %s: layer not found in QGIS project!"
+#~ msgstr ""
+#~ "Errore nell'apertura del layer di destinazione %s: layer non trovato nel "
+#~ "progetto QGIS!"
+
+#~ msgid "Error transforming geometry from 4326 to destination layer CRS."
+#~ msgstr ""
+#~ "Errore nella trasformazione della geometria da 4326 al sistema di "
+#~ "riferimento del layer di destinazione."
+
+#~ msgid "No compatible features returned from isochrone."
+#~ msgstr "Nessuna feature compatibile restituita dall'isochrone."
+
+#~ msgid "Destination layer is not editable."
+#~ msgstr "Il layer di destinazione non è modificabile."
+
+#~ msgid "Error adding features to the destination layer."
+#~ msgstr "Errore nell'aggiunta delle feature al layer di destinazione."
+
+#~ msgid "Error committing features to the destination layer."
+#~ msgstr "Errore nel salvataggio delle feature nel layer di destinazione."
+
+#, python-format
+#~ msgid "Error generating isochrone: %s."
+#~ msgstr "Errore nella generazione dell'isochrone: %s."
+
+#~ msgid "Unknown error adding results to the destination layer."
+#~ msgstr ""
+#~ "Errore sconosciuto nell'aggiunta dei risultati al layer di destinazione."
+
+#~ msgid "error page"
+#~ msgstr "Pagina di errore"
+
+#~ msgid "Access denied"
+#~ msgstr "Accesso negato"
+
+#~ msgid "You don't have grant to access this section"
+#~ msgstr "Non hai i privilegi per accedere a questa sezione"
+
+#~ msgid "Oops! Page not found."
+#~ msgstr "Ops! Pagina non trovata"
+
+#~ msgid "We could not find the page you were looking for."
+#~ msgstr "Non abbiamo trovato la pagina che stavi cercando."
+
+#~ msgid "G3W-ADMIN"
+#~ msgstr "G3W-ADMIN"
+
+#, fuzzy
+#~| msgid "Current situation"
+#~ msgid "Documentation"
+#~ msgstr "Documentazione"
+
+#, fuzzy
+#~| msgid "Change my password"
+#~ msgid "Change password"
+#~ msgstr "Cambia password"
+
+#, fuzzy
+#~| msgid "Sign out"
+#~ msgid "Log out"
+#~ msgstr "Esci"
+
+#~ msgid "Dashboard"
+#~ msgstr "Scrivania"
+
+#, fuzzy
+#~| msgid " Version"
+#~ msgid "Version"
+#~ msgstr "Versione"
+
+#~ msgid ""
+#~ "This website uses cookies to ensure you get the best experience on our "
+#~ "website"
+#~ msgstr ""
+#~ "Questo sito utilizza i cookie per garantirti la migliore esperienza."
+
+#~ msgid "Sign in to start your session"
+#~ msgstr "Accedi per iniziare la tua sessione di lavoro"
+
+#~ msgid "LOGIN ERROR"
+#~ msgstr "ERRORE DI LOGIN"
+
+#~ msgid "Username and/or password uncorrect"
+#~ msgstr "Username e/o password non corretti"
+
+#~ msgid "Sign In"
+#~ msgstr "Accedi"
+
+#~ msgid "Forgot your password?"
+#~ msgstr "Hai dimenticato la password?"
+
+#, fuzzy
+#~| msgid "Sign out"
+#~ msgid "Sign up"
+#~ msgstr "Registrati"
+
+#~ msgid " Version"
+#~ msgstr "Versione"
+
+#~ msgid "Search"
+#~ msgstr "Cerca"
+
+#~ msgid "Frontend"
+#~ msgstr "Frontend"
+
+#~ msgid "Registered on"
+#~ msgstr "Registrato il"
+
+#~ msgid "Last login"
+#~ msgstr "Ultimo accesso"
+
+#~ msgid "Profile"
+#~ msgstr "Profilo"
+
+#~ msgid "Logout"
+#~ msgstr "Esci"
+
+#~ msgid "Information"
+#~ msgstr "Informazioni"
+
+#~ msgid "System information"
+#~ msgstr "Informazioni di sistema"
+
+#~ msgid "System information about QGIS-Server etc."
+#~ msgstr "Informazioni di sistema su QGIS-Server ecc."
+
+#~ msgid "Configurations"
+#~ msgstr "Configurazioni"
+
+#~ msgid "Edit general data"
+#~ msgstr "Modifica i dati generali"
+
+#~ msgid "Frontend data and other"
+#~ msgstr "Dati del frontend e altro"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Django administration"
+#~ msgstr "Amministrazione Django"
+
+#, fuzzy
+#~| msgid "Login to go backend administration system"
+#~ msgid "Go to staff administration section"
+#~ msgstr "Vai alla sezione di amministrazione dello staff"
+
+#~ msgid "Current situation"
+#~ msgstr "Situazione attuale"
+
+#, fuzzy
+#~| msgid "Groups list"
+#~ msgid "Groups"
+#~ msgstr "Gruppi"
+
+#~ msgid "Show"
+#~ msgstr "Mostra"
+
+#~ msgid "Module widgets"
+#~ msgstr "Widget modulo"
+
+#, fuzzy
+#~| msgid "Forgot your password?"
+#~ msgid "Forgot your username?"
+#~ msgstr "Hai dimenticato il tuo username?"
+
+#~ msgid "Password reset complete"
+#~ msgstr "Reimpostazione password completata"
+
+#~ msgid "Your new password has been set. You can log in now on the"
+#~ msgstr "La tua nuova password è stata impostata. Ora puoi accedere alla"
+
+#~ msgid "log in page"
+#~ msgstr "pagina di accesso"
+
+#~ msgid "Enter new password"
+#~ msgstr "Inserisci una nuova password"
+
+#~ msgid "New password"
+#~ msgstr "Nuova password"
+
+#~ msgid "Repeat password"
+#~ msgstr "Ripeti la password"
+
+#~ msgid "Change my password"
+#~ msgstr "Cambia la mia password"
+
+#~ msgid ""
+#~ "The password reset link <strong>was invalid</strong>, possibly because it "
+#~ "has already been used.  Please request a new password reset."
+#~ msgstr ""
+#~ "Il link per reimpostare la password <strong>non è valido</strong>, è "
+#~ "possibile che sia già stato usato. Per favore esegui una nuova richiesta "
+#~ "di reimpostazione password."
+
+#~ msgid "Check your inbox."
+#~ msgstr "Controlla la tua casella di posta"
+
+#~ msgid ""
+#~ "We've emailed you instructions for setting your password. You should "
+#~ "receive the email shortly!"
+#~ msgstr ""
+#~ "Ti abbiamo inviato le istruzioni per reimpostare la tua password. "
+#~ "Dovresti ricevere una email a breve!"
+
+#, python-format
+#~ msgid ""
+#~ "You're receiving this email because you requested a password reset for "
+#~ "your user account at %(site_name)s."
+#~ msgstr ""
+#~ "Hai ricevuto questa email perché hai richiesto la reimpostazione della "
+#~ "password per il tuo account su %(site_name)s."
+
+#~ msgid "Please go to the following page and choose a new password:"
+#~ msgstr "Vai alla seguente pagina e scegli una nuova password:"
+
+#~ msgid "Your username, in case you’ve forgotten:"
+#~ msgstr "Il tuo username, nel caso lo avessi dimenticato:"
+
+#~ msgid "Email no present into database"
+#~ msgstr "Email non presente nel sistema"
+
+#~ msgid "Checking the CAPTCHA is required"
+#~ msgstr "Il controllo CAPTCHA è obbligatorio"
+
+#~ msgid ""
+#~ "Enter your email address below, and we'll email instructions for setting "
+#~ "a new one."
+#~ msgstr ""
+#~ "Inserisci il tuo indirizzo email qui sotto e ti invieremo le istruzioni "
+#~ "per impostarne una nuova."
+
+#~ msgid "Send me instruction"
+#~ msgstr "Inviami le istruzioni"
+
 #, fuzzy, python-format
-#| msgid "Password reset complete"
-msgid "Password reset on %(site_name)s"
-msgstr "Reimpostazione password su %(site_name)s"
+#~| msgid "Password reset complete"
+#~ msgid "Password reset on %(site_name)s"
+#~ msgstr "Reimpostazione password su %(site_name)s"
 
-#: templates/registration/username_recovery_done.html:9
 #, fuzzy
-#| msgid ""
-#| "We've emailed you instructions for setting your password. You should "
-#| "receive the email shortly!"
-msgid "We've emailed you your username. You should receive the email shortly!"
-msgstr "Ti abbiamo inviato il tuo username. Dovresti ricevere una email a breve!"
+#~| msgid ""
+#~| "We've emailed you instructions for setting your password. You should "
+#~| "receive the email shortly!"
+#~ msgid ""
+#~ "We've emailed you your username. You should receive the email shortly!"
+#~ msgstr ""
+#~ "Ti abbiamo inviato il tuo username. Dovresti ricevere una email a breve!"
 
-#: templates/registration/username_recovery_email.html:2
 #, python-format
-msgid ""
-"You're receiving this email because you requested a username recovery for "
-"your user account at %(site_name)s."
-msgstr "Hai ricevuto questa email perché hai richiesto il recupero dello username per il tuo account su %(site_name)s."
+#~ msgid ""
+#~ "You're receiving this email because you requested a username recovery for "
+#~ "your user account at %(site_name)s."
+#~ msgstr ""
+#~ "Hai ricevuto questa email perché hai richiesto il recupero dello username "
+#~ "per il tuo account su %(site_name)s."
 
-#: templates/registration/username_recovery_email.html:4
-msgid "Your username is:"
-msgstr "Il tuo username è:"
+#~ msgid "Your username is:"
+#~ msgstr "Il tuo username è:"
 
-#: templates/registration/username_recovery_form.html:23
 #, fuzzy
-#| msgid ""
-#| "Enter your email address below, and we'll email instructions for setting "
-#| "a new one."
-msgid "Enter your email address below, and we'll email your username."
-msgstr "Inserisci il tuo indirizzo email qui sotto e ti invieremo il tuo username."
+#~| msgid ""
+#~| "Enter your email address below, and we'll email instructions for setting "
+#~| "a new one."
+#~ msgid "Enter your email address below, and we'll email your username."
+#~ msgstr ""
+#~ "Inserisci il tuo indirizzo email qui sotto e ti invieremo il tuo username."
 
-#: templates/registration/username_recovery_form.html:32
 #, fuzzy
-#| msgid "Send me instruction"
-msgid "Send me username"
-msgstr "Inviami lo username"
+#~| msgid "Send me instruction"
+#~ msgid "Send me username"
+#~ msgstr "Inviami lo username"
 
-#: templates/registration/username_recovery_subject.txt:2
 #, python-format
-msgid "Username recovery on %(site_name)s"
-msgstr "Recupero username su %(site_name)s"
+#~ msgid "Username recovery on %(site_name)s"
+#~ msgstr "Recupero username su %(site_name)s"
 
-#: templates/search.html:6
-msgid "Search results for"
-msgstr "Risultati della ricerca per"
+#~ msgid "Search results for"
+#~ msgstr "Risultati della ricerca per"
 
-#: templates/search.html:14
-msgid "Not results found!"
-msgstr "Nessun risultato trovato!"
+#~ msgid "Not results found!"
+#~ msgstr "Nessun risultato trovato!"
 
-#: templates/search.html:16
-msgid "Found "
-msgstr "Trovati "
+#~ msgid "Found "
+#~ msgstr "Trovati "
 
-#: templates/search.html:16
-msgid " results."
-msgstr " risultati."
-
-#
+#~ msgid " results."
+#~ msgstr " risultati."

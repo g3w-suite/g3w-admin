@@ -416,6 +416,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
+
         # Check Geoconstraint rule whit autozoom flagged and calculate new initentext
         try:
             initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
