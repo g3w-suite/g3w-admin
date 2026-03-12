@@ -40,6 +40,9 @@ const state = {
   template:        print?.[0]?.name,
   atlas:           print?.[0]?.atlas,
   atlas_values:    [],
+  atlas_search:    '',
+  atlas_options:   [],
+  atlas_loading:   false,
   rotation:        0,
   scale:           null,
   inner:           [0, 0, 0, 0],
@@ -67,15 +70,15 @@ template: /*html*/`
 
     <!-- CHOOSE A TEMPLATE -->
     <label for = "templates">{{ $t('Template') }}</label>
-    <select
-      id             = "templates"
-      class          = "form-control"
-      v-select2      = "'template'"
-      :select2_value = "template"
-      :style         = "{ marginBottom: atlas && '10px' }"
+    <x-select
+      id      = "templates"
+      :value  = "template"
+      @change = "template = $event.target.value"
+      :style  = "{ marginBottom: atlas && '10px' }"
+      searchable
     >
-      <option v-for = "p in print" :value = "p.name" v-t = "p.label || p.name"></option>
-    </select>
+      <x-option v-for = "p in print" :key="p.name" :value = "p.name">{{ $t(p.label || p.name) }}</x-option>
+    </x-select>
 
     <!-- ADVANCED SETTINGS -->
     <details v-if = "is_customizable" class = "custom-settings">
@@ -104,47 +107,45 @@ template: /*html*/`
 
       <!-- PRINT SCALE -->
       <label for = "scale">{{ $t('Scale') }}</label>
-      <select
-        id             = "scale"
-        class          = "form-control"
-        v-disabled     = "!has_maps"
-        v-select2      = "'scale'"
-        :select2_value = "scale"
-        :createTag     = "true"
-        @change        = "changeScale"
-        ref            = "scales"
+      <x-select
+        id         = "scale"
+        v-disabled = "!has_maps"
+        :value     = "scale"
+        @change    = "onScaleChange"
+        createTag
+        searchable
       >
-        <option v-for = "scale in scales" :value = "scale.value">{{ scale.label }}</option>
-      </select>
+        <x-option v-for = "s in scales" :key = "s.value" :value = "s.value">
+          {{ s.label }}
+        </x-option>
+      </x-select>
 
       <!-- PRINT FORMAT -->
       <label for = "format">{{ $t('Format') }}</label>
-      <select
-        id             = "format"
-        class          = "form-control"
-        v-select2      = "'format'"
-        :select2_value = "format"
+      <x-select
+        id         = "format"
+        :value     = "format"
+        @change    = "format = $event.target.value"
+        searchable
       >
-        <option value = "png">PNG</option>
-        <option value = "jpg">JPG</option>
-        <option value = "svg">SVG</option>
-        <option value = "pdf">PDF</option>
-        <option value = "geopdf">GEOPDF</option>
-      </select>
+        <x-option value = "png">PNG</x-option>
+        <x-option value = "jpg">JPG</x-option>
+        <x-option value = "svg">SVG</x-option>
+        <x-option value = "pdf">PDF</x-option>
+        <x-option value = "geopdf">GEOPDF</x-option>
+      </x-select>
 
       <!-- PRINT DPI -->
       <label for = "dpi">{{ $t('Resolution') }}</label>
-      <select
-        id             = "dpi"
-        class          = "form-control"
-        v-select2      = "'dpi'"
-        :select2_value = "dpi"
-        @change        = "changeDpi"
-        :createTag     = "true"
-        ref            = "dpi"
+      <x-select
+        id        = "dpi"
+        :value    = "dpi"
+        @change   = "onDpiChange"
+        createTag
+        searchable
       >
-        <option v-for = "dpi in dpis" :value = "dpi">{{ dpi }} dpi</option>
-      </select>
+        <x-option v-for = "d in dpis" :key = "d" :value = "d">{{ d }} dpi</x-option>
+      </x-select>
 
       <!-- PRINT LABEL -->
       <div
@@ -157,7 +158,7 @@ template: /*html*/`
             v-for = "label in labels"
             :key  = "label.id"
           >
-            <label :for = "'g3w_label_id_input_'+ label.id"> {{ label.id }}</label>
+            <label :for = "'g3w_label_id_input_' + label.id"> {{ label.id }}</label>
             <input
               :id     = "'g3w_label_id_input_' + label.id"
               class   = "form-control"
@@ -173,11 +174,18 @@ template: /*html*/`
     <!-- ORIGINAL SOURCE: src/componentsPrintSelectAtlasFieldValues.vue@v3.9.3 -->
     <template v-if = "!is_screenshot && atlas && has_autocomplete">
       <label  for = "print_atlas_autocomplete"><span>{{ atlas.field_name }}</span></label>
-      <select
-        id    = "print_atlas_autocomplete"
-        :name = "atlas.field_name"
-        class = "form-control"
-      ></select>
+      <x-select
+        :key            = "template"
+        id              = "print_atlas_autocomplete"
+        :value          = "atlas_values.join(',')"
+        @change         = "onAtlasChange"
+        @search-input   = "atlas_search = $event.detail.value"
+        multiple
+        searchable
+      >
+        <x-option v-for = "option in atlas_options" :key = "option" :value = "option">{{ option }}</x-option>
+      </x-select>
+      <div v-if = "atlas_loading" style = "font-size: 0.85em; color: #999; margin-top: 4px;">{{ $t('Searching ...') }}</div>
     </template>
 
     <!-- PRINT ATLAS -->
@@ -194,18 +202,17 @@ template: /*html*/`
     <!-- SCREENSHOT FORMAT -->
     <template v-if = "is_screenshot">
       <label for = "format">{{ $t('Format') }}</label>
-      <select
-        id        = "format"
-        ref       = "select"
-        style     = "width: 100%;"
-        :search   = "false"
-        v-select2 = "'screenshot_type'"
+      <x-select
+        id     = "format"
+        :value = "screenshot_type"
+        @change = "screenshot_type = $event.target.value"
       >
-        <option
-          v-for  = "type in screenshot_types"
-          :value = "type"
-        >{{ $t(({ screenshot: 'PNG', geoscreenshot: 'GeoTIFF'})[type]) }}</option>
-      </select>
+        <x-option
+          v-for     = "type in screenshot_types"
+          :key      = "type"
+          :value    = "type"
+        >{{ $t(({ screenshot: 'PNG', geoscreenshot: 'GeoTIFF'})[type]) }}</x-option>
+      </x-select>
     </template>
 
     <!-- SUBMIT BUTTON -->
@@ -402,13 +409,6 @@ template: /*html*/`
           return;
         }
 
-        // destroy select2 dom element and remove all events
-        if (this.select2) {
-          this.select2.select2('destroy');
-          this.select2.off();
-          this.select2 = null;
-        }
-
         Object.assign(this, {
           disabled:     false,
           maps:         print.maps,
@@ -419,7 +419,9 @@ template: /*html*/`
 
         //In case of current atlas template just init select
         if (this.atlas) {
-          this.initSelect2Field();
+          this.atlas_search = '';
+          this.atlas_options = [];
+          this.atlas_values = [];
           return;
         }
         this.showPrintArea(!this.is_screenshot);
@@ -430,7 +432,8 @@ template: /*html*/`
     async has_autocomplete(b) {
       if (b) {
         await this.$nextTick();
-        this.initSelect2Field();
+        this.atlas_search = '';
+        this.atlas_options = [];
       }
     },
 
@@ -469,6 +472,30 @@ template: /*html*/`
         await this.$nextTick();
         this._skip_atlas_check = false;
         this.disabled = '' === value.trim();
+      }
+    },
+
+    /**
+     * Perform atlas search
+     */
+    atlas_search: {
+      async handler(atlas_search) {
+        try {
+          if (!this.atlas || !atlas_search || atlas_search.length < 1) {
+            this.atlas_options = [];
+            return;
+          }
+          this.atlas_loading = true;
+          this.atlas_options = (await getCatalogLayerById(this.atlas.qgs_layer_id).getFilterData({
+            suggest: `${this.atlas.field_name}|${atlas_search}`,
+            unique:  this.atlas.field_name,
+          }));
+        } catch (e) {
+          console.warn('Atlas search error:', e);
+          this.atlas_options = [];
+        } finally {
+          this.atlas_loading = false;
+        }
       }
     },
 
@@ -512,12 +539,13 @@ template: /*html*/`
     /**
      * On scale change set print area
      */
-    changeScale() {
+    onScaleChange(event) {
+      this.scale = event.target.value;
+      
       // custom scale provided by user (eg. "1:2300")
       try {
-        if (this.scale.includes(':')) {
+        if (this.scale && this.scale.includes(':')) {
           const scale = Number(this.scale.split(':')[1].trim());
-          this.$refs.scales.children.at(-1).value = scale;
           this.scale = scale;
         }
       } catch(e) {
@@ -532,11 +560,8 @@ template: /*html*/`
 
       // eg. when is less than minimum scale permission
       if (this.scale < 0) {
-        this.state.scale = this.state.scales.at(-1).value;
+        this.scale = this.scales[this.scales.length - 1].value;
       }
-
-      // update select2 value
-      $(this.$refs.scales).val(this.scale).trigger('change');
 
       if (this.scale) {
         this._setPrintArea();
@@ -546,12 +571,12 @@ template: /*html*/`
     /**
      * @since 3.10.0
      */
-    changeDpi() {
-      // check dpi if si a NaN
+    onDpiChange(event) {
+      this.dpi = event.target.value;
+      
+      // check dpi if is a NaN
       if (Number.isNaN(Number(this.dpi))) {
         this.dpi = this.dpis[0];
-        //set value
-        $(this.$refs.dpi).val(this.dpi).trigger('change');
       }
     },
 
@@ -766,9 +791,6 @@ template: /*html*/`
      * @param { boolean } show when true it will close content
      */
     showPrintArea(show) {
-      if (!show && this.select2) {
-        this.select2.val(null).trigger('change');
-      }
       if (!show) {
         this.atlas_values = [];
         this.print_extent = null;
@@ -849,48 +871,16 @@ template: /*html*/`
       this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units));
     },
 
-    initSelect2Field() {
-      this.select2 = $('#print_atlas_autocomplete').select2({
-        width: '100%',
-        multiple: true,
-        minimumInputLength: 1,
-        ajax: {
-          delay: 500,
-          transport: async (d, ok, ko) => {
-            try {
-              ok({
-                results: (await getCatalogLayerById(this.atlas.qgs_layer_id).getFilterData({
-                  suggest: `${this.atlas.field_name}|${d.data.q}`,
-                  unique: this.atlas.field_name,
-                })).map(v => ({ id: v, text: v }))
-              });
-            } catch(e) {
-              console.warn(e);
-              ko(e);
-            }
-          }
-        },
-        /**
-         * @param { Object } params
-         * @param params.term the term that is used for searching
-         * @param { Object } data
-         * @param data.text the text that is displayed for the data object
-         */
-        matcher: (params, data) => {
-          const search = params.term ? params.term.toLowerCase() : params.term;
-          if ('' === (search || '').toString().trim())                             { return data; }        // no search terms → get all of the data
-          if (data.text.toLowerCase().includes(search) && undefined !== data.text) { return { ...data }; } // the searched term
-          return null;                                                                                     // hide the term
-        },
-        language: {
-          noResults:     () => _('No results'),
-          errorLoading:  () => _('Error Loading Data'),
-          searching:     () => _('Searching ...'),
-          inputTooShort: d => `${_('Please enter')} ${d.minimum - d.input.length} ${_('or more characters')}`,
-        },
-      });
-      this.select2.on('select2:select',   e => { this.atlas_values.push(e.params.data.id); });
-      this.select2.on('select2:unselect', e => { this.atlas_values = this.atlas_values.filter(v => v != e.params.data.id); }); // NB: != instead of !== because sometime we need to compare "numbers" with "strings"
+    onAtlasChange(event) {
+      const selected = event.target.value;
+      if (selected) {
+        this.atlas_values = selected.split(',').filter(v => v);
+        // Resetta la ricerca per forzare l'utente a digitare di nuovo
+        this.atlas_search = '';
+        this.atlas_options = [];
+        // Chiudi la dropdown
+        event.target.close();
+      }
     },
 
     /**
@@ -954,9 +944,10 @@ template: /*html*/`
    */
   async mounted() {
     await this.$nextTick();
-    // when default print template is "atlas" → initialize select2
+    // when default print template is "atlas" → initialize autocomplete
     if (this.atlas) {
-      this.initSelect2Field();
+      this.atlas_search = '';
+      this.atlas_options = [];
     }
 
     document.body.appendChild(this.$refs.dialog);
@@ -1060,17 +1051,6 @@ document.head.insertAdjacentHTML(
 <style>
 .print-modal label:not(:first-of-type) {
   margin-top: 8px;
-}
-
-.print-modal .select2-container--open {
-  width: 100%;
-}
-.print-modal .select2-container--open input.select2-search__field {
-  color: #555;
-  width: 100%;
-}
-.print-modal .select2.select2-container {
-  display: block;
 }
 
 .print-modal .print-labels-content {

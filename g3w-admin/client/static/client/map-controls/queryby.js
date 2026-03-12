@@ -11,7 +11,6 @@ const ApplicationState   = g3w.state;
 const GUI                = g3w.app;
 const MapControl         = g3w.Control;
 const {
-  getCatalogLayerById,
   PickCoordinatesInteraction,
   throttle,
 } = g3w.utils;
@@ -129,15 +128,28 @@ export class QueryBy extends MapControl {
                 </a>
                 <!-- SPATIAL METHOD -->
                 <div style = "padding: 5px;">
-                  <select :search = "false" v-select2 = "'method'">
-                    <option v-for = "method in methods" :value = "method" v-t = "'mapcontrols.queryby.methods.' + method"></option>
-                  </select>
+                  <x-select :value="method" @change="method = $event.target.value">
+                    <x-option v-for="_method in methods" :key="_method" :value="_method">
+                    {{ $t('mapcontrols.queryby.methods.' + _method) }}
+                    </x-option>
+                  </x-select>
                 </div>
                 <!-- QUERY TYPE -->
                 <div style = "padding: 5px;">
-                  <select :search = "false" v-select2 = "'type'" :templateSelection = "templateType" :templateResult = "templateType">
-                    <option v-for = "type in types" :value = "type" v-t = "'mapcontrols.queryby.' + type + '.tooltip'"></option>
-                  </select>
+                  <x-select :value="type" @change="type = $event.target.value">
+                    <x-option v-for="_type in types" :key="_type" :value="_type">
+                      <i :class="({
+                        'querybbox':          'far fa-square',
+                        'querybycircle':      'far fa-circle',
+                        'querybydrawpolygon': 'fas fa-draw-polygon',
+                        'querybypolygon':     'fa fa-hand-pointer',
+                        'querybyfreehand':    'fas fa-pen-fancy',
+                      })[_type]"
+                    ></i>
+                    &nbsp;&nbsp;
+                    {{ $t('mapcontrols.queryby.' + _type + '.tooltip') }}
+                    </x-option>
+                  </x-select>
                 </div>
                 <!-- RADIUS TYPE IN METERS-->
                 <div v-if = "'querybycircle' === type" style = "padding: 5px;">
@@ -163,11 +175,19 @@ export class QueryBy extends MapControl {
                 <!-- SELECTED LAYER -->
                 <div style = "padding: 5px;">
                   <label v-t = "'mapcontrols.queryby.layer'"></label>
-                  <select v-if = "!reloading" ref = "layer" :select2_value = "selectedLayer" v-select2 = "'selectedLayer'" :templateSelection = "templateLayer" :templateResult = "templateLayer">
-                    <option v-t = "all" :value = "'__ALL__'"></option>
-                    <option v-for = "layer in layers" :value = "layer.getId()" :selected = "selectedLayer === layer.getId()">{{ layer.get('name') }}</option>
-                    <option :value = "'__NEW__'" v-t = "'mapcontrols.queryby.new'"></option>
-                  </select>
+                  <x-select 
+                    v-if    ="!reloading" 
+                    :value  = "selectedLayer" 
+                    @change = "selectedLayer = $event.target.value"
+                    ref     = "layer"
+                    searchable
+                  >
+                    <x-option :value="'__ALL__'">{{ $t(all) }}</x-option>
+                    <x-option v-for="(layer, index) in layers" :key="layer.getId() + '_' + index" :value="layer.getId()">
+                      <i :class="g3wtemplate.getFontClass(layer.isVisible() ? 'eye' : 'eye-close')"></i>&nbsp;&nbsp;{{ layer.get('name') }}
+                    </x-option>
+                    <x-option :value="'__NEW__'">{{ $t('mapcontrols.queryby.new') }}</x-option>
+                  </x-select>
                 </div>
                 <!-- HELP TEXT -->
                 <div ref = "help" v-t = "help"></div>
@@ -246,7 +266,7 @@ export class QueryBy extends MapControl {
                   }
 
                   // perform request again
-                  if ('__NEW__' !== value && 'querybypolygon' !== this.type) {
+                  if ('__NEW__' !== value) {
                     this.reset();
                   }
                 }
@@ -287,24 +307,6 @@ export class QueryBy extends MapControl {
                 this.control.setEnable(_hasVisible(this.control));
                 this.reloading = false;
               },
-              templateType(state) {
-                if (!state.id) { return state.text }
-                return $(/*html*/`<span><i class="${ ({
-                  'querybbox':          'far fa-square',
-                  'querybycircle':      'far fa-circle',
-                  'querybydrawpolygon': 'fas fa-draw-polygon',
-                  'querybypolygon':     'fa fa-hand-pointer',
-                  'querybyfreehand':    'fas fa-pen-fancy',
-                })[state.id] }"></i>&nbsp;&nbsp;${state.text}</span>`);
-              },
-              templateLayer(state) {
-                if (!state.id || '__NEW__' === state.id) { return state.text; }
-                const externalLayers = GUI.getExternalLayers('vector').map(l => l._externalLayer);
-                const layer = getCatalogLayerById(state.id) || externalLayers.find(l => state.id === l.get('id'));
-                /** @FIXME layer is undefined when removing an external layer */
-                const icon = ('__ALL__' === state.id || !layer ? '' : /*html */ `<i class="${ GUI.getFontClass( layer.isVisible() ? 'eye' : 'eye-close') }"></i>&nbsp;&nbsp;`)
-                return $(/*html*/`<span>${ icon }${ state.text }</span>`);  
-              } 
             },
             mounted() {
               CONTROLS['queryby'].usermessage = this;
@@ -490,11 +492,12 @@ export class QueryBy extends MapControl {
         const control = CONTROLS[t];
         return (control.layers || []).map(layer => Vue.watch(
           () => layer.state?.visible ?? layer.visible,
-          () => {
+          async () => {
+            await Vue.nextTick();
+
             // toggle "eye" / "eye-close" icon
-            if (this.usermessage) {
-              $(this.usermessage.$refs.layer).trigger('change');
-            }
+            this.usermessage?.$refs?.layer?.refresh();
+
             // toggle control interaction
             control.setEnable(control.isToggled() && _hasVisible(control));
             control._interaction.setActive(control.getEnable());
