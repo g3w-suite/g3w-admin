@@ -434,7 +434,7 @@
         if (relations && !plot._rel.data) {
           plot._rel.data = relations;
         } else if (relations) {
-          Object.keys(relations).forEach(id => { plot._rel.data[id] = relations[id]; });
+          Object.keys(relations).forEach(id => plot._rel.data[id] = relations[id]);
         }
 
         // data has a relations attributes data
@@ -448,7 +448,7 @@
                 .forEach(p => {
                   p.loaded = true;
                   p.data   = r.data;
-                  p.title  = `${father_relations.find(rel => rel.getId() === id)?.getName()} ${p.label}`;
+                  p.title  = `${father_relations.find(rel => id === rel.getId())?.getName()} ${p.label}`;
                   // get father filter plots
                   if (plot.filters.length && !(`relation.${plot.filters[0]}` in plot.filters)) {
                     //set child plot filter
@@ -467,7 +467,7 @@
                     tools:   p.tools,
                     layerId: p.qgs_layer_id,
                     title:   p.title,
-                    data:    (is_error ?? false) ? null : p.data[0],
+                    data:    (is_error ?? false) ? null : p.data,
                   });
               });
             })
