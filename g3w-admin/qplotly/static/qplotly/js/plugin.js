@@ -49,8 +49,22 @@
         rel:  null,      // relation data
       });
 
+      // //FAKE TEST
+      // this.config.plots.push({
+      //   type: 'multiplots',
+      //   plots: this.config.plots.filter(p => "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a" === p.qgs_layer_id),
+      //   id : 2000,
+      //   label: "MULTIPLOTS",
+      //   show: true,
+      //   show_position: 'sidebarquery',
+      //   show_on_start: false,
+      //   qgs_layer_id: "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
+      // })
+      
+
       // loop over plots
       this.config.plots.forEach(plot => {
+        
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
 
         this.#LAYERS.push(layer);
@@ -318,10 +332,12 @@
                   }, 0)
               )
             ) {
+              // no further requests needed, use cached data
+              c_cache.push(plot);
               return Promise.resolve({
                 result:    true,
                 data:      plot.data,
-                relations: plot._rel && plot._rel.data,
+                relations: plot?._rel?.data,
               });
             }
 
@@ -344,8 +360,8 @@
                 .forEach(r => {
                   c_cache.push(plot);
                   promise = plot.loaded
-                    ? Promise.resolve({ data: plot.data })
-                    : XHR.get({
+                    ? Promise.resolve({ result: true, data: plot.data })
+                    : Promise.allSettled((plot.plots ?? [plot]).map(plot => XHR.get({
                         url: `/qplotly/api/trace/${this.config?.gid.split(':')[1]}/${plot.qgs_layer_id}/${plot.id}/`,
                         params: {
                           relationonetomany: r,
@@ -364,6 +380,19 @@
                           // in_bbox parameter (in case of tool map toggled)
                           in_bbox: (this.state.bbox_ids.length > 0 ? -1 !== this.state.bbox_ids.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
                         }
+                    }))).then(results => {
+                        // normalize the result of multiple XHR requests into a single object
+                        const success = results.every(r => r.status === 'fulfilled' && r.value?.result);
+                        const data = results.flatMap(r => r.value?.data || []);
+                        const relations = results.reduce((acc, r) => {
+                            if (r.value?.relations) {
+                                Object.keys(r.value.relations).forEach(key => {
+                                    acc[key] = (acc[key] || []).concat(r.value.relations[key]);
+                                });
+                            }
+                            return acc;
+                        }, {});
+                        return { result: success, data, relations };
                     });
                   promises.push(promise);
                 });
@@ -386,13 +415,12 @@
         if (!charts[plot.id]) {
           charts[plot.id] = [];
         }
-
         charts[plot.id].push({
           filters: plot.filters,
           tools:   plot.tools,
           layerId: plot.qgs_layer_id,
           title:   plot.label,
-          data:    (is_error ?? false) ? null : plot.data[0],
+          data:    (is_error ?? false) ? null : plot.data,
         });
 
         // skip on relation or invalid response
@@ -406,7 +434,7 @@
         if (relations && !plot._rel.data) {
           plot._rel.data = relations;
         } else if (relations) {
-          Object.keys(relations).forEach((id) => { plot._rel.data[id] = relations[id]; });
+          Object.keys(relations).forEach(id => { plot._rel.data[id] = relations[id]; });
         }
 
         // data has a relations attributes data
@@ -416,7 +444,7 @@
           .forEach(id => relations[id]
             .forEach(r => {
               this.config.plots
-                .filter(p => p.show && p.id === r.id)
+                .filter(p => p.show && r.id == p.id)
                 .forEach(p => {
                   p.loaded = true;
                   p.data   = r.data;

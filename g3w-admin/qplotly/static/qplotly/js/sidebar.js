@@ -163,8 +163,21 @@ export default ({
             await this.$nextTick();
             const plot_container = this.$refs[`${plotId}`][0];
             const svg_container = plot_container?.querySelector('.svg-container');
-            // no data
-            if (!chart?.data?.[({ 'pie': 'values', 'scatterternary': 'a', 'scatterpolar': 'r' })[chart?.data?.type] || 'x']?.length) {
+            // fold multi‑plot arrays into a single trace list
+            let traces = chart.data;
+            if (Array.isArray(traces[0])) {
+              // chart.data is an array of arrays: flatten one level
+              traces = traces.flat();
+            }
+
+            // no data check (applies to flattened traces)
+            const noData =
+              traces.length === 1 &&
+              !traces[0][({ pie: 'values', scatterternary: 'a', scatterpolar: 'r' })[
+                traces[0]?.type
+              ] || 'x']?.length;
+
+            if (noData) {
               if (!plot_container.querySelector('.no_data')) {
                 plot_container.innerHTML = /* html */ `
                   <div class="no_data" style="display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
@@ -175,9 +188,10 @@ export default ({
               // retrieve "trace-config" from cache
               this.draw.configs = this.draw.configs || {}
               if (!this.draw.configs[plotId]) {
-                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${plotId}/`)).json()).data;
+                const plot = this.service.config.plots.find(p => plotId === p.id);
+                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${(plot.plots ?? [plot, plot]).at(-1).id}/`)).json()).data;
               }
-              const { layout, config } = this.draw.configs[plotId];
+              const { layout = {}, config = {} } = this.draw.configs[plotId];
               layout.title  = chart.title;
               // plot bg-color
               plot_container.parentNode.style.backgroundColor = layout.plot_bgcolor || '#fff';
@@ -196,7 +210,7 @@ export default ({
                 await Plotly.Plots.resize(plot_container);
               } else {
                 plot_container.innerHTML = '';
-                await Plotly.newPlot(plot_container, [chart.data] , layout, config);
+                await Plotly.newPlot(plot_container, traces , layout, config);
               }
             }
           } catch (e) {
