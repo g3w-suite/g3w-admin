@@ -11,6 +11,7 @@ __date__ = '2026-03-12 14:50:30'
 __copyright__ = 'Copyright Gis3w'
 
 
+from django.conf import settings
 from qdjango.apps import QGS_SERVER
 from qgis.core import (
     Qgis,
@@ -21,11 +22,6 @@ from qgis.server import (
     QgsServerFilter,
 )
 
-# Reserved QGIS print layout labels
-RESERVED_PRINT_LAYOUT_LABELS = [
-    'g3w_username', # Reserved for the username of the logged in user
-    'g3w_user_email' # Reserved for the email of the logged in user
-]
 
 class ReservedLabelsPrintFilter(QgsServerFilter):
     """
@@ -53,7 +49,7 @@ class ReservedLabelsPrintFilter(QgsServerFilter):
             return
         
         # Set the reserved labels values
-        for label in RESERVED_PRINT_LAYOUT_LABELS:
+        for label in settings.RESERVED_PRINT_LAYOUT_LABELS:
             if label == 'g3w_username':
                 try:
                     handler.setParameter(label, QGS_SERVER.user.username)
