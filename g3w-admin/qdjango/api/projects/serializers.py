@@ -27,6 +27,7 @@ from qdjango.utils.structure import (
 )
 from qdjango.utils.session import reset_filtertoken
 from qdjango.api.layers.serializers import FilterLayerSavedSerializer
+from qdjango.server_filters.print.reservedlabels import RESERVED_PRINT_LAYOUT_LABELS
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
@@ -429,10 +430,20 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except Exception as e:
             logger.error(f'[Project serializer] Initextent by geocontraint error: {str(e)}')
 
+
+        # Add print layouts
+        # ---------------------------------------------------------
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
-        # Ordering
+        
+        # Ordering layouts by name
         ret['print'].sort(key=lambda x: x['name'])
+
+        # Filter labels reserved for print layout
+        for layout in ret['print']:
+            for label in layout['labels']:
+                if label['id'] in RESERVED_PRINT_LAYOUT_LABELS:
+                    layout['labels'].pop(layout['labels'].index(label))
 
         # Get layer which request.user can view:
         if self.request:
