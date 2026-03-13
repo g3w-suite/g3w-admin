@@ -334,7 +334,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     if default_value:
                         toRes[field.name()]['input']['options']['default'] = default_value
 
-                    if fieldType == FIELD_TYPE_BOOLEAN:
+                    if fieldType == FIELD_TYPE_BOOLEAN and toRes[field.name()]['input']['type'] in (FORM_FIELD_TYPE_RADIO, FORM_FIELD_TYPE_CHECK):
                         toRes[field.name()]['input']['options']['values'] = [
                                 {'checked': True, 'value': True},
                                 {'checked': False, 'value': False}
