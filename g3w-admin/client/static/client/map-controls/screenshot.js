@@ -21,6 +21,7 @@ const {
   getCatalogLayerById,
   saveBlob,
   sameOrigin,
+  debounce,
 } = g3w.utils;
 
 const _                = g3w.gettext;
@@ -40,7 +41,6 @@ const state = {
   template:        print?.[0]?.name,
   atlas:           print?.[0]?.atlas,
   atlas_values:    [],
-  atlas_search:    '',
   atlas_options:   [],
   atlas_loading:   false,
   rotation:        0,
@@ -172,25 +172,26 @@ template: /*html*/`
 
     <!-- PRINT ATLAS -->
     <!-- ORIGINAL SOURCE: src/componentsPrintSelectAtlasFieldValues.vue@v3.9.3 -->
-    <template v-if = "!is_screenshot && atlas && has_autocomplete">
+    <template v-if = "!is_screenshot && atlas && atlas.field_name">
       <label  for = "print_atlas_autocomplete"><span>{{ atlas.field_name }}</span></label>
       <x-select
-        :key            = "template"
-        id              = "print_atlas_autocomplete"
-        :value          = "atlas_values.join(',')"
-        @change         = "onAtlasChange"
-        @search-input   = "atlas_search = $event.detail.value"
+        :key                = "template"
+        id                  = "print_atlas_autocomplete"
+        :value              = "JSON.stringify(atlas_values)"
+        @change             = "onAtlasChange"
+        @search-input       = "onAtlasSearch"
+        :search-placeholder = "$t('Please enter') + ' 1 ' + $t('or more characters')"
         multiple
         searchable
+        v-disabled          = "atlas_loading"
       >
-        <x-option v-for = "option in atlas_options" :key = "option" :value = "option">{{ option }}</x-option>
+        <x-option v-for = "option in atlas_options" :key = "option" :value = "option" :selected="atlas_values.includes(option)">{{ option }}</x-option>
       </x-select>
-      <div v-if = "atlas_loading" style = "font-size: 0.85em; color: #999; margin-top: 4px;">{{ $t('Searching ...') }}</div>
     </template>
 
     <!-- PRINT ATLAS -->
     <!-- ORIGINAL SOURCE: src/components/PrintFidAtlasValues.vue@v3.9.3 -->
-    <template v-if = "!is_screenshot && atlas && !has_autocomplete">
+    <template v-if = "!is_screenshot && atlas && !atlas.field_name">
       <label><span>fids [max: {{ atlas.feature_count - 1 }}]</span></label>
       <input class = "form-control" v-model = "atlas_values" @keydown.space.prevent>
       <div id = "fid-print-atals-instruction">
@@ -343,11 +344,6 @@ template: /*html*/`
       return (this.maps || []).length > 0;
     },
 
-    //in the case of current template is atlas and has field_name
-    has_autocomplete() {
-      return !!(this.atlas && this.atlas.field_name);
-    },
-
     /** @since 3.10.0  */
     lang() {
       return ApplicationState.language;
@@ -419,7 +415,6 @@ template: /*html*/`
 
         //In case of current atlas template just init select
         if (this.atlas) {
-          this.atlas_search = '';
           this.atlas_options = [];
           this.atlas_values = [];
           return;
@@ -429,21 +424,13 @@ template: /*html*/`
       }
     },
 
-    async has_autocomplete(b) {
-      if (b) {
-        await this.$nextTick();
-        this.atlas_search = '';
-        this.atlas_options = [];
-      }
-    },
-
     atlas_values: {
       immediate: true,
       async handler(vals) {
         if (this._skip_atlas_check || !this.atlas) {
           return;
         }
-        if (this.has_autocomplete) {
+        if (this.atlas?.field_name) {
           this.disabled = 0 === vals.length;
           return;
         }
@@ -472,30 +459,6 @@ template: /*html*/`
         await this.$nextTick();
         this._skip_atlas_check = false;
         this.disabled = '' === value.trim();
-      }
-    },
-
-    /**
-     * Perform atlas search
-     */
-    atlas_search: {
-      async handler(atlas_search) {
-        try {
-          if (!this.atlas || !atlas_search || atlas_search.length < 1) {
-            this.atlas_options = [];
-            return;
-          }
-          this.atlas_loading = true;
-          this.atlas_options = (await getCatalogLayerById(this.atlas.qgs_layer_id).getFilterData({
-            suggest: `${this.atlas.field_name}|${atlas_search}`,
-            unique:  this.atlas.field_name,
-          }));
-        } catch (e) {
-          console.warn('Atlas search error:', e);
-          this.atlas_options = [];
-        } finally {
-          this.atlas_loading = false;
-        }
       }
     },
 
@@ -802,7 +765,14 @@ template: /*html*/`
       //Initialize scales 
       if (show && !this._initialized) {
         const view = GUI.getMap().getView();
-        this._setScales(view.getMaxResolution());
+        const maxRes   = view.getMaxResolution();
+        const units    = GUI.getMapUnits();
+        const mapScale = getScaleFromResolution(maxRes, units);
+        const scales   = PRINT_SCALES.sort((a, b) => b.value - a.value);
+        const below    = scales.filter(s => s.value < mapScale);           // all scales below mapScale
+        const above    = scales.findLast(s => s.value >= mapScale);        // first scale above mapScale
+        this.scales    = (above ? [above] : []).concat(below);
+        this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units));
         this._initialized = true;
         const resolution  = view.getResolution();
         // set current scale
@@ -856,30 +826,42 @@ template: /*html*/`
       GUI.setModal(false);
     },
 
-    /**
-     * Set all scales based on max resolution
-     *
-     * @param maxRes maximum resolution
-     */
-    _setScales(maxRes) {
-      const units    = GUI.getMapUnits();
-      const mapScale = getScaleFromResolution(maxRes, units);
-      const scales   = PRINT_SCALES.sort((a, b) => b.value - a.value);
-      const below    = scales.filter(s => s.value < mapScale);           // all scales below mapScale
-      const above    = scales.findLast(s => s.value >= mapScale);        // first scale above mapScale
-      this.scales    = (above ? [above] : []).concat(below);
-      this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units));
+    onAtlasChange(e) {
+      const selected    = e.target.value;
+      this.atlas_values = (selected || '').split(',').filter(v => v);
+      // hide dropdown
+      e.target.close();
+      // auto reset (force new user input)
+      const reset = event => {
+        if (event.newState === 'open') {
+          this.atlas_options = [];
+          e.target.container.removeEventListener('toggle', reset);
+        }
+      };
+      e.target.container.addEventListener('toggle', reset);
+      // auto reset options (when no value)
+      if (!selected) {
+        this.atlas_options = [];
+      }
     },
 
-    onAtlasChange(event) {
-      const selected = event.target.value;
-      if (selected) {
-        this.atlas_values = selected.split(',').filter(v => v);
-        // Resetta la ricerca per forzare l'utente a digitare di nuovo
-        this.atlas_search = '';
+    async onAtlasSearch(e) {
+      try {
+        const atlas_search = e.detail.value;
+        if (!this.atlas || !atlas_search.length) {
+          this.atlas_options = [];
+          return;
+        }
+        this.atlas_loading = true;
+        this.atlas_options = (await getCatalogLayerById(this.atlas.qgs_layer_id).getFilterData({
+          suggest: `${this.atlas.field_name}|${atlas_search}`,
+          unique:  this.atlas.field_name,
+        }));
+      } catch (e) {
+        console.warn('Atlas search error:', e);
         this.atlas_options = [];
-        // Chiudi la dropdown
-        event.target.close();
+      } finally {
+        this.atlas_loading = false;
       }
     },
 
@@ -939,17 +921,14 @@ template: /*html*/`
     };
   },
 
+  created() {
+    this.onAtlasSearch = debounce(this.onAtlasSearch.bind(this), 400);
+  },
+
   /**
    * @since 3.10.2
    */
   async mounted() {
-    await this.$nextTick();
-    // when default print template is "atlas" → initialize autocomplete
-    if (this.atlas) {
-      this.atlas_search = '';
-      this.atlas_options = [];
-    }
-
     document.body.appendChild(this.$refs.dialog);
 
     this.$refs.dialog.addEventListener('close', () => {

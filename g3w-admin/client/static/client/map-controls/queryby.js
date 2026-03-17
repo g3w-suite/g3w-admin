@@ -102,30 +102,20 @@ export class QueryBy extends MapControl {
         title:     'Query area',
         type:      'tool',
         iconClass: 'info',
-        closable:  false,
+        closable:  true,
         hooks: {
           body: {
             data: () => ({
               types:           this.types,
               type:            this.types[0],
               methods:         ['intersects', 'within'],
-              method:          this.getSpatialMethod(),
+              method:          this.getSpatialMethod() ?? 'intersects',
               layers:          [],
               selectedLayer:   (GUI.getSelectedLayer() || { getId() { return '__ALL__'; } }).getId(), // TODO: use optional chaining instead: GUI.getSelectedLayer()?.getId() || '__ALL__'
               reloading:       true,
             }),
             template: /* html */ `
               <div style="width: 100%;">
-                <!-- DOCS URL -->
-                <a
-                  :href           = "'https://g3w-suite.readthedocs.io/en/v3.9.x/g3wsuite_client.html#map-controls'"
-                  target          = "_blank"
-                  style           = "position: absolute;inset: 1em 1em auto auto;"
-                  data-i18n-title = "Docs"
-                  data-placement  = "bottom"
-                >
-                  <i aria-hidden = "true" class = "fa fa-external-link-alt"></i>
-                </a>
                 <!-- SPATIAL METHOD -->
                 <div style = "padding: 5px;">
                   <x-select :value="method" @change="method = $event.target.value">
@@ -182,11 +172,11 @@ export class QueryBy extends MapControl {
                     ref     = "layer"
                     searchable
                   >
-                    <x-option :value="'__ALL__'">{{ $t(all) }}</x-option>
-                    <x-option v-for="(layer, index) in layers" :key="layer.getId() + '_' + index" :value="layer.getId()">
+                    <x-option value="__ALL__">{{ $t(all) }}</x-option>
+                    <x-option v-for="(layer, index) in layers" :key="layer.getId()" :value="layer.getId()">
                       <i :class="g3wtemplate.getFontClass(layer.isVisible() ? 'eye' : 'eye-close')"></i>&nbsp;&nbsp;{{ layer.get('name') }}
                     </x-option>
-                    <x-option :value="'__NEW__'">{{ $t('mapcontrols.queryby.new') }}</x-option>
+                    <x-option value="__NEW__">{{ $t('mapcontrols.queryby.new') }}</x-option>
                   </x-select>
                 </div>
                 <!-- HELP TEXT -->
