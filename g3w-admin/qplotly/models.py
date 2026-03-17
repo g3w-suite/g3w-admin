@@ -20,6 +20,15 @@ class QplotlyWidget(models.Model):
 
     layers = models.ManyToManyField(Layer)
 
+    related_widgets = models.ManyToManyField(
+        'self',
+        through='QplotlyWidgetRelation',
+        symmetrical=False,
+        blank=True,
+        related_name='associated_by',
+        verbose_name=_('Related widgets'),
+    )
+
     order = models.PositiveIntegerField(
         _('Order'),
         default=0,
@@ -56,6 +65,38 @@ class QplotlyWidget(models.Model):
         # compare datasources
         if self.datasource and layer.datasource != self.datasource:
             raise ValidationError(_(f'Layer DataPlotly settings layer datasource is not equal to datasource into values.'))
+
+
+class QplotlyWidgetRelation(models.Model):
+    """
+    Intermediate model for the many-to-many relation between QplotlyWidgets.
+    Stores metadata such as ordering on the relation.
+    """
+    source = models.ForeignKey(
+        QplotlyWidget,
+        on_delete=models.CASCADE,
+        related_name='widget_relations',
+        verbose_name=_('Source widget'),
+    )
+    target = models.ForeignKey(
+        QplotlyWidget,
+        on_delete=models.CASCADE,
+        related_name='widget_related_by',
+        verbose_name=_('Target widget'),
+    )
+    order = models.PositiveIntegerField(
+        _('Order'),
+        default=0,
+    )
+
+    class Meta:
+        unique_together = ('source', 'target')
+        ordering = ['order']
+        verbose_name = _('QPlotly Widget relation')
+        verbose_name_plural = _('QPlotly Widget relations')
+
+    def __str__(self):
+        return f'{self.source} → {self.target} (order: {self.order})'
 
 
 

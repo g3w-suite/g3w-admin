@@ -242,7 +242,7 @@ def invalid_prj_cache(**kwargs):
         )
 
 @receiver(load_project_layers_actions)
-def editing_project_layers_actions(sender, **kwargs):
+def qplotly_plots_order_actions(sender, **kwargs):
     """
     Return html actions for order plots by projects.
     """
