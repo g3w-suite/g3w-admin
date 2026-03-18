@@ -235,6 +235,7 @@ export default {
   'No relations found': 'Nessuna relazione trovata',
   'Back to relations': 'Ritorna alle relazioni',
   'List of relations of feature': 'Relazioni associate all’elemento:',
+  'associated with the element': 'associate all’elemento',
   'Download with relations': "Scarica con relazioni",
   'Relation key field': "Campo chiave relazione",
   'Can\'t get your position': "Non è possibile ottenere la tua posizione.",
