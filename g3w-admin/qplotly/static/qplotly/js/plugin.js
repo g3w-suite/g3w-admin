@@ -47,20 +47,7 @@
         bbox_key: null,  // Openlayers key event for map `moveend`
         bbox: undefined, // custom request param
         rel:  null,      // relation data
-      });
-
-      // //FAKE TEST
-      // this.config.plots.push({
-      //   type: 'multiplots',
-      //   plots: this.config.plots.filter(p => "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a" === p.qgs_layer_id),
-      //   id : 2000,
-      //   label: "MULTIPLOTS",
-      //   show: true,
-      //   show_position: 'sidebarquery',
-      //   show_on_start: false,
-      //   qgs_layer_id: "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
-      // })
-      
+      });  
 
       // loop over plots
       this.config.plots.forEach(plot => {
