@@ -39,19 +39,20 @@
 
       // state of plugin
       this.state = Vue.observable({
-        loading:    false, // loading purpose
-        showCharts: false, // show/hide charts
-        geolayer:   false, // is geolayer
+        loading:     false, // loading purpose
+        showCharts:  false, // show/hide charts
+        geolayer:    false, // is geolayer
         bbox_filter: false,
-        bbox_ids: [],    // plot ids associated to bbox (moveend event)
-        bbox_key: null,  // Openlayers key event for map `moveend`
-        bbox: undefined, // custom request param
-        rel:  null,      // relation data
+        bbox_ids:    [],    // plot ids associated to bbox (moveend event)
+        bbox_key:    null,  // Openlayers key event for map `moveend`
+        bbox:        undefined, // custom request param
+        rel:         null,      // relation data
       });  
 
       // loop over plots
       this.config.plots.forEach(plot => {
         
+        //get catalog layer
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
 
         this.#LAYERS.push(layer);
@@ -69,8 +70,9 @@
           geolayer:  Vue.observable({ show: layer.isGeoLayer(), active: false }) // if is geolayer show map tool
         };
 
+        //check if layer is relation father
         plot._rel  = layer.isFather() ? {
-          data: null,
+          data:      null,
           relations: layer.getRelations().getArray().filter(r => r.getFather() === plot.qgs_layer_id).map(r => ({ id: r.getId(), relationLayer: r.getChild() }))
         } : null;
 
@@ -186,7 +188,7 @@
           .values(plot._rel.data)
           .forEach(d => {
             d.forEach(({ id }) => {
-              this.clearData(this.config.plots.find(p => p.id === id));
+              this.clearData(this.config.plots.find(p => id === p.id));
               plotIds.push(id);
             })
           });
@@ -202,8 +204,8 @@
               .entries(p._rel.data)
               .forEach(([id, data]) => {
                 data.forEach(({ id }, index) => id === plot.id && data.splice(index, 1));
-                if (0 === data.length)                                          delete p._rel.data[id];
-                if (0 === data.length && 0 === Object.keys(p._rel.data).length) p._rel.data = null;
+                if (0 === data.length)                                          { delete p._rel.data[id]; }
+                if (0 === data.length && 0 === Object.keys(p._rel.data).length) { p._rel.data = null; }
               });
           });
       }
@@ -369,15 +371,16 @@
                         }
                     }))).then(results => {
                         // normalize the result of multiple XHR requests into a single object
-                        const success = results.every(r => r.status === 'fulfilled' && r.value?.result);
-                        const data = results.flatMap(r => r.value?.data || []);
-                        const relations = results.reduce((acc, r) => {
-                            if (r.value?.relations) {
-                                Object.keys(r.value.relations).forEach(key => {
-                                    acc[key] = (acc[key] || []).concat(r.value.relations[key]);
-                                });
-                            }
-                            return acc;
+                        const success   = results.every(r => r.status === 'fulfilled' && r.value?.result);
+                        const data      = results.flatMap(r => r.value?.data || []);
+                        //set realtion only if there are some relation on result
+                        const relations = results.some(r => r.value?.relation) && results.reduce((acc, r) => {
+                          if (r.value?.relations) {
+                            Object.keys(r.value.relations).forEach(key => {
+                              acc[key] = (acc[key] || []).concat(r.value.relations[key]);
+                            });
+                          }
+                          return acc;
                         }, {});
                         return { result: success, data, relations };
                     });
