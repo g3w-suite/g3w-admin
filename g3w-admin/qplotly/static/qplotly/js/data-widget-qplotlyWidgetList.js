@@ -50,11 +50,10 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
           <thead>
           <tr>
             <th style="width:180px;">${gettext('Actions')}</th>
-            <th>${gettext('Active on startup')}</th>
+            <th>${gettext('Active at startup')}</th>
             <th>${gettext('Position')}*</th>
             <th>${gettext('Title')}</th>
             <th>${gettext('Type')}</th>
-            <th>${gettext('From project')}</th>
             <th>${gettext('Linked')}</th>
           </tr>
         </thead>
@@ -128,7 +127,6 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
               </td>
               <td>${v.title}</td>
               <td>${v.type}</td>
-              <td>${v.project ? '<span class="fa fa-check-circle" style="color: #ffa500"></span>' : ''}</td>
               <td>
                 <input
                   type="checkbox"
