@@ -63,7 +63,7 @@ export default ({
       > 
         <i
           v-disabled              = "editDisabled"
-          @click.stop             = "toggleEditing"
+          @click                  = "toggleEditing"
           class                   = "start-editing editbtn"
           :class                  = "{
             'pull-right':       !isMobile(),
@@ -345,7 +345,7 @@ export default ({
       if (!this.toggled.layer) {
         this.$emit('stoptoolbox', this.state.id);
       }
-      this.select();
+      
     },
 
     /**

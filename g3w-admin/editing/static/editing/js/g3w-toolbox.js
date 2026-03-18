@@ -1772,17 +1772,18 @@ export class ToolBox extends Emitter {
    * @private
    */
   _handleScaleConstraint(stop = false) {
+    
     // get features from server or wait to start
     const map = GUI.getMap();
 
     this.state.editing.canEdit = getScaleFromResolution(map.getView().getResolution()) <= this.state._constraints.scale;
 
     //check if start method is called
-    const in_editing = (this.#start || this.#startAsync);
+    const in_editing     = (this.#start || this.#startAsync);
 
     const showZoomCursor = !stop && this.state.selected && !this.state.editing.canEdit;
 
-    const control = GUI.getCurrentToggledMapControl();
+    const control        = GUI.getCurrentToggledMapControl();
 
     if (control?.cursorClass && (stop || in_editing)) {
       control.setMouseCursor(!showZoomCursor);
@@ -1790,25 +1791,19 @@ export class ToolBox extends Emitter {
 
     map.getViewport().classList.toggle('ol-zoom-in', showZoomCursor);
 
-    // check if selected → hide modal
-    if (stop || !this.state.selected || !in_editing) {
-      GUI.setModal(false);
-      return;
-    }
-
     if (this.state.editing.canEdit && this.#startAsync) {
       this.#startAsync();
     }
 
-     //@since 4.0.1 set modal true in case of openFormStep is running
+    //@since 4.0.1 set modal true in case of openFormStep is running
     if (this.state.editing.canEdit && this.state.activetool?.op.getRunningStep() instanceof OpenFormStep) {
       //Check if current interaction is pickLayer 
       GUI.setModal('picklayer' !== map.getInteractions().item(map.getInteractions().getLength() -1).get('id') );
       return;
     }
-
     // async show message because another toolbox can be unselected before
-    setTimeout(() => GUI.setModal(!this.state.editing.canEdit, this.messages.constraint.scale));
+    GUI.setModal(showZoomCursor, this.messages.constraint.scale);
+    
   }
 
   /**
@@ -1864,16 +1859,18 @@ export class ToolBox extends Emitter {
       //add featuresLockedByOtherUser setter
       this.state._unregisterStartSettersEventsKey.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
 
-
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
-
+        //reset/close eventually user message scale on stop
+        this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint(true));
+        //listen selected attribute
+        this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async bool => { await Vue.nextTick(); this._handleScaleConstraint(!bool); }, { immediate: true }));
+        //await scale set for get features
         await new Promise(resolve => {
           //set as resolve handler to resolve waiting get features from server
           this.#startAsync = resolve;
-          //call scale constraint handler
-          this._handleScaleConstraint();
-
+          //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
+          this.#events.push(GUI.getMap().getView().on('change:resolution', () => this._handleScaleConstraint(false) ));
           // click to fit zoom scale constraint
           this.#events.push(
             GUI.getMap().on('click', e => {
@@ -1887,10 +1884,14 @@ export class ToolBox extends Emitter {
           );
 
           // if click on start toolbox can edit
-          if (this.state.editing.canEdit) { resolve() }
-
+          if (this.state.editing.canEdit) { resolve(); }
         })
+        
+      }
 
+      //reset eventually message
+      if (!this.state._constraints.scale) {
+        GUI.setModal(false);
       }
 
       this.#startAsync = null;
@@ -2005,10 +2006,6 @@ export class ToolBox extends Emitter {
 
     this.#startAsync = null;
 
-    if (this.state._constraints.scale) {
-      this._handleScaleConstraint(true);
-    }
-
     const is_started = !!this.isSessionStarted();
 
     if (!is_started) { return true }
@@ -2020,17 +2017,18 @@ export class ToolBox extends Emitter {
       this.startLoading();
     }
 
-    const layerId = this.state.id;
+
 
     // Check if father relation is editing and has commit feature
-    const fathersInEditing = GUI.getPlugin('editing').getLayerById(layerId).getFathers().filter(id => {
-      const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
-      if (toolbox && toolbox.inEditing() && toolbox.isDirty()) {
+    const fathersInEditing = GUI.getPlugin('editing').getLayerById(this.state.id).getFathers().filter(id => {
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(id); //get father toolbox
+      if (toolbox?.inEditing?.() && toolbox?.isDirty?.()) {
         //get a temporary relations object and check if layerId has some changes
-        return Object.keys(toolbox.getCommitItems() || {}).find(id => layerId === id);
+        return Object.keys(toolbox.getCommitItems() || {}).find(id => this.state.id === id);
       }
     });
 
+    //In case of father layer with changes
     if (fathersInEditing.length > 0) {
       this.stopLoading();
       this.stopActiveTool();
@@ -2156,7 +2154,7 @@ export class ToolBox extends Emitter {
    *
    */
   clearMessage() {
-    this.setMessage(null);
+    this.state.message = null;
   }
 
   /**
@@ -2257,34 +2255,17 @@ export class ToolBox extends Emitter {
    * @param bool
    */
   setSelected(bool = false) {
+    //set state of selected attribute
     this.state.selected = bool;
-
-    if (false === this.state.selected && this.state.activetool) {
+    //In case of unselection and acive tool, stop active tool
+    if (!this.state.selected && this.state.activetool) {
       this.stopActiveTool();
     }
 
-    const map = GUI.getMap();
-    //Check if layer has a scale constraint
-    if (this.state._constraints.scale) {
-      //run handle scale contraint handler function
-      this._handleScaleConstraint();
-
-      //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
-      if (this.state.selected && !this.keyChangeResolution) {
-        this.keyChangeResolution = map.getView().on('change:resolution', () => this._handleScaleConstraint() );
-      }
-
-      //NOT SELECTED AND REGISTER MAP CHANGE RESOLUTION, NEED TO REMOVE CHANGE RESOLUTION CHECK
-      if (!this.state.selected && this.keyChangeResolution) {
-        ol.Observable.unByKey(this.keyChangeResolution);
-        this.keyChangeResolution = null;
-      }
+    if (!this.state.selected) {
+      this.clearMessage();
     }
 
-    //IN CASE START EDITING AND CAN EDIT NEED TO DISPATCH EVENT MOVE END MAP
-    if (this.state.selected && this.#start && (this.state._constraints.scale ? this.state.canEdit : true)) {
-      map.dispatchEvent({ type: this.#getFeaturesEvent.event, target: map });
-    }
   }
 
   /**
@@ -3171,7 +3152,6 @@ export class ToolBox extends Emitter {
             //added ApplicationState.online
             ApplicationState.online
             && this.state.editing.canEdit
-            && this.state.selected //need to be selected
             && 0 === GUI.getContentLength()
           ) {
             this.state._getFeaturesOption.filter.bbox = GUI.getMapBBOX();
