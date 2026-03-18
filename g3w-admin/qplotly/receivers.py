@@ -46,6 +46,52 @@ import logging
 
 logger = logging.getLogger('django.request')
 
+def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id):
+    """Make a qplotly widget dict for initconfig"""
+
+    # Load settings from db
+    settings = QplotlySettings()
+    if not settings.read_from_model(qplotly_widget):
+        return 
+
+    # Instace QplotlyFactory
+    factory = QplotlyFactoring(settings, request=None, layer=None)
+    factory.build_layout()
+
+    fig = go.Figure(layout=factory.layout)
+    layout = fig.to_dict()['layout']
+
+    # Check if is has related
+    related_widgets = qplotly_widget.related()
+    if related_widgets.count() > 0:
+        logger.warning(f"Widget {qplotly_widget.pk} has related widgets, but related widgets are not supported for initconfig. Widget will be ignored.")
+
+        multiplots = [make_qplotlywidget_for_config(plot, qgs_layer_id) for plot in related_widgets]
+        
+        return {
+            'id': qplotly_widget.pk,
+            'qgs_layer_id': qgs_layer_id,
+            'selected_features_only': qplotly_widget.selected_features_only,
+            'visible_features_only': qplotly_widget.visible_features_only,
+            'show_on_start': qplotly_widget.show_on_start_client,
+            'show_position': qplotly_widget.show_position,
+            'label': multiplots[-1]['label'],
+            'type': 'multiplot',
+            'plots': multiplots
+        }
+
+    return {
+        'id': qplotly_widget.pk,
+        'type': 'singleplot',
+        'qgs_layer_id': qgs_layer_id,
+        'selected_features_only': qplotly_widget.selected_features_only,
+        'visible_features_only': qplotly_widget.visible_features_only,
+        'show_on_start': qplotly_widget.show_on_start_client,
+        'show_position': qplotly_widget.show_position,
+        'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
+        'type': settings.plot_type,
+    }
+
 
 @receiver(load_qdjango_project_file)
 def load_dataplotly_project_settings(sender, **kwargs):
@@ -135,32 +181,13 @@ def set_initconfig_value(sender, **kwargs):
 
     plots = []
 
-    qplotly_widgets = get_qplotlywidgets4project(project, sender.request.user)
+    qplotly_widgets = get_qplotlywidgets4project(project, sender.request.user, ctx='free+related')
 
     for qplotly_widget, qgs_layer_id in qplotly_widgets:
 
-        # load settings from db
-        settings = QplotlySettings()
-        if not settings.read_from_model(qplotly_widget):
-            continue
-
-        # instace q QplotlyFactory
-        factory = QplotlyFactoring(settings, request=None, layer=None)
-        factory.build_layout()
-
-        fig = go.Figure(layout=factory.layout)
-        layout = fig.to_dict()['layout']
-
-        plots.append({
-            'id': qplotly_widget.pk,
-            'qgs_layer_id': qgs_layer_id,
-            'selected_features_only': qplotly_widget.selected_features_only,
-            'visible_features_only': qplotly_widget.visible_features_only,
-            'show_on_start': qplotly_widget.show_on_start_client,
-            'show_position': qplotly_widget.show_position,
-            'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
-            'type': settings.plot_type,
-        })
+        plot = make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id)
+        if plot is not None:
+            plots.append(plot)
 
     # no plots no 'qplotly' section
     if len(plots) == 0:

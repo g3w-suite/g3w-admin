@@ -65,6 +65,10 @@ class QplotlyWidget(models.Model):
         # compare datasources
         if self.datasource and layer.datasource != self.datasource:
             raise ValidationError(_(f'Layer DataPlotly settings layer datasource is not equal to datasource into values.'))
+    
+    def related(self):
+        """Return related widgets ordered by 'order' field"""
+        return self.related_widgets.order_by('widget_relations__order')
 
 
 class QplotlyWidgetRelation(models.Model):
