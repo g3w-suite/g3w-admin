@@ -37,7 +37,10 @@ from base.version import get_version
 from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
 from .utils.models import get_qplotlywidgets4project
-from .models import QplotlyWidget
+from .models import (
+    QplotlyWidget, 
+    QplotlyWidgetRelation
+)
 
 import plotly
 import plotly.graph_objects as go
@@ -258,15 +261,23 @@ def qplottly_layer_action(sender, **kwargs):
 
 @receiver(post_save, sender=QplotlyWidget)
 @receiver(pre_delete, sender=QplotlyWidget)
+@receiver(post_save, sender=QplotlyWidgetRelation)
+@receiver(pre_delete, sender=QplotlyWidgetRelation)
 def invalid_prj_cache(**kwargs):
     """Invalid the possible qdjango project cache"""
 
-    for layer in kwargs['instance'].layers.all():
+    if kwargs['sender'] == QplotlyWidgetRelation:
+        layers = kwargs['instance'].source.layers.all()
+    else:
+        layers = kwargs['instance'].layers.all()
+
+    for layer in layers:
         layer.project.invalidate_cache()
         logging.getLogger("g3wadmin.debug").debug(
-            f"Qdjango project /api/config  invalidate cache after create/update/delete of layer qplotly widget: "
+            f"Qdjango project /api/config  invalidate cache after create/update/delete of qplotly widget or relation: "
             f"{layer.project}"
         )
+
 
 @receiver(load_project_layers_actions)
 def qplotly_plots_order_actions(sender, **kwargs):
