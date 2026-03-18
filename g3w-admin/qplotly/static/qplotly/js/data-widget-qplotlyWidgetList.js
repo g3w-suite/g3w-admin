@@ -109,14 +109,16 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
                   type="checkbox"
                   name="show_on_start_client"
                   value="1"
+                  data-qplotlywidget-pk="${v.pk}"
                   ${v.show_on_start_client ? 'checked' : ''}
                   onchange="fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showonstartclient/${v.pk}/' + (event.target.checked ? '' : '?show=0')).catch(g3wadmin.widget.showError)"
                 />
               </td>
               <td>
                 <select 
-                  id       = "'qplotly-show-position-'${v.pk}"
-                  class    = "form-control select2 "
+                  id                    = "'qplotly-show-position-'${v.pk}"
+                  data-qplotlywidget-pk = "${v.pk}"
+                  class                 = "form-control select2 "
                   onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}/', { method: 'POST',  headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
                 >
                   <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'selected' : ''}>Sidebar, Query</option>
@@ -150,7 +152,11 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
         (await fetch(`/${SITE_PREFIX_URL}qplotly/api/widget/free/${layer_pk}/`).then(r => r.json())).map(String)
       );
       $div.find('[data-qplotlywidget-action-mode="related"]').each(function () {
-        $(this).toggle(notTargetPks.has($(this).attr('data-qplotlywidget-pk')));
+        const pk = $(this).attr('data-qplotlywidget-pk');
+        const isVisible = notTargetPks.has(pk);
+        $(this).toggle(isVisible);
+        $div.find(`input[name="show_on_start_client"][data-qplotlywidget-pk="${pk}"]`).toggle(isVisible);
+        $div.find(`select[data-qplotlywidget-pk="${pk}"]`).toggle(isVisible);
       });
     };
 
@@ -283,22 +289,24 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
           </div>`,
       });
 
+
       const initSortable = () => {
-        modal.$modal.find('#related-widgets-container tbody').sortable({
-          handle: '.drag-handle',
-          axis: 'y',
-          update: async () => {
+        const $container = modal.$modal.find('#related-widgets-container tbody');
+        $container.sortable({
+            handle: '.drag-handle',
+            axis: 'y',
+            update() {
             const rows = modal.$modal.find('#related-widgets-container tbody tr[data-related-pk]');
-            await Promise.all(rows.toArray().map((tr, i) =>
-              fetch(relatedUrl, {
+            rows.toArray().map((tr, i) =>
+                fetch(relatedUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ target: parseInt($(tr).attr('data-related-pk')), order: i }),
-              })
-            ));
-          },
+                })
+            )
+            },
         });
-      };
+        };
 
       const refreshSelect = async () => {
         const freshAvailable = await fetchAvailable();
@@ -341,8 +349,8 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
         }
       });
 
+      modal.$modal.on('shown.bs.modal', initSortable);
       modal.show();
-      initSortable();
     });
 
     row.child($div).show();
