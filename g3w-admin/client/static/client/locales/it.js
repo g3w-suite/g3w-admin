@@ -240,6 +240,7 @@ export default {
   'Can\'t get your position': "Non è possibile ottenere la tua posizione.",
   'Choose a layer where to add this feature': "Scegli un livello in cui aggiungere questa funzionalità",
   'Search': "Cerca",
+  'Select': "Seleziona",
   'No editable point layers found on this project': "Nessun layer di punti modificabile trovato in questo progetto",
   'No results': "Nessun risultato",
   'Add Layer': "Aggiungi livello",

@@ -74,7 +74,7 @@ class MeasureControl extends MapControl {
             title:     'Measure',
             type:      'tool',
             iconClass: 'measure',
-            closable:  false,
+            closable:  true,
             hooks:     {
               body: {
                 data: () => ({ types: this.types, type: this.types[0] }),
@@ -100,7 +100,7 @@ class MeasureControl extends MapControl {
                   },
                 },
                 created()       { GUI.toggleUserMessage(false); },
-                beforeDestroy() { GUI.toggleUserMessage(true); },
+                beforeDestroy() { GUI.toggleUserMessage(true); GUI.getMapControl('measure').toggle(false); },
               }
             }
           });
