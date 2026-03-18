@@ -374,15 +374,11 @@
                         const success   = results.every(r => r.status === 'fulfilled' && r.value?.result);
                         const data      = results.flatMap(r => r.value?.data || []);
                         //set realtion only if there are some relation on result
-                        const relations = results.some(r => r.value?.relation) && results.reduce((acc, r) => {
-                          if (r.value?.relations) {
-                            Object.keys(r.value.relations).forEach(key => {
-                              acc[key] = (acc[key] || []).concat(r.value.relations[key]);
-                            });
-                          }
+                        const relations = results.filter(r => r.value?.relation).reduce((acc, r) => {
+                          Object.keys(r.value.relations).forEach(key => acc[key] = (acc[key] || []).concat(r.value.relations[key]));
                           return acc;
                         }, {});
-                        return { result: success, data, relations };
+                        return { result: success, data, relations: Object.keys(relations).length ? relations: null };
                     });
                   promises.push(promise);
                 });
