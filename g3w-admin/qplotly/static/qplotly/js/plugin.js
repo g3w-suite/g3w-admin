@@ -418,7 +418,7 @@
 
         this.#setActiveFilters(plot);
         
-        /** In not yer gat data from a plot id, set empty array */
+        /** In not yet get data from a plot id, set empty array */
         if (!charts[plot.id]) {
           charts[plot.id] = [];
         }
@@ -436,11 +436,14 @@
         } 
 
         // request has valid response
-        const { relations } = response.value;
-        // add data to relations
+        const { relations } = response.value; //get relations attribute
+        // add data to relations if not set yet
         if (relations && !plot._rel.data) {
-          plot._rel.data = relations;
-        } else if (relations) {
+          plot._rel.data = relations; //add data of relations 
+        }
+        
+        //Update relation data for each relation
+        if (relations && plot._rel.data) {
           Object.keys(relations).forEach(id => plot._rel.data[id] = relations[id]);
         }
 
@@ -465,7 +468,7 @@
                     p.filters = [];
                   }
                   this.#setActiveFilters(plot);
-                  /** @FIXME add description */
+                  /** In not yet get data from a plot id, set empty array */
                   if (!charts[p.id]) {
                     charts[p.id] = [];
                   }
@@ -481,8 +484,6 @@
           );
 
       });
-
-      // remove inactive plot ids
 
       /** @FIXME add description */
       if (!this.state.bbox_filter) {
