@@ -709,7 +709,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertIn('xml', jvcontent['error']['data'])
         self.assertIn('layers', jvcontent['error']['data'])
 
-        data = copy.copy(jcontent['results'][0])
+        data = copy.copy(jcontent[0])
         data['title'] = 'Test title create'
         data['xml'] = self.wrong_settings_source_layer_id_xml
         response = self.client.post(url, data=data)
