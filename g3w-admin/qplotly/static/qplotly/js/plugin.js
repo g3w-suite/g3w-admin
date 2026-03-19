@@ -14,8 +14,8 @@
   new class extends Plugin {
 
     #SIDEBAR;                     //sidebar component
-    #LAYERS                 = new Set(); //store layers that has plot
-    #QUERY_RELATIONS_LAYERS = new Set(); //store layers that has query position plot
+    #LAYERS                 = new Set(); //store unique layers that has plot
+    #QUERY_RELATIONS_LAYERS = new Set(); //store unique layers that has query position plot
     #CHARTS                 = [];
     
 
@@ -63,9 +63,12 @@
           this.#QUERY_RELATIONS_LAYERS.add(layer);
         }
 
+        plot.loaded = false // set if plot already laoded
+
         //check if plot is visible when open sidebar item
         plot.show  = plot.show_on_start; //boolean
 
+        //set tools for each plots
         plot.tools = {
           filter:    layer.getFilter(),                                          // reactive layer filter attribute:    { filter:    { active: <Boolean> } }
           selection: layer.getSelection(),                                       // reactive layer selection attribute: { selection: { active: <Boolean> } }
@@ -203,11 +206,13 @@
               plotIds.push(id);
             })
           });
+        //reset data  
         plot._rel.data = null;
       }
 
-      // check if we need to remove relation data coming from parent plot
-      if (!plot._rel) {
+      // check if we need to remove relation data coming from parent plot (plot.rel = null)
+      if (null === plot._rel) {
+        //get all plots that has relation 
         this.config.plots.filter(p => p.show && p.id !== plot.id && p._rel?.data)
           .forEach(p => {
             // plot has different id from current hide plot and it has relations
@@ -390,7 +395,7 @@
                         const success   = results.every(r => r.status === 'fulfilled' && r.value?.result);
                         const data      = results.flatMap(r => r.value?.data || []);
                         //set realtion only if there are some relation on result
-                        const relations = results.filter(r => r.value?.relation).reduce((acc, r) => {
+                        const relations = results.filter(r => r.value?.relations).reduce((acc, r) => {
                           Object.keys(r.value.relations).forEach(key => acc[key] = (acc[key] || []).concat(r.value.relations[key]));
                           return acc;
                         }, {});
