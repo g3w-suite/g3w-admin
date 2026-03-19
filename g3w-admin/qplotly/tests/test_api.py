@@ -674,25 +674,25 @@ class QplotlyTestAPI(QdjangoTestBase):
 
     def _check_constraints(self, jcontent):
         #self.assertEqual(jcontent['results'][0]['pk'], 18)
-        self.assertFalse(jcontent['results'][0]['selected_features_only'])
-        self.assertFalse(jcontent['results'][0]['visible_features_only'])
-        self.assertEqual(jcontent['results'][0]['type'], 'histogram')
-        self.assertEqual(jcontent['results'][0]['title'], '')
-        self.assertTrue(len(jcontent['results'][0]['layers'])==1)
+        self.assertFalse(jcontent[0]['selected_features_only'])
+        self.assertFalse(jcontent[0]['visible_features_only'])
+        self.assertEqual(jcontent[0]['type'], 'histogram')
+        self.assertEqual(jcontent[0]['title'], '')
+        self.assertTrue(len(jcontent[0]['layers'])==1)
 
     def test_widgets(self):
         """Test API"""
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}).content)
-        self.assertEqual(jcontent['count'], 2)
+        self.assertEqual(len(jcontent), 2)
         self._check_constraints(jcontent)
-        layer_pk = jcontent['results'][0]['layers'][0]
+        layer_pk = jcontent[0]['layers'][0]
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 2)
+        self.assertEqual(len(jcontent), 2)
         self._check_constraints(jcontent)
 
-        qplw_pk = jcontent['results'][0]['pk']
+        qplw_pk = jcontent[0]['pk']
 
 
         # TEST API VALIDATION
@@ -786,10 +786,10 @@ class QplotlyTestAPI(QdjangoTestBase):
         """Test API ACL"""
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}).content)
-        self.assertEqual(jcontent['count'], 2)
+        self.assertEqual(len(jcontent), 2)
         self._check_constraints(jcontent)
-        pk = jcontent['results'][0]['pk']
-        layer_pk = jcontent['results'][0]['layers'][0]
+        pk = jcontent[0]['pk']
+        layer_pk = jcontent[0]['layers'][0]
 
         # as viewer1 without grant
         self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
@@ -846,7 +846,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.client.logout()
 
         # Create
-        data = jcontent['results'][0]
+        data = jcontent[0]
         data['type'] = 'pie'
         self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
         url = reverse('qplotly-widget-api-list')

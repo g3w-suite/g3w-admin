@@ -74,6 +74,9 @@ class QdjangoTestBase(TestCase):
 
     def setUp(self):
 
+        # No limit to diff on failed assertEqual with big data
+        self.maxDiff = None
+
         # main project group
         self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
