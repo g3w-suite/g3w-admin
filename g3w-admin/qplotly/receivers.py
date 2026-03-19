@@ -13,7 +13,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.conf import settings as g3wsettings
 from django.dispatch import receiver
 from django.apps import apps
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save, post_delete, pre_delete
 from django.templatetags.static import static
 from django.template import loader
 from core.signals import (
@@ -79,10 +79,13 @@ def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id, project=None) :
     # Check if is has related per project
     # Only at first levet pass project
     related_widgets = qplotly_widget.related(project)
-    if related_widgets.count() > 0:
+    if len(related_widgets) > 0:
         logger.warning(f"Widget {qplotly_widget.pk} has related widgets, but related widgets are not supported for initconfig. Widget will be ignored.")
 
-        multiplots = [toret] + [make_qplotlywidget_for_config(plot, qgs_layer_id) for plot in related_widgets]
+        multiplots = [
+            toret if plot.pk == qplotly_widget.pk else make_qplotlywidget_for_config(plot, qgs_layer_id)
+            for plot in related_widgets
+        ]
         
         return {
             'id': qplotly_widget.pk,
@@ -283,6 +286,42 @@ def invalid_prj_cache(**kwargs):
             f"Qdjango project /api/config  invalidate cache after create/update/delete of qplotly widget or relation: "
             f"{layer.project}"
         )
+
+
+@receiver(post_save, sender=QplotlyWidgetRelation)
+def add_source_self_relation(sender, instance, created, **kwargs):
+    """
+    When a non-self relation is created, automatically add a self-relation for the
+    source widget (source == target) so it appears in the related list for ordering.
+    """
+    if not created or instance.source_id == instance.target_id:
+        return
+    QplotlyWidgetRelation.objects.get_or_create(
+        source=instance.source,
+        target=instance.source,
+        project=instance.project,
+        defaults={'order': 0},
+    )
+
+
+@receiver(post_delete, sender=QplotlyWidgetRelation)
+def remove_source_self_relation(sender, instance, **kwargs):
+    """
+    When the last non-self relation for a source+project is removed,
+    automatically delete the self-relation too.
+    """
+    if instance.source_id == instance.target_id:
+        return
+    remaining = QplotlyWidgetRelation.objects.filter(
+        source=instance.source,
+        project=instance.project,
+    ).exclude(target=instance.source).exists()
+    if not remaining:
+        QplotlyWidgetRelation.objects.filter(
+            source=instance.source,
+            target=instance.source,
+            project=instance.project,
+        ).delete()
 
 
 @receiver(load_project_layers_actions)

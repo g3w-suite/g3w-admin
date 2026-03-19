@@ -11,7 +11,7 @@ __date__ = '2020-09-22'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
-from django.db.models import Q
+from django.db.models import Q, F
 from qdjango.utils.structure import datasource2dict
 from qplotly.models import QplotlyWidget, QplotlyWidgetRelation
 
@@ -71,7 +71,9 @@ def get_qplotlywidgets4project(project, user=None, ctx='all'):
             continue
 
         if ctx == 'free+related':
-            target_pks = QplotlyWidgetRelation.objects.filter(project=project).values_list('target_id', flat=True)
+            target_pks = list(QplotlyWidgetRelation.objects.filter(project=project).exclude(
+                source_id=F('target_id')
+            ).values_list('target_id', flat=True))
             qplotly_widgets = layer.qplotlywidget_set.exclude(pk__in=target_pks)
         else:
             qplotly_widgets = layer.qplotlywidget_set.all()

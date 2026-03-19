@@ -66,14 +66,16 @@ class QplotlyWidget(models.Model):
             raise ValidationError(_(f'Layer DataPlotly settings layer datasource is not equal to datasource into values.'))
     
     def related(self, project: Project = None):
-        """Return related widgets ordered by 'order' field"""
+        """Return related widgets ordered by 'order' field, excluding self-relation"""
 
-        qs = self.related_widgets.filter(widget_related_by__source=self)
-
+        relations = QplotlyWidgetRelation.objects.filter(source=self)
+        
         if project:
-            qs = qs.filter(widget_related_by__project=project)
+            relations = relations.filter(project=project)
 
-        return qs.order_by('widget_related_by__order')
+        target_ids = list(relations.order_by('order').values_list('target_id', flat=True))
+        widgets = {w.pk: w for w in QplotlyWidget.objects.filter(pk__in=target_ids)}
+        return [widgets[pk] for pk in target_ids if pk in widgets]
 
 
 class QplotlyWidgetRelation(models.Model):

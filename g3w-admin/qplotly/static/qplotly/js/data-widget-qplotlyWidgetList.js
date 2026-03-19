@@ -249,9 +249,10 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
                   <td>${w.title || '-'}</td>
                   <td>${w.type  || '-'}</td>
                   <td>
+                    ${w.id !== PLOT.pk ? /* html */`
                     <a href="#" class="btn btn-xs btn-danger btn-remove-related" data-related-target-pk="${w.id}">
                       <i class="fa fa-trash"></i>
-                    </a>
+                    </a>` : ''}
                   </td>
                 </tr>`).join('')
             }

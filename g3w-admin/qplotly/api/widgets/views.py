@@ -14,6 +14,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from django.db.models import F
 from django.http import Http404
 
 from core.api.authentication import CsrfExemptSessionAuthentication
@@ -165,12 +166,6 @@ class QplotlyWidgetRelatedWidgetView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        if target_id == int(pk):
-            return Response(
-                {'error': 'A widget cannot be related to itself'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             target = QplotlyWidget.objects.get(pk=target_id)
         except QplotlyWidget.DoesNotExist:
@@ -280,9 +275,13 @@ class QplotlyWidgetFreeView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # PKs already used as targets in any relation
-        target_pks = QplotlyWidgetRelation.objects.filter(project_id=project_id).values_list('target_id', flat=True)
+        # PKs used as targets by a *different* widget (self-relations don't count)
+        target_pks = list(QplotlyWidgetRelation.objects.filter(
+            project_id=project_id,
+        ).exclude(
+            source_id=F('target_id'),
+        ).values_list('target_id', flat=True))
 
-        # widgets on this layer that are NOT targets
+        # widgets on this layer that are NOT targets of another widget
         not_targets = QplotlyWidget.objects.filter(layers=layer).exclude(pk__in=target_pks)
         return Response([w.pk for w in not_targets])
