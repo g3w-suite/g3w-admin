@@ -53,12 +53,14 @@ class QplotlyWidget(models.Model):
         settings = QplotlySettings()
 
         if not settings.read_from_model(self):
+            print('XML is not a DataPlotly settings.')
             raise ValidationError(_('XML is not a DataPlotly settings.'))
 
         # check for souce_layerd_id inside project and datasource into values
         try:
             layer = Layer.objects.filter(qgs_layer_id=settings.source_layer_id)[0]
         except IndexError:
+            print(f'Layer with qgs_layer_id={settings.source_layer_id} is not present into DB')
             raise ValidationError(_(f'Layer with qgs_layer_id={settings.source_layer_id} is not present into DB'))
 
         # compare datasources

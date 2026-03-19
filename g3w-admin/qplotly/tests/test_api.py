@@ -46,6 +46,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.client = APIClient()
 
     def setUp(self):
+
+        self.maxDiff = None
+
         # Main project group
         self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
@@ -450,8 +453,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         if created:
             widget_3857.layers.add(cities_3857)
 
-
-
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project.instance.pk,
             qplotlywidget_id
@@ -562,6 +563,8 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertNotIn('AL', relation_data[0]['x'])
 
         # for 3857 reproject
+        print('3857 bbox')
+        print(cities_3857.qplotlywidget_set.all())
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project_3857.instance.pk,
             qplotlywidget_3857_id
