@@ -13,10 +13,11 @@
 
   new class extends Plugin {
 
-    #SIDEBAR;
-    #LAYERS                 = [];
+    #SIDEBAR;                     //sidebar component
+    #LAYERS                 = new Set(); //store layers that has plot
+    #QUERY_RELATIONS_LAYERS = new Set(); //store layers that has query position plot
     #CHARTS                 = [];
-    #QUERY_RELATIONS_LAYERS = [];
+    
 
     /**
      * @fires   service~ready
@@ -39,12 +40,12 @@
 
       // state of plugin
       this.state = Vue.observable({
-        loading:     false, // loading purpose
-        showCharts:  false, // show/hide charts
-        geolayer:    false, // is geolayer
-        bbox_filter: false,
-        bbox_ids:    [],    // plot ids associated to bbox (moveend event)
-        bbox_key:    null,  // Openlayers key event for map `moveend`
+        loading:     false,     // loading purpose
+        showCharts:  false,     // show/hide charts
+        geolayer:    false,     // is geolayer
+        bbox_filter: false,     // Boolean - if set bbox filter on charts
+        bbox_ids:    [],        // plot ids associated to bbox (moveend event)
+        bbox_key:    null,      // Openlayers key event for map `moveend`
         bbox:        undefined, // custom request param
         rel:         null,      // relation data
       });  
@@ -55,11 +56,11 @@
         //get catalog layer
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
 
-        this.#LAYERS.push(layer);
+        this.#LAYERS.add(layer);
 
         //Add only in a plot that we must show on query
         if (plot.show_position.includes('query')) {
-          this.#QUERY_RELATIONS_LAYERS.push(layer);
+          this.#QUERY_RELATIONS_LAYERS.add(layer);
         }
 
         //check if plot is visible when open sidebar item
@@ -83,7 +84,7 @@
         layer.on('filtertokenchange', debounce(({ layerId }) => this.toggleCharts({ layerId }))); 
       });
 
-      QUERY.addLayersPlotIds(Array.from(new Set(this.#QUERY_RELATIONS_LAYERS.map(l => l.getId()))));
+      QUERY.addLayersPlotIds(Array.from(this.#QUERY_RELATIONS_LAYERS).map(l => l.getId()));
 
       //Handle event coming from query resut content
       QUERY.on('show-chart', (ids, container, rel) => this.toggleCharts({ show: true, container, ids, rel }));
@@ -315,7 +316,7 @@
       const charts           = {}; // Object containing charts data
       const c_cache          = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
       const r_cache          = new Set(); // cache already loaded relationIds
-      const father_relations = this.#LAYERS.flatMap(l => l.isFather() ? l.getRelations().getArray() : []); // add "withrerlations" attribute in case of father relation
+      const father_relations = Array.from(this.#LAYERS).flatMap(l => l.isFather() ? l.getRelations().getArray() : []); // add "withrerlations" attribute in case of father relation
 
       // loop through array plots waiting all promises
       (await Promise
@@ -526,7 +527,7 @@
 
         let CHARTS, PLOT_IDS;
 
-        // show charts (append to DOM)
+        // show charts (append to DOM) Open Charts sibar item
         if (true === show) {
           this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
           this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
@@ -539,7 +540,7 @@
           await new Promise(res => this.#CHARTS[0].$watch(() => this.state.loading, bool => !bool && res(), { immediate: true }))
         }
 
-        // hide charts (remove from DOM)
+        // hide charts (remove from DOM) - Close Charts sibar item
         if (false === show) {
           const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
           if (1!== i) {
@@ -598,7 +599,7 @@
           PLOT_IDS = reload.length > 0 ? reload.map(p => { this.clearData(p); return p.id; }) : undefined;
         }
 
-        // reload charts (after "plot.id" change)
+        // reload charts (after "plot.id" change) - show/hide (checkbox)
         if (undefined !== id) {
           const plot = this.config.plots.find(p => id === p.id);
 
@@ -623,7 +624,7 @@
             this.state.bbox_filter = false;     // un-toggle main chart map tool
           }
 
-            // set main map geolayer tools based on if there are plot belong to a geolayer
+          // set main map geolayer tools based on if there are plot belong to a geolayer
           if (plot.show) {
             this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
           }
@@ -669,7 +670,7 @@
           this.emit('change-charts', CHARTS || await this.getCharts({ plotIds: PLOT_IDS }));
         }
 
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
       }
     }
