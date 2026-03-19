@@ -90,7 +90,7 @@
       // show relations (plot)
       QUERY.onafter('addActionsForLayers', (actions, layers) => {
         layers.forEach(layer => {
-          const relations      = ApplicationState.project.getRelations().filter(r => r.referencedLayer === layer.id);
+          const relations      = ApplicationState.project.getRelations().filter(r => layer.id === r.referencedLayer);
           const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
           const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
           if (charts.length) {
@@ -124,7 +124,7 @@
                   _container = null; // remove container from action
                 }
               }),
-              clear: () => {
+              clear:() => {
                 if (_container) {
                   this.toggleCharts({ show: false, container: _container });
                   _container = null;
@@ -150,7 +150,12 @@
           template: /* html */ `
             <ul class = "treeview-menu" style = "padding: 10px; color:#FFF;">
               <li v-for = "plot in service.config.plots" :key = "plot.id" :hidden = "!plot.show_position.includes('sidebar')">
-                <input type="checkbox" :id = "plot.id" @change = "service.toggleCharts({ id: plot.id })" v-model = "plot.show" class = "magic-checkbox" />
+                <input 
+                  type    = "checkbox" 
+                  :id     = "plot.id" 
+                  @change = "service.toggleCharts({ id: plot.id })" 
+                  v-model = "plot.show" 
+                  class   = "magic-checkbox" />
                 <label :for = "plot.id" style = "display:flex; justify-content: space-between;">
                   <span style = "white-space: pre-wrap">{{ plot.label }} </span>{{ plot.type }}
                 </label>
@@ -163,7 +168,7 @@
           await GUI.closeContent();
           this.toggleCharts({ show: b });
           GUI.once('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
-          if (!b) {
+          if (!b) { 
             GUI.closeContent();
           }
         });
@@ -178,7 +183,7 @@
      * @param plot object
      */
     clearData(plot) {
-     const plotIds = [];    // plotId eventually to reload
+      const plotIds = [];    // plotId eventually to reload
       plot.loaded   = false; // set loaded data to false
       plot.data     = null;  // set dat to null
 
@@ -282,25 +287,26 @@
         plots = this.config.plots.filter(({ show }) => show).filter(plot => {
           return (
             // and if not belong to show plot father relation
-            (undefined === this.config.plots.filter(({ show }) => show).find((_plot) =>
-            (
-              // is not the same plot id
-              (plot.id !== _plot.id) &&
-              // plat has relations
-              (null !== _plot._rel) &&
-              // find a plot that has withrelations array and with relationLayer the same
-              // layer id belog to plot qgis_layer_id
-              (undefined !== _plot._rel.relations.find(({ id, relationLayer }) => ((relationLayer === plot.qgs_layer_id))))
-            )))
+            (undefined === this.config.plots.filter(({ show }) => show).find(_plot =>
+              (
+                // is not the same plot id
+                (plot.id !== _plot.id) 
+                // plat has relations
+                && (null !== _plot._rel)
+                // find a plot that has withrelations array and with relationLayer the same
+                // layer id belog to plot qgis_layer_id
+                && (undefined !== _plot._rel.relations.find(({ id, relationLayer }) => ((relationLayer === plot.qgs_layer_id))))
+              ))
+            )
           )
         })
       }
 
-      const order   = (layerIds ? plots : this.config.plots.filter(({ show, show_position }) => show && show_position.includes('sidebar'))).map(p => p.id); // order of plot ids
-      const charts  = {}; // Object containing charts data
-      const c_cache = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
-      const r_cache = new Set(); // cache already loaded relationIds
-      const father_relations = this.#LAYERS.flatMap(layer => layer.isFather() ? layer.getRelations().getArray() : []); // add "withrerlations" attribute in case of father relation
+      const order            = (layerIds ? plots : this.config.plots.filter(({ show, show_position }) => show && show_position.includes('sidebar'))).map(p => p.id); // order of plot ids
+      const charts           = {}; // Object containing charts data
+      const c_cache          = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
+      const r_cache          = new Set(); // cache already loaded relationIds
+      const father_relations = this.#LAYERS.flatMap(l => l.isFather() ? l.getRelations().getArray() : []); // add "withrerlations" attribute in case of father relation
 
       // loop through array plots waiting all promises
       (await Promise
@@ -426,7 +432,7 @@
         // data has a relations attributes data
         // loop through relations by id and get relation data filtered by only show plot
         Object
-          .keys(relations || [])
+          .keys(relations ?? {})
           .forEach(id => relations[id]
             .forEach(r => {
               this.config.plots
