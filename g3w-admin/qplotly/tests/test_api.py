@@ -673,7 +673,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(len(widgets), 2)
 
     def _check_constraints(self, jcontent):
-        #self.assertEqual(jcontent['results'][0]['pk'], 18)
+        #self.assertEqual(jcontent[0]['pk'], 18)
         self.assertFalse(jcontent[0]['selected_features_only'])
         self.assertFalse(jcontent[0]['visible_features_only'])
         self.assertEqual(jcontent[0]['type'], 'histogram')
@@ -727,7 +727,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST CREATE
         # -----------
-        data = jcontent['results'][0]
+        data = jcontent[0]
         data['title'] = 'Test title create'
         del(data['pk'])
         del(data['project'])
@@ -745,7 +745,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 3)
+        self.assertEqual(len(jcontent), 3)
 
         # TEST UPDATE
         # -----------
@@ -757,16 +757,16 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(jcontent['type'], 'scatter')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 3)
-        self.assertEqual(jcontent['results'][2]['type'], 'scatter')
+        self.assertEqual(len(jcontent), 3)
+        self.assertEqual(jcontent[2]['type'], 'scatter')
 
         # TEST DELETE
         # -----------
         self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, qplw_pk + 1], {}, data=None, method='DELETE')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 2)
-        self.assertEqual(jcontent['results'][0]['type'], 'histogram')
+        self.assertEqual(len(jcontent), 2)
+        self.assertEqual(jcontent[0]['type'], 'histogram')
 
         # TEST CREATE XML WITH TITLE
         # ----------------------------------------
