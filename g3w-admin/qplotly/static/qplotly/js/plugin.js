@@ -168,7 +168,9 @@
           await GUI.closeContent();
           this.toggleCharts({ show: b });
           GUI.once('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
-          if (!b) { GUI.closeContent();}
+          if (!b) { 
+            GUI.closeContent();
+          }
         });
 
         this.setReady(true);
