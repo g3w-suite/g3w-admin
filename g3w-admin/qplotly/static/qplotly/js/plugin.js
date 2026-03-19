@@ -40,12 +40,12 @@
 
       // state of plugin
       this.state = Vue.observable({
-        loading:     false, // loading purpose
-        showCharts:  false, // show/hide charts
-        geolayer:    false, // is geolayer
-        bbox_filter: false,
-        bbox_ids:    [],    // plot ids associated to bbox (moveend event)
-        bbox_key:    null,  // Openlayers key event for map `moveend`
+        loading:     false,     // loading purpose
+        showCharts:  false,     // show/hide charts
+        geolayer:    false,     // is geolayer
+        bbox_filter: false,     // Boolean - if set bbox filter on charts
+        bbox_ids:    [],        // plot ids associated to bbox (moveend event)
+        bbox_key:    null,      // Openlayers key event for map `moveend`
         bbox:        undefined, // custom request param
         rel:         null,      // relation data
       });  
@@ -527,7 +527,7 @@
 
         let CHARTS, PLOT_IDS;
 
-        // show charts (append to DOM)
+        // show charts (append to DOM) Open Charts sibar item
         if (true === show) {
           this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
           this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
@@ -540,7 +540,7 @@
           await new Promise(res => this.#CHARTS[0].$watch(() => this.state.loading, bool => !bool && res(), { immediate: true }))
         }
 
-        // hide charts (remove from DOM)
+        // hide charts (remove from DOM) - Close Charts sibar item
         if (false === show) {
           const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
           if (1!== i) {
@@ -599,7 +599,7 @@
           PLOT_IDS = reload.length > 0 ? reload.map(p => { this.clearData(p); return p.id; }) : undefined;
         }
 
-        // reload charts (after "plot.id" change)
+        // reload charts (after "plot.id" change) - show/hide (checkbox)
         if (undefined !== id) {
           const plot = this.config.plots.find(p => id === p.id);
 
@@ -624,7 +624,7 @@
             this.state.bbox_filter = false;     // un-toggle main chart map tool
           }
 
-            // set main map geolayer tools based on if there are plot belong to a geolayer
+          // set main map geolayer tools based on if there are plot belong to a geolayer
           if (plot.show) {
             this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
           }
@@ -670,7 +670,7 @@
           this.emit('change-charts', CHARTS || await this.getCharts({ plotIds: PLOT_IDS }));
         }
 
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
       }
     }

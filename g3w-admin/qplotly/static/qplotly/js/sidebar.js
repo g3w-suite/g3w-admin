@@ -290,7 +290,7 @@ export default ({
       .filter(p => p.show)
       .forEach(p => {
         this.service.clearData(p);
-        p.tools.geolayer.active =  p.tools.geolayer.show ? false : p.tools.geolayer.active;
+        p.tools.geolayer.active =  !p.tools.geolayer.show && p.tools.geolayer.active;
         p.filters               = [];
       });
 
