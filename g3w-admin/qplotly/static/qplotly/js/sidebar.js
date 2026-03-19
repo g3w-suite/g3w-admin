@@ -132,8 +132,8 @@ export default ({
      */
     async draw({
       charts = {},
-      order = [],
-      plotId
+      order  = [],
+      plotId = null,
     } = {}) {
       if (!order || !charts) {
         return;
@@ -141,7 +141,7 @@ export default ({
 
       this.service.setLoading(true);
 
-      const resize = this.order === order;
+      const resize = this.order === order; //check if order is changed
       this.order   = order;                // get new charts order
 
       // remove plot
@@ -156,7 +156,7 @@ export default ({
 
       // draw all charts → loop through plots ids (ordered) draw Plotly Chart
       (await Promise.allSettled(this.order.flatMap(plotId => 
-        this.charts[plotId].map(async ({ chart, state }) => {
+        this.charts?.[plotId]?.map(async ({ chart, state }) => {
           try {
             await this.$nextTick();
             const plot_container = this.$refs[`${plotId}`][0];
@@ -219,7 +219,7 @@ export default ({
           return plotId;
         })
       ))).forEach(response => {
-        this.charts[response.value].forEach(chart => { chart.state.loading = false; })
+        this.charts?.[response.value]?.forEach(chart => chart.state.loading = false)
       });
 
       setTimeout(() => this.service.setLoading(false))
