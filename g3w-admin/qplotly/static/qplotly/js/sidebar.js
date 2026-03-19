@@ -15,11 +15,11 @@ export default ({
         height: order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
       }"
     >
-
     <template v-if = "order.length">
 
       <template v-for = "plotId in order">
-        <figure v-for="({ chart }) in charts[plotId]">
+
+        <figure v-for = "({ chart }) in charts[plotId]">
 
           <figcaption>
 
@@ -99,21 +99,19 @@ export default ({
 
   computed: {
     edit_url() {
-      return ApplicationState.project.getState()?.layers_url || '';
+      return ApplicationState.project.getState?.()?.layers_url || '';
     },
   },
 
   methods: {
 
     /**
-     * toggle filter token on project layer
+     * Toggle filter token on project layer
+     * @param layerId
      */
     async toggleFilter(layerId) {
       this.service.setLoading(true);
-      const layer = CatalogLayersStoresRegistry.getLayerById(layerId);
-      if (undefined !== layer) {
-        await layer.toggleToken();
-      }
+      await CatalogLayersStoresRegistry.getLayerById(layerId)?.toggleToken();
     },
 
     /**
@@ -162,7 +160,7 @@ export default ({
           try {
             await this.$nextTick();
             const plot_container = this.$refs[`${plotId}`][0];
-            const svg_container = plot_container?.querySelector('.svg-container');
+            const svg_container  = plot_container?.querySelector('.svg-container');
             // fold multi‑plot arrays into a single trace list
             let traces = chart.data;
             if (Array.isArray(traces[0])) {
@@ -172,25 +170,27 @@ export default ({
 
             // no data check (applies to flattened traces)
             const noData =
-              traces.length === 1 &&
-              !traces[0][({ pie: 'values', scatterternary: 'a', scatterpolar: 'r' })[
+              1 === traces.length 
+              && !traces[0][({ pie: 'values', scatterternary: 'a', scatterpolar: 'r' })[
                 traces[0]?.type
               ] || 'x']?.length;
 
             if (noData) {
               if (!plot_container.querySelector('.no_data')) {
                 plot_container.innerHTML = /* html */ `
-                  <div class="no_data" style="display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
-                    <h4 style="font-weight: bold;" class="skin-color">${ this.$t('plugins.qplotly.no_data') }</h4>
+                  <div class = "no_data" style = "display: flex; flex-direction: column; align-items: center; height: ${svg_container?.style?.height || '100%' }; justify-content: center;">
+                    <h4 style = "font-weight: bold;" class = "skin-color">${ this.$t('plugins.qplotly.no_data') }</h4>
                   </div>`;
               }
             } else {
               // retrieve "trace-config" from cache
-              this.draw.configs = this.draw.configs || {}
+              this.draw.configs = this.draw.configs || {};
               if (!this.draw.configs[plotId]) {
                 const plot = this.service.config.plots.find(p => plotId === p.id);
-                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${(plot.plots ?? [plot, plot]).at(-1).id}/`)).json()).data;
+                //get config from server
+                this.draw.configs[plotId] = (await (await fetch(`/qplotly/api/trace-config/${(plot.plots ?? [plot]).at(-1).id}/`)).json()).data;
               }
+
               const { layout = {}, config = {} } = this.draw.configs[plotId];
               layout.title  = chart.title;
               // plot bg-color

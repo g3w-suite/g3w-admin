@@ -62,7 +62,8 @@
           this.#QUERY_RELATIONS_LAYERS.push(layer);
         }
 
-        plot.show = !!plot.show_on_start;
+        //check if plot is visible when open sidebar item
+        plot.show  = plot.show_on_start; //boolean
 
         plot.tools = {
           filter:    layer.getFilter(),                                          // reactive layer filter attribute:    { filter:    { active: <Boolean> } }
@@ -70,24 +71,28 @@
           geolayer:  Vue.observable({ show: layer.isGeoLayer(), active: false }) // if is geolayer show map tool
         };
 
-        //check if layer is relation father
+        //check if layer is father on a relation 
         plot._rel  = layer.isFather() ? {
           data:      null,
-          relations: layer.getRelations().getArray().filter(r => r.getFather() === plot.qgs_layer_id).map(r => ({ id: r.getId(), relationLayer: r.getChild() }))
+          relations: layer.getRelations().getArray()
+                      .filter(r => plot.qgs_layer_id === r.getFather())
+                      .map(r => ({ id: r.getId(), relationLayer: r.getChild() }))
         } : null;
 
-        layer.on('filtertokenchange', debounce(({ layerId }) => this.toggleCharts({ layerId }))) // reload charts after changing filter
+        // reload charts after changing filter
+        layer.on('filtertokenchange', debounce(({ layerId }) => this.toggleCharts({ layerId }))); 
       });
 
       QUERY.addLayersPlotIds(Array.from(new Set(this.#QUERY_RELATIONS_LAYERS.map(l => l.getId()))));
 
-      QUERY.on('show-chart', (ids, container, rel) => { this.toggleCharts({ show: true, container, ids, rel }); });
-      QUERY.on('hide-chart', container             => { this.toggleCharts({ show: false, container }); });
+      //Handle event coming from query resut content
+      QUERY.on('show-chart', (ids, container, rel) => this.toggleCharts({ show: true, container, ids, rel }));
+      QUERY.on('hide-chart', container             => this.toggleCharts({ show: false, container }));
 
       // check if some some plot has visible geolayer 
       this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
 
-      // show relations (plot)
+      // Add query action (show relations (plot))
       QUERY.onafter('addActionsForLayers', (actions, layers) => {
         layers.forEach(layer => {
           const relations      = ApplicationState.project.getRelations().filter(r => layer.id === r.referencedLayer);
@@ -157,14 +162,14 @@
                   v-model = "plot.show" 
                   class   = "magic-checkbox" />
                 <label :for = "plot.id" style = "display:flex; justify-content: space-between;">
-                  <span style = "white-space: pre-wrap">{{ plot.label }} </span>{{ plot.type }}
+                  <span style = "white-space: pre-wrap"> {{ plot.label }} </span>{{ plot.type }}
                 </label>
               </li>
-            </ul>`,
+            </ul>`
         }, this.config.sidebar);
 
         sidebar.onbefore('setOpen', async b => {
-          //need tyo close content before. In this way eventually charts on query result service are cleared
+          //need to close content before. In this way eventually charts on query result service are cleared
           await GUI.closeContent();
           this.toggleCharts({ show: b });
           GUI.once('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
@@ -209,8 +214,12 @@
               .entries(p._rel.data)
               .forEach(([id, data]) => {
                 data.forEach(({ id }, index) => id === plot.id && data.splice(index, 1));
-                if (0 === data.length)                                          { delete p._rel.data[id]; }
-                if (0 === data.length && 0 === Object.keys(p._rel.data).length) { p._rel.data = null; }
+                if (0 === data.length) { 
+                  delete p._rel.data[id]; 
+                }
+                if (0 === data.length && 0 === Object.keys(p._rel.data).length) {
+                  p._rel.data = null; 
+                }
               });
           });
       }
@@ -234,7 +243,7 @@
       rel,
     } = {}) {
 
-      //start to loading
+      //start loading
       this.setLoading(true);
 
       // check if it has relation data
@@ -527,7 +536,7 @@
             container
           }}).$mount());  
           //need to wait util loading is false
-          await new Promise((res) => this.#CHARTS[0].$watch(() => this.state.loading, (l) => !l && res(), { immediate: true }))
+          await new Promise(res => this.#CHARTS[0].$watch(() => this.state.loading, bool => !bool && res(), { immediate: true }))
         }
 
         // hide charts (remove from DOM)
@@ -703,4 +712,4 @@
 
   }
 
-} catch (e) { console.error(e); } })();
+} catch(e) { console.error(e); } })();
