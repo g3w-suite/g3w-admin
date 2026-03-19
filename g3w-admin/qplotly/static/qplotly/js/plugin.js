@@ -555,25 +555,25 @@
           this.state.bbox_filter = bbox;
 
           // set bbox parameter
-          this.state.bbox = this.state.bbox_filter ? GUI.getService('map').getMapBBOX().toString() : undefined;
+          this.state.bbox        = bbox ? GUI.getService('map').getMapBBOX().toString() : undefined;
 
           // get active plot related to geolayer
-          const geo_plots = this.config.plots.filter(p => p.show && p.tools.geolayer.show);
+          const geo_plots        = this.config.plots.filter(p => p.show && p.tools.geolayer.show);
           
           geo_plots.forEach(p => p.tools.geolayer.active = bbox)
 
           // handle moveend map event
 
           // which plotIds need to trigger map moveend event
-          this.state.bbox_ids = this.state.bbox_filter ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
+          this.state.bbox_ids    = bbox ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
 
           // get map moveend event just one time
-          if (this.state.bbox_filter && !this.state.bbox_key) {
+          if (bbox && !this.state.bbox_key) {
             this.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.toggleCharts({ layerId: false })));
           }
 
           // remove handler of map moveend and reset to empty
-          if (!this.state.bbox_filter) {
+          if (!bbox) {
             ol.Observable.unByKey(this.state.bbox_key);
             this.state.bbox_key = null;
           }
@@ -591,7 +591,7 @@
           // plots to reload
           const reload   = [
             // whether there is a bbox filter
-            ...((this.state.bbox_ids || []).map(plotId => Object.assign(this.config.plots.find(p => p.id === plotId.id), { filters: [] }))),
+            ...((this.state.bbox_ids || []).map(plotId => Object.assign(this.config.plots.find(p => plotId.id === p.id), { filters: [] }))),
             // whether filtertoken is added or removed from layer
             ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
           ];
@@ -601,7 +601,7 @@
 
         // reload charts (after "plot.id" change) - show/hide (checkbox)
         if (undefined !== id) {
-          const plot = this.config.plots.find(p => id === p.id);
+          const plot    = this.config.plots.find(p => id === p.id);
 
           // whether geolayer tools is show
           const has_geo = plot.tools.geolayer.show;
