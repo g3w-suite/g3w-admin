@@ -71,7 +71,7 @@ def get_qplotlywidgets4project(project, user=None, ctx='all'):
             continue
 
         if ctx == 'free+related':
-            target_pks = QplotlyWidgetRelation.objects.values_list('target_id', flat=True)
+            target_pks = QplotlyWidgetRelation.objects.filter(project=project).values_list('target_id', flat=True)
             qplotly_widgets = layer.qplotlywidget_set.exclude(pk__in=target_pks)
         else:
             qplotly_widgets = layer.qplotlywidget_set.all()

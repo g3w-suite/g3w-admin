@@ -15,7 +15,6 @@ class QplotlyWidget(models.Model):
     visible_features_only = models.BooleanField(_('Use visible features only'), default=False)
     type = models.CharField(_('Plot type'), max_length=50, null=True)
     title = models.CharField(_('Plot title'), max_length=255, null=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
     show_on_start_client = models.BooleanField(_('Set as default plot on starting map'), null=True, default=False)
 
     layers = models.ManyToManyField(Layer)
@@ -45,7 +44,7 @@ class QplotlyWidget(models.Model):
     )
     
     def __str__(self):
-        return self.datasource if self.datasource else str(self.pk)
+        return self.title if self.title else self.datasource if self.datasource else str(self.pk)
 
     def clean(self):
         """Check by DataPlotly API"""
@@ -66,9 +65,15 @@ class QplotlyWidget(models.Model):
         if self.datasource and layer.datasource != self.datasource:
             raise ValidationError(_(f'Layer DataPlotly settings layer datasource is not equal to datasource into values.'))
     
-    def related(self):
+    def related(self, project: Project = None):
         """Return related widgets ordered by 'order' field"""
-        return self.related_widgets.order_by('widget_relations__order')
+
+        qs = self.related_widgets.filter(widget_related_by__source=self)
+
+        if project:
+            qs = qs.filter(widget_related_by__project=project)
+
+        return qs.order_by('widget_related_by__order')
 
 
 class QplotlyWidgetRelation(models.Model):
@@ -88,13 +93,22 @@ class QplotlyWidgetRelation(models.Model):
         related_name='widget_related_by',
         verbose_name=_('Target widget'),
     )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='qplotly_widget_relations',
+        verbose_name=_('Project'),
+        null=True,
+        blank=True,
+    )
     order = models.PositiveIntegerField(
         _('Order'),
         default=0,
     )
 
+
     class Meta:
-        unique_together = ('source', 'target')
+        unique_together = ('project', 'source', 'target')
         ordering = ['order']
         verbose_name = _('QPlotly Widget relation')
         verbose_name_plural = _('QPlotly Widget relations')

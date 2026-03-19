@@ -49,7 +49,7 @@ import logging
 
 logger = logging.getLogger('django.request')
 
-def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id):
+def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id, project=None) :
     """Make a qplotly widget dict for initconfig"""
 
     # Load settings from db
@@ -64,12 +64,25 @@ def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id):
     fig = go.Figure(layout=factory.layout)
     layout = fig.to_dict()['layout']
 
-    # Check if is has related
-    related_widgets = qplotly_widget.related()
+    toret = {
+        'id': qplotly_widget.pk,
+        'type': 'singleplot',
+        'qgs_layer_id': qgs_layer_id,
+        'selected_features_only': qplotly_widget.selected_features_only,
+        'visible_features_only': qplotly_widget.visible_features_only,
+        'show_on_start': qplotly_widget.show_on_start_client,
+        'show_position': qplotly_widget.show_position,
+        'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
+        'type': settings.plot_type,
+    }
+
+    # Check if is has related per project
+    # Only at first levet pass project
+    related_widgets = qplotly_widget.related(project)
     if related_widgets.count() > 0:
         logger.warning(f"Widget {qplotly_widget.pk} has related widgets, but related widgets are not supported for initconfig. Widget will be ignored.")
 
-        multiplots = [make_qplotlywidget_for_config(plot, qgs_layer_id) for plot in related_widgets]
+        multiplots = [toret] + [make_qplotlywidget_for_config(plot, qgs_layer_id) for plot in related_widgets]
         
         return {
             'id': qplotly_widget.pk,
@@ -83,18 +96,7 @@ def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id):
             'plots': multiplots
         }
 
-    return {
-        'id': qplotly_widget.pk,
-        'type': 'singleplot',
-        'qgs_layer_id': qgs_layer_id,
-        'selected_features_only': qplotly_widget.selected_features_only,
-        'visible_features_only': qplotly_widget.visible_features_only,
-        'show_on_start': qplotly_widget.show_on_start_client,
-        'show_position': qplotly_widget.show_position,
-        'label': layout.get('title', {}).get('text', f"Plot id [{qplotly_widget.pk}]"),
-        'type': settings.plot_type,
-    }
-
+    return toret
 
 @receiver(load_qdjango_project_file)
 def load_dataplotly_project_settings(sender, **kwargs):
@@ -140,16 +142,20 @@ def save_dataplotly_project_settings(sender, **kwargs):
 
         layer = sender.instance.layer_set.get(qgs_layer_id=sender.qplotly['qgs_layer_id'])
 
-        qplw, created = QplotlyWidget.objects.update_or_create(defaults={
-            'datasource': layer.datasource,
-            'type': sender.qplotly['type'],
-            'title': sender.qplotly['title'],
-            'xml': sender.qplotly['xml'],
-            'selected_features_only': sender.qplotly['selected_features_only'],
-            'visible_features_only': sender.qplotly['visible_features_only']
-        }, project=sender.instance)
+        qplw = layer.qplotlywidget_set.first()
+        if qplw is None:
+            qplw = QplotlyWidget()
 
-        qplw.layers.add(layer)
+        qplw.datasource = layer.datasource
+        qplw.type = sender.qplotly['type']
+        qplw.title = sender.qplotly['title']
+        qplw.xml = sender.qplotly['xml']
+        qplw.selected_features_only = sender.qplotly['selected_features_only']
+        qplw.visible_features_only = sender.qplotly['visible_features_only']
+        qplw.save()
+
+        if not qplw.layers.filter(pk=layer.pk).exists():
+            qplw.layers.add(layer)
 
 
 @receiver(post_save, sender=Layer)
@@ -188,7 +194,7 @@ def set_initconfig_value(sender, **kwargs):
 
     for qplotly_widget, qgs_layer_id in qplotly_widgets:
 
-        plot = make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id)
+        plot = make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id, project)
         if plot is not None:
             plots.append(plot)
 
