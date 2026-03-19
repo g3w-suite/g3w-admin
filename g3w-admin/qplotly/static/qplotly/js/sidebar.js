@@ -232,6 +232,7 @@ export default ({
    */
   async mounted() {
 
+    //show chart on query result
     if (this.container) {
       this.container.append(this.$el);
     }
@@ -252,11 +253,11 @@ export default ({
       rel:      this.rel, // provided by query result service otherwise is undefined
     });
 
-    this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
-    this.resize.observe(this.$el);
-
     // set charts
     await this.draw({ charts, order });
+    
+    this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
+    this.resize.observe(this.$el);
     
     this.service.state.showCharts = true;
     

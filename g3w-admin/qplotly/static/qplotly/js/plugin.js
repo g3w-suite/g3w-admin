@@ -13,10 +13,11 @@
 
   new class extends Plugin {
 
-    #SIDEBAR;
-    #LAYERS                 = [];
+    #SIDEBAR;                     //sidebar component
+    #LAYERS                 = new Set(); //store layers that has plot
+    #QUERY_RELATIONS_LAYERS = new Set(); //store layers that has query position plot
     #CHARTS                 = [];
-    #QUERY_RELATIONS_LAYERS = [];
+    
 
     /**
      * @fires   service~ready
@@ -55,11 +56,11 @@
         //get catalog layer
         const layer = CatalogLayersStoresRegistry.getLayerById(plot.qgs_layer_id);
 
-        this.#LAYERS.push(layer);
+        this.#LAYERS.add(layer);
 
         //Add only in a plot that we must show on query
         if (plot.show_position.includes('query')) {
-          this.#QUERY_RELATIONS_LAYERS.push(layer);
+          this.#QUERY_RELATIONS_LAYERS.add(layer);
         }
 
         //check if plot is visible when open sidebar item
@@ -83,7 +84,7 @@
         layer.on('filtertokenchange', debounce(({ layerId }) => this.toggleCharts({ layerId }))); 
       });
 
-      QUERY.addLayersPlotIds(Array.from(new Set(this.#QUERY_RELATIONS_LAYERS.map(l => l.getId()))));
+      QUERY.addLayersPlotIds(Array.from(this.#QUERY_RELATIONS_LAYERS).map(l => l.getId()));
 
       //Handle event coming from query resut content
       QUERY.on('show-chart', (ids, container, rel) => this.toggleCharts({ show: true, container, ids, rel }));
@@ -315,7 +316,7 @@
       const charts           = {}; // Object containing charts data
       const c_cache          = [];        // cache charts plots TODO: register already loaded relation to avoid to replace the same plot multiple times
       const r_cache          = new Set(); // cache already loaded relationIds
-      const father_relations = this.#LAYERS.flatMap(l => l.isFather() ? l.getRelations().getArray() : []); // add "withrerlations" attribute in case of father relation
+      const father_relations = Array.from(this.#LAYERS).flatMap(l => l.isFather() ? l.getRelations().getArray() : []); // add "withrerlations" attribute in case of father relation
 
       // loop through array plots waiting all promises
       (await Promise
