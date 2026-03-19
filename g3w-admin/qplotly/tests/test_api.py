@@ -97,7 +97,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.widget_country_histogram = QplotlyWidget.objects.create(
             xml=self.countries_histogram_plot_xml,
             datasource=layer.datasource,
-            project=self.project.instance,
             type='histogram',
             title=''
             )
@@ -108,7 +107,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.widget_country_histogram_3857 = QplotlyWidget.objects.create(
             xml=self.countries_histogram_plot_xml,
             datasource=layer.datasource,
-            project=self.project_3857.instance,
             type='histogram',
             title=''
             )
@@ -158,14 +156,12 @@ class QplotlyTestAPI(QdjangoTestBase):
         qplotly_widgets = get_qplotlywidget_for_project(self.project.instance)
         self.assertEqual(len(qplotly_widgets), 1)
 
-        # check project fk is saved
-        self.assertEqual(qplotly_widgets[0].project, self.project.instance)
+        self.assertTrue(qplotly_widgets[0].layers.filter(project=self.project.instance).exists())
 
         qplotly_widgets = get_qplotlywidget_for_project(self.project_3857.instance)
         self.assertEqual(len(qplotly_widgets), 1)
 
-        # check project fk is saved
-        self.assertEqual(qplotly_widgets[0].project, self.project_3857.instance)
+        self.assertTrue(qplotly_widgets[0].layers.filter(project=self.project_3857.instance).exists())
 
     def test_initconfig_plugin_start(self):
         """Test data added to API client config"""
@@ -315,8 +311,7 @@ class QplotlyTestAPI(QdjangoTestBase):
             xml=self.cities_histogram_plot_xml,
             datasource=cities.datasource,
             type='histogram',
-            title='',
-            project=self.project.instance
+            title=''
         )
 
         widget.layers.add(cities)
@@ -326,8 +321,7 @@ class QplotlyTestAPI(QdjangoTestBase):
             xml=self.cities_histogram_plot_xml,
             datasource=cities_3857.datasource,
             type='histogram',
-            title='',
-            project=self.project_3857.instance
+            title=''
         )
 
         widget_3857.layers.add(cities_3857)
@@ -438,8 +432,7 @@ class QplotlyTestAPI(QdjangoTestBase):
             xml=self.cities_histogram_plot_xml,
             datasource=cities.datasource,
             type='histogram',
-            title='',
-            project=self.project.instance
+            title=''
         )
 
         if created:
@@ -451,8 +444,7 @@ class QplotlyTestAPI(QdjangoTestBase):
             xml=self.cities_histogram_plot_xml,
             datasource=cities_3857.datasource,
             type='histogram',
-            title='',
-            project=self.project_3857.instance
+            title=''
         )
 
         if created:
@@ -747,8 +739,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Test title create')
 
-        # check project instance into qplotlywidget not saved
-        self.assertIsNone(QplotlyWidget.objects.get(pk=jcontent['pk']).project)
+        self.assertTrue(
+            QplotlyWidget.objects.get(pk=jcontent['pk']).layers.filter(pk=layer_pk).exists()
+        )
 
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)

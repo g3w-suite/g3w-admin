@@ -58,7 +58,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
           </tr>
         </thead>
         <tbody>
-          ${res.results.map(v => /* html */ `
+          ${res.map(v => /* html */ `
             <tr id="qplotlywidget-item-${v.pk}">
               <td style="display: flex; flex-wrap: wrap; gap: 0 10px; font-size: 1.25em;">
                 <a
@@ -147,7 +147,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
     // shared: re-fetch free widget PKs and hide/show sitemap buttons accordingly
     const refreshButtonsVisibility = async () => {
       const notTargetPks = new Set(
-        (await fetch(`/${SITE_PREFIX_URL}qplotly/api/widget/free/${layer_pk}/`).then(r => r.json())).map(String)
+        (await fetch(`/${SITE_PREFIX_URL}qplotly/api/widget/free/${project_pk}/${layer_pk}/`).then(r => r.json())).map(String)
       );
       $div.find('[data-qplotlywidget-action-mode="related"]').each(function () {
         const pk = $(this).attr('data-qplotlywidget-pk');
@@ -160,7 +160,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
 
     $div.on("click", ".btn-add-new-plot, [data-qplotlywidget-action-mode='update']", async function (e) {
       if ($(this).is('.btn-add-new-plot') || $(this).is('[data-qplotlywidget-action-mode="update"]')) {
-        const PLOT = res.results.find(v => `${v.pk}` === $(this).attr("data-qplotlywidget-pk"));
+        const PLOT = res.find(v => `${v.pk}` === $(this).attr("data-qplotlywidget-pk"));
 
         const modal = ga.currentModal = g3wadmin.ui._buildModal({
           modalTitle: gettext(PLOT ? 'Update widget' : 'New qplotly widget'),
@@ -222,11 +222,12 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
 
     $div.on("click", "[data-qplotlywidget-action-mode='related']", async function (e) {
       e.preventDefault();
-      const PLOT = res.results.find(v => `${v.pk}` === $(this).attr("data-qplotlywidget-pk"));
-      const relatedUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/`;
+      const PLOT = res.find(v => `${v.pk}` === $(this).attr("data-qplotlywidget-pk"));
+      const relatedReadUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/${PLOT.project}/`;
+      const relatedWriteUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/`;
 
       // widgets available as targets: fetched from dedicated API endpoint
-      const availableUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/available/`;
+      const availableUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/available/${PLOT.project}/`;
       const fetchAvailable = () => fetch(availableUrl).then(r => r.json());
 
       const buildTable = (relatedWidgets) => /* html */ `
@@ -248,9 +249,10 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
                   <td>${w.title || '-'}</td>
                   <td>${w.type  || '-'}</td>
                   <td>
+                    ${w.id !== PLOT.pk ? /* html */`
                     <a href="#" class="btn btn-xs btn-danger btn-remove-related" data-related-target-pk="${w.id}">
                       <i class="fa fa-trash"></i>
-                    </a>
+                    </a>` : ''}
                   </td>
                 </tr>`).join('')
             }
@@ -259,7 +261,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
 
       // fetch current related widgets and available widgets in parallel
       const [related, available] = await Promise.all([
-        fetch(relatedUrl).then(r => r.json()),
+        fetch(relatedReadUrl).then(r => r.json()),
         fetchAvailable(),
       ]);
 
@@ -296,10 +298,10 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
             update() {
             const rows = modal.$modal.find('#related-widgets-container tbody tr[data-related-pk]');
             rows.toArray().map((tr, i) =>
-                fetch(relatedUrl, {
+                fetch(relatedWriteUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ target: parseInt($(tr).attr('data-related-pk')), order: i }),
+              body: JSON.stringify({ target: parseInt($(tr).attr('data-related-pk')), project: parseInt(PLOT.project), order: i }),
                 })
             )
             },
@@ -312,7 +314,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
       };
 
       const refreshTable = async () => {
-        const updated = await (await fetch(relatedUrl)).json();
+        const updated = await (await fetch(relatedReadUrl)).json();
         modal.$modal.find('#related-widgets-container').html(buildTable(updated));
         await refreshButtonsVisibility();
         initSortable();
@@ -323,7 +325,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
         e.preventDefault();
         const targetPk = $(this).attr('data-related-target-pk');
         try {
-          await fetch(`/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/${targetPk}/`, { method: 'DELETE' });
+          await fetch(`/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/${targetPk}/${PLOT.project}/`, { method: 'DELETE' });
           await refreshTable();
         } catch (err) {
           g3wadmin.widget.showError(err.message);
@@ -336,10 +338,10 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
         if (!targetPk) return;
         const nextOrder = modal.$modal.find('#related-widgets-container tbody tr[data-related-pk]').length;
         try {
-          await fetch(relatedUrl, {
+          await fetch(relatedWriteUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ target: parseInt(targetPk), order: nextOrder }),
+            body: JSON.stringify({ target: parseInt(targetPk), project: parseInt(PLOT.project), order: nextOrder }),
           });
           await refreshTable();
         } catch (err) {

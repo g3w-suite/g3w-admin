@@ -14,6 +14,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from django.db.models import F
 from django.http import Http404
 
 from core.api.authentication import CsrfExemptSessionAuthentication
@@ -21,7 +22,7 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 from qplotly.models import QplotlyWidget, QplotlyWidgetRelation
 from qplotly.utils.models import get_qplotlywidgets4layer
 
-from qdjango.models import Layer
+from qdjango.models import Layer, Project
 
 from .serializers import QplotlyWidgetSerializer
 from .permissions import QplotlyWidgetPermission, QplotlyWidgetRelatedPermission
@@ -33,6 +34,8 @@ class QplotlyWidgetList(generics.ListCreateAPIView):
     queryset = QplotlyWidget.objects.all()
     serializer_class = QplotlyWidgetSerializer
 
+    pagination_class = None
+
     authentication_classes = (
         CsrfExemptSessionAuthentication,
     )
@@ -41,6 +44,16 @@ class QplotlyWidgetList(generics.ListCreateAPIView):
         QplotlyWidgetPermission,
     )
 
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+
+        toret = super().get_serializer_context()
+        toret['project'] = self.layer.project if hasattr(self, 'layer') else None
+        return toret
+        
+
     def get_queryset(self):
         """
         This view should return a list constraints for a given layer id portion of the URL.
@@ -48,7 +61,8 @@ class QplotlyWidgetList(generics.ListCreateAPIView):
 
         qs = super().get_queryset()
         if 'layer_id' in self.kwargs:
-            qs = get_qplotlywidgets4layer(Layer.objects.get(pk=self.kwargs['layer_id']))
+            self.layer = Layer.objects.filter(pk=self.kwargs['layer_id']).first()
+            qs = get_qplotlywidgets4layer(self.layer)
         return qs
 
 
@@ -71,14 +85,14 @@ class QplotlyWidgetRelatedWidgetView(APIView):
     """
     Manage related_widgets on a QplotlyWidget via the QplotlyWidgetRelation through-model.
 
-    GET    /api/widget/related/<pk>/
+    GET    /api/widget/related/<pk>/<project_id>/
         Returns the list of related widgets with their relation order.
 
     POST   /api/widget/related/<pk>/
-        Adds a relation. Body: {"target": <widget_id>, "order": <int>}
+        Adds a relation. Body: {"target": <widget_id>, "project": <project_id>, "order": <int>}
         Creates the relation if it does not exist, otherwise updates the order.
 
-    DELETE /api/widget/related/<pk>/<target_pk>/
+    DELETE /api/widget/related/<pk>/<target_pk>/<project_id>/
         Removes the relation between the source widget and the target widget.
     """
 
@@ -91,9 +105,16 @@ class QplotlyWidgetRelatedWidgetView(APIView):
         except QplotlyWidget.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk):
+    def get(self, request, pk, project_id=None):
         widget = self._get_widget_or_404(pk)
-        relations = widget.widget_relations.select_related('target').all()
+
+        if project_id is None:
+            return Response(
+                {'error': "'project_id' path parameter is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        relations = widget.widget_relations.select_related('target').filter(project_id=project_id)
         data = [
             {
                 'id': r.target.pk,
@@ -108,11 +129,18 @@ class QplotlyWidgetRelatedWidgetView(APIView):
     def post(self, request, pk):
         widget = self._get_widget_or_404(pk)
         target_id = request.data.get('target')
+        project_id = request.data.get('project')
         order = request.data.get('order', 0)
 
         if not target_id:
             return Response(
                 {'error': "'target' field is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not project_id:
+            return Response(
+                {'error': "'project' field is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -124,10 +152,18 @@ class QplotlyWidgetRelatedWidgetView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if target_id == int(pk):
+        try:
+            project_id = int(project_id)
+        except (TypeError, ValueError):
             return Response(
-                {'error': 'A widget cannot be related to itself'},
+                {'error': "'project' must be a valid project id"},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not Project.objects.filter(pk=project_id).exists():
+            return Response(
+                {'error': f'Project with pk={project_id} not found'},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         try:
@@ -141,6 +177,7 @@ class QplotlyWidgetRelatedWidgetView(APIView):
         relation, created = QplotlyWidgetRelation.objects.get_or_create(
             source=widget,
             target=target,
+            project_id=project_id,
             defaults={'order': order},
         )
         if not created:
@@ -152,19 +189,28 @@ class QplotlyWidgetRelatedWidgetView(APIView):
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
         )
 
-    def delete(self, request, pk, target_pk):
+    def delete(self, request, pk, target_pk, project_id):
         widget = self._get_widget_or_404(pk)
+
         deleted, _ = QplotlyWidgetRelation.objects.filter(
-            source=widget, target_id=target_pk
+            source=widget,
+            target_id=target_pk,
+            project_id=project_id,
         ).delete()
         if deleted == 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class QplotlyWidgetRelatedWidgetPostView(QplotlyWidgetRelatedWidgetView):
+    """POST-only endpoint for creating/updating related widget relations."""
+
+    http_method_names = ['post', 'options']
+
+
 class QplotlyWidgetAvailableRelatedView(APIView):
     """
-    GET /api/widget/related/<pk>/available/
+    GET /api/widget/related/<pk>/available/<project_id>/
     Returns widgets that can be added as related to the widget <pk>:
     - belong to the same layer(s) as <pk>
     - are not already a target of any QplotlyWidgetRelation
@@ -175,22 +221,29 @@ class QplotlyWidgetAvailableRelatedView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (QplotlyWidgetRelatedPermission,)
 
-    def get(self, request, pk):
+    def get(self, request, pk, project_id):
         try:
             source = QplotlyWidget.objects.get(pk=pk)
         except QplotlyWidget.DoesNotExist:
             raise Http404
 
-        layer_ids = source.layers.values_list('pk', flat=True)
+        source_layers = source.layers.filter(project_id=project_id)
+        if not source_layers.exists():
+            return Response(
+                {'error': 'Project in URL must match source widget layers project'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        layer_ids = source_layers.values_list('pk', flat=True)
 
         # widgets on the same layer(s), excluding source itself
-        candidates = QplotlyWidget.objects.filter(layers__in=layer_ids).exclude(pk=pk).distinct()
+        candidates = QplotlyWidget.objects.filter(layers__in=layer_ids, layers__project_id=project_id).exclude(pk=pk).distinct()
 
         # exclude widgets already targeted by any relation
-        targeted_pks = QplotlyWidgetRelation.objects.values_list('target_id', flat=True)
+        targeted_pks = QplotlyWidgetRelation.objects.filter(project_id=project_id).values_list('target_id', flat=True)
 
         # exclude widgets that are already a source in any relation
-        source_pks = QplotlyWidgetRelation.objects.values_list('source_id', flat=True)
+        source_pks = QplotlyWidgetRelation.objects.filter(project_id=project_id).values_list('source_id', flat=True)
 
         candidates = candidates.exclude(pk__in=targeted_pks).exclude(pk__in=source_pks)
 
@@ -200,7 +253,7 @@ class QplotlyWidgetAvailableRelatedView(APIView):
 
 class QplotlyWidgetFreeView(APIView):
     """
-    GET /api/widget/free/<layer_id>/
+    GET /api/widget/free/<project_id>/<layer_id>/
     Returns the PKs of widgets on the given layer that are NOT a target
     in any QplotlyWidgetRelation (i.e. they are not already "owned" by
     another widget as a related).
@@ -210,15 +263,25 @@ class QplotlyWidgetFreeView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (QplotlyWidgetPermission,)
 
-    def get(self, request, layer_id):
+    def get(self, request, project_id, layer_id):
         try:
             layer = Layer.objects.get(pk=layer_id)
         except Layer.DoesNotExist:
             raise Http404
 
-        # PKs already used as targets in any relation
-        target_pks = QplotlyWidgetRelation.objects.values_list('target_id', flat=True)
+        if layer.project_id != project_id:
+            return Response(
+                {'error': 'Project in URL must match layer project'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        # widgets on this layer that are NOT targets
+        # PKs used as targets by a *different* widget (self-relations don't count)
+        target_pks = list(QplotlyWidgetRelation.objects.filter(
+            project_id=project_id,
+        ).exclude(
+            source_id=F('target_id'),
+        ).values_list('target_id', flat=True))
+
+        # widgets on this layer that are NOT targets of another widget
         not_targets = QplotlyWidget.objects.filter(layers=layer).exclude(pk__in=target_pks)
         return Response([w.pk for w in not_targets])
