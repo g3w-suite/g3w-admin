@@ -438,11 +438,13 @@ class QplotlyTestAPI(QdjangoTestBase):
             title=''
         )
 
+
         if created:
             widget.layers.add(cities)
 
         # also for 3857 project
         cities_3857 = self.project_3857.instance.layer_set.get(qgs_layer_id='cities10000eu_399beab0_e385_4ce1_9b59_688d02930517')
+
         widget_3857, created = QplotlyWidget.objects.get_or_create(
             xml=self.cities_histogram_plot_xml,
             datasource=cities_3857.datasource,
@@ -563,8 +565,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertNotIn('AL', relation_data[0]['x'])
 
         # for 3857 reproject
-        print('3857 bbox')
-        print(cities_3857.qplotlywidget_set.all())
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project_3857.instance.pk,
             qplotlywidget_3857_id
