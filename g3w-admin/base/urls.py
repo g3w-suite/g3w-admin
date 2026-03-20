@@ -111,6 +111,11 @@ urlpatterns += [
         'ajax_select/',
         include(ajax_select_urls)
     ),
+    path(
+        'logout/',
+        auth.views.LogoutView.as_view(next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)),
+        name='logout'
+    ),
     # django-two-factor-auth
     path('', include(tf_urls, 'two_factor')),
 ]
