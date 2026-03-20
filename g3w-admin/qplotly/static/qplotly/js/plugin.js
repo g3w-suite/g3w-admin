@@ -268,21 +268,29 @@
       if (!layerIds && plotIds) {
         //loop throught plot ids
         plotIds.forEach(plotId => {
-          // check if is child of already show plots (not equal to current plotId, relation plot)
-          const added = this.config.plots.find(p => p.show && plotId !== p.id
-            // find a plot that has relations array and with relationLayer the same layer id belong to plot qgis_layer_id
-            && p._rel?.relations.find(r =>
-              r.relationLayer === this.config.plots.find(p => plotId === p.id).qgs_layer_id
-              && (
-                null === p._rel.data
-                || undefined === p._rel?.data[r.relationLayer]
-                || undefined === p._rel?.data[r.relationLayer].find(r => r.id === plotId)
-              )
-            )
-          ) || this.config.plots.find(p => p.id === plotId)
-          // check if already (in case of parent plots) added to plots
-          if (!plots.some(p => p === added)) {
-            added.loaded = false; //need to force to se loaded false in case of father plot that has already load a child plot
+          const currentPlot = this.config.plots.find(p => p.id === plotId);
+          if (!currentPlot) return;
+
+          // Check if there is an already shown parent with a relation to the current plot's layer
+          const parentPlot = this.config.plots.find(p => {
+            if (!p.show || p.id === plotId || !p._rel) return false;
+
+            return p._rel.relations.some(r => {
+              const isSameLayer = r.relationLayer === currentPlot.qgs_layer_id;
+              const data = p._rel.data;
+
+              // The plot is "new" if relation data is null, the specific layer is missing, or the ID is not yet loaded
+              const isNotInData = !data || !data[r.relationLayer] || !data[r.relationLayer].some(d => d.id === plotId);
+
+              return isSameLayer && isNotInData;
+            });
+          });
+
+          const added = parentPlot || currentPlot;
+
+          // Avoid duplicates and reset loading state
+          if (!plots.includes(added)) {
+            added.loaded = false;
             plots.push(added);
           }
         });
