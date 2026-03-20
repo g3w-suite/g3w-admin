@@ -71,6 +71,13 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.google",
     "allauth.usersessions",
+    # django-two-factor-auth
+    'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_hotp',
+    'two_factor',
+    'two_factor.plugins.phonenumber',
 ]
 
 G3WADMIN_APPS = [
@@ -95,6 +102,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
@@ -171,7 +179,7 @@ SITETREE_MODEL_TREE_ITEM = 'core.G3W2TreeItem'
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
-LOGIN_URL = 'login'
+LOGIN_URL = 'two_factor:login'
 LOGOUT_NEXT_PAGE = '/'
 LOGIN_REDIRECT_URL = '/'
 
