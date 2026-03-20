@@ -46,7 +46,7 @@
         bbox_filter: false,     // Boolean - if set bbox filter on charts
         bbox_ids:    [],        // plot ids associated to bbox (moveend event)
         bbox_key:    null,      // Openlayers key event for map `moveend`
-        bbox:        undefined, // custom request param
+        bbox:        undefined, // store content of in_bbox param to ge data inside the map bbox
         rel:         null,      // relation data
       });  
 
@@ -388,7 +388,7 @@
                           .join(',')
                           || undefined,
                           // in_bbox parameter (in case of tool map toggled)
-                          in_bbox: (this.state.bbox_ids.length > 0 ? -1 !== this.state.bbox_ids.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
+                          in_bbox: (!this.state.bbox_ids.length || this.state.bbox_ids.some(p => p.active && p.id === plot.id)) && this.state.bbox, //state.bbox can store map bbox or undefined
                         }
                     }))).then(results => {
                         // normalize the result of multiple XHR requests into a single object
@@ -558,6 +558,8 @@
 
         // reload charts (after "bbox" change)
         if (undefined !== bbox) {
+
+          //set bbox_filter (true/false)
           this.state.bbox_filter = bbox;
 
           // set bbox parameter
@@ -607,12 +609,16 @@
 
         // reload charts (after "plot.id" change) - show/hide (checkbox)
         if (undefined !== id) {
+          //get plot
           const plot    = this.config.plots.find(p => id === p.id);
 
           // whether geolayer tools is show
           const has_geo = plot.tools.geolayer.show;
 
           plot.tools.geolayer.active = has_geo ? plot.show && this.state.bbox_filter : plot.tools.geolayer.active;
+
+          // set main map geolayer tools based on if there are plot belong to a geolayer
+          this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
 
           // add current plot id in case of already register move map event
           if (plot.show && has_geo && this.state.bbox_key) {
@@ -628,11 +634,6 @@
           if (!plot.show && has_geo && !this.state.bbox_ids.length) {
             this.state.bbox        = undefined; // set request params to undefined
             this.state.bbox_filter = false;     // un-toggle main chart map tool
-          }
-
-          // set main map geolayer tools based on if there are plot belong to a geolayer
-          if (plot.show) {
-            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
           }
 
           /**
@@ -657,12 +658,11 @@
 
           const plotIds = plot.show ? [plot.id] : this.clearData(plot);
 
-          if (plot.show || (!plot.show && plotIds.length)) {
+          if (plot.show || plotIds.length) {
             PLOT_IDS = plotIds;
           }
 
           if (!plot.show) {
-            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
             this.#setActiveFilters(plot); // remove filters
             CHARTS = {
               plotId: plot.id,
