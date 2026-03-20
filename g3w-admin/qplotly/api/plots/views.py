@@ -107,7 +107,7 @@ class QplotlyTraceAPIView(G3WAPIView):
                     'id': qplotly.pk,
                     'data': self._get_trace(factory)
                 })
-
+                
             if 'relations' not in res and relations:
                 res.update({'relations': relations})
 
@@ -152,6 +152,7 @@ class QplotlyTraceAPIView(G3WAPIView):
             request_data = request.query_params
 
         with_relations = request_data.get(WITH_RELATIONS_PARAM)
+       
         if with_relations:
             self._get_relations(
                 with_relations=with_relations.split(','),

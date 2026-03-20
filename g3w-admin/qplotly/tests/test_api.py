@@ -46,6 +46,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.client = APIClient()
 
     def setUp(self):
+
+        self.maxDiff = None
+
         # Main project group
         self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
@@ -435,11 +438,14 @@ class QplotlyTestAPI(QdjangoTestBase):
             title=''
         )
 
+
         if created:
             widget.layers.add(cities)
 
         # also for 3857 project
+        # Now without model 'project' property the widget is the same!!!
         cities_3857 = self.project_3857.instance.layer_set.get(qgs_layer_id='cities10000eu_399beab0_e385_4ce1_9b59_688d02930517')
+
         widget_3857, created = QplotlyWidget.objects.get_or_create(
             xml=self.cities_histogram_plot_xml,
             datasource=cities_3857.datasource,
@@ -447,10 +453,7 @@ class QplotlyTestAPI(QdjangoTestBase):
             title=''
         )
 
-        if created:
-            widget_3857.layers.add(cities_3857)
-
-
+        widget_3857.layers.add(cities_3857)
 
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project.instance.pk,
