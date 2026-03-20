@@ -189,42 +189,49 @@
     }
 
     /**
-     * @param plot object
+     * Resets plot data and recursively clears related child or parent data.
+     * @param {Object} plot - The plot object to clear.
+     * @returns {Array} List of plot IDs that were affected/cleared.
      */
     clearData(plot) {
-      const plotIds = [];    // plotId eventually to reload
-      plot.loaded   = false; // set loaded data to false
-      plot.data     = null;  // set dat to null
+      const plotIds = [];
+      plot.loaded   = false;
+      plot.data     = null;
 
-      // in case of plot father and has relation data and data related to
+      // --- 1. Recursive cleanup for child plots (Parent -> Children) ---
       if (plot._rel?.data) {
+        // Iterate through all relation layers and their associated data entries
         Object
-          .values(plot._rel.data)
-          .forEach(d => {
-            d.forEach(({ id }) => {
-              this.clearData(this.config.plots.find(p => id === p.id));
-              plotIds.push(id);
-            })
+        .values(plot._rel.data)
+        .forEach(data => {
+          data.forEach(({ id }) => {
+            this.clearData(this.config.plots.find(p => p.id === id)); // Recursively clear child
+            plotIds.push(id);
           });
-        //reset data  
+        });
+        // Reset the relation data object after clearing children
         plot._rel.data = null;
       }
 
-      // check if we need to remove relation data coming from parent plot (plot.rel = null)
+      // --- 2. Cleanup orphan references in other plots (Child -> Parent) ---
+      // If the plot has no specific relation metadata, check if it exists as a child elsewhere
       if (null === plot._rel) {
-        //get all plots that has relation 
-        this.config.plots.filter(p => p.show && p.id !== plot.id && p._rel?.data)
+        this.config.plots
+          .filter(p => p.show && p.id !== plot.id && p._rel?.data)
           .forEach(p => {
-            // plot has different id from current hide plot and it has relations
-            Object
-              .entries(p._rel.data)
-              .forEach(([id, data]) => {
-                data.forEach(({ id }, index) => id === plot.id && data.splice(index, 1));
-                if (0 === data.length) { 
-                  delete p._rel.data[id]; 
+            Object.entries(p._rel.data)
+              .forEach(([layerId, data]) => {
+                // Remove the current plot ID from the parent's relation data
+                p._rel.data[layerId] = data.filter(d => plot.id !== d.id);
+
+                // Cleanup: if a layer's data array is empty, remove the layer key
+                if (0 === p._rel.data[layerId].length) {
+                  delete p._rel.data[layerId];
                 }
-                if (0 === data.length && 0 === Object.keys(p._rel.data).length) {
-                  p._rel.data = null; 
+
+                // Final cleanup: if no layers remain, set the whole data object to null
+                if (0 === Object.keys(p._rel.data)) {
+                  p._rel.data = null;
                 }
               });
           });
