@@ -72,10 +72,11 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.usersessions",
     # django-two-factor-auth
+    # ------------------------------------------
     'django_otp',
-    'django_otp.plugins.otp_static',
+    #'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
-    'django_otp.plugins.otp_hotp',
+    #'django_otp.plugins.otp_hotp',
     'two_factor',
     'two_factor.plugins.phonenumber',
 ]
