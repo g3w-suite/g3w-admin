@@ -3378,7 +3378,7 @@ export class ToolBox extends Emitter {
       return features;
     } catch(e) {
       console.warn(e);
-      return Promise.reject({ message: _("info.server_error")});
+      return Promise.reject({ message: _("server_error")});
     }
 
   }
