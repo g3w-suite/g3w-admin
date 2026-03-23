@@ -110,18 +110,14 @@ export default ({
      * @param layerId
      */
     async toggleFilter(layerId) {
-      this.service.setLoading(true);
       await CatalogLayersStoresRegistry.getLayerById(layerId)?.toggleToken();
-      this.service.setLoading(false);
     },
 
     /**
      * Handle click on map icon tool (show bbox data)
      */
     async toggleBBox() {
-      this.service.setLoading(true);
       await this.service.toggleCharts({ bbox: !this.service.state.bbox_filter });
-      this.service.setLoading(false);
     },
 
     /**
@@ -220,9 +216,7 @@ export default ({
           }
           return plotId;
         })
-      ))).forEach(response => {
-        this.charts?.[response.value]?.forEach(chart => chart.state.loading = false)
-      });
+      ))).forEach(response => this.charts?.[response.value]?.forEach(chart => chart.state.loading = false));
 
       setTimeout(() => this.service.setLoading(false))
     },
