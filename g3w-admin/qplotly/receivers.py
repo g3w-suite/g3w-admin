@@ -50,7 +50,27 @@ import logging
 logger = logging.getLogger('django.request')
 
 def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id, project=None) :
-    """Make a qplotly widget dict for initconfig"""
+    """
+    Generate a qplotly widget configuration dictionary for initialization.
+    This function creates a configuration dictionary for a qplotly widget by loading
+    its settings from the database and building the necessary layout information.
+    If the widget has related widgets, it returns a multiplot configuration instead.
+    Args:
+        qplotly_widget: The qplotly widget model instance to configure.
+        qgs_layer_id: The QGIS layer ID associated with this widget.
+        project (optional): The project instance. Used only at the first level to check
+                           for related widgets. Defaults to None.
+    Returns:
+        dict: A configuration dictionary containing:
+            - For single plots: id, type ('singleplot'), qgs_layer_id, selected_features_only,
+              visible_features_only, show_on_start, show_position, label, and plot_type.
+            - For multi plots: id, qgs_layer_id, selected_features_only, visible_features_only,
+              show_on_start, show_position, label, type ('multiplot'), and plots list.
+        None: If settings cannot be read from the widget model.
+    Note:
+        When related widgets are found, they are processed recursively in reverse order
+        ('desc') for correct logical alignment with project-level chart ordering.
+    """
 
     # Load settings from db
     settings = QplotlySettings()
