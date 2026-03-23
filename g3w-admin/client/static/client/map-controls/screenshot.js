@@ -493,7 +493,7 @@ const vueComp = ({
         }
       } catch(e) {
         console.warn(e);
-        GUI.showUserMessage({ type: 'alert', message: e || _("info.server_error") });
+        GUI.showUserMessage({ type: 'alert', message: e || _("server_error") });
       } finally {
         clearTimeout(timeout);
         GUI.disableSideBar(false);
@@ -745,7 +745,7 @@ const vueComp = ({
         } else {
           GUI.showUserMessage({
             type: 'alert',
-            message: e || _("info.server_error"),
+            message: e || _("server_error"),
           });
         }
       } finally {
