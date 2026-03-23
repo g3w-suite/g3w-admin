@@ -688,7 +688,9 @@
             plots.filter(p => p.show && p.id !== plot.id && plot._rel.relations.some(r => p.qgs_layer_id === r.relationLayer))
                 .forEach(p => {
                   const pIds = this.clearData(p);
-                  if (pIds.length) this.getCharts({ plotIds: pIds }).then(d => this.emit('change-charts', d));
+                  if (pIds.length) { 
+                    this.getCharts({ plotIds: pIds }).then(d => this.emit('change-charts', d));
+                  }
                 });
           }
 
