@@ -112,6 +112,7 @@ export default ({
     async toggleFilter(layerId) {
       this.service.setLoading(true);
       await CatalogLayersStoresRegistry.getLayerById(layerId)?.toggleToken();
+      this.service.setLoading(false);
     },
 
     /**
@@ -119,7 +120,8 @@ export default ({
      */
     async toggleBBox() {
       this.service.setLoading(true);
-      this.service.toggleCharts({ bbox: !this.service.state.bbox_filter })
+      await this.service.toggleCharts({ bbox: !this.service.state.bbox_filter });
+      this.service.setLoading(false);
     },
 
     /**
