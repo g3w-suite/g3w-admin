@@ -21,6 +21,7 @@ const {
   getCatalogLayerById,
   saveBlob,
   sameOrigin,
+  debounce,
 } = g3w.utils;
 
 const _                = g3w.gettext;
@@ -40,7 +41,6 @@ const state = {
   template:        print?.[0]?.name,
   atlas:           print?.[0]?.atlas,
   atlas_values:    [],
-  atlas_search:    '',
   atlas_options:   [],
   atlas_loading:   false,
   rotation:        0,
@@ -54,278 +54,278 @@ const state = {
   screenshot_type: screenshot_types[0],
   print_extent:    null,
   resolutions:     {},
-  moveKey:      null,
+  moveKey:         null,
 };
 
 
 const vueComp = ({
-template: /*html*/`
-<div class = "print-modal">
-  <div v-show = "loading" class = "bar-loader"></div>
+  template: /*html*/`
+    <div class = "print-modal" v-disabled = "loading">
+      <div v-show = "loading" class = "bar-loader"></div>
 
-  <form
-    v-if  = "print.length"
-    style = "padding: 10px;max-height: 75vh;overflow-y: auto;"
-  >
-
-    <!-- CHOOSE A TEMPLATE -->
-    <label for = "templates">{{ $t('Template') }}</label>
-    <x-select
-      id      = "templates"
-      :value  = "template"
-      @change = "template = $event.target.value"
-      :style  = "{ marginBottom: atlas && '10px' }"
-      searchable
-    >
-      <x-option v-for = "p in print" :key="p.name" :value = "p.name">{{ $t(p.label || p.name) }}</x-option>
-    </x-select>
-
-    <!-- ADVANCED SETTINGS -->
-    <details v-if = "is_customizable" class = "custom-settings">
-      <summary>{{ $t('Advanced settings') }}</summary>
-
-      <!-- PRINT ROTATION -->
-      <label for = "rotation">{{ $t('Rotation') }}: {{ rotation }}°</label>
-      <input
-        id         = "rotation"
-        v-disabled = "!has_maps"
-        min        = "0"
-        max        = "360"
-        step       = "1"
-        @input     = "changeRotation"
-        v-model    = "rotation"
-        type       = "range"
-        list       = "print-rotation-markers"
-      />
-      <datalist id = "print-rotation-markers" style = "display: flex; justify-content: space-between;">
-        <option value = "0"   style = "margin-left: 6px;">0</option>
-        <option value = "90"  style = "margin-left: 10px;">90</option>
-        <option value = "180" style = "margin-left: 6px;">180</option>
-        <option value = "270">270</option>
-        <option value = "360">360</option>
-      </datalist>
-
-      <!-- PRINT SCALE -->
-      <label for = "scale">{{ $t('Scale') }}</label>
-      <x-select
-        id         = "scale"
-        v-disabled = "!has_maps"
-        :value     = "scale"
-        @change    = "onScaleChange"
-        createTag
-        searchable
+      <form
+        v-if  = "print.length"
+        style = "padding: 10px;max-height: 75vh;overflow-y: auto;"
       >
-        <x-option v-for = "s in scales" :key = "s.value" :value = "s.value">
-          {{ s.label }}
-        </x-option>
-      </x-select>
 
-      <!-- PRINT FORMAT -->
-      <label for = "format">{{ $t('Format') }}</label>
-      <x-select
-        id         = "format"
-        :value     = "format"
-        @change    = "format = $event.target.value"
-        searchable
-      >
-        <x-option value = "png">PNG</x-option>
-        <x-option value = "jpg">JPG</x-option>
-        <x-option value = "svg">SVG</x-option>
-        <x-option value = "pdf">PDF</x-option>
-        <x-option value = "geopdf">GEOPDF</x-option>
-      </x-select>
+        <!-- CHOOSE A TEMPLATE -->
+        <label for = "templates">{{ $t('Template') }}</label>
+        <x-select
+          id      = "templates"
+          :value  = "template"
+          @change = "template = $event.target.value"
+          :style  = "{ marginBottom: atlas && '10px' }"
+          searchable
+        >
+          <x-option v-for = "p in print" :key="p.name" :value = "p.name">{{ $t(p.label || p.name) }}</x-option>
+        </x-select>
 
-      <!-- PRINT DPI -->
-      <label for = "dpi">{{ $t('Resolution') }}</label>
-      <x-select
-        id        = "dpi"
-        :value    = "dpi"
-        @change   = "onDpiChange"
-        createTag
-        searchable
-      >
-        <x-option v-for = "d in dpis" :key = "d" :value = "d">{{ d }} dpi</x-option>
-      </x-select>
+        <!-- ADVANCED SETTINGS -->
+        <details v-if = "is_customizable" class = "custom-settings">
+          <summary>{{ $t('Advanced settings') }}</summary>
 
-      <!-- PRINT LABEL -->
-      <div
-        v-if  = "labels && labels.length > 0"
-        class = "print-labels-content"
-      >
-        <b class = "skin-color" hidden>{{ $t('Labels') }}</b>
-        <div class = "labels-input-content">
-          <span
-            v-for = "label in labels"
-            :key  = "label.id"
+          <!-- PRINT ROTATION -->
+          <label for = "rotation">{{ $t('Rotation') }}: {{ rotation }}°</label>
+          <input
+            id         = "rotation"
+            v-disabled = "!has_maps"
+            min        = "0"
+            max        = "360"
+            step       = "1"
+            @input     = "changeRotation"
+            v-model    = "rotation"
+            type       = "range"
+            list       = "print-rotation-markers"
+          />
+          <datalist id = "print-rotation-markers" style = "display: flex; justify-content: space-between;">
+            <option value = "0"   style = "margin-left: 6px;">0</option>
+            <option value = "90"  style = "margin-left: 10px;">90</option>
+            <option value = "180" style = "margin-left: 6px;">180</option>
+            <option value = "270">270</option>
+            <option value = "360">360</option>
+          </datalist>
+
+          <!-- PRINT SCALE -->
+          <label for = "scale">{{ $t('Scale') }}</label>
+          <x-select
+            id         = "scale"
+            v-disabled = "!has_maps"
+            :value     = "scale"
+            @change    = "onScaleChange"
+            createTag
+            searchable
           >
-            <label :for = "'g3w_label_id_input_' + label.id"> {{ label.id }}</label>
-            <input
-              :id     = "'g3w_label_id_input_' + label.id"
-              class   = "form-control"
-              v-model = "label.text"
-            />
-          </span>
-        </div>
-      </div>
+            <x-option v-for = "s in scales" :key = "s.value" :value = "s.value">
+              {{ s.label }}
+            </x-option>
+          </x-select>
 
-    </details>
+          <!-- PRINT FORMAT -->
+          <label for = "format">{{ $t('Format') }}</label>
+          <x-select
+            id         = "format"
+            :value     = "format"
+            @change    = "format = $event.target.value"
+            searchable
+          >
+            <x-option value = "png">PNG</x-option>
+            <x-option value = "jpg">JPG</x-option>
+            <x-option value = "svg">SVG</x-option>
+            <x-option value = "pdf">PDF</x-option>
+            <x-option value = "geopdf">GEOPDF</x-option>
+          </x-select>
 
-    <!-- PRINT ATLAS -->
-    <!-- ORIGINAL SOURCE: src/componentsPrintSelectAtlasFieldValues.vue@v3.9.3 -->
-    <template v-if = "!is_screenshot && atlas && has_autocomplete">
-      <label  for = "print_atlas_autocomplete"><span>{{ atlas.field_name }}</span></label>
-      <x-select
-        :key            = "template"
-        id              = "print_atlas_autocomplete"
-        :value          = "atlas_values.join(',')"
-        @change         = "onAtlasChange"
-        @search-input   = "atlas_search = $event.detail.value"
-        multiple
-        searchable
-      >
-        <x-option v-for = "option in atlas_options" :key = "option" :value = "option">{{ option }}</x-option>
-      </x-select>
-      <div v-if = "atlas_loading" style = "font-size: 0.85em; color: #999; margin-top: 4px;">{{ $t('Searching ...') }}</div>
-    </template>
+          <!-- PRINT DPI -->
+          <label for = "dpi">{{ $t('Resolution') }}</label>
+          <x-select
+            id        = "dpi"
+            :value    = "dpi"
+            @change   = "onDpiChange"
+            createTag
+            searchable
+          >
+            <x-option v-for = "d in dpis" :key = "d" :value = "d">{{ d }} dpi</x-option>
+          </x-select>
 
-    <!-- PRINT ATLAS -->
-    <!-- ORIGINAL SOURCE: src/components/PrintFidAtlasValues.vue@v3.9.3 -->
-    <template v-if = "!is_screenshot && atlas && !has_autocomplete">
-      <label><span>fids [max: {{ atlas.feature_count - 1 }}]</span></label>
-      <input class = "form-control" v-model = "atlas_values" @keydown.space.prevent>
-      <div id = "fid-print-atals-instruction">
-        <div id = "fids_intruction">{{ $t('Values accepted: from 1 to value of [max]. Is possible to insert a range ex. 4-6') }}</div>
-        <div id = "fids_examples_values">{{ $t('Ex. 1,4-6 will be printed id 1,4,5,6') }}</div>
-      </div>
-    </template>
+          <!-- PRINT LABEL -->
+          <div
+            v-if  = "labels && labels.length > 0"
+            class = "print-labels-content"
+          >
+            <b class = "skin-color" hidden>{{ $t('Labels') }}</b>
+            <div class = "labels-input-content">
+              <span
+                v-for = "label in labels"
+                :key  = "label.id"
+              >
+                <label :for = "'g3w_label_id_input_' + label.id"> {{ label.id }}</label>
+                <input
+                  :id     = "'g3w_label_id_input_' + label.id"
+                  class   = "form-control"
+                  v-model = "label.text"
+                />
+              </span>
+            </div>
+          </div>
 
-    <!-- SCREENSHOT FORMAT -->
-    <template v-if = "is_screenshot">
-      <label for = "format">{{ $t('Format') }}</label>
-      <x-select
-        id     = "format"
-        :value = "screenshot_type"
-        @change = "screenshot_type = $event.target.value"
-      >
-        <x-option
-          v-for     = "type in screenshot_types"
-          :key      = "type"
-          :value    = "type"
-        >{{ $t(({ screenshot: 'PNG', geoscreenshot: 'GeoTIFF'})[type]) }}</x-option>
-      </x-select>
-    </template>
+        </details>
 
-    <!-- SUBMIT BUTTON -->
-    <button
-      class     = "btn btn-block btn-success"
-      :disabled = "!can_submit"
-      @click    = "onSubmit"
-      style     = "margin: 15px 0;"
-      type      = "button"
-    >{{ $t('Generate') }}</button>
+        <!-- PRINT ATLAS -->
+        <!-- ORIGINAL SOURCE: src/componentsPrintSelectAtlasFieldValues.vue@v3.9.3 -->
+        <template v-if = "!is_screenshot && atlas && atlas.field_name">
+          <label  for = "print_atlas_autocomplete"><span>{{ atlas.field_name }}</span></label>
+          <x-select
+            :key                = "template"
+            id                  = "print_atlas_autocomplete"
+            :value              = "JSON.stringify(atlas_values)"
+            @change             = "onAtlasChange"
+            @search-input       = "onAtlasSearch"
+            :search-placeholder = "$t('Please enter') + ' 1 ' + $t('or more characters')"
+            multiple
+            searchable
+            v-disabled          = "atlas_loading"
+          >
+            <x-option v-for = "option in atlas_options" :key = "option" :value = "option" :selected="atlas_values.includes(option)">{{ option }}</x-option>
+          </x-select>
+        </template>
 
-    <!-- WARNING PANEL -->
-    <fieldset
-      v-if  = "!is_screenshot"
-      style = "
-        border: 1px solid;
-        padding: 4.9px 8.75px 8.75px 10.5px;
-        border-radius: 3px;
-        background-color: hsl(from var(--bgcolor) h s calc(l + 8));
-        user-select:none
-      "
-    >
-      <legend style = "
-        width: 15px;
-        height: 15px;
-        border: 1px solid;
-        border-radius: 50%;
-        background-color: rgb(34, 45, 50);
-        font-weight: bold;
-        color: rgb(255, 255, 255);
-        font-size: 0.7em;
-        display: flex;
-        justify-content: center;
-        margin: 0px -14px;
-        user-select: none;
-      ">i</legend>
-      <details>
-        <summary
-          title             = "Show more"
-          data-placement    = "right"
-          style             = "
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
+        <!-- PRINT ATLAS -->
+        <!-- ORIGINAL SOURCE: src/components/PrintFidAtlasValues.vue@v3.9.3 -->
+        <template v-if = "!is_screenshot && atlas && !atlas.field_name">
+          <label><span>fids [max: {{ atlas.feature_count - 1 }}]</span></label>
+          <input class = "form-control" v-model = "atlas_values" @keydown.space.prevent>
+          <div id = "fid-print-atals-instruction">
+            <div id = "fids_intruction">{{ $t('Values accepted: from 1 to value of [max]. Is possible to insert a range ex. 4-6') }}</div>
+            <div id = "fids_examples_values">{{ $t('Ex. 1,4-6 will be printed id 1,4,5,6') }}</div>
+          </div>
+        </template>
+
+        <!-- SCREENSHOT FORMAT -->
+        <template v-if = "is_screenshot">
+          <label for = "format">{{ $t('Format') }}</label>
+          <x-select
+            id     = "format"
+            :value = "screenshot_type"
+            @change = "screenshot_type = $event.target.value"
+          >
+            <x-option
+              v-for     = "type in screenshot_types"
+              :key      = "type"
+              :value    = "type"
+            >{{ $t(({ screenshot: 'PNG', geoscreenshot: 'GeoTIFF'})[type]) }}</x-option>
+          </x-select>
+        </template>
+
+        <!-- SUBMIT BUTTON -->
+        <button
+          class     = "btn btn-block btn-success"
+          :disabled = "!can_submit"
+          @click    = "onSubmit"
+          style     = "margin: 15px 0;"
+          type      = "button"
+        >{{ $t('Generate') }}</button>
+
+        <!-- WARNING PANEL -->
+        <fieldset
+          v-if  = "!is_screenshot"
+          style = "
+            border: 1px solid;
+            padding: 4.9px 8.75px 8.75px 10.5px;
+            border-radius: 3px;
+            user-select:none
           "
         >
-          <span style = "text-overflow: ellipsis;overflow: hidden;">{{ $t('Exportable layers are defined by the administrator') }}</span>
-          <i class = "far fa-eye"></i>
-        </summary>
-        <hr style = "margin: 10px 0;border-style: dotted;color:black;">
-        <div style = "white-space: wrap; line-height: 25px;" v-t = "'print_help'"></div>
-      </details>
-    </fieldset>
+          <legend style = "
+            width: 15px;
+            height: 15px;
+            border: 1px solid;
+            border-radius: 50%;
+            background-color: rgb(34, 45, 50);
+            font-weight: bold;
+            color: rgb(255, 255, 255);
+            font-size: 0.7em;
+            display: flex;
+            justify-content: center;
+            margin: 0px -14px;
+            user-select: none;
+          ">i</legend>
+          <details>
+            <summary
+              title             = "Show more"
+              data-placement    = "right"
+              style             = "
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+              "
+            >
+              <span style = "text-overflow: ellipsis;overflow: hidden;">{{ $t('Exportable layers are defined by the administrator') }}</span>
+              <i aria-hidden = "true" class = "far fa-eye"></i>
+            </summary>
+            <hr style = "margin: 10px 0;border-style: dotted;border-color:currentColor;">
+            <div style = "white-space: wrap; line-height: 25px;" v-t = "'print_help'"></div>
+          </details>
+        </fieldset>
 
-  </form>
+      </form>
 
-  <!-- DOCS URL -->
-  <div v-if = "is_staff && !is_screenshot" style = "padding: 1em;text-align: center;">
-    <b>
-      <a
-        :href           = "'https://docs.qgis.org/3.34/' + lang + '/docs/training_manual/map_composer/map_composer.html'"
-        target          = "_blank"
-        data-i18n-title = "QGIS Docs"
-        data-placement  = "right"
+      <!-- DOCS URL -->
+      <div v-if = "is_staff && !is_screenshot" style = "padding: 1em;text-align: center;">
+        <b>
+          <a
+            :href           = "'https://docs.qgis.org/3.34/' + lang + '/docs/training_manual/map_composer/map_composer.html'"
+            target          = "_blank"
+            data-i18n-title = "QGIS Docs"
+            data-placement  = "right"
+          >
+            <i aria-hidden = "true" class = "fa fa-external-link-alt"></i> {{ $t('Edit in QGIS') }}
+          </a>
+        </b>
+      </div>
+
+      <!-- PREVIEW MODAL -->
+      <dialog
+        ref    = "dialog"
+        :style = "'max-width: max(70vw, 800px);' + (['pdf', 'geopdf'].includes(format) ? 'width: 100vw; height: 100vh;' : '')"
+        @click = "$event.target === $event.target.closest('dialog') && $event.target.closest('dialog').close()"
       >
-        <i aria-hidden = "true" class = "fa fa-external-link-alt"></i> {{ $t('Edit in QGIS') }}
-      </a>
-    </b>
-  </div>
+        <form method = "dialog">
+          <div v-show = "loading && layers" class = "bar-loader"></div>
+          <h4 v-if = "!layers"><b>{{ $t('No Layer to print') }}</b></h4>
+          <menu style = "position: sticky;top: 0;">
+            <a
+              v-if       = "layers && !['pdf', 'geopdf'].includes(format)"
+              :href      = "url"
+              @click     = "downloadImage($event)"
+              class      = "btn btn-success"
+              :disabled  = "!!(downloading && layers)"
+              title      = "Download Image"
+            ><i aria-hidden = "true" class = "fas fa-download"></i> {{ $t('Download') }}</a>
+            <button
+              value = "cancel"
+              style = "border: none;line-height: 1;font-weight: 700;font-size: 25px;background: none;position: absolute;inset: 0 0 auto auto;width: 40px;height: 40px;"
+              title = 'close'
+            >&times;</button>
+          </menu>
+          <!-- PRINT as PDF or GEOPDF-->
+          <iframe
+            v-if   = "layers && ['pdf', 'geopdf'].includes(format)"
+            :src   = "url"
+            style  = "border:0; width:100%; height:87vh; margin-top: 20px;"
+          ></iframe>
 
-  <!-- PREVIEW MODAL -->
-  <dialog
-    ref    = "dialog"
-    :style = "'max-width: max(70vw, 800px);' + (['pdf', 'geopdf'].includes(format) ? 'width: 100vw; height: 100vh;' : '')"
-    @click = "$event.target === $event.target.closest('dialog') && $event.target.closest('dialog').close()"
-  >
-    <form method = "dialog">
-      <div v-show = "loading && layers" class = "bar-loader"></div>
-      <h4 v-if = "!layers"><b>{{ $t('No Layer to print') }}</b></h4>
-      <menu style = "position: sticky;top: 0;">
-        <a
-          v-if       = "layers && !['pdf', 'geopdf'].includes(format)"
-          :href      = "url"
-          @click     = "downloadImage($event)"
-          class      = "btn btn-success"
-          :disabled  = "!!(downloading && layers)"
-          title      = "Download Image"
-        ><i aria-hidden = "true" class = "fas fa-download"></i> {{ $t('Download') }}</a>
-        <button
-          value = "cancel"
-          style = "border: none;line-height: 1;font-weight: 700;font-size: 25px;background: none;position: absolute;inset: 0 0 auto auto;width: 40px;height: 40px;"
-          title = 'close'
-        >&times;</button>
-      </menu>
-      <!-- PRINT as PDF or GEOPDF-->
-      <iframe
-        v-if   = "layers && ['pdf', 'geopdf'].includes(format)"
-        :src   = "url"
-        style  = "border:0; width:100%; height:87vh; margin-top: 20px;"
-      ></iframe>
-
-      <!-- PRINT as PNG, JPG, SVG -->
-      <img
-        v-if   = "layers && !['pdf', 'geopdf'].includes(format)"
-        :src   = "url"
-        style  = "height:auto; width: 100%;"
-      >
-    </form>
-  </dialog>
-</div>
-`,
+          <!-- PRINT as PNG, JPG, SVG -->
+          <img
+            v-if   = "layers && !['pdf', 'geopdf'].includes(format)"
+            :src   = "url"
+            style  = "height:auto; width: 100%;"
+          >
+        </form>
+      </dialog>
+    </div>
+  `,
 
   /** @since 3.8.6 */
   name: 'print',
@@ -341,11 +341,6 @@ template: /*html*/`
      */
     has_maps() {
       return (this.maps || []).length > 0;
-    },
-
-    //in the case of current template is atlas and has field_name
-    has_autocomplete() {
-      return !!(this.atlas && this.atlas.field_name);
     },
 
     /** @since 3.10.0  */
@@ -419,7 +414,6 @@ template: /*html*/`
 
         //In case of current atlas template just init select
         if (this.atlas) {
-          this.atlas_search = '';
           this.atlas_options = [];
           this.atlas_values = [];
           return;
@@ -429,21 +423,13 @@ template: /*html*/`
       }
     },
 
-    async has_autocomplete(b) {
-      if (b) {
-        await this.$nextTick();
-        this.atlas_search = '';
-        this.atlas_options = [];
-      }
-    },
-
     atlas_values: {
       immediate: true,
       async handler(vals) {
         if (this._skip_atlas_check || !this.atlas) {
           return;
         }
-        if (this.has_autocomplete) {
+        if (this.atlas?.field_name) {
           this.disabled = 0 === vals.length;
           return;
         }
@@ -472,30 +458,6 @@ template: /*html*/`
         await this.$nextTick();
         this._skip_atlas_check = false;
         this.disabled = '' === value.trim();
-      }
-    },
-
-    /**
-     * Perform atlas search
-     */
-    atlas_search: {
-      async handler(atlas_search) {
-        try {
-          if (!this.atlas || !atlas_search || atlas_search.length < 1) {
-            this.atlas_options = [];
-            return;
-          }
-          this.atlas_loading = true;
-          this.atlas_options = (await getCatalogLayerById(this.atlas.qgs_layer_id).getFilterData({
-            suggest: `${this.atlas.field_name}|${atlas_search}`,
-            unique:  this.atlas.field_name,
-          }));
-        } catch (e) {
-          console.warn('Atlas search error:', e);
-          this.atlas_options = [];
-        } finally {
-          this.atlas_loading = false;
-        }
       }
     },
 
@@ -802,7 +764,14 @@ template: /*html*/`
       //Initialize scales 
       if (show && !this._initialized) {
         const view = GUI.getMap().getView();
-        this._setScales(view.getMaxResolution());
+        const maxRes   = view.getMaxResolution();
+        const units    = GUI.getMapUnits();
+        const mapScale = getScaleFromResolution(maxRes, units);
+        const scales   = PRINT_SCALES.sort((a, b) => b.value - a.value);
+        const below    = scales.filter(s => s.value < mapScale);           // all scales below mapScale
+        const above    = scales.findLast(s => s.value >= mapScale);        // first scale above mapScale
+        this.scales    = (above ? [above] : []).concat(below);
+        this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units));
         this._initialized = true;
         const resolution  = view.getResolution();
         // set current scale
@@ -856,30 +825,42 @@ template: /*html*/`
       GUI.setModal(false);
     },
 
-    /**
-     * Set all scales based on max resolution
-     *
-     * @param maxRes maximum resolution
-     */
-    _setScales(maxRes) {
-      const units    = GUI.getMapUnits();
-      const mapScale = getScaleFromResolution(maxRes, units);
-      const scales   = PRINT_SCALES.sort((a, b) => b.value - a.value);
-      const below    = scales.filter(s => s.value < mapScale);           // all scales below mapScale
-      const above    = scales.findLast(s => s.value >= mapScale);        // first scale above mapScale
-      this.scales    = (above ? [above] : []).concat(below);
-      this.scales.forEach(s => this.resolutions[s.value] = getResolutionFromScale(s.value, units));
+    onAtlasChange(e) {
+      const selected    = e.target.value;
+      this.atlas_values = (selected || '').split(',').filter(v => v);
+      // hide dropdown
+      e.target.close();
+      // auto reset (force new user input)
+      const reset = event => {
+        if (event.newState === 'open') {
+          this.atlas_options = [];
+          e.target.container.removeEventListener('toggle', reset);
+        }
+      };
+      e.target.container.addEventListener('toggle', reset);
+      // auto reset options (when no value)
+      if (!selected) {
+        this.atlas_options = [];
+      }
     },
 
-    onAtlasChange(event) {
-      const selected = event.target.value;
-      if (selected) {
-        this.atlas_values = selected.split(',').filter(v => v);
-        // Resetta la ricerca per forzare l'utente a digitare di nuovo
-        this.atlas_search = '';
+    async onAtlasSearch(e) {
+      try {
+        const atlas_search = e.detail.value;
+        if (!this.atlas || !atlas_search.length) {
+          this.atlas_options = [];
+          return;
+        }
+        this.atlas_loading = true;
+        this.atlas_options = (await getCatalogLayerById(this.atlas.qgs_layer_id).getFilterData({
+          suggest: `${this.atlas.field_name}|${atlas_search}`,
+          unique:  this.atlas.field_name,
+        }));
+      } catch (e) {
+        console.warn('Atlas search error:', e);
         this.atlas_options = [];
-        // Chiudi la dropdown
-        event.target.close();
+      } finally {
+        this.atlas_loading = false;
       }
     },
 
@@ -939,17 +920,14 @@ template: /*html*/`
     };
   },
 
+  created() {
+    this.onAtlasSearch = debounce(this.onAtlasSearch.bind(this), 400);
+  },
+
   /**
    * @since 3.10.2
    */
   async mounted() {
-    await this.$nextTick();
-    // when default print template is "atlas" → initialize autocomplete
-    if (this.atlas) {
-      this.atlas_search = '';
-      this.atlas_options = [];
-    }
-
     document.body.appendChild(this.$refs.dialog);
 
     this.$refs.dialog.addEventListener('close', () => {

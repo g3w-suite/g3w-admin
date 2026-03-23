@@ -226,7 +226,7 @@ export default ({
     async startTool(toolId, toolboxId) {
 
       const toolbox = GUI.getPlugin('editing').getToolBoxById(toolboxId);
-      const enabled = this.activetool && toolboxId === this.activetool;
+      const enabled = toolboxId === this.activetool;
 
       if (!enabled && GUI.getPlugin('editing').getToolBoxById(toolbox.getDependencies().find(id => id === this.activetool))) {
         await this.commit_dirty(this.activetool);
@@ -244,29 +244,24 @@ export default ({
      * @param id
      */
     stopTool(id) {
-      if (id) {
-        GUI.getPlugin('editing').getToolBoxById(id).stopActiveTool();
-        this.activetool = null;
-      }
+      GUI.getPlugin('editing').getToolBoxById(id)?.stopActiveTool?.();
+      this.activetool = null;
     },
 
     /**
      * @param id
      */
     async selectToolBox(id) {
-      const toolbox   = GUI.getPlugin('editing').getToolBoxById(id); // get toolbox by id
-      const toolboxes = GUI.getPlugin('editing').getToolBoxes();            // get all toolboxes
-      const selected  = toolboxes.find(t => t.isSelected());    // check if exist already toolbox selected (first time)
-
-      // set already selected false
-      if (selected) {
-        selected.setSelected(false);
-        selected.clearMessage();
-      }
-
+      //wait eventually start/stop toolbox
+      await this.$nextTick();
+      const toolbox          = GUI.getPlugin('editing').getToolBoxById(id); // get toolbox by id
+      const toolboxes        = GUI.getPlugin('editing').getToolBoxes();     // get all toolboxes
+      //set current selected toolbox false
+      toolboxes.find(t => t.isSelected())?.setSelected(false);         
       // set the current selected toolbox to true
       toolbox.setSelected(true);
-
+      
+      //set current tooboxselected
       this.state.toolboxselected = toolbox;
     },
 

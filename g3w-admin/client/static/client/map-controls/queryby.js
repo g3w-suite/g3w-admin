@@ -102,30 +102,20 @@ export class QueryBy extends MapControl {
         title:     'Query area',
         type:      'tool',
         iconClass: 'info',
-        closable:  false,
+        closable:  true,
         hooks: {
           body: {
             data: () => ({
               types:           this.types,
               type:            this.types[0],
               methods:         ['intersects', 'within'],
-              method:          this.getSpatialMethod(),
+              method:          this.getSpatialMethod() ?? 'intersects',
               layers:          [],
               selectedLayer:   (GUI.getSelectedLayer() || { getId() { return '__ALL__'; } }).getId(), // TODO: use optional chaining instead: GUI.getSelectedLayer()?.getId() || '__ALL__'
               reloading:       true,
             }),
             template: /* html */ `
               <div style="width: 100%;">
-                <!-- DOCS URL -->
-                <a
-                  :href           = "'https://g3w-suite.readthedocs.io/en/v3.9.x/g3wsuite_client.html#map-controls'"
-                  target          = "_blank"
-                  style           = "position: absolute;inset: 1em 1em auto auto;"
-                  data-i18n-title = "Docs"
-                  data-placement  = "bottom"
-                >
-                  <i aria-hidden = "true" class = "fa fa-external-link-alt"></i>
-                </a>
                 <!-- SPATIAL METHOD -->
                 <div style = "padding: 5px;">
                   <x-select :value="method" @change="method = $event.target.value">
@@ -153,7 +143,7 @@ export class QueryBy extends MapControl {
                 </div>
                 <!-- RADIUS TYPE IN METERS-->
                 <div v-if = "'querybycircle' === type" style = "padding: 5px;">
-                  <label for = "g3w_querybycircle_radius" v-t:pre = "'mapcontrols.querybycircle.label'">[m]</label>
+                  <label for = "g3w_querybycircle_radius">{{ $t('Radius') }} [m]</label>
                   <div style = "display: flex">
                     <input
                       id      = "g3w_querybycircle_radius"
@@ -174,7 +164,7 @@ export class QueryBy extends MapControl {
                 </div>
                 <!-- SELECTED LAYER -->
                 <div style = "padding: 5px;">
-                  <label v-t = "'mapcontrols.queryby.layer'"></label>
+                  <label>{{ $t('Selected layer:') }}</label>
                   <x-select 
                     v-if    ="!reloading" 
                     :value  = "selectedLayer" 
@@ -182,15 +172,33 @@ export class QueryBy extends MapControl {
                     ref     = "layer"
                     searchable
                   >
-                    <x-option :value="'__ALL__'">{{ $t(all) }}</x-option>
-                    <x-option v-for="(layer, index) in layers" :key="layer.getId() + '_' + index" :value="layer.getId()">
+                    <x-option value="__ALL__">{{ $t(all) }}</x-option>
+                    <x-option v-for="(layer, index) in layers" :key="layer.getId()" :value="layer.getId()">
                       <i :class="g3wtemplate.getFontClass(layer.isVisible() ? 'eye' : 'eye-close')"></i>&nbsp;&nbsp;{{ layer.get('name') }}
                     </x-option>
-                    <x-option :value="'__NEW__'">{{ $t('mapcontrols.queryby.new') }}</x-option>
+                    <x-option value="__NEW__">{{ $t('mapcontrols.queryby.new') }}</x-option>
                   </x-select>
                 </div>
                 <!-- HELP TEXT -->
-                <div ref = "help" v-t = "help"></div>
+                <div>
+                  <ul v-if="'querybypolygon' === type">
+                    <li>{{ $t('Select a (visible) layer.') }}</li>
+                    <li>{{ $t('Click on a geometry within map.') }}</li>
+                  </ul>
+                  <ul v-if="'querybydrawpolygon' === type">
+                    <li>{{ $t('Click on map to add a new vertex') }}</li>
+                    <li>{{ $t('Double click to finish and query layers') }}</li>
+                  </ul>
+                  <ul v-if="'querybbox' === type">
+                    <li>{{ $t('Drag the mouse to draw a rectangle and query layers') }}</li>
+                  </ul>
+                  <ul v-if="'querybycircle' === type">
+                    <li>{{ $t('Click on map to draw circle') }}</li>
+                  </ul>
+                  <ul v-if="'querybyfreehand' === type">
+                    <li>{{ $t('Drag the mouse to draw a polygon and query layers') }}</li>
+                  </ul>
+                </div>
                 <!-- CLEAR SELECTION -->
                 <button 
                   v-if        = "!['__ALL__', '__NEW__'].includes(selectedLayer)" 
@@ -205,7 +213,6 @@ export class QueryBy extends MapControl {
             computed: {
               control()   { return CONTROLS[this.type]; },
               queryable() { return (this.control.layers || []).filter(l => 'querybypolygon' === this.type ? POLYGON_TYPES.includes(l.getGeometryType()) : true); },
-              help()      { return `mapcontrols.${this.type}.help.message`; },
               all()       { return `mapcontrols.queryby.${(!this.queryable.length || !_hasVisible(this.control)) ? 'none' : 'all'}`; },
               radius:    {
                 get() { return QUERY.radius },
