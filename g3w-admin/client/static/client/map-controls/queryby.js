@@ -119,9 +119,7 @@ export class QueryBy extends MapControl {
                 <!-- SPATIAL METHOD -->
                 <div style = "padding: 5px;">
                   <x-select :value="method" @change="method = $event.target.value">
-                    <x-option v-for="_method in methods" :key="_method" :value="_method">
-                    {{ $t('mapcontrols.queryby.methods.' + _method) }}
-                    </x-option>
+                    <x-option v-for="_method in methods" :key="_method" :value="_method">{{ $t(_method) }}</x-option>
                   </x-select>
                 </div>
                 <!-- QUERY TYPE -->
@@ -137,7 +135,15 @@ export class QueryBy extends MapControl {
                       })[_type]"
                     ></i>
                     &nbsp;&nbsp;
-                    {{ $t('mapcontrols.queryby.' + _type + '.tooltip') }}
+                    {{
+                      $t(({
+                        'querybbox':          'draw a rectangle',
+                        'querybycircle':      'draw a circle',
+                        'querybydrawpolygon': 'draw a polygon',
+                        'querybypolygon':     'select a polygon',
+                        'querybyfreehand':    'freehand',
+                      })[_type])
+                    }}
                     </x-option>
                   </x-select>
                 </div>
@@ -176,7 +182,7 @@ export class QueryBy extends MapControl {
                     <x-option v-for="(layer, index) in layers" :key="layer.getId()" :value="layer.getId()">
                       <i :class="g3wtemplate.getFontClass(layer.isVisible() ? 'eye' : 'eye-close')"></i>&nbsp;&nbsp;{{ layer.get('name') }}
                     </x-option>
-                    <x-option value="__NEW__">{{ $t('mapcontrols.queryby.new') }}</x-option>
+                    <x-option value="__NEW__">{{ $t('__NEW__') }}</x-option>
                   </x-select>
                 </div>
                 <!-- HELP TEXT -->
@@ -213,7 +219,7 @@ export class QueryBy extends MapControl {
             computed: {
               control()   { return CONTROLS[this.type]; },
               queryable() { return (this.control.layers || []).filter(l => 'querybypolygon' === this.type ? POLYGON_TYPES.includes(l.getGeometryType()) : true); },
-              all()       { return `mapcontrols.queryby.${(!this.queryable.length || !_hasVisible(this.control)) ? 'none' : 'all'}`; },
+              all()       { return `${(!this.queryable.length || !_hasVisible(this.control)) ? '__NONE__' : '__ALL__'}`; },
               radius:    {
                 get() { return QUERY.radius },
                 set(v) {
@@ -738,7 +744,7 @@ export class QueryBy extends MapControl {
         },
         usermessage: 'querybbox' !== type && !GEOMETRY && {
           type:    'warning',
-          message: `${layerName} - ${_('mapcontrols.querybypolygon.no_geometry')}`,
+          message: `${layerName} - ${_('No geometry on response')}`,
         } || undefined,
         data,
       });

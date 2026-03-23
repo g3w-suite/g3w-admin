@@ -133,9 +133,9 @@
                   _container = null; // remove container from action
                 }
               }),
-              clear:() => {
+              clear:async () => {
                 if (_container) {
-                  this.toggleCharts({ show: false, container: _container });
+                  await this.toggleCharts({ show: false, container: _container });
                   _container = null;
                 }
               }
@@ -175,7 +175,7 @@
         sidebar.onbefore('setOpen', async b => {
           //need to close content before. In this way eventually charts on query result service are cleared
           await GUI.closeContent();
-          this.toggleCharts({ show: b });
+          await this.toggleCharts({ show: b });
           GUI.once('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
           if (!b) { 
             GUI.closeContent();
@@ -546,7 +546,7 @@
         }
       }
 
-      //sto loading
+      //stop loading
       this.setLoading(false);
 
       return Promise.resolve({ order, charts });
@@ -727,10 +727,8 @@
      * @returns { undefined }
      */
     setLoading(b) {
+      document.querySelector('#qplotly').classList.toggle('g3w-disabled', b);
       this.state.loading = b;
-      if (undefined === this.state.rel) {
-        document.querySelector('#qplotly').classList.toggle('g3w-disabled', b);
-      }
     }
 
     /**
