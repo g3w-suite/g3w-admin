@@ -81,9 +81,7 @@ class MeasureControl extends MapControl {
                 template: /* html */ `
                   <div style = "width: 100%; padding: 5px;">
                     <x-select :value="type" @change="type = $event.target.value">
-                      <x-option v-for="_type in types" :key="_type" :value="_type">
-                      {{ $t('measure_types.' + _type) }}
-                      </x-option>
+                      <x-option v-for="_type in types" :key="_type" :value="_type">{{ $t(_type) }}</x-option>
                     </x-select>
                   </div>`,
                 watch: {
