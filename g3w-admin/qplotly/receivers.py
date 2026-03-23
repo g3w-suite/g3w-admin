@@ -78,7 +78,7 @@ def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id, project=None) :
 
     # Check if is has related per project
     # Only at first levet pass project
-    related_widgets = qplotly_widget.related(project)
+    related_widgets = qplotly_widget.related(project, order='desc')
     if len(related_widgets) > 0:
         logger.warning(f"Widget {qplotly_widget.pk} has related widgets, but related widgets are not supported for initconfig. Widget will be ignored.")
 
@@ -94,7 +94,7 @@ def make_qplotlywidget_for_config(qplotly_widget, qgs_layer_id, project=None) :
             'visible_features_only': qplotly_widget.visible_features_only,
             'show_on_start': qplotly_widget.show_on_start_client,
             'show_position': qplotly_widget.show_position,
-            'label': multiplots[-1]['label'],
+            'label': multiplots[0]['label'],
             'type': 'multiplot',
             'plots': multiplots
         }

@@ -67,7 +67,7 @@ class QplotlyWidget(models.Model):
         if self.datasource and layer.datasource != self.datasource:
             raise ValidationError(_(f'Layer DataPlotly settings layer datasource is not equal to datasource into values.'))
     
-    def related(self, project: Project = None):
+    def related(self, project: Project = None, order='asc'):
         """Return related widgets ordered by 'order' field, excluding self-relation"""
 
         relations = QplotlyWidgetRelation.objects.filter(source=self)
@@ -75,7 +75,15 @@ class QplotlyWidget(models.Model):
         if project:
             relations = relations.filter(project=project)
 
-        target_ids = list(relations.order_by('order').values_list('target_id', flat=True))
+        if order == 'asc':
+            order = 'order'
+        elif order == 'desc':
+            order = '-order'
+        else:
+            raise ValueError(_('Order must be "asc" or "desc".'))   
+        
+        target_ids = list(relations.order_by(order).values_list('target_id', flat=True))
+
         widgets = {w.pk: w for w in QplotlyWidget.objects.filter(pk__in=target_ids)}
         return [widgets[pk] for pk in target_ids if pk in widgets]
     
