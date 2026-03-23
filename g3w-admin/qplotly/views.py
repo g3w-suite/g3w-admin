@@ -122,7 +122,7 @@ class QplotlyProjectPlotsListView(TemplateView):
 
         # Get every qplotly plots for the project
         ctx['project'] = Project.objects.get(pk=kwargs['project_id'])
-        ctx['plots'] = get_qplotlywidgets4project(ctx['project'])
+        ctx['plots'] = get_qplotlywidgets4project(ctx['project'], ctx='free+related')
 
         return ctx
 

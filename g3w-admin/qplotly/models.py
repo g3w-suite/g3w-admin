@@ -78,6 +78,16 @@ class QplotlyWidget(models.Model):
         target_ids = list(relations.order_by('order').values_list('target_id', flat=True))
         widgets = {w.pk: w for w in QplotlyWidget.objects.filter(pk__in=target_ids)}
         return [widgets[pk] for pk in target_ids if pk in widgets]
+    
+    def has_related(self, project: Project = None):
+        """Return True if the widget has related widgets"""
+
+        relations = QplotlyWidgetRelation.objects.filter(source=self)
+        
+        if project:
+            relations = relations.filter(project=project)
+
+        return relations.exists()
 
 
 class QplotlyWidgetRelation(models.Model):

@@ -57,7 +57,8 @@ def get_qplotlywidgets4project(project, user=None, ctx='all'):
 
     :param project: Qdjango Project model instance
     :param user: User model instance
-    :return: Ordered list of ( QplotlyWidget instance, qgs_layer_id)
+    :param ctx: Context for filtering widgets ('all' or 'free+related')
+    :return: Ordered list of (QplotlyWidget instance, qgs_layer_id)
     """
 
     # Get every qplotly plots for the project
