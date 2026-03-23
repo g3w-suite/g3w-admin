@@ -46,7 +46,7 @@
         bbox_filter: false,     // Boolean - if set bbox filter on charts
         bbox_ids:    [],        // plot ids associated to bbox (moveend event)
         bbox_key:    null,      // Openlayers key event for map `moveend`
-        bbox:        undefined, // custom request param
+        bbox:        undefined, // store content of in_bbox param to ge data inside the map bbox
         rel:         null,      // relation data
       });  
 
@@ -189,42 +189,49 @@
     }
 
     /**
-     * @param plot object
+     * Resets plot data and recursively clears related child or parent data.
+     * @param {Object} plot - The plot object to clear.
+     * @returns {Array} List of plot IDs that were affected/cleared.
      */
     clearData(plot) {
-      const plotIds = [];    // plotId eventually to reload
-      plot.loaded   = false; // set loaded data to false
-      plot.data     = null;  // set dat to null
+      const plotIds = [];
+      plot.loaded   = false;
+      plot.data     = null;
 
-      // in case of plot father and has relation data and data related to
+      // --- 1. Recursive cleanup for child plots (Parent -> Children) ---
       if (plot._rel?.data) {
+        // Iterate through all relation layers and their associated data entries
         Object
-          .values(plot._rel.data)
-          .forEach(d => {
-            d.forEach(({ id }) => {
-              this.clearData(this.config.plots.find(p => id === p.id));
-              plotIds.push(id);
-            })
+        .values(plot._rel.data)
+        .forEach(data => {
+          data.forEach(({ id }) => {
+            this.clearData(this.config.plots.find(p => p.id === id)); // Recursively clear child
+            plotIds.push(id);
           });
-        //reset data  
+        });
+        // Reset the relation data object after clearing children
         plot._rel.data = null;
       }
 
-      // check if we need to remove relation data coming from parent plot (plot.rel = null)
+      // --- 2. Cleanup orphan references in other plots (Child -> Parent) ---
+      // If the plot has no specific relation metadata, check if it exists as a child elsewhere
       if (null === plot._rel) {
-        //get all plots that has relation 
-        this.config.plots.filter(p => p.show && p.id !== plot.id && p._rel?.data)
+        this.config.plots
+          .filter(p => p.show && p.id !== plot.id && p._rel?.data)
           .forEach(p => {
-            // plot has different id from current hide plot and it has relations
-            Object
-              .entries(p._rel.data)
-              .forEach(([id, data]) => {
-                data.forEach(({ id }, index) => id === plot.id && data.splice(index, 1));
-                if (0 === data.length) { 
-                  delete p._rel.data[id]; 
+            Object.entries(p._rel.data)
+              .forEach(([layerId, data]) => {
+                // Remove the current plot ID from the parent's relation data
+                p._rel.data[layerId] = data.filter(d => plot.id !== d.id);
+
+                // Cleanup: if a layer's data array is empty, remove the layer key
+                if (0 === p._rel.data[layerId].length) {
+                  delete p._rel.data[layerId];
                 }
-                if (0 === data.length && 0 === Object.keys(p._rel.data).length) {
-                  p._rel.data = null; 
+
+                // Final cleanup: if no layers remain, set the whole data object to null
+                if (0 === Object.keys(p._rel.data)) {
+                  p._rel.data = null;
                 }
               });
           });
@@ -237,9 +244,9 @@
      * Get charts data from server
      * 
      * @param { Object } opts
-     * @param opts.layerIds          provide by query by result service otherwise is undefined
-     * @param opts.rel               provide by query by result service otherwise is undefined
-     * @param { Array } opts.plotIds plots id to show
+     * @param opts.layerIds          provide by query by result service otherwise is undefined - Array of relations layer ids
+     * @param opts.rel               provide by query by result service otherwise is undefined - Object:  { relations: Array of relations object, fid: father feature fid, height: heigh of content }
+     * @param { Array } opts.plotIds plots id to show provide by plugin sideb item checkbox
      * 
      * @returns { Promise<{ order, charts }> }
      */
@@ -268,21 +275,29 @@
       if (!layerIds && plotIds) {
         //loop throught plot ids
         plotIds.forEach(plotId => {
-          // check if is child of already show plots (not equal to current plotId, relation plot)
-          const added = this.config.plots.find(p => p.show && plotId !== p.id
-            // find a plot that has relations array and with relationLayer the same layer id belong to plot qgis_layer_id
-            && p._rel?.relations.find(r =>
-              r.relationLayer === this.config.plots.find(p => plotId === p.id).qgs_layer_id
-              && (
-                null === p._rel.data
-                || undefined === p._rel?.data[r.relationLayer]
-                || undefined === p._rel?.data[r.relationLayer].find(r => r.id === plotId)
-              )
-            )
-          ) || this.config.plots.find(p => p.id === plotId)
-          // check if already (in case of parent plots) added to plots
-          if (!plots.some(p => p === added)) {
-            added.loaded = false; //need to force to se loaded false in case of father plot that has already load a child plot
+          const currentPlot = this.config.plots.find(p => p.id === plotId);
+          if (!currentPlot) return;
+
+          // Check if there is an already shown parent with a relation to the current plot's layer
+          const parentPlot = this.config.plots.find(p => {
+            if (!p.show || p.id === plotId || !p._rel) return false;
+
+            return p._rel.relations.some(r => {
+              const isSameLayer = r.relationLayer === currentPlot.qgs_layer_id;
+              const data = p._rel.data;
+
+              // The plot is "new" if relation data is null, the specific layer is missing, or the ID is not yet loaded
+              const isNotInData = !data || !data[r.relationLayer] || !data[r.relationLayer].some(d => d.id === plotId);
+
+              return isSameLayer && isNotInData;
+            });
+          });
+
+          const added = parentPlot || currentPlot;
+
+          // Avoid duplicates and reset loading state
+          if (!plots.includes(added)) {
+            added.loaded = false;
             plots.push(added);
           }
         });
@@ -299,22 +314,19 @@
       if (!layerIds && !plotIds) {
         // get only plots that have attribute show to true
         // and not in relation with other plot show
-        plots = this.config.plots.filter(({ show }) => show).filter(plot => {
-          return (
-            // and if not belong to show plot father relation
-            (undefined === this.config.plots.filter(({ show }) => show).find(_plot =>
-              (
-                // is not the same plot id
-                (plot.id !== _plot.id) 
-                // plat has relations
-                && (null !== _plot._rel)
-                // find a plot that has withrelations array and with relationLayer the same
-                // layer id belog to plot qgis_layer_id
-                && (undefined !== _plot._rel.relations.find(({ id, relationLayer }) => ((relationLayer === plot.qgs_layer_id))))
-              ))
-            )
-          )
-        })
+        const activePlots = this.config.plots.filter(p => p.show);
+
+        plots = activePlots.filter(plot => {
+          // Find active parent plot relating to current layer
+          const hasParentRelation = activePlots.some(parent => 
+            parent.id !== plot.id && 
+            parent._rel !== null && 
+            parent._rel.relations.some(rel => plot.qgs_layer_id === rel.relationLayer)
+          );
+
+          // Filter out children: keep only plots that do not belong to a parent relation
+          return !hasParentRelation;
+        });
       }
 
       const order            = (layerIds ? plots : this.config.plots.filter(({ show, show_position }) => show && show_position.includes('sidebar'))).map(p => p.id); // order of plot ids
@@ -329,19 +341,18 @@
           plots.flatMap(plot => {
             const promises = []; // promises array
             let promise;
-            // no request server request is needed plot is already loaded (show / relation)
-            if (
-              (plot.loaded && !plot._rel) ||
-              (
-                plot.loaded && !plot._rel?.data && 0 === this.config.plots
-                  .filter(p => p.show && plot._rel.relations.some(r => p.qgs_layer_id === r.relationLayer))
-                  // not child
-                  .reduce((nc, p) => {
-                    nc += (Object.values(plot._rel.data).some(d => d.some(d => d.id === p.id))) ? 0 : 1;
-                    return nc;
-                  }, 0)
-              )
-            ) {
+            // A plot is valid if loaded and has no relations, or if all its visible children are already in data
+            const isLoadedWithoutRel   = plot.loaded && !plot._rel;
+
+            const areAllChildrenLoaded = plot.loaded && plot._rel?.data && 
+              this.config.plots
+                .filter(p => p.show && plot._rel.relations.some(r => p.qgs_layer_id === r.relationLayer))
+                .every(childPlot => 
+                  // Check if this specific child ID exists within any of the plot's relation data arrays
+                  Object.values(plot._rel.data).some(data => data.some(d => childPlot.id === d.id))
+                );
+
+            if (isLoadedWithoutRel || areAllChildrenLoaded) {
               // no further requests needed, use cached data
               c_cache.push(plot);
               return Promise.resolve({
@@ -351,58 +362,94 @@
               });
             }
 
-            // data coming from father plots
-            let data;
-
             // charts relations
-            if (
-              undefined !== rel ||                                 // relation data is passed by query result service
-              this.config.plots.filter(p => p.show).length <= 1 || // single plot
-              !this.config.plots.some(p => {                       // find if is a plots that belong to plot father
-                if (p.show && p.id !== plot.id && Object.values(p._rel?.data ?? {}).some(d => d.some(d => { if (d.id === plot.id) { data = d.data; return true; } }))) {
-                  promises.push(Promise.resolve({ result: true, data: [ data ] }));
+            const activePlots = this.config.plots.filter(p => p.show);
+
+            // 1. Data passed directly, or single plot visible, or found as a child of another active plot
+            const isStandaloneOrPassed = undefined !== rel || activePlots.length <= 1;
+
+            const foundInParentRelation = !isStandaloneOrPassed && activePlots.some(parent => {
+              if (parent.id === plot.id || !parent._rel?.data) return false;
+
+              // Check if plot.id exists within any of the parent's relation data arrays
+              return Object.values(parent._rel.data).some(dataArray => {
+                const match = dataArray.find(d => d.id === plot.id);
+                if (match) {
+                  // If found, resolve with the nested data and stop searching
+                  promises.push(Promise.resolve({ result: true, data: [match.data] }));
                   return true;
                 }
-              })
-            ) {
-              (layerIds ? [] : [undefined])
-                .concat(this.state?.rel?.relations.filter(r => plot.qgs_layer_id === r.referencingLayer).map(r => `${r.id}|${this.state.rel.fid}`) ?? [])
-                .forEach(r => {
-                  c_cache.push(plot);
-                  promise = plot.loaded
-                    ? Promise.resolve({ result: true, data: plot.data })
-                    : Promise.allSettled((plot.plots ?? [plot]).map(plot => XHR.get({
-                        url: `/qplotly/api/trace/${this.config?.gid.split(':')[1]}/${plot.qgs_layer_id}/${plot.id}/`,
-                        params: {
-                          relationonetomany: r,
-                          filtertoken: ApplicationState.tokens.filtertoken || undefined,
-                          // withrelations parameter (check if plot has relation child → default: undefined)
-                          withrelations: plot._rel?.relations.filter(r => {
-                            if (this.config.plots.some(p => p.show && p.show_position.includes('sidebar') && p.qgs_layer_id === r.relationLayer && !p.loaded) && !r_cache.has(r.id)) {
-                              r_cache.add(r.id);
-                              plot.loaded = false;
-                              return true;
-                            }
-                          })
-                          .map(r => r.id)
-                          .join(',')
-                          || undefined,
-                          // in_bbox parameter (in case of tool map toggled)
-                          in_bbox: (this.state.bbox_ids.length > 0 ? -1 !== this.state.bbox_ids.filter(p => p.active).map(p => p.id).indexOf(plot.id) : true) && this.state.bbox ? this.state.bbox : undefined,
+                return false;
+              });
+            });
+
+            if (isStandaloneOrPassed || !foundInParentRelation) {
+              // Determine the base relations: use undefined if no layerIds, otherwise filter by referencing layer
+              const relations = layerIds 
+                ? (this.state?.rel?.relations || [])
+                    .filter(r => plot.qgs_layer_id === r.referencingLayer)
+                    .map(r => `${r.id}|${this.state.rel.fid}`)
+                : [undefined];
+
+              relations.forEach(relParam => {
+                c_cache.push(plot);
+
+                // If already loaded, resolve immediately; otherwise, fetch data
+                const currentPromise = plot.loaded
+                  ? Promise.resolve({ result: true, data: plot.data })
+                  : Promise.allSettled((plot.plots ?? [plot]).map(p => {
+                      
+                      // Identify child relations that need to be loaded (sidebar visibility and not in cache)
+                      const pendingRelations = p._rel?.relations?.filter(r => {
+                        const isTargetPlot = this.config.plots.some(cp => 
+                          cp.show && 
+                          cp.show_position.includes('sidebar') && 
+                          cp.qgs_layer_id === r.relationLayer && 
+                          !cp.loaded
+                        );
+
+                        if (isTargetPlot && !r_cache.has(r.id)) {
+                          r_cache.add(r.id);
+                          p.loaded = false;
+                          return true;
                         }
-                    }))).then(results => {
-                        // normalize the result of multiple XHR requests into a single object
-                        const success   = results.every(r => r.status === 'fulfilled' && r.value?.result);
-                        const data      = results.flatMap(r => r.value?.data || []);
-                        //set realtion only if there are some relation on result
-                        const relations = results.filter(r => r.value?.relations).reduce((acc, r) => {
-                          Object.keys(r.value.relations).forEach(key => acc[key] = (acc[key] || []).concat(r.value.relations[key]));
+                        return false;
+                      }) || [];
+
+                      return XHR.get({
+                        url: `/qplotly/api/trace/${this.config?.gid.split(':')[1]}/${p.qgs_layer_id}/${p.id}/`,
+                        params: {
+                          relationonetomany: relParam,
+                          filtertoken: ApplicationState.tokens.filtertoken || undefined,
+                          withrelations: pendingRelations.map(r => r.id).join(',') || undefined,
+                          // Only apply bbox if no specific IDs are set or if the current plot is active
+                          in_bbox: (this.state.bbox_ids.length === 0 || this.state.bbox_ids.some(b => b.active && b.id === p.id)) && this.state.bbox,
+                        }
+                      });
+                    })).then(results => {
+                      // Aggregate results from multiple XHR calls
+                      const success = results.every(r => r.status === 'fulfilled' && r.value?.result);
+                      const data = results.flatMap(r => r.value?.data || []);
+                      
+                      // Merge relations from all results into a single object
+                      const mergedRelations = results
+                        .filter(r => r.value?.relations)
+                        .reduce((acc, r) => {
+                          Object.entries(r.value.relations).forEach(([key, val]) => {
+                            acc[key] = (acc[key] || []).concat(val);
+                          });
                           return acc;
                         }, {});
-                        return { result: success, data, relations: Object.keys(relations).length ? relations: null };
+
+                      return { 
+                        result: success, 
+                        data, 
+                        relations: Object.keys(mergedRelations).length ? mergedRelations : null 
+                      };
                     });
-                  promises.push(promise);
-                });
+
+                promises.push(currentPromise);
+              });
             }
             return promises;
         })
@@ -449,52 +496,54 @@
 
         // data has a relations attributes data
         // loop through relations by id and get relation data filtered by only show plot
-        Object
-          .keys(relations ?? {})
-          .forEach(id => relations[id]
-            .forEach(r => {
-              this.config.plots
-                .filter(p => p.show && r.id == p.id)
-                .forEach(p => {
-                  p.loaded = true;
-                  p.data   = r.data;
-                  p.title  = `${father_relations.find(rel => id === rel.getId())?.getName()} ${p.label}`;
-                  // get father filter plots
-                  if (plot.filters.length && !(`relation.${plot.filters[0]}` in plot.filters)) {
-                    //set child plot filter
-                    p.filters = [(`relation.${plot.filters[0]}`)];
-                  } else {
-                    //remove eventually child plot filter
-                    p.filters = [];
-                  }
-                  this.#setActiveFilters(plot);
-                  /** In not yet get data from a plot id, set empty array */
-                  if (!charts[p.id]) {
-                    charts[p.id] = [];
-                  }
-                  charts[p.id].push({
-                    filters: p.filters,
-                    tools:   p.tools,
-                    layerId: p.qgs_layer_id,
-                    title:   p.title,
-                    data:    (is_error ?? false) ? null : p.data,
-                  });
+
+        // Pre-calculate common values and filter active plots once
+        const activePlots = this.config.plots.filter(p => p.show);
+        const baseFilter  = plot.filters[0];
+
+        Object.entries(relations ?? {}).forEach(([relId, relationData]) => {
+          // Find the father relation name once per relation ID
+          const fatherRelName = father_relations.find(rel => relId === rel.getId())?.getName() || "";
+
+          relationData.forEach(r => {
+            // Find the specific plot associated with this relation ID
+            activePlots
+              .filter(p => p.id === r.id)
+              .forEach(p => {
+                p.loaded = true;
+                p.data = r.data;
+                p.title = `${fatherRelName} ${p.label}`.trim();
+
+                // Manage child plot filters based on the parent's first filter
+                const hasValidParentFilter = baseFilter && !(`relation.${baseFilter}` in plot.filters);
+                p.filters = hasValidParentFilter ? [`relation.${baseFilter}`] : [];
+
+                this.#setActiveFilters(plot);
+
+                // Ensure the chart entry exists and push the new plot data
+                charts[p.id] = charts[p.id] || [];
+                charts[p.id].push({
+                  filters: p.filters,
+                  tools:   p.tools,
+                  layerId: p.qgs_layer_id,
+                  title:   p.title,
+                  data:    (is_error ?? false) ? null : p.data,
+                });
               });
-            })
-          );
+          });
+        });
 
       });
 
-      /** @FIXME add description */
+      // Keep only active plots in bbox_ids if bbox filtering is disabled
       if (!this.state.bbox_filter) {
         this.state.bbox_ids = this.state.bbox_ids.filter(p => p.active);
-      }
 
-      // remove handler of map moveend and reset to empty
-      if (!this.state.bbox_filter && !this.state.bbox_ids.length && this.state.bbox_key) {
-        ol.Observable.unByKey(this.state.bbox_key);
-        this.state.bbox_key = null;
-        this.state.bbox_ids = [];
+        // If no active plots remain, unbind the map move event and clear state
+        if (!this.state.bbox_ids.length && this.state.bbox_key) {
+          ol.Observable.unByKey(this.state.bbox_key);
+          this.state.bbox_key = null;
+        }
       }
 
       //sto loading
@@ -528,158 +577,148 @@
       bbox,
       layerId,
     }) {
-
       try {
-
         let CHARTS, PLOT_IDS;
+        const { plots } = this.config;
 
-        // show charts (append to DOM) Open Charts sibar item
+        // --- 1. Handle Sidebar visibility (Open/Close) ---
         if (true === show) {
-          this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
-          this.#CHARTS.push(new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ propsData: {
-            ids,
-            rel,
-            service: this,
-            container
-          }}).$mount());  
-          //need to wait util loading is false
-          await new Promise(res => this.#CHARTS[0].$watch(() => this.state.loading, bool => !bool && res(), { immediate: true }))
-        }
-
-        // hide charts (remove from DOM) - Close Charts sibar item
-        if (false === show) {
-          const i = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
-          if (1!== i) {
-            this.#CHARTS[i].$destroy();                                       // remove container
-            this.#CHARTS.splice(i, 1);
-            this.config.plots.forEach(p => p.loaded && this.clearData(p)); // clear plot data
-          }
-        }
-
-        // reload charts (after "bbox" change)
-        if (undefined !== bbox) {
-          this.state.bbox_filter = bbox;
-
-          // set bbox parameter
-          this.state.bbox        = bbox ? GUI.getService('map').getMapBBOX().toString() : undefined;
-
-          // get active plot related to geolayer
-          const geo_plots        = this.config.plots.filter(p => p.show && p.tools.geolayer.show);
+          // Clear data for all previously loaded plots to ensure a fresh state
+          plots.forEach(p => p.loaded && this.clearData(p));
+        
+          // Dynamically import and mount the Sidebar Vue component
+          const component = new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({ 
+            propsData: { ids, rel, service: this, container } 
+          }).$mount();
           
-          geo_plots.forEach(p => p.tools.geolayer.active = bbox)
+          this.#CHARTS.push(component);
 
-          // handle moveend map event
+          // Block execution until the 'loading' state in the sidebar becomes false
+          await new Promise(res => component.$watch(() => this.state.loading, loading => !loading && res(), { immediate: true }));
+        }
 
-          // which plotIds need to trigger map moveend event
-          this.state.bbox_ids    = bbox ? geo_plots.map(plot => ({ id: plot.id, active: plot.tools.geolayer.active })) : [];
-
-          // get map moveend event just one time
-          if (bbox && !this.state.bbox_key) {
-            this.state.bbox_key = GUI.getService('map').getMap().on('moveend', debounce(() => this.toggleCharts({ layerId: false })));
+        if (false === show) {
+          // Find the chart instance associated with the provided container selector
+          const index = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
+          if (index !== -1) {
+            // Properly destroy the Vue instance and remove it from the tracking array
+            this.#CHARTS[index].$destroy();
+            this.#CHARTS.splice(index, 1);
+            
+            // Cleanup plot data after closing the sidebar
+            plots.forEach(p => p.loaded && this.clearData(p));
           }
+        }
 
-          // remove handler of map moveend and reset to empty
-          if (!bbox) {
+        // --- 2. Handle BBOX / Map Filter changes ---
+        if (undefined !== bbox) {
+          // Synchronize bbox filter state and fetch current map bounds
+          this.state.bbox_filter = bbox;
+          this.state.bbox        = bbox ? MAP.getMapBBOX().toString() : undefined;
+
+          // Identify plots with geographic tools and toggle their active state
+          const geoPlots = plots.filter(p => p.show && p.tools.geolayer.show);
+          geoPlots.forEach(p => p.tools.geolayer.active = bbox);
+
+          // Register or unregister map 'moveend' listener to trigger reloads on pan/zoom
+          if (bbox && !this.state.bbox_key) {
+            this.state.bbox_key = MAP.getMap().on('moveend', debounce(() => this.toggleCharts({ layerId: false })));
+          } 
+          
+          if (!bbox && this.state.bbox_key) {
             ol.Observable.unByKey(this.state.bbox_key);
             this.state.bbox_key = null;
           }
 
-          PLOT_IDS = geo_plots.map(p => { this.clearData(p); return p.id; });
+          // Update the list of plot IDs that should react to bbox changes
+          this.state.bbox_ids = bbox ? geoPlots.map(p => ({ id: p.id, active: true })) : [];
+          PLOT_IDS = geoPlots.map(p => { this.clearData(p); return p.id; });
         }
 
-        // reload charts (after "filtertoken" or "bbox" change)
-        if (undefined !== layerId && this.state.showCharts && !(undefined !== this.state.rel && !this.config.plots.some(p => this.state.bbox || (p.qgs_layer_id === layerId && p.show)))) {
+        // --- 3. Handle Layer Filter / Token changes ---
+        if (undefined !== layerId && this.state.showCharts) {
+          const hasValidRel   = undefined !== this.state.rel;
+          const isPlotVisible = plots.some(p => this.state.bbox || (layerId === p.qgs_layer_id && p.show));
 
-          this.state.bbox = (this.state.bbox_ids.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
+          // Proceed only if there isn't a relation preventing the update of hidden plots
+          if (!(hasValidRel && !isPlotVisible)) {
+            // Refresh bbox string if any bbox-related filter is active
+            this.state.bbox = (this.state.bbox_ids.length || this.state.bbox_filter) ? MAP.getMapBBOX().toString() : undefined;
 
-          // in case of a filter is change on showed chart it redraw the chart
+            // Collect plots affected by bbox or layer-specific token changes
+            const reloadQueue = [
+              ...(this.state.bbox_ids || []).map(b => Object.assign(plots.find(p => b.id === p.id), { filters: [] })),
+              ...(layerId ? plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
+            ];
 
-          // plots to reload
-          const reload   = [
-            // whether there is a bbox filter
-            ...((this.state.bbox_ids || []).map(plotId => Object.assign(this.config.plots.find(p => plotId.id === p.id), { filters: [] }))),
-            // whether filtertoken is added or removed from layer
-            ...(layerId ? this.config.plots.filter(p => p.show && p.qgs_layer_id === layerId) : [])
-          ];
-
-          PLOT_IDS = reload.length > 0 ? reload.map(p => { this.clearData(p); return p.id; }) : undefined;
+            if (reloadQueue.length) {
+              PLOT_IDS = reloadQueue.map(p => { this.clearData(p); return p.id; });
+            }
+          }
         }
 
-        // reload charts (after "plot.id" change) - show/hide (checkbox)
+        // --- 4. Handle individual Plot Toggle (Checkbox) ---
         if (undefined !== id) {
-          const plot    = this.config.plots.find(p => id === p.id);
+          const plot   = plots.find(p => p.id === id);
+          const hasGeo = plot.tools.geolayer.show;
 
-          // whether geolayer tools is show
-          const has_geo = plot.tools.geolayer.show;
+          // Sync the plot's geolayer tool with the global bbox filter
+          plot.tools.geolayer.active = hasGeo ? (plot.show && this.state.bbox_filter) : plot.tools.geolayer.active;
+          
+          // Check if at least one visible plot requires the geolayer tool
+          this.state.geolayer = plots.some(p => p.show && p.tools.geolayer.show);
 
-          plot.tools.geolayer.active = has_geo ? plot.show && this.state.bbox_filter : plot.tools.geolayer.active;
-
-          // add current plot id in case of already register move map event
-          if (plot.show && has_geo && this.state.bbox_key) {
-            this.state.bbox_ids.push({ id: plot.id, active: this.state.bbox_filter });
+          // Add or remove the plot from the bbox tracking list based on its visibility
+          if (hasGeo && this.state.bbox_key) {
+            if (plot.show) {
+              this.state.bbox_ids.push({ id: plot.id, active: this.state.bbox_filter });
+            } else {
+              this.state.bbox_ids = this.state.bbox_ids.filter(p => p.id !== plot.id);
+            }
           }
 
-          // remove map Move end from plotids keys when there is a key moveend listener 
-          if (!plot.show && has_geo && this.state.bbox_key) {
-            this.state.bbox_ids = this.state.bbox_ids.filter(p => plot.id !== p.id);
+          // Disable bbox filtering entirely if no geographic plots are left
+          if (!plot.show && hasGeo && !this.state.bbox_ids.length) {
+            this.state.bbox = undefined;
+            this.state.bbox_filter = false;
           }
 
-          // no plots have active geo tools
-          if (!plot.show && has_geo && !this.state.bbox_ids.length) {
-            this.state.bbox        = undefined; // set request params to undefined
-            this.state.bbox_filter = false;     // un-toggle main chart map tool
+          // If a parent plot is shown, reload its related child plots to maintain data integrity
+          if (plot.show && plot._rel && !plots.some(p => p.show && p.id !== plot.id && p.qgs_layer_id === plot.qgs_layer_id)) {
+            plots.filter(p => p.show && p.id !== plot.id && plot._rel.relations.some(r => p.qgs_layer_id === r.relationLayer))
+                .forEach(p => {
+                  const pIds = this.clearData(p);
+                  if (pIds.length) this.getCharts({ plotIds: pIds }).then(d => this.emit('change-charts', d));
+                });
           }
 
-          // set main map geolayer tools based on if there are plot belong to a geolayer
-          if (plot.show) {
-            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
-          }
-
-          /**
-           * @TODO make it simpler..
-           */
-          // whether there are chart to reload (in case of parent plot relations)
-          // check if other plot with the same `qgs_layer_id` has already loaded child plot
-          // show plot
-          if (plot.show && plot._rel && !this.config.plots.some(p => p.show && p.id !== plot.id && p.qgs_layer_id === plot.qgs_layer_id)) {
-            // not find a show plot with same qgs_layer_id
-            this.config.plots
-              // find a child plot show
-              .filter(p => p.show && p.show_position.includes('sidebar') && p.id !== plot.id && plot._rel?.relations.some(r => p.qgs_layer_id === r.relationLayer) && this.clearData(p).length > 0)
-              .forEach(p => {
-                // if found clear plot data to force to reload by parent plot
-                const plotIds = this.clearData(p);
-                if (plotIds.length > 0) {
-                  this.getCharts({ plotIds }).then(d => this.emit('change-charts', d));
-                }
-              });
-          }
-
+          // Determine which IDs to fetch: either the newly shown plot or the leftovers of a hidden one
           const plotIds = plot.show ? [plot.id] : this.clearData(plot);
-
-          if (plot.show || (!plot.show && plotIds.length)) {
-            PLOT_IDS = plotIds;
-          }
+          if (plot.show || plotIds.length) PLOT_IDS = plotIds;
 
           if (!plot.show) {
-            this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
-            this.#setActiveFilters(plot); // remove filters
+            // Reset filters and update the chart display order when a plot is unchecked
+            this.#setActiveFilters(plot);
             CHARTS = {
               plotId: plot.id,
-              order:  this.config.plots.flatMap(p => p.show && p.show_position.includes('sidebar') ? p.id : []), // order of plot ids
+              order: plots.filter(p => p.show && p.show_position.includes('sidebar')).map(p => p.id)
             };
           }
         }
 
-        // redraw the charts
+        // --- 5. Finalize and Redraw ---
         if (CHARTS || PLOT_IDS) {
-          this.emit('change-charts', CHARTS || await this.getCharts({ plotIds: PLOT_IDS }));
+          // Emit the update event with either cached chart metadata or newly fetched data
+          const result = CHARTS || await this.getCharts({ plotIds: PLOT_IDS });
+          this.emit('change-charts', result);
         }
 
-      } catch(e) {
-        console.warn(e);
+      } catch (e) {
+        console.warn("toggleCharts error:", e);
       }
     }
+
+
 
     /**
      * Show loading charts data (loading === true) is on going
