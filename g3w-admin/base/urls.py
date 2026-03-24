@@ -116,9 +116,13 @@ urlpatterns += [
         auth.views.LogoutView.as_view(next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)),
         name='logout'
     ),
-    # django-two-factor-auth
-    path('', include(tf_urls, 'two_factor')),
 ]
+
+# django-two-factor-auth
+if settings.ENABLE_TWO_FACTOR_AUTH:
+    urlpatterns += [
+        path('', include(tf_urls, 'two_factor')),
+    ]
 
 #############################################################
 # REGISTRATION USERS

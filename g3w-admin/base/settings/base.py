@@ -78,7 +78,7 @@ THIRD_PARTY_APPS = [
     'django_otp.plugins.otp_totp',
     #'django_otp.plugins.otp_hotp',
     'two_factor',
-    'two_factor.plugins.phonenumber',
+    #'two_factor.plugins.phonenumber',
 ]
 
 G3WADMIN_APPS = [
@@ -180,7 +180,7 @@ SITETREE_MODEL_TREE_ITEM = 'core.G3W2TreeItem'
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
-LOGIN_URL = 'two_factor:login'
+LOGIN_URL = 'login'
 LOGOUT_NEXT_PAGE = '/'
 LOGIN_REDIRECT_URL = '/'
 
@@ -343,6 +343,10 @@ REGISTRATION_ACTIVE_BY_ADMIN = False
 # CHANGE PASSWORD AT FIRST LOGIN
 # ------------------------------
 PASSWORD_CHANGE_FIRST_LOGIN = False
+
+# TWO FACTOR AUTHENTICATION SETTINGS
+# ----------------------------------
+ENABLE_TWO_FACTOR_AUTH = False
 
 
 # QPLOTLY DEFAULT SETTINGS
