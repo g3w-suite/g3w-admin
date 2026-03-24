@@ -74,7 +74,7 @@ THIRD_PARTY_APPS = [
     # django-two-factor-auth
     # ------------------------------------------
     'django_otp',
-    #'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     #'django_otp.plugins.otp_hotp',
     'two_factor',
