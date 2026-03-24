@@ -103,6 +103,11 @@ urlpatterns += [
         include('about.urls')
     ),
     path(
+        'logout/',
+        auth.views.LogoutView.as_view(next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)),
+        name='logout'
+    ),
+    path(
         'jsi18n/',
         JavaScriptCatalog.as_view(),
         name='javascript-catalog'
@@ -111,17 +116,24 @@ urlpatterns += [
         'ajax_select/',
         include(ajax_select_urls)
     ),
-    path(
-        'logout/',
-        auth.views.LogoutView.as_view(next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)),
-        name='logout'
-    ),
 ]
 
-# django-two-factor-auth
 if settings.ENABLE_TWO_FACTOR_AUTH:
     urlpatterns += [
+        # django-two-factor-auth
         path('', include(tf_urls, 'two_factor')),
+    ]
+else:
+    urlpatterns += [
+        path(
+            'login/',
+            G3WLoginView.as_view(
+                template_name='login.html',
+                form_class=G3WAuthenticationForm,
+                extra_context=extra_context_login_page
+            ),
+            name='login'
+            )
     ]
 
 #############################################################

@@ -28,7 +28,10 @@ from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from guardian.compat import get_user_model
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import (
+    get_objects_for_user, 
+    assign_perm
+)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
@@ -346,6 +349,13 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         if settings.REGISTRATION_OPEN:
             self.fields['email'].required = True
 
+        if (not self.request.user.is_superuser and
+            self.instance is not None and
+            self.instance.pk and
+            self.instance.pk == self.request.user.pk and
+            'username' in self.fields):
+            self.fields['username'].disabled = True
+
         # change queryset for editor1
         if G3W_EDITOR1 in getUserGroups(self.request.user):
             self._set_editor1_queryset()
@@ -631,6 +641,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 user.user_permissions.add(add_group)
             else:
                 user.user_permissions.remove(add_group)
+
+            # Give grant change_user to oneself
+            assign_perm('auth.change_user', user, user)
 
             # To save extra data for user send signal
             after_save_user_form.send(self, user=user)
