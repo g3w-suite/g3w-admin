@@ -119,31 +119,36 @@ urlpatterns += [
     ),
 ]
 
-if settings.ENABLE_TWO_FACTOR_AUTH:
-    two_factor_patterns = [
-        path(
-            'account/login/',
-            TwoFactorLoginView.as_view(extra_context=extra_context_login_page),
-            name='login'
-        )
-    ] + [pattern for pattern in tf_urls[0] if getattr(pattern, 'name', None) != 'login']
+# if settings.ENABLE_TWO_FACTOR_AUTH:
+two_factor_patterns = [
+    path(
+        'account/login/',
+        TwoFactorLoginView.as_view(extra_context=extra_context_login_page),
+        name='login'
+    )
+] + [pattern for pattern in tf_urls[0] if getattr(pattern, 'name', None) != 'login']
 
-    urlpatterns += [
-        # django-two-factor-auth
-        path('', include((two_factor_patterns, 'two_factor'), namespace='two_factor')),
-    ]
+urlpatterns += [
+    # django-two-factor-auth
+    path('', include((two_factor_patterns, 'two_factor'), namespace='two_factor')),
+]
+# else:
+if settings.ENABLE_TWO_FACTOR_AUTH:
+    authview = TwoFactorLoginView.as_view(extra_context=extra_context_login_page)
 else:
-    urlpatterns += [
-        path(
-            'login/',
-            G3WLoginView.as_view(
-                template_name='login.html',
-                form_class=G3WAuthenticationForm,
-                extra_context=extra_context_login_page
-            ),
-            name='login'
-            )
-    ]
+    authview = G3WLoginView.as_view(
+        template_name='login.html',
+        form_class=G3WAuthenticationForm,
+        extra_context=extra_context_login_page
+    )
+
+urlpatterns += [
+    path(
+        'login/',
+        authview,
+        name='login'
+        )
+]
 
 #############################################################
 # REGISTRATION USERS
