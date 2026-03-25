@@ -38,28 +38,38 @@
       {% endif%}
 
         <form method="post">
+
           {% csrf_token %}
+        
         {% if SETTINGS.ENABLE_TWO_FACTOR_AUTH %}
+        
+          <!-- TWO FACTOR AUTH -->
+          <!-- ============================================ -->
+
           {% block main_form_content %}
-          {% include "two_factor/_wizard_forms.html" %}
+            {% include "two_factor/_wizard_forms.html" %}
 
-          {# hidden submit button to enable [enter] key #}
-          <input type="submit" value="" hidden />
+            {# hidden submit button to enable [enter] key #}
+            <input type="submit" value="" hidden />
 
-          {% if other_devices %}
-            <p>{% trans "Or, alternatively, use one of your other authentication methods:" %}</p>
-            <p>
-              {% for other in other_devices %}
-              <button name="challenge_device" value="{{ other.persistent_id }}"
-                      class="btn btn-secondary btn-block" type="submit">
-                {{ other|as_action }}
-              </button>
-            {% endfor %}</p>
-          {% endif %}
+            {% if other_devices %}
+              <p>{% trans "Or, alternatively, use one of your other authentication methods:" %}</p>
+              <p>
+                {% for other in other_devices %}
+                <button name="challenge_device" value="{{ other.persistent_id }}"
+                        class="btn btn-secondary btn-block" type="submit">
+                  {{ other|as_action }}
+                </button>
+              {% endfor %}</p>
+            {% endif %}
 
-          {% include "two_factor/_wizard_actions.html" %}
+            {% include "two_factor/_wizard_actions.html" %}
           {% endblock %}
+          <!-- ============================================ -->
         {% else %}
+
+          <!-- STANDARD LOGIN -->
+          <!-- ============================================ -->
             <div class="form-group has-feedback">
               <input type="text" class="form-control" name="username" placeholder="Username">
               <span class="glyphicon glyphicon-user form-control-feedback"></span>

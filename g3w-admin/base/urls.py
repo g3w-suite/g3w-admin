@@ -134,7 +134,10 @@ urlpatterns += [
 ]
 # else:
 if settings.ENABLE_TWO_FACTOR_AUTH:
-    authview = TwoFactorLoginView.as_view(extra_context=extra_context_login_page)
+    authview = TwoFactorLoginView.as_view(
+        template_name='login.html',
+        extra_context=extra_context_login_page
+        )
 else:
     authview = G3WLoginView.as_view(
         template_name='login.html',
