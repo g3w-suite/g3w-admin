@@ -76,9 +76,8 @@ THIRD_PARTY_APPS = [
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
-    #'django_otp.plugins.otp_hotp',
+    'django_otp.plugins.otp_email',
     'two_factor',
-    #'two_factor.plugins.phonenumber',
 ]
 
 G3WADMIN_APPS = [

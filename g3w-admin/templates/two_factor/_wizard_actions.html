@@ -1,14 +1,40 @@
 {% load i18n %}
 
+<div class="row">
+<div class="col-md-6">
+<div class="row margin-bottom">
+  {% if wizard.steps.prev %}
+    <div class="col-xs-6">
+      <button name="wizard_goto_step" type="submit"
+              value="{{ wizard.steps.prev }}"
+              class="btn btn-default btn-block btn-flat">
+        <i class="fa fa-arrow-left"></i> {% trans "Back" %}
+      </button>
+    </div>
+    <div class="col-xs-6">
+      <button type="submit" class="btn btn-primary btn-block btn-flat">
+        {% if wizard.steps.current == 'token' %}{% trans "Verify" %} <i class="fa fa-check"></i>
+        {% elif wizard.steps.current == 'auth' %}{% trans "Sign In" %} <i class="fa fa-arrow-right"></i>
+        {% else %}{% trans "Next" %} <i class="fa fa-arrow-right"></i>{% endif %}
+      </button>
+    </div>
+  {% else %}
+    <div class="col-xs-12">
+      <button type="submit" class="btn btn-primary btn-block btn-flat">
+        {% if wizard.steps.current == 'token' %}{% trans "Verify" %} <i class="fa fa-check"></i>
+        {% elif wizard.steps.current == 'auth' %}{% trans "Sign In" %} <i class="fa fa-arrow-right"></i>
+        {% else %}{% trans "Next" %} <i class="fa fa-arrow-right"></i>{% endif %}
+      </button>
+    </div>
+  {% endif %}
+</div>
+
 {% if cancel_url %}
-  <a href="{{ cancel_url }}"
-     class="float-right btn btn-link">{% trans "Cancel" %}</a>
+  <div class="row" style="margin-top: 5px;">
+    <div class="col-xs-12 text-center">
+      <a href="{{ cancel_url }}">{% trans "Cancel" %}</a>
+    </div>
+  </div>
 {% endif %}
-{% if wizard.steps.prev %}
-  <button name="wizard_goto_step" type="submit"
-          value="{{ wizard.steps.prev }}"
-          class="btn btn-secondary">{% trans "Back" %}</button>
-{% else %}
-  <button disabled name="" type="button" class="btn">{% trans "Back" %}</button>
-{% endif %}
-<button type="submit" class="btn btn-primary">{% trans "Next" %}</button>
+</div>
+</div>

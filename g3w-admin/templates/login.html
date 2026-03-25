@@ -17,7 +17,7 @@
     </span>
   </div><!-- /.login-logo -->
   <div class="login-box-body">
-    <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
+    <p class="login-box-msg"><span style="font-weight: bold;">{%  trans 'Sign in to start your session' %}</span></p>
       {% if form.errors %}
       <div class="alert alert-danger alert-dismissible">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -26,9 +26,7 @@
       </div>
       {% endif %}
       {% if SETTINGS.ENABLE_TWO_FACTOR_AUTH %}
-        {% if wizard.steps.current == 'auth' %}
-          <p class="login-box-msg">{% blocktrans %}Enter your credentials.{% endblocktrans %}</p>
-        {% elif wizard.steps.current == 'token' %}
+        {% if wizard.steps.current == 'token' %}
           <p class="login-box-msg">{{ device|as_verbose_action }}</p>
         {% elif wizard.steps.current == 'backup' %}
           <p class="login-box-msg">{% blocktrans trimmed %}Use this form for entering backup tokens for logging in.
@@ -63,7 +61,7 @@
               {% endfor %}</p>
             {% endif %}
 
-            {% include "two_factor/_wizard_actions.html" %}
+            {% include "two_factor/_wizard_actions_login.html" %}
           {% endblock %}
           <!-- ============================================ -->
         {% else %}

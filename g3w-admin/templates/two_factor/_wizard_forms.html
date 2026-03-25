@@ -19,7 +19,7 @@
   {% for field in wizard.form.visible_fields %}
     <div class="form-group has-feedback">
       <input type="password" class="form-control" name="{{ field.html_name }}" placeholder="{{ field.label }}">
-      <span class="glyphicon glyphicon-shield form-control-feedback"></span>
+      <span class="fa fa-shield form-control-feedback"></span>
     
       {% if field.help_text %}<small class="help-block">{{ field.help_text }}</small>{% endif %}
     </div>
@@ -29,7 +29,7 @@
   {% for field in wizard.form.visible_fields %}
     <div class="form-group has-feedback">
       <input type="text" class="form-control" name="{{ field.html_name }}" placeholder="{{ field.label }}">
-      <span class="glyphicon glyphicon-certificate form-control-feedback"></span>
+      <span class="fa fa-key form-control-feedback"></span>
       {% if field.help_text %}<small class="help-block">{{ field.help_text }}</small>{% endif %}
     </div>
   {% endfor %}
@@ -37,7 +37,8 @@
 {% else %}
   {% for field in wizard.form.visible_fields %}
     <div class="form-group">
-      <input type="text" class="form-control" name="{{ field.html_name }}" placeholder="{{ field.label }}">
+      {{field.label_tag}}
+      {{field}}
       {% if field.help_text %}<small class="help-block">{{ field.help_text }}</small>{% endif %}
     </div>
   {% endfor %}

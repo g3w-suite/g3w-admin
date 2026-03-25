@@ -92,11 +92,10 @@
     <div class="row">
         <div class="col-md-12">
         <div class="box box-info">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-file"></i> {% trans 'Two factor Authentication' %}</h3>
-        </div>
         <div class="box-body"> 
-            {% trans "Manage two factor authentication in" %} <a href="{% url 'two_factor:setup' %}">{% trans "this link" %}</a>.
+            <a href="{% url 'two_factor:setup' %}" class="btn btn-default btn-flat">
+                <i class="fa fa-shield"></i> {% trans "Manage two factor authentication" %}
+            </a>
         </div>
     </div>
     {% endif %}
