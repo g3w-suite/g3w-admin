@@ -15,6 +15,7 @@ from django.urls import path, include, re_path
 from django.views.i18n import JavaScriptCatalog
 from django.views.generic import TemplateView
 from two_factor.urls import urlpatterns as tf_urls
+from two_factor.views import LoginView as TwoFactorLoginView
 
 from django_registration.backends.activation import views as registration_views
 from usersmanage.forms import (
@@ -119,9 +120,17 @@ urlpatterns += [
 ]
 
 if settings.ENABLE_TWO_FACTOR_AUTH:
+    two_factor_patterns = [
+        path(
+            'account/login/',
+            TwoFactorLoginView.as_view(extra_context=extra_context_login_page),
+            name='login'
+        )
+    ] + [pattern for pattern in tf_urls[0] if getattr(pattern, 'name', None) != 'login']
+
     urlpatterns += [
         # django-two-factor-auth
-        path('', include(tf_urls, 'two_factor')),
+        path('', include((two_factor_patterns, 'two_factor'), namespace='two_factor')),
     ]
 else:
     urlpatterns += [
