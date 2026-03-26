@@ -347,6 +347,10 @@ PASSWORD_CHANGE_FIRST_LOGIN = False
 # ----------------------------------
 ENABLE_TWO_FACTOR_AUTH = False
 
+# DJANGO OTP SETTINGS
+# ----------------------
+OTP_EMAIL_SUBJECT = 'Your second factor token for G3W-SUITE'
+
 
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
