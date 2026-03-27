@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'drf_spectacular',
     'import_export',
     'mptt',
@@ -71,6 +72,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.google",
     "allauth.usersessions",
+    "corsheaders" # Used for G3W-SUITE inside iframe
 ]
 
 G3WADMIN_APPS = [
@@ -92,8 +94,13 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+
+    # CORS
+    "corsheaders.middleware.CorsMiddleware",
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'usersmanage.middleware.JWTAutologinMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -221,6 +228,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'UNICODE_JSON': False,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.api.authentication.BasicAuthentication403',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
 
 # FOR MEDIA
