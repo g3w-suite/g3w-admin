@@ -80,7 +80,8 @@ THIRD_PARTY_APPS = [
     "django_otp.plugins.otp_email",
     "two_factor",
      # Used for G3W-SUITE inside iframe
-    "corsheaders",
+    "corsheaders"
+]
 
 G3WADMIN_APPS = [
     'base',
