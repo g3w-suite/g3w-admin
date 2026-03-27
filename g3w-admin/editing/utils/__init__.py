@@ -179,3 +179,55 @@ class LayerLock(object):
 
         # rebuild by featureid
         self.clientLockedFeatures = {lf['featureid']: lf['lockid'] for lf in lockedFeatures}
+
+
+def enable_feature_lock(request, aucn_settings_name='EDITING_AUTH_CLASS_NO_LOCK_FEATURES', elf_setting_name='EDITING_LOCK_FEATURES'):
+    """
+    Checks whether features should be locked based on Django settings and authentication class.
+
+    :param request: The Django request object.
+    :type request: django.http.HttpRequest
+
+    :param aucn_settings_name: The settings poperty ti use for get list of authentication class name that disables feature locking.
+    :type aucn_settings_name: str, optional
+
+    :param elf_setting_name: The name of the setting to check. If this setting is set to False in Django settings, features are not locked.
+    :type elf_setting_name: str, optional
+
+    :returns: True if features should be locked; False otherwise.
+    :rtype: bool
+    """
+    if not getattr(settings, elf_setting_name, True):
+        return False
+    auth_class = request.successful_authenticator.__class__.__name__ if hasattr(request, 'successful_authenticator') else None
+    if  auth_class in getattr(settings, aucn_settings_name, []):
+        return False
+    return True
+
+def get_sessionid_from_request(request):
+    """
+    Get sessionid from request, if not present create a new one for anonymous user
+    :param request: django request object
+    :return: sessionid string
+    """
+
+    # Default case 
+    sessionid = settings.ANONYMOUS_USER_SESSIONID
+
+    try:
+        # Check if user is authenticated with a session
+        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] 
+    except:
+        # Check for other authentication methods
+        auth_class = request.successful_authenticator.__class__.__name__ if hasattr(request, 'successful_authenticator') else None
+        if auth_class in ['JWTAuthentication403', 'TokenAuthentication403']:
+            # for JWT and Token authentication use a hash of user id as sessionid
+            if not request.user.is_anonymous:
+                sessionid = hashlib.md5()
+                toCrypt = str(request.user.pk) + (request.user.username if request.user.username else '') + (request.user.email if request.user.email else '')
+                sessionid.update(toCrypt.encode('utf-8'))
+                sessionid = sessionid.hexdigest()
+    
+    return sessionid
+        
+        

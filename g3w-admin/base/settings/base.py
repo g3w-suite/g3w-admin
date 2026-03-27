@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'drf_spectacular',
     'import_export',
     'mptt',
@@ -73,12 +74,13 @@ THIRD_PARTY_APPS = [
     "allauth.usersessions",
     # django-two-factor-auth
     # ------------------------------------------
-    'django_otp',
-    'django_otp.plugins.otp_static',
-    'django_otp.plugins.otp_totp',
-    'django_otp.plugins.otp_email',
-    'two_factor',
-]
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+     # Used for G3W-SUITE inside iframe
+    "corsheaders",
 
 G3WADMIN_APPS = [
     'base',
@@ -99,8 +101,13 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+
+    # CORS
+    "corsheaders.middleware.CorsMiddleware",
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'usersmanage.middleware.JWTAutologinMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -229,6 +236,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'UNICODE_JSON': False,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.api.authentication.BasicAuthentication403',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
 
 # FOR MEDIA
