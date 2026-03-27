@@ -1292,7 +1292,8 @@ new (class extends Plugin {
         context: { session: toolBox.getSession() }
       });
 
-      await toolBox.save();
+      //save temporary changes
+      await toolBox._session.save();
 
       this.saveChange();
 

@@ -380,7 +380,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         # No auth
         response = self.client.get(path)
-        self.assertIn(response.status_code, [302, 403])
+        self.assertIn(response.status_code, [302, 401, 403])
 
         # Auth
         self.assertTrue(self.client.login(

@@ -24,10 +24,16 @@ from qgis.PyQt.QtCore import QVariant
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.api.authentication import CsrfExemptSessionAuthentication
+from core.api.authentication import (
+    CsrfExemptSessionAuthentication,
+    TokenAuthentication403,
+    BasicAuthentication403,
+    JWTAuthentication403
+)
 from core.api.filters import IntersectsBBoxFilter
 from core.signals import (before_return_vector_data_layer,
                           post_create_maplayerattributes,
@@ -196,7 +202,10 @@ class BaseVectorApiView(G3WAPIView):
     """
 
     authentication_classes = (
-        CsrfExemptSessionAuthentication,
+        CsrfExemptSessionAuthentication, 
+        TokenAuthentication403,
+        JWTAuthentication403,
+        BasicAuthentication403
     )
 
     # Parameter for locking features data into db
