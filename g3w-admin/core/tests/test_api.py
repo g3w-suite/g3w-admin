@@ -22,12 +22,14 @@ from django.test.client import JSON_CONTENT_TYPE_RE
 from django.urls import reverse
 from qgis.core import QgsFieldConstraints
 from rest_framework.test import APIClient, APITestCase
+from guardian.shortcuts import assign_perm
 
 from qdjango.apps import get_qgs_project
 from core.models import Group, ShortURL, PermaLinkURL
 from qdjango.models import Layer, Project
 from base.version import get_version
 from qdjango.utils.data import QgisProject
+from rest_framework.authtoken.models import Token
 
 from .base import CoreTestBase
 
@@ -115,6 +117,45 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
         self.assertIsNotNone(resp["vector"]["count"])
+
+        # Test authentication by token
+        # ----------------------------
+        # Is just sufficient only this test to check that the API is working with token authentication
+
+        # Without authentication
+        url = reverse('core-vector-api', args=['data', 'qdjango', '1', 'spatialite_points20190604101052075'])
+        response = self.api_client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        # As viewier
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        response = self.api_client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # Create token for test_viewer1
+        token, created = Token.objects.get_or_create(user=self.test_viewer1)
+
+        print(f"Token for {self.test_viewer1.username}: {token.key}")
+        self.api_client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+        response = self.api_client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+        assign_perm('view_project', self.test_viewer1, Project.objects.get(pk=1))
+
+        response = self.api_client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        resp = json.loads(response.content)
+
+        self.assertIsNotNone(resp["vector"]["count"])
+        self.assertEqual(resp["vector"]["format"], "GeoJSON")
+        self.assertIsNone(resp["vector"]["fields"])
+        self.assertEqual(resp["vector"]["geometrytype"], "Point")
+
+
 
     def testCoreVectorApiXls(self):
         """Test core-vector-api data XLS"""
