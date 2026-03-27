@@ -1861,6 +1861,8 @@ export class ToolBox extends Emitter {
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
+        //set false
+        this.state.editing.canEdit = false;
         //reset/close eventually user message scale on stop
         this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint(true));
         //listen selected attribute
@@ -1870,7 +1872,7 @@ export class ToolBox extends Emitter {
           //set as resolve handler to resolve waiting get features from server
           this.#startAsync = resolve;
           //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
-          this.#events.push(GUI.getMap().getView().on('change:resolution', () => this._handleScaleConstraint(false) ));
+          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint(false) ), 600));
           // click to fit zoom scale constraint
           this.#events.push(
             GUI.getMap().on('click', e => {

@@ -56,3 +56,7 @@ if not 'SECRET_KEY' in locals():
         # provide a SECRET_KEY or SECRET_KEY_FILE variable 
         from django.core.management.utils import get_random_secret_key
         SECRET_KEY = get_random_secret_key()
+
+# Add two_factor email plugin if Django email is configured
+if 'EMAIL_HOST' in locals() and EMAIL_HOST and ENABLE_TWO_FACTOR_AUTH:
+    INSTALLED_APPS += ['two_factor.plugins.email']
