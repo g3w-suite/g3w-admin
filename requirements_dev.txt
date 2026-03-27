@@ -1,1 +1,1 @@
-pyOpenSSL==25.3.0
+pyOpenSSL==26.0.0
