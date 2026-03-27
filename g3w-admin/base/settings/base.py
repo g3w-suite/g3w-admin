@@ -72,7 +72,15 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.google",
     "allauth.usersessions",
-    "corsheaders" # Used for G3W-SUITE inside iframe
+    # django-two-factor-auth
+    # ------------------------------------------
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+     # Used for G3W-SUITE inside iframe
+    "corsheaders"
 ]
 
 G3WADMIN_APPS = [
@@ -102,6 +110,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'usersmanage.middleware.JWTAutologinMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
@@ -345,6 +354,14 @@ REGISTRATION_ACTIVE_BY_ADMIN = False
 # CHANGE PASSWORD AT FIRST LOGIN
 # ------------------------------
 PASSWORD_CHANGE_FIRST_LOGIN = False
+
+# TWO FACTOR AUTHENTICATION SETTINGS
+# ----------------------------------
+ENABLE_TWO_FACTOR_AUTH = False
+
+# DJANGO OTP SETTINGS
+# ----------------------
+OTP_EMAIL_SUBJECT = 'Your second factor token for G3W-SUITE'
 
 
 # QPLOTLY DEFAULT SETTINGS
