@@ -14,6 +14,8 @@ from django.contrib.staticfiles import views
 from django.urls import path, include, re_path
 from django.views.i18n import JavaScriptCatalog
 from django.views.generic import TemplateView
+from two_factor.urls import urlpatterns as tf_urls
+from two_factor.views import LoginView as TwoFactorLoginView
 
 from django_registration.backends.activation import views as registration_views
 from usersmanage.forms import (
@@ -102,15 +104,6 @@ urlpatterns += [
         include('about.urls')
     ),
     path(
-        'login/',
-        G3WLoginView.as_view(
-            template_name='login.html',
-            form_class=G3WAuthenticationForm,
-            extra_context=extra_context_login_page
-        ),
-        name='login'
-    ),
-    path(
         'logout/',
         auth.views.LogoutView.as_view(next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)),
         name='logout'
@@ -123,7 +116,41 @@ urlpatterns += [
     path(
         'ajax_select/',
         include(ajax_select_urls)
+    ),
+]
+
+# if settings.ENABLE_TWO_FACTOR_AUTH:
+two_factor_patterns = [
+    path(
+        'account/login/',
+        TwoFactorLoginView.as_view(extra_context=extra_context_login_page),
+        name='login'
     )
+] + [pattern for pattern in tf_urls[0] if getattr(pattern, 'name', None) != 'login']
+
+urlpatterns += [
+    # django-two-factor-auth
+    path('', include((two_factor_patterns, 'two_factor'), namespace='two_factor')),
+]
+# else:
+if settings.ENABLE_TWO_FACTOR_AUTH:
+    authview = TwoFactorLoginView.as_view(
+        template_name='login.html',
+        extra_context=extra_context_login_page
+        )
+else:
+    authview = G3WLoginView.as_view(
+        template_name='login.html',
+        form_class=G3WAuthenticationForm,
+        extra_context=extra_context_login_page
+    )
+
+urlpatterns += [
+    path(
+        'login/',
+        authview,
+        name='login'
+        )
 ]
 
 #############################################################
