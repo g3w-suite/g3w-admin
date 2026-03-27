@@ -17,8 +17,8 @@ GUI.setupControl.mouseposition = function() {
   const coordinateFormat = (epsg, coords) => {
     mouse_coords = coords;
     return 'EPSG:4326' === epsg
-      ? ol.coordinate.format(ol.proj.transform(coords, mapEpsg, 'EPSG:4326'), `\u00A0Lng: {x}, Lat: {y}\u00A0\u00A0 [EPSG:4326]\u00A0`, 4)
-      : ol.coordinate.format(coords, `\u00A0${degrees ? 'Lng' : 'X'}: {x}, ${degrees ? 'Lat' : 'Y'}: {y}\u00A0\u00A0 [${epsg}]\u00A0`, degrees ? 4 : 2);
+      ? ol.coordinate.format(ol.proj.transform(coords, mapEpsg, 'EPSG:4326'), `\u00A0Lng: {x}, Lat: {y}\u00A0\u00A0 [EPSG:4326]\u00A0`, 6)
+      : ol.coordinate.format(coords, `\u00A0${degrees ? 'Lng' : 'X'}: {x}, ${degrees ? 'Lat' : 'Y'}: {y}\u00A0\u00A0 [${epsg}]\u00A0`, degrees ? 6 : 2);
   }
   GUI.addControl('mouseposition', Object.assign((new ol.control.MousePosition({
     coordinateFormat: coordinateFormat.bind(null, mapEpsg),

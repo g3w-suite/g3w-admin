@@ -74,15 +74,17 @@ class MeasureControl extends MapControl {
             title:     'Measure',
             type:      'tool',
             iconClass: 'measure',
-            closable:  false,
+            closable:  true,
             hooks:     {
               body: {
                 data: () => ({ types: this.types, type: this.types[0] }),
                 template: /* html */ `
                   <div style = "width: 100%; padding: 5px;">
-                    <select ref = "select" style = "width: 100%" :search = "false" v-select2 = "'type'">
-                      <option v-for = "type in types" :value = "type" v-t = "'measure_types.' + type"></option>
-                    </select>
+                    <x-select :value="type" @change="type = $event.target.value">
+                      <x-option v-for="_type in types" :key="_type" :value="_type">
+                      {{ $t('measure_types.' + _type) }}
+                      </x-option>
+                    </x-select>
                   </div>`,
                 watch: {
                   // change measure interaction
@@ -98,7 +100,7 @@ class MeasureControl extends MapControl {
                   },
                 },
                 created()       { GUI.toggleUserMessage(false); },
-                beforeDestroy() { GUI.toggleUserMessage(true); },
+                beforeDestroy() { GUI.toggleUserMessage(true); GUI.getMapControl('measure').toggle(false); },
               }
             }
           });

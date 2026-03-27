@@ -642,21 +642,21 @@ class GeocodingControl extends ol.control.Control {
                 style               = "width: 100%; display: flex"
                 @click.prevent.stop = ""
               >
-                <select
-                  v-select2 = "'layerId'"
-                  :search   = "false"
+                <x-select
                   style     = "flex-grow: 1;"
-                  class     = "form-control"
+                  :value    = "layerId"
                   :disabled = "!has_layers"
+                  @change   = "layerId = $event.target.value"
                 >
-                  <option
-                    v-for   = "layer in config.layers"
-                    :key    = "layer.id"
-                    :value  = "layer.id">
+                  <x-option
+                    v-for  = "layer in config.layers"
+                    :key   = "layer.id"
+                    :value = "layer.id"
+                  >
                     <b>{{ layer.name }}</b>
-                  </option>
-                  <option v-if = "!has_layers" v-t = "config.nolayers"></option>
-                </select>
+                  </x-option>
+                  <x-option v-if = "!has_layers" :value="null">{{ $t(config.nolayers) }}</x-option>
+                </x-select>
                 <button
                   v-if        = "has_layers"
                   style       = "border-radius: 0 3px 3px 0;"
