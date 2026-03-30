@@ -15,10 +15,18 @@ class QplotlyWidget(models.Model):
     visible_features_only = models.BooleanField(_('Use visible features only'), default=False)
     type = models.CharField(_('Plot type'), max_length=50, null=True)
     title = models.CharField(_('Plot title'), max_length=255, null=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
     show_on_start_client = models.BooleanField(_('Set as default plot on starting map'), null=True, default=False)
 
     layers = models.ManyToManyField(Layer)
+
+    related_widgets = models.ManyToManyField(
+        'self',
+        through='QplotlyWidgetRelation',
+        symmetrical=False,
+        blank=True,
+        related_name='associated_by',
+        verbose_name=_('Related widgets'),
+    )
 
     order = models.PositiveIntegerField(
         _('Order'),
@@ -36,7 +44,7 @@ class QplotlyWidget(models.Model):
     )
     
     def __str__(self):
-        return self.datasource if self.datasource else str(self.pk)
+        return self.title if self.title else self.datasource if self.datasource else str(self.pk)
 
     def clean(self):
         """Check by DataPlotly API"""
@@ -45,17 +53,90 @@ class QplotlyWidget(models.Model):
         settings = QplotlySettings()
 
         if not settings.read_from_model(self):
+            print('XML is not a DataPlotly settings.')
             raise ValidationError(_('XML is not a DataPlotly settings.'))
 
         # check for souce_layerd_id inside project and datasource into values
         try:
             layer = Layer.objects.filter(qgs_layer_id=settings.source_layer_id)[0]
         except IndexError:
+            print(f'Layer with qgs_layer_id={settings.source_layer_id} is not present into DB')
             raise ValidationError(_(f'Layer with qgs_layer_id={settings.source_layer_id} is not present into DB'))
 
         # compare datasources
         if self.datasource and layer.datasource != self.datasource:
             raise ValidationError(_(f'Layer DataPlotly settings layer datasource is not equal to datasource into values.'))
+    
+    def related(self, project: Project = None, order='asc'):
+        """Return related widgets ordered by 'order' field, excluding self-relation"""
+
+        relations = QplotlyWidgetRelation.objects.filter(source=self)
+        
+        if project:
+            relations = relations.filter(project=project)
+
+        if order == 'asc':
+            order = 'order'
+        elif order == 'desc':
+            order = '-order'
+        else:
+            raise ValueError(_('Order must be "asc" or "desc".'))   
+        
+        target_ids = list(relations.order_by(order).values_list('target_id', flat=True))
+
+        widgets = {w.pk: w for w in QplotlyWidget.objects.filter(pk__in=target_ids)}
+        return [widgets[pk] for pk in target_ids if pk in widgets]
+    
+    def has_related(self, project: Project = None):
+        """Return True if the widget has related widgets"""
+
+        relations = QplotlyWidgetRelation.objects.filter(source=self)
+        
+        if project:
+            relations = relations.filter(project=project)
+
+        return relations.exists()
+
+
+class QplotlyWidgetRelation(models.Model):
+    """
+    Intermediate model for the many-to-many relation between QplotlyWidgets.
+    Stores metadata such as ordering on the relation.
+    """
+    source = models.ForeignKey(
+        QplotlyWidget,
+        on_delete=models.CASCADE,
+        related_name='widget_relations',
+        verbose_name=_('Source widget'),
+    )
+    target = models.ForeignKey(
+        QplotlyWidget,
+        on_delete=models.CASCADE,
+        related_name='widget_related_by',
+        verbose_name=_('Target widget'),
+    )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='qplotly_widget_relations',
+        verbose_name=_('Project'),
+        null=True,
+        blank=True,
+    )
+    order = models.PositiveIntegerField(
+        _('Order'),
+        default=0,
+    )
+
+
+    class Meta:
+        unique_together = ('project', 'source', 'target')
+        ordering = ['order']
+        verbose_name = _('QPlotly Widget relation')
+        verbose_name_plural = _('QPlotly Widget relations')
+
+    def __str__(self):
+        return f'{self.source} → {self.target} (order: {self.order})'
 
 
 

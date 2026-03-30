@@ -50,16 +50,15 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
           <thead>
           <tr>
             <th style="width:180px;">${gettext('Actions')}</th>
-            <th>${gettext('Active on startup')}</th>
+            <th>${gettext('Active at startup')}</th>
             <th>${gettext('Position')}*</th>
             <th>${gettext('Title')}</th>
             <th>${gettext('Type')}</th>
-            <th>${gettext('From project')}</th>
             <th>${gettext('Linked')}</th>
           </tr>
         </thead>
         <tbody>
-          ${res.results.map(v => /* html */ `
+          ${res.map(v => /* html */ `
             <tr id="qplotlywidget-item-${v.pk}">
               <td style="display: flex; flex-wrap: wrap; gap: 0 10px; font-size: 1.25em;">
                 <a
@@ -92,20 +91,33 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
                 >
                   <i class="fa fa-download"></i>
                 </a>
+                <a
+                  style="display:${v.rule_count > 0 ? 'none' : 'display'}"
+                  href="#"
+                  data-toggle="tooltip" 
+                  title="${gettext('Related widgets')}"
+                  data-qplotlywidget-action-mode="related"
+                  data-qplotlywidget-pk="${v.pk}"
+                  data-qplotlywidget-layer-id="${layer_pk}"
+                >
+                  <i class="fa fa-sitemap"></i>
+                </a>
               </td>
               <td>
                 <input
                   type="checkbox"
                   name="show_on_start_client"
                   value="1"
+                  data-qplotlywidget-pk="${v.pk}"
                   ${v.show_on_start_client ? 'checked' : ''}
                   onchange="fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showonstartclient/${v.pk}/' + (event.target.checked ? '' : '?show=0')).catch(g3wadmin.widget.showError)"
                 />
               </td>
               <td>
                 <select 
-                  id       = "'qplotly-show-position-'${v.pk}"
-                  class    = "form-control select2 "
+                  id                    = "'qplotly-show-position-'${v.pk}"
+                  data-qplotlywidget-pk = "${v.pk}"
+                  class                 = "form-control select2 "
                   onchange = "fetch('/${SETTINGS.CURRENT_LANGUAGE_CODE}/${SITE_PREFIX_URL}${FRONTEND ? 'admin/' : ''}qplotly/showposition/${v.pk}/', { method: 'POST',  headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: event.target.value }),  }).catch(g3wadmin.widget.showError)"
                 >
                   <option value = "sidebarquery" ${'sidebarquery' === v.show_position ? 'selected' : ''}>Sidebar, Query</option>
@@ -115,7 +127,6 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
               </td>
               <td>${v.title}</td>
               <td>${v.type}</td>
-              <td>${v.project ? '<span class="fa fa-check-circle" style="color: #ffa500"></span>' : ''}</td>
               <td>
                 <input
                   type="checkbox"
@@ -132,9 +143,24 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
     `);
 
     // attach events
+
+    // shared: re-fetch free widget PKs and hide/show sitemap buttons accordingly
+    const refreshButtonsVisibility = async () => {
+      const notTargetPks = new Set(
+        (await fetch(`/${SITE_PREFIX_URL}qplotly/api/widget/free/${project_pk}/${layer_pk}/`).then(r => r.json())).map(String)
+      );
+      $div.find('[data-qplotlywidget-action-mode="related"]').each(function () {
+        const pk = $(this).attr('data-qplotlywidget-pk');
+        const isVisible = notTargetPks.has(pk);
+        $(this).toggle(isVisible);
+        $div.find(`input[name="show_on_start_client"][data-qplotlywidget-pk="${pk}"]`).toggle(isVisible);
+        $div.find(`select[data-qplotlywidget-pk="${pk}"]`).toggle(isVisible);
+      });
+    };
+
     $div.on("click", ".btn-add-new-plot, [data-qplotlywidget-action-mode='update']", async function (e) {
       if ($(this).is('.btn-add-new-plot') || $(this).is('[data-qplotlywidget-action-mode="update"]')) {
-        const PLOT = res.results.find(v => `${v.pk}` === $(this).attr("data-qplotlywidget-pk"));
+        const PLOT = res.find(v => `${v.pk}` === $(this).attr("data-qplotlywidget-pk"));
 
         const modal = ga.currentModal = g3wadmin.ui._buildModal({
           modalTitle: gettext(PLOT ? 'Update widget' : 'New qplotly widget'),
@@ -194,7 +220,143 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
       }
     });
 
+    $div.on("click", "[data-qplotlywidget-action-mode='related']", async function (e) {
+      e.preventDefault();
+      const PLOT = res.find(v => `${v.pk}` === $(this).attr("data-qplotlywidget-pk"));
+      const relatedReadUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/${PLOT.project}/`;
+      const relatedWriteUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/`;
+
+      // widgets available as targets: fetched from dedicated API endpoint
+      const availableUrl = `/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/available/${PLOT.project}/`;
+      const fetchAvailable = () => fetch(availableUrl).then(r => r.json());
+
+      const buildTable = (relatedWidgets) => /* html */ `
+        <table class="table table-bordered table-condensed" style="width:100%">
+          <thead>
+            <tr>
+              <th style="width:20px;"></th>
+              <th>${gettext('Title')}</th>
+              <th>${gettext('Type')}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${relatedWidgets.length === 0
+              ? /* html */`<tr><td colspan="4" class="text-center text-muted">${gettext('No related widgets')}</td></tr>`
+              : relatedWidgets.map(w => /* html */`
+                <tr id="related-widget-row-${w.id}" data-related-pk="${w.id}">
+                  <td class="drag-handle" style="cursor:grab; color:#aaa;"><i class="fa fa-bars"></i></td>
+                  <td>${w.title || '-'}</td>
+                  <td>${w.type  || '-'}</td>
+                  <td>
+                    ${w.id !== PLOT.pk ? /* html */`
+                    <a href="#" class="btn btn-xs btn-danger btn-remove-related" data-related-target-pk="${w.id}">
+                      <i class="fa fa-trash"></i>
+                    </a>` : ''}
+                  </td>
+                </tr>`).join('')
+            }
+          </tbody>
+        </table>`;
+
+      // fetch current related widgets and available widgets in parallel
+      const [related, available] = await Promise.all([
+        fetch(relatedReadUrl).then(r => r.json()),
+        fetchAvailable(),
+      ]);
+
+      const buildSelect = (availableWidgets) =>
+        `<option value="">${gettext('Select a widget...')}</option>` +
+        availableWidgets.map(w => `<option value="${w.id}">${w.title || w.id} (${w.type || '-'})</option>`).join('');
+
+      await refreshButtonsVisibility();
+
+      const modal = ga.currentModal = g3wadmin.ui._buildModal({
+        modalTitle: gettext('Related widgets'),
+        confirmButton: false,
+        modalBody: /* html */`
+          <div id="related-widgets-container">
+            ${buildTable(related)}
+          </div>
+          <hr/>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <select class="form-control" id="related-widget-select" style="flex:1; min-width:150px;">
+              ${buildSelect(available)}
+            </select>
+            <button class="btn btn-primary btn-sm" id="btn-add-related">
+              <i class="fa fa-plus"></i> ${gettext('Add')}
+            </button>
+          </div>`,
+      });
+
+
+      const initSortable = () => {
+        const $container = modal.$modal.find('#related-widgets-container tbody');
+        $container.sortable({
+            handle: '.drag-handle',
+            axis: 'y',
+            update() {
+            const rows = modal.$modal.find('#related-widgets-container tbody tr[data-related-pk]');
+            rows.toArray().map((tr, i) =>
+                fetch(relatedWriteUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ target: parseInt($(tr).attr('data-related-pk')), project: parseInt(PLOT.project), order: i }),
+                })
+            )
+            },
+        });
+        };
+
+      const refreshSelect = async () => {
+        const freshAvailable = await fetchAvailable();
+        modal.$modal.find('#related-widget-select').html(buildSelect(freshAvailable));
+      };
+
+      const refreshTable = async () => {
+        const updated = await (await fetch(relatedReadUrl)).json();
+        modal.$modal.find('#related-widgets-container').html(buildTable(updated));
+        await refreshButtonsVisibility();
+        initSortable();
+        await refreshSelect();
+      };
+
+      modal.$modal.on('click', '.btn-remove-related', async function (e) {
+        e.preventDefault();
+        const targetPk = $(this).attr('data-related-target-pk');
+        try {
+          await fetch(`/${SITE_PREFIX_URL}qplotly/api/widget/related/${PLOT.pk}/${targetPk}/${PLOT.project}/`, { method: 'DELETE' });
+          await refreshTable();
+        } catch (err) {
+          g3wadmin.widget.showError(err.message);
+        }
+      });
+
+      modal.$modal.on('click', '#btn-add-related', async function (e) {
+        e.preventDefault();
+        const targetPk = modal.$modal.find('#related-widget-select').val();
+        if (!targetPk) return;
+        const nextOrder = modal.$modal.find('#related-widgets-container tbody tr[data-related-pk]').length;
+        try {
+          await fetch(relatedWriteUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target: parseInt(targetPk), project: parseInt(PLOT.project), order: nextOrder }),
+          });
+          await refreshTable();
+        } catch (err) {
+          g3wadmin.widget.showError(err.message);
+        }
+      });
+
+      modal.$modal.on('shown.bs.modal', initSortable);
+      modal.show();
+    });
+
     row.child($div).show();
+
+    await refreshButtonsVisibility();
+
   } catch (e) {
     g3wadmin.widget.showError(e.message);
   }

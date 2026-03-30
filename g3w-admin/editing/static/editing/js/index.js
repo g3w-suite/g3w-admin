@@ -1148,7 +1148,7 @@ new (class extends Plugin {
       console.warn(e);
     }
 
-    return Promise.reject({ message: _("info.server_error")});
+    return Promise.reject({ message: _("server_error")});
   }
 
   /**

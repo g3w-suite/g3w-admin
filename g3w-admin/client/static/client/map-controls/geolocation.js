@@ -108,7 +108,7 @@ class GeolocationControl extends MapControl {
 
       GUI.showUserMessage({
         type:      'warning',
-        title:     'Can\'t get your position',
+        title:     'Can’t get your position',
         message:   e.message,
       });
 

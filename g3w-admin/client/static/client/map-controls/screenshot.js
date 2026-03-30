@@ -265,7 +265,15 @@ const vueComp = ({
               <i aria-hidden = "true" class = "far fa-eye"></i>
             </summary>
             <hr style = "margin: 10px 0;border-style: dotted;border-color:currentColor;">
-            <div style = "white-space: wrap; line-height: 25px;" v-t = "'print_help'"></div>
+            <div style = "white-space: wrap; line-height: 25px;">
+              <p>{{ $t('If you don’t see some layer in your print file:') }}</p>
+              <ol style="padding-left: 25px">
+                <li>{{ $t('try again by selecting a different template') }}</li>
+                <li>{{ $t('try changing the zoom level') }}</li>
+                <li>{{ $t('check the origin (eg. third-party WMS server)') }}</li>
+                <li>{{ $t('make sure the item is actually checked within layers list') }}</li>
+              </ol>
+            </div>
           </details>
         </fieldset>
 
@@ -485,7 +493,7 @@ const vueComp = ({
         }
       } catch(e) {
         console.warn(e);
-        GUI.showUserMessage({ type: 'alert', message: e || _("info.server_error") });
+        GUI.showUserMessage({ type: 'alert', message: e || _("server_error") });
       } finally {
         clearTimeout(timeout);
         GUI.disableSideBar(false);
@@ -737,7 +745,7 @@ const vueComp = ({
         } else {
           GUI.showUserMessage({
             type: 'alert',
-            message: e || _("info.server_error"),
+            message: e || _("server_error"),
           });
         }
       } finally {

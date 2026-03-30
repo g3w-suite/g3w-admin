@@ -18,6 +18,10 @@ from .api.plots.views import (
 from .api.widgets.views import (
     QplotlyWidgetList,
     QplotlyWidgetDetail,
+    QplotlyWidgetRelatedWidgetView,
+    QplotlyWidgetRelatedWidgetPostView,
+    QplotlyWidgetAvailableRelatedView,
+    QplotlyWidgetFreeView,
 )
 
 
@@ -64,6 +68,45 @@ urlpatterns = [
         r'^api/widget/$',
         login_required(QplotlyWidgetList.as_view()),
         name='qplotly-widget-api-list'
+    ),
+
+    #############################################################
+    # Related widgets
+    #############################################################
+
+    # Add relation (POST only)
+    path(
+        'api/widget/related/<int:pk>/',
+        login_required(QplotlyWidgetRelatedWidgetPostView.as_view()),
+        name='qplotly-widget-related-api'
+    ),
+
+    # List related widgets by project
+    path(
+        'api/widget/related/<int:pk>/<int:project_id>/',
+        login_required(QplotlyWidgetRelatedWidgetView.as_view()),
+        name='qplotly-widget-related-api-project'
+    ),
+
+    # Remove relation
+    path(
+        'api/widget/related/<int:pk>/<int:target_pk>/<int:project_id>/',
+        login_required(QplotlyWidgetRelatedWidgetView.as_view()),
+        name='qplotly-widget-related-api-delete'
+    ),
+
+    # Available widgets to be added as related
+    path(
+        'api/widget/related/<int:pk>/available/<int:project_id>/',
+        login_required(QplotlyWidgetAvailableRelatedView.as_view()),
+        name='qplotly-widget-related-available-api'
+    ),
+
+    # Free widgets on a layer (not involved in any relation)
+    path(
+        'api/widget/free/<int:project_id>/<int:layer_id>/',
+        login_required(QplotlyWidgetFreeView.as_view()),
+        name='qplotly-widget-free-api'
     ),
 
     #############################################################

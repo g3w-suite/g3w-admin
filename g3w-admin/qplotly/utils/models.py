@@ -11,9 +11,9 @@ __date__ = '2020-09-22'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
-from django.db.models import Q
+from django.db.models import Q, F
 from qdjango.utils.structure import datasource2dict
-from qplotly.models import QplotlyWidget
+from qplotly.models import QplotlyWidget, QplotlyWidgetRelation
 
 import logging
 
@@ -51,13 +51,14 @@ def get_qplotlywidgets4layer(layer):
         return QplotlyWidget.objects.filter(datasource=layer.datasource)
 
 
-def get_qplotlywidgets4project(project, user=None):
+def get_qplotlywidgets4project(project, user=None, ctx='all'):
     """
     Get every qplotly widget for evey layer of the project and order by 'order' field
 
     :param project: Qdjango Project model instance
     :param user: User model instance
-    :return: Ordered list of ( QplotlyWidget instance, qgs_layer_id)
+    :param ctx: Context for filtering widgets ('all' or 'free+related')
+    :return: Ordered list of (QplotlyWidget instance, qgs_layer_id)
     """
 
     # Get every qplotly plots for the project
@@ -70,7 +71,13 @@ def get_qplotlywidgets4project(project, user=None):
         if user and not user.has_perm('view_layer', layer):
             continue
 
-        qplotly_widgets = layer.qplotlywidget_set.all()
+        if ctx == 'free+related':
+            target_pks = list(QplotlyWidgetRelation.objects.filter(project=project).exclude(
+                source_id=F('target_id')
+            ).values_list('target_id', flat=True))
+            qplotly_widgets = layer.qplotlywidget_set.exclude(pk__in=target_pks)
+        else:
+            qplotly_widgets = layer.qplotlywidget_set.all()
         for qplotly_widget in qplotly_widgets:
             if qplotly_widget not in plots:
                 plots.append((qplotly_widget, layer.qgs_layer_id))
