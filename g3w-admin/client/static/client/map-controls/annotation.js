@@ -162,7 +162,7 @@ class AnnotationControl extends MapControl {
                 <div style = "display: flex; justify-content: space-between; flex-flow: wrap; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee;">
                   <input
                     v-for          = "shape in ['Point', 'LineString', 'Polygon', 'Circle', 'Rectangle', 'Text']"
-                    :title         = "'annotation_types.' + shape"
+                    :title         = "shape"
                     data-placement = "bottom"
                     type           = "radio"
                     :value         = "shape"
