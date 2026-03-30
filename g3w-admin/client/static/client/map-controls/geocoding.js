@@ -726,7 +726,7 @@ function _makeDraggable(dialog) {
       || e.clientX < rect.left
       || e.clientX > rect.left + rect.width - 20
     );
-    const is_interactive = ['label', 'button', 'select', 'input', 'textarea'].some(i => e.target.closest(i));
+    const is_interactive = ['label', 'button', 'select', 'input', 'textarea', 'x-select'].some(i => e.target.closest(i));
     if (is_backdrop || is_interactive || !e.target.closest('li.skin-background-color')) {
       return;
     }

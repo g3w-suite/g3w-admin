@@ -3,7 +3,6 @@
  * @since 4.1.0
  */
 const { 
-  GEOMETRY_TYPES,
   G3W_FID,
   PAGELENGTHS, 
 }                        = g3w.constants;
@@ -32,16 +31,8 @@ GUI.setupControl.querybyfreehand = function(type) {
 };
 
 const POLYGON_TYPES = [
-  GEOMETRY_TYPES.POLYGON,
-  GEOMETRY_TYPES.POLYGONZ,
-  GEOMETRY_TYPES.POLYGONM,
-  GEOMETRY_TYPES.POLYGONZM,
-  GEOMETRY_TYPES.POLYGON25D,
-  GEOMETRY_TYPES.MULTIPOLYGON,
-  GEOMETRY_TYPES.MULTIPOLYGONZ,
-  GEOMETRY_TYPES.MULTIPOLYGONM,
-  GEOMETRY_TYPES.MULTIPOLYGONZM,
-  GEOMETRY_TYPES.MULTIPOLYGON25D,
+  'MultiPolygon', 'MultiPolygonZ', 'MultiPolygonM', 'MultiPolygonZM', 'MultiPolygon25D',
+       'Polygon',      'PolygonZ',      'PolygonM',      'PolygonZM',      'Polygon25D',
 ];
 
 /**
