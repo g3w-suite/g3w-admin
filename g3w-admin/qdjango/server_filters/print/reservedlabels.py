@@ -60,6 +60,16 @@ class ReservedLabelsPrintFilter(QgsServerFilter):
                     handler.setParameter(label, QGS_SERVER.user.email)
                 except Exception as e:
                     QgsMessageLog.logMessage(f"Error setting parameter {label}: {e}", 'reservedlabelsprint', Qgis.Warning)
+            elif label == 'g3w_user_first_name':
+                try:
+                    handler.setParameter(label, QGS_SERVER.user.first_name)
+                except Exception as e:
+                    QgsMessageLog.logMessage(f"Error setting parameter {label}: {e}", 'reservedlabelsprint', Qgis.Warning)
+            elif label == 'g3w_user_last_name':
+                try:
+                    handler.setParameter(label, QGS_SERVER.user.last_name)
+                except Exception as e:
+                    QgsMessageLog.logMessage(f"Error setting parameter {label}: {e}", 'reservedlabelsprint', Qgis.Warning)
 
 # Register the filter, keep a reference because of the garbage collector
 reserved_labels_print_filter = ReservedLabelsPrintFilter(QGS_SERVER.serverInterface())
