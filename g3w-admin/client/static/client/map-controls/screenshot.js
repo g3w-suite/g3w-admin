@@ -125,7 +125,7 @@ const vueComp = ({
           <x-select
             id         = "format"
             :value     = "format"
-            @change    = "format = $event.target.value"
+            @change    = "format = $event.target.value.toLowerCase()"
             searchable
           >
             <x-option value = "png">PNG</x-option>
