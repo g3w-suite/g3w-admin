@@ -429,10 +429,21 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except Exception as e:
             logger.error(f'[Project serializer] Initextent by geocontraint error: {str(e)}')
 
+
+        # Add print layouts
+        # ---------------------------------------------------------
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
-        # Ordering
+        
+        # Ordering layouts by name
         ret['print'].sort(key=lambda x: x['name'])
+
+        # Filter labels reserved for print layout
+        for layout in ret['print']:
+            layout['labels'] = [
+                label for label in layout['labels'] 
+                if label['id'] not in settings.RESERVED_PRINT_LAYOUT_LABELS
+            ]
 
         # Get layer which request.user can view:
         if self.request:
