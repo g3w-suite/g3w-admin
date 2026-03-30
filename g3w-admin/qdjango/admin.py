@@ -62,13 +62,19 @@ class ColumnAclAdmin(GuardedModelAdmin):
     list_display = (
         'layer',
         'project',
-        'user',
-        'group',
+        'get_users',
+        'get_groups',
         'restricted_fields'
     )
 
     def project(self, obj):
         return obj.layer.project.title
+
+    def get_users(self, obj):
+        return ', '.join(obj.users.values_list('username', flat=True))
+
+    def get_groups(self, obj):
+        return ', '.join(obj.groups.values_list('name', flat=True))
 
     def has_add_permission(self, request, obj=None):
         return False

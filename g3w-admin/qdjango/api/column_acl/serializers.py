@@ -22,8 +22,7 @@ class ColumnAclCleanValidator(object):
 
     def __call__(self, value):
         try:
-            ColumnAcl(layer=value['layer'], user=value['user'],
-                      group=value['group'], restricted_fields=value['restricted_fields']).clean()
+            ColumnAcl(layer=value['layer'], restricted_fields=value['restricted_fields']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
@@ -35,17 +34,17 @@ class ColumnAclSerializer(serializers.ModelSerializer):
         fields = [
             'pk',
             'layer',
-            'user',
-            'group',
+            'users',
+            'groups',
             'restricted_fields',
         ]
         validators = [ColumnAclCleanValidator()]
 
     def to_representation(self, instance):
-        """Add user an goup name"""
+        """Add usernames and groupnames lists"""
         ret = super().to_representation(instance)
-        ret['username'] = instance.user.username if instance.user else ''
-        ret['groupname'] = instance.group.name if instance.group else ''
+        ret['usernames'] = list(instance.users.values_list('username', flat=True))
+        ret['groupnames'] = list(instance.groups.values_list('name', flat=True))
         return ret
 
 
