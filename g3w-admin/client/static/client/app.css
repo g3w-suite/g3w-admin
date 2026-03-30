@@ -747,9 +747,7 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .ol-zoom :is(.ol-zoom-in, .ol-zoom-out)                                { border-radius: 3px; display: block; }
 .ol-scale-control                                                      { bottom: 15px; }
 .ol-scale-line                                                         { left: auto; font-weight: bold; bottom: 35px; }
-#scale-control .select2-selection__rendered                            { font-weight: bold !important; }
-#scale-control .select2-container--default .select2-selection--single,
-#scale-control .select2-selection .select2-selection--single           { height: 30px !important; background-color: #eee; border-width: 0; }
+#scale-control .x-select-trigger                                       { border: none; font-weight: bold; background-color: transparent; min-height: 30px; }
 .ol-rotate                                                             { top: 55px; left: 0; }
 .ol-rotate button span                                                 { font-weight: bold; }
 .ol-hidden                                                             { display:none; }
@@ -798,10 +796,7 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .tool_mapcontrol_button                                                { background-color: var(--skin-color); }
 .g3w-ol-toggled                                                        { background-color: var(--skin-color) !important; }
 
-.ol-attribution li a                                                                           { color: hsl(from var(--skin-color) h s calc(l - 20)); }
-#scale-control .select2-selection__rendered                                                    { color: hsl(from var(--skin-color) h s calc(l - 20)) !important; }
-#scale-control .select2-selection__arrow b                                                     { border-top-color: hsl(from var(--skin-color) h s calc(l - 20)) !important; }
-#scale-control .select2-container--default.select2-container--open .select2-selection__arrow b { border-bottom-color: hsl(from var(--skin-color) h s calc(l - 20)) !important; }
+.ol-attribution li a                                                   { color: hsl(from var(--skin-color) h s calc(l - 20)); }
 
 /* nominatim */
 @media (max-width: 578px) {
@@ -1282,8 +1277,7 @@ i.triangle                             { border-color: currentColor transparent 
 .g3w-map                      { position: absolute; width: 100%; height: 100%; }
 .g3w-map.show                 { display: block; }
 .g3w-map.hide                 { display: none; }
-#map_footer                   { position:absolute; bottom:0; height: 30px; width:100%; display: flex; justify-content: space-between; background-color: rgba(255, 255, 255, 0.7); }
-#map_footer_right             { flex-shrink: 0; }
+#map_footer                   { position:absolute; bottom:0; height: 30px; width:100%; display: flex; background-color: rgba(255, 255, 255, 0.7); }
 .drop-area:not([hidden])      { display: flex; }
 .drop-area                    { justify-content: center; align-items: center; width: 100%; height: 100%; color: #fff; font-size: 4em; position: absolute; z-index: 100; background-color: var(--bgcolor); pointer-events: none; }
 .drop-area::before            { border: 5px dashed #fff; content: ""; bottom: 60px; left: 60px;  position: absolute; right: 60px; top: 60px; }

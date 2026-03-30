@@ -491,3 +491,15 @@ QES_SEARCH_SORT = {
 # By project id and qgis_layer_id is posssible se fileds to index
 QES_INDEXING_FIELDS = {}
 
+# RESERVERD PRINT LAYOUT LABELS
+# ------------------------
+# Important: add here reserved labels for print layout, in particular if they are used by plugins
+# Reserved QGIS print layout labels
+RESERVED_PRINT_LAYOUT_LABELS = [
+    'g3w_username', # Reserved for the username of the logged in user
+    'g3w_user_email', # Reserved for the email of the logged in user
+    'g3w_user_first_name', # Reserved for the first name of the logged in user
+    'g3w_user_last_name' # Reserved for the last name of the logged in user
+]
+
+

@@ -28,6 +28,6 @@ GUI.isMapReady().then(() => {
 
   // check if a base layer is set. If true, add attribution control
   if (has_baselayer) {
-    GUI.getMap().addControl(new ol.control.Attribution({ collapsible: false, target: 'map_footer_left' }));
+    GUI.getMap().addControl(new ol.control.Attribution({ collapsible: false, target: 'attribution-control' }));
   }
 });
