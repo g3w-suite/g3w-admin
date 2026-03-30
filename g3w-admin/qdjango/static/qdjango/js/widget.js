@@ -2768,6 +2768,14 @@ _.extend(g3wadmin.tpl, {
 				<div class="col-md-12">
 					<div class="info"><%= title %></div>
 					<div class="form-group">
+						<label class="control-label ">${gettext("Hidden Fields (required)")}</label>
+						<div class="controls ">
+							<select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;">
+                            </select>
+						</div>
+					</div>
+
+					<div class="form-group">
 						<label class="control-label ">${gettext("Users (required if no group is set)")}</label>
 						<div class="controls ">
 							<select class="form-select" multiple name="users" style="width:100%;"/>
@@ -2778,14 +2786,6 @@ _.extend(g3wadmin.tpl, {
 						<label class="control-label ">${gettext("Groups (required if no user is set)")}</label>
 						<div class="controls ">
                         <select class="form-select" multiple name="groups" style="width:100%;" />
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label ">${gettext("Hidden Fields (required)")}</label>
-						<div class="controls ">
-							<select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;">
-                            </select>
 						</div>
 					</div>
 

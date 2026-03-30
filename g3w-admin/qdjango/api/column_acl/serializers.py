@@ -34,9 +34,9 @@ class ColumnAclSerializer(serializers.ModelSerializer):
         fields = [
             'pk',
             'layer',
+            'restricted_fields',
             'users',
             'groups',
-            'restricted_fields',
         ]
         validators = [ColumnAclCleanValidator()]
 

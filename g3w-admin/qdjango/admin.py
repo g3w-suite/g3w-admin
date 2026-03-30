@@ -58,6 +58,7 @@ class ColumnAclAdminForm(ModelForm):
 class ColumnAclAdmin(GuardedModelAdmin):
 
     form = ColumnAclAdminForm
+    fields = ('layer', 'restricted_fields', 'users', 'groups')
 
     list_display = (
         'layer',
