@@ -1101,7 +1101,7 @@ class Layer(G3WACLModelMixins, models.Model):
                 if user.is_anonymous:
                     user = get_anonymous_user()
 
-                for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
+                for acl in self.columnacl_set.filter(models.Q(users=user) | models.Q(groups__in=user.groups.all())).distinct():
                     attributes = list(set(attributes) -
                                       set(acl.restricted_fields))
 

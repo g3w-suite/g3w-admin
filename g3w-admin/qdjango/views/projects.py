@@ -433,9 +433,11 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                         ctx['expconstraints'].append(ec)
 
                 for hidef in hiddenfields:
-
+                    user_names = list(hidef.users.values_list('username', flat=True))
+                    group_names = list(hidef.groups.values_list('name', flat=True))
+                    subject = ', '.join(user_names + group_names) or '—'
                     hf['hiddenfields'].append((
-                        hidef.user.username if hidef.user else hidef.group.name,
+                        subject,
                         hidef.restricted_fields
                     ))
 

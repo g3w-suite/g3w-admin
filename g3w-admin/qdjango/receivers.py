@@ -24,7 +24,8 @@ from django.db.models.signals import (
     post_delete,
     post_save,
     pre_delete,
-    pre_save
+    pre_save,
+    m2m_changed,
 )
 from django.dispatch import receiver
 from django.template import loader
@@ -333,6 +334,25 @@ def invalid_prj_cache_by_columnacl(**kwargs):
         f"Parent qdjango project /api/config invalidate on create/update/delete of a layer columnacl: "
         f"{kwargs['instance'].layer.project}"
     )
+
+
+def _invalid_prj_cache_by_columnacl_m2m(sender, instance, **kwargs):
+    """Invalidate project cache when users or groups M2M on ColumnAcl change"""
+    instance.layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on M2M change of column acl users/groups: "
+        f"{instance.layer.project}"
+    )
+
+
+m2m_changed.connect(
+    _invalid_prj_cache_by_columnacl_m2m,
+    sender=ColumnAcl.users.through,
+)
+m2m_changed.connect(
+    _invalid_prj_cache_by_columnacl_m2m,
+    sender=ColumnAcl.groups.through,
+)
 
 @receiver(post_save, sender=Message)
 @receiver(pre_delete, sender=Message)

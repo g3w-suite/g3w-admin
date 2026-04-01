@@ -47,22 +47,15 @@ class ColumnAcl(TimeStampedModel):
 
     layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, validators=[validate_vector])
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, blank=True)
-    group = models.ForeignKey(
-        AuthGroup, on_delete=models.CASCADE, null=True, blank=True)
+    users = models.ManyToManyField(
+        User, blank=True, verbose_name=_('Users'), related_name='column_acl_restrictions')
+    groups = models.ManyToManyField(
+        AuthGroup, blank=True, verbose_name=_('User groups'), related_name='column_acl_restrictions')
 
     restricted_fields = ArrayField(models.CharField(
         max_length=255), verbose_name=_('Restricted fields'))
 
     class Meta:
-
-        constraints = [
-            models.CheckConstraint(check=models.Q(user__isnull=False) | models.Q(
-                group__isnull=False), name='user_or_group_mutex_column'),
-            models.CheckConstraint(check=models.Q(user__isnull=True) | models.Q(
-                group__isnull=True), name='user_or_group_is_set_column'),
-        ]
 
         ordering = ['-id']
 
@@ -80,6 +73,6 @@ class ColumnAcl(TimeStampedModel):
             available_fields = self.layer.qgis_layer.fields().names()
             for fname in self.restricted_fields:
                 if fname not in available_fields:
-                    errors = _('Field "{}" is not available in layer {}.').format(fname, self.layer.title)
+                    errors.append(_('Field "{}" is not available in layer {}.').format(fname, self.layer.title))
         if errors:
             raise ValidationError({'restricted_fields': errors})
