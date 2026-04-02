@@ -3753,7 +3753,8 @@ export class ToolBox extends Emitter {
             const response = await layer.getFilterData({ fformatter: field.name }); // get data with fformatter
             if (response && response.data) {
               // response data is an array ok key value objects
-              field.input.options.values.push(...response.data.map(([value, key]) => ({ key, value })));
+              //@since 4.1.0 set as key value
+              field.input.options.values.push(...response.data.map(([value, _]) => ({ key: value, value })));
               field.input.options.loading.state = 'ready';
               GUI.getPlugin('editing').emit('autocomplete', { field, data: [response.data] });
               return field.input.options.values;
