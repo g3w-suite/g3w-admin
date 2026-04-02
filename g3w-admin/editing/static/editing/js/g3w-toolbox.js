@@ -1943,7 +1943,7 @@ export class ToolBox extends Emitter {
         });
       }
 
-      /** @TODO merge the following condtions? */
+      /** @TODO merge the following conditions? */
       if (!is_started && !GIVE_ME_A_NAME) {
         this.#start = true;
         this.startLoading();
@@ -3199,10 +3199,16 @@ export class ToolBox extends Emitter {
    */
   async __getFeatures(options = {}) {
     if (!this.#allfeatures) {
-      this.#allfeatures = !options.filter;
-      const features    = await this._editor.getFeatures(options);
-      this.state.editing.session.getfeatures = true;
-      return features;
+      try { 
+        const features    = await this._editor.getFeatures(options);
+        //@since 4.1.0 need to set allfeatures after get features
+        this.#allfeatures                      = !options.filter;
+        this.state.editing.session.getfeatures = true;
+        return features;
+      } catch(e) {
+        console.warn(e);
+      }
+      
     }
     return [];
   }
