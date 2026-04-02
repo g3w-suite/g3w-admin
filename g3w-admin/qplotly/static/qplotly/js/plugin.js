@@ -26,17 +26,10 @@
      */
     constructor() {
 
-      super({ name: 'qplotly' });
-
-      // i18n
-      const VM = new Vue();
-      const i18n = async lang => {
-        this.#SIDEBAR?.setLoading(true);
-        this.setLocale({ [lang]: (await import(`${BASE_URL}/i18n/${lang}.js`)).default });
-        this.#SIDEBAR?.setLoading(false);
-      };
-
-      VM.$watch(() => ApplicationState.language, i18n);
+      super({ 
+        name: 'qplotly',
+        i18n: `${initConfig.staticurl}qplotly/js/i18n/`, 
+      });
 
       // state of plugin
       this.state = Vue.observable({
@@ -150,8 +143,6 @@
         if (!this.registerPlugin(this.config.gid)) {
           return;
         }
-
-        await i18n(ApplicationState.language);
 
         // multi plot selector
         const sidebar = this.#SIDEBAR = this.createSideBarComponent({
