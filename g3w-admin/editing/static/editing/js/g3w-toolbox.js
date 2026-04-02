@@ -3200,9 +3200,7 @@ export class ToolBox extends Emitter {
   async __getFeatures(options = {}) {
     if (!this.#allfeatures) {
       try { 
-        const features    = await this._editor.getFeatures(options);
-        //@since 4.1.0 need to set allfeatures after get features
-        this.#allfeatures                      = !options.filter;
+        const features = await this._editor.getFeatures(options);
         this.state.editing.session.getfeatures = true;
         return features;
       } catch(e) {
