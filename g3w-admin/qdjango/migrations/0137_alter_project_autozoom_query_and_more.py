@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0136_alter_project_toc_tab_default_and_more'),
+        ('qdjango', '0133_project_sidebar_collapse'),
     ]
 
     operations = [
