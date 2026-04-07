@@ -1268,7 +1268,7 @@ export default ({
       /**
        * editing a constraint type
        */
-      this.capabilities = this.parentWorkflow.getLayer().config.editing.capabilities;
+      this.capabilities = this.getLayer().config?.editing?.capabilities ?? [];
 
 
       /**
