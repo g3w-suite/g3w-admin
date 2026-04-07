@@ -22,7 +22,7 @@ template: /*html*/`
   >: {{ layer.getName() }}</h4>
 
   <template
-    v-for = "c in Object.keys(commits).filter(c => commits[c].length)"
+    v-for = "c in Object.keys(commits).filter(c => 'relations' !== c && commits[c].filter(item => getAttrs(item).filter(([key,_]) => isEdited(item, key)).length).length)"
   >
     <h4 v-t:pre = "'plugins.editing.messages.commit.'+c"> ({{ commits[c].length }}) </h4>
     <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
@@ -57,6 +57,7 @@ template: /*html*/`
     }"
     :relation = "true"
     :layer    = "getLayerById(id)"
+    :key      = "id"
   />
 
 </div>`,
@@ -79,14 +80,14 @@ template: /*html*/`
   },
 
   data() {
+    console.log(this.commits)
     return {
-      features:  this.layer.getEditor().readFeatures(),                    // original features
+      features:  this.layer.getEditor().readFeatures(),        // original features
       efeatures: this.layer.getEditor().readEditingFeatures(), // edited features,
     };
   },
 
   methods: {
-
     getFormattedValue(feat, key) {
       if (!feat) { return }
       //need to check if the current attribute is geometry and if it has value (mean not feat of alphanumeical layer)
