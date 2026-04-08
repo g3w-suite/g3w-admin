@@ -39,8 +39,8 @@ def main():
             print(f"Request: {request.url}")
             route.continue_()
 
-        page.route('*', log_all_requests)
-        page.route('**/static/*', handle_route)
+        context.route('*', log_all_requests)
+        context.route('**/static/*', handle_route)
 
         print("Going to page")
         page.goto(SERVER_URL + '/map/expression/')
