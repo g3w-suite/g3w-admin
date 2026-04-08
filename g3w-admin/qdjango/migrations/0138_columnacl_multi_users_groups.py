@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('auth', '0011_update_proxy_permissions'),
-        ('qdjango', '0137_alter_project_autozoom_query_and_more'),
+        ('qdjango', '0133_project_sidebar_collapse'),
     ]
 
     operations = [

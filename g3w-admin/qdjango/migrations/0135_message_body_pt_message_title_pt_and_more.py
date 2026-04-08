@@ -4,9 +4,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('qdjango', '0134_projectbookmark'),
+        ('qdjango', '0133_project_sidebar_collapse'),
     ]
 
     operations = [
