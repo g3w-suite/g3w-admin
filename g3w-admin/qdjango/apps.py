@@ -95,6 +95,9 @@ def init_qgis():
     # Load providers
     QGS_APPLICATION.initQgis()
 
+    QgsApplication.restoreGdalDriver('ECW')
+    QgsApplication.restoreGdalDriver('JP2ECW')
+
     if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
         if QgsApplication.authManager().isDisabled():
             raise ImproperlyConfigured('QGIS AuthManager is not enabled')
