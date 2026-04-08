@@ -367,44 +367,49 @@ export class OpenFormStep extends Step {
                 // @since 3.5.15
                 GUI.setLoadingContent(true);
                 GUI.disableContent(true);
+                //chek if some changes are present before save otherwise check in relation eventually
+                if (Workflow.Stack.current.getContext().service.state.fields.find(f => f.update)) {
+                  
+                  await Workflow.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
 
-                await Workflow.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
+                  this._features.forEach(f => {
+                    _setFieldsWithValues(inputs.layer, f, fields);
+                    newFeatures.push(f.clone());
+                  });
+
+                  if (this._isContentChild) {
+                    inputs.relationFeatures = {
+                      newFeatures,
+                      originalFeatures: this._originalFeatures
+                    };
+                  }
+
+                  await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
+
+                  newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
+
+                  // check and handle if layer has relation 1:1
+                  await _handleRelation1_1LayerFields({
+                    layerId:  this.layerId,
+                    features: newFeatures,
+                    fields,
+                    task:     this,
+                  });
+
+                  GUI.setModal(false);
+
+                  GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
+                  GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
+
+                  // In case of save of child, it means that child is updated so also parent
+                  if (this._isContentChild) {
+                    Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                  }
+                }
 
                 GUI.setLoadingContent(false);
                 GUI.disableContent(false);
-
-                this._features.forEach(f => {
-                  _setFieldsWithValues(inputs.layer, f, fields);
-                  newFeatures.push(f.clone());
-                });
-
-                if (this._isContentChild) {
-                  inputs.relationFeatures = {
-                    newFeatures,
-                    originalFeatures: this._originalFeatures
-                  };
-                }
-
-                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
-
-                newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
-
-                // check and handle if layer has relation 1:1
-                await _handleRelation1_1LayerFields({
-                  layerId:  this.layerId,
-                  features: newFeatures,
-                  fields,
-                  task:     this,
-                });
-
-                GUI.setModal(false);
-
-                GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
-                // In case of save of child, it means that child is updated so also parent
-                if (this._isContentChild) {
-                  Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
-                }
+                
                 //@TODO add field unique new value id not set
                 resolve(inputs);
               }
