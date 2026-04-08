@@ -24,7 +24,8 @@ def main():
                 print(f"Intercepting: {request.url}")
                 route.fulfill(path=local_path)
             else:
-                sys.exit(1)
+                print(f"Not found locally: {request.url}")
+                route.continue_()
 
         page.route('**/static/**', handle_route)
 
