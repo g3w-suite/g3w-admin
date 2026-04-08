@@ -2,7 +2,7 @@
 Test your local Django admin static files (development) against a remote server (production)
 """
 
-import sys
+import sys, glob
 
 from playwright.sync_api import sync_playwright
 
@@ -19,22 +19,18 @@ def main():
         def handle_route(route, request):
             url = request.url
             print(f"Intercepting: {url}")
-            if 'static/' in url:
-                relative_path = url.split(SERVER_URL)[1]
-                # Use Django-like logic: find the file in any **/static/** location
-                import glob
-                matches = glob.glob('**/' + relative_path, recursive=True)
-                if matches:
-                    local_path = matches[0]  # Take the first match
-                    print(True, local_path)
-                    route.fulfill(path=local_path)
-                else:
-                    print(False, relative_path)
-                    route.continue_()
+            relative_path = url.split(SERVER_URL)[1]
+            # Use Django-like logic: find the file in any **/static/** location
+            matches = glob.glob('**/' + relative_path, recursive=True)
+            if matches:
+                local_path = matches[0]  # Take the first match
+                print(f"True → {local_path}")
+                route.fulfill(path=local_path)
             else:
+                print(f"False → {relative_path}")
                 route.continue_()
 
-        page.route('**/**', handle_route)
+        page.route('**/static/**', handle_route)
 
         print("Going to page")
         page.goto(SERVER_URL + '/map/expression/')
