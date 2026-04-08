@@ -34,13 +34,7 @@ def main():
             else:
                 route.continue_()
 
-        # Log all requests for debugging
-        def log_all_requests(route, request):
-            print(f"Request: {request.url}")
-            route.continue_()
-
-        context.route('*', log_all_requests)
-        context.route('**/static/*', handle_route)
+        page.route('**/**', handle_route)
 
         print("Going to page")
         page.goto(SERVER_URL + '/map/expression/')
