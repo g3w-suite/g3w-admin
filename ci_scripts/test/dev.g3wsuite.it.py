@@ -18,13 +18,14 @@ def main():
         # replace remote static files with local ones
         def handle_route(route, request):
             # Use Django-like logic: find the file in any **/static/** location
-            matches = glob.glob('**/' + request.url.split(SERVER_URL)[1], recursive=True)
+            relative_path = request.url.split(SERVER_URL)[1].split('?')[0] # Remove query string from URL
+            matches = glob.glob('**/' + relative_path, recursive=True)
             if matches:
                 local_path = matches[0]  # Take the first match
-                print(f"Intercepting: {request.url}")
+                print(f"Intercepting: {request.url} -> {local_path}")
                 route.fulfill(path=local_path)
             else:
-                print(f"Not found locally: {request.url}")
+                print(f"Not found locally: {relative_path}")
                 route.continue_()
 
         page.route('**/static/**', handle_route)
