@@ -22,7 +22,7 @@ def main():
             matches = glob.glob('**/' + relative_path, recursive=True)
             if matches:
                 local_path = matches[0]  # Take the first match
-                print(f"Intercepting: {request.url} -> {local_path}")
+                print(f"Intercepting: {request.url}")
                 route.fulfill(path=local_path)
             else:
                 print(f"Not found locally: {relative_path}")
