@@ -368,7 +368,7 @@ export class OpenFormStep extends Step {
                 GUI.setLoadingContent(true);
                 GUI.disableContent(true);
 
-                //chek if some changes are present before save otherwise check in relation eventually
+                // chek if some changes are present before save otherwise check in relation eventually
                 if (Workflow.Stack.current.getContext().service.state.fields.find(f => f.update)) {
                   
                   await Workflow.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
