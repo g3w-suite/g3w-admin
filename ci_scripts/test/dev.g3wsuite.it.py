@@ -34,6 +34,12 @@ def main():
             else:
                 route.continue_()
 
+        # Log all requests for debugging
+        def log_all_requests(route, request):
+            print(f"Request: {request.url}")
+            route.continue_()
+
+        page.route('*', log_all_requests)
         page.route('**/static/*', handle_route)
 
         print("Going to page")
