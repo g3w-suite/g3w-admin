@@ -3086,6 +3086,7 @@ export class ToolBox extends Emitter {
         //@since 4.1.0 In case of missing changes child relaztion, need to create relation object with empty changes to mantain relation structure in commit object
         if (!commitObj.relations[fatherId]) {
           commitObj.relations[fatherId] = { 
+            lockids:   ToolBox._sessions[fatherId]._editor.getLockIds?.() || [],
             add:       [],
             update:    [],
             delete:    [],
