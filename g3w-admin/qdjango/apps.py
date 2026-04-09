@@ -95,9 +95,6 @@ def init_qgis():
     # Load providers
     QGS_APPLICATION.initQgis()
 
-    QgsApplication.restoreGdalDriver('ECW')
-    QgsApplication.restoreGdalDriver('JP2ECW')
-
     if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
         if QgsApplication.authManager().isDisabled():
             raise ImproperlyConfigured('QGIS AuthManager is not enabled')
@@ -114,6 +111,10 @@ def init_qgis():
 
     # Singleton server instance (reused across each request)
     QGS_SERVER = QgsServer()
+
+    # Initialize GDAL drivers that are required when GDAL is compiled with ECW support
+    QgsApplication.restoreGdalDriver('ECW')
+    QgsApplication.restoreGdalDriver('JP2ECW')
 
     QGS_APPLICATION.messageLog().messageReceived.connect(get_qgis_log)
 
