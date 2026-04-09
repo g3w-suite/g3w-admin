@@ -15,7 +15,7 @@ template: /*html*/`
 <div class="editing-changes">
 
   <h4
-    v-if    = "relation"
+    v-if    = "relation && Object.keys(commits).filter(c => commits[c].length).length"
     class   = "skin-color g3w-long-text"
     style   = "font-weight: bold; margin: 15px 0"
     v-t:pre = "'plugins.editing.messages.commit.header_relation'"

@@ -3081,10 +3081,19 @@ export class ToolBox extends Emitter {
     relations
       .filter(id => undefined === this._editor.getLayer().getRelations().getArray().find(r => id === r.getChild())) // child relations
       .map(id => {
-        commitObj.relations[
-          ToolBox._sessions[id]._editor.getLayer().getRelations().getArray()
-          .find(r => id === r.getChild() && commitObj.relations[r.getFather()]) // parent relation layer
-          .getFather()].relations[id] = commitObj.relations[id];
+        const fatherId = ToolBox._sessions[id]._editor.getLayer().getRelations().getArray()
+          .find(r => id === r.getChild()).getFather() // parent relation layer
+        //@since 4.1.0 In case of missing changes child relaztion, need to create relation object with empty changes to mantain relation structure in commit object
+        if (!commitObj.relations[fatherId]) {
+          commitObj.relations[fatherId] = { 
+            add:       [],
+            update:    [],
+            delete:    [],
+            relations: {} 
+          };
+        }  
+
+        commitObj.relations[fatherId].relations[id] = commitObj.relations[id];
         return id;
       })
       .forEach(id => delete commitObj.relations[id]);
