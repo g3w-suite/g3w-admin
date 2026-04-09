@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0135_message_body_pt_message_title_pt_and_more'),
+        ('qdjango', '0133_project_sidebar_collapse'),
     ]
 
     operations = [
