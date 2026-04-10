@@ -3609,8 +3609,13 @@ export class ToolBox extends Emitter {
     (response.response.update || []).forEach(({ id, properties } = {}) => {
       //get feature from current layer in editing
       const feature  = this._featuresstore.getFeatureById(id);
-      //set properties
-      feature.setProperties(properties);
+      if (feature) {
+        //set properties
+        feature.setProperties(properties);
+      } else {
+        console.warn(`Feature with id ${id} not found in editing source to update properties after commit`);
+      }
+      
       //Loop on eventual relation updated or created
       relations.forEach(r => {         // handle relations (if provided)
         Object
