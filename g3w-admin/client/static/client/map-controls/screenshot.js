@@ -49,7 +49,7 @@ const state = {
   scales:          [],
   dpis:            [150, 300],
   dpi:             150,
-  format:          'png',
+  format:          'pdf',
   screenshot_types,
   screenshot_type: screenshot_types[0],
   print_extent:    null,
