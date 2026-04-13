@@ -427,6 +427,8 @@ export default ({
             this.rows[index][key] = getFeatureTableFieldValue({ layerId: this.layerId, feature, property: key });
           });
       } catch(e) {
+        //Force roolback
+        this.context.session.rollback();
         console.warn(e);
       }
 

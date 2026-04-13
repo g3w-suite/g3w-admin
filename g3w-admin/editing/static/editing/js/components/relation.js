@@ -784,6 +784,10 @@ export default ({
               d.resolve(true);
             } catch(e) {
               console.warn(e);
+              //need to rollback changes done at moment
+              Workflow.Stack.current.session.rollback();
+              //reset eventually state of form parent service (save changes or not)
+              Workflow.Stack.parents?.forEach(w => w?.getContext?.()?.service?.setUpdate?.( w?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
               d.reject(e);
             }
 
