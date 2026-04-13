@@ -72,6 +72,8 @@ export class ToolBox extends Emitter {
    */
   static _sessions = {};
 
+  #controller = null; //@since 4.1.0
+
   #start = false;
 
   /** @since 4.0.1 */
@@ -1911,7 +1913,11 @@ export class ToolBox extends Emitter {
           resolve({ features })
         } catch(e) {
           console.warn(e);
-          GUI.notify.error(e.message);
+          
+          if (!e.signal) {
+            GUI.notify.error(e.message);
+          }
+          
           this.stop();
           this.stopLoading();
           reject(e);
@@ -1989,6 +1995,7 @@ export class ToolBox extends Emitter {
    * @returns {*}
    */
   async stop() {
+
     if (this.state.layer.config.editing.layer_style && this.#current_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
       await getCatalogLayerById(this.state.id).changeStyle(this.#current_style);
     }
@@ -2010,7 +2017,11 @@ export class ToolBox extends Emitter {
 
     const is_started = !!this.isSessionStarted();
 
-    if (!is_started) { return true }
+    if (!is_started) {
+      this.#controller?.abort();
+      this.#controller = null; 
+      return true 
+    }
 
     if (!ApplicationState.online) { return; }
     
@@ -3268,6 +3279,10 @@ export class ToolBox extends Emitter {
     }
 
     const url = `${ApplicationState.project.state.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`;
+    
+    /**@since 4.1.0 - Add signal to stop request */
+    this.#controller  = new AbortController();
+    const signal = this.#controller.signal; 
 
     try {
       let response;
@@ -3276,6 +3291,7 @@ export class ToolBox extends Emitter {
           url,
           data:        JSON.stringify(params),
           contentType: 'application/json',
+          signal,
         });
       } else if (is_defined(options.filter.bbox)) { // bbox filter
         response = await XHR.post({
@@ -3286,6 +3302,7 @@ export class ToolBox extends Emitter {
             filtertoken: this._editor.getLayer().getToken(),
           }),
           contentType: 'application/json',
+           signal,
         })
       } else if (is_defined(options.filter.fid)) { // fid filter
         const { fid, relation } = options.filter.fid;
@@ -3293,6 +3310,7 @@ export class ToolBox extends Emitter {
           url: `${ApplicationState.project.state.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/?relationonetomany=${relation.id}|${fid}`,
           contentType: 'application/json',
           data:        JSON.stringify({ formatter: 1 }),
+          signal,
         });
       } else if (options.filter.field) {
         response = await XHR.post({
@@ -3302,6 +3320,7 @@ export class ToolBox extends Emitter {
             ...options.filter,
           }),
           contentType: 'application/json',
+          signal,
         })
       } else if (is_defined(options.filter.fids)) {
         response = await XHR.post({
@@ -3311,6 +3330,7 @@ export class ToolBox extends Emitter {
             ...options.filter,
           }),
           contentType: 'application/json',
+          signal,
         })
       } else if (is_defined(options.filter.nofeatures)) {
         response = await XHR.post({
@@ -3320,6 +3340,7 @@ export class ToolBox extends Emitter {
             field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__`
           }),
           contentType: 'application/json',
+          signal,
         })
       }
 
@@ -3379,7 +3400,7 @@ export class ToolBox extends Emitter {
           }
         });
 
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
       }
 
@@ -3394,7 +3415,9 @@ export class ToolBox extends Emitter {
       return features;
     } catch(e) {
       console.warn(e);
-      return Promise.reject({ message: _("server_error")});
+      return Promise.reject({ signal: e.name === 'AbortError', message: _("server_error") });
+    } finally {
+      this.#controller = null; //reset signal to null
     }
 
   }
@@ -3690,6 +3713,7 @@ export class ToolBox extends Emitter {
    * @since g3w-client-plugin-editing@v4.1.0
    */
   async __stopEditor() {
+    this.#controller?.abort(); //abort request if exist
     const { result } = await XHR.post({ url: `${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/` });
     this.__clearEditor();
     return result;
@@ -3704,6 +3728,7 @@ export class ToolBox extends Emitter {
     this.#started     = false;
     this.#filter.bbox = null;
     this.#allfeatures = false;
+    this.#controller  = null;
 
     this._features                                  = []; // clear features collection
     GUI.getPlugin('editing').state.lock_ids[this.getId()]   = [];
