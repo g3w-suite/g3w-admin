@@ -1915,7 +1915,7 @@ export class ToolBox extends Emitter {
           console.warn(e);
           
           if (!e.signal) {
-            GUI.notify.error(e.message);
+            GUI.showUserMessage({ type: 'alert', message: e.message });
           }
           
           this.stop();
