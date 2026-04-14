@@ -491,6 +491,12 @@ QES_SEARCH_SORT = {
 # By project id and qgis_layer_id is posssible se fileds to index
 QES_INDEXING_FIELDS = {}
 
+# If QES_INDEXING_CRON_SCHEDULE is defined, then the periodic task will be executed according to the schedule defined in settings, i.e.:
+# indexing every 4 hours,
+# from huey import crontab
+# QES_INDEXING_CRON_SCHEDULE = crontab(hour='*/4')
+QES_INDEXING_CRON_SCHEDULE = None
+
 # RESERVERD PRINT LAYOUT LABELS
 # ------------------------
 # Important: add here reserved labels for print layout, in particular if they are used by plugins
