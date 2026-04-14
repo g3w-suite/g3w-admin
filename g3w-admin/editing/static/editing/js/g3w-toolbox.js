@@ -3081,10 +3081,20 @@ export class ToolBox extends Emitter {
     relations
       .filter(id => undefined === this._editor.getLayer().getRelations().getArray().find(r => id === r.getChild())) // child relations
       .map(id => {
-        commitObj.relations[
-          ToolBox._sessions[id]._editor.getLayer().getRelations().getArray()
-          .find(r => id === r.getChild() && commitObj.relations[r.getFather()]) // parent relation layer
-          .getFather()].relations[id] = commitObj.relations[id];
+        const fatherId = ToolBox._sessions[id]._editor.getLayer().getRelations().getArray()
+          .find(r => id === r.getChild()).getFather() // parent relation layer
+        //@since 4.1.0 In case of missing changes child relaztion, need to create relation object with empty changes to mantain relation structure in commit object
+        if (!commitObj.relations[fatherId]) {
+          commitObj.relations[fatherId] = { 
+            lockids:   ToolBox._sessions[fatherId]._editor.getLockIds?.() || [],
+            add:       [],
+            update:    [],
+            delete:    [],
+            relations: {} 
+          };
+        }  
+
+        commitObj.relations[fatherId].relations[id] = commitObj.relations[id];
         return id;
       })
       .forEach(id => delete commitObj.relations[id]);
@@ -3599,8 +3609,13 @@ export class ToolBox extends Emitter {
     (response.response.update || []).forEach(({ id, properties } = {}) => {
       //get feature from current layer in editing
       const feature  = this._featuresstore.getFeatureById(id);
-      //set properties
-      feature.setProperties(properties);
+      if (feature) {
+        //set properties
+        feature.setProperties(properties);
+      } else {
+        console.warn(`Feature with id ${id} not found in editing source to update properties after commit`);
+      }
+      
       //Loop on eventual relation updated or created
       relations.forEach(r => {         // handle relations (if provided)
         Object

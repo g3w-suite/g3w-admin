@@ -12,7 +12,8 @@ export default ({
       class      = "plot-content"
       :style     = "{
         overflow: 'hidden visible',
-        height: order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
+        width:    '100%',
+        height:   order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
       }"
     >
     <template v-if = "order.length">
