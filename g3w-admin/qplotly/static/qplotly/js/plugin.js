@@ -126,7 +126,7 @@
                   _container = null; // remove container from action
                 }
               }),
-              clear:async () => {
+              clear: async () => {
                 if (_container) {
                   await this.toggleCharts({ show: false, container: _container });
                   _container = null;
@@ -146,7 +146,7 @@
 
         // multi plot selector
         const sidebar = this.#SIDEBAR = this.createSideBarComponent({
-          data: () => ({ service: this }),
+          data: () => ({ service: this, }),
           template: /* html */ `
             <ul class = "treeview-menu" style = "padding: 10px; color:#FFF;">
               <li v-for = "plot in service.config.plots" :key = "plot.id" :hidden = "!plot.show_position.includes('sidebar')">
@@ -720,7 +720,7 @@
      * @returns { undefined }
      */
     setLoading(b) {
-      document.querySelector('#qplotly').classList.toggle('g3w-disabled', b);
+      document.querySelector('#qplotly')?.classList.toggle('g3w-disabled', b);
       this.state.loading = b;
     }
 

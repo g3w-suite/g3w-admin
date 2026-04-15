@@ -239,12 +239,13 @@ def set_initconfig_value(sender, **kwargs):
                 'title': 'plugins.qplotly.title',
                 'open': False,
                 'collapsible': True,
-                'icon':'chart-area',
+                'icon': 'chart-area',
                 'iconColor': 'red',
                 'mobile': True,
                 'sidebarOptions': {
                     'position': 1,
                 },
+                'visible': any('sidebar' in plot.get('show_position', '') for plot in plots),
             },
         }
     }
