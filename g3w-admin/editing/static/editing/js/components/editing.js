@@ -490,7 +490,7 @@ export default ({
     this.unByKeys.push({
       owner :  ApplicationService,
       setter: 'online',
-      key:     ApplicationService.onafter('online', () => this.checkOfflineChanges({ modal: false }).catch(e => GUI.notify.error(e)))
+      key:     ApplicationService.onafter('online', () => this.checkOfflineChanges({ modal: false }).catch(e => GUI.showUserMessage({ type: 'alert', message: e })))
     });
 
     GUI.closeContent();
