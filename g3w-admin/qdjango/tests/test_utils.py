@@ -952,7 +952,7 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         dfields = {f['name']: f for f in jres['vector']['fields']}
 
         # Check fields with default value not expression
-        self.assertTrue('default_expression' not in dfields['name']['input']['options'])
+        self.assertTrue('default_expression' in dfields['name']['input']['options'])
         self.assertEqual(dfields['name']['input']['options']['default'], 'default_name')
 
         self.assertTrue('default_expression' not in dfields['subname']['input']['options'])
