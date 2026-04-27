@@ -24,7 +24,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost']
 
-
 # Application definition
 
 DJANGO_APPS = [
@@ -60,7 +59,7 @@ THIRD_PARTY_APPS = [
     'ajax_select',
     'modeltranslation',
     'huey.contrib.djhuey',
-    'bx_py_utils',  # required by huey_monitor
+    'bx_django_utils',  # required by huey_monitor
     'huey_monitor',
     'about',
     'django_bleach',

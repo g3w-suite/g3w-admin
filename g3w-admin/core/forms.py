@@ -192,13 +192,14 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         For not new group or existing not empty item, check if NEW srid is different from projects SRID
         """
 
-        projects = Project.objects.filter(group=self.instance)
-        if self.instance.pk and len(projects) > 0:
-            srid = self.cleaned_data['srid'].auth_srid
-            layer_srid = projects[0].qgis_project.crs().postgisSrid()
-            if srid != layer_srid:
-                raise ValidationError(
-                    _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"))
+        if self.instance.pk:
+            projects = Project.objects.filter(group=self.instance)
+            if projects.exists():
+                srid = self.cleaned_data['srid'].auth_srid
+                layer_srid = projects[0].qgis_project.crs().postgisSrid()
+                if srid != layer_srid:
+                    raise ValidationError(
+                        _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"))
 
         return self.cleaned_data['srid']
 

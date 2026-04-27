@@ -18,6 +18,7 @@ docs/locales/**/*.mo
 # vscode project file
 /.vscode/
 /venv/
+/venv_dj52/
 g3w-admin.code-workspace
 
 # temp_uploads for jqupload
