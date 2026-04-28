@@ -496,6 +496,12 @@ class QGISElasticsearchIndexer:
                 elif key == "geometry_type":
                     query["bool"]["filter"] = query["bool"].get("filter", [])
                     query["bool"]["filter"].append({"term": {"geometry_type": value}})
+                elif key == "layer_id":
+                    query["bool"]["filter"] = query["bool"].get("filter", [])
+                    if isinstance(value, (list, tuple, set)):
+                        query["bool"]["filter"].append({"terms": {"layer_id": list(value)}})
+                    else:
+                        query["bool"]["filter"].append({"term": {"layer_id": value}})
 
         # Query execution
         try:
