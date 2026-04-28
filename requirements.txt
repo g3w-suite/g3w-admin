@@ -2,19 +2,19 @@ Django==5.2.13
 django-formtools==2.2
 django-crispy-forms==2.3
 crispy-bootstrap3==2024.1
-django-extensions==3.1.5
+django-extensions==4.1
 #---------------------------------------------------------------------------
 # django-file-form: to replace with PyPi version where this patch is present:
 #git+https://github.com/gis3w/django-file-form.git@behind_proxy
 #---------------------------------------------------------------------------
 django-file-form==3.8.2
 django-guardian==3.3.1
-django-model-utils==4.5.1
+django-model-utils==5.0.0
 django-sitetree==1.18.1
 djangorestframework==3.15.2
 djangorestframework-gis==1.0
 djangorestframework-simplejwt==5.5.1
-drf-spectacular==0.25.1
+drf-spectacular==0.29.0
 django-downloadview==2.3.0
 django-mptt==0.13.4
 django-ordered-model==3.7.4
