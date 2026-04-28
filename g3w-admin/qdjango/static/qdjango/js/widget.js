@@ -176,7 +176,7 @@ ga.Qdjango.widgetEditor = {
           }
 
           // Add relation_reference
-          if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
+          if (_.indexOf(fieldname, ga.Qdjango.localVars.layer_edittypes) != -1 && ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
               (fieldwidgettype == 'selectbox')) {
             options['relation_reference'] = true ? v.find(".cmpRelationReference").find("select").val() == '1': false
           }
@@ -440,16 +440,18 @@ ga.Qdjango.widgetEditor = {
       // Case QDATETIME
       //if (_.indexOf(['QDATETIME', 'QDATE'], $(this).find("option:selected").data().type) != -1 &&
       widgetSelect.find('[value="datetimebox"]').remove();
-      if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
-        // Append 'DatetimBox' to widget selectbox
-        widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
-      }
+      if (_.indexOf([$(this).val()], ga.Qdjango.localVars.layer_edittypes) != -1) {
+        if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
+          // Append 'DatetimBox' to widget selectbox
+          widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
+        }
 
-      // Remove `AutoCompleteBox` from widget type list
-      if (ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type == 'ValueRelation') {
-        widgetSelect.find("option[value=\"autocompletebox\"]").hide();
-      } else {
-        widgetSelect.find("option[value=\"autocompletebox\"]").show();
+        // Remove `AutoCompleteBox` from widget type list
+        if (ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type == 'ValueRelation') {
+          widgetSelect.find("option[value=\"autocompletebox\"]").hide();
+        } else {
+          widgetSelect.find("option[value=\"autocompletebox\"]").show();
+        }
       }
 
       // Tringger widgetSelect change if widgetSelect 'selectbox' or 'autocompletebox' are setted
@@ -598,7 +600,7 @@ ga.Qdjango.widgetEditor = {
 
         // Check if field has RelationReference widget
         fieldname = div.find(".fieldSelect").find("select").val();
-        if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
+        if (_.indexOf(fieldname, ga.Qdjango.localVars.layer_edittypes) != -1 && ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
           div.find(".cmpRelationReference").removeClass("invisible")
         } else {
           div.find(".cmpRelationReference").addClass("invisible")
