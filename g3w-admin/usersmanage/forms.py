@@ -606,22 +606,24 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
             self.save_m2m()
 
+            # Manage avatar cleaned data for new django-file-form version
+            # -----------------------------------------------------------
+            avatar = self.cleaned_data['avatar'] if self.cleaned_data['avatar'] else None
+
             if hasattr(user, 'userdata'):
                 if 'department' in self.cleaned_data:
                     user.userdata.department = self.cleaned_data['department']
                 if 'other_info' in self.cleaned_data:
                     user.userdata.other_info = self.cleaned_data['other_info']
-                if self.cleaned_data['avatar']:
-                    user.userdata.avatar = self.cleaned_data['avatar']
-                else:
-                    user.userdata.avatar = None
+        
+                user.userdata.avatar = avatar
                 user.userdata.save()
             else:
                 Userdata(
                     user=user,
                     department=self.cleaned_data['department'],
                     other_info=self.cleaned_data['other_info'],
-                    avatar=self.cleaned_data['avatar']
+                    avatar=avatar
                 ).save()
 
             # add backend
@@ -698,7 +700,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         :return: Cleaned data dict
         """
         avatar = self.cleaned_data['avatar']
-        if avatar is None:
+        if not avatar:
             return avatar
 
         try:
