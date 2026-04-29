@@ -36,8 +36,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from django_registration.forms import RegistrationForm
-from captcha.fields import ReCaptchaField
-from captcha import widgets
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha import widgets
 from PIL import Image
 from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_TYPES, GROUP_ROLES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin

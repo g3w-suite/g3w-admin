@@ -18,8 +18,8 @@ drf-spectacular==0.29.0
 django-downloadview==2.3.0
 django-mptt==0.13.4
 django-ordered-model==3.7.4
-django-ajax-selects==2.2.0
-django-modeltranslation==0.17.5
+django-ajax-selects==3.0.3
+django-modeltranslation==0.20.3
 django-filter
 django-bleach==3.1.0
 pathlib2
@@ -35,11 +35,11 @@ urllib3
 python-magic
 celery==5.4.0
 deprecation
-huey==2.4.3
-redis==4.5.4
+huey==3.0.0
+redis==7.4.0
 django-redis==6.0.0
 django-registration==3.4
-django-recaptcha==3.0.0
+django-recaptcha==4.1.0
 pydantic==2.6.3
 weasyprint==68.0
 distro==1.7.0

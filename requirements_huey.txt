@@ -5,5 +5,6 @@
 
 git+https://github.com/boxine/bx_py_utils.git@v118
 bx-django-utils==97
-git+https://github.com/g3w-suite/django-huey-monitor.git
+#git+https://github.com/g3w-suite/django-huey-monitor.git
+django-huey-monitor==0.10.1
 # to fix compatibility con huey_monitor

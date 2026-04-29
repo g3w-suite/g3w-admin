@@ -64,7 +64,7 @@ THIRD_PARTY_APPS = [
     'about',
     'django_bleach',
     'django_registration',
-    'captcha',
+    'django_recaptcha',
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -407,7 +407,7 @@ RECAPTCHA_REQUIRED_SCORE = 0.85
 # Settings for ReCaptcha v2. Default checkbox
 RECAPTCHA_VERSION2_TYPE = 'checkbox' # or 'invisible'
 
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
 # SOCIAL ACCOUNT LOGIN SETTINGS
 # -----------------------------
