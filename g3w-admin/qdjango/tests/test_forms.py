@@ -92,6 +92,9 @@ class QdjangoFormsTest(QdjangoTestBase):
         self.assertEqual(len(form.fields['toc_tab_default'].choices), 1)
 
         # Save project as into project CRUD views
+        # 2026-04-29: set to None 'thumbnail' clened data for new django_file_from version
+        form.cleaned_data['thumbnail'] = None
+        
         form.qgisProject.save(**form.cleaned_data)
         if not form.instance.pk:
             form.instance = form.qgisProject.instance
