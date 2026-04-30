@@ -38,7 +38,7 @@ deprecation
 huey==3.0.0
 redis==7.4.0
 django-redis==6.0.0
-django-registration==3.4
+django-registration==5.2.1
 django-recaptcha==4.1.0
 pydantic==2.6.3
 weasyprint==68.0
