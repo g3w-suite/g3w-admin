@@ -330,6 +330,7 @@ class TestEmbeddedLayers(QdjangoTestBase):
         self.assertTrue(form.is_valid(), form.errors)
 
         # Save embedded project
+        form.cleaned_data['thumbnail'] = None  # avoid thumbnail generation for test
         form.qgisProject.save(**form.cleaned_data)
 
         # Store temporary file to avoid error on test exit (because the temp file was moved)
