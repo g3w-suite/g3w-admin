@@ -1,10 +1,5 @@
-# Requirements for to use huey inside G3W-SUITE
-# For new pip import requirements system VCS repository order install policy,
-# it was necessary put follow requirements into a separate requirements file.
-# 2021-09-17
+# 2026-01-15, requirements for huey, to be used in G3W-SUITE. 
+# This file is included in requirements.txt, so that huey and its dependencies are installed when installing the project.
+# This file is kept separate from requirements.txt for retro compatibility reasons.
+ 
 
-git+https://github.com/boxine/bx_py_utils.git@v118
-bx-django-utils==97
-#git+https://github.com/g3w-suite/django-huey-monitor.git
-django-huey-monitor==0.10.1
-# to fix compatibility con huey_monitor
