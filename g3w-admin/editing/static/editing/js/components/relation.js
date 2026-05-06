@@ -913,7 +913,7 @@ export default ({
             const keyRelationFeatureChange = options.parentFeature.on('propertychange', evt => {
               if (options.parentFeature.isNew()) {
                 //check if input is relation field
-                if (relationField.find(evt.key)) {
+                if (relationField.find(rf => rf === evt.key)) {
                   //set value to relation field
                   setRelationFieldValue({
                     field:  evt.key,
