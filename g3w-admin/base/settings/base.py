@@ -385,11 +385,7 @@ NH3_ALLOWED_TAGS = {'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr'
                        'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span'}
 NH3_STRIP_TAGS = True
 NH3_ALLOWED_ATTRIBUTES = {
-    'href': {"class"}, 
-    'title': {"class"},
-    'style': {"class"},
-    'src': {"class"},
-    'target': {"class"}
+    "*": {'href', 'title', 'style', 'src', 'target', 'class'},
 }
 NH3_ALLOWED_STYLES = [
     'background-color', 'color', 'font-size'
