@@ -378,7 +378,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(
                                     qgis_field.name(),
                                     nh3.clean(
-                                        attr_value,
+                                        attr_value if attr_value else '',
                                         tags=set(getattr(settings, 'NH3_ALLOWED_TAGS')),
                                         attributes=getattr(settings, 'NH3_ALLOWED_ATTRIBUTES'),
                                         attribute_filter=_style_filter,
