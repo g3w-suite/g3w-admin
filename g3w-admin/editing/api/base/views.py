@@ -53,7 +53,8 @@ from qgis.PyQt.QtCore import (
     NULL
 )
 
-import bleach
+# For html and css sanitize
+import nh3
 
 import re
 import logging
@@ -353,21 +354,37 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     feature.setAttribute(qgis_field.name(), NULL)
                                     numeric_nullable_field_values[qgis_field.name()] = NULL
 
-                            # For fields with UseHtml options, filter content with bleach
+                            # For fields with UseHtml options, filter content with nh3
                             # -----------------------------------------------------------
-                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] == True):
-                                css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
-                                    allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
+                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] is True):
+
                                 attr_value = geojson_feature['properties'][qgis_field.name()]
-                                feature.setAttribute(qgis_field.name(),
-                                                     bleach.clean(
-                                                         attr_value if attr_value else '',
-                                                         tags=settings.BLEACH_ALLOWED_TAGS,
-                                                         attributes=settings.BLEACH_ALLOWED_ATTRIBUTES,
-                                                         strip=settings.BLEACH_STRIP_TAGS,
-                                                         css_sanitizer=css_sanitizer
-                                                     )
-                                                 )
+
+                                # Optional: filter style properties via attribute_filter
+                                allowed_css = set(getattr(settings, 'NH3_ALLOWED_STYLES'))
+
+                                def _style_filter(tag, attr, value, _allowed_css=allowed_css):
+                                    if attr != 'style':
+                                        return value
+                                    cleaned = []
+                                    for decl in value.split(';'):
+                                        if ':' not in decl:
+                                            continue
+                                        prop, val = decl.split(':', 1)
+                                        if prop.strip().lower() in _allowed_css:
+                                            cleaned.append(f"{prop.strip()}:{val.strip()}")
+                                    return ';'.join(cleaned) if cleaned else None
+
+                                feature.setAttribute(
+                                    qgis_field.name(),
+                                    nh3.clean(
+                                        attr_value,
+                                        tags=set(getattr(settings, 'NH3_ALLOWED_TAGS')),
+                                        attributes=getattr(settings, 'NH3_ALLOWED_ATTRIBUTES'),
+                                        attribute_filter=_style_filter,
+                                        strip_comments=getattr(settings, 'NH3_STRIP_COMMENTS', True),
+                                    )
+                                )
 
 
                         # Call validator!
