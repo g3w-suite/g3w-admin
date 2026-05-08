@@ -156,7 +156,7 @@ export class ToolBox extends Emitter {
 
     if ('image' === _layer.getType()) {
       //Need to set always visible otherwise if catalog layer is not visible no fetaures are visible on map
-      layer = new Layer({..._layer.state, ...{ visible: true } }, { TYPE: 'vector' });
+      layer = new Layer(layer.state, { TYPE: 'vector' });
     }
 
 
@@ -1973,6 +1973,9 @@ export class ToolBox extends Emitter {
       if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
         await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
       }
+
+      //@since 4.0.1 set visible layer in case of image layer
+      this.state.layer.getOLLayer()?.setVisible(true);
 
     });
   };
