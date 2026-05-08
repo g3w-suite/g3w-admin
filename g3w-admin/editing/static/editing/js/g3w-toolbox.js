@@ -1975,7 +1975,7 @@ export class ToolBox extends Emitter {
       }
 
       //@since 4.0.1 set visible layer in case of image layer
-      this.state.layer.getOLLayer()?.setVisible(true);
+      this.state.layer.getOLLayer?.()?.setVisible(true);
 
     });
   };
