@@ -993,11 +993,11 @@ new (class extends Plugin {
    *
    * @since g3w-client-plugin-editing@v3.7.2
    */
-  showPanel(options = {}) {
+  async showPanel(options = {}) {
     if (Array.isArray(options.toolboxes)) {
       this.getToolBoxes().forEach(tb => tb.setShow(options.toolboxes.includes(tb.getId())));
     }
-    this.showEditingPanel(options);
+    return await this.showEditingPanel(options);
   }
 
   /**
