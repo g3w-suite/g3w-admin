@@ -17,7 +17,7 @@ django-ordered-model==3.7.4
 django-ajax-selects==3.0.3
 django-modeltranslation==0.20.3
 django-filter
-django-bleach==3.1.0
+django-nh3==0.3.1
 pathlib2
 lxml
 psycopg[binary]
@@ -35,7 +35,7 @@ redis==7.4.0
 django-redis==6.0.0
 django-registration==5.2.1
 django-recaptcha==4.1.0
-pydantic==2.6.3
+pydantic==2.13.4
 weasyprint==68.0
 distro==1.7.0
 django-allauth[socialaccount]==65.14.1

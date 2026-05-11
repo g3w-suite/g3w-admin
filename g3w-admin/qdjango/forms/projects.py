@@ -11,7 +11,7 @@ from django.utils.html import mark_safe
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from guardian.shortcuts import get_objects_for_user
 from modeltranslation.forms import TranslationModelForm
-from django_bleach.forms import BleachField
+from django_nh3.forms import Nh3Field
 from usersmanage.forms import G3WACLForm, label_users
 from usersmanage.utils import (
     crispyBoxACL,
@@ -190,7 +190,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
         widget=forms.PasswordInput(),
     )
 
-    description = BleachField(
+    description = Nh3Field(
         required=False,
     )
 

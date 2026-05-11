@@ -62,7 +62,7 @@ THIRD_PARTY_APPS = [
     'bx_django_utils',  # required by huey_monitor
     'huey_monitor',
     'about',
-    'django_bleach',
+    'django_nh3',
     'django_registration',
     'django_recaptcha',
     "allauth",
@@ -378,17 +378,19 @@ ANONYMOUS_USER_SESSIONID = '_anonymous_g3w_suite_sessionid_'
 # Custom token session client cookie name
 G3W_CLIENT_COOKIE_SESSION_TOKEN = 'g3wclientsessiontoken'
 
-# BLEACH SETTINGS
+# NH3 SETTINGS
 # ----------------
 # Which HTML tags are allowed
-BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr', 'td', 'th', 'b', 'ul', 'li', 'ol',
-                       'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span']
-BLEACH_STRIP_TAGS = True
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src', 'target']
-BLEACH_ALLOWED_STYLES = [
+NH3_ALLOWED_TAGS = {'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr', 'td', 'th', 'b', 'ul', 'li', 'ol',
+                       'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span'}
+NH3_STRIP_TAGS = True
+NH3_ALLOWED_ATTRIBUTES = {
+    "*": {'href', 'title', 'style', 'src', 'target', 'class'},
+}
+NH3_ALLOWED_STYLES = [
     'background-color', 'color', 'font-size'
 ]
-BLEACH_STRIP_COMMENTS = True
+NH3_STRIP_COMMENTS = True
 
 # For reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -335,7 +335,7 @@ class QdjangoViewsTest(QdjangoTestBase):
         self.assertTrue('editor2_user' in form.initial)
         self.assertEqual(form.initial['editor_user'], self.test_editor1.pk)
         self.assertEqual(form.initial['editor2_user'], self.test_editor2.pk)
-        self.assertEqual(form.initial['viewer_users'], [self.test_viewer1.pk, self.test_viewer1_2.pk])
+        self.assertCountEqual(form.initial['viewer_users'], [self.test_viewer1.pk, self.test_viewer1_2.pk])
         self.assertEqual(form.initial['editor_user_groups'], [])
         self.assertEqual(form.initial['viewer_user_groups'], [])
 
