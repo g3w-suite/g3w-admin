@@ -994,7 +994,7 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.7.2
    */
   showPanel(options = {}) {
-    if (options.toolboxes && Array.isArray(options.toolboxes)) {
+    if (Array.isArray(options.toolboxes)) {
       this.getToolBoxes().forEach(tb => tb.setShow(options.toolboxes.includes(tb.getId())));
     }
     this.showEditingPanel(options);
