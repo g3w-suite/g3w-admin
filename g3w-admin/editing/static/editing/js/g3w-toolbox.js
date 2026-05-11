@@ -155,8 +155,8 @@ export class ToolBox extends Emitter {
     }
 
     if ('image' === _layer.getType()) {
-      // clone state to keep catalog/project layer state independent from editing vector layer state
-      layer = new Layer({..._layer.state}, { TYPE: 'vector' });
+      // state of catalog/project layer state need to be in sync with editing vector layer state
+      layer = new Layer(_layer.state, { TYPE: 'vector' });
     }
 
 
