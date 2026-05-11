@@ -155,8 +155,8 @@ export class ToolBox extends Emitter {
     }
 
     if ('image' === _layer.getType()) {
-      //Need to set always visible otherwise if catalog layer is not visible no fetaures are visible on map
-      layer = new Layer(layer.state, { TYPE: 'vector' });
+      // clone state to keep catalog/project layer state independent from editing vector layer state
+      layer = new Layer({..._layer.state}, { TYPE: 'vector' });
     }
 
 
@@ -1974,7 +1974,7 @@ export class ToolBox extends Emitter {
         await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
       }
 
-      //@since 4.0.1 set visible layer in case of image layer
+      //@since 4.0.1 set OL vector layer visible when starting toolbox (eg. image layers whose catalog layer may be hidden)
       this.state.layer.getOLLayer?.()?.setVisible(true);
 
     });
