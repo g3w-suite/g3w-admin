@@ -155,8 +155,8 @@ export class ToolBox extends Emitter {
     }
 
     if ('image' === _layer.getType()) {
-      //Need to set always visible otherwise if catalog layer is not visible no fetaures are visible on map
-      layer = new Layer({..._layer.state, ...{ visible: true } }, { TYPE: 'vector' });
+      // state of catalog/project layer state need to be in sync with editing vector layer state
+      layer = new Layer(_layer.state, { TYPE: 'vector' });
     }
 
 
@@ -1809,8 +1809,8 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   *
    * Start editing
+   * 
    * @param options
    * @param { Object } options
    * @param { boolean } [options.selected=true]
@@ -1822,7 +1822,7 @@ export class ToolBox extends Emitter {
    */
   start(options = {}) {
     return new Promise(async (resolve, reject) => {
-      //get current style of layer
+      // get current style of layer
       this.#current_style = this.state.layer.getCurrentStyle().name;
 
       const plugin = GUI.getPlugin('editing');
@@ -1849,7 +1849,7 @@ export class ToolBox extends Emitter {
   
       options.filter = constraints?.filter || this.constraints.filter || options.filter;
 
-      //register lock features to show a message
+      // register lock features to show a message
       const unKeyLock = this._editor.onceafter('featuresLockedByOtherUser', () => {
         GUI.showUserMessage({
           type:     'warning',
@@ -1858,22 +1858,22 @@ export class ToolBox extends Emitter {
         })
       });
   
-      //add featuresLockedByOtherUser setter
+      // add featuresLockedByOtherUser setter
       this.state._unregisterStartSettersEventsKey.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
-        //set false
+        // set false
         this.state.editing.canEdit = false;
-        //reset/close eventually user message scale on stop
+        // reset/close eventually user message scale on stop
         this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint(true));
-        //listen selected attribute
+        // listen selected attribute
         this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async bool => { await Vue.nextTick(); this._handleScaleConstraint(!bool); }, { immediate: true }));
-        //await scale set for get features
+        // await scale set for get features
         await new Promise(resolve => {
-          //set as resolve handler to resolve waiting get features from server
+          // set as resolve handler to resolve waiting get features from server
           this.#startAsync = resolve;
-          //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
+          // SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
           this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint(false) ), 600));
           // click to fit zoom scale constraint
           this.#events.push(
@@ -1893,7 +1893,7 @@ export class ToolBox extends Emitter {
         
       }
 
-      //reset eventually message
+      // reset eventually message
       if (!this.state._constraints.scale) {
         GUI.setModal(false);
       }
@@ -1904,7 +1904,7 @@ export class ToolBox extends Emitter {
 
       const handlerAfterSessionGetFeatures = async promise => {
         this.emit('start-editing');
-        //set unique fields values
+        // set unique fields values
         await setLayerUniqueFieldValues(this.getId());
         try {
           const features = await promise;
@@ -1969,10 +1969,13 @@ export class ToolBox extends Emitter {
         GUI.disableClickMapControls(true);
       }
 
-      //@since 4.0.1 change layer style
+      // wait for features before changing editing layer style 
       if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
         await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
       }
+
+      // force vector layer visibity when starting toolbox (eg. image layers whose catalog layer may be hidden)
+      this.state.layer.getOLLayer?.()?.setVisible(true);
 
     });
   };
