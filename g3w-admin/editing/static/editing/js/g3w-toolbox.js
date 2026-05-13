@@ -2268,6 +2268,10 @@ export class ToolBox extends Emitter {
    * @param bool
    */
   setSelected(bool = false) {
+    if (bool) {
+      //set current selected toolbox false
+      GUI.getPlugin('editing').getToolBoxes()?.find?.(t => t.isSelected())?.setSelected(false);         
+    }
     //set state of selected attribute
     this.state.selected = bool;
     //In case of unselection and acive tool, stop active tool
