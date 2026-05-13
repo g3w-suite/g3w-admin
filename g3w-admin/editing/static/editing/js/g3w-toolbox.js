@@ -1793,7 +1793,7 @@ export class ToolBox extends Emitter {
 
     map.getViewport().classList.toggle('ol-zoom-in', showZoomCursor);
 
-    if (this.state.editing.canEdit && this.#startAsync) {
+    if (this.state.editing.canEdit && this.state.selected && this.#startAsync) {
       this.#startAsync();
     }
 
