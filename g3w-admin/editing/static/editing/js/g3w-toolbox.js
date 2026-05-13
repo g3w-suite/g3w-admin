@@ -1433,7 +1433,7 @@ export class ToolBox extends Emitter {
                           /** @since g3w-client-plugin-editing@v3.8.0 */
                           (isSplitted ? resolve : reject)(inputs);
                           //need to set timeout promise, because at the end of the workflow all user messages are cleared
-                          await new Promise((r) => setTimeout(r, 600));
+                          await new Promise(r => setTimeout(r, 600));
                           GUI.showUserMessage({
                             type:      isSplitted ? 'success': 'warning',
                             message:   isSplitted ? 'plugins.editing.messages.splitted' : 'plugins.editing.messages.nosplittedfeature',
@@ -1678,7 +1678,7 @@ export class ToolBox extends Emitter {
       layerId,
       relations: layer.getRelations() ? layer.getRelations().getArray() : [],
     })
-      .filter(relation => relation.getFather() === layerId)
+      .filter(r => layerId === r.getFather())
       .forEach(relation => {
         const relationId = getRelationId({ layerId, relation });
         // In case of no editing is started (click on pencil of relation layer) need to stop (unlock) features
@@ -1936,7 +1936,7 @@ export class ToolBox extends Emitter {
             this.startLoading();
             this.setFeaturesOptions({ filter: options.filter });
             try {
-              await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption))
+              await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
             } catch(e) {
               console.warn(e);
               this.setEditing(false);
@@ -3177,7 +3177,11 @@ export class ToolBox extends Emitter {
             && this.state.editing.canEdit
             && 0 === GUI.getContentLength()
           ) {
-            this.state._getFeaturesOption.filter.bbox = GUI.getMapBBOX();
+            const newBbox = GUI.getMapBBOX();
+            const curBbox = this.state._getFeaturesOption.filter.bbox;
+            // skip request if bbox hasn't changed
+            if (newBbox.every((v, i) => v === curBbox?.[i])) { return; }
+            this.state._getFeaturesOption.filter.bbox = newBbox;
             this.state.loading = true;
             await this._session.getFeatures(this.state._getFeaturesOption);
             this.state.loading = false;
@@ -3185,7 +3189,15 @@ export class ToolBox extends Emitter {
         };
         this.#getFeaturesEvent.event = 'moveend';
         this.#getFeaturesEvent.fnc   = debounce(fnc, 300);
+      
         this.#events.push(GUI.getMap().on('moveend', this.#getFeaturesEvent.fnc));
+        this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async selected => {
+          //in case of select toolbox and layer already started editing get features
+          if (selected && this.#start) { 
+            this.#getFeaturesEvent.fnc();
+          }
+        }));
+
         if (GUI.getContentLength()) {
           GUI.once('closecontent', () => {
             const map = GUI.getMap();
