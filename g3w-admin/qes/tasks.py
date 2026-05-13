@@ -70,9 +70,11 @@ def es_project_indexing(obj_to_index, users, task, **kwargs):
         layer = obj_to_index
 
 
-    # Indexing for every user
+    # Refresh indexing for every user by removing stale documents only for
+    # the current project/layer before re-indexing the visible set.
     for user in users:
         indexer = QGISElasticsearchIndexer('default', user, process_info=process_info)
+        indexer.delete_documents(project, layer)
         indexer.index_project(project, layer)
 
 @db_task(context=True)
