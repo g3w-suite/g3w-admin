@@ -1770,24 +1770,20 @@ export class ToolBox extends Emitter {
 
   /**
    * @since 3.8.0 Handle scale constraint
-   * @sto <Boolean> stop true when called from stop method
    * @private
    */
-  _handleScaleConstraint(stop = false) {
-    
+  _handleScaleConstraint() {    
     // get features from server or wait to start
     const map = GUI.getMap();
 
     this.state.editing.canEdit = getScaleFromResolution(map.getView().getResolution()) <= this.state._constraints.scale;
 
     //check if start method is called
-    const in_editing     = (this.#start || this.#startAsync);
-
-    const showZoomCursor = !stop && this.state.selected && !this.state.editing.canEdit;
+    const showZoomCursor = this.state.selected && (this.#start || this.#startAsync) && !this.state.editing.canEdit;
 
     const control        = GUI.getCurrentToggledMapControl();
 
-    if (control?.cursorClass && (stop || in_editing)) {
+    if (control?.cursorClass) {
       control.setMouseCursor(!showZoomCursor);
     }
 
@@ -1803,9 +1799,9 @@ export class ToolBox extends Emitter {
       GUI.setModal('picklayer' !== map.getInteractions().item(map.getInteractions().getLength() -1).get('id') );
       return;
     }
+    
     // async show message because another toolbox can be unselected before
     GUI.setModal(showZoomCursor, this.messages.constraint.scale);
-    
   }
 
   /**
@@ -1866,15 +1862,15 @@ export class ToolBox extends Emitter {
         //set false
         this.state.editing.canEdit = false;
         //reset/close eventually user message scale on stop
-        this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint(true));
+        this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint());
         //listen selected attribute
-        this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async bool => { await Vue.nextTick(); this._handleScaleConstraint(!bool); }, { immediate: true }));
+        this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async () => { await Vue.nextTick(); this._handleScaleConstraint(); }, { immediate: true }));
         //await scale set for get features
         await new Promise(resolve => {
           //set as resolve handler to resolve waiting get features from server
           this.#startAsync = resolve;
           //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
-          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint(false) ), 600));
+          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint() ), 600));
           // click to fit zoom scale constraint
           this.#events.push(
             GUI.getMap().on('click', e => {
@@ -1996,6 +1992,9 @@ export class ToolBox extends Emitter {
    */
   async stop() {
 
+    this.#start      = false;
+    this.#startAsync = null;
+
     if (this.state.layer.config.editing.layer_style && this.#current_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
       await getCatalogLayerById(this.state.id).changeStyle(this.#current_style);
     }
@@ -2013,7 +2012,7 @@ export class ToolBox extends Emitter {
     this.#unwatches.forEach(uw => uw());
     this.#unwatches.splice(0);
 
-    this.#startAsync = null;
+    
 
     const is_started = !!this.isSessionStarted();
 
@@ -2029,8 +2028,6 @@ export class ToolBox extends Emitter {
     if (0 === GUI.getPlugin('editing').state.stopChain.size) {
       this.startLoading();
     }
-
-
 
     // Check if father relation is editing and has commit feature
     const fathersInEditing = GUI.getPlugin('editing').getLayerById(this.state.id).getFathers().filter(id => {
@@ -2057,8 +2054,6 @@ export class ToolBox extends Emitter {
 
     try {
       await this._session.stop();
-      //set start to false
-      this.#start           = false
       this.stopLoading();
       this.setEditing(false);
       this.state._getFeaturesOption = {};
@@ -3178,6 +3173,7 @@ export class ToolBox extends Emitter {
           if (
             //added ApplicationState.online
             ApplicationState.online
+            && this.state.selected
             && this.state.editing.canEdit
             && 0 === GUI.getContentLength()
           ) {
