@@ -343,8 +343,8 @@ export class ToolBox extends Emitter {
         father       : layer.isFather(),
         canEdit      : true
       },
-      /** @since g3w-client-plugin-editing@v3.7.0 store key events setters */
-      _unregisterStartSettersEventsKey: [],
+      /** store events un-setters */
+      _unsetters: [],
       _getFeaturesOption: {},
       _layerType: layer.getType() || 'vector',
       _enabledtools: undefined,
@@ -1772,7 +1772,7 @@ export class ToolBox extends Emitter {
    * @since 3.8.0 Handle scale constraint
    * @private
    */
-  _handleScaleConstraint() {    
+  _handleScaleConstraint() {
     // get features from server or wait to start
     const map = GUI.getMap();
 
@@ -1855,19 +1855,21 @@ export class ToolBox extends Emitter {
       });
   
       // add featuresLockedByOtherUser setter
-      this.state._unregisterStartSettersEventsKey.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
+      this.state._unsetters.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
         // set false
         this.state.editing.canEdit = false;
         //reset/close eventually user message scale on stop
-        this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint());
+        this.state._unsetters.push(() => this._handleScaleConstraint());
         await new Promise(resolve => {
           // set as resolve handler to resolve waiting get features from server
           this.#startAsync = resolve;
           //listen selected attribute
-          this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
+          this.state._unsetters.push(
+            Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true })
+          );
           //await scale set for get features
           //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
           this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(async () => {
@@ -2012,8 +2014,8 @@ export class ToolBox extends Emitter {
       this.disableCanEditEvent();
     }
 
-    this.state._unregisterStartSettersEventsKey.forEach(fnc => fnc());
-    this.state._unregisterStartSettersEventsKey = [];
+    this.state._unsetters.forEach(fnc => fnc());
+    this.state._unsetters = [];
 
     this.#events.forEach(k => ol.Observable.unByKey(k));
     this.#events.splice(0);
@@ -3200,7 +3202,7 @@ export class ToolBox extends Emitter {
         this.#getFeaturesEvent.fnc   = debounce(fnc, 300);
       
         this.#events.push(GUI.getMap().on('moveend', this.#getFeaturesEvent.fnc));
-        this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async selected => {
+        this.state._unsetters.push(Vue.watch(() => this.state.selected, async selected => {
           //in case of select toolbox and layer already started editing get features
           if (selected && this.#start) { 
             this.#getFeaturesEvent.fnc();
