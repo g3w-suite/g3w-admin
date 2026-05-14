@@ -1863,32 +1863,32 @@ export class ToolBox extends Emitter {
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
+        const { promise, res, rej } = Promise.withResolvers();
         this.state.editing.canEdit = false;
         // reset user message scale (on stop)
         this.state._unsetters.push(() => this._handleScaleConstraint());
-        await new Promise(resolve => {
-          // set as resolve handler to resolve waiting get features from server
-          this.#startAsync = resolve;
-          // listen selected attribute
-          this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
-          // await scale set for get features
-          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
-          // click to fit zoom scale constraint
-          this.#events.push(
-            GUI.getMap().on('click', e => {
-              if (this.state.selected && !this.state.editing.canEdit) {
-                GUI.getMap().getView().animate(
-                  { duration: 200, center: e.coordinate },
-                  { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
-                );
-              }
-            })
-          );
-
-          // if click on start toolbox can edit
-          if (this.state.editing.canEdit) { resolve(); }
-        })
-        
+        // set as resolve handler to resolve waiting get features from server
+        this.#startAsync = res;
+        // listen selected attribute
+        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
+        // await scale set for get features
+        this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
+        // click to fit zoom scale constraint
+        this.#events.push(
+          GUI.getMap().on('click', e => {
+            if (this.state.selected && !this.state.editing.canEdit) {
+              GUI.getMap().getView().animate(
+                { duration: 200, center: e.coordinate },
+                { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+              );
+            }
+          })
+        );
+        // if click on start toolbox can edit
+        if (this.state.editing.canEdit) {
+          res();
+        }
+        await promise;
       }
 
       // reset eventually message
