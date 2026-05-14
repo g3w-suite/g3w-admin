@@ -1772,7 +1772,12 @@ export class ToolBox extends Emitter {
    * @since 3.8.0 Handle scale constraint
    * @private
    */
-  _handleScaleConstraint() {
+  async _handleScaleConstraint() {
+    // To ensure that selected toolbox run is logic after all not selected toolboxes to ensure that GUI Modal and cuursor is set in right state
+    // otherwise it happen that selected behaviour  is "overwrite" by unselected toolboxes that run after selected one and set GUI Modal and cuursor in wrong state
+    if (this.state.selected) {
+      await Promise.resolve();
+    }
     // get features from server or wait to start
     const map = GUI.getMap();
 
@@ -1871,14 +1876,7 @@ export class ToolBox extends Emitter {
             Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true })
           );
           //await scale set for get features
-          //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
-          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(async () => {
-            //selected nee to wait handle by not selected in editing toolboxes
-            if (this.state.selected) {
-              await Promise.resolve();
-            }
-            this._handleScaleConstraint();
-          }), 600));
+          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
           // click to fit zoom scale constraint
           this.#events.push(
             GUI.getMap().on('click', e => {
