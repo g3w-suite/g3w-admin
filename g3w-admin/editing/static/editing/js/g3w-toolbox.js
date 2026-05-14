@@ -1863,14 +1863,20 @@ export class ToolBox extends Emitter {
         this.state.editing.canEdit = false;
         //reset/close eventually user message scale on stop
         this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint());
-        //listen selected attribute
-        this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async () => { await Vue.nextTick(); this._handleScaleConstraint(); }, { immediate: true }));
-        //await scale set for get features
         await new Promise(resolve => {
           //set as resolve handler to resolve waiting get features from server
           this.#startAsync = resolve;
+          //listen selected attribute
+          this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
+          //await scale set for get features
           //SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
-          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint() ), 600));
+          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(async () => {
+            //selected nee to wait handle by not selected in editing toolboxes
+            if (this.state.selected) {
+              await Promise.resolve();
+            }
+            this._handleScaleConstraint();
+          }), 600));
           // click to fit zoom scale constraint
           this.#events.push(
             GUI.getMap().on('click', e => {
