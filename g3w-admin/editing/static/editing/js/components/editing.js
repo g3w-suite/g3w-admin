@@ -249,19 +249,13 @@ export default ({
     },
 
     /**
-     * @param id
+     * @param id toolbox id
      */
     async selectToolBox(id) {
-      //wait eventually start/stop toolbox
+      // wait for DOM updates
       await this.$nextTick();
-      const toolbox          = GUI.getPlugin('editing').getToolBoxById(id); // get toolbox by id
-      const toolboxes        = GUI.getPlugin('editing').getToolBoxes();     // get all toolboxes
-      //set current selected toolbox false
-      toolboxes.find(t => t.isSelected())?.setSelected(false);         
-      // set the current selected toolbox to true
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
       toolbox.setSelected(true);
-      
-      //set current tooboxselected
       this.state.toolboxselected = toolbox;
     },
 
