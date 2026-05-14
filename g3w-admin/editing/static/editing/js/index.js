@@ -855,7 +855,7 @@ new (class extends Plugin {
    */
   async startEditing(layerId, options = {}) {
     const toolbox = this.getToolBoxById(layerId);
-    //need to set selected toolbox before start editing to show scale constraint message related to layer
+    // select toolbox before start editing (to display scale constraint message related to layer)
     toolbox.setSelected(true);
     const data    = await toolbox.start(options);
     return data ? { toolbox, data } : toolbox;

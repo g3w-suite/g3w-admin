@@ -3200,12 +3200,17 @@ export class ToolBox extends Emitter {
         this.#getFeaturesEvent.fnc   = debounce(fnc, 300);
       
         this.#events.push(GUI.getMap().on('moveend', this.#getFeaturesEvent.fnc));
-        this.state._unsetters.push(Vue.watch(() => this.state.selected, async selected => {
-          //in case of select toolbox and layer already started editing get features
-          if (selected && this.#start) { 
-            this.#getFeaturesEvent.fnc();
-          }
-        }));
+        this.state._unsetters.push(
+          Vue.watch(
+            () => this.state.selected,
+            async selected => {
+              // in case of select toolbox and layer already started editing get features
+              if (selected && this.#start) { 
+                this.#getFeaturesEvent.fnc();
+              }
+            }
+          )
+        );
 
         if (GUI.getContentLength()) {
           GUI.once('closecontent', () => {
