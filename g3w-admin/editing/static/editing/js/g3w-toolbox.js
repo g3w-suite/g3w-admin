@@ -1773,17 +1773,16 @@ export class ToolBox extends Emitter {
    * @private
    */
   async _handleScaleConstraint() {
-    // To ensure that selected toolbox run is logic after all not selected toolboxes to ensure that GUI Modal and cuursor is set in right state
-    // otherwise it happen that selected behaviour  is "overwrite" by unselected toolboxes that run after selected one and set GUI Modal and cuursor in wrong state
+    // wait until previous toolbox is un-selected to prevent conflicts when running "GUI.setModal" and `control.setMouseCursor`.
     if (this.state.selected) {
       await Promise.resolve();
     }
-    // get features from server or wait to start
+
     const map = GUI.getMap();
 
     this.state.editing.canEdit = getScaleFromResolution(map.getView().getResolution()) <= this.state._constraints.scale;
 
-    //check if start method is called
+    // check if start method is called
     const showZoomCursor = this.state.selected && (this.#start || this.#startAsync) && !this.state.editing.canEdit;
 
     const control        = GUI.getCurrentToggledMapControl();
@@ -1798,9 +1797,9 @@ export class ToolBox extends Emitter {
       this.#startAsync();
     }
 
-    //@since 4.0.1 set modal true in case of openFormStep is running
+    // set modal when running an `OpenFormStep`
     if (this.state.editing.canEdit && this.state.activetool?.op.getRunningStep() instanceof OpenFormStep) {
-      //Check if current interaction is pickLayer 
+      // check if current interaction is pickLayer 
       GUI.setModal('picklayer' !== map.getInteractions().item(map.getInteractions().getLength() -1).get('id') );
       return;
     }
