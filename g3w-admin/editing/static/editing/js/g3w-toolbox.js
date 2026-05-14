@@ -1863,7 +1863,7 @@ export class ToolBox extends Emitter {
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
-        const { promise, res, rej } = Promise.withResolvers();
+        const { promise, resolve: res, reject: rej } = Promise.withResolvers();
         this.state.editing.canEdit = false;
         // reset user message scale (on stop)
         this.state._unsetters.push(() => this._handleScaleConstraint());
