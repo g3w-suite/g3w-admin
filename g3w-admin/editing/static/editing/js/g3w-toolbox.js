@@ -343,8 +343,8 @@ export class ToolBox extends Emitter {
         father       : layer.isFather(),
         canEdit      : true
       },
-      /** @since g3w-client-plugin-editing@v3.7.0 store key events setters */
-      _unregisterStartSettersEventsKey: [],
+      /** store events un-setters */
+      _unsetters: [],
       _getFeaturesOption: {},
       _layerType: layer.getType() || 'vector',
       _enabledtools: undefined,
@@ -1433,7 +1433,7 @@ export class ToolBox extends Emitter {
                           /** @since g3w-client-plugin-editing@v3.8.0 */
                           (isSplitted ? resolve : reject)(inputs);
                           //need to set timeout promise, because at the end of the workflow all user messages are cleared
-                          await new Promise((r) => setTimeout(r, 600));
+                          await new Promise(r => setTimeout(r, 600));
                           GUI.showUserMessage({
                             type:      isSplitted ? 'success': 'warning',
                             message:   isSplitted ? 'plugins.editing.messages.splitted' : 'plugins.editing.messages.nosplittedfeature',
@@ -1678,7 +1678,7 @@ export class ToolBox extends Emitter {
       layerId,
       relations: layer.getRelations() ? layer.getRelations().getArray() : [],
     })
-      .filter(relation => relation.getFather() === layerId)
+      .filter(r => layerId === r.getFather())
       .forEach(relation => {
         const relationId = getRelationId({ layerId, relation });
         // In case of no editing is started (click on pencil of relation layer) need to stop (unlock) features
@@ -1770,42 +1770,42 @@ export class ToolBox extends Emitter {
 
   /**
    * @since 3.8.0 Handle scale constraint
-   * @sto <Boolean> stop true when called from stop method
    * @private
    */
-  _handleScaleConstraint(stop = false) {
-    
-    // get features from server or wait to start
+  async _handleScaleConstraint() {
+    // wait until previous toolbox is un-selected to prevent conflicts when running "GUI.setModal" and `control.setMouseCursor`.
+    if (this.state.selected) {
+      await Promise.resolve();
+    }
+
     const map = GUI.getMap();
 
     this.state.editing.canEdit = getScaleFromResolution(map.getView().getResolution()) <= this.state._constraints.scale;
 
-    //check if start method is called
-    const in_editing     = (this.#start || this.#startAsync);
-
-    const showZoomCursor = !stop && this.state.selected && !this.state.editing.canEdit;
+    // check if start method is called
+    const showZoomCursor = this.state.selected && (this.#start || this.#startAsync) && !this.state.editing.canEdit;
 
     const control        = GUI.getCurrentToggledMapControl();
 
-    if (control?.cursorClass && (stop || in_editing)) {
+    if (control?.cursorClass) {
       control.setMouseCursor(!showZoomCursor);
     }
 
     map.getViewport().classList.toggle('ol-zoom-in', showZoomCursor);
 
-    if (this.state.editing.canEdit && this.#startAsync) {
+    if (this.state.editing.canEdit && this.state.selected && this.#startAsync) {
       this.#startAsync();
     }
 
-    //@since 4.0.1 set modal true in case of openFormStep is running
+    // set modal when running an `OpenFormStep`
     if (this.state.editing.canEdit && this.state.activetool?.op.getRunningStep() instanceof OpenFormStep) {
-      //Check if current interaction is pickLayer 
+      // check if current interaction is pickLayer 
       GUI.setModal('picklayer' !== map.getInteractions().item(map.getInteractions().getLength() -1).get('id') );
       return;
     }
+    
     // async show message because another toolbox can be unselected before
     GUI.setModal(showZoomCursor, this.messages.constraint.scale);
-    
   }
 
   /**
@@ -1859,38 +1859,36 @@ export class ToolBox extends Emitter {
       });
   
       // add featuresLockedByOtherUser setter
-      this.state._unregisterStartSettersEventsKey.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
+      this.state._unsetters.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
-        // set false
+        const { promise, resolve: res, reject: rej } = Promise.withResolvers();
         this.state.editing.canEdit = false;
-        // reset/close eventually user message scale on stop
-        this.state._unregisterStartSettersEventsKey.push(() => this._handleScaleConstraint(true));
+        // reset user message scale (on stop)
+        this.state._unsetters.push(() => this._handleScaleConstraint());
+        // set as resolve handler to resolve waiting get features from server
+        this.#startAsync = res;
         // listen selected attribute
-        this.state._unregisterStartSettersEventsKey.push(Vue.watch(() => this.state.selected, async bool => { await Vue.nextTick(); this._handleScaleConstraint(!bool); }, { immediate: true }));
+        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
         // await scale set for get features
-        await new Promise(resolve => {
-          // set as resolve handler to resolve waiting get features from server
-          this.#startAsync = resolve;
-          // SELECTED AND NOT REGISTER MAP CHANGE RESOLUTION
-          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint(false) ), 600));
-          // click to fit zoom scale constraint
-          this.#events.push(
-            GUI.getMap().on('click', e => {
-              if (this.state.selected && !this.state.editing.canEdit) {
-                GUI.getMap().getView().animate(
-                  { duration: 200, center: e.coordinate },
-                  { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
-                );
-              }
-            })
-          );
-
-          // if click on start toolbox can edit
-          if (this.state.editing.canEdit) { resolve(); }
-        })
-        
+        this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
+        // click to fit zoom scale constraint
+        this.#events.push(
+          GUI.getMap().on('click', e => {
+            if (this.state.selected && !this.state.editing.canEdit) {
+              GUI.getMap().getView().animate(
+                { duration: 200, center: e.coordinate },
+                { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+              );
+            }
+          })
+        );
+        // if click on start toolbox can edit
+        if (this.state.editing.canEdit) {
+          res();
+        }
+        await promise;
       }
 
       // reset eventually message
@@ -1940,7 +1938,7 @@ export class ToolBox extends Emitter {
             this.startLoading();
             this.setFeaturesOptions({ filter: options.filter });
             try {
-              await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption))
+              await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
             } catch(e) {
               console.warn(e);
               this.setEditing(false);
@@ -1999,6 +1997,9 @@ export class ToolBox extends Emitter {
    */
   async stop() {
 
+    this.#start      = false;
+    this.#startAsync = null;
+
     if (this.state.layer.config.editing.layer_style && this.#current_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
       await getCatalogLayerById(this.state.id).changeStyle(this.#current_style);
     }
@@ -2007,8 +2008,8 @@ export class ToolBox extends Emitter {
       this.disableCanEditEvent();
     }
 
-    this.state._unregisterStartSettersEventsKey.forEach(fnc => fnc());
-    this.state._unregisterStartSettersEventsKey = [];
+    this.state._unsetters.forEach(fnc => fnc());
+    this.state._unsetters = [];
 
     this.#events.forEach(k => ol.Observable.unByKey(k));
     this.#events.splice(0);
@@ -2016,7 +2017,7 @@ export class ToolBox extends Emitter {
     this.#unwatches.forEach(uw => uw());
     this.#unwatches.splice(0);
 
-    this.#startAsync = null;
+    
 
     const is_started = !!this.isSessionStarted();
 
@@ -2032,8 +2033,6 @@ export class ToolBox extends Emitter {
     if (0 === GUI.getPlugin('editing').state.stopChain.size) {
       this.startLoading();
     }
-
-
 
     // Check if father relation is editing and has commit feature
     const fathersInEditing = GUI.getPlugin('editing').getLayerById(this.state.id).getFathers().filter(id => {
@@ -2060,8 +2059,6 @@ export class ToolBox extends Emitter {
 
     try {
       await this._session.stop();
-      //set start to false
-      this.#start           = false
       this.stopLoading();
       this.setEditing(false);
       this.state._getFeaturesOption = {};
@@ -2271,17 +2268,19 @@ export class ToolBox extends Emitter {
    * @param bool
    */
   setSelected(bool = false) {
-    //set state of selected attribute
+    // un-select current toolbox
+    if (bool) {
+      GUI.getPlugin('editing').getToolBoxes()?.find?.(t => t.isSelected())?.setSelected(false);
+    }
     this.state.selected = bool;
-    //In case of unselection and acive tool, stop active tool
+    // stop active tool
     if (!this.state.selected && this.state.activetool) {
       this.stopActiveTool();
     }
-
+    // reset warning message
     if (!this.state.selected) {
       this.clearMessage();
     }
-
   }
 
   /**
@@ -3177,10 +3176,15 @@ export class ToolBox extends Emitter {
           if (
             //added ApplicationState.online
             ApplicationState.online
+            && this.state.selected
             && this.state.editing.canEdit
             && 0 === GUI.getContentLength()
           ) {
-            this.state._getFeaturesOption.filter.bbox = GUI.getMapBBOX();
+            const newBbox = GUI.getMapBBOX();
+            const curBbox = this.state._getFeaturesOption.filter.bbox;
+            // skip request if bbox hasn't changed
+            if (newBbox.every((v, i) => v === curBbox?.[i])) { return; }
+            this.state._getFeaturesOption.filter.bbox = newBbox;
             this.state.loading = true;
             await this._session.getFeatures(this.state._getFeaturesOption);
             this.state.loading = false;
@@ -3188,7 +3192,20 @@ export class ToolBox extends Emitter {
         };
         this.#getFeaturesEvent.event = 'moveend';
         this.#getFeaturesEvent.fnc   = debounce(fnc, 300);
+      
         this.#events.push(GUI.getMap().on('moveend', this.#getFeaturesEvent.fnc));
+        this.state._unsetters.push(
+          Vue.watch(
+            () => this.state.selected,
+            async selected => {
+              // in case of select toolbox and layer already started editing get features
+              if (selected && this.#start) { 
+                this.#getFeaturesEvent.fnc();
+              }
+            }
+          )
+        );
+
         if (GUI.getContentLength()) {
           GUI.once('closecontent', () => {
             const map = GUI.getMap();
