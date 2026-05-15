@@ -172,7 +172,7 @@ export class IframeEditor extends Emitter {
 
       // in case of no feature add avent subscribe
       this.#onPlugin('addfeature', feature => {
-        Object.keys(config.data.properties).forEach(p => feature.set(p, config.data.properties[p]));
+        Object.keys(config.properties).forEach(p => feature.set(p, config.properties[p]));
 
         let activeTool;
         const disableToolboxes = [];
@@ -198,7 +198,8 @@ export class IframeEditor extends Emitter {
             activeTool.setEnabled(!bool);
             disableToolboxes.forEach(t => t.setEditing(!bool))
           });
-          this.#onPlugin('cancelform', () => { e1(); }); // runs callback 
+
+          this.#onPlugin('cancelform', () => { this.#promise.cb(); }); // runs callback 
         }
       });
 
