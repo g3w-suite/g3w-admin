@@ -747,7 +747,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True, method='get'):
         """Utility to make test calls for admin01 user"""
-
+        
         path = reverse(view_name, args=args)
         if kwargs and method == 'get':
             path += '?'
@@ -1862,6 +1862,20 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                              cities.qgs_layer_id],
                                             {
                                                 'fformatter': 'NAME'
+                                            }).content)
+
+        # item[0] and item[1] are identical
+        for item in resp['data']:
+            self.assertEqual(item[0], item[1])
+
+        # Test field without relative widget with other query layer
+        # ---------------------------------------------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_rrwidget.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fformatter': 'NAME',
+                                                'otherquerylayerids': ""
                                             }).content)
 
         # item[0] and item[1] are identical
