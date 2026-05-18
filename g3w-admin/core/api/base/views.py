@@ -653,9 +653,9 @@ class BaseVectorApiView(G3WAPIView):
                 and self.request_data['fformatter'] in self.request_data['ordering']):
                 rev = True if self.request_data['ordering'].startswith('-') else False
 
-                values = natsorted(values, key=lambda v: v[1], reverse=rev)
+                values = natsorted(values, key=lambda v: str(v[1]).casefold() if isinstance(v, list) else str(v).casefold(), reverse=rev)
             else:
-                values.sort()
+                values.sort(key=lambda v: str(v).casefold())
 
             # If other layers are added for querying uniques,
             # call every vector fformatter to get formatted value for uniques of other layer
@@ -702,7 +702,7 @@ class BaseVectorApiView(G3WAPIView):
                 # Re-apply ordering after merge
                 if 'ordering' in self.request_data:
                     rev = self.request_data['ordering'].startswith('-')
-                    values = natsorted(values, key=lambda v: v[1] if isinstance(v, list) else v, reverse=rev)
+                    values = natsorted(values, key=lambda v: str(v[1]).casefold() if isinstance(v, list) else str(v).casefold(), reverse=rev)
 
             self.results.update({
                 'data': values,
