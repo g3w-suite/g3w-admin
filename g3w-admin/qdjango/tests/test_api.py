@@ -747,7 +747,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True, method='get'):
         """Utility to make test calls for admin01 user"""
-        
+
         path = reverse(view_name, args=args)
         if kwargs and method == 'get':
             path += '?'
@@ -1867,6 +1867,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # item[0] and item[1] are identical
         for item in resp['data']:
             self.assertEqual(item[0], item[1])
+        
+        self.assertEqual(len(resp['data']), 8884)
 
         # Test field without relative widget with other query layer
         # ---------------------------------------------------------
@@ -1875,12 +1877,14 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                              cities.qgs_layer_id],
                                             {
                                                 'fformatter': 'NAME',
-                                                'otherquerylayerids': ""
+                                                'otherquerylayerids': "rivers20171228095726368"
                                             }).content)
 
         # item[0] and item[1] are identical
         for item in resp['data']:
             self.assertEqual(item[0], item[1])
+
+        self.assertEqual(len(resp['data']), 9167)
 
         # Test RelatioReference
         # ---------------------
