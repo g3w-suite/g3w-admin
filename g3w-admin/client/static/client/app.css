@@ -637,6 +637,7 @@ ul.sidebar-menu > li a:hover                                       { color: hsl(
 .sidebar-mini:not(.sidebar-collapse) .g3w-view.content.full-size                 { padding-left: 45px !important; }
 
 .g3w-view.content                                                                { z-index: 1; container-name: g3w-view-content; container-type: size; }
+.g3w-view.content:has(> .contents:not(:empty))                                   { padding: 15px; }
 .g3w-view.content.split-h:not(.g3w-disabled)                                     { transition: width .3s ease-in-out; }
 .g3w-view.content.split-v:not(.g3w-disabled)                                     { transition: height .3s ease-in-out; }
 .g3w-view.content .preview                                                       { width: 100%; margin-top: 0; display:flex; align-items: center;}
