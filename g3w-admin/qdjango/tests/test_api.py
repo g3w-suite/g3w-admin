@@ -1867,6 +1867,24 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # item[0] and item[1] are identical
         for item in resp['data']:
             self.assertEqual(item[0], item[1])
+        
+        self.assertEqual(len(resp['data']), 8884)
+
+        # Test field without relative widget with other query layer
+        # ---------------------------------------------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_rrwidget.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fformatter': 'NAME',
+                                                'otherquerylayerids': "rivers20171228095726368"
+                                            }).content)
+
+        # item[0] and item[1] are identical
+        for item in resp['data']:
+            self.assertEqual(item[0], item[1])
+
+        self.assertEqual(len(resp['data']), 9167)
 
         # Test RelatioReference
         # ---------------------
