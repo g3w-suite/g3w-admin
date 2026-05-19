@@ -596,8 +596,8 @@ class BaseVectorApiView(G3WAPIView):
 
                         view = LayerVectorView.as_view()
                         res = view(req, *[], **kwargs).render()
-                        uniques = json.loads(res.content)['data']
 
+                        uniques = json.loads(res.content)['data']
 
             if not uniques:
 
@@ -653,9 +653,57 @@ class BaseVectorApiView(G3WAPIView):
                 and self.request_data['fformatter'] in self.request_data['ordering']):
                 rev = True if self.request_data['ordering'].startswith('-') else False
 
-                values = natsorted(values, key=lambda v: v[1], reverse=rev)
+                values = natsorted(values, key=lambda v: str(v[1]).casefold() if isinstance(v, list) else str(v).casefold(), reverse=rev)
             else:
-                values.sort()
+                values.sort(key=lambda v: str(v).casefold())
+
+            # If other layers are added for querying uniques,
+            # call every vector fformatter to get formatted value for uniques of other layer
+            if 'otherquerylayerids' in self.request_data:
+
+                other_layer_ids = self.request_data.get('otherquerylayerids').split(',')
+                for olid in other_layer_ids:
+                    kwargs.update({'project_type': 'qdjango',
+                                    'project_id': self.layer.project.pk,
+                                    'layer_name': olid,
+                                    'mode_call': 'data'
+                                    })
+
+                    url = reverse('core-vector-api', kwargs=kwargs)
+                    req = HttpRequest()
+                    req.method = 'GET'
+                    req.user = request.user
+                    req.resolver_match = resolve(url)
+                    req.GET['formatter'] = 1
+                    req.GET['fformatter'] = self.request_data.get('fformatter')
+
+                    if 'ffield' in self.request_data:
+                        req.GET['field'] = self.request_data.get('ffield')
+
+                    if 'ordering' in self.request_data:
+                        req.GET['ordering'] = self.request_data.get('ordering')
+
+                    # Call the view and merge results
+                    try:
+                        from qdjango.vector import LayerVectorView
+                    except ImportError:
+                        pass
+                    view = LayerVectorView.as_view()
+                    other_res = view(req, *[], **kwargs).render()
+                    other_data = json.loads(other_res.content).get('data', [])
+
+                    # Merge avoiding duplicates (deduplicate on raw value)
+                    existing_raw = {u[0] for u in values if isinstance(u, list)}
+                    for item in other_data:
+                        if isinstance(item, list) and item[0] not in existing_raw:
+                            values.append(item)
+                            existing_raw.add(item[0])
+    
+                # Re-apply ordering after merge
+                if 'ordering' in self.request_data:
+                    rev = self.request_data['ordering'].startswith('-')
+                    values = natsorted(values, key=lambda v: str(v[1]).casefold() if isinstance(v, list) else str(v).casefold(), reverse=rev)
+
             self.results.update({
                 'data': values,
                 'count': len(values)
