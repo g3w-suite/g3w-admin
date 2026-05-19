@@ -855,6 +855,8 @@ new (class extends Plugin {
    */
   async startEditing(layerId, options = {}) {
     const toolbox = this.getToolBoxById(layerId);
+    // select toolbox before start editing (to display scale constraint message related to layer)
+    toolbox.setSelected(true);
     const data    = await toolbox.start(options);
     return data ? { toolbox, data } : toolbox;
   }
@@ -989,11 +991,11 @@ new (class extends Plugin {
    *
    * @since g3w-client-plugin-editing@v3.7.2
    */
-  showPanel(options = {}) {
-    if (options.toolboxes && Array.isArray(options.toolboxes)) {
+  async showPanel(options = {}) {
+    if (Array.isArray(options.toolboxes)) {
       this.getToolBoxes().forEach(tb => tb.setShow(options.toolboxes.includes(tb.getId())));
     }
-    this.showEditingPanel(options);
+    return await this.showEditingPanel(options);
   }
 
   /**
