@@ -209,6 +209,8 @@ More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [build_suite
 
 ## FAQ
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/g3w-suite/g3w-admin)
+
 <details>
 
 <summary>1. How can I translate this project?</summary>
