@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-18 17:01+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: core/static/dist/js/g3wadmin.min.js:20 core/static/js/g3wadmin/tpl.js:15
+msgid "Title"
+msgstr "Título"
+
+#: core/static/dist/js/g3wadmin.min.js:20 core/static/js/g3wadmin/tpl.js:16
+msgid "Content"
+msgstr "Contenido"
+
+#: core/static/dist/js/g3wadmin.min.js:20
+#: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/tpl.js:21
+#: core/static/js/g3wadmin/widget.js:244 core/static/js/g3wadmin/widget.js:852
+msgid "Close"
+msgstr "Cerrar"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:117
+msgid "Delete item"
+msgstr "Eliminar elemento"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:118
+msgid "Are you sure to delete this Item"
+msgstr "¿Está seguro de eliminar este elemento?"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:169
+msgid "Are you sure to "
+msgstr "¿Está seguro de "
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:174
+msgid "Permanently delete"
+msgstr "Eliminar permanentemente"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:179
+msgid " item"
+msgstr "elemento"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:241
+msgid "Detail object"
+msgstr "Detalle del objeto"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:373
+msgid "Form title"
+msgstr "Título del formulario"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:434
+msgid "Upload file"
+msgstr "Subir archivo"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:462
+msgid "Drag&Drop files here"
+msgstr "Arrastre y suelte archivos aquí"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:463
+msgid "Browse Files"
+msgstr "Examinar archivos"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:534
+msgid "ERROR"
+msgstr "ERROR"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:830 core/static/js/g3wadmin/widget.js:840
+msgid "Access"
+msgstr "Acceso"
+
+#: core/static/dist/js/g3wadmin.min.js:34
+#: core/static/js/g3wadmin/widget.js:849
+msgid "WEB Services"
+msgstr "Servicios WEB"
