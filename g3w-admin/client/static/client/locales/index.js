@@ -9,9 +9,10 @@ import pl from './pl.js';
 import uk from './uk.js';
 import pt from './pt.js';
 import bg from './bg.js';
+import es from './es.js';
 
 const translations = {
-  it,
+  it,  
   en,
   fi,
   se,
@@ -22,6 +23,7 @@ const translations = {
   uk,
   pt,
   bg,
+  es,
 };
 
 export default translations;
