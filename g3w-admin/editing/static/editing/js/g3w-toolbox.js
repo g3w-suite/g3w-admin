@@ -1920,20 +1920,13 @@ export class ToolBox extends Emitter {
       );
       if (!is_started && GIVE_ME_A_NAME) {
         this.setEditing(true);
-        GUI.onceafter('setHidden', () => {
-          setTimeout(async () => {
-            this.#start = true;
-            this.startLoading();
-            this.setFeaturesOptions({ filter: options.filter });
-            try {
-              await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
-            } catch(e) {
-              reject(e);
-            } finally {
-              this.stopLoading();
-            }
-          }, 300);
-        });
+        const { promise, resolve: res } = Promise.withResolvers();
+        GUI.onceafter('setHidden', () => setTimeout(res, 300));
+        await promise;
+        this.#start = true;
+        this.startLoading();
+        this.setFeaturesOptions({ filter: options.filter });
+        await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
       }
 
       try {
