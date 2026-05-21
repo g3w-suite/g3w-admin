@@ -1817,6 +1817,7 @@ export class ToolBox extends Emitter {
    * @param { boolean } [options.disablemapcontrols=false]
    * @param { boolean } [options.showselectlayers=true]
    * @param { string }  [options.title]
+   * @param { Array }   [options.tools]
    * 
    * @returns { Promise<unknown> } info about start editing has features loaded
    */
@@ -1843,6 +1844,7 @@ export class ToolBox extends Emitter {
 
       this.state.changingtools = options.changingtools ?? false;
 
+      //show only some explicit tools for toolbox
       if (options.tools) {
         this.setEnablesDisablesTools(options.tools);
       }
@@ -1887,7 +1889,7 @@ export class ToolBox extends Emitter {
             }
           })
         );
-        // if click on start toolbox can edit
+        // if can editing layer, resolve
         if (this.state.editing.canEdit) {
           res();
         }
@@ -1899,24 +1901,23 @@ export class ToolBox extends Emitter {
         GUI.setModal(false);
       }
 
-      this.#startAsync = null;
+      this.#startAsync = null; //reset #startAsync
 
-      this.setFeaturesOptions({ filter: options.filter });
+      this.setFeaturesOptions({ filter: options.filter }); //set filter options to get features (ex. bbox, fids, etc..)
 
-      const is_started = !!this.isSessionStarted();
+      const is_started = this.isSessionStarted(); //Boolean check if session, to get features, is started (already ge features)
 
-      //@TODO need to explain better
-      const GIVE_ME_A_NAME = (
+      //In case of mobile device with hidden map and vector layer when click on start editing
+      const isMobileHiddenMap = (
         ApplicationState.ismobile             // mobile device
         && GUI.isMapHidden()                  // map not visible (content 100%)
         && 'vector' === this.state._layerType // vector layer
       );
 
-      if (!is_started && GIVE_ME_A_NAME) {
-        this.setEditing(true);
+      this.startLoading();
+      //ina case toolbox is not yet started and we are in mobile with map hidden we need to start session before set editing to true to avoid conflict with map controls disabled when set editing true and map not visible
+      if (!is_started && isMobileHiddenMap) {
         await new Promise(res => GUI.onceafter('setHidden', () => setTimeout(res, 300))); // 300 = CSS transition?
-        this.#start = true;
-        this.startLoading();
         this.setFeaturesOptions({ filter: options.filter });
 
         this.emit('start-editing');
@@ -1924,28 +1925,23 @@ export class ToolBox extends Emitter {
         features = await this._session.start(this.state._getFeaturesOption);
       }
 
-      /** @TODO merge the following conditions? */
-      if (!is_started && !GIVE_ME_A_NAME) {
-        this.#start = true;
-        this.startLoading();
+      /** In case of not yest started session and is not in mobile */
+      if (!is_started && !isMobileHiddenMap) {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
         features = await this._session.start(this.state._getFeaturesOption);
       }
 
+      /**
+       * Case of session already started to from parent layer to get features without start toolbox
+       */
       if (is_started && !this.#start) {
-        this.startLoading();
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
         features = await this._session.getFeatures(this.state._getFeaturesOption);
 
-        this.#start = true;
-      }
-
-      if (is_started) {
-        this.setEditing(true);
       }
 
       // disablemapcontrols in conflict
@@ -1961,7 +1957,11 @@ export class ToolBox extends Emitter {
       // force vector layer visibity when starting toolbox (eg. image layers whose catalog layer may be hidden)
       this.state.layer.getOLLayer?.()?.setVisible(true);
 
+      //set start
+      this.#start = true;
+      //stop loading
       this.stopLoading();
+      //set Editing to true
       this.setEditing(true);
 
       return { features };
@@ -2780,7 +2780,7 @@ export class ToolBox extends Emitter {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   isSessionStarted() {
-    return this.state.editing.session.started;
+    return !!this.state.editing.session.started;
   }
 
   /**
