@@ -1910,6 +1910,7 @@ export class ToolBox extends Emitter {
       }
 
       const is_started = !!this.isSessionStarted();
+      
 
       //@TODO need to explain better
       const GIVE_ME_A_NAME = (
@@ -1924,13 +1925,7 @@ export class ToolBox extends Emitter {
             this.#start = true;
             this.startLoading();
             this.setFeaturesOptions({ filter: options.filter });
-            try {
-              resolve({ features: await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption)) });
-            } catch(e) {
-              console.warn(e);
-              this.setEditing(false);
-              reject(e);
-            }
+            await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
           }, 300);
         });
       }
@@ -1961,7 +1956,7 @@ export class ToolBox extends Emitter {
           await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
         }
 
-        // force vector layer visibility when starting toolbox (eg. image layers whose catalog layer may be hidden)
+        // force vector layer visibity when starting toolbox (eg. image layers whose catalog layer may be hidden)
         this.state.layer.getOLLayer?.()?.setVisible(true);
 
         this.stopLoading();
@@ -1977,8 +1972,6 @@ export class ToolBox extends Emitter {
         }
         this.stop();
         this.stopLoading();
-        this.setEditing(false);
-        reject(e);
       }
 
       
