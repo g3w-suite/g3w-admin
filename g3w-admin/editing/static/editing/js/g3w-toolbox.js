@@ -1972,6 +1972,7 @@ export class ToolBox extends Emitter {
         }
         this.stop();
         this.stopLoading();
+        reject(e);
       }
 
       
