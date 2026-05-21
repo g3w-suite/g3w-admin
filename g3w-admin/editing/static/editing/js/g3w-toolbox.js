@@ -1925,7 +1925,13 @@ export class ToolBox extends Emitter {
             this.#start = true;
             this.startLoading();
             this.setFeaturesOptions({ filter: options.filter });
-            await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
+            try {
+              await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
+            } catch(e) {
+              reject(e);
+            } finally {
+              this.stopLoading();
+            }
           }, 300);
         });
       }
