@@ -1961,7 +1961,7 @@ export class ToolBox extends Emitter {
           await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
         }
 
-        // force vector layer visibity when starting toolbox (eg. image layers whose catalog layer may be hidden)
+        // force vector layer visibility when starting toolbox (eg. image layers whose catalog layer may be hidden)
         this.state.layer.getOLLayer?.()?.setVisible(true);
 
         this.stopLoading();
