@@ -1822,114 +1822,115 @@ export class ToolBox extends Emitter {
    */
   start(options = {}) {
     return new Promise(async (resolve, reject) => {
-      // get current style of layer
-      this.#current_style = this.state.layer.getCurrentStyle().name;
-
-      const plugin = GUI.getPlugin('editing');
-      const id     = this.getId();
-
-      plugin.state.showselectlayers = options.showselectlayers ?? true;
-      plugin.state.toolboxselected  = (options.selected ?? true) ? this : plugin.state.toolboxselected;
-
-      const constraints = plugin.state.constraints.toolboxes[id];
-
-      // set title
-      if (undefined !== options.title) {
-        this.setTitle(options.title);
-      }
-
-      this.state.changingtools = options.changingtools ?? false;
-
-      if (options.tools) {
-        this.setEnablesDisablesTools(options.tools);
-      }
-
-      this.state.toolboxheader    = options.toolboxheader ?? true;
-      this.state.startstopediting = options.startstopediting ?? true;
-  
-      options.filter = constraints?.filter || this.constraints.filter || options.filter;
-
-      // register lock features to show a message
-      const unKeyLock = this._editor.onceafter('featuresLockedByOtherUser', () => {
-        GUI.showUserMessage({
-          type:     'warning',
-          subtitle: this.state.layer.getName().toUpperCase(),
-          message:  'plugins.editing.messages.featureslockbyotheruser',
-        })
-      });
-  
-      // add featuresLockedByOtherUser setter
-      this.state._unsetters.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
-
-      // check if can we edit based on scale contraint (vector layer)
-      if (this.state._constraints.scale) {
-        const { promise, resolve: res, reject: rej } = Promise.withResolvers();
-        this.state.editing.canEdit = false;
-        // reset user message scale (on stop)
-        this.state._unsetters.push(() => this._handleScaleConstraint());
-        // set as resolve handler to resolve waiting get features from server
-        this.#startAsync = res;
-        // listen selected attribute
-        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
-        // await scale set for get features
-        this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
-        // click to fit zoom scale constraint
-        this.#events.push(
-          GUI.getMap().on('click', e => {
-            if (this.state.selected && !this.state.editing.canEdit) {
-              GUI.getMap().getView().animate(
-                { duration: 200, center: e.coordinate },
-                { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
-              );
-            }
-          })
-        );
-        // if click on start toolbox can edit
-        if (this.state.editing.canEdit) {
-          res();
-        }
-        await promise;
-      }
-
-      // reset eventually message
-      if (!this.state._constraints.scale) {
-        GUI.setModal(false);
-      }
-
-      this.#startAsync = null;
-
-      this.setFeaturesOptions({ filter: options.filter });
-      let features;
-
-      const handlerAfterSessionGetFeatures = async promise => {
-        this.emit('start-editing');
-        // set unique fields values
-        await setLayerUniqueFieldValues(this.getId());
-        features = await promise;
-        return features;
-      }
-
-      const is_started = !!this.isSessionStarted();
-      
-
-      //@TODO need to explain better
-      const GIVE_ME_A_NAME = (
-        ApplicationState.ismobile // is mobile
-        && GUI.isMapHidden() // map is not visible (content 100%)
-        && 'vector' === this.state._layerType // is  vector
-      );
-      if (!is_started && GIVE_ME_A_NAME) {
-        this.setEditing(true);
-        const { promise, resolve: res } = Promise.withResolvers();
-        GUI.onceafter('setHidden', () => setTimeout(res, 300));
-        await promise;
-        this.#start = true;
-        this.startLoading();
-        this.setFeaturesOptions({ filter: options.filter });
-        await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
-      }
 
       try {
+        // get current style of layer
+        this.#current_style = this.state.layer.getCurrentStyle().name;
+
+        const plugin = GUI.getPlugin('editing');
+        const id     = this.getId();
+
+        plugin.state.showselectlayers = options.showselectlayers ?? true;
+        plugin.state.toolboxselected  = (options.selected ?? true) ? this : plugin.state.toolboxselected;
+
+        const constraints = plugin.state.constraints.toolboxes[id];
+
+        // set title
+        if (undefined !== options.title) {
+          this.setTitle(options.title);
+        }
+
+        this.state.changingtools = options.changingtools ?? false;
+
+        if (options.tools) {
+          this.setEnablesDisablesTools(options.tools);
+        }
+
+        this.state.toolboxheader    = options.toolboxheader ?? true;
+        this.state.startstopediting = options.startstopediting ?? true;
+    
+        options.filter = constraints?.filter || this.constraints.filter || options.filter;
+
+        // register lock features to show a message
+        const unKeyLock = this._editor.onceafter('featuresLockedByOtherUser', () => {
+          GUI.showUserMessage({
+            type:     'warning',
+            subtitle: this.state.layer.getName().toUpperCase(),
+            message:  'plugins.editing.messages.featureslockbyotheruser',
+          })
+        });
+    
+        // add featuresLockedByOtherUser setter
+        this.state._unsetters.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
+
+        // check if can we edit based on scale contraint (vector layer)
+        if (this.state._constraints.scale) {
+          const { promise, resolve: res, reject: rej } = Promise.withResolvers();
+          this.state.editing.canEdit = false;
+          // reset user message scale (on stop)
+          this.state._unsetters.push(() => this._handleScaleConstraint());
+          // set as resolve handler to resolve waiting get features from server
+          this.#startAsync = res;
+          // listen selected attribute
+          this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
+          // await scale set for get features
+          this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
+          // click to fit zoom scale constraint
+          this.#events.push(
+            GUI.getMap().on('click', e => {
+              if (this.state.selected && !this.state.editing.canEdit) {
+                GUI.getMap().getView().animate(
+                  { duration: 200, center: e.coordinate },
+                  { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+                );
+              }
+            })
+          );
+          // if click on start toolbox can edit
+          if (this.state.editing.canEdit) {
+            res();
+          }
+          await promise;
+        }
+
+        // reset eventually message
+        if (!this.state._constraints.scale) {
+          GUI.setModal(false);
+        }
+
+        this.#startAsync = null;
+
+        this.setFeaturesOptions({ filter: options.filter });
+        let features;
+
+        const handlerAfterSessionGetFeatures = async promise => {
+          this.emit('start-editing');
+          // set unique fields values
+          await setLayerUniqueFieldValues(this.getId());
+          features = await promise;
+          return features;
+        }
+
+        const is_started = !!this.isSessionStarted();
+        
+
+        //@TODO need to explain better
+        const GIVE_ME_A_NAME = (
+          ApplicationState.ismobile // is mobile
+          && GUI.isMapHidden() // map is not visible (content 100%)
+          && 'vector' === this.state._layerType // is  vector
+        );
+        if (!is_started && GIVE_ME_A_NAME) {
+          this.setEditing(true);
+          const { promise, resolve: res } = Promise.withResolvers();
+          GUI.onceafter('setHidden', () => setTimeout(res, 300));
+          await promise;
+          this.#start = true;
+          this.startLoading();
+          this.setFeaturesOptions({ filter: options.filter });
+          await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
+        }
+
         /** @TODO merge the following conditions? */
         if (!is_started && !GIVE_ME_A_NAME) {
           this.#start = true;
@@ -1969,12 +1970,11 @@ export class ToolBox extends Emitter {
         if (!e.signal) {
           GUI.showUserMessage({ type: 'alert', message: e.message });
         }
+        
         this.stop();
         this.stopLoading();
         reject(e);
       }
-
-      
 
     });
   };
