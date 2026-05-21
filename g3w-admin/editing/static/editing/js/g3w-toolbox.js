@@ -1822,6 +1822,8 @@ export class ToolBox extends Emitter {
    */
   async start(options = {}) {
 
+    let features;
+
     try {
       // get current style of layer
       this.#current_style = this.state.layer.getCurrentStyle().name;
@@ -1900,21 +1902,19 @@ export class ToolBox extends Emitter {
       this.#startAsync = null;
 
       this.setFeaturesOptions({ filter: options.filter });
-      let features;
 
       const is_started = !!this.isSessionStarted();
 
       //@TODO need to explain better
       const GIVE_ME_A_NAME = (
-        ApplicationState.ismobile // is mobile
-        && GUI.isMapHidden() // map is not visible (content 100%)
-        && 'vector' === this.state._layerType // is  vector
+        ApplicationState.ismobile             // mobile device
+        && GUI.isMapHidden()                  // map not visible (content 100%)
+        && 'vector' === this.state._layerType // vector layer
       );
+
       if (!is_started && GIVE_ME_A_NAME) {
         this.setEditing(true);
-        const { promise, resolve: res } = Promise.withResolvers();
-        GUI.onceafter('setHidden', () => setTimeout(res, 300));
-        await promise;
+        await new Promise(res => GUI.onceafter('setHidden', () => setTimeout(res, 300))); // 300 = CSS transition?
         this.#start = true;
         this.startLoading();
         this.setFeaturesOptions({ filter: options.filter });
