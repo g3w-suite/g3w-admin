@@ -1899,27 +1899,14 @@ export class ToolBox extends Emitter {
       this.#startAsync = null;
 
       this.setFeaturesOptions({ filter: options.filter });
+      let features;
 
       const handlerAfterSessionGetFeatures = async promise => {
         this.emit('start-editing');
         // set unique fields values
         await setLayerUniqueFieldValues(this.getId());
-        try {
-          const features = await promise;
-          this.stopLoading();
-          this.setEditing(true);
-          resolve({ features })
-        } catch(e) {
-          console.warn(e);
-          
-          if (!e.signal) {
-            GUI.showUserMessage({ type: 'alert', message: e.message });
-          }
-          
-          this.stop();
-          this.stopLoading();
-          reject(e);
-        }
+        features = await promise;
+        return features;
       }
 
       const is_started = !!this.isSessionStarted();
@@ -1938,42 +1925,61 @@ export class ToolBox extends Emitter {
             this.startLoading();
             this.setFeaturesOptions({ filter: options.filter });
             try {
-              await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption));
+              resolve({ features: await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption)) });
             } catch(e) {
               console.warn(e);
               this.setEditing(false);
+              reject(e);
             }
           }, 300);
         });
       }
 
-      /** @TODO merge the following conditions? */
-      if (!is_started && !GIVE_ME_A_NAME) {
-        this.#start = true;
-        this.startLoading();
-        await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption))
+      try {
+        /** @TODO merge the following conditions? */
+        if (!is_started && !GIVE_ME_A_NAME) {
+          this.#start = true;
+          this.startLoading();
+          await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption))
+        }
+
+        if (is_started && !this.#start) {
+          this.startLoading();
+          await handlerAfterSessionGetFeatures(this._session.getFeatures(this.state._getFeaturesOption))
+          this.#start = true;
+        }
+
+        if (is_started) { this.setEditing(true); }
+
+        // disablemapcontrols in conflict
+        if (options.disablemapcontrols ?? false) {
+          GUI.disableClickMapControls(true);
+        }
+
+        // wait for features before changing editing layer style 
+        if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
+          await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
+        }
+
+        // force vector layer visibity when starting toolbox (eg. image layers whose catalog layer may be hidden)
+        this.state.layer.getOLLayer?.()?.setVisible(true);
+
+        this.stopLoading();
+        this.setEditing(true);
+
+        resolve({ features });
+      } catch(e) {
+
+        console.warn(e);
+
+        if (!e.signal) {
+          GUI.showUserMessage({ type: 'alert', message: e.message });
+        }
+        this.stop();
+        this.stopLoading();
       }
 
-      if (is_started && !this.#start) {
-        this.startLoading();
-        await handlerAfterSessionGetFeatures(this._session.getFeatures(this.state._getFeaturesOption))
-        this.#start = true;
-      }
-
-      if (is_started) { this.setEditing(true); }
-
-      // disablemapcontrols in conflict
-      if (options.disablemapcontrols ?? false) {
-        GUI.disableClickMapControls(true);
-      }
-
-      // wait for features before changing editing layer style 
-      if (this.state.layer.config.editing.layer_style && this.#current_style !== this.state.layer.config.editing.layer_style) {
-        await getCatalogLayerById(this.state.id).changeStyle(this.state.layer.config.editing.layer_style);
-      }
-
-      // force vector layer visibity when starting toolbox (eg. image layers whose catalog layer may be hidden)
-      this.state.layer.getOLLayer?.()?.setVisible(true);
+      
 
     });
   };
