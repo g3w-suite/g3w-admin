@@ -33,6 +33,7 @@ Software releases follow theese main branches as described in the compatibility 
 
 
 [dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.11.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.11.x
 [v.3.10.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.10.x
 [v.3.9.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.9.x
 [v.3.8.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.8.x
@@ -209,6 +210,8 @@ More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [build_suite
 
 ## FAQ
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/g3w-suite/g3w-admin)
+
 <details>
 
 <summary>1. How can I translate this project?</summary>
@@ -230,21 +233,24 @@ Depending on the component you want to translate you can start by consulting one
 
 ### Contributors
 
-* GIS3W: [wlorenzetti](https://github.com/wlorenzetti), [leolami](https://github.com/leolami/), [volterra79](https://github.com/volterra79), [raruto](https://github.com/Raruto), [giohappy](https://github.com/giohappy)
-* QCooperative: [elpaso](https://github.com/elpaso), [luipir](https://github.com/luipir)
-* Kartoza: [NyakudyaA](https://github.com/NyakudyaA)
+- GIS3W: [wlorenzetti](https://github.com/wlorenzetti), [leolami](https://github.com/leolami/), [volterra79](https://github.com/volterra79), [raruto](https://github.com/Raruto), [giohappy](https://github.com/giohappy)
+- QCooperative: [elpaso](https://github.com/elpaso), [luipir](https://github.com/luipir)
+- Kartoza: [NyakudyaA](https://github.com/NyakudyaA)
 
 ### Translators
 
-* Romanian: [tudorbarascu](https://github.com/tudorbarascu)
-* German: [r3gis](https://www.r3gis.com)
-* French: [democracy essentials](https://www.democracy-essentials.eu)
-* Bulgarian: [Ivan Ivanov (suricactus)](https://github.com/suricactus)
+- Bulgarian: [suricactus](https://github.com/suricactus)
+- French: [democracy essentials](https://www.democracy-essentials.eu), [sig-echirolles](https://github.com/sig-echirolles)
+- German: [r3gis](https://www.r3gis.com)
+- Italian: [wlorenzetti](https://github.com/wlorenzetti)
+- Portuguese: [SrNetoChan](https://github.com/SrNetoChan)
+- Romanian: [tudorbarascu](https://github.com/tudorbarascu)
+- Spanish: [samtux](https://github.com/samtux)
 
 ---
 
 **Compatibile with:**
-[![Django version](https://img.shields.io/badge/Django-3.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![Django version](https://img.shields.io/badge/Django-4.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
 [![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.34-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---

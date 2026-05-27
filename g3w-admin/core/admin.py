@@ -71,6 +71,7 @@ admin.site.register(MapControl, MapControlAdmin)
 
 class G3WSpatialRefSysAdmin(ModelAdmin):
     model = G3WSpatialRefSys
+    search_fields = ('srid', 'auth_name')
 admin.site.register(G3WSpatialRefSys, G3WSpatialRefSysAdmin)
 
 
