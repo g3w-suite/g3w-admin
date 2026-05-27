@@ -120,7 +120,7 @@ class ClientView(TemplateView):
         # logout_url
         logout_url = None
         try:
-            logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
+            logout_url = resolve_url(settings.LOGOUT_URL) + '?next={}'.format(reverse('group-project-map', kwargs={
                 'group_slug': kwargs['group_slug'],
                 'project_type': kwargs['project_type'],
                 'project_id': self.project.pk
