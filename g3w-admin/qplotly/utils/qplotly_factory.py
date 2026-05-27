@@ -27,6 +27,8 @@ from qplotly.vendor.DataPlotly.core.plot_factory import (
     QgsSymbolLayerUtils
 )
 
+from qgis.core import QgsVectorLayer, QgsWkbTypes
+
 from qplotly.server_filters import ByFatherFeatursFilter
 
 from core.api.filters import IntersectsBBoxFilter
@@ -233,7 +235,34 @@ class QplotlyFactoring(PlotFactory):
         #     it = self.source_layer.getSelectedFeatures(request)
         # else:
         #     it = self.source_layer.getFeatures(request)
-        it = self.source_layer.getFeatures(request)
+        # Materialize features so we can both build a temporary memory layer
+        # (to expose the filtered features as an expression context scope)
+        # and iterate over them below.
+        features = list(self.source_layer.getFeatures(request))
+
+        # Build a temporary in-memory layer that mirrors the source layer
+        # schema/CRS and contains only the features matching the request.
+        geom_type = QgsWkbTypes.displayString(self.source_layer.wkbType())
+        crs_auth = self.source_layer.crs().authid() or ''
+        uri = '{geom}?crs={crs}'.format(geom=geom_type, crs=crs_auth)
+        temp_layer = QgsVectorLayer(uri, 'qplotly_filtered', 'memory')
+        if temp_layer.isValid():
+            temp_provider = temp_layer.dataProvider()
+            temp_provider.addAttributes(self.source_layer.fields().toList())
+            temp_layer.updateFields()
+            if features:
+                temp_provider.addFeatures(features)
+            temp_layer.updateExtents()
+
+            # Append the temporary layer scope to the expression context so
+            # downstream expressions can reference it (e.g. via @layer / fields).
+            context.appendScope(
+                QgsExpressionContextUtils.layerScope(temp_layer))
+
+            # Keep a reference on self in case callers need to access it.
+            self.temp_filtered_layer = temp_layer
+
+        it = iter(features)
 
         self.qgsrequest = request
 
@@ -370,7 +399,17 @@ class QplotlyFactoring(PlotFactory):
 
          # Restore the original subset string
         self.source_layer.setSubsetString(original_subset_string)
-    
+
+        # Dispose of the temporary in-memory layer created for the
+        # expression context scope, to avoid keeping it alive longer than
+        # needed.
+        if getattr(self, 'temp_filtered_layer', None) is not None:
+            try:
+                self.temp_filtered_layer.deleteLater()
+            except Exception:
+                pass
+            self.temp_filtered_layer = None
+
     def __fetch_values_from_layer(self):
         """
         (Re)fetches plot values from the source layer.
