@@ -28,7 +28,7 @@
                 success:function(res){
 
                     users = []
-                    _.each(res.results, function(u){
+                    _.each(res, function(u){
                         selected = true ? _.indexOf(cleaned_data['gusers'], u.id) != -1 : false
                         users.push({
                             id: u.id,
