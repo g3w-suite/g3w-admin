@@ -122,14 +122,14 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
                   <div class="form-group">
                     <label class="control-label ">${gettext("Min scale")}</label>
                     <div class="controls ">
-                      <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.minscale ?? ''}" required name="minscale" />
+                      <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.minscale ?? ''}" min="0" required name="minscale" />
                     </div>
                   </div>
 
                   <div class="form-group">
                     <label class="control-label ">${gettext("Max scale")}</label>
                     <div class="controls ">
-                      <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.maxscale ?? ''}" required name="maxscale" />
+                      <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.maxscale ?? ''}" min="0" required name="maxscale" />
                     </div>
                   </div>
 
@@ -147,13 +147,15 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
 
         modal.$modal.find('.modal-button-confirm').on('click', function (e) {
           let dt = form.getData("array");
+          console.log(dt);
 
           // Validate
           form.$form.find(".form-errors").html(`
-            ${ '' == dt.user && '' == dt.group        ? `<h4 class="badge bg-red">${gettext("You must select a 'group' or a 'user'!")}</h4>`: '' }
-            ${ '' != dt.user && '' != dt.group        ? `<h4 class="badge bg-red">${gettext("You cannot select both a 'group' and a 'user': they are mutually exclusive!")}</h4>`: '' }
-            ${ '' == dt.minscale || '' == dt.maxscale ? `<h4 class="badge bg-red">${gettext("The 'maxscale' and/or 'minscale' fields cannot be empty!")}</h4>` : '' }
-            ${ dt.minscale < dt.maxscale ? `<h4 class="badge bg-red">${gettext("The 'maxscale' can not be greater than the 'minscale'!")}</h4>` : '' }
+            ${ '' === dt.user && '' === dt.group                      ? `<h4 class="badge bg-red">${gettext("You must select a 'group' or a 'user'!")}</h4>` : '' }
+            ${ '' !== dt.user && '' !== dt.group                      ? `<h4 class="badge bg-red">${gettext("You cannot select both a 'group' and a 'user': they are mutually exclusive!")}</h4>` : '' }
+            ${ '' === dt.minscale || '' === dt.maxscale               ? `<h4 class="badge bg-red">${gettext("The 'maxscale' and/or 'minscale' fields cannot be empty!")}</h4>` : '' }
+            ${ (Number(dt.minscale) < 0 || Number(dt.maxscale) < 0)   ? `<h4 class="badge bg-red">${gettext("The 'minscale' and 'maxscale' values cannot be negative!")}</h4>` : '' }
+            ${ (Number(dt.minscale) < Number(dt.maxscale))            ? `<h4 class="badge bg-red">${gettext("The 'maxscale' can not be greater than the 'minscale'!")}</h4>` : '' }
           `);
 
           if (!form.$form.find(".form-errors").children().length) {
@@ -161,10 +163,10 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
           }
         });
 
-        modal.show()
+        modal.show();
 
-        modal.$modal.find('[name="user"]').select2()
-        modal.$modal.find('[name="group"]').select2()
+        modal.$modal.find('[name="user"]').select2();
+        modal.$modal.find('[name="group"]').select2();
       }
 
       // DELETE constraint
