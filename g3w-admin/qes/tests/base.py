@@ -23,12 +23,18 @@ class QesTesBase(QdjangoTestBase):
 
     def _query_es(self, q, method='GET', **kwargs):
 
-        host = settings.ELASTICSEARCH_DSL['default']['hosts']
+        es_conf = settings.ELASTICSEARCH_DSL['default']
+        host = es_conf['hosts']
+
+        auth = es_conf.get('http_auth')
+        request_kwargs = {}
+        if auth:
+            request_kwargs['auth'] = tuple(auth) if not isinstance(auth, tuple) else auth
 
         # Global refresh
         url = f"{host}/_refresh"
 
-        response = requests.post(url)
+        response = requests.post(url, **request_kwargs)
 
         if not response.status_code == 200:
             raise Exception(response.json())
@@ -36,9 +42,9 @@ class QesTesBase(QdjangoTestBase):
         url = f"{host}/{q}?format=json"
 
         if method.upper() == 'POST':
-            response = requests.post(url, json=kwargs['data'])
+            response = requests.post(url, json=kwargs['data'], **request_kwargs)
         else:
-            response = requests.get(url)
+            response = requests.get(url, **request_kwargs)
 
         if response.status_code == 200:
             return response.json()
