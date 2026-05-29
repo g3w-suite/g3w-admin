@@ -489,7 +489,7 @@ class QGISElasticsearchIndexer:
         # Add specific filters
         if filters:
             for key, value in filters.items():
-                if key == "layer_id":
+                if key == "layer_name":
                     query["bool"]["filter"] = query["bool"].get("filter", [])
                     query["bool"]["filter"].append({"term": {"layer_name.keyword": value}})
                 elif key == "project_id":
