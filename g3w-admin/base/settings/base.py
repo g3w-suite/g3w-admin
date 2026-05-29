@@ -238,12 +238,83 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'UNICODE_JSON': False,
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'core.api.schema.G3WAutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'core.api.authentication.BasicAuthentication403',
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+# drf-spectacular: OpenAPI schema generation
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'G3W-SUITE Admin API',
+    'DESCRIPTION': (
+        'REST API for the G3W-SUITE administration backend. '
+        'Endpoints are grouped per Django app (core, client, qdjango, editing, '
+        'OWS, caching, qplotly, qtimeseries, qes, filemanager, usersmanage, about). '
+        'Most write endpoints return the standard envelope '
+        '`{"result": bool, "data": ..., "error": ...}`.'
+    ),
+    'VERSION': None,  # resolved at runtime from base.version.get_version()
+    'CONTACT': {'name': 'Gis3w', 'url': 'https://g3wsuite.it', 'email': 'info@gis3w.it'},
+    'LICENSE': {'name': 'MPL 2.0', 'url': 'https://www.mozilla.org/en-US/MPL/2.0/'},
+    'SERVE_INCLUDE_SCHEMA': False,
+    # Strip the i18n language prefix (e.g. /en/, /it/) from generated paths so
+    # each endpoint appears once in the schema.
+    'SCHEMA_PATH_PREFIX': r'/[a-z]{2}(-[a-z]{2})?/',
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
+    'AUTHENTICATION_WHITELIST': [
+        'core.api.authentication.CsrfExemptSessionAuthentication',
+        'core.api.authentication.BasicAuthentication403',
+        'core.api.authentication.TokenAuthentication403',
+        'core.api.authentication.JWTAuthentication403',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'SWAGGER_UI_SETTINGS': {
+        'persistAuthorization': True,
+        'displayOperationId': False,
+        'docExpansion': 'none',
+        'filter': True,
+    },
+    'PREPROCESSING_HOOKS': [
+        'core.api.schema.unwrap_dispatchers',
+    ],
+    'POSTPROCESSING_HOOKS': [
+        'drf_spectacular.hooks.postprocess_schema_enums',
+        'core.api.schema.auto_tag_by_path',
+    ],
+    'DEFAULT_GENERATOR_CLASS': 'core.api.schema.G3WSchemaGenerator',
+    'TAGS': [
+        {'name': 'core', 'description': 'Core endpoints: vector/raster data, project info, expressions, PDF, short URLs.'},
+        {'name': 'client', 'description': 'Client configuration (project/group bootstrap for the map client).'},
+        {'name': 'qdjango', 'description': 'QGIS projects, layers, legend, print, WMS/WFS proxy metadata.'},
+        {'name': 'editing', 'description': 'Vector editing: commits, feature locks, form data.'},
+        {'name': 'OWS', 'description': 'OGC WMS/WFS proxy entry point.'},
+        {'name': 'caching', 'description': 'Tile caching configuration.'},
+        {'name': 'qplotly', 'description': 'Plotly widget data.'},
+        {'name': 'qtimeseries', 'description': 'Time-series widget data.'},
+        {'name': 'qes', 'description': 'Elasticsearch-backed search.'},
+        {'name': 'filemanager', 'description': 'Project file manager.'},
+        {'name': 'usersmanage', 'description': 'Users and groups listing.'},
+        {'name': 'about', 'description': 'Public groups, projects and macrogroups listing.'},
+    ],
+}
+
+
+def _spectacular_version():
+    try:
+        from base.version import get_version
+        return get_version()
+    except Exception:
+        return '0.0.0'
+
+
+SPECTACULAR_SETTINGS['VERSION'] = _spectacular_version()
 
 # FOR MEDIA
 MEDIA_ROOT = '/home/www/django-qgis-static/media/'
