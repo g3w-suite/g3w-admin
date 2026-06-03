@@ -1004,8 +1004,9 @@ class ProjectSetOrderView(View):
 
     model = Project
 
-    # only user with change_group for this group can change overview map.
-    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    # only user with change_project permission on the project can change order.
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'pk', 'project_id'),
+                                          raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
