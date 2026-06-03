@@ -127,6 +127,8 @@ _TAG_BY_PREFIX = {
     'jx': 'core',
 }
 
+_EDITING_MODES = ('editing', 'commit', 'unlock')
+
 
 def auto_tag_by_path(result, generator, request, public):
     """drf-spectacular POSTPROCESSING_HOOK.
@@ -135,10 +137,18 @@ def auto_tag_by_path(result, generator, request, public):
     app without requiring per-view `@extend_schema` annotations.
     """
     for path, methods in (result.get('paths') or {}).items():
-        first = path.lstrip('/').split('/', 1)[0].lower()
-        if first.startswith('api'):
+        stripped = path.lstrip('/')
+        first = stripped.split('/', 1)[0].lower()
+        # Editing module is mounted under /vector/api/(info/layer|commit|unlock|editing)/...
+        if first == 'vector' and (
+            stripped.startswith('vector/api/info/layer')
+            or any(f'/api/{m}/' in path for m in _EDITING_MODES)
+            or '{mode_call_editing}' in path
+        ):
+            tag = 'editing'
+        elif first.startswith('api'):
             # Catch generic /api/... endpoints (client / core mix)
-            second = path.lstrip('/').split('/', 2)
+            second = stripped.split('/', 2)
             second = second[1].lower() if len(second) > 1 else ''
             if second in ('config', 'initconfig', 'embed'):
                 tag = 'client'
@@ -224,7 +234,12 @@ from django.urls import URLPattern
 
 
 class G3WEndpointEnumerator(_SpectacularEndpointEnumerator):
-    """Rewrites known dispatcher callbacks to the real APIView callback."""
+    """Rewrites known dispatcher callbacks to the real APIView callback.
+
+    Also renames `{mode_call}` to `{mode_call_editing}` on endpoints served by
+    the editing dispatcher so they get a distinct OpenAPI path and do not
+    collide with the core vector dispatcher (same URL template).
+    """
 
     def _get_api_endpoints(self, patterns=None, prefix=''):
         if patterns is None:
@@ -234,7 +249,28 @@ class G3WEndpointEnumerator(_SpectacularEndpointEnumerator):
                 substitute = _resolve_dispatcher_substitute(pattern.callback)
                 if substitute is not None:
                     pattern.callback = substitute
-        return super()._get_api_endpoints(patterns=patterns, prefix=prefix)
+
+        endpoints = super()._get_api_endpoints(patterns=patterns, prefix=prefix)
+
+        try:
+            from editing.api.views import LAYERCOMMITVECTORVIEW_CLASSES
+            editing_view_cls = LAYERCOMMITVECTORVIEW_CLASSES.get('qdjango')
+        except Exception:
+            editing_view_cls = None
+
+        if editing_view_cls is None:
+            return endpoints
+
+        rewritten = []
+        for path, path_regex, method, callback in endpoints:
+            view_cls = getattr(callback, 'cls', None)
+            if view_cls is editing_view_cls and '{mode_call}' in path:
+                path = path.replace('{mode_call}', '{mode_call_editing}')
+                path_regex = path_regex.replace(
+                    '(?P<mode_call>', '(?P<mode_call_editing>'
+                )
+            rewritten.append((path, path_regex, method, callback))
+        return rewritten
 
 
 class G3WSchemaGenerator(_SpectacularSchemaGenerator):

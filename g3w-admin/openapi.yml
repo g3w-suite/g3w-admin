@@ -1,0 +1,6235 @@
+openapi: 3.0.3
+info:
+  title: G3W-SUITE Admin API
+  version: 3.11.doc_api-20260529145810
+  description: 'REST API for the G3W-SUITE administration backend. Endpoints are grouped
+    per Django app (core, client, qdjango, editing, OWS, caching, qplotly, qtimeseries,
+    qes, filemanager, usersmanage, about). Most write endpoints return the standard
+    envelope `{"result": bool, "data": ..., "error": ...}`.'
+  contact:
+    name: Gis3w
+    url: https://g3wsuite.it
+    email: info@gis3w.it
+  license:
+    name: MPL 2.0
+    url: https://www.mozilla.org/en-US/MPL/2.0/
+paths:
+  /about/api/infodata/:
+    get:
+      operationId: about_api_infodata_retrieve
+      description: API for Generic suite data
+      tags:
+      - about
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericSuiteData'
+          description: ''
+  /about/api/group/:
+    get:
+      operationId: about_api_group_list
+      description: API list view for map groups
+      tags:
+      - about
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+          description: ''
+  /about/api/project/:
+    get:
+      operationId: about_api_project_list
+      description: API list view for map projects
+      tags:
+      - about
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+          description: ''
+  /about/api/group/{group_id}/projects/:
+    get:
+      operationId: about_api_group_projects_list
+      description: API list view for map projects
+      parameters:
+      - in: path
+        name: group_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - about
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+          description: ''
+  /about/api/group/{macrogroup_id}/:
+    get:
+      operationId: about_api_group_list_2
+      description: API list view for map groups
+      parameters:
+      - in: path
+        name: macrogroup_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - about
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+          description: ''
+  /about/api/group/nomacrogroup/:
+    get:
+      operationId: about_api_group_nomacrogroup_list
+      description: API list view for map groups
+      tags:
+      - about
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+          description: ''
+  /about/api/macrogroup/:
+    get:
+      operationId: about_api_macrogroup_list
+      description: API list view for map macrogroups
+      tags:
+      - about
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MacroGroup'
+          description: ''
+  /api/initconfig/{group_slug}/{project_type}/{project_id}:
+    get:
+      operationId: api_initconfig_retrieve
+      description: Returns the initial client configuration combining the group data
+        with the selected project. Includes base layers, static URLs, logos and the
+        main map metadata.
+      summary: Group + project initial configuration
+      parameters:
+      - in: path
+        name: group_slug
+        schema:
+          type: string
+        description: Slug of the group containing the project.
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        description: Numeric ID of the project.
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+        description: Project backend app name (e.g. `qdjango`).
+        required: true
+      tags:
+      - client
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/config/{group_slug}/{project_type}/{project_id}:
+    get:
+      operationId: api_config_retrieve
+      description: Returns the full serialized configuration of a project (layers,
+        metadata, capabilities) used to bootstrap the map client.
+      summary: Project configuration for the map client
+      parameters:
+      - in: path
+        name: group_slug
+        schema:
+          type: string
+        description: Slug of the group containing the project.
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        description: Numeric ID of the project.
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+        description: Project backend app name (e.g. `qdjango`).
+        required: true
+      tags:
+      - client
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /vector/api/{mode_call}/{project_type}/{project_id}/{layer_name}/:
+    get:
+      operationId: vector_api_retrieve_2
+      description: |-
+        Returns a list of GeoJSON (custom) vector features from a layer.
+
+        Features can be filtered in different ways using the BaseFilterBackend implementations.
+
+        QgsExpression filters are supported in POST only with the following JSON payload:
+
+        `expression`: the QgsExpression text
+
+        Optionally a form feature context can be added, allowing to use form functions
+        like `current_value(<field name>)`:
+
+        `layer_id`: the qdjango Layer id (pk of the Layer instance) for the `form_data`, note that
+                    this can be a different layer than the one being queried, it is the layer
+                    which contains the `form_data` feature.
+        `form_data`: a GeoJSON representation of the the feature belonging to `layer_id` Layer
+
+        Example payload to filter by expression in a form context on Layer pk=2
+
+        ```json
+        {
+            "layer_id": 2,
+            "form_data": {
+                "type": "Feature",
+                "properties": {
+                    "name": "GUATEMALA",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-90.35368448325509405, 15.68342749654157053]
+                }
+            },
+            "expression": "NAME=current_value('name')"
+        }
+        ```
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          enum:
+          - config
+          - csv
+          - data
+          - editorformstructure
+          - featurecount
+          - filter_token
+          - gpkg
+          - gpx
+          - shp
+          - xls
+        description: 'Output mode: data (GeoJSON), config, shp, xls, gpx, csv, gpkg,
+          filter_token, etc.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: vector_api_create_2
+      description: |-
+        Returns a list of GeoJSON (custom) vector features from a layer.
+
+        Features can be filtered in different ways using the BaseFilterBackend implementations.
+
+        QgsExpression filters are supported in POST only with the following JSON payload:
+
+        `expression`: the QgsExpression text
+
+        Optionally a form feature context can be added, allowing to use form functions
+        like `current_value(<field name>)`:
+
+        `layer_id`: the qdjango Layer id (pk of the Layer instance) for the `form_data`, note that
+                    this can be a different layer than the one being queried, it is the layer
+                    which contains the `form_data` feature.
+        `form_data`: a GeoJSON representation of the the feature belonging to `layer_id` Layer
+
+        Example payload to filter by expression in a form context on Layer pk=2
+
+        ```json
+        {
+            "layer_id": 2,
+            "form_data": {
+                "type": "Feature",
+                "properties": {
+                    "name": "GUATEMALA",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-90.35368448325509405, 15.68342749654157053]
+                }
+            },
+            "expression": "NAME=current_value('name')"
+        }
+        ```
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          enum:
+          - config
+          - csv
+          - data
+          - editorformstructure
+          - featurecount
+          - filter_token
+          - gpkg
+          - gpx
+          - shp
+          - xls
+        description: 'Output mode: data (GeoJSON), config, shp, xls, gpx, csv, gpkg,
+          filter_token, etc.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /vector/api/{mode_call}/{project_type}/{project_id}/{layer_name}.{ext}:
+    get:
+      operationId: vector_api_._retrieve
+      description: |-
+        Returns a list of GeoJSON (custom) vector features from a layer.
+
+        Features can be filtered in different ways using the BaseFilterBackend implementations.
+
+        QgsExpression filters are supported in POST only with the following JSON payload:
+
+        `expression`: the QgsExpression text
+
+        Optionally a form feature context can be added, allowing to use form functions
+        like `current_value(<field name>)`:
+
+        `layer_id`: the qdjango Layer id (pk of the Layer instance) for the `form_data`, note that
+                    this can be a different layer than the one being queried, it is the layer
+                    which contains the `form_data` feature.
+        `form_data`: a GeoJSON representation of the the feature belonging to `layer_id` Layer
+
+        Example payload to filter by expression in a form context on Layer pk=2
+
+        ```json
+        {
+            "layer_id": 2,
+            "form_data": {
+                "type": "Feature",
+                "properties": {
+                    "name": "GUATEMALA",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-90.35368448325509405, 15.68342749654157053]
+                }
+            },
+            "expression": "NAME=current_value('name')"
+        }
+        ```
+      parameters:
+      - in: path
+        name: ext
+        schema:
+          type: string
+          pattern: ^zip|xls|gpx|csv|gpkg$
+        required: true
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          enum:
+          - config
+          - csv
+          - data
+          - editorformstructure
+          - featurecount
+          - filter_token
+          - gpkg
+          - gpx
+          - shp
+          - xls
+        description: 'Output mode: data (GeoJSON), config, shp, xls, gpx, csv, gpkg,
+          filter_token, etc.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: vector_api_._create
+      description: |-
+        Returns a list of GeoJSON (custom) vector features from a layer.
+
+        Features can be filtered in different ways using the BaseFilterBackend implementations.
+
+        QgsExpression filters are supported in POST only with the following JSON payload:
+
+        `expression`: the QgsExpression text
+
+        Optionally a form feature context can be added, allowing to use form functions
+        like `current_value(<field name>)`:
+
+        `layer_id`: the qdjango Layer id (pk of the Layer instance) for the `form_data`, note that
+                    this can be a different layer than the one being queried, it is the layer
+                    which contains the `form_data` feature.
+        `form_data`: a GeoJSON representation of the the feature belonging to `layer_id` Layer
+
+        Example payload to filter by expression in a form context on Layer pk=2
+
+        ```json
+        {
+            "layer_id": 2,
+            "form_data": {
+                "type": "Feature",
+                "properties": {
+                    "name": "GUATEMALA",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-90.35368448325509405, 15.68342749654157053]
+                }
+            },
+            "expression": "NAME=current_value('name')"
+        }
+        ```
+      parameters:
+      - in: path
+        name: ext
+        schema:
+          type: string
+          pattern: ^zip|xls|gpx|csv|gpkg$
+        required: true
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          enum:
+          - config
+          - csv
+          - data
+          - editorformstructure
+          - featurecount
+          - filter_token
+          - gpkg
+          - gpx
+          - shp
+          - xls
+        description: 'Output mode: data (GeoJSON), config, shp, xls, gpx, csv, gpkg,
+          filter_token, etc.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /vector/api/{mode_call}/{widget_type}/data/{project_type}/{project_id}/{layer_name}/:
+    get:
+      operationId: vector_api_data_retrieve
+      description: |-
+        Returns a list of GeoJSON (custom) vector features from a layer.
+
+        Features can be filtered in different ways using the BaseFilterBackend implementations.
+
+        QgsExpression filters are supported in POST only with the following JSON payload:
+
+        `expression`: the QgsExpression text
+
+        Optionally a form feature context can be added, allowing to use form functions
+        like `current_value(<field name>)`:
+
+        `layer_id`: the qdjango Layer id (pk of the Layer instance) for the `form_data`, note that
+                    this can be a different layer than the one being queried, it is the layer
+                    which contains the `form_data` feature.
+        `form_data`: a GeoJSON representation of the the feature belonging to `layer_id` Layer
+
+        Example payload to filter by expression in a form context on Layer pk=2
+
+        ```json
+        {
+            "layer_id": 2,
+            "form_data": {
+                "type": "Feature",
+                "properties": {
+                    "name": "GUATEMALA",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-90.35368448325509405, 15.68342749654157053]
+                }
+            },
+            "expression": "NAME=current_value('name')"
+        }
+        ```
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          enum:
+          - config
+          - csv
+          - data
+          - editorformstructure
+          - featurecount
+          - filter_token
+          - gpkg
+          - gpx
+          - shp
+          - xls
+        description: 'Output mode: data (GeoJSON), config, shp, xls, gpx, csv, gpkg,
+          filter_token, etc.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      - in: path
+        name: widget_type
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: vector_api_data_create
+      description: |-
+        Returns a list of GeoJSON (custom) vector features from a layer.
+
+        Features can be filtered in different ways using the BaseFilterBackend implementations.
+
+        QgsExpression filters are supported in POST only with the following JSON payload:
+
+        `expression`: the QgsExpression text
+
+        Optionally a form feature context can be added, allowing to use form functions
+        like `current_value(<field name>)`:
+
+        `layer_id`: the qdjango Layer id (pk of the Layer instance) for the `form_data`, note that
+                    this can be a different layer than the one being queried, it is the layer
+                    which contains the `form_data` feature.
+        `form_data`: a GeoJSON representation of the the feature belonging to `layer_id` Layer
+
+        Example payload to filter by expression in a form context on Layer pk=2
+
+        ```json
+        {
+            "layer_id": 2,
+            "form_data": {
+                "type": "Feature",
+                "properties": {
+                    "name": "GUATEMALA",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-90.35368448325509405, 15.68342749654157053]
+                }
+            },
+            "expression": "NAME=current_value('name')"
+        }
+        ```
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          enum:
+          - config
+          - csv
+          - data
+          - editorformstructure
+          - featurecount
+          - filter_token
+          - gpkg
+          - gpx
+          - shp
+          - xls
+        description: 'Output mode: data (GeoJSON), config, shp, xls, gpx, csv, gpkg,
+          filter_token, etc.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      - in: path
+        name: widget_type
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/deploy/info/:
+    get:
+      operationId: api_deploy_info_retrieve
+      description: Returns the G3W-SUITE version, the list of installed optional modules
+        and the runtime environment (Python, Django, QGIS Server).
+      summary: Deploy information
+      tags:
+      - core
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/DeployInfoData'
+                required:
+                - result
+          description: ''
+  /api/expression_eval/{project_id}/:
+    post:
+      operationId: api_expression_eval_create
+      description: Evaluate a `QgsExpression` in the context of a project and an optional
+        layer/feature form.
+      summary: Evaluate a QGIS expression
+      parameters:
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        description: Numeric ID of the QGIS project (qdjango).
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpressionEvalRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExpressionEvalRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExpressionEvalRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ExpressionEvalData'
+                required:
+                - result
+          description: ''
+  /interface/ows/:
+    post:
+      operationId: interface_ows_create
+      description: |-
+        API interface view for client. Retrieve information about ows (i.e. wms) service
+        Only POST request are available on this view.
+      tags:
+      - OWS
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /raster/api/{mode_call}/{project_type}/{project_id}/{layer_name}/:
+    get:
+      operationId: raster_api_retrieve
+      description: Qdjango class for ratser layer api rest
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          pattern: ^geotiff$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: raster_api_create
+      description: Qdjango class for ratser layer api rest
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - in: path
+        name: mode_call
+        schema:
+          type: string
+          pattern: ^geotiff$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /crs/{epsg}/:
+    get:
+      operationId: crs_retrieve
+      description: API REST service for info about CRS ask by ESPG code
+      summary: CRS information by EPSG code
+      parameters:
+      - in: path
+        name: epsg
+        schema:
+          type: integer
+        description: EPSG numeric code (e.g. 4326).
+        required: true
+      tags:
+      - core
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/CRSInfoData'
+                required:
+                - result
+          description: ''
+  /html2pdf/:
+    post:
+      operationId: html2pdf_create
+      description: Renders the provided HTML markup to a PDF document via WeasyPrint
+        and streams it back as an attachment.
+      summary: Render HTML to PDF
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Html2PdfRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Html2PdfRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Html2PdfRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: 'PDF binary stream (`Content-Type: application/pdf`).'
+  /api/su/:
+    post:
+      operationId: api_su_create
+      description: API view to get a short url code
+      summary: Create a short URL
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortURLRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShortURLRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShortURLRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ShortURLData'
+                required:
+                - result
+          description: ''
+  /api/embed/:
+    post:
+      operationId: api_embed_create
+      description: Stores arbitrary JSON state and returns a short permalink code.
+      summary: Create a permalink code
+      tags:
+      - client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/PermaLinkData'
+                required:
+                - result
+          description: ''
+  /api/token/:
+    post:
+      operationId: api_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - usersmanage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: api_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - usersmanage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/users/:
+    get:
+      operationId: api_users_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - core
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+  /qdjango/api/subsetstringrule/detail/{id}/:
+    get:
+      operationId: qdjango_api_subsetstringrule_detail_retrieve
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintSubsetStringRule'
+          description: ''
+    put:
+      operationId: qdjango_api_subsetstringrule_detail_update
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintSubsetStringRule'
+          description: ''
+    patch:
+      operationId: qdjango_api_subsetstringrule_detail_partial_update
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConstraintSubsetStringRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConstraintSubsetStringRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConstraintSubsetStringRuleRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintSubsetStringRule'
+          description: ''
+    delete:
+      operationId: qdjango_api_subsetstringrule_detail_destroy
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/subsetstringrule/layer/{layer_id}/:
+    get:
+      operationId: qdjango_api_subsetstringrule_layer_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintSubsetStringRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_subsetstringrule_layer_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintSubsetStringRule'
+          description: ''
+  /qdjango/api/subsetstringrule/user/{user_id}/:
+    get:
+      operationId: qdjango_api_subsetstringrule_user_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintSubsetStringRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_subsetstringrule_user_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintSubsetStringRule'
+          description: ''
+  /qdjango/api/subsetstringrule/constraint/{constraint_id}/:
+    get:
+      operationId: qdjango_api_subsetstringrule_constraint_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: constraint_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintSubsetStringRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_subsetstringrule_constraint_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: constraint_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintSubsetStringRule'
+          description: ''
+  /qdjango/api/subsetstringrule/:
+    get:
+      operationId: qdjango_api_subsetstringrule_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintSubsetStringRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_subsetstringrule_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintSubsetStringRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintSubsetStringRule'
+          description: ''
+  /qdjango/api/expressionrule/detail/{id}/:
+    get:
+      operationId: qdjango_api_expressionrule_detail_retrieve
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintExpressionRule'
+          description: ''
+    put:
+      operationId: qdjango_api_expressionrule_detail_update
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintExpressionRule'
+          description: ''
+    patch:
+      operationId: qdjango_api_expressionrule_detail_partial_update
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConstraintExpressionRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConstraintExpressionRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConstraintExpressionRuleRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintExpressionRule'
+          description: ''
+    delete:
+      operationId: qdjango_api_expressionrule_detail_destroy
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/expressionrule/layer/{layer_id}/:
+    get:
+      operationId: qdjango_api_expressionrule_layer_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintExpressionRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_expressionrule_layer_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintExpressionRule'
+          description: ''
+  /qdjango/api/expressionrule/user/{user_id}/:
+    get:
+      operationId: qdjango_api_expressionrule_user_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintExpressionRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_expressionrule_user_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintExpressionRule'
+          description: ''
+  /qdjango/api/expressionrule/constraint/{constraint_id}/:
+    get:
+      operationId: qdjango_api_expressionrule_constraint_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: constraint_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintExpressionRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_expressionrule_constraint_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - in: path
+        name: constraint_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintExpressionRule'
+          description: ''
+  /qdjango/api/expressionrule/:
+    get:
+      operationId: qdjango_api_expressionrule_list
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConstraintExpressionRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_expressionrule_create
+      description: List of constraint subset string rules, optionally filtered by
+        editing layer QGIS id, user id or constraint id
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConstraintExpressionRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstraintExpressionRule'
+          description: ''
+  /qdjango/api/constraint/detail/{id}/:
+    get:
+      operationId: qdjango_api_constraint_detail_retrieve
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleLayerConstraint'
+          description: ''
+    put:
+      operationId: qdjango_api_constraint_detail_update
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleLayerConstraint'
+          description: ''
+    patch:
+      operationId: qdjango_api_constraint_detail_partial_update
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSingleLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSingleLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSingleLayerConstraintRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleLayerConstraint'
+          description: ''
+    delete:
+      operationId: qdjango_api_constraint_detail_destroy
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/constraint/layer/{layer_id}/:
+    get:
+      operationId: qdjango_api_constraint_layer_list
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSingleLayerConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_constraint_layer_create
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleLayerConstraint'
+          description: ''
+  /qdjango/api/constraint/user/{user_id}/:
+    get:
+      operationId: qdjango_api_constraint_user_list
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSingleLayerConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_constraint_user_create
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleLayerConstraint'
+          description: ''
+  /qdjango/api/constraint/:
+    get:
+      operationId: qdjango_api_constraint_list
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSingleLayerConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_constraint_create
+      description: List of constraints, optionally filtered by editing layer id
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SingleLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleLayerConstraint'
+          description: ''
+  /qdjango/api/column_acl/detail/{id}/:
+    get:
+      operationId: qdjango_api_column_acl_detail_retrieve
+      description: Details of a ColumnAcl
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnAcl'
+          description: ''
+    put:
+      operationId: qdjango_api_column_acl_detail_update
+      description: Details of a ColumnAcl
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnAcl'
+          description: ''
+    patch:
+      operationId: qdjango_api_column_acl_detail_partial_update
+      description: Details of a ColumnAcl
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedColumnAclRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedColumnAclRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedColumnAclRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnAcl'
+          description: ''
+    delete:
+      operationId: qdjango_api_column_acl_detail_destroy
+      description: Details of a ColumnAcl
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/column_acl/layer/{layer_id}/:
+    get:
+      operationId: qdjango_api_column_acl_layer_list
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedColumnAclList'
+          description: ''
+    post:
+      operationId: qdjango_api_column_acl_layer_create
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnAcl'
+          description: ''
+  /qdjango/api/column_acl/user/{user_id}/:
+    get:
+      operationId: qdjango_api_column_acl_user_list
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedColumnAclList'
+          description: ''
+    post:
+      operationId: qdjango_api_column_acl_user_create
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnAcl'
+          description: ''
+  /qdjango/api/column_acl/group/{group_id}/:
+    get:
+      operationId: qdjango_api_column_acl_group_list
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      parameters:
+      - in: path
+        name: group_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedColumnAclList'
+          description: ''
+    post:
+      operationId: qdjango_api_column_acl_group_create
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      parameters:
+      - in: path
+        name: group_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnAcl'
+          description: ''
+  /qdjango/api/column_acl/fields/{layer_id}/:
+    get:
+      operationId: qdjango_api_column_acl_fields_retrieve
+      description: Field names for a vector layer
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /qdjango/api/column_acl/:
+    get:
+      operationId: qdjango_api_column_acl_list
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedColumnAclList'
+          description: ''
+    post:
+      operationId: qdjango_api_column_acl_create
+      description: List of ColumnAcl objects, optionally filtered by editing layer
+        id
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ColumnAclRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnAcl'
+          description: ''
+  /qdjango/api/scalevisconstraint/detail/{id}/:
+    get:
+      operationId: qdjango_api_scalevisconstraint_detail_retrieve
+      description: Details of a ScaleVisibilityLayerConstraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+          description: ''
+    put:
+      operationId: qdjango_api_scalevisconstraint_detail_update
+      description: Details of a ScaleVisibilityLayerConstraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+          description: ''
+    patch:
+      operationId: qdjango_api_scalevisconstraint_detail_partial_update
+      description: Details of a ScaleVisibilityLayerConstraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedScaleVisibilityLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedScaleVisibilityLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedScaleVisibilityLayerConstraintRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+          description: ''
+    delete:
+      operationId: qdjango_api_scalevisconstraint_detail_destroy
+      description: Details of a ScaleVisibilityLayerConstraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/scalevisconstraint/layer/{layer_id}/:
+    get:
+      operationId: qdjango_api_scalevisconstraint_layer_list
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedScaleVisibilityLayerConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_scalevisconstraint_layer_create
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+          description: ''
+  /qdjango/api/scalevisconstraint/user/{user_id}/:
+    get:
+      operationId: qdjango_api_scalevisconstraint_user_list
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedScaleVisibilityLayerConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_scalevisconstraint_user_create
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+          description: ''
+  /qdjango/api/scalevisconstraint/group/{group_id}/:
+    get:
+      operationId: qdjango_api_scalevisconstraint_group_list
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      parameters:
+      - in: path
+        name: group_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedScaleVisibilityLayerConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_scalevisconstraint_group_create
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      parameters:
+      - in: path
+        name: group_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+          description: ''
+  /qdjango/api/scalevisconstraint/:
+    get:
+      operationId: qdjango_api_scalevisconstraint_list
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedScaleVisibilityLayerConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_scalevisconstraint_create
+      description: List of ScaleVisibilityLayerConstraint objects, optionally filtered
+        by editing layer id
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScaleVisibilityLayerConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+          description: ''
+  /qdjango/api/georule/detail/{id}/:
+    get:
+      operationId: qdjango_api_georule_detail_retrieve
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraintRule'
+          description: ''
+    put:
+      operationId: qdjango_api_georule_detail_update
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraintRule'
+          description: ''
+    patch:
+      operationId: qdjango_api_georule_detail_partial_update
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGeoConstraintRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGeoConstraintRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGeoConstraintRuleRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraintRule'
+          description: ''
+    delete:
+      operationId: qdjango_api_georule_detail_destroy
+      description: Details of a constraint rule
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/georule/layer/{layer_id}/:
+    get:
+      operationId: qdjango_api_georule_layer_list
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGeoConstraintRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_georule_layer_create
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraintRule'
+          description: ''
+  /qdjango/api/georule/user/{user_id}/:
+    get:
+      operationId: qdjango_api_georule_user_list
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGeoConstraintRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_georule_user_create
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraintRule'
+          description: ''
+  /qdjango/api/georule/geoconstraint/{constraint_id}/:
+    get:
+      operationId: qdjango_api_georule_geoconstraint_list
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      parameters:
+      - in: path
+        name: constraint_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGeoConstraintRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_georule_geoconstraint_create
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      parameters:
+      - in: path
+        name: constraint_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraintRule'
+          description: ''
+  /qdjango/api/georule/:
+    get:
+      operationId: qdjango_api_georule_list
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGeoConstraintRuleList'
+          description: ''
+    post:
+      operationId: qdjango_api_georule_create
+      description: List of constraint rules, optionally filtered by editing layer
+        id, user id or constraint id
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRuleRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraintRule'
+          description: ''
+  /qdjango/api/geoconstraint/geometry/{layer_id}/:
+    get:
+      operationId: qdjango_api_geoconstraint_geometry_retrieve
+      description: APIView to get constraint geometry feature for request user and
+        editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - qdjango
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /qdjango/api/geoconstraint/detail/{id}/:
+    get:
+      operationId: qdjango_api_geoconstraint_detail_retrieve
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraint'
+          description: ''
+    put:
+      operationId: qdjango_api_geoconstraint_detail_update
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraint'
+          description: ''
+    patch:
+      operationId: qdjango_api_geoconstraint_detail_partial_update
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGeoConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGeoConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGeoConstraintRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraint'
+          description: ''
+    delete:
+      operationId: qdjango_api_geoconstraint_detail_destroy
+      description: Details of a constraint
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/geoconstraint/{layer_id}/:
+    get:
+      operationId: qdjango_api_geoconstraint_list_2
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGeoConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_geoconstraint_create_2
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraint'
+          description: ''
+  /qdjango/api/geoconstraint/:
+    get:
+      operationId: qdjango_api_geoconstraint_list
+      description: List of constraints, optionally filtered by editing layer id
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGeoConstraintList'
+          description: ''
+    post:
+      operationId: qdjango_api_geoconstraint_create
+      description: List of constraints, optionally filtered by editing layer id
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GeoConstraintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoConstraint'
+          description: ''
+  /qdjango/api/webservice/{project_id}/:
+    get:
+      operationId: qdjango_api_webservice_retrieve
+      description: API return Project WEB services available
+      parameters:
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /qdjango/api/asgeotiff/{project_id}/:
+    post:
+      operationId: qdjango_api_asgeotiff_create
+      description: Given a image and bbox from server return a GeoTiff images.
+      parameters:
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /qdjango/api/prjtheme/{project_id}/{theme_name}/:
+    get:
+      operationId: qdjango_api_prjtheme_retrieve
+      description: |-
+        API to get layers tree based on a selected theme.
+        Give a project_id and a view/theme name.
+      parameters:
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: theme_name
+        schema:
+          type: string
+          pattern: ^[-_\w\d\s:.=,]+$
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: qdjango_api_prjtheme_create
+      description: Post action view for custom theme data
+      parameters:
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: theme_name
+        schema:
+          type: string
+          pattern: ^[-_\w\d\s:.=,]+$
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: qdjango_api_prjtheme_destroy
+      description: |-
+        API to get layers tree based on a selected theme.
+        Give a project_id and a view/theme name.
+      parameters:
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: theme_name
+        schema:
+          type: string
+          pattern: ^[-_\w\d\s:.=,]+$
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/layerstyles/{layer_id}/:
+    get:
+      operationId: qdjango_api_layerstyles_retrieve
+      description: |-
+        Returns a list of styles
+
+        :param layer_id: QDjango Layer object pk
+        :type layer_id: int
+        :return: Response
+        :rtype: REST framework Response object json
+        :raises LayerNotFoundException
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: qdjango_api_layerstyles_create
+      description: |-
+        Create a new style
+
+        Accepted body:
+
+        {
+            'name': '<new name>',
+            'qml': '<uploaded QML>'
+        }
+
+        :param layer_id: QDjango Layer object pk
+        :type layer_id: int
+        :return: Response
+        :rtype: REST framework Response object json
+        :raises LayerNotFoundException
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /qdjango/api/layerstyles/{layer_id}/{style_name}/:
+    get:
+      operationId: qdjango_api_layerstyles_retrieve_2
+      description: |-
+        Returns a single style
+
+        :param layer_id: QDjango Layer object pk
+        :type layer_id: int
+        :param style_name: QGIS layer style name
+        :type style_name: str
+        :return: Response
+        :rtype: REST framework Response object json
+        :raises LayerNotFoundException
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: style_name
+        schema:
+          type: string
+          pattern: ^[\w\s%-]+$
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: qdjango_api_layerstyles_partial_update
+      description: |-
+        Modify a single style (if the style is not current).
+
+        Accepted body (at least one of the arguments must be present):
+
+        {
+            'name': '<new name>',
+            'current': <bool>,
+            'qml': '<uploaded QML>'
+        }
+
+        Note: it is not possible to change the "current" status from True to False, it is
+        only possible to change the "current" status from False to True.
+
+        :param layer_id: QDjango Layer object pk
+        :type layer_id: int
+        :param style_name: QGIS layer style name
+        :type style_name: str
+        :return: Response
+        :rtype: REST framework Response object json
+        :raises LayerNotFoundException
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: style_name
+        schema:
+          type: string
+          pattern: ^[\w\s%-]+$
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: qdjango_api_layerstyles_destroy
+      description: |-
+        Deletes a single style
+
+        :param layer_id: QDjango Layer object pk
+        :type layer_id: int
+        :param style_name: QGIS layer style name
+        :type style_name: str
+        :return: Response
+        :rtype: REST framework Response object json
+        :raises LayerNotFoundException
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: style_name
+        schema:
+          type: string
+          pattern: ^[\w\s%-]+$
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qdjango/api/info/layer/polygon/{layer_id}/:
+    get:
+      operationId: qdjango_api_info_layer_polygon_list
+      description: 'Layer vector usable as geoconstraint layer: layer Polygon or Multipolygon'
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLayerInfoList'
+          description: ''
+  /qdjango/api/info/layer/user/{layer_id}/:
+    get:
+      operationId: qdjango_api_info_layer_user_list
+      description: For a qdjango layer id return users and users_groups (viewers)
+        can be view project of it
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLayerInfoUserList'
+          description: ''
+  /qdjango/api/info/layer/authgroup/{layer_id}/:
+    get:
+      operationId: qdjango_api_info_layer_authgroup_list
+      description: For a qdjango layer id, return users_groups (viewers) can be view
+        project of it
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLayerInfoAuthGroupList'
+          description: ''
+  /qdjango/api/info/layer/{id}/:
+    get:
+      operationId: qdjango_api_info_layer_retrieve
+      description: Return info about qdjango layer by pk
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LayerInfo'
+          description: ''
+  /qdjango/api/alternativeuniquelayer/{project_id}/{layer_id}/:
+    post:
+      operationId: qdjango_api_alternativeuniquelayer_create
+      description: Return a list of layers to use as alternative for call on unique
+        field value
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /qdjango/api/bookmark/:
+    get:
+      operationId: qdjango_api_bookmark_list
+      description: API for project bookmarks per user
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectBookmarkList'
+          description: ''
+    post:
+      operationId: qdjango_api_bookmark_create
+      description: API for project bookmarks per user
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectBookmarkRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectBookmarkRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectBookmarkRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectBookmark'
+          description: ''
+    put:
+      operationId: qdjango_api_bookmark_update
+      description: API for project bookmarks per user
+      tags:
+      - qdjango
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectBookmarkRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectBookmarkRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectBookmarkRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectBookmark'
+          description: ''
+    delete:
+      operationId: qdjango_api_bookmark_destroy
+      description: API for project bookmarks per user
+      tags:
+      - qdjango
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /vector/api/{mode_call_editing}/{project_type}/{project_id}/{layer_name}/:
+    get:
+      operationId: vector_api_retrieve
+      description: View base to get layer data
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call_editing
+        schema:
+          type: string
+          enum:
+          - commit
+          - editing
+          - unlock
+        description: 'Editing operation: read editing data, commit changes, or unlock
+          features.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      tags:
+      - editing
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: vector_api_create
+      description: View base to get layer data
+      parameters:
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: mode_call_editing
+        schema:
+          type: string
+          enum:
+          - commit
+          - editing
+          - unlock
+        description: 'Editing operation: read editing data, commit changes, or unlock
+          features.'
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_type
+        schema:
+          type: string
+          enum:
+          - qdjango
+        required: true
+      tags:
+      - editing
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - jwtAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          description: No response body
+  /vector/api/info/layer/{editing_layer_id}/:
+    get:
+      operationId: vector_api_info_layer_list
+      description: Layer vector usable as constraint layer
+      parameters:
+      - in: path
+        name: editing_layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - editing
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLayerInfoList'
+          description: ''
+  /vector/api/info/layer/user/{editing_layer_id}/:
+    get:
+      operationId: vector_api_info_layer_user_list
+      description: For a editing layer id, get by qdjango layer id, return users and
+        users_groups (viewers) can be editing on it
+      parameters:
+      - in: path
+        name: editing_layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - editing
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLayerInfoUserList'
+          description: ''
+  /vector/api/info/layer/authgroup/{editing_layer_id}/:
+    get:
+      operationId: vector_api_info_layer_authgroup_list
+      description: For a editing layer id, get by qdjango layer id, return users_groups
+        (viewers) can be editing on it
+      parameters:
+      - in: path
+        name: editing_layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - editing
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLayerInfoAuthGroupList'
+          description: ''
+  /caching/api/{layer_name}/{z}/{x}/{y}.{extension}:
+    get:
+      operationId: caching_api_._retrieve
+      description: Fetch tiles with tilestache.
+      parameters:
+      - in: path
+        name: extension
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: layer_name
+        schema:
+          type: string
+          pattern: ^[-\w]+$
+        required: true
+      - in: path
+        name: x
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: y
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: z
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - caching
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /qplotly/api/trace/{project_id}/{id}/:
+    get:
+      operationId: qplotly_api_trace_retrieve
+      description: API return plotly trace data
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - qplotly
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /qplotly/api/trace/{project_id}/{qgs_layer_id}/{id}/:
+    get:
+      operationId: qplotly_api_trace_retrieve_2
+      description: API return plotly trace data
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: path
+        name: qgs_layer_id
+        schema:
+          type: string
+          pattern: ^[-_\w\d]+$
+        required: true
+      tags:
+      - qplotly
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /qplotly/api/widget/detail/{project_id}/{id}/:
+    get:
+      operationId: qplotly_api_widget_detail_retrieve
+      description: Details/Update/Delete of a qplotly widget
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QplotlyWidget'
+          description: ''
+    put:
+      operationId: qplotly_api_widget_detail_update
+      description: Details/Update/Delete of a qplotly widget
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - qplotly
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QplotlyWidget'
+          description: ''
+    patch:
+      operationId: qplotly_api_widget_detail_partial_update
+      description: Details/Update/Delete of a qplotly widget
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - qplotly
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedQplotlyWidgetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedQplotlyWidgetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedQplotlyWidgetRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QplotlyWidget'
+          description: ''
+    delete:
+      operationId: qplotly_api_widget_detail_destroy
+      description: Details/Update/Delete of a qplotly widget
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qplotly/api/widget/layer/{layer_id}/:
+    get:
+      operationId: qplotly_api_widget_layer_list
+      description: List of qplotly widgets, optionally filtered by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QplotlyWidget'
+          description: ''
+    post:
+      operationId: qplotly_api_widget_layer_create
+      description: List of qplotly widgets, optionally filtered by editing layer id
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - qplotly
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QplotlyWidget'
+          description: ''
+  /qplotly/api/widget/:
+    get:
+      operationId: qplotly_api_widget_list
+      description: List of qplotly widgets, optionally filtered by editing layer id
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QplotlyWidget'
+          description: ''
+    post:
+      operationId: qplotly_api_widget_create
+      description: List of qplotly widgets, optionally filtered by editing layer id
+      tags:
+      - qplotly
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QplotlyWidgetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QplotlyWidget'
+          description: ''
+  /qplotly/api/widget/related/{id}/:
+    post:
+      operationId: qplotly_api_widget_related_create
+      description: POST-only endpoint for creating/updating related widget relations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /qplotly/api/widget/related/{id}/{project_id}/:
+    get:
+      operationId: qplotly_api_widget_related_retrieve
+      description: |-
+        Manage related_widgets on a QplotlyWidget via the QplotlyWidgetRelation through-model.
+
+        GET    /api/widget/related/<pk>/<project_id>/
+            Returns the list of related widgets with their relation order.
+
+        POST   /api/widget/related/<pk>/
+            Adds a relation. Body: {"target": <widget_id>, "project": <project_id>, "order": <int>}
+            Creates the relation if it does not exist, otherwise updates the order.
+
+        DELETE /api/widget/related/<pk>/<target_pk>/<project_id>/
+            Removes the relation between the source widget and the target widget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: qplotly_api_widget_related_create_2
+      description: |-
+        Manage related_widgets on a QplotlyWidget via the QplotlyWidgetRelation through-model.
+
+        GET    /api/widget/related/<pk>/<project_id>/
+            Returns the list of related widgets with their relation order.
+
+        POST   /api/widget/related/<pk>/
+            Adds a relation. Body: {"target": <widget_id>, "project": <project_id>, "order": <int>}
+            Creates the relation if it does not exist, otherwise updates the order.
+
+        DELETE /api/widget/related/<pk>/<target_pk>/<project_id>/
+            Removes the relation between the source widget and the target widget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: qplotly_api_widget_related_destroy
+      description: |-
+        Manage related_widgets on a QplotlyWidget via the QplotlyWidgetRelation through-model.
+
+        GET    /api/widget/related/<pk>/<project_id>/
+            Returns the list of related widgets with their relation order.
+
+        POST   /api/widget/related/<pk>/
+            Adds a relation. Body: {"target": <widget_id>, "project": <project_id>, "order": <int>}
+            Creates the relation if it does not exist, otherwise updates the order.
+
+        DELETE /api/widget/related/<pk>/<target_pk>/<project_id>/
+            Removes the relation between the source widget and the target widget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qplotly/api/widget/related/{id}/{target_pk}/{project_id}/:
+    get:
+      operationId: qplotly_api_widget_related_retrieve_2
+      description: |-
+        Manage related_widgets on a QplotlyWidget via the QplotlyWidgetRelation through-model.
+
+        GET    /api/widget/related/<pk>/<project_id>/
+            Returns the list of related widgets with their relation order.
+
+        POST   /api/widget/related/<pk>/
+            Adds a relation. Body: {"target": <widget_id>, "project": <project_id>, "order": <int>}
+            Creates the relation if it does not exist, otherwise updates the order.
+
+        DELETE /api/widget/related/<pk>/<target_pk>/<project_id>/
+            Removes the relation between the source widget and the target widget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: target_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: qplotly_api_widget_related_create_3
+      description: |-
+        Manage related_widgets on a QplotlyWidget via the QplotlyWidgetRelation through-model.
+
+        GET    /api/widget/related/<pk>/<project_id>/
+            Returns the list of related widgets with their relation order.
+
+        POST   /api/widget/related/<pk>/
+            Adds a relation. Body: {"target": <widget_id>, "project": <project_id>, "order": <int>}
+            Creates the relation if it does not exist, otherwise updates the order.
+
+        DELETE /api/widget/related/<pk>/<target_pk>/<project_id>/
+            Removes the relation between the source widget and the target widget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: target_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: qplotly_api_widget_related_destroy_2
+      description: |-
+        Manage related_widgets on a QplotlyWidget via the QplotlyWidgetRelation through-model.
+
+        GET    /api/widget/related/<pk>/<project_id>/
+            Returns the list of related widgets with their relation order.
+
+        POST   /api/widget/related/<pk>/
+            Adds a relation. Body: {"target": <widget_id>, "project": <project_id>, "order": <int>}
+            Creates the relation if it does not exist, otherwise updates the order.
+
+        DELETE /api/widget/related/<pk>/<target_pk>/<project_id>/
+            Removes the relation between the source widget and the target widget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: target_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /qplotly/api/widget/related/{id}/available/{project_id}/:
+    get:
+      operationId: qplotly_api_widget_related_available_retrieve
+      description: |-
+        GET /api/widget/related/<pk>/available/<project_id>/
+        Returns widgets that can be added as related to the widget <pk>:
+        - belong to the same layer(s) as <pk>
+        - are not already a target of any QplotlyWidgetRelation
+        - do not have any related widgets of their own (i.e. are not a source in any relation)
+        - are not <pk> itself
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /qplotly/api/widget/free/{project_id}/{layer_id}/:
+    get:
+      operationId: qplotly_api_widget_free_retrieve
+      description: |-
+        GET /api/widget/free/<project_id>/<layer_id>/
+        Returns the PKs of widgets on the given layer that are NOT a target
+        in any QplotlyWidgetRelation (i.e. they are not already "owned" by
+        another widget as a related).
+        These are the widgets for which the "manage related" button must be shown.
+      parameters:
+      - in: path
+        name: layer_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /qplotly/api/trace-config/{id}/:
+    get:
+      operationId: qplotly_api_trace_config_retrieve
+      description: Get the trace config data for a plotly widget.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - qplotly
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /newline/api/refreshviews/:
+    get:
+      operationId: newline_api_refreshviews_retrieve
+      description: API view to refresh materialized view
+      tags:
+      - newline
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /qes/api/search/{project_id}/:
+    get:
+      operationId: qes_api_search_retrieve
+      description: Returns the search results from the Elasticsearch index restricted
+        to the given project, after the standard ACL check.
+      summary: Elasticsearch search inside a project
+      parameters:
+      - in: path
+        name: project_id
+        schema:
+          type: integer
+        description: Numeric ID of the qdjango Project.
+        required: true
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Full-text query string.
+        required: true
+      tags:
+      - qes
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/QesSearchData'
+                required:
+                - result
+          description: ''
+components:
+  schemas:
+    CRSInfoData:
+      type: object
+      properties:
+        epsg:
+          type: integer
+        proj4:
+          type: string
+        geographic:
+          type: boolean
+        axisinverted:
+          type: boolean
+        extent:
+          type: array
+          items:
+            type: number
+            format: double
+      required:
+      - axisinverted
+      - epsg
+      - extent
+      - geographic
+      - proj4
+    ColumnAcl:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        layer:
+          type: integer
+        restricted_fields:
+          type: array
+          items:
+            type: string
+            maxLength: 255
+        users:
+          type: array
+          items:
+            type: integer
+        groups:
+          type: array
+          items:
+            type: integer
+            title: User groups
+          title: User groups
+      required:
+      - layer
+      - pk
+      - restricted_fields
+    ColumnAclRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        restricted_fields:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+        users:
+          type: array
+          items:
+            type: integer
+        groups:
+          type: array
+          items:
+            type: integer
+            title: User groups
+          title: User groups
+      required:
+      - layer
+      - restricted_fields
+    ConstraintExpressionRule:
+      type: object
+      description: Mixin for management of anonymoususer property/flag
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          title: Rule definition
+          description: Definition of the rule, either an SQL WHERE condition or a
+            QgsExpression definition depending on the rule type
+          maxLength: 1024
+        active:
+          type: string
+          readOnly: true
+        anonymoususer:
+          type: boolean
+          nullable: true
+      required:
+      - active
+      - constraint
+      - pk
+      - rule
+    ConstraintExpressionRuleRequest:
+      type: object
+      description: Mixin for management of anonymoususer property/flag
+      properties:
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          minLength: 1
+          title: Rule definition
+          description: Definition of the rule, either an SQL WHERE condition or a
+            QgsExpression definition depending on the rule type
+          maxLength: 1024
+        anonymoususer:
+          type: boolean
+          nullable: true
+      required:
+      - constraint
+      - rule
+    ConstraintSubsetStringRule:
+      type: object
+      description: Mixin for management of anonymoususer property/flag
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          title: Rule definition
+          description: Definition of the rule, either an SQL WHERE condition or a
+            QgsExpression definition depending on the rule type
+          maxLength: 1024
+        active:
+          type: string
+          readOnly: true
+        anonymoususer:
+          type: boolean
+          nullable: true
+      required:
+      - active
+      - constraint
+      - pk
+      - rule
+    ConstraintSubsetStringRuleRequest:
+      type: object
+      description: Mixin for management of anonymoususer property/flag
+      properties:
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          minLength: 1
+          title: Rule definition
+          description: Definition of the rule, either an SQL WHERE condition or a
+            QgsExpression definition depending on the rule type
+          maxLength: 1024
+        anonymoususer:
+          type: boolean
+          nullable: true
+      required:
+      - constraint
+      - rule
+    DeployInfoData:
+      type: object
+      properties:
+        version:
+          type: string
+        modules:
+          type: array
+          items:
+            type: string
+        environment:
+          $ref: '#/components/schemas/DeployInfoEnvironment'
+      required:
+      - environment
+      - modules
+      - version
+    DeployInfoEnvironment:
+      type: object
+      properties:
+        python_version:
+          type: string
+        django_version:
+          type: string
+        qgis-server-version:
+          type: string
+      required:
+      - django_version
+      - python_version
+      - qgis-server-version
+    ExpressionEvalData:
+      type: object
+      properties:
+        value:
+          type: object
+          additionalProperties: {}
+      required:
+      - value
+    ExpressionEvalRequestRequest:
+      type: object
+      properties:
+        expression:
+          type: string
+          minLength: 1
+          description: QgsExpression text.
+        qgs_layer_id:
+          type: string
+          minLength: 1
+        form_data:
+          type: object
+          additionalProperties: {}
+          description: GeoJSON feature.
+        formatter:
+          type: integer
+          default: 0
+        parent:
+          type: string
+          nullable: true
+          minLength: 1
+        field_name:
+          type: string
+          nullable: true
+          minLength: 1
+      required:
+      - expression
+    GenericSuiteData:
+      type: object
+      description: Generic suite data
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        sub_title:
+          type: string
+          nullable: true
+          title: Subtitle
+          maxLength: 255
+        home_description:
+          type: string
+          nullable: true
+        about_title:
+          type: string
+          maxLength: 255
+        about_description:
+          type: string
+          nullable: true
+        about_name:
+          type: string
+          maxLength: 255
+        about_tel:
+          type: string
+          nullable: true
+          title: About phone
+          maxLength: 255
+        about_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        about_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        groups_title:
+          type: string
+          maxLength: 255
+        groups_map_description:
+          type: string
+          nullable: true
+        login_title:
+          type: string
+          nullable: true
+          maxLength: 255
+        login_description:
+          type: string
+          nullable: true
+        suite_logo:
+          type: string
+          format: uri
+          nullable: true
+        url_suite_logo:
+          type: string
+          format: uri
+          nullable: true
+          title: Suite logo URL
+          maxLength: 200
+        registration_intro:
+          type: string
+          nullable: true
+          title: Registration introductory message
+        credits:
+          type: string
+          nullable: true
+        main_map_title:
+          type: string
+          nullable: true
+          maxLength: 400
+        facebook_url:
+          type: string
+          format: uri
+          nullable: true
+          title: Facebook link
+          maxLength: 200
+        twitter_url:
+          type: string
+          format: uri
+          nullable: true
+          title: Twitter link
+          maxLength: 200
+        googleplus_url:
+          type: string
+          format: uri
+          nullable: true
+          title: Google+ link
+          maxLength: 200
+        youtube_url:
+          type: string
+          format: uri
+          nullable: true
+          title: Youtube link
+          maxLength: 200
+        instagram_url:
+          type: string
+          format: uri
+          nullable: true
+          title: Instagram link
+          maxLength: 200
+        flickr_url:
+          type: string
+          format: uri
+          nullable: true
+          title: Flickr link
+          maxLength: 200
+        tripadvisor_url:
+          type: string
+          format: uri
+          nullable: true
+          title: Tripadvisor link
+          maxLength: 200
+      required:
+      - about_name
+      - about_title
+      - groups_title
+      - title
+    GeoConstraint:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        layer:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        constraint_layer_qgs_layer_id:
+          type: string
+          readOnly: true
+        layer_qgs_layer_id:
+          type: string
+          readOnly: true
+        constraint_layer:
+          type: integer
+        constraint_layer_name:
+          type: string
+          readOnly: true
+        active:
+          type: boolean
+        constraint_rule_count:
+          type: string
+          readOnly: true
+        for_view:
+          type: boolean
+          nullable: true
+          title: Active for visualization
+          description: Active this constraint for users have viewing grant on layer/project
+        for_editing:
+          type: boolean
+          nullable: true
+          title: Active for editing
+          description: Active this constraint for users have editing grant on layer/project
+        autozoom:
+          type: boolean
+          nullable: true
+          title: Autozoom on map boostrap
+          description: Active this to make possible auto zoom on geometric constraint
+            (combining every rule) for user on map boostrap
+      required:
+      - constraint_layer
+      - constraint_layer_name
+      - constraint_layer_qgs_layer_id
+      - constraint_rule_count
+      - layer
+      - layer_qgs_layer_id
+      - pk
+    GeoConstraintRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        constraint_layer:
+          type: integer
+        active:
+          type: boolean
+        for_view:
+          type: boolean
+          nullable: true
+          title: Active for visualization
+          description: Active this constraint for users have viewing grant on layer/project
+        for_editing:
+          type: boolean
+          nullable: true
+          title: Active for editing
+          description: Active this constraint for users have editing grant on layer/project
+        autozoom:
+          type: boolean
+          nullable: true
+          title: Autozoom on map boostrap
+          description: Active this to make possible auto zoom on geometric constraint
+            (combining every rule) for user on map boostrap
+      required:
+      - constraint_layer
+      - layer
+    GeoConstraintRule:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          title: SQL WHERE clause for the constraint layer
+          maxLength: 255
+        active:
+          type: string
+          readOnly: true
+        anonymoususer:
+          type: boolean
+          nullable: true
+      required:
+      - active
+      - constraint
+      - pk
+      - rule
+    GeoConstraintRuleRequest:
+      type: object
+      properties:
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          minLength: 1
+          title: SQL WHERE clause for the constraint layer
+          maxLength: 255
+        anonymoususer:
+          type: boolean
+          nullable: true
+      required:
+      - constraint
+      - rule
+    Group:
+      type: object
+      description: Map group serializer for portal
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        srid:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        header_logo_link:
+          type: string
+          format: uri
+          nullable: true
+          title: Logo link
+          description: Enter link with http:// or https//
+          maxLength: 200
+        header_logo_img:
+          type: string
+          format: uri
+          title: Logo image
+      required:
+      - id
+      - name
+      - srid
+      - title
+    Html2PdfRequestRequest:
+      type: object
+      properties:
+        html:
+          type: string
+          minLength: 1
+          description: Full HTML markup to render.
+        filename:
+          type: string
+          minLength: 1
+          default: download.pdf
+      required:
+      - html
+    LayerInfo:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        name:
+          type: string
+          maxLength: 1000
+        title:
+          type: string
+          maxLength: 255
+        origname:
+          type: string
+          nullable: true
+          title: Original Name
+          maxLength: 1000
+        qgs_layer_id:
+          type: string
+          nullable: true
+          title: Qgis Layer Project ID
+          maxLength: 1000
+        layer_type:
+          allOf:
+          - $ref: '#/components/schemas/LayerTypeEnum'
+          title: Type
+        database_columns:
+          type: string
+          nullable: true
+      required:
+      - layer_type
+      - name
+      - pk
+    LayerInfoAuthGroup:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        name:
+          type: string
+          maxLength: 150
+      required:
+      - name
+      - pk
+    LayerInfoUser:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - pk
+      - username
+    LayerTypeEnum:
+      enum:
+      - postgres
+      - spatialite
+      - raster
+      - wfs
+      - wms
+      - ogr
+      - gdal
+      - delimitedtext
+      - arcgismapserver
+      - arcgisfeatureserver
+      - mssql
+      - virtual
+      - oracle
+      - vector-tile
+      - wcs
+      - vectortile
+      - mdal
+      - postgresraster
+      type: string
+    MacroGroup:
+      type: object
+      description: Map macrogroup serializer for portal
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          title: Identification name
+          description: Internal identification Macrogroup name
+          maxLength: 255
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        logo_img:
+          type: string
+          format: uri
+          title: Logo image
+        logo_link:
+          type: string
+          format: uri
+          nullable: true
+          description: Enter link with http:// or https//
+          maxLength: 200
+      required:
+      - id
+      - logo_img
+      - title
+    PaginatedColumnAclList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnAcl'
+    PaginatedConstraintExpressionRuleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstraintExpressionRule'
+    PaginatedConstraintSubsetStringRuleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstraintSubsetStringRule'
+    PaginatedGeoConstraintList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoConstraint'
+    PaginatedGeoConstraintRuleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoConstraintRule'
+    PaginatedLayerInfoAuthGroupList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayerInfoAuthGroup'
+    PaginatedLayerInfoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayerInfo'
+    PaginatedLayerInfoUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayerInfoUser'
+    PaginatedProjectBookmarkList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectBookmark'
+    PaginatedScaleVisibilityLayerConstraintList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScaleVisibilityLayerConstraint'
+    PaginatedSingleLayerConstraintList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SingleLayerConstraint'
+    PatchedColumnAclRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        restricted_fields:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+        users:
+          type: array
+          items:
+            type: integer
+        groups:
+          type: array
+          items:
+            type: integer
+            title: User groups
+          title: User groups
+    PatchedConstraintExpressionRuleRequest:
+      type: object
+      description: Mixin for management of anonymoususer property/flag
+      properties:
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          minLength: 1
+          title: Rule definition
+          description: Definition of the rule, either an SQL WHERE condition or a
+            QgsExpression definition depending on the rule type
+          maxLength: 1024
+        anonymoususer:
+          type: boolean
+          nullable: true
+    PatchedConstraintSubsetStringRuleRequest:
+      type: object
+      description: Mixin for management of anonymoususer property/flag
+      properties:
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          minLength: 1
+          title: Rule definition
+          description: Definition of the rule, either an SQL WHERE condition or a
+            QgsExpression definition depending on the rule type
+          maxLength: 1024
+        anonymoususer:
+          type: boolean
+          nullable: true
+    PatchedGeoConstraintRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        constraint_layer:
+          type: integer
+        active:
+          type: boolean
+        for_view:
+          type: boolean
+          nullable: true
+          title: Active for visualization
+          description: Active this constraint for users have viewing grant on layer/project
+        for_editing:
+          type: boolean
+          nullable: true
+          title: Active for editing
+          description: Active this constraint for users have editing grant on layer/project
+        autozoom:
+          type: boolean
+          nullable: true
+          title: Autozoom on map boostrap
+          description: Active this to make possible auto zoom on geometric constraint
+            (combining every rule) for user on map boostrap
+    PatchedGeoConstraintRuleRequest:
+      type: object
+      properties:
+        constraint:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        rule:
+          type: string
+          minLength: 1
+          title: SQL WHERE clause for the constraint layer
+          maxLength: 255
+        anonymoususer:
+          type: boolean
+          nullable: true
+    PatchedQplotlyWidgetRequest:
+      type: object
+      properties:
+        xml:
+          type: string
+          minLength: 1
+          title: XML original settings
+        datasource:
+          type: string
+          nullable: true
+          minLength: 1
+          title: Layer datasource
+        selected_features_only:
+          type: boolean
+          title: Use selected features only
+        visible_features_only:
+          type: boolean
+          title: Use visible features only
+        type:
+          type: string
+          nullable: true
+          minLength: 1
+          title: Plot type
+          maxLength: 50
+        title:
+          type: string
+          nullable: true
+          minLength: 1
+          title: Plot title
+          maxLength: 255
+        layers:
+          type: array
+          items:
+            type: integer
+        show_on_start_client:
+          type: boolean
+          nullable: true
+          title: Set as default plot on starting map
+        show_position:
+          type: string
+          nullable: true
+          title: SChart show position
+          maxLength: 100
+    PatchedScaleVisibilityLayerConstraintRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        minscale:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        maxscale:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+    PatchedSingleLayerConstraintRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        active:
+          type: boolean
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        for_view:
+          type: boolean
+          nullable: true
+          title: Active for visualization
+          description: Active this constraint for users have viewing grant on layer/project
+        for_editing:
+          type: boolean
+          nullable: true
+          title: Active for editing
+          description: Active this constraint for users have editing grant on layer/project
+    PermaLinkData:
+      type: object
+      properties:
+        permalink_code:
+          type: string
+      required:
+      - permalink_code
+    Project:
+      type: object
+      description: Map group serializer for portal
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+        map_url:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - map_url
+      - title
+    ProjectBookmark:
+      type: object
+      description: Serializer for project bookmarks per user
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+        project:
+          type: integer
+      required:
+      - id
+      - project
+      - user
+    ProjectBookmarkRequest:
+      type: object
+      description: Serializer for project bookmarks per user
+      properties:
+        user:
+          type: integer
+        project:
+          type: integer
+      required:
+      - project
+      - user
+    QesSearchData:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - results
+    QplotlyWidget:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        xml:
+          type: string
+          title: XML original settings
+        datasource:
+          type: string
+          nullable: true
+          title: Layer datasource
+        selected_features_only:
+          type: boolean
+          title: Use selected features only
+        visible_features_only:
+          type: boolean
+          title: Use visible features only
+        type:
+          type: string
+          nullable: true
+          title: Plot type
+          maxLength: 50
+        title:
+          type: string
+          nullable: true
+          title: Plot title
+          maxLength: 255
+        layers:
+          type: array
+          items:
+            type: integer
+        show_on_start_client:
+          type: boolean
+          nullable: true
+          title: Set as default plot on starting map
+        show_position:
+          type: string
+          nullable: true
+          title: SChart show position
+          maxLength: 100
+      required:
+      - layers
+      - pk
+      - xml
+    QplotlyWidgetRequest:
+      type: object
+      properties:
+        xml:
+          type: string
+          minLength: 1
+          title: XML original settings
+        datasource:
+          type: string
+          nullable: true
+          minLength: 1
+          title: Layer datasource
+        selected_features_only:
+          type: boolean
+          title: Use selected features only
+        visible_features_only:
+          type: boolean
+          title: Use visible features only
+        type:
+          type: string
+          nullable: true
+          minLength: 1
+          title: Plot type
+          maxLength: 50
+        title:
+          type: string
+          nullable: true
+          minLength: 1
+          title: Plot title
+          maxLength: 255
+        layers:
+          type: array
+          items:
+            type: integer
+        show_on_start_client:
+          type: boolean
+          nullable: true
+          title: Set as default plot on starting map
+        show_position:
+          type: string
+          nullable: true
+          title: SChart show position
+          maxLength: 100
+      required:
+      - layers
+      - xml
+    ScaleVisibilityLayerConstraint:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        layer:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        minscale:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        maxscale:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+      required:
+      - group
+      - layer
+      - pk
+      - user
+    ScaleVisibilityLayerConstraintRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        user:
+          type: integer
+          nullable: true
+        group:
+          type: integer
+          nullable: true
+        minscale:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        maxscale:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+      required:
+      - group
+      - layer
+      - user
+    ShortURLData:
+      type: object
+      properties:
+        short_url:
+          type: string
+      required:
+      - short_url
+    ShortURLRequestRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          minLength: 1
+      required:
+      - url
+    SingleLayerConstraint:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        layer:
+          type: integer
+        qgs_layer_id:
+          type: string
+          readOnly: true
+        layer_name:
+          type: string
+          readOnly: true
+        active:
+          type: boolean
+        rule_count:
+          type: string
+          readOnly: true
+        subset_rule_count:
+          type: string
+          readOnly: true
+        expression_rule_count:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        for_view:
+          type: boolean
+          nullable: true
+          title: Active for visualization
+          description: Active this constraint for users have viewing grant on layer/project
+        for_editing:
+          type: boolean
+          nullable: true
+          title: Active for editing
+          description: Active this constraint for users have editing grant on layer/project
+      required:
+      - expression_rule_count
+      - layer
+      - layer_name
+      - name
+      - pk
+      - qgs_layer_id
+      - rule_count
+      - subset_rule_count
+    SingleLayerConstraintRequest:
+      type: object
+      properties:
+        layer:
+          type: integer
+        active:
+          type: boolean
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        for_view:
+          type: boolean
+          nullable: true
+          title: Active for visualization
+          description: Active this constraint for users have viewing grant on layer/project
+        for_editing:
+          type: boolean
+          nullable: true
+          title: Active for editing
+          description: Active this constraint for users have editing grant on layer/project
+      required:
+      - layer
+      - name
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    User:
+      type: object
+      description: User contrib.auth.model serializer
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        roles:
+          type: string
+          readOnly: true
+        viewer_user_groups:
+          type: string
+          readOnly: true
+        editor_user_groups:
+          type: string
+          readOnly: true
+        backend:
+          type: string
+          readOnly: true
+      required:
+      - backend
+      - editor_user_groups
+      - email
+      - id
+      - roles
+      - username
+      - viewer_user_groups
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: g3w_suite_qgis_api
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Token-based authentication. Header: `Authorization: Token <key>`.'
+tags:
+- name: core
+  description: 'Core endpoints: vector/raster data, project info, expressions, PDF,
+    short URLs.'
+- name: client
+  description: Client configuration (project/group bootstrap for the map client).
+- name: qdjango
+  description: QGIS projects, layers, legend, print, WMS/WFS proxy metadata.
+- name: editing
+  description: 'Vector editing: commits, feature locks, form data.'
+- name: OWS
+  description: OGC WMS/WFS proxy entry point.
+- name: caching
+  description: Tile caching configuration.
+- name: qplotly
+  description: Plotly widget data.
+- name: qtimeseries
+  description: Time-series widget data.
+- name: qes
+  description: Elasticsearch-backed search.
+- name: filemanager
+  description: Project file manager.
+- name: usersmanage
+  description: Users and groups listing.
+- name: about
+  description: Public groups, projects and macrogroups listing.

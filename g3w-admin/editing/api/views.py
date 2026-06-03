@@ -2,6 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.views.decorators.csrf import csrf_exempt
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
 from core.api.filters import IntersectsBBoxFilter, FieldFilterBackend
@@ -17,6 +18,20 @@ from qdjango.api.layers.filters import \
 from .base.views import BaseEditingVectorOnModelApiView
 
 
+@extend_schema(
+    tags=['editing'],
+    parameters=[
+        OpenApiParameter(
+            name='mode_call_editing',
+            location=OpenApiParameter.PATH,
+            description='Editing operation: read editing data, commit changes, or unlock features.',
+            enum=['editing', 'commit', 'unlock'],
+        ),
+        OpenApiParameter('project_type', location=OpenApiParameter.PATH, enum=['qdjango']),
+        OpenApiParameter('project_id', location=OpenApiParameter.PATH, type=int),
+        OpenApiParameter('layer_name', location=OpenApiParameter.PATH),
+    ],
+)
 class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnModelApiView):
 
     permission_classes = (
