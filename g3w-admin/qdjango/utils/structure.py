@@ -144,9 +144,6 @@ class QdjangoMetaLayer(CoreMetaLayer):
     Layer 4 (Metalayer value 3)
     Layer 1 and 2 work as a group also for Layer 3 another group and Layer 4
     """
-    layerTypesSingleLayer = (
-        'wms',
-    )
 
     def getCurrentByLayer(self, layer):
         """
@@ -156,7 +153,7 @@ class QdjangoMetaLayer(CoreMetaLayer):
         self.countLayer += 1
         layerType = layer['source']['type']
 
-        if layerType in self.layerTypesSingleLayer and 'url' in layer['source'] and layer['source']['external']\
+        if layerType in Layer.layer_types_can_be_external() and 'url' in layer['source'] and layer['source']['external']\
                 or 'cache_url' in layer:
             if self.countLayer > 1:
                 self.increment()

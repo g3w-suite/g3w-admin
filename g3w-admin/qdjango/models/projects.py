@@ -696,7 +696,11 @@ class VectorLayersManager(models.Manager):
     """Returns only vector layers"""
 
     def get_queryset(self):
-        return super().get_queryset().exclude(layer_type__in=('gdal', 'wms', 'arcgismapserver', 'vector-tile'))
+        return super().get_queryset().exclude(layer_type__in=(
+            Layer.TYPES.gdal, 
+            Layer.TYPES.wms, 
+            Layer.TYPES.arcgismapserver, 
+            Layer.TYPES.vector_tile))
 
 
 class Layer(G3WACLModelMixins, models.Model):
@@ -722,6 +726,14 @@ class Layer(G3WACLModelMixins, models.Model):
         ('mdal', _('Mesh layer')),
         ('postgresraster', _('PostGis raster'))
     )
+
+    @classmethod
+    def layer_types_can_be_external(cls):
+        """Returns the layer types that can be external, not called by QGIS server but by external services (like WMS)"""
+        return [
+            cls.TYPES.wms, 
+            cls.TYPES.arcgismapserver
+        ]
 
     # General info
     name = models.CharField(

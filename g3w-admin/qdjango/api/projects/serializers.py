@@ -902,7 +902,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         }
 
         # add options for wms layer
-        if instance.layer_type in [Layer.TYPES.wms, Layer.TYPES.arcgismapserver]:
+        if instance.layer_type in Layer.layer_types_can_be_external():
 
             if instance.layer_type == Layer.TYPES.wms:
                 datasource_wms = QueryDict(instance.datasource)
