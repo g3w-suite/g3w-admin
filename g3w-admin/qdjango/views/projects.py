@@ -20,11 +20,9 @@ from core.utils.decorators import project_type_permission_required, is_active_re
 from core.models import GroupProjectPanoramic
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
-from qplotly.utils.models import get_qplotlywidgets4project
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.models import Group as AuthGroup
-from usersmanage.decorators import user_passes_test_or_403
-from usersmanage.utils import userHasGroups, get_groups_for_object, get_users_for_object
+from usersmanage.utils import userHasGroups, get_groups_for_object
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 
 if 'editing' in settings.INSTALLED_APPS:
@@ -807,17 +805,6 @@ class QdjangoLayerWidgetCreateView(QdjangoLayerWidgetsMixin, G3WRequestViewMixin
         # add layer
         self.object.layers.add(self.layer)
 
-        '''
-        if not self.request.user.is_superuser:
-            self.object.addPermissionsToEditor(self.request.user)
-        else:
-            editor_users = get_users_for_object(self.layer, 'change_layer', 'Editor Maps Groups')
-            if editor_users:
-                self.object.addPermissionsToEditor(editor_users[0])
-
-        viewers = map(lambda o: o.id, get_users_for_object(self.layer, 'view_layer', 'Viewer Maps Groups'))
-        self.object.addPermissionsToViewers(viewers)
-        '''
 
         return ret
 
