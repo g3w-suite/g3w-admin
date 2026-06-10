@@ -102,7 +102,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     use_logo_client = models.BooleanField(_('Use logo image for client'), default=False)
 
     slug = AutoSlugField(
-        _('Slug'), unique=True, populate_from=['name'])
+        _('Slug'), unique=True, populate_from=['name'], overwrite=True)
 
     def __str__(self):
         return self.title
@@ -137,7 +137,7 @@ class Group(TimeStampedModel, OrderedModel):
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
     slug = AutoSlugField(
-        _('Slug'), populate_from=['name'], unique=True
+        _('Slug'), populate_from=['name'], unique=True, overwrite=True
         )
     is_active = models.BooleanField(_('Is active'), default=1)
 
