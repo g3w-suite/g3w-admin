@@ -14,4 +14,5 @@ G3W_CLIENT_RIGHT_PANEL = {
 
 BASE_G3W_CLIENT_LEGEND = {
    'transparent': True,
+   "rulelabel": "auto",
 }
