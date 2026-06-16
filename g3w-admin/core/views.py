@@ -69,6 +69,25 @@ class DashboardView(TemplateView):
 
 
 class SearchAdminView(TemplateView):
+    """
+    Admin-wide search view.
+
+    Renders the `search.html` template with the results of a textual search
+    executed against every module connected to the
+    :data:`core.signals.execute_search_on_models` signal.
+
+    The search term is read from the ``stext`` GET parameter and forwarded to
+    every signal receiver, which is expected to return a list of result
+    objects exposing an ``n_tot_results`` attribute.
+
+    Context variables:
+        - ``search_text``: the original query string (GET ``stext``).
+        - ``results``: flat list aggregating the results returned by all
+          signal receivers.
+        - ``n_tot_results``: sum of ``n_tot_results`` across all results,
+          used to display the global match count.
+    """
+
     template_name = "search.html"
 
     def get_context_data(self, **kwargs):
