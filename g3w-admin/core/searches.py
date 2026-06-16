@@ -78,7 +78,8 @@ class G3WAdminSearch(object):
         return results.render(context={
             'results': self._results,
             'MEDIA_URL': settings.MEDIA_URL,
-            'user': self.user
+            'user': self.user,
+            'search_text': self.search_text,
         })
 
     def search(self, search_text=None):

@@ -190,6 +190,14 @@ h5 small {
     font-size: 150%;
 }
 
+.result-search-item mark,
+mark {
+    background-color: #fff3a3;
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
 div.vector-download  li,
 div.not-show  li {
     list-style: none;
