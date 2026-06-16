@@ -3,9 +3,13 @@
 {% load guardian_tags %}
 
 {% if results|length > 0 %}
-<div class="box">
+<div class="box box-success box-solid result-section result-section-macrogroup">
     <div class="box-header with-border">
-        <h3 class="box-title">{% trans 'Cartographic macro groups' %} ({{ results|length }})</h3>
+        <h3 class="box-title">
+            <i class="ion ion-cube"></i>
+            {% trans 'Cartographic macro groups' %}
+        </h3>
+        <span class="badge result-section-badge pull-right">{{ results|length }}</span>
     </div>
     <div class="box-body">
         {% for r in results %}
@@ -13,10 +17,15 @@
         {% get_obj_perms user for r as "userObj_perms" %}
         {% endif %}
         <div class="result-search-item result-search-item-{% cycle 'odd' 'even' %} row">
-            <div class="col-sm-2 col-md-1"><img style="height: 60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ r.logo_img }}"></div>
+            <div class="col-sm-2 col-md-1 result-search-item-thumb">
+                <img class="img-responsive" src="{{ MEDIA_URL }}{{ r.logo_img }}">
+            </div>
             <div class="col-sm-10 col-md-11">
-                <p>{{ r.title|highlight:search_text }} ({{ r.name|highlight:search_text }})</p>
-                {% if r.description %}<p>{{ r.description|highlight:search_text }}</p> {% endif %}
+                <h4 class="result-search-item-title">
+                    {{ r.title|highlight:search_text }}
+                    <small class="text-muted">({{ r.name|highlight:search_text }})</small>
+                </h4>
+                {% if r.description %}<p class="result-search-item-desc">{{ r.description|highlight:search_text }}</p>{% endif %}
                 {% if user %}
                 <p class="result-search-item-links">
                     <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' r.slug %}"><i class="ion ion-eye"></i></a>

@@ -3,31 +3,38 @@
 {% load guardian_tags %}
 
 {% if results|length > 0 %}
-<div class="box">
+<div class="box box-info box-solid result-section result-section-project">
     <div class="box-header with-border">
-        <h3 class="box-title">{% trans 'Projects' %} ({{ results|length }})</h3>
+        <h3 class="box-title">
+            <i class="ion ion-map"></i>
+            {% trans 'Projects' %}
+        </h3>
+        <span class="badge result-section-badge pull-right">{{ results|length }}</span>
     </div>
     <div class="box-body">
     {% for r in results %}
         {% get_obj_perms user for r as "userObj_perms" %}
 
         <div class="result-search-item result-search-item-{% cycle 'odd' 'even' %} row">
-            <div class="col-sm-2 col-md-1">
+            <div class="col-sm-2 col-md-1 result-search-item-thumb">
             {% if "view_project" in userObj_perms %}
             <a href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}" class="project-thumb" title="{% trans 'Show map' %}" target="_blank">
             {% endif %}
             {% if r.thumbnail  %}
-            <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ r.thumbnail }}" />
+            <img class="img-responsive" src="{{ MEDIA_URL }}{{ r.thumbnail }}" />
             {% else %}
-            <img style="height:60px;" class="img-responsive" src="https://via.placeholder.com/80x60" />
+            <img class="img-responsive" src="https://via.placeholder.com/80x60" />
             {% endif %}
             {% if "view_project" in userObj_perms %}
             </a>
             {% endif %}
             </div>
             <div class="col-sm-10 col-md-11">
-                <h4>{{ r.title|highlight:search_text }} <small>({% trans 'group:' %}{{ r.group.name|highlight:search_text }})</small></h4>
-                {% if r.description %}<p>{{ r.description|highlight:search_text }}</p> {% endif %}
+                <h4 class="result-search-item-title">
+                    {{ r.title|highlight:search_text }}
+                    <small class="text-muted">({% trans 'group:' %} {{ r.group.name|highlight:search_text }})</small>
+                </h4>
+                {% if r.description %}<p class="result-search-item-desc">{{ r.description|highlight:search_text }}</p>{% endif %}
                 <p class="result-search-item-links">
                     {% if "view_project" in userObj_perms %}
                         <a class="color-orange" href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
