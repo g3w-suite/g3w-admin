@@ -190,7 +190,7 @@ class GenericSuiteDataSerializer(GetUnlanguageFieldsMixin, serializers.ModelSeri
         login_url = getattr(settings, 'LOGIN_URL')
         if login_url:
             ret['login_url'] = settings.LOGIN_URL
-            ret['logout_url'] = reverse('logout')
+            ret['logout_url'] = getattr(settings, 'LOGOUT_URL', 'logout')
 
         return ret
 

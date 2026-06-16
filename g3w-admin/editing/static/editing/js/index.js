@@ -1166,7 +1166,7 @@ new (class extends Plugin {
     if (undefined === fid) { return }
 
     this.getToolBoxes().forEach(tb => tb.setShow(layer.id === tb.getId()));
-    this.showEditingPanel();
+    await this.showEditingPanel();
 
     this.state.showselectlayers = false;
 
@@ -1192,7 +1192,6 @@ new (class extends Plugin {
         if (currentScale > scale) {
           map.getView().setResolution(getResolutionFromScale(scale, units));
         }
-
       }
 
       await toolBox.start({ filter: { fids: fid } });
@@ -1214,8 +1213,13 @@ new (class extends Plugin {
 
       const geom = feature.getGeometry();
 
-      // feature has geometry → zoom to geometry
-      if (geom) {
+      // feature has geometry and scale constraint → set map center
+      if (geom && scale) {
+        GUI.getMap().getView().setCenter(ol.extent.getCenter(geom?.getExtent()));
+      }
+
+      //if feature has geometry and not a scale constraint → zoom feature extent
+      if (geom && !scale) {
         GUI.zoomToExtent(geom?.getExtent());
       }
 
@@ -1288,6 +1292,7 @@ new (class extends Plugin {
         helpMessage: 'editing.tools.update_feature',
         steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
       }));
+
 
       await w.start({
         inputs:  { layer: _layer, features: [feature] },

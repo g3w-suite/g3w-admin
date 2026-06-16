@@ -241,10 +241,12 @@ class QGISElasticsearchIndexer:
         for layer_id, qlayer in qlayers:
 
             if not isinstance(qlayer, QgsVectorLayer):
+                logger.info(f"{self.log_tag} - Generate documente from api - Layer {qlayer.name()} is not a vector layer, skipping")
                 continue
 
             # Check for indexing fields settings
             if settings.QES_INDEXING_FIELDS and not settings.QES_INDEXING_FIELDS.get(qlayer.id()):
+                logger.info(f"{self.log_tag} - Generate documente from api - No fields to index for layer {qlayer.name()}, skipping")
                 continue
 
             # Get features from API
@@ -487,7 +489,7 @@ class QGISElasticsearchIndexer:
         # Add specific filters
         if filters:
             for key, value in filters.items():
-                if key == "layer_id":
+                if key == "layer_name":
                     query["bool"]["filter"] = query["bool"].get("filter", [])
                     query["bool"]["filter"].append({"term": {"layer_name.keyword": value}})
                 elif key == "project_id":
@@ -599,7 +601,11 @@ class QGISElasticsearchIndexer:
                 "terms": {"feature_id": [str(fid) for fid in feature_ids]}
             })
 
-        result = self.es.delete_by_query(index=self.index_name, body=query)
+        try:
+            result = self.es.delete_by_query(index=self.index_name, body=query)
+        except Exception as e:
+            logger.info(f"{self.log_tag}Error deleting documents from index '{self.index_name}': {str(e)}")
+            return None
 
         success_message = (
             f"Delete documents completed.\n"

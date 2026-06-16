@@ -1817,6 +1817,7 @@ export class ToolBox extends Emitter {
    * @param { boolean } [options.disablemapcontrols=false]
    * @param { boolean } [options.showselectlayers=true]
    * @param { string }  [options.title]
+   * @param { Array }   [options.tools]
    * 
    * @returns { Promise<unknown> } info about start editing has features loaded
    */
@@ -1840,6 +1841,7 @@ export class ToolBox extends Emitter {
 
       this.state.changingtools = options.changingtools ?? false;
 
+      //show only some explicit tools for toolbox
       if (options.tools) {
         this.setEnablesDisablesTools(options.tools);
       }
@@ -1896,30 +1898,29 @@ export class ToolBox extends Emitter {
         GUI.setModal(false);
       }
 
-      this.#startAsync = null;
+      this.#startAsync = null; //reset #startAsync
 
-      this.setFeaturesOptions({ filter: options.filter });
+      this.setFeaturesOptions({ filter: options.filter }); //set filter options to get features (ex. bbox, fids, etc..)
 
-      const handlerAfterSessionGetFeatures = async promise => {
+      const is_started = this.isSessionStarted(); //Boolean check if session, to get features, is started (already ge features)
+
+      //In case of mobile device with hidden map and vector layer when click on start editing
+      const isMobileHiddenMap = (
+        ApplicationState.ismobile             // mobile device
+        && GUI.isMapHidden()                  // map not visible (content 100%)
+        && 'vector' === this.state._layerType // vector layer
+      );
+
+      this.startLoading();
+      //ina case toolbox is not yet started and we are in mobile with map hidden we need to start session before set editing to true to avoid conflict with map controls disabled when set editing true and map not visible
+      if (!is_started && isMobileHiddenMap) {
+        await new Promise(res => GUI.onceafter('setHidden', () => setTimeout(res, 300))); // 300 = CSS transition?
+        this.setFeaturesOptions({ filter: options.filter });
+
         this.emit('start-editing');
         // set unique fields values
         await setLayerUniqueFieldValues(this.getId());
-        try {
-          const features = await promise;
-          this.stopLoading();
-          this.setEditing(true);
-          resolve({ features })
-        } catch(e) {
-          console.warn(e);
-          
-          if (!e.signal) {
-            GUI.showUserMessage({ type: 'alert', message: e.message });
-          }
-          
-          this.stop();
-          this.stopLoading();
-          reject(e);
-        }
+        features = await this._session.start(this.state._getFeaturesOption);
       }
 
       const is_started = !!this.isSessionStarted();
@@ -1947,20 +1948,21 @@ export class ToolBox extends Emitter {
         });
       }
 
-      /** @TODO merge the following conditions? */
-      if (!is_started && !GIVE_ME_A_NAME) {
-        this.#start = true;
-        this.startLoading();
-        await handlerAfterSessionGetFeatures(this._session.start(this.state._getFeaturesOption))
+        this.emit('start-editing');
+        await setLayerUniqueFieldValues(this.getId());
+        features = await this._session.start(this.state._getFeaturesOption);
       }
 
+      /**
+       * Case of session already started to from parent layer to get features without start toolbox
+       */
       if (is_started && !this.#start) {
-        this.startLoading();
-        await handlerAfterSessionGetFeatures(this._session.getFeatures(this.state._getFeaturesOption))
-        this.#start = true;
-      }
 
-      if (is_started) { this.setEditing(true); }
+        this.emit('start-editing');
+        await setLayerUniqueFieldValues(this.getId());
+        features = await this._session.getFeatures(this.state._getFeaturesOption);
+
+      }
 
       // disablemapcontrols in conflict
       if (options.disablemapcontrols ?? false) {
@@ -2782,7 +2784,7 @@ export class ToolBox extends Emitter {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   isSessionStarted() {
-    return this.state.editing.session.started;
+    return !!this.state.editing.session.started;
   }
 
   /**
