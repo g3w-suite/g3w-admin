@@ -394,73 +394,53 @@ input.uploadwidget {
     opacity: .85;
 }
 
-/* Breadcrumbs over the hero: AdminLTE positions .breadcrumb absolute top-right
-   inside .content-header; with our blue hero behind it the default dark grey
-   text becomes unreadable. Make it light + add a subtle frosted pill. */
-.content-header > .dash-hero ~ .breadcrumb,
+/* Breadcrumbs above the hero: AdminLTE positions .breadcrumb absolute
+   top-right inside .content-header by default. We move it to normal flow
+   so it sits ABOVE the hero, on a soft pill aligned to the left. */
 .content-header:has(.dash-hero) > .breadcrumb {
-    background: rgba(255, 255, 255, .15);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid rgba(255, 255, 255, .25);
+    position: static;
+    float: none;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
     border-radius: 999px;
     padding: 6px 14px;
-    top: 32px;
-    right: 28px;
-    z-index: 2;
+    margin: 0 0 12px;
+    font-size: 12.5px;
+    color: #5d6b1c;
+    box-shadow: 0 2px 6px -4px rgba(93, 107, 28, .25);
 }
-.content-header > .dash-hero ~ .breadcrumb,
-.content-header > .dash-hero ~ .breadcrumb > li,
-.content-header > .dash-hero ~ .breadcrumb > li > a,
-.content-header > .dash-hero ~ .breadcrumb > .active,
-.content-header:has(.dash-hero) > .breadcrumb,
 .content-header:has(.dash-hero) > .breadcrumb > li,
 .content-header:has(.dash-hero) > .breadcrumb > li > a,
 .content-header:has(.dash-hero) > .breadcrumb > .active {
-    color: #fff !important;
+    color: #5d6b1c !important;
 }
-.content-header > .dash-hero ~ .breadcrumb > li > a,
 .content-header:has(.dash-hero) > .breadcrumb > li > a {
-    opacity: .9;
     text-decoration: none;
+    font-weight: 600;
+    transition: color .15s ease;
 }
-.content-header > .dash-hero ~ .breadcrumb > li > a:hover,
 .content-header:has(.dash-hero) > .breadcrumb > li > a:hover {
-    opacity: 1;
+    color: #95ad36 !important;
     text-decoration: underline;
 }
-.content-header > .dash-hero ~ .breadcrumb > li + li::before,
 .content-header:has(.dash-hero) > .breadcrumb > li + li::before {
-    color: rgba(255, 255, 255, .65);
+    color: rgba(93, 107, 28, .55);
+    padding: 0 6px;
 }
-.content-header > .dash-hero ~ .breadcrumb > li > i,
 .content-header:has(.dash-hero) > .breadcrumb > li > i {
-    color: #fff;
+    color: #95ad36;
+    margin-right: 4px;
+}
+.content-header:has(.dash-hero) > .breadcrumb > .active {
+    font-weight: 700;
 }
 @media (max-width: 768px) {
-    .content-header > .dash-hero ~ .breadcrumb,
     .content-header:has(.dash-hero) > .breadcrumb {
-        position: static;
-        margin: -12px 0 16px;
-        display: inline-block;
-        background: #95ad36;
-        border: 1px solid #95ad36;
-    }
-    .content-header > .dash-hero ~ .breadcrumb,
-    .content-header > .dash-hero ~ .breadcrumb > li,
-    .content-header > .dash-hero ~ .breadcrumb > li > a,
-    .content-header > .dash-hero ~ .breadcrumb > li > i,
-    .content-header > .dash-hero ~ .breadcrumb > .active,
-    .content-header:has(.dash-hero) > .breadcrumb,
-    .content-header:has(.dash-hero) > .breadcrumb > li,
-    .content-header:has(.dash-hero) > .breadcrumb > li > a,
-    .content-header:has(.dash-hero) > .breadcrumb > li > i,
-    .content-header:has(.dash-hero) > .breadcrumb > .active {
-        color: #fff !important;
-    }
-    .content-header > .dash-hero ~ .breadcrumb > li + li::before,
-    .content-header:has(.dash-hero) > .breadcrumb > li + li::before {
-        color: rgba(255, 255, 255, .75);
+        display: flex;
+        width: 100%;
     }
 }
 .dash-hero .hero-meta {
@@ -3397,4 +3377,105 @@ table.users-table > tbody > tr:first-child > td {
     background: #95ad36;
     border-color: #95ad36;
     color: #fff;
+}
+
+/* ===== Deactivated groups list (core/group_deactive_list.html) ===== */
+
+/* Trash variant of the dashboard hero */
+.dash-hero.dash-hero-trash {
+    background: linear-gradient(135deg, #5d6b1c 0%, #3d4612 70%);
+}
+.dash-hero.dash-hero-trash h1 i.fa {
+    opacity: .9;
+}
+
+/* Trash toolbar (no filter, just a counter) */
+.filter-toolbar.trash-toolbar {
+    background: #f9faf2;
+    border: 1px solid #e3e6d4;
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px -6px rgba(93, 107, 28, .25);
+}
+.trash-toolbar-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #5d6b1c;
+    font-size: 13px;
+    font-weight: 600;
+}
+.trash-toolbar-info > i.fa {
+    width: 32px;
+    height: 32px;
+    background: #95ad36;
+    color: #fff;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+.trash-toolbar-info strong {
+    font-size: 16px;
+    color: #5d6b1c;
+}
+
+/* Deactivated card styling */
+.group-card.is-deactivated {
+    filter: grayscale(.35);
+    opacity: .92;
+    border-color: #e3e6d4;
+}
+.group-card.is-deactivated:hover {
+    filter: grayscale(0);
+    opacity: 1;
+}
+.group-card.is-deactivated .group-cover {
+    cursor: default;
+}
+.group-card.is-deactivated .group-cover::after {
+    background: linear-gradient(180deg, rgba(40, 40, 40, .35) 0%, rgba(0, 0, 0, .75) 100%);
+}
+
+/* Deactivated badge in the cover */
+.deactivated-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, .92);
+    color: #5d6b1c;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px -2px rgba(0, 0, 0, .25);
+    z-index: 2;
+}
+.deactivated-badge > i.fa {
+    color: #95ad36;
+    font-size: 11px;
+}
+
+/* Restore action: green pill */
+.group-card.is-deactivated .group-actions a.restore {
+    color: #fff;
+    background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
+    border-color: transparent;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .45);
+}
+.group-card.is-deactivated .group-actions a.restore:hover,
+.group-card.is-deactivated .group-actions a.restore:focus {
+    filter: brightness(1.07);
+    color: #fff;
+    transform: translateY(-1px);
 }
