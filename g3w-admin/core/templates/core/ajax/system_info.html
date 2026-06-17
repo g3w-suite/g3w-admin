@@ -1,35 +1,107 @@
 {% load i18n %}
-<div class="row">
-  <div class="col-md-12">
-      <h3>{% trans 'General' %}</h3>
-      <ul class="list-unstyled pdl10">
-          <li><strong>OS</strong>: {{ sysinfo.OS.v }}</li>
-          <li><strong>QGIS Server</strong>: {{ sysinfo.QGIS.v }}</li>
-          <li><strong>Python</strong>: {{ sysinfo.Python.v }}</li>
+<div class="g3w-detail-overlay sysinfo-overlay">
+  <div class="sysinfo-grid">
+
+    {# General #}
+    <section class="sysinfo-card sysinfo-card-primary">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-server"></i>
+        <h3>{% trans 'General' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key"><i class="fa fa-desktop"></i> OS</span>
+          <span class="sysinfo-value">{{ sysinfo.OS.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key"><i class="fa fa-globe"></i> QGIS Server</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.QGIS.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key"><i class="fa fa-code"></i> Python</span>
+          <span class="sysinfo-value sysinfo-mono">{{ sysinfo.Python.v }}</span>
+        </li>
       </ul>
-      <h3>{% trans 'DataBase' %}</h3>
-      <ul class="list-unstyled pdl10">
-          {% for db in sysinfo.DB.items %}
-              <li><strong>{{ db.db_name }}</strong>: {{ db.v }}</li>
-          {% endfor %}
+    </section>
+
+    {# Database #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-database"></i>
+        <h3>{% trans 'Databases' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        {% for db in sysinfo.DB.items %}
+          <li>
+            <span class="sysinfo-key"><i class="fa fa-hdd-o"></i> {{ db.db_name }}</span>
+            <span class="sysinfo-value sysinfo-mono">{{ db.v }}</span>
+          </li>
+        {% empty %}
+          <li class="sysinfo-empty">
+            <i class="fa fa-info-circle"></i>
+            {% trans 'No database connections detected.' %}
+          </li>
+        {% endfor %}
       </ul>
-      <h3>{% trans 'Libraries' %}</h3>
-      <h4>{% trans 'General' %}</h4>
-      <ul class="list-unstyled  pdl10">
-          <li><strong>Qt</strong>: {{ sysinfo.Libraries.General.Qt.v }}</li>
+    </section>
+
+    {# Libraries: General #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-cubes"></i>
+        <h3>{% trans 'Libraries' %} &middot; {% trans 'General' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key">Qt</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.General.Qt.v }}</span>
+        </li>
       </ul>
-      <h4>{% trans 'Geographic' %}</h4>
-      <ul class="list-unstyled  pdl10">
-          <li><strong>GDAL/OGR</strong>: {{ sysinfo.Libraries.Geo.GDAL_OGR.v }}</li>
-          <li><strong>PROJ</strong>: {{ sysinfo.Libraries.Geo.PROJ.v }}</li>
-          <li><strong>GEOS</strong>: {{ sysinfo.Libraries.Geo.PROJ.v }}</li>
+    </section>
+
+    {# Libraries: Geographic #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-map"></i>
+        <h3>{% trans 'Libraries' %} &middot; {% trans 'Geographic' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key">GDAL/OGR</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Geo.GDAL_OGR.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">PROJ</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Geo.PROJ.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">GEOS</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Geo.GEOS.v }}</span>
+        </li>
       </ul>
-      <h4>{% trans 'Python' %}</h4>
-      <ul class="list-unstyled pdl10">
-          <li><strong>Django</strong>: {{ sysinfo.Libraries.Python.Django.v }}</li>
-          <li><strong>GDAL/OGR</strong>: {{ sysinfo.Libraries.Python.GDAL_OGR.v }}</li>
-          <li><strong>PyProj</strong>: {{ sysinfo.Libraries.Python.PyProj.v }}</li>
+    </section>
+
+    {# Libraries: Python #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-code"></i>
+        <h3>{% trans 'Libraries' %} &middot; Python</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key">Django</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Python.Django.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">GDAL/OGR</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Python.GDAL_OGR.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">PyProj</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Python.PyProj.v }}</span>
+        </li>
       </ul>
+    </section>
 
   </div>
 </div>
