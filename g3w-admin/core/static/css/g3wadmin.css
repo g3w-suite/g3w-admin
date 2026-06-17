@@ -3118,12 +3118,12 @@ table.users-table > tbody > tr:first-child > td {
 }
 
 /* ----- Neutralize rainbow boxes inside the form shell ----- */
-#group-form-shell .box.box-primary,
-#group-form-shell .box.box-success,
-#group-form-shell .box.box-danger,
-#group-form-shell .box.box-warning,
-#group-form-shell .box.box-info,
-#group-form-shell .box.box-default {
+.form-shell .box.box-primary,
+.form-shell .box.box-success,
+.form-shell .box.box-danger,
+.form-shell .box.box-warning,
+.form-shell .box.box-info,
+.form-shell .box.box-default {
     background: #fff;
     border: 1px solid #e3e6d4;
     border-top: 1px solid #e3e6d4;
@@ -3134,11 +3134,11 @@ table.users-table > tbody > tr:first-child > td {
 }
 
 /* Headers: same look across all boxes */
-#group-form-shell .box > .box-header,
-#group-form-shell .box.box-success > .box-header,
-#group-form-shell .box.box-danger > .box-header,
-#group-form-shell .box.box-primary > .box-header,
-#group-form-shell .box.box-default > .box-header {
+.form-shell .box > .box-header,
+.form-shell .box.box-success > .box-header,
+.form-shell .box.box-danger > .box-header,
+.form-shell .box.box-primary > .box-header,
+.form-shell .box.box-default > .box-header {
     background: #f9faf2;
     color: #5d6b1c;
     border-bottom: 1px solid #e3e6d4;
@@ -3146,7 +3146,7 @@ table.users-table > tbody > tr:first-child > td {
     display: flex;
     align-items: center;
 }
-#group-form-shell .box .box-header .box-title {
+.form-shell .box .box-header .box-title {
     font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
@@ -3158,14 +3158,14 @@ table.users-table > tbody > tr:first-child > td {
     align-items: center;
     gap: 8px;
 }
-#group-form-shell .box .box-header .box-title > i.fa {
+.form-shell .box .box-header .box-title > i.fa {
     color: #95ad36;
     font-size: 16px;
 }
-#group-form-shell .box .box-header .box-tools {
+.form-shell .box .box-header .box-tools {
     margin-left: auto;
 }
-#group-form-shell .box .box-header .box-tools .btn-box-tool {
+.form-shell .box .box-header .box-tools .btn-box-tool {
     color: #7a8e26;
     background: transparent;
     border: 0;
@@ -3173,37 +3173,37 @@ table.users-table > tbody > tr:first-child > td {
     border-radius: 6px;
     transition: background .15s ease, color .15s ease;
 }
-#group-form-shell .box .box-header .box-tools .btn-box-tool:hover {
+.form-shell .box .box-header .box-tools .btn-box-tool:hover {
     background: #95ad36;
     color: #fff;
 }
 
 /* Coloured accent stripe on the left for visual rhythm */
-#group-form-shell .box.box-success { border-left: 4px solid #95ad36; }
-#group-form-shell .box.box-danger  { border-left: 4px solid #b03828; }
-#group-form-shell .box.box-primary { border-left: 4px solid #7a8e26; }
-#group-form-shell .box.box-default { border-left: 4px solid #e3e6d4; }
+.form-shell .box.box-success { border-left: 4px solid #95ad36; }
+.form-shell .box.box-danger  { border-left: 4px solid #b03828; }
+.form-shell .box.box-primary { border-left: 4px solid #7a8e26; }
+.form-shell .box.box-default { border-left: 4px solid #e3e6d4; }
 
 /* Box body */
-#group-form-shell .box > .box-body {
+.form-shell .box > .box-body {
     background: #fff;
     padding: 18px;
 }
 
 /* Form fields */
-#group-form-shell .form-control {
+.form-shell .form-control {
     border-radius: 8px;
     border: 1px solid #e3e6d4;
     transition: border-color .15s ease, box-shadow .15s ease;
 }
-#group-form-shell .form-control:focus {
+.form-shell .form-control:focus {
     border-color: #95ad36;
     box-shadow: 0 0 0 3px rgba(149, 173, 54, .18);
     outline: 0;
 }
-#group-form-shell .form-group { margin-bottom: 14px; }
-#group-form-shell .form-group > label,
-#group-form-shell .control-label {
+.form-shell .form-group { margin-bottom: 14px; }
+.form-shell .form-group > label,
+.form-shell .control-label {
     color: #5d6b1c;
     font-weight: 600;
     font-size: 12.5px;
@@ -3211,21 +3211,21 @@ table.users-table > tbody > tr:first-child > td {
     letter-spacing: .4px;
     margin-bottom: 6px;
 }
-#group-form-shell .help-block {
+.form-shell .help-block {
     color: #6b7280;
     font-size: 12px;
     margin-top: 4px;
 }
 
 /* Translate hint inline */
-#group-form-shell .translatable_fields {
+.form-shell .translatable_fields {
     color: #95ad36;
     font-weight: 600;
     font-size: 12px;
 }
 
 /* Image preview */
-#group-form-shell img.img-thumbnail {
+.form-shell img.img-thumbnail {
     border-radius: 10px;
     border: 1px solid #e3e6d4;
     padding: 6px;
@@ -3236,14 +3236,14 @@ table.users-table > tbody > tr:first-child > td {
 }
 
 /* Select2 hooks (Bootstrap 3 select2 v3 used by g3w-admin) */
-#group-form-shell .select2-container .select2-choice,
-#group-form-shell .select2-container-multi .select2-choices {
+.form-shell .select2-container .select2-choice,
+.form-shell .select2-container-multi .select2-choices {
     border-radius: 8px !important;
     border: 1px solid #e3e6d4 !important;
     background: #fff !important;
     min-height: 36px;
 }
-#group-form-shell .select2-container-multi .select2-choices .select2-search-choice {
+.form-shell .select2-container-multi .select2-choices .select2-search-choice {
     background: #f3f6e3 !important;
     border: 1px solid #dde6b3 !important;
     color: #5d6b1c !important;
@@ -3255,7 +3255,7 @@ table.users-table > tbody > tr:first-child > td {
 }
 
 /* Color picker append */
-#group-form-shell .input-group-addon i {
+.form-shell .input-group-addon i {
     border: 1px solid #e3e6d4;
     border-radius: 4px;
     width: 18px;
@@ -3264,7 +3264,7 @@ table.users-table > tbody > tr:first-child > td {
 }
 
 /* Save / Back buttons */
-#group-form-shell form > .row:last-child {
+.form-shell form > .row:last-child {
     margin-top: 20px;
     background: #f9faf2;
     border: 1px solid #e3e6d4;
@@ -3272,7 +3272,7 @@ table.users-table > tbody > tr:first-child > td {
     padding: 14px 18px;
     box-shadow: 0 -2px 8px -6px rgba(93, 107, 28, .15);
 }
-#group-form-shell .btn-success {
+.form-shell .btn-success {
     background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
     border: 0;
     color: #fff;
@@ -3283,13 +3283,13 @@ table.users-table > tbody > tr:first-child > td {
     box-shadow: 0 4px 12px -6px rgba(93, 107, 28, .55);
     transition: filter .15s ease, transform .1s ease;
 }
-#group-form-shell .btn-success:hover,
-#group-form-shell .btn-success:focus {
+.form-shell .btn-success:hover,
+.form-shell .btn-success:focus {
     filter: brightness(1.06);
     color: #fff;
     transform: translateY(-1px);
 }
-#group-form-shell .btn-default {
+.form-shell .btn-default {
     background: #fff;
     border: 1px solid #e3e6d4;
     color: #5d6b1c;
@@ -3298,20 +3298,20 @@ table.users-table > tbody > tr:first-child > td {
     font-weight: 600;
     margin-left: 6px;
 }
-#group-form-shell .btn-default:hover,
-#group-form-shell .btn-default:focus {
+.form-shell .btn-default:hover,
+.form-shell .btn-default:focus {
     background: #f3f6e3;
     border-color: #dde6b3;
     color: #5d6b1c;
 }
 
 /* Field-level errors */
-#group-form-shell .has-error .form-control {
+.form-shell .has-error .form-control {
     border-color: #c0392b;
     box-shadow: 0 0 0 3px rgba(192, 57, 43, .15);
 }
-#group-form-shell .has-error .help-block,
-#group-form-shell .has-error .control-label {
+.form-shell .has-error .help-block,
+.form-shell .has-error .control-label {
     color: #c0392b;
 }
 
@@ -3321,11 +3321,80 @@ table.users-table > tbody > tr:first-child > td {
         flex-direction: column;
         align-items: flex-start;
     }
-    #group-form-shell form > .row:last-child {
+    .form-shell form > .row:last-child {
         text-align: center;
     }
-    #group-form-shell .btn-default {
+    .form-shell .btn-default {
         margin-left: 0;
         margin-top: 8px;
     }
+}
+
+/* ===== Project form shortcuts (qdjango/project_form.html) ===== */
+.project-shortcut-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.qa-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff;
+    color: #5d6b1c;
+    border: 1px solid #dde6b3;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+    box-shadow: 0 2px 6px -4px rgba(93, 107, 28, .25);
+}
+.qa-shortcut > i { font-size: 16px; }
+.qa-shortcut:hover,
+.qa-shortcut:focus {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    border-color: #95ad36;
+    transform: translateY(-1px);
+}
+.qa-shortcut.qa-shortcut-primary {
+    background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 10px -6px rgba(93, 107, 28, .55);
+}
+.qa-shortcut.qa-shortcut-primary:hover,
+.qa-shortcut.qa-shortcut-primary:focus {
+    filter: brightness(1.06);
+    color: #fff;
+}
+
+/* Allow tabular form_summary content (long lists of group links) */
+.form-summary-info span a {
+    color: #7a8e26;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(149, 173, 54, .5);
+}
+.form-summary-info span a:hover {
+    color: #95ad36;
+    border-bottom-color: #95ad36;
+}
+
+/* 2FA flat button inside form-summary */
+.form-summary .btn-default.btn-flat {
+    background: #fff;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 600;
+}
+.form-summary .btn-default.btn-flat:hover,
+.form-summary .btn-default.btn-flat:focus {
+    background: #95ad36;
+    border-color: #95ad36;
+    color: #fff;
 }
