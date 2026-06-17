@@ -3001,3 +3001,331 @@ table.users-table > tbody > tr:first-child > td {
     font-size: 12px;
     font-style: italic;
 }
+
+/* ===== Group form (core/group_form.html) =====
+   Restyles the cartographic group create/edit page. The crispy form layout
+   produces several AdminLTE box-success / box-danger / box-primary cards;
+   we neutralize that rainbow palette inside the shell and unify everything
+   on the client-green visual identity.
+*/
+
+/* Hero "back" link */
+.dash-hero .hero-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .25);
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
+    transition: background .15s ease, border-color .15s ease;
+}
+.dash-hero .hero-back:hover,
+.dash-hero .hero-back:focus {
+    background: rgba(255, 255, 255, .25);
+    border-color: rgba(255, 255, 255, .55);
+    color: #fff;
+}
+
+/* Form shell wrapper */
+.form-shell {
+    background: transparent;
+    margin-bottom: 18px;
+}
+
+/* Object summary banner (edit mode only) */
+.form-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(135deg, #f3f6e3 0%, #ffffff 70%);
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+    flex-wrap: wrap;
+}
+.form-summary-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.form-summary-info > i.fa {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .35);
+}
+.form-summary-info > div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+.form-summary-info strong {
+    color: #5d6b1c;
+    font-size: 15px;
+}
+.form-summary-info span {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+.form-summary-info a {
+    color: #7a8e26;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(149, 173, 54, .5);
+}
+.form-summary-info a:hover {
+    color: #95ad36;
+    border-bottom-color: #95ad36;
+}
+.form-summary-actions { display: flex; gap: 6px; }
+
+/* Modern alert at top of form */
+.form-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px -4px rgba(0, 0, 0, .08);
+}
+.form-alert > i.fa {
+    font-size: 22px;
+}
+.form-alert > div { display: flex; flex-direction: column; line-height: 1.3; }
+.form-alert strong { font-size: 14px; }
+.form-alert span { font-size: 12.5px; opacity: .85; }
+.form-alert-error {
+    background: #fdecea;
+    color: #b03828;
+    border: 1px solid #f5c6c0;
+    border-left: 4px solid #c0392b;
+}
+
+/* ----- Neutralize rainbow boxes inside the form shell ----- */
+#group-form-shell .box.box-primary,
+#group-form-shell .box.box-success,
+#group-form-shell .box.box-danger,
+#group-form-shell .box.box-warning,
+#group-form-shell .box.box-info,
+#group-form-shell .box.box-default {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-top: 1px solid #e3e6d4;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .2);
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+/* Headers: same look across all boxes */
+#group-form-shell .box > .box-header,
+#group-form-shell .box.box-success > .box-header,
+#group-form-shell .box.box-danger > .box-header,
+#group-form-shell .box.box-primary > .box-header,
+#group-form-shell .box.box-default > .box-header {
+    background: #f9faf2;
+    color: #5d6b1c;
+    border-bottom: 1px solid #e3e6d4;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+}
+#group-form-shell .box .box-header .box-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: #5d6b1c;
+    flex: 1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#group-form-shell .box .box-header .box-title > i.fa {
+    color: #95ad36;
+    font-size: 16px;
+}
+#group-form-shell .box .box-header .box-tools {
+    margin-left: auto;
+}
+#group-form-shell .box .box-header .box-tools .btn-box-tool {
+    color: #7a8e26;
+    background: transparent;
+    border: 0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background .15s ease, color .15s ease;
+}
+#group-form-shell .box .box-header .box-tools .btn-box-tool:hover {
+    background: #95ad36;
+    color: #fff;
+}
+
+/* Coloured accent stripe on the left for visual rhythm */
+#group-form-shell .box.box-success { border-left: 4px solid #95ad36; }
+#group-form-shell .box.box-danger  { border-left: 4px solid #b03828; }
+#group-form-shell .box.box-primary { border-left: 4px solid #7a8e26; }
+#group-form-shell .box.box-default { border-left: 4px solid #e3e6d4; }
+
+/* Box body */
+#group-form-shell .box > .box-body {
+    background: #fff;
+    padding: 18px;
+}
+
+/* Form fields */
+#group-form-shell .form-control {
+    border-radius: 8px;
+    border: 1px solid #e3e6d4;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+#group-form-shell .form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .18);
+    outline: 0;
+}
+#group-form-shell .form-group { margin-bottom: 14px; }
+#group-form-shell .form-group > label,
+#group-form-shell .control-label {
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: 6px;
+}
+#group-form-shell .help-block {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Translate hint inline */
+#group-form-shell .translatable_fields {
+    color: #95ad36;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Image preview */
+#group-form-shell img.img-thumbnail {
+    border-radius: 10px;
+    border: 1px solid #e3e6d4;
+    padding: 6px;
+    background: #fff;
+    box-shadow: 0 4px 10px -6px rgba(93, 107, 28, .25);
+    margin-top: 8px;
+    max-width: 100%;
+}
+
+/* Select2 hooks (Bootstrap 3 select2 v3 used by g3w-admin) */
+#group-form-shell .select2-container .select2-choice,
+#group-form-shell .select2-container-multi .select2-choices {
+    border-radius: 8px !important;
+    border: 1px solid #e3e6d4 !important;
+    background: #fff !important;
+    min-height: 36px;
+}
+#group-form-shell .select2-container-multi .select2-choices .select2-search-choice {
+    background: #f3f6e3 !important;
+    border: 1px solid #dde6b3 !important;
+    color: #5d6b1c !important;
+    border-radius: 999px !important;
+    padding: 3px 10px 3px 22px !important;
+    margin: 4px 4px 0 0;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Color picker append */
+#group-form-shell .input-group-addon i {
+    border: 1px solid #e3e6d4;
+    border-radius: 4px;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+}
+
+/* Save / Back buttons */
+#group-form-shell form > .row:last-child {
+    margin-top: 20px;
+    background: #f9faf2;
+    border: 1px solid #e3e6d4;
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 -2px 8px -6px rgba(93, 107, 28, .15);
+}
+#group-form-shell .btn-success {
+    background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
+    border: 0;
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    box-shadow: 0 4px 12px -6px rgba(93, 107, 28, .55);
+    transition: filter .15s ease, transform .1s ease;
+}
+#group-form-shell .btn-success:hover,
+#group-form-shell .btn-success:focus {
+    filter: brightness(1.06);
+    color: #fff;
+    transform: translateY(-1px);
+}
+#group-form-shell .btn-default {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    color: #5d6b1c;
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-weight: 600;
+    margin-left: 6px;
+}
+#group-form-shell .btn-default:hover,
+#group-form-shell .btn-default:focus {
+    background: #f3f6e3;
+    border-color: #dde6b3;
+    color: #5d6b1c;
+}
+
+/* Field-level errors */
+#group-form-shell .has-error .form-control {
+    border-color: #c0392b;
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, .15);
+}
+#group-form-shell .has-error .help-block,
+#group-form-shell .has-error .control-label {
+    color: #c0392b;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .form-summary {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    #group-form-shell form > .row:last-child {
+        text-align: center;
+    }
+    #group-form-shell .btn-default {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+}
