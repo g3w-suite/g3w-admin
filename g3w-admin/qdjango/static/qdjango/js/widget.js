@@ -1618,20 +1618,21 @@ _.extend(g3wadmin.widget, {
 _.extend(g3wadmin.tpl, {
   singlelayerConstraintRules: _.template(
     '\
-		<div class="intro" style="margin-bottom: 20px;"><%= intro %></div>\
-        <div class="row">\
-            <div class="col-md-12 rules-list">\
+        <div class="constraint-rules-form">\
+            <div class="constraint-rules-intro">\
+                <i class="fa fa-cubes" aria-hidden="true"></i>\
+                <div>\
+                    <strong>' +
+      gettext("Constraint rules") +
+      '</strong>\
+                    <span><%= intro %></span>\
+                </div>\
             </div>\
-        </div>\
-        <div class="row">\
-            <div class="col-md-12">\
-                <div class="row text-center">\
-                    <div class="col-md-12">\
-                        <button type="button" class="btn btn-success add-rule"><i class="glyphicon glyphicon-plus"></i> ' +
+            <div class="rules-list"></div>\
+            <div class="constraint-rules-actions">\
+                <button type="button" class="btn btn-success add-rule"><i class="fa fa-plus"></i> ' +
       gettext("Add") +
       "</button>\
-                    </div>\
-                </div>\
             </div>\
         </div>\
     "
@@ -1639,67 +1640,53 @@ _.extend(g3wadmin.tpl, {
 
   singlelayerConstraintRule: _.template(
     '\
-    <div class="row rule-form" style="border-top: 1px solid gray;">\
-        <div class="col-md-12 form-errors" style="color: #ff0000;"></div>\
-        <div class="col-md-10 rule-fields">\
-            <form action="<%= action %>" id="#constraint-rule-<%= rulePk %>">\
+    <div class="rule-form">\
+        <div class="form-errors"></div>\
+        <div class="rule-fields">\
+            <form action="<%= action %>" id="constraint-rule-<%= rulePk %>">\
                 <input type="hidden" name="pk" value="<%= rulePk %>" />\
                 <input type="hidden" name="constraint" value="<%= constraintPk %>" />\
-                <div class="row">\
-                    <div class="col-md-4">\
-                        <div class="row">\
-                            <div class="col-md-12">\
-                            <div class="form-group">\
-                                <label class="control-label ">Viewer</label>\
-                                <div class="controls ">\
-                                    <select name="user" class="select form-control">\
-                                        <option value="">---------</option>\
-                                    </select>\
-                                </div>\
-                            </div>\
+                <div class="rule-grid">\
+                    <div class="rule-targets">\
+                        <div class="form-group rule-field">\
+                            <label class="control-label">' +
+      gettext("Viewer") +
+      '</label>\
+                            <div class="controls">\
+                                <select name="user" class="select form-control">\
+                                    <option value="">---------</option>\
+                                </select>\
                             </div>\
                         </div>\
-                        <div class="row">\
-                            <div class="col-md-12">\
-                            <div class="form-group">\
-                                <label class="control-label ">User viewer group</label>\
-                                <div class="controls ">\
-                                    <select name="group" class="select form-control">\
-                                        <option value="">---------</option>\
-                                    </select>\
-                                </div>\
-                            </div>\
+                        <div class="form-group rule-field">\
+                            <label class="control-label">' +
+      gettext("User viewer group") +
+      '</label>\
+                            <div class="controls">\
+                                <select name="group" class="select form-control">\
+                                    <option value="">---------</option>\
+                                </select>\
                             </div>\
                         </div>\
                     </div>\
-                    <div class="col-md-8">\
-                        <div class="row">\
-                            <div class="col-md-12">\
-                            <div class="form-group">\
-                                <label class="control-label "><%= rule_form_label %></label>\
-                                <div class="controls ">\
-                                    <textarea name="rule" style="width:100%;"></textarea>\
-                                </div>\
-                            </div>\
+                    <div class="rule-expr">\
+                        <div class="form-group rule-field">\
+                            <label class="control-label"><%= rule_form_label %></label>\
+                            <div class="controls">\
+                                <textarea name="rule" class="form-control" rows="6"></textarea>\
                             </div>\
                         </div>\
                     </div>\
                 </div>\
             </form>\
         </div>\
-        <div class="col-md-2 rule-actions">\
-            <div class="row" style="font-size: 24px;">\
-                <span class="col-xs-2 icon">\
-                    <a href="#" class="bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
+        <div class="rule-actions">\
+            <a href="#" class="rule-action-btn bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Save") +
       '"><i class="fa fa-save"></i></a>\
-                </span>\
-                <span class="col-xs-2 icon">\
-                    <a href="#" class="bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
+            <a href="#" class="rule-action-btn rule-action-btn-danger bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Delete") +
-      '"><i class="ion ion-trash-b"></i></a>\
-                </span>\
-            </div>\
+      '"><i class="fa fa-trash"></i></a>\
         </div>\
     </div>\
     '
@@ -1707,54 +1694,75 @@ _.extend(g3wadmin.tpl, {
 
   singlelayerConstraintForm: _.template(
     '\
-        <form action="<%= action %>" id="form-singlelayerconstraint-<%= layerId %>">\
+        <form action="<%= action %>" class="alphaconstraint-form" id="form-singlelayerconstraint-<%= layerId %>">\
             <input type="hidden" name="layer" value="<%= layerId %>" />\
             <input type="hidden" name="active" value="1" />\
-            <div class="row">\
-				<div class="col-md-12">\
-					<div class="info"><h4>' +
+            <div class="alphaconstraint-shell">\
+                <div class="alphaconstraint-intro">\
+                    <i class="fa fa-filter" aria-hidden="true"></i>\
+                    <div>\
+                        <strong>' +
+      gettext("Alphanumeric constraint") +
+      '</strong>\
+                        <span>' +
       gettext("Set a name and a possible description for the alphanumeric constraint") +
-      ':</h4></div>\
-					<div class="form-group">\
-						<label class="control-label ">' +
+      '</span>\
+                    </div>\
+                </div>\
+                <div class="form-group alphaconstraint-field">\
+                    <label class="control-label" for="id_name">' +
       gettext("Name") +
       '</label>\
-						<div class="controls ">\
-							<input class="form-control" name="name" style="width:100%;"></input>\
-						</div>\
-					</div>\
-					<div class="form-group">\
-						<label class="control-label ">' +
+                    <div class="controls">\
+                        <input class="form-control" id="id_name" name="name" />\
+                    </div>\
+                </div>\
+                <div class="form-group alphaconstraint-field">\
+                    <label class="control-label" for="id_description">' +
       gettext("Description") +
       '</label>\
-						<div class="controls ">\
-							<textarea class="form-control" name="description" style="width:100%;"></textarea>\
-						</div>\
-					</div>\
-					<div class="form-group">\
-						<div id="div_id_for_view" class="checkbox">\
-							<label for="id_for_view" class="">\
-								<input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
-								' +
+                    <div class="controls">\
+                        <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>\
+                    </div>\
+                </div>\
+                <div class="alphaconstraint-options">\
+                    <div class="alphaconstraint-options-title">' +
+      gettext("Options") +
+      '</div>\
+                    <div class="form-group alphaconstraint-toggle">\
+                        <div id="div_id_for_view" class="checkbox">\
+                            <label for="id_for_view">\
+                                <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
+                                <span class="alphaconstraint-toggle-text">\
+                                    <strong>' +
       gettext("Active for visualization") +
-      '\
-							</label>\
-						</div>\
-						<input type="hidden" name="for_view" value="true">\
-					</div>\
-					<div class="form-group">\
-						<div id="div_id_for_editing" class="checkbox">\
-							<label for="id_for_editing" class="">\
-								<input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
-								' +
+      '</strong>\
+                                    <small>' +
+      gettext("Apply this constraint when the layer is shown on the map.") +
+      '</small>\
+                                </span>\
+                            </label>\
+                        </div>\
+                        <input type="hidden" name="for_view" value="true">\
+                    </div>\
+                    <div class="form-group alphaconstraint-toggle">\
+                        <div id="div_id_for_editing" class="checkbox">\
+                            <label for="id_for_editing">\
+                                <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
+                                <span class="alphaconstraint-toggle-text">\
+                                    <strong>' +
       gettext("Active for editing") +
-      '\
-							</label>\
-						</div>\
-						<input type="hidden" name="for_editing">\
-					</div>\
-				</div>\
-			</div>\
+      '</strong>\
+                                    <small>' +
+      gettext("Apply this constraint when users edit the layer features.") +
+      '</small>\
+                                </span>\
+                            </label>\
+                        </div>\
+                        <input type="hidden" name="for_editing">\
+                    </div>\
+                </div>\
+            </div>\
         </form>'
   ),
 
@@ -1825,19 +1833,23 @@ _.extend(ga.Qdjango, {
 _.extend(g3wadmin.tpl, {
   geoConstraintRules: _.template(
     '\
-      <div class="row">\
-          <div class="col-md-12 rules-list">\
+      <div class="constraint-rules-form">\
+          <div class="constraint-rules-intro">\
+              <i class="fa fa-cubes" aria-hidden="true"></i>\
+              <div>\
+                  <strong>' +
+      gettext("Geo-constraint rules") +
+      '</strong>\
+                  <span>' +
+      gettext("Define, for each user and/or group of users, viewing/editing rules based on the constraint layer geometry.") +
+      '</span>\
+              </div>\
           </div>\
-      </div>\
-      <div class="row">\
-          <div class="col-md-12">\
-              <div class="row text-center">\
-                  <div class="col-md-12">\
-                      <button type="button" class="btn btn-success add-rule"><i class="glyphicon glyphicon-plus"></i> ' +
+          <div class="rules-list"></div>\
+          <div class="constraint-rules-actions">\
+              <button type="button" class="btn btn-success add-rule"><i class="fa fa-plus"></i> ' +
       gettext("Add") +
       "</button>\
-                  </div>\
-              </div>\
           </div>\
       </div>\
   "
@@ -1845,67 +1857,53 @@ _.extend(g3wadmin.tpl, {
 
   geoConstraintRule: _.template(
     '\
-  <div class="row rule-form" style="border-top: 1px solid gray;">\
-      <div class="col-md-12 form-errors" style="color: #ff0000;"></div>\
-      <div class="col-md-10 rule-fields">\
-          <form action="<%= action %>" id="#constraint-rule-<%= rulePk %>">\
+  <div class="rule-form">\
+      <div class="form-errors"></div>\
+      <div class="rule-fields">\
+          <form action="<%= action %>" id="geoconstraint-rule-<%= rulePk %>">\
               <input type="hidden" name="pk" value="<%= rulePk %>" />\
               <input type="hidden" name="constraint" value="<%= constraintPk %>" />\
-              <div class="row">\
-                  <div class="col-md-4">\
-                      <div class="row">\
-                          <div class="col-md-12">\
-                          <div class="form-group">\
-                              <label class="control-label ">Viewer</label>\
-                              <div class="controls ">\
-                                  <select name="user" class="select form-control">\
-                                      <option value="">---------</option>\
-                                  </select>\
-                              </div>\
-                          </div>\
+              <div class="rule-grid">\
+                  <div class="rule-targets">\
+                      <div class="form-group rule-field">\
+                          <label class="control-label">' +
+      gettext("Viewer") +
+      '</label>\
+                          <div class="controls">\
+                              <select name="user" class="select form-control">\
+                                  <option value="">---------</option>\
+                              </select>\
                           </div>\
                       </div>\
-                      <div class="row">\
-                          <div class="col-md-12">\
-                          <div class="form-group">\
-                              <label class="control-label ">User viewer group</label>\
-                              <div class="controls ">\
-                                  <select name="group" class="select form-control">\
-                                      <option value="">---------</option>\
-                                  </select>\
-                              </div>\
-                          </div>\
+                      <div class="form-group rule-field">\
+                          <label class="control-label">' +
+      gettext("User viewer group") +
+      '</label>\
+                          <div class="controls">\
+                              <select name="group" class="select form-control">\
+                                  <option value="">---------</option>\
+                              </select>\
                           </div>\
                       </div>\
                   </div>\
-                  <div class="col-md-8">\
-                      <div class="row">\
-                          <div class="col-md-12">\
-                          <div class="form-group">\
-                              <label class="control-label ">SQL</label>\
-                              <div class="controls ">\
-                                  <textarea name="rule" style="width:100%;"></textarea>\
-                              </div>\
-                          </div>\
+                  <div class="rule-expr">\
+                      <div class="form-group rule-field">\
+                          <label class="control-label">SQL</label>\
+                          <div class="controls">\
+                              <textarea name="rule" class="form-control" rows="6"></textarea>\
                           </div>\
                       </div>\
                   </div>\
               </div>\
           </form>\
       </div>\
-      <div class="col-md-2 rule-actions">\
-          <div class="row" style="font-size: 24px;">\
-              <span class="col-xs-2 icon">\
-                  <a href="#" class="bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
+      <div class="rule-actions">\
+          <a href="#" class="rule-action-btn bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Save") +
       '"><i class="fa fa-save"></i></a>\
-              </span>\
-              <span class="col-xs-2 icon">\
-                  <a href="#" class="bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
+          <a href="#" class="rule-action-btn rule-action-btn-danger bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Delete") +
-      '"><i class="ion ion-trash-b"></i></a>\
-              </span>\
-          </div>\
+      '"><i class="fa fa-trash"></i></a>\
       </div>\
   </div>\
   '
@@ -2797,37 +2795,39 @@ ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
 
 _.extend(g3wadmin.tpl, {
   _newColumnAclForm: _.template(`
-        <form action="<%= form_action %>" id="form-new-column-acl-<%= layerId %>">
-        <input type="hidden" name="pk" value="<%= columnAclPk %>">
-        <input type="hidden" name="layer" value="<%= layerId %>">
-        <div class="form-errors"></div>
-            <div class="row">
-				<div class="col-md-12">
-					<div class="info"><%= title %></div>
-					<div class="form-group">
-						<label class="control-label ">${gettext("Hidden Fields (required)")}</label>
-						<div class="controls ">
-							<select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;">
-                            </select>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label ">${gettext("Users (required if no group is set)")}</label>
-						<div class="controls ">
-							<select class="form-select" multiple name="users" style="width:100%;"/>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label ">${gettext("Groups (required if no user is set)")}</label>
-						<div class="controls ">
-                        <select class="form-select" multiple name="groups" style="width:100%;" />
-						</div>
-					</div>
-
-				</div>
-			</div>
+        <form action="<%= form_action %>" class="column-acl-form" id="form-new-column-acl-<%= layerId %>">
+            <input type="hidden" name="pk" value="<%= columnAclPk %>">
+            <input type="hidden" name="layer" value="<%= layerId %>">
+            <div class="form-errors"></div>
+            <div class="column-acl-shell">
+                <div class="column-acl-intro">
+                    <i class="fa fa-columns" aria-hidden="true"></i>
+                    <div>
+                        <strong>${gettext("Column level constraint")}</strong>
+                        <span><%= title %></span>
+                    </div>
+                </div>
+                <div class="column-acl-field column-acl-field-fields">
+                    <label class="control-label">${gettext("Hidden Fields (required)")}</label>
+                    <div class="controls">
+                        <select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;"></select>
+                    </div>
+                </div>
+                <div class="column-acl-grid">
+                    <div class="column-acl-field">
+                        <label class="control-label">${gettext("Users (required if no group is set)")}</label>
+                        <div class="controls">
+                            <select class="form-select" multiple name="users" style="width:100%;"></select>
+                        </div>
+                    </div>
+                    <div class="column-acl-field">
+                        <label class="control-label">${gettext("Groups (required if no user is set)")}</label>
+                        <div class="controls">
+                            <select class="form-select" multiple name="groups" style="width:100%;"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>`),
 })
 
@@ -3150,31 +3150,32 @@ ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
 
 _.extend(g3wadmin.tpl, {
   _newStyleForm: _.template(`
-        <form action="<%= form_action %>" id="form-newstyle-<%= layerId %>">
-        <div class="form-errors"></div>
-        <input type="hidden" name="qml" value="" />
-            <div class="row">
-				<div class="col-md-12">
-					<div class="info"><%= title %></div>
-					<div class="info">${gettext("The style defined in the uploaded QML must be compatible with the target layer.")}</div>
-					<div class="form-group">
-						<label class="control-label ">${gettext("Style name (required)")}</label>
-						<div class="controls ">
-							<input class="form-control" value="" placeholder="${gettext("Enter the unique name of the new style")}" required name="name" style="width:100%;">
-						</div>
-					</div>
-
-                    <div class="form-group" style="border: 1px dot-dash grey;  text-align: center">
-						<div class="controls qq-upload-button-selector" style="position: relative; padding: 10px;">
-							<input class="form-control" id="load_qml_file" accept=".qml" title="" name="qml_file" type="file" style="top:0; left:0; cursor:pointer;opacity:0; width:100%; position:absolute; height: 100%;" />
-							<h4>${gettext("Upload layer style QML file")}</h4>
-							<div>
-                                <i class="fa fa-upload fa-3x" aria-hidden="true"></i>
-                            </div>
-						</div>
-						<span id="qml_filename" style="display:none;"></span>
-					</div>
-				</div>
-			</div>
+        <form action="<%= form_action %>" class="qml-style-form" id="form-newstyle-<%= layerId %>">
+            <div class="form-errors"></div>
+            <input type="hidden" name="qml" value="" />
+            <div class="qml-style-shell">
+                <div class="qml-style-intro">
+                    <i class="fa fa-paint-brush" aria-hidden="true"></i>
+                    <div>
+                        <strong>${gettext("Layer style")}</strong>
+                        <span><%= title %></span>
+                        <small>${gettext("The style defined in the uploaded QML must be compatible with the target layer.")}</small>
+                    </div>
+                </div>
+                <div class="qml-style-field">
+                    <label class="control-label">${gettext("Style name (required)")}</label>
+                    <div class="controls">
+                        <input class="form-control" value="" placeholder="${gettext("Enter the unique name of the new style")}" required name="name" style="width:100%;">
+                    </div>
+                </div>
+                <div class="qml-style-upload">
+                    <input class="qml-style-upload-input" id="load_qml_file" accept=".qml" title="" name="qml_file" type="file" />
+                    <div class="qml-style-upload-content">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                        <h4>${gettext("Upload layer style QML file")}</h4>
+                        <span id="qml_filename" class="qml-style-upload-filename"></span>
+                    </div>
+                </div>
+            </div>
         </form>`),
 })

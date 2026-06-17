@@ -90,18 +90,25 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
           modalBody: /* html */`
             <form
               action="${SAVED_CONSTRAINT ? `/${SITE_PREFIX_URL}qdjango/api/scalevisconstraint/detail/${SAVED_CONSTRAINT.pk}/` : $item.attr('data-scalevisconstraint-list-url')}"
+              class="scalevis-form"
               id="form-new-scalevisconstraint-${$item.attr('data-scalevisconstraint-layer-pk')}"
             >
               <input type="hidden" name="pk" value="${SAVED_CONSTRAINT?.pk}">
               <input type="hidden" name="layer" value="${$item.attr('data-scalevisconstraint-layer-pk')}">
               <div class="form-errors"></div>
-              <div class="row">
-                <div class="col-md-12">
-                  <p class="info">${SAVED_CONSTRAINT ? gettext("Edit Scale Visibility Layer Constraint.") : gettext("Define minscale and maxscale for a user or a group.")}</p>
+              <div class="scalevis-shell">
+                <div class="scalevis-intro">
+                  <i class="fa fa-search-plus" aria-hidden="true"></i>
+                  <div>
+                    <strong>${gettext("Scale visibility constraint")}</strong>
+                    <span>${SAVED_CONSTRAINT ? gettext("Edit Scale Visibility Layer Constraint.") : gettext("Define minscale and maxscale for a user or a group.")}</span>
+                  </div>
+                </div>
 
-                  <div class="form-group">
-                    <label class="control-label ">${gettext("User (required if group is not set)")}</label>
-                    <div class="controls ">
+                <div class="scalevis-grid">
+                  <div class="scalevis-field">
+                    <label class="control-label">${gettext("User (required if group is not set)")}</label>
+                    <div class="controls">
                       <select class="form-select" name="user" style="width: 100%">
                         <option value="">---</option>
                         ${ (await (await fetch($item.attr('data-info-layer-user'))).json()).results.map(user => `<option value="${user.pk}" ${user.pk === SAVED_CONSTRAINT?.user ? 'selected' : ''}>${user.username}</option>`).join('') }
@@ -109,8 +116,8 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
                     </div>
                   </div>
 
-                  <div class="form-group">
-                    <label class="control-label ">${gettext("Group (required if user is not set)")}</label>
+                  <div class="scalevis-field">
+                    <label class="control-label">${gettext("Group (required if user is not set)")}</label>
                     <div class="controls">
                       <select class="form-select" name="group" style="width: 100%">
                       <option value="">---</option>
@@ -118,21 +125,22 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
                       </select>
                     </div>
                   </div>
+                </div>
 
-                  <div class="form-group">
-                    <label class="control-label ">${gettext("Min scale")}</label>
-                    <div class="controls ">
+                <div class="scalevis-grid">
+                  <div class="scalevis-field scalevis-field-scale">
+                    <label class="control-label"><i class="fa fa-arrows-alt" aria-hidden="true"></i> ${gettext("Min scale")}</label>
+                    <div class="controls">
                       <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.minscale ?? ''}" min="0" required name="minscale" />
                     </div>
                   </div>
 
-                  <div class="form-group">
-                    <label class="control-label ">${gettext("Max scale")}</label>
-                    <div class="controls ">
+                  <div class="scalevis-field scalevis-field-scale">
+                    <label class="control-label"><i class="fa fa-compress" aria-hidden="true"></i> ${gettext("Max scale")}</label>
+                    <div class="controls">
                       <input class="form-control" type="number" value="${SAVED_CONSTRAINT?.maxscale ?? ''}" min="0" required name="maxscale" />
                     </div>
                   </div>
-
                 </div>
               </div>
             </form>`,

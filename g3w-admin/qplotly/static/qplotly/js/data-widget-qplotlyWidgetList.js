@@ -181,7 +181,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
                 <div class="form-group qplotly-dropzone">
                   <label class="controls qq-upload-button-selector qplotly-dropzone-inner" for="load_xml_plot">
                     <input class="form-control qplotly-dropzone-input" id="load_xml_plot" accept=".xml" title="" name="xml_file" type="file" />
-                    <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                    <i class="fa fa-upload" aria-hidden="true"></i>
                     <strong>${gettext('Click to browse or drop your .xml file')}</strong>
                     <span>${gettext('Only DataPlotly XML files are accepted')}</span>
                   </label>

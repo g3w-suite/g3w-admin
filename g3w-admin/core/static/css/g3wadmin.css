@@ -4747,3 +4747,398 @@ body.login-page button[name="wizard_goto_step"].btn-secondary {
         justify-content: flex-end;
     }
 }
+
+/* ======================================================================
+   Column level constraint form modal
+   ====================================================================== */
+.column-acl-form {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.column-acl-form .form-errors {
+    color: #c0392b;
+    background: #fdecea;
+    border: 1px solid #f5c6c0;
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.column-acl-form .form-errors:not(:empty) {
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+.column-acl-form .column-acl-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.column-acl-form .column-acl-intro {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+.column-acl-form .column-acl-intro > i.fa {
+    color: #5d6b1c;
+    font-size: 22px;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+.column-acl-form .column-acl-intro strong {
+    display: block;
+    color: #5d6b1c;
+    font-size: 14px;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.column-acl-form .column-acl-intro span {
+    color: #4a5018;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.column-acl-form .column-acl-field {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.column-acl-form .column-acl-field:focus-within {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.column-acl-form .column-acl-field > .control-label {
+    display: block;
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.column-acl-form .column-acl-field-fields {
+    border-left: 4px solid #95ad36;
+}
+.column-acl-form .column-acl-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.column-acl-form .select2-container--default .select2-selection--multiple {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    min-height: 38px;
+}
+.column-acl-form .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.column-acl-form .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: #e7eecf;
+    border-color: #dde6b3;
+    color: #5d6b1c;
+    border-radius: 6px;
+}
+.column-acl-form .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #7a8e26;
+    margin-right: 4px;
+}
+
+@media (max-width: 768px) {
+    .column-acl-form .column-acl-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ======================================================================
+   QML style upload form modal
+   ====================================================================== */
+.qml-style-form {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.qml-style-form .form-errors {
+    color: #c0392b;
+    background: #fdecea;
+    border: 1px solid #f5c6c0;
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.qml-style-form .form-errors:not(:empty) {
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+.qml-style-form .qml-style-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.qml-style-form .qml-style-intro {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+.qml-style-form .qml-style-intro > i.fa {
+    color: #5d6b1c;
+    font-size: 22px;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+.qml-style-form .qml-style-intro strong {
+    display: block;
+    color: #5d6b1c;
+    font-size: 14px;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.qml-style-form .qml-style-intro span {
+    display: block;
+    color: #4a5018;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 4px;
+}
+.qml-style-form .qml-style-intro small {
+    display: block;
+    color: #7a8260;
+    font-size: 12px;
+    line-height: 1.45;
+}
+.qml-style-form .qml-style-field {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.qml-style-form .qml-style-field:focus-within {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.qml-style-form .qml-style-field > .control-label {
+    display: block;
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.qml-style-form .qml-style-field input.form-control {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.qml-style-form .qml-style-field input.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.qml-style-form .qml-style-upload {
+    position: relative;
+    background: #fff;
+    border: 2px dashed #dde6b3;
+    border-radius: 10px;
+    padding: 22px 16px;
+    text-align: center;
+    transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+    cursor: pointer;
+}
+.qml-style-form .qml-style-upload:hover,
+.qml-style-form .qml-style-upload:focus-within {
+    border-color: #95ad36;
+    background: #f3f6e3;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .15);
+}
+.qml-style-form .qml-style-upload-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+.qml-style-form .qml-style-upload-content {
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.qml-style-form .qml-style-upload-content > i.fa {
+    color: #95ad36;
+    font-size: 36px;
+    line-height: 1;
+}
+.qml-style-form .qml-style-upload-content h4 {
+    margin: 0;
+    color: #5d6b1c;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+.qml-style-form .qml-style-upload-filename:empty {
+    display: none;
+}
+.qml-style-form .qml-style-upload-filename {
+    display: inline-block;
+    background: #e7eecf;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    word-break: break-all;
+    max-width: 100%;
+}
+
+/* ======================================================================
+   Scale visibility layer constraint form modal
+   ====================================================================== */
+.scalevis-form {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.scalevis-form .form-errors {
+    color: #c0392b;
+    background: #fdecea;
+    border: 1px solid #f5c6c0;
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.scalevis-form .form-errors:not(:empty) {
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+.scalevis-form .form-errors .badge.bg-red {
+    background: transparent;
+    color: #c0392b;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 0;
+    margin: 0 0 4px;
+    display: block;
+}
+.scalevis-form .scalevis-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.scalevis-form .scalevis-intro {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+.scalevis-form .scalevis-intro > i.fa {
+    color: #5d6b1c;
+    font-size: 22px;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+.scalevis-form .scalevis-intro strong {
+    display: block;
+    color: #5d6b1c;
+    font-size: 14px;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.scalevis-form .scalevis-intro span {
+    color: #4a5018;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.scalevis-form .scalevis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.scalevis-form .scalevis-field {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.scalevis-form .scalevis-field:focus-within {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.scalevis-form .scalevis-field > .control-label {
+    display: block;
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.scalevis-form .scalevis-field > .control-label > i.fa {
+    color: #95ad36;
+    margin-right: 6px;
+}
+.scalevis-form .scalevis-field-scale {
+    border-left: 4px solid #95ad36;
+}
+.scalevis-form .scalevis-field input.form-control {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.scalevis-form .scalevis-field input.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.scalevis-form .select2-container--default .select2-selection--single {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    height: 38px;
+}
+.scalevis-form .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+    color: #4a5018;
+}
+.scalevis-form .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+.scalevis-form .select2-container--default.select2-container--focus .select2-selection--single,
+.scalevis-form .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+
+@media (max-width: 768px) {
+    .scalevis-form .scalevis-grid {
+        grid-template-columns: 1fr;
+    }
+}
