@@ -22,7 +22,7 @@ export async function scalevisconstraintManagerList($datatable, $item, refresh) 
     const res = await (await fetch(url)).json();
 
     const $div = $(/* html */`
-      <div style="margin-left:40px;">
+      <div class="layer-sub-panel scalevis-list" style="margin-left:40px;">
         <!-- add new style -->
         <a href="#" class="btn btn-sm btn-default btn-add-constraint">
           <i class="ion ion-plus-circled"></i> ${gettext("Create New Scale Visibility Layer Constraint")}

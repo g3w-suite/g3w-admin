@@ -1443,10 +1443,10 @@ _.extend(g3wadmin.widget, {
     Build singlelayer constraints table
      */
   _singlelayerConstraintsTable: function (layer_pk, res) {
-    var $div = $('<div style="margin-left:40px;">')
+    var $div = $('<div class="layer-sub-panel singlelayer-constraints-list" style="margin-left:40px;">')
 
     // add new constraint btn
-    $newConstraint = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> ' + gettext("New alphanumeric constraints") + "</a>")
+    $newConstraint = $('<a href="#" class="btn btn-sm btn-default btn-add-singlelayer-constraint"><i class="ion ion-plus-circled"></i> ' + gettext("New alphanumeric constraints") + "</a>")
     $newConstraint.on("click", function () {
       ga.widget._singlelayerConstraintForm($newConstraint, null, {
         "modal-title": gettext("New alphanumeric constraints"),
@@ -2297,10 +2297,10 @@ _.extend(g3wadmin.widget, {
     Build constraints table
      */
   _geoConstraintsTable: function (layer_pk, res) {
-    var $div = $('<div style="margin-left:40px;">')
+    var $div = $('<div class="geoconstraints-list" style="margin-left:40px;">')
 
     // add new constraint btn
-    $newConstraint = $('<a href="#" class="btn btn-default btn-sm"><i class="ion ion-plus-circled"></i> ' + gettext("New geo constraint") + "</a>")
+    $newConstraint = $('<a href="#" class="btn btn-default btn-sm btn-add-geoconstraint"><i class="ion ion-plus-circled"></i> ' + gettext("New geo constraint") + "</a>")
     $newConstraint.on("click", function () {
       ga.widget._geoConstraintForm($newConstraint, null, {
         "modal-title": gettext("New constraint"),
@@ -2474,10 +2474,10 @@ _.extend(g3wadmin.widget, {
       throw new Error("Attribute column-acl-layer-pk not defined")
     }
 
-    let $div = $('<div style="margin-left:40px;">')
+    let $div = $('<div class="layer-sub-panel column-acl-list" style="margin-left:40px;">')
 
     // add new acl btn
-    $newColumnAcl = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Column Level Constraint") + "</a>")
+    $newColumnAcl = $('<a href="#" class="btn btn-sm btn-default btn-add-column-acl"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Column Level Constraint") + "</a>")
     $newColumnAcl.on("click", function () {
       ga.widget._newColumnAclForm($datatable, $newColumnAcl, params, {
         "modal-title": gettext("New Column Level Constraint"),
@@ -2856,10 +2856,10 @@ _.extend(g3wadmin.widget, {
       throw new Error("Attribute stylemanager-layer-pk not defined")
     }
 
-    let $div = $('<div style="margin-left:40px;">')
+    let $div = $('<div class="layer-sub-panel styles-list" style="margin-left:40px;">')
 
     // add new style btn
-    $newStyle = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Style From QML") + "</a>")
+    $newStyle = $('<a href="#" class="btn btn-sm btn-default btn-add-style"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Style From QML") + "</a>")
     $newStyle.on("click", function () {
       ga.widget._newStyleForm($datatable, $newStyle, {
         "modal-title": gettext("New Style From QML"),

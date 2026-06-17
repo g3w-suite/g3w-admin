@@ -5142,3 +5142,921 @@ body.login-page button[name="wizard_goto_step"].btn-secondary {
         grid-template-columns: 1fr;
     }
 }
+
+/* ======================================================================
+   Search widget form (qdjango Search widget builder)
+   ====================================================================== */
+/* Scope: #widget_form crispy form + .rightCol JS-built builder */
+
+#widget_form {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+    margin-bottom: 16px;
+}
+#widget_form .control-label {
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 13px;
+}
+#widget_form .form-control,
+#widget_form select.form-control {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+#widget_form .form-control:focus,
+#widget_form select.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+
+/* Builder area injected by JS */
+.rightCol {
+    margin-top: 4px;
+}
+
+/* AdminLTE box overrides: General configuration (was box-danger) */
+.rightCol .bloccoGenerale.box,
+.rightCol .bloccoGenerale.box.box-danger {
+    background: #fff;
+    border: 1px solid #dde6b3;
+    border-top: 4px solid #95ad36;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+    margin-bottom: 18px;
+}
+.rightCol .bloccoGenerale.box > .box-header,
+.rightCol .bloccoGenerale.box.box-danger > .box-header {
+    background: #f3f6e3;
+    border-bottom: 1px solid #dde6b3;
+    border-radius: 8px 8px 0 0;
+    padding: 12px 16px;
+}
+.rightCol .bloccoGenerale.box > .box-header > .box-title,
+.rightCol .bloccoGenerale.box.box-danger > .box-header > .box-title {
+    color: #5d6b1c;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+.rightCol .bloccoGenerale.box > .box-header > .box-title::before,
+.rightCol .bloccoGenerale.box.box-danger > .box-header > .box-title::before {
+    content: "\f0b0"; /* fa-filter */
+    font-family: FontAwesome;
+    color: #95ad36;
+    margin-right: 8px;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+/* AdminLTE box: Search field settings (was box-success) — accent verde-oliva piu' chiaro */
+.rightCol .blocco.box,
+.rightCol .blocco.box.box-success {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-top: 4px solid #b1c44e;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .2);
+    margin-bottom: 14px;
+}
+.rightCol .blocco.box > .box-header,
+.rightCol .blocco.box.box-success > .box-header {
+    background: #f9faf2;
+    border-bottom: 1px solid #e3e6d4;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.rightCol .blocco.box > .box-header > .box-title,
+.rightCol .blocco.box.box-success > .box-header > .box-title {
+    color: #5d6b1c;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    flex: 1;
+}
+.rightCol .blocco.box > .box-header > .box-title::before,
+.rightCol .blocco.box.box-success > .box-header > .box-title::before {
+    content: "\f1c0"; /* fa-database */
+    font-family: FontAwesome;
+    color: #b1c44e;
+    margin-right: 8px;
+    font-size: 13px;
+    font-weight: normal;
+}
+.rightCol .blocco .box-tools .btn.close {
+    background: transparent;
+    border: 1px solid #e3e6d4;
+    border-radius: 999px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    color: #5d6b1c;
+    opacity: 1;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.rightCol .blocco .box-tools .btn.close:hover {
+    background: #fdecea;
+    border-color: #f5c6c0;
+    color: #c0392b;
+}
+.rightCol .blocco .box-tools .btn.close .fa {
+    font-size: 12px;
+}
+
+/* Box body — labels, form controls, help blocks */
+.rightCol .box .box-body {
+    padding: 14px 16px;
+}
+.rightCol .box .box-body .control-label {
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 6px;
+    display: block;
+}
+.rightCol .box .box-body .control-label.requiredField::after {
+    content: " *";
+    color: #c0392b;
+}
+.rightCol .box .box-body .form-control,
+.rightCol .box .box-body select.form-control {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.rightCol .box .box-body .form-control:focus,
+.rightCol .box .box-body select.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.rightCol .box .box-body .help-block {
+    color: #777;
+    font-size: 12px;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+.rightCol .box .box-body .row + .row {
+    margin-top: 10px;
+}
+
+/* Search field rows: better visual grouping of dynamic +/− buttons */
+.rightCol .resultFields .row,
+.rightCol .bloccoGenerale .row {
+    align-items: flex-end;
+}
+.rightCol .btn.add {
+    background: #95ad36;
+    border-color: #7a8e26;
+    color: #fff;
+    border-radius: 8px;
+    height: 34px;
+    width: 34px;
+    padding: 0;
+    transition: background .15s ease, border-color .15s ease;
+}
+.rightCol .btn.add:hover,
+.rightCol .btn.add:focus {
+    background: #7a8e26;
+    border-color: #5d6b1c;
+    color: #fff;
+}
+.rightCol .btn.remove {
+    background: #fff;
+    border-color: #f5c6c0;
+    color: #c0392b;
+    border-radius: 8px;
+    height: 34px;
+    width: 34px;
+    padding: 0;
+    transition: background .15s ease, color .15s ease;
+}
+.rightCol .btn.remove:hover,
+.rightCol .btn.remove:focus {
+    background: #fdecea;
+    color: #c0392b;
+    border-color: #c0392b;
+}
+
+/* Logic operator AND/OR — pill stand-alone */
+.rightCol .logic_operator {
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-radius: 999px;
+    color: #5d6b1c;
+    font-weight: 700;
+    text-align: center;
+    text-align-last: center;
+    width: 120px;
+    margin: 8px auto 16px;
+    display: block;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 14px;
+}
+.rightCol .logic_operator:focus {
+    outline: none;
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+
+/* Advice / warning block inside search box */
+.rightCol .alert.alert-warning {
+    background: #fff7e6;
+    border: 1px solid #f3d99c;
+    color: #7a4a06;
+    border-radius: 8px;
+}
+
+/* "Other searching layers" cmpPlusLayersSearch panel */
+.rightCol .cmpPlusLayersSearch select,
+.rightCol .cmpPlusLayersSearch .select2-container {
+    width: 100% !important;
+}
+
+/* Select2 inside builder */
+.rightCol .select2-container--default .select2-selection--single,
+.rightCol .select2-container--default .select2-selection--multiple,
+#widget_form .select2-container--default .select2-selection--single,
+#widget_form .select2-container--default .select2-selection--multiple {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    min-height: 34px;
+}
+.rightCol .select2-container--default.select2-container--focus .select2-selection--single,
+.rightCol .select2-container--default.select2-container--focus .select2-selection--multiple,
+.rightCol .select2-container--default.select2-container--open .select2-selection--single,
+.rightCol .select2-container--default.select2-container--open .select2-selection--multiple,
+#widget_form .select2-container--default.select2-container--focus .select2-selection--single,
+#widget_form .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.rightCol .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: #e7eecf;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    border-radius: 999px;
+    padding: 2px 10px;
+}
+
+/* Checkbox/paginate alignment with iCheck (Bootstrap iCheck container) */
+.rightCol .icheckbox_flat-green,
+.rightCol [class^="icheckbox_"],
+.rightCol [class^="iradio_"] {
+    margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+    .rightCol .bloccoGenerale .row > [class^="col-md-"],
+    .rightCol .blocco .row > [class^="col-md-"] {
+        margin-bottom: 8px;
+    }
+    .rightCol .logic_operator {
+        width: 100%;
+    }
+}
+
+/* ======================================================================
+   Layer widgets sub-panel (per-layer widgets list under DataTable row)
+   ====================================================================== */
+/* Scope: <div id="layer_widgets_{layer_id}"> injected by ajax */
+
+[id^="layer_widgets_"] {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-left: 40px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+[id^="layer_widgets_"] > .btn.btn-default {
+    background: #95ad36;
+    border-color: #7a8e26;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+    margin-bottom: 10px;
+}
+[id^="layer_widgets_"] > .btn.btn-default:hover,
+[id^="layer_widgets_"] > .btn.btn-default:focus {
+    background: #7a8e26;
+    border-color: #5d6b1c;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+[id^="layer_widgets_"] > .btn.btn-default .ion {
+    color: #fff;
+    margin-right: 4px;
+}
+
+/* Table */
+[id^="layer_widgets_"] > table.table {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+[id^="layer_widgets_"] > table.table > thead > tr > th {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    font-weight: 700;
+    border-bottom: 1px solid #dde6b3;
+    padding: 10px 12px;
+}
+[id^="layer_widgets_"] > table.table > tbody > tr > td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-top: 1px solid #eef0e2;
+    color: #4a5018;
+}
+[id^="layer_widgets_"] > table.table > tbody > tr:hover > td {
+    background: #f9faf2;
+}
+
+/* Action icons (edit / delete) */
+[id^="layer_widgets_"] td .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin-right: 4px;
+    float: none;
+}
+[id^="layer_widgets_"] td .icon > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+/* Edit icon (first .icon) — verde-oliva */
+[id^="layer_widgets_"] td .icon > a > .ion-edit {
+    color: #95ad36;
+    font-size: 16px;
+}
+[id^="layer_widgets_"] td .icon > a:hover {
+    background: #f3f6e3;
+    border-color: #dde6b3;
+}
+[id^="layer_widgets_"] td .icon > a:hover > .ion-edit {
+    color: #5d6b1c;
+}
+/* Delete icon — rosso (preservato) */
+[id^="layer_widgets_"] td .icon > a > .ion-trash-b {
+    color: #c0392b;
+    font-size: 16px;
+}
+[id^="layer_widgets_"] td .icon > a:hover > .ion-trash-b {
+    color: #c0392b;
+}
+[id^="layer_widgets_"] td .icon > a:has(.ion-trash-b):hover {
+    background: #fdecea;
+    border-color: #f5c6c0;
+}
+
+/* "Type" column value — small pill */
+[id^="layer_widgets_"] > table.table > tbody > tr > td:nth-child(3) {
+    color: #5d6b1c;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+/* iCheck checkbox alignment in "Linked" column */
+[id^="layer_widgets_"] td .icheckbox_flat-green,
+[id^="layer_widgets_"] td [class^="icheckbox_"] {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    [id^="layer_widgets_"] {
+        margin-left: 0;
+    }
+}
+
+/* ======================================================================
+   qplotly widgets sub-panel (per-layer plots list under DataTable row)
+   ====================================================================== */
+/* Scope: <div class="qplotly"> injected by data-widget-qplotlyWidgetList.js */
+
+div.qplotly {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-left: 40px !important; /* override inline style */
+    margin-top: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+div.qplotly > .btn.btn-default.btn-add-new-plot {
+    background: #95ad36;
+    border-color: #7a8e26;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+    margin-bottom: 10px;
+}
+div.qplotly > .btn.btn-default.btn-add-new-plot:hover,
+div.qplotly > .btn.btn-default.btn-add-new-plot:focus {
+    background: #7a8e26;
+    border-color: #5d6b1c;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+div.qplotly > .btn.btn-default.btn-add-new-plot .fa {
+    color: #fff;
+    margin-right: 4px;
+}
+div.qplotly > p.text-muted {
+    color: #7a8e26;
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+div.qplotly > p.text-muted small {
+    color: #95ad36;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Table */
+div.qplotly > table {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 0;
+}
+div.qplotly > table > thead > tr > th {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    font-weight: 700;
+    border-bottom: 1px solid #dde6b3;
+    padding: 10px 12px !important;
+    text-align: left;
+}
+div.qplotly > table > tbody > tr > td {
+    padding: 10px 12px !important;
+    vertical-align: middle;
+    border-top: 1px solid #eef0e2;
+    color: #4a5018;
+}
+div.qplotly > table > tbody > tr:first-child > td {
+    border-top: none;
+}
+div.qplotly > table > tbody > tr:hover > td {
+    background: #f9faf2;
+}
+
+/* Actions column icons (edit / delete / download / sitemap) */
+div.qplotly > table > tbody > tr > td:first-child {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 0 8px !important;
+    align-items: center;
+    font-size: 14px !important;
+}
+div.qplotly > table > tbody > tr > td:first-child > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    color: #95ad36;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+div.qplotly > table > tbody > tr > td:first-child > a:hover {
+    background: #f3f6e3;
+    border-color: #dde6b3;
+    color: #5d6b1c;
+}
+div.qplotly > table > tbody > tr > td:first-child > a > .fa {
+    font-size: 14px;
+}
+/* delete icon stays red, but its container highlights rosso on hover */
+div.qplotly > table > tbody > tr > td:first-child > a > .fa-trash[style*="red"] {
+    color: #c0392b !important;
+}
+div.qplotly > table > tbody > tr > td:first-child > a:has(.fa-trash):hover {
+    background: #fdecea;
+    border-color: #f5c6c0;
+}
+
+/* Active at startup + Linked checkboxes */
+div.qplotly > table > tbody > tr > td input[type="checkbox"] {
+    accent-color: #95ad36; /* override existing #1abc9c */
+    width: 1.25em;
+    aspect-ratio: 1;
+    cursor: pointer;
+}
+
+/* Position select */
+div.qplotly > table > tbody > tr > td select.form-control {
+    border-color: #e3e6d4;
+    border-radius: 8px;
+    box-shadow: none;
+    color: #4a5018;
+    font-size: 13px;
+    height: 34px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+div.qplotly > table > tbody > tr > td select.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+
+/* Title / Type values */
+div.qplotly > table > tbody > tr > td:nth-child(4) {
+    color: #5d6b1c;
+    font-weight: 600;
+}
+div.qplotly > table > tbody > tr > td:nth-child(5) {
+    color: #5d6b1c;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+@media (max-width: 768px) {
+    div.qplotly {
+        margin-left: 0 !important;
+    }
+    div.qplotly > table > tbody > tr > td:first-child {
+        gap: 4px 4px !important;
+    }
+}
+
+/* ======================================================================
+   Geo constraints sub-panel (per-layer list under DataTable row)
+   ====================================================================== */
+/* Scope: <div class="geoconstraints-list"> injected by widget.js _geoConstraintsTable */
+
+.geoconstraints-list {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-left: 40px !important; /* override inline style */
+    margin-top: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.geoconstraints-list > .btn.btn-default.btn-add-geoconstraint {
+    background: #95ad36;
+    border-color: #7a8e26;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+    margin-bottom: 10px;
+}
+.geoconstraints-list > .btn.btn-default.btn-add-geoconstraint:hover,
+.geoconstraints-list > .btn.btn-default.btn-add-geoconstraint:focus {
+    background: #7a8e26;
+    border-color: #5d6b1c;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.geoconstraints-list > .btn.btn-default.btn-add-geoconstraint .ion {
+    color: #fff;
+    margin-right: 4px;
+}
+
+/* Table */
+.geoconstraints-list > table.table {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.geoconstraints-list > table.table > thead > tr > th {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    font-weight: 700;
+    border-bottom: 1px solid #dde6b3;
+    padding: 10px 12px;
+}
+.geoconstraints-list > table.table > tbody > tr > td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-top: 1px solid #eef0e2;
+    color: #4a5018;
+}
+.geoconstraints-list > table.table > tbody > tr:hover > td {
+    background: #f9faf2;
+}
+
+/* Actions column (rules / edit / delete) */
+.geoconstraints-list td .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin-right: 4px;
+    float: none;
+}
+.geoconstraints-list td .icon > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+    color: #95ad36;
+}
+.geoconstraints-list td .icon > a:hover {
+    background: #f3f6e3;
+    border-color: #dde6b3;
+    color: #5d6b1c;
+}
+.geoconstraints-list td .icon > a > .fa,
+.geoconstraints-list td .icon > a > .ion {
+    font-size: 16px;
+    color: inherit;
+}
+/* Delete icon — keeps red on hover */
+.geoconstraints-list td .icon > a[data-delete-method="delete"] > .ion-trash-b {
+    color: #c0392b;
+}
+.geoconstraints-list td .icon > a[data-delete-method="delete"]:hover {
+    background: #fdecea;
+    border-color: #f5c6c0;
+}
+.geoconstraints-list td .icon > a[data-delete-method="delete"]:hover > .ion-trash-b {
+    color: #c0392b;
+}
+
+/* Yes/No flag columns (for_view, for_editing, autozoom) — replace orange check with verde-oliva */
+.geoconstraints-list td .fa-check-circle {
+    color: #95ad36 !important;
+    font-size: 18px;
+}
+
+/* Rules count (last column) — small pill */
+.geoconstraints-list > table.table > tbody > tr > td:last-child {
+    color: #5d6b1c;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .geoconstraints-list {
+        margin-left: 0 !important;
+    }
+}
+
+/* ======================================================================
+   Layer sub-panels (shared restyle):
+   - .singlelayer-constraints-list   (alphanumeric constraints)
+   - .column-acl-list                (column-level constraints / ACLs)
+   - .styles-list                    (QML styles per layer)
+   - .scalevis-list                  (scale visibility constraints)
+   ====================================================================== */
+
+.singlelayer-constraints-list,
+.column-acl-list,
+.styles-list,
+.scalevis-list {
+    background: #f9faf2;
+    border: 1px solid #dde6b3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-left: 40px !important; /* override inline style */
+    margin-top: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+
+/* "New ..." button (verde-oliva pill) */
+.singlelayer-constraints-list > .btn.btn-add-singlelayer-constraint,
+.column-acl-list             > .btn.btn-add-column-acl,
+.styles-list                 > .btn.btn-add-style,
+.scalevis-list               > .btn.btn-add-constraint {
+    background: #95ad36;
+    border-color: #7a8e26;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+    margin-bottom: 10px;
+}
+.singlelayer-constraints-list > .btn.btn-add-singlelayer-constraint:hover,
+.singlelayer-constraints-list > .btn.btn-add-singlelayer-constraint:focus,
+.column-acl-list             > .btn.btn-add-column-acl:hover,
+.column-acl-list             > .btn.btn-add-column-acl:focus,
+.styles-list                 > .btn.btn-add-style:hover,
+.styles-list                 > .btn.btn-add-style:focus,
+.scalevis-list               > .btn.btn-add-constraint:hover,
+.scalevis-list               > .btn.btn-add-constraint:focus {
+    background: #7a8e26;
+    border-color: #5d6b1c;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+}
+.singlelayer-constraints-list > .btn .ion,
+.column-acl-list             > .btn .ion,
+.styles-list                 > .btn .ion,
+.scalevis-list               > .btn .ion {
+    color: #fff;
+    margin-right: 4px;
+}
+
+/* Tables */
+.singlelayer-constraints-list > table.table,
+.column-acl-list             > table.table,
+.styles-list                 > table.table,
+.scalevis-list               > table.table {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.singlelayer-constraints-list > table.table > thead > tr > th,
+.column-acl-list             > table.table > thead > tr > th,
+.styles-list                 > table.table > thead > tr > th,
+.scalevis-list               > table.table > thead > tr > th {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    font-weight: 700;
+    border-bottom: 1px solid #dde6b3;
+    padding: 10px 12px;
+}
+.singlelayer-constraints-list > table.table > tbody > tr > td,
+.column-acl-list             > table.table > tbody > tr > td,
+.styles-list                 > table.table > tbody > tr > td,
+.scalevis-list               > table.table > tbody > tr > td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-top: 1px solid #eef0e2;
+    color: #4a5018;
+}
+.singlelayer-constraints-list > table.table > tbody > tr:hover > td,
+.column-acl-list             > table.table > tbody > tr:hover > td,
+.styles-list                 > table.table > tbody > tr:hover > td,
+.scalevis-list               > table.table > tbody > tr:hover > td {
+    background: #f9faf2;
+}
+
+/* Action icons */
+.singlelayer-constraints-list td .icon,
+.column-acl-list             td .icon,
+.styles-list                 td .icon,
+.scalevis-list               td .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin-right: 4px;
+    float: none;
+}
+.singlelayer-constraints-list td .icon > a,
+.column-acl-list             td .icon > a,
+.styles-list                 td .icon > a,
+.scalevis-list               td .icon > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+    color: #95ad36;
+}
+.singlelayer-constraints-list td .icon > a:hover,
+.column-acl-list             td .icon > a:hover,
+.styles-list                 td .icon > a:hover,
+.scalevis-list               td .icon > a:hover {
+    background: #f3f6e3;
+    border-color: #dde6b3;
+    color: #5d6b1c;
+}
+.singlelayer-constraints-list td .icon > a > .fa,
+.singlelayer-constraints-list td .icon > a > .ion,
+.column-acl-list             td .icon > a > .fa,
+.column-acl-list             td .icon > a > .ion,
+.styles-list                 td .icon > a > .fa,
+.styles-list                 td .icon > a > .ion,
+.scalevis-list               td .icon > a > .fa,
+.scalevis-list               td .icon > a > .ion {
+    font-size: 16px;
+    color: inherit;
+}
+/* Trash icon — red */
+.singlelayer-constraints-list td .icon > a > .ion-trash-b,
+.column-acl-list             td .icon > a > .ion-trash-b,
+.styles-list                 td .icon > a > .ion-trash-b,
+.scalevis-list               td .icon > a > .ion-trash-b {
+    color: #c0392b;
+}
+.singlelayer-constraints-list td .icon > a:has(.ion-trash-b):hover,
+.column-acl-list             td .icon > a:has(.ion-trash-b):hover,
+.styles-list                 td .icon > a:has(.ion-trash-b):hover,
+.scalevis-list               td .icon > a:has(.ion-trash-b):hover {
+    background: #fdecea;
+    border-color: #f5c6c0;
+}
+.singlelayer-constraints-list td .icon > a:has(.ion-trash-b):hover > .ion-trash-b,
+.column-acl-list             td .icon > a:has(.ion-trash-b):hover > .ion-trash-b,
+.styles-list                 td .icon > a:has(.ion-trash-b):hover > .ion-trash-b,
+.scalevis-list               td .icon > a:has(.ion-trash-b):hover > .ion-trash-b {
+    color: #c0392b;
+}
+
+/* Yes/No check-circle flag — uniform verde-oliva (override inline orange) */
+.singlelayer-constraints-list .fa-check-circle {
+    color: #95ad36 !important;
+    font-size: 18px;
+}
+
+/* Styles list: "Current" radio button — verde-oliva accent */
+.styles-list td input[type="radio"][data-style-action-mode="make_current"] {
+    accent-color: #95ad36;
+    width: 1.1em;
+    height: 1.1em;
+    cursor: pointer;
+}
+
+/* Last numeric/count columns: emphasis */
+.singlelayer-constraints-list > table.table > tbody > tr > td:nth-child(n+5),
+.geoconstraints-list          > table.table > tbody > tr > td:last-child {
+    color: #5d6b1c;
+    font-weight: 600;
+}
+
+/* Scalevis list: User / Group / Minscale / Maxscale formatting */
+.scalevis-list > table.table > tbody > tr > td:nth-child(4),
+.scalevis-list > table.table > tbody > tr > td:nth-child(5) {
+    color: #5d6b1c;
+    font-weight: 600;
+}
+
+/* Column ACL list: restricted_fields column — pillify lists */
+.column-acl-list > table.table > tbody > tr > td:nth-child(4) {
+    color: #5d6b1c;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .singlelayer-constraints-list,
+    .column-acl-list,
+    .styles-list,
+    .scalevis-list {
+        margin-left: 0 !important;
+    }
+}
