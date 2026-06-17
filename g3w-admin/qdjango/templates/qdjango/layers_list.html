@@ -37,83 +37,169 @@
         '     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >\n' +
         '  <image x="0" y="0" height="122%" width="122%"  ' +
         ' xlink:href="{% static 'svg/mIconExpression_orange.svg' %}" />'
+
+    // Modern pill tabs (replaces Bootstrap .nav-tabs li.active behavior)
+    $(document).off('click.lyrtab').on('click.lyrtab', '.layers-panel .project-tabs .ptab', function(e){
+        e.preventDefault();
+        var $btn = $(this);
+        var target = $btn.attr('href');
+        $btn.closest('.project-tabs').find('.ptab').removeClass('is-active');
+        $btn.addClass('is-active');
+        var $content = $btn.closest('.layers-panel').find('.tab-content').first();
+        $content.find('.tab-pane').removeClass('active');
+        $content.find(target).addClass('active');
+    });
+
+    // Single-open behavior for layer widget panels (DataTables row.child).
+    //
+    // Restricted to widgets that open a sub-row (DataTables row.child).
+    // Modal/overlay widgets (ajaxForm and friends) are intentionally
+    // excluded so they keep their own behavior.
+    var LYR_SUBROW_WIDGETS = [
+        'geoConstraintsList',
+        'singlelayerConstraintsList',
+        'columnAclManagerList',
+        'detailItemDataTable',
+        'styleManagerList',
+        'scalevisconstraintManagerList',
+        'qplotlyWidgetList'
+    ];
+    var LYR_SUBROW_SELECTOR = '#layers_table a.layer-action' +
+        LYR_SUBROW_WIDGETS
+            .map(function (t) { return '[data-widget-type="' + t + '"]'; })
+            .join(',#layers_table a.layer-action');
+
+    $(document).off('click.lyrwid').on(
+        'click.lyrwid',
+        LYR_SUBROW_SELECTOR,
+        function () {
+            var $clicked = $(this);
+            var clickedType = $clicked.attr('data-widget-type');
+            var $clickedTr  = $clicked.closest('tr');
+            var clickedId   = $clickedTr.attr('id');
+            var $table      = $('#layers_table');
+
+            var updateMarker = function () {
+                setTimeout(function () {
+                    if ($clickedTr.hasClass('details')) {
+                        $clickedTr.attr('data-open-widget', clickedType);
+                    } else {
+                        $clickedTr.removeAttr('data-open-widget');
+                    }
+                }, 0);
+            };
+
+            // Re-entry from our own .trigger('click')? Just update marker.
+            if ($clicked.data('lyrwidSkip')) {
+                $clicked.removeData('lyrwidSkip');
+                updateMarker();
+                return;
+            }
+
+            // 1) Close any sub-row widget panel open on OTHER rows.
+            $table.children('tbody').children('tr.child').each(function () {
+                var $childTr = $(this);
+                var $prevTr  = $childTr.prev('tr');
+                var prevId   = $prevTr.attr('id');
+                if (prevId === clickedId) return;
+                var prevType = $prevTr.attr('data-open-widget');
+                if (!prevType || LYR_SUBROW_WIDGETS.indexOf(prevType) < 0) return;
+                var $btn = $prevTr
+                    .find('a.layer-action[data-widget-type="' + prevType + '"]')
+                    .first();
+                if ($btn.length) {
+                    $btn.data('lyrwidSkip', true);
+                    $btn.trigger('click');
+                }
+            });
+
+            // 2) Same row: was a DIFFERENT sub-row widget previously open?
+            var prevType = $clickedTr.attr('data-open-widget');
+            if (!prevType ||
+                prevType === clickedType ||
+                LYR_SUBROW_WIDGETS.indexOf(prevType) < 0) {
+                updateMarker();
+                return;
+            }
+
+            // CONFLICT: the widget handler already ran and CLOSED the
+            // previous panel. Re-fire the click to OPEN the new widget.
+            setTimeout(function () {
+                $clicked.data('lyrwidSkip', true);
+                $clicked.trigger('click');
+            }, 0);
+        }
+    );
 </script>
 {% endblock %}
 
 {% block page_header %}
-<h1>
-{% trans 'QGIS Project Layers' %}
-    <small></small>
-</h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>{% trans 'QGIS Project Layers' %}</h1>
+      <p>{{ project.title }}</p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <a href="{% url 'project-list' group.slug %}" style="color:#fff;opacity:.9;text-decoration:none;">
+        <i class="fa fa-arrow-left"></i> {% trans 'Back to projects' %}
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block main_content %}
 {% get_obj_perms user for project as "userPrj_perms" %}
-<div class="row">
-    <div class="col-md-12 col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">{% trans 'Project' %}</h3>
-            </div>
-            <div class="box-body">
-                <div class="attachment-block clearfix">
-                    {% if project.thumbnail %}
-                    <img class="attachment-img" src="{{ MEDIA_URL }}{{ project.thumbnail }}">
-                    {% endif %}
-                    <div class="{% if project.thumbnail %}attachment-pushed{% else %}attachement{% endif %}">
-                        <div class=" attachment-heading"><h4>{{ project.title }}</h4></div>
-                        <div class="attachment-text">{{ project.description|safe }}</div>
-                    </div>
-                </div>
-                <div class="project-abstract-action">
-                    {% if "view_project" in userPrj_perms %}
-                    <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" class="color-orange btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
-                        <i class="ion ion-map"></i>
-                        {% trans 'Show map' %}
-                    </a>
-                    {% endif %}
-                    {% if "view_project" in userPrj_perms %}
-                    <a class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" >
-                        <i class="ion ion-eye"></i>
-                        {% trans 'Show detail' %}
-                    </a>
-                    {% endif %}
-                    {% if "change_project" in userPrj_perms %}
-                    <a href="{% url 'qdjango-project-update' group.slug project.slug %}" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
-                        <i class="ion ion-edit"></i>
-                        {% trans 'Edit' %}
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+
+<div class="group-info-card">
+    {% if project.thumbnail %}
+    <div class="gi-logo" style="background-image:url('{{ MEDIA_URL }}{{ project.thumbnail }}');"></div>
+    {% endif %}
+    <div class="gi-body">
+        <h3 class="gi-title">{{ project.title }}</h3>
+        <div class="gi-desc">{{ project.description|safe }}</div>
+    </div>
+    <div class="gi-actions">
+        {% if "view_project" in userPrj_perms %}
+        <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" class="qa-btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
+            <i class="ion ion-map"></i> {% trans 'Map' %}
+        </a>
+        {% endif %}
+        {% if "view_project" in userPrj_perms %}
+        <a href="#" class="qa-btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}">
+            <i class="ion ion-eye"></i> {% trans 'Detail' %}
+        </a>
+        {% endif %}
+        {% if "change_project" in userPrj_perms %}
+        <a href="{% url 'qdjango-project-update' group.slug project.slug %}" class="qa-btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}">
+            <i class="ion ion-edit"></i> {% trans 'Edit' %}
+        </a>
+        {% endif %}
     </div>
 </div>
 
-<div class="box">
-    <div class="box-body">
-        <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
-              <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> {% trans 'Data' %}</a></li>
-              <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
-            </ul>
-            <div class="tab-content">
-              <div class="tab-pane active project_layers_action-content" id="tab_layers_data">
-                <div class="row">
-                <div class="col-md-3 col-md-offset-6 col-xs-6" >
-                    <b>{% trans 'Project layers actions' %}:</b>
-                </div>
-                <div class="col-md-3 col-xs-6" style="border-bottom: 1px solid #f4f4f4;">
-                {% g3wadmin_project_layers_actions project 'qdjango' user as project_layers_actions %}
+<div class="layers-panel">
+    <div class="project-toolbar" style="margin-bottom:8px;">
+        <div class="project-tabs" role="tablist">
+            <a href="#tab_layers_data" class="ptab is-active"><i class="fa fa-file"></i> {% trans 'Data' %}</a>
+            <a href="#tab_layers_structure" class="ptab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a>
+        </div>
+    </div>
 
-                {% for action in project_layers_actions %}
-                    {{ action }}
-                {% endfor %}
-                </div>
-                </div>
+    <div class="tab-content">
+      <div class="tab-pane active project_layers_action-content" id="tab_layers_data">
+        <div class="panel-head">
+            <span class="actions-label">{% trans 'Project layers actions' %}</span>
+            <div class="layers-bulk-actions">
+            {% g3wadmin_project_layers_actions project 'qdjango' user as project_layers_actions %}
+            {% for action in project_layers_actions %}
+                {{ action }}
+            {% endfor %}
+            </div>
+        </div>
 
-
-                <table id="layers_table" class="table table-hover table-striped" data-widget-type="dataTable">
+        <table id="layers_table" class="table table-hover layers-table" data-widget-type="dataTable">
                     <thead>
                         <tr>
 
@@ -137,29 +223,30 @@
                         <tr id="qdjango_project_layer_{{ object.slug }}">
 
 
-                            <td>{{ object.title }}</td>
-                            <td>{{ object.origname }}
+                            <td data-label="{% trans 'Label' %}" class="layer-title">{{ object.title }}</td>
+                            <td data-label="{% trans 'Name' %}">
+                                <span class="layer-origname">{{ object.origname }}</span>
                                 {% if "change_project" in userPrj_perms %}
-                                <a data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
+                                <a class="layer-detail-icon" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td data-label="{% trans 'Type' %}" class="layer-type-cell">
                                 {% include 'qdjango/include/layer_icon.html' %}
                             </td>
                             {% if "change_project" in userPrj_perms %}
-                            <td>
+                            <td data-label="{% trans 'WMS External' %}" class="layer-ext-cell">
                                 {% if object|can_set_external %}
                                 <input type="checkbox" data-widget-type="externalLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="external_{{ object.pk }}" {% if object.external %}checked="checked"{% endif %}>
                                 {% endif %}
                             </td>
                             {% endif %}
-                            <td>
+                            <td data-label="WFS" class="layer-wfs-cell">
                                 {% if object.wfscapabilities %}
-                                <span class="fa fa-check-circle" style="color: orange"></span>
+                                <span class="fa fa-check-circle"></span>
                                 {% endif %}
                             </td>
-                            <td>
-                                <span class="row">
+                            <td data-label="{% trans 'Actions' %}">
+                                <span class="layer-actions-grid">
                                     {% g3wadmin_layer_actions object 'qdjango' user as actions %}
 
                                     {% for action in actions %}
@@ -227,13 +314,13 @@
                                     {% endif %}
                                 </span>
                             </td>
-                            <td>
+                            <td data-label="{% trans 'Preview fields (max.)' %}">
                                 {% if object.layer_type in type_layer_for_download %}
                                 <div class="controls">
                                     <input
                                         data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}"
                                         type="number"
-                                        class="max_preview_fields text-input form-control"
+                                        class="max_preview_fields max-preview-fields-input text-input form-control"
                                         value="{{ object.max_preview_fields|default:"3" }}"
                                         min="1"
                                         max="{% fieldsnumber object %}"
@@ -243,7 +330,7 @@
                                 </div>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td data-label="{% trans 'Download capabilities' %}">
 
 {#                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>#}
                                 <div class="dropdown">
@@ -305,7 +392,7 @@
                             </td>
 
                             {% if "change_project" in userPrj_perms %}
-                            <td>
+                            <td data-label="{% trans 'Visibility capabilities' %}">
                             <div class="dropdown">
                                 <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                   <i class="fa fa-eye"></i>
@@ -343,15 +430,12 @@
                         </tr>
                         {% endfor %}
                     </tbody>
-                </table>
-              </div><!-- /.tab-pane -->
-              <div class="tab-pane" id="tab_layers_structure">
-                <div id="tree"></div>
-              </div><!-- /.tab-pane -->
+        </table>
+      </div><!-- /.tab-pane -->
+      <div class="tab-pane" id="tab_layers_structure">
+        <div id="tree"></div>
+      </div><!-- /.tab-pane -->
 
-            </div><!-- /.tab-content -->
-          </div>
-
-    </div>
+    </div><!-- /.tab-content -->
 </div>
 {% endblock %}

@@ -7,7 +7,17 @@
 {% load g3wadmin_tags %}
 
 {% block page_header %}
-    <h1>{% trans 'Cartographic groups' %}</h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>{% trans 'Cartographic groups' %}</h1>
+      <p>{% trans 'Browse, organize and manage the map groups you have access to.' %}</p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <i class="fa fa-globe"></i> {{ object_list|length }} {% trans 'groups' %}
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block custom_js_links_page %}
@@ -39,115 +49,127 @@
     });
 </script>
 {% endif %}
+<script>
+    // Modern collapse toggle for the filter card
+    (function(){
+        var $btn = $('#filter-toggle');
+        var $card = $('#filter-card');
+        $btn.on('click', function(){
+            $card.toggleClass('is-collapsed');
+        });
+    })();
+</script>
 {% endblock %}
 
 {% block main_content %}
 
-<div id="group_list_fitler_bar" class="row">
-<section class="col-lg-5">
-    <div class="box box-solid {% if collapsed_filter_form %}collapsed-box{% endif %}">
-            <div class="box-header ui-sortable-handle" style="cursor: move;">
-              <i class="fa fa-filter"></i>
-              <h3 class="box-title">{% trans 'Filter by' %}</h3>
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="box-body border-radius-none">
-                <form method="get" id="group-filter">
-                {% crispy filter_form  %}
-                    <button class="btn btn-block btn-default">{% trans 'Filter' %}</button>
-                </form>
-            </div>
-          </div>
-</section>
+{# ---- Filter toolbar ---- #}
+<div class="filter-toolbar">
+    <button type="button" id="filter-toggle" class="filter-toggle">
+        <i class="fa fa-filter"></i> {% trans 'Filter groups' %}
+    </button>
+    {% if perms.core.add_group %}
+    <a class="qa-btn" href="{% url 'group-add' %}">
+        <i class="fa fa-plus-circle"></i> {% trans 'New group' %}
+    </a>
+    {% endif %}
 </div>
+
+<div id="filter-card" class="filter-card {% if collapsed_filter_form %}is-collapsed{% endif %}">
+    <form method="get" id="group-filter">
+        {% crispy filter_form %}
+        <button class="btn btn-primary">{% trans 'Apply filter' %}</button>
+    </form>
+</div>
+
+{# ---- Groups grid ---- #}
+{% if object_list %}
 <div id="groups_list" class="row">
 {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
     <div class="col-md-3 col-sm-6" id="group_{{ object.pk }}">
-     <div class="box box-widget widget-user" id="group_{{ object.slug }}">
-                <!-- Add the bg color to the header using any of the bg-* classes -->
-                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') no-repeat center center;">
-                <div class="row">
-                    <div class="col-sm-12 widget-group-title handle">
-                        <h3 class="widget-user-username">{{ object.name }}</h3>
-                        <h5 class="widget-user-desc">{{ object.title }} <small>({{ object.srid }})</small></h5>
-                    </div>
+        <div class="group-card" id="group_{{ object.slug }}">
+            <div class="group-cover handle"
+                 {% if object.header_logo_img %}style="background-image:url('{{ MEDIA_URL }}{{ object.header_logo_img }}');"{% endif %}>
+                <h3 class="group-name">{{ object.name }}</h3>
+                <div class="group-meta">
+                    {{ object.title }}<span class="srid-badge">EPSG:{{ object.srid }}</span>
                 </div>
-                </div>
-                <div class="box-footer">
-                  <div class="row">
-                   <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        {% if "change_group" in userObj_perms %}
-                        <div class="icon" data-toggle="tooltip" data-placement="top" title="{% trans 'Add new project' %}" >
+            </div>
+            <div class="group-body">
+                <a class="group-projects-link" href="{% url 'project-list' object.slug %}">
+                    <i class="fa fa-map"></i>
+                    {% g3wadmin_get_projects_number object user 1 %} {% trans 'Projects' %}
+                </a>
+                <div class="group-actions">
+                    {% if "change_group" in userObj_perms %}
+                    <span class="action-wrap" data-toggle="tooltip" data-placement="top" title="{% trans 'Add new project' %}">
                         {% if SETTINGS.G3WADMIN_PROJECT_APPS|length == 1 %}
-                            <a href="{% url 'qdjango-project-add' object.slug %}" ><i class="ion ion-plus-circled"></i></a>
+                            <a href="{% url 'qdjango-project-add' object.slug %}"><i class="ion ion-plus-circled"></i></a>
                         {% else %}
                             {% include 'core/include/add_project.html' %}
                         {% endif %}
+                    </span>
+                    {% endif %}
+                    {% if "view_group" in userObj_perms %}
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}"
+                       data-widget-type="detailItem"
+                       data-detail-url="{% url 'group-detail' object.slug %}">
+                        <i class="ion ion-eye"></i>
+                    </a>
+                    {% endif %}
+                    {% if "change_group" in userObj_perms %}
+                    <a href="{% url 'group-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}">
+                        <i class="ion ion-edit"></i>
+                    </a>
+                    {% endif %}
+                    {% if "delete_group" in userObj_perms %}
+                    <a href="#" class="danger"
+                       data-toggle="tooltip" data-placement="top"
+                       title="{% trans 'Delete/Deactivate' %}"
+                       data-widget-type="activeDeactiveItem"
+                       data-active-deactive-action="deactivate"
+                       data-active-deactive-url="{% url 'group-deactive' object.slug %}"
+                       data-active-deactive-delete-url="{% url 'group-delete' object.slug %}"
+                       data-item-selector="#group_{{ object.slug }}">
+                        <i class="ion ion-trash-b"></i>
+                        <div class="hidden pre-active-deactive-message">
+                            <div><p>{% blocktrans %}<strong>Warning</strong>: deleting the group (move to bucket) will delete the projects it contains (move to the bucket)!{% endblocktrans %}</p></div>
                         </div>
-                        {% endif %}
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-4 col-xs-4">
-                      <div class="description-block projects-group">
-                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{% g3wadmin_get_projects_number object user 1 %} {% trans 'Projects' %}</a></h5>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                         <div class="icon">
-                         {% if "view_group" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' object.slug %}"><i class="ion ion-eye"></i></a>
-                         {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "change_group" in userObj_perms %}
-                          <a href="{% url 'group-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                        {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "delete_group" in userObj_perms %}
-                          <a href="#" 
-                          data-toggle="tooltip" 
-                          data-placement="top" 
-                          title="{% trans 'Delete/Deactivate' %}"  
-                          data-widget-type="activeDeactiveItem" 
-                          data-active-deactive-action="deactivate" 
-                          data-active-deactive-url="{% url 'group-deactive' object.slug %}"
-                          data-active-deactive-delete-url="{% url 'group-delete' object.slug %}"
-                          data-item-selector="#group_{{ object.slug }}">
-                          <i class="ion ion-trash-b"></i></a>
-                        {% endif %}
-                            <div class="hidden pre-active-deactive-message">
-                                <div><p>{% blocktrans %}<strong>Warning</strong>: deleting the group (move to bucket) will delete the projects it contains (move to the bucket)!{% endblocktrans %}</p></div>
-                            </div>
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                  </div><!-- /.row -->
+                    </a>
+                    {% endif %}
                 </div>
-          </div><!-- /.widget-user -->
+            </div>
+        </div>
     </div>
 {% endfor %}
-</div>
+
 {% if perms.core.add_group %}
-<div class="row">
-{% with 'group-add' as object_add_url_name %}
-    {% include 'core/include/widget_add_box.html' %}
-{% endwith %}
+    <div class="col-md-3 col-sm-6" id="group_add">
+        <a class="group-add-card" href="{% url 'group-add' %}">
+            <i class="ion ion-plus-circled"></i>
+            <span>{% trans 'Add new group' %}</span>
+        </a>
+    </div>
+{% endif %}
 </div>
+{% else %}
+    <div class="empty-state">
+        <i class="fa fa-globe"></i>
+        <strong>{% trans 'No groups found' %}</strong>
+        <p>
+            {% if perms.core.add_group %}
+                {% trans 'Create your first cartographic group to start organizing projects.' %}
+            {% else %}
+                {% trans 'No groups match your filter, or none have been shared with you yet.' %}
+            {% endif %}
+        </p>
+        {% if perms.core.add_group %}
+        <a class="qa-btn" href="{% url 'group-add' %}" style="margin-top:12px;">
+            <i class="fa fa-plus-circle"></i> {% trans 'New group' %}
+        </a>
+        {% endif %}
+    </div>
 {% endif %}
 
 {% endblock %}

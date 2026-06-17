@@ -1,91 +1,166 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load  guardian_tags %}
+{% load guardian_tags %}
 
 {% block page_header %}
-<h1>
-    {% trans 'Dashboard' %}
-    <small>{% trans 'Current situation' %}</small>
-</h1>
-{% endblock%}
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        {% blocktrans with name=user.first_name|default:user.username %}Welcome back, {{ name }}{% endblocktrans %}
+      </h1>
+      <p>{% trans 'Here is an overview of your geospatial workspaces.' %}</p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <i class="fa fa-calendar"></i> {% now "l, j F Y" %}
+    </div>
+  </div>
+  <form class="hero-search" method="get" action="{% url 'search-admin' %}">
+    <input type="text" name="stext" placeholder="{% trans 'Search groups, projects, layers…' %}" />
+    <button type="submit"><i class="fa fa-search"></i> {% trans 'Search' %}</button>
+  </form>
+</div>
+{% endblock %}
 
 {% block main_content %}
+{# ---- KPI cards ---- #}
 <div class="row">
-    <div class="col-md-4">
-        <div class="small-box bg-aqua">
-            <div class="inner">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h3>{{ n_groups }}</h3>
-                        <p>{% trans 'Groups' %}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="icon">
-                <i class="fa fa-globe"></i>
-            </div>
-            <a href="{% url 'group-list' %}" class="small-box-footer">{% trans 'Show' %} <i class="fa fa-arrow-circle-right"></i></a>
+  <div class="col-md-3 col-sm-6" style="margin-bottom:16px;">
+    <div class="kpi-card">
+      <a class="kpi-link" href="{% url 'group-list' %}">
+        <span class="kpi-icon bg-grad-aqua"><i class="fa fa-globe"></i></span>
+        <div>
+          <div class="kpi-value">{{ n_groups }}</div>
+          <div class="kpi-label">{% trans 'Map groups' %}</div>
         </div>
+        <span class="kpi-cta"><i class="fa fa-arrow-circle-right"></i></span>
+      </a>
     </div>
+  </div>
+  <div class="col-md-3 col-sm-6" style="margin-bottom:16px;">
+    <div class="kpi-card">
+      <span class="kpi-icon bg-grad-blue"><i class="fa fa-map"></i></span>
+      <div>
+        <div class="kpi-value">{{ n_projects }}</div>
+        <div class="kpi-label">{% trans 'Projects' %}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6" style="margin-bottom:16px;">
+    <div class="kpi-card">
+      <span class="kpi-icon bg-grad-violet"><i class="fa fa-database"></i></span>
+      <div>
+        <div class="kpi-value">{{ n_layers }}</div>
+        <div class="kpi-label">{% trans 'Layers' %}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6" style="margin-bottom:16px;">
+    <div class="kpi-card">
+      <span class="kpi-icon bg-grad-pink"><i class="fa fa-bookmark"></i></span>
+      <div>
+        <div class="kpi-value">{{ projects_bookmarked|length }}</div>
+        <div class="kpi-label">{% trans 'Bookmarked projects' %}</div>
+      </div>
+    </div>
+  </div>
 </div>
-{% if projects_bookmarked|length > 0 %}
-<div class="row">
-    <div class="col-md-12"><h3>{% trans 'Projects bookmarked' %}</h3></div>
-    {% for prj in projects_bookmarked %}
-        {% get_obj_perms user for prj.project as "userObj_perms" %}
-        <div class="col-md-3 col-sm-6 col-xs-12" id="prj-book-{{ prj.project.pk }}">
-          <div class="info-box">
-            <span class="info-box-icon bg-aqua">
-                <a href="{% url 'group-project-map' prj.project.group.slug 'qdjango' prj.project.pk %}" class="project-thumb" title="{% trans 'Show map' %}" target="_blank">
-                {% if prj.project.thumbnail  %}
-                <img style="height:90px;" class="img-responsive" src="{{ MEDIA_URL }}{{ prj.project.thumbnail }}" />
-                {% else %}
-                <img style="height:90px;" class="img-responsive" src="{{ SETTINGS.PLACEHOLD_SERVICE }}90x90?text=MAP" />
-                {% endif %}
-                </a>
-            </span>
 
-            <div class="info-box-content">
-              <span class="info-box-text"><h4>{{prj.project.title}}</h4></span>
-              {% if "view_project" in userObj_perms %}
-            <span class="col-xs-2 icon">
-                <a class="color-orange" href="{% url 'group-project-map' prj.project.group.slug 'qdjango' prj.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
+{# ---- Quick actions ---- #}
+<div class="section-title"><span>{% trans 'Quick actions' %}</span><span class="bar"></span></div>
+<div class="quick-actions">
+  <a class="qa-btn" href="{% url 'group-list' %}"><i class="fa fa-globe"></i> {% trans 'Browse groups' %}</a>
+  {% if perms.core.add_group %}
+  <a class="qa-btn" href="{% url 'group-add' %}"><i class="fa fa-plus-circle"></i> {% trans 'New group' %}</a>
+  {% endif %}
+  <a class="qa-btn" href="{% url 'search-admin' %}"><i class="fa fa-search"></i> {% trans 'Advanced search' %}</a>
+</div>
+
+{# ---- Bookmarked projects ---- #}
+<div class="section-title"><span>{% trans 'Projects bookmarked' %}</span><span class="bar"></span></div>
+{% if projects_bookmarked|length > 0 %}
+  <div class="row">
+    {% for prj in projects_bookmarked %}
+      {% get_obj_perms user for prj.project as "userObj_perms" %}
+      <div class="col-md-3 col-sm-6 col-xs-12" id="prj-book-{{ prj.project.pk }}" style="margin-bottom:16px;">
+        <div class="prj-card">
+          <div class="prj-thumb"
+               style="background-image:url('{% if prj.project.thumbnail %}{{ MEDIA_URL }}{{ prj.project.thumbnail }}{% else %}{{ SETTINGS.PLACEHOLD_SERVICE }}600x300?text=MAP{% endif %}');">
+            <div class="prj-thumb-overlay"></div>
+            <span class="prj-bookmark bookmark-toggle"
+                  data-widget-type="setProjectBookmark"
+                  data-ajax-url="{% url 'qdjango-api-bookmark-project' %}"
+                  data-prj-id="{{ prj.project.pk }}"
+                  data-remove-selector="prj-book-{{ prj.project.pk }}"
+                  data-bookmarked="1"
+                  title="{% trans 'Remove bookmark' %}">
+              <i class="fa fa-bookmark"></i>
             </span>
-            {% endif %}
-            {% if "change_project" in userObj_perms %}
-            <span class="col-xs-2 icon">
-                <a href="{% url 'qdjango-project-layers-list' prj.project.group.slug prj.project.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i></a>
-            </span>
-            {% endif %}
-            {% if "change_project" in userObj_perms %}
-            <span class="col-xs-2 icon">
-                <a href="{% url 'qdjango-project-update' prj.project.group.slug prj.project.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-            </span>
-            {% endif %}
-            <span  class="bookmark-toggle col-xs-2 icon" 
-                    style="cursor:pointer; color:red;" 
-                    data-widget-type="setProjectBookmark"
-                    data-ajax-url="{% url 'qdjango-api-bookmark-project' %}" 
-                    data-prj-id="{{ prj.project.pk }}"
-                    data-remove-selector="prj-book-{{ prj.project.pk }}"
-                    data-bookmarked="1"
-                    title="{% trans 'Remove bookmark' %}">
-                <i class="fa fa-bookmark"></i>
-            </span>
-            </div>
-            <!-- /.info-box-content -->
           </div>
-          <!-- /.info-box -->
+          <div class="prj-body">
+            <h4 class="prj-title" title="{{ prj.project.title }}">{{ prj.project.title }}</h4>
+            <div class="prj-actions">
+              {% if "view_project" in userObj_perms %}
+                <a href="{% url 'group-project-map' prj.project.group.slug 'qdjango' prj.project.pk %}"
+                   target="_blank" title="{% trans 'Show map' %}">
+                  <i class="ion ion-map"></i>{% trans 'Map' %}
+                </a>
+              {% endif %}
+              {% if "change_project" in userObj_perms %}
+                <a href="{% url 'qdjango-project-layers-list' prj.project.group.slug prj.project.slug %}"
+                   title="{% trans 'Layers' %}">
+                  <i class="ion ion-navicon-round"></i>{% trans 'Layers' %}
+                </a>
+                <a href="{% url 'qdjango-project-update' prj.project.group.slug prj.project.slug %}"
+                   title="{% trans 'Edit' %}">
+                  <i class="ion ion-edit"></i>{% trans 'Edit' %}
+                </a>
+              {% endif %}
+            </div>
+          </div>
         </div>
+      </div>
     {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <i class="fa fa-bookmark-o"></i>
+    <strong>{% trans 'No bookmarked projects yet' %}</strong>
+    <p>{% trans 'Open any project map and click the bookmark icon to pin it here.' %}</p>
+  </div>
+{% endif %}
+
+{# ---- Recent activity (staff/superuser only) ---- #}
+{% if recent_activity %}
+<div class="section-title"><span>{% trans 'Recent activity' %}</span><span class="bar"></span></div>
+<div class="activity-list">
+  {% for log in recent_activity %}
+    <div class="act-item">
+      {% if log.level >= 50 %}
+        <div class="act-badge act-lvl-fatal"><i class="fa fa-times-circle"></i></div>
+      {% elif log.level >= 40 %}
+        <div class="act-badge act-lvl-error"><i class="fa fa-exclamation-circle"></i></div>
+      {% elif log.level >= 30 %}
+        <div class="act-badge act-lvl-warning"><i class="fa fa-exclamation-triangle"></i></div>
+      {% elif log.level >= 20 %}
+        <div class="act-badge act-lvl-info"><i class="fa fa-info-circle"></i></div>
+      {% else %}
+        <div class="act-badge act-lvl-debug"><i class="fa fa-bug"></i></div>
+      {% endif %}
+      <div class="act-msg">
+        <p class="act-title">{{ log.msg }}</p>
+        <div class="act-meta">{{ log.logger_name }} &middot; {{ log.create_datetime|timesince }} {% trans 'ago' %}</div>
+      </div>
+    </div>
+  {% endfor %}
 </div>
 {% endif %}
-{% if widgets  %}
-<div class="row">
-    <div class="col-md-12"><h3>{% trans 'Module widgets' %}</h3></div>
-    {% for widget in widgets %}
-        {{ widget }}
-    {% endfor %}
-</div>
+
+{# ---- Module widgets ---- #}
+{% if widgets %}
+  <div class="section-title"><span>{% trans 'Module widgets' %}</span><span class="bar"></span></div>
+  <div class="widgets-grid">
+    {% for widget in widgets %}{{ widget }}{% endfor %}
+  </div>
 {% endif %}
 {% endblock %}
