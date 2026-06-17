@@ -7,9 +7,18 @@
 {% load g3wadmin_tags %}
 
 {% block page_header %}
-    <h1>{% trans 'Cartographic macro groups' %}</h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>{% trans 'Cartographic macro groups' %}</h1>
+      <p>{% trans 'Group together cartographic groups under shared identities and logos.' %}</p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <i class="fa fa-sitemap"></i> {{ object_list|length }} {% trans 'macro groups' %}
+    </div>
+  </div>
+</div>
 {% endblock %}
-
 
 {% block custom_js_links_page %}
 {% if user.is_superuser %}
@@ -20,21 +29,20 @@
         update: function(e, ui){
             new_order = $(e.target).sortable("toArray");
 
-            // get current id of group moved
-            var gid = ui.item.attr('id').substring(11)
+            // get current id of macrogroup moved
+            var gid = ui.item.attr('id').substring(11);
             var url = _.template("/jx/macrogroups/<%= gid %>/setorder/")({gid: gid});
             var data = {
                 new_order: new_order
-            }
+            };
             ga.utils.addCsfrtokenData(data);
 
             $.post(url, data, function(res){
                 console.log(res);
             });
-
         },
     });
-    $("#groups_list").disableSelection();
+    $("#macrogroups_list").disableSelection();
     $('.handle').hover(function() {
         $(this).css('cursor','move');
     });
@@ -44,60 +52,98 @@
 
 {% block main_content %}
 
+{# ---- Toolbar ---- #}
+<div class="filter-toolbar">
+    <span class="filter-toolbar-title">
+        <i class="fa fa-sitemap"></i> {% trans 'All macro groups' %}
+    </span>
+    {% if perms.core.add_macrogroup %}
+    <a class="qa-btn" href="{% url 'macrogroup-add' %}">
+        <i class="fa fa-plus-circle"></i> {% trans 'New macro group' %}
+    </a>
+    {% endif %}
+</div>
 
+{# ---- Macrogroups grid ---- #}
+{% if object_list %}
 <div id="macrogroups_list" class="row">
 {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
     <div class="col-md-3 col-sm-6" id="macrogroup_{{ object.pk }}">
-     <div class="box box-widget widget-user" id="macrogroup_{{ object.slug }}">
-                <!-- Add the bg color to the header using any of the bg-* classes -->
-                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.logo_img }}') center center;">
-                <div class="row">
-                    <div class="col-sm-12 widget-group-title handle">
-                        <h3 class="widget-user-username">{{ object.title }}</h3>
-                    </div>
+        <div class="group-card is-macrogroup" id="macrogroup_{{ object.slug }}">
+            <div class="group-cover handle"
+                 {% if object.logo_img %}style="background-image:url('{{ MEDIA_URL }}{{ object.logo_img }}');"{% endif %}>
+                <h3 class="group-name">{{ object.title }}</h3>
+                <div class="group-meta">
+                    <span class="srid-badge">
+                        <i class="fa fa-layer-group"></i>
+                        {{ object.group_set.count }} {% trans 'groups' %}
+                    </span>
                 </div>
+            </div>
+            <div class="group-body">
+                <div class="mg-groups-list">
+                    {% for group in object.group_set.all|slice:":5" %}
+                        <a class="mg-group-chip" href="{% url 'group-update' group.slug %}" title="{{ group.title }}">{{ group }}</a>
+                    {% empty %}
+                        <span class="mg-groups-empty">{% trans 'No groups linked' %}</span>
+                    {% endfor %}
+                    {% if object.group_set.count > 5 %}
+                        <span class="mg-group-more">+{{ object.group_set.count|add:"-5" }}</span>
+                    {% endif %}
                 </div>
-                <div class="box-footer">
-                  <div class="row">
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                         <div class="icon">
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' object.slug %}"><i class="ion ion-eye"></i></a>
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "change_macrogroup" in userObj_perms %}
-                          <a href="{% url 'macrogroup-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                        {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "delete_macrogroup" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'macrogroup-delete' object.slug %}" data-item-selector="#macrogroup_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
-                        {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                  </div><!-- /.row -->
+                <div class="group-actions">
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}"
+                       data-widget-type="detailItem"
+                       data-detail-url="{% url 'macrogroup-detail' object.slug %}">
+                        <i class="ion ion-eye"></i>
+                    </a>
+                    {% if "change_macrogroup" in userObj_perms %}
+                    <a href="{% url 'macrogroup-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}">
+                        <i class="ion ion-edit"></i>
+                    </a>
+                    {% endif %}
+                    {% if "delete_macrogroup" in userObj_perms %}
+                    <a href="#" class="danger"
+                       data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"
+                       data-widget-type="deleteItem"
+                       data-delete-url="{% url 'macrogroup-delete' object.slug %}"
+                       data-item-selector="#macrogroup_{{ object.slug }}">
+                        <i class="ion ion-trash-b"></i>
+                    </a>
+                    {% endif %}
                 </div>
-          </div><!-- /.widget-user -->
+            </div>
+        </div>
     </div>
 {% endfor %}
-</div>
-{% if perms.core.add_group %}
-<div class="row">
-{% with 'macrogroup-add' as object_add_url_name %}
-    {% include 'core/include/widget_add_box.html' %}
-{% endwith %}
-</div>
-{% endif %}
 
+{% if perms.core.add_macrogroup %}
+    <div class="col-md-3 col-sm-6" id="macrogroup_add">
+        <a class="group-add-card" href="{% url 'macrogroup-add' %}">
+            <i class="ion ion-plus-circled"></i>
+            <span>{% trans 'Add new macro group' %}</span>
+        </a>
+    </div>
+{% endif %}
+</div>
+{% else %}
+    <div class="empty-state">
+        <i class="fa fa-sitemap"></i>
+        <strong>{% trans 'No macro groups found' %}</strong>
+        <p>
+            {% if perms.core.add_macrogroup %}
+                {% trans 'Create your first macro group to organize cartographic groups under a shared identity.' %}
+            {% else %}
+                {% trans 'No macro groups have been shared with you yet.' %}
+            {% endif %}
+        </p>
+        {% if perms.core.add_macrogroup %}
+        <a class="qa-btn" href="{% url 'macrogroup-add' %}" style="margin-top:12px;">
+            <i class="fa fa-plus-circle"></i> {% trans 'New macro group' %}
+        </a>
+        {% endif %}
+    </div>
+{% endif %}
 
 {% endblock %}

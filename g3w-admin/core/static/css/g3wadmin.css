@@ -1727,3 +1727,792 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
         font-size: 12px;
     }
 }
+
+/* ===== Project info overlay (qdjango/ajax/project_detail.html) =====
+   Loaded inside a Bootstrap modal via data-widget-type="detailItem".
+   Markup is an AdminLTE accordion: <div id="accordion" class="box-group">
+     <div class="panel box box-primary">
+       <div class="box-header with-border">
+         <h4 class="box-title"><a data-toggle="collapse" href="#…">Section</a></h4>
+       </div>
+       <div id="…" class="panel-collapse collapse [in]">
+         <div class="box-body"> … </div>
+       </div>
+     </div> ...
+   </div>
+*/
+
+/* Modal shell tweaks (only when this content is inside) */
+.modal-dialog .modal-content:has(#accordion.box-group),
+.modal-dialog .modal-content:has(.g3w-detail-overlay) {
+    border-radius: 14px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 24px 60px -20px rgba(10, 84, 85, .35);
+}
+.modal-dialog .modal-content:has(#accordion.box-group) .modal-header,
+.modal-dialog .modal-content:has(.g3w-detail-overlay) .modal-header {
+    background: linear-gradient(135deg, #149ea0 0%, #0d7274 100%);
+    color: #fff;
+    border: none;
+    padding: 16px 22px;
+}
+.modal-dialog .modal-content:has(#accordion.box-group) .modal-header .modal-title,
+.modal-dialog .modal-content:has(#accordion.box-group) .modal-header h4,
+.modal-dialog .modal-content:has(.g3w-detail-overlay) .modal-header .modal-title,
+.modal-dialog .modal-content:has(.g3w-detail-overlay) .modal-header h4 {
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+.modal-dialog .modal-content:has(#accordion.box-group) .modal-header .close,
+.modal-dialog .modal-content:has(.g3w-detail-overlay) .modal-header .close {
+    color: #fff;
+    opacity: .85;
+    text-shadow: none;
+    font-size: 26px;
+    line-height: 1;
+}
+.modal-dialog .modal-content:has(#accordion.box-group) .modal-header .close:hover,
+.modal-dialog .modal-content:has(.g3w-detail-overlay) .modal-header .close:hover {
+    opacity: 1;
+}
+.modal-dialog .modal-content:has(#accordion.box-group) .modal-body,
+.modal-dialog .modal-content:has(.g3w-detail-overlay) .modal-body {
+    background: #f7fbfb;
+    padding: 18px 18px 6px 18px;
+}
+.modal-dialog .modal-content:has(#accordion.box-group) .modal-footer,
+.modal-dialog .modal-content:has(.g3w-detail-overlay) .modal-footer {
+    border-top: 1px solid #e6eef0;
+    background: #fff;
+}
+
+/* Accordion container */
+#accordion.box-group {
+    margin: 0;
+}
+#accordion.box-group .panel.box {
+    background: #fff;
+    border: 1px solid #e6eef0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px -3px rgba(10, 84, 85, .15);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+#accordion.box-group .panel.box.box-primary {
+    border-top: 1px solid #e6eef0;
+}
+#accordion.box-group .panel.box::before { display: none; }
+
+/* Panel header */
+#accordion.box-group .panel.box .box-header {
+    background: #fff;
+    border-bottom: 1px solid #f1f5f6;
+    padding: 0;
+}
+#accordion.box-group .panel.box .box-header.with-border {
+    border-color: #f1f5f6;
+}
+#accordion.box-group .panel.box .box-title {
+    margin: 0;
+    width: 100%;
+}
+#accordion.box-group .panel.box .box-title > a {
+    display: block;
+    padding: 14px 18px 14px 46px;
+    color: #0d7274;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-transform: none;
+    letter-spacing: .2px;
+    position: relative;
+    transition: background .15s ease, color .15s ease;
+}
+#accordion.box-group .panel.box .box-title > a:hover {
+    background: #f1f9f9;
+    color: #0a5455;
+}
+#accordion.box-group .panel.box .box-title > a::before {
+    content: "\f107"; /* fa-angle-down */
+    font-family: FontAwesome;
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 16px;
+    color: #149ea0;
+    transition: transform .2s ease;
+    width: 18px;
+    text-align: center;
+}
+#accordion.box-group .panel.box .box-title > a:not(.collapsed)::before,
+#accordion.box-group .panel.box .panel-collapse.in ~ * .box-title > a::before {
+    transform: translateY(-50%) rotate(0);
+}
+/* When the collapse is open, rotate the chevron */
+#accordion.box-group .panel.box:has(.panel-collapse.in) .box-title > a::before {
+    transform: translateY(-50%) rotate(0);
+}
+
+/* Panel body */
+#accordion.box-group .panel.box .box-body {
+    padding: 18px 22px;
+    color: #1f2937;
+    font-size: 13.5px;
+}
+
+/* Section meta lists */
+#accordion.box-group .box-body h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #cdebec;
+}
+#accordion.box-group .box-body h4 {
+    font-size: 14px;
+    color: #0d7274;
+    font-weight: 600;
+    margin: 0 0 10px;
+}
+#accordion.box-group .box-body h5 {
+    font-size: 13px;
+    margin: 6px 0;
+    color: #374151;
+    font-weight: 500;
+}
+#accordion.box-group .box-body h5 strong {
+    color: #0d7274;
+}
+#accordion.box-group .box-body strong {
+    color: #1f2937;
+}
+
+#accordion.box-group .box-body ul.list-unstyled > li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #eef3f4;
+    line-height: 1.6;
+}
+#accordion.box-group .box-body ul.list-unstyled > li:last-child {
+    border-bottom: none;
+}
+#accordion.box-group .box-body ul.list-unstyled > li > strong {
+    color: #6b7280;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+/* Thumbnail block */
+#accordion.box-group .box-body img {
+    max-width: 100%;
+    border-radius: 10px;
+    border: 1px solid #e6eef0;
+    box-shadow: 0 4px 10px -6px rgba(10, 84, 85, .25);
+}
+
+/* "Layer: Foo" sub-header inside lists (was box-body bg-gray) */
+#accordion.box-group .box-body .box-body.bg-gray {
+    background: linear-gradient(135deg, #e8f7f7, #f4faf9) !important;
+    color: #0d7274;
+    border-radius: 10px;
+    padding: 10px 14px !important;
+    margin: 0 0 12px 0 !important;
+    border-left: 3px solid #149ea0;
+}
+#accordion.box-group .box-body .box-body.bg-gray + div + .box-body.bg-gray,
+#accordion.box-group .box-body .box-body.bg-gray ~ .box-body.bg-gray {
+    margin-top: 22px !important;
+}
+#accordion.box-group .box-body .box-body.bg-gray h4 {
+    margin: 0;
+    font-size: 13.5px;
+    color: #0d7274;
+}
+#accordion.box-group .box-body .box-body.bg-gray h4 strong {
+    color: #0a5455;
+}
+
+/* Tables inside the overlay */
+#accordion.box-group .box-body table.table {
+    background: #fff;
+    border: 1px solid #e6eef0;
+    border-radius: 10px;
+    overflow: hidden;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    margin: 8px 0 14px 0;
+    box-shadow: 0 1px 3px -2px rgba(10, 84, 85, .15);
+}
+#accordion.box-group .box-body table.table > thead > tr > th {
+    background: #f1f9f9;
+    color: #0d7274;
+    border: none !important;
+    border-bottom: 1px solid #cdebec !important;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    padding: 10px 12px;
+}
+#accordion.box-group .box-body table.table > tbody > tr > td {
+    background: #fff;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f6 !important;
+    padding: 10px 12px;
+    color: #1f2937;
+    font-size: 13px;
+    vertical-align: middle;
+}
+#accordion.box-group .box-body table.table > tbody > tr:hover > td {
+    background: #f8fcfc;
+}
+#accordion.box-group .box-body table.table > tbody > tr:last-child > td {
+    border-bottom: none !important;
+}
+
+/* Yes / No badges (replace inline color:green/red) */
+#accordion.box-group .box-body span[style*="color:green"],
+#accordion.box-group .box-body span[style*="color: green"] {
+    color: #fff !important;
+    background: #6b9e1f;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    display: inline-block;
+}
+#accordion.box-group .box-body span[style*="color:red"],
+#accordion.box-group .box-body span[style*="color: red"] {
+    color: #fff !important;
+    background: #c0392b;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    display: inline-block;
+}
+
+/* Horizontal separator inside accordion bodies */
+#accordion.box-group .box-body hr {
+    border-top: 1px solid #e6eef0;
+    margin: 14px 0;
+}
+
+/* When sections are nested (constraints inside accordion) */
+#accordion.box-group .box-body > div + div {
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    #accordion.box-group .panel.box .box-title > a {
+        padding: 12px 14px 12px 40px;
+        font-size: 13px;
+    }
+    #accordion.box-group .box-body {
+        padding: 14px;
+    }
+    #accordion.box-group .box-body table.table {
+        font-size: 12px;
+    }
+}
+
+/* ===== Group / Macrogroup detail overlay (core/ajax/{group,macrogroup}_detail.html) =====
+   Plain two-column layout (no accordion). Wrapped in .g3w-detail-overlay to
+   scope the styles. Modal shell rules are shared with the project_detail
+   accordion (see :has(...) block above).
+*/
+.g3w-detail-overlay {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e6eef0;
+    box-shadow: 0 2px 8px -4px rgba(10, 84, 85, .15);
+    padding: 22px 26px;
+    color: #1f2937;
+    font-size: 13.5px;
+}
+
+.g3w-detail-overlay > .row {
+    margin-left: -12px;
+    margin-right: -12px;
+}
+.g3w-detail-overlay > .row > [class*="col-"] {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.g3w-detail-overlay h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin: 0 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #cdebec;
+    position: relative;
+}
+.g3w-detail-overlay h3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 36px;
+    height: 2px;
+    background: #149ea0;
+}
+
+.g3w-detail-overlay h4 {
+    font-size: 13px;
+    color: #0d7274;
+    font-weight: 600;
+    margin: 14px 0 6px;
+    text-transform: none;
+    letter-spacing: .2px;
+}
+.g3w-detail-overlay h4:first-child,
+.g3w-detail-overlay ul.list-unstyled > li:first-child > h4 {
+    margin-top: 4px;
+}
+
+.g3w-detail-overlay ul.list-unstyled {
+    margin: 0;
+    padding: 0;
+}
+.g3w-detail-overlay ul.list-unstyled > li {
+    padding: 6px 0;
+    line-height: 1.55;
+    border-bottom: 1px dashed #eef3f4;
+    list-style: none;
+}
+.g3w-detail-overlay ul.list-unstyled > li:has(h4),
+.g3w-detail-overlay ul.list-unstyled > li:last-child {
+    border-bottom: none;
+}
+.g3w-detail-overlay ul.list-unstyled > li > strong {
+    color: #6b7280;
+    font-weight: 600;
+    margin-right: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+.g3w-detail-overlay strong {
+    color: #1f2937;
+}
+
+/* Logo / images */
+.g3w-detail-overlay img.thumbnail,
+.g3w-detail-overlay img.img-responsive,
+.g3w-detail-overlay ul.list-unstyled img {
+    border-radius: 10px;
+    border: 1px solid #e6eef0;
+    box-shadow: 0 4px 10px -6px rgba(10, 84, 85, .25);
+    background: #fff;
+    padding: 6px;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Links inside overlay (e.g. group list inside macrogroup detail) */
+.g3w-detail-overlay a {
+    color: #0d7274;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(20, 158, 160, .4);
+    transition: color .15s ease, border-color .15s ease;
+}
+.g3w-detail-overlay a:hover {
+    color: #149ea0;
+    border-bottom-color: #149ea0;
+}
+
+/* On wide modals, give a subtle vertical divider between the two columns */
+@media (min-width: 768px) {
+    .g3w-detail-overlay > .row > [class*="col-"] + [class*="col-"] {
+        border-left: 1px solid #f1f5f6;
+    }
+}
+
+@media (max-width: 767px) {
+    .g3w-detail-overlay {
+        padding: 16px;
+    }
+}
+
+/* ===== Macrogroup list restyle (core/macrogroup_list.html) =====
+   Reuses .group-card / .group-cover / .group-body / .group-actions from the
+   group list. These rules add the chips of linked groups and a small visual
+   variant on the cover.
+*/
+.filter-toolbar .filter-toolbar-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0d7274;
+    font-size: 14px;
+    letter-spacing: .2px;
+}
+.filter-toolbar .filter-toolbar-title i {
+    color: #149ea0;
+}
+
+.group-card.is-macrogroup .group-cover {
+    background-color: #0d7274;
+    background-blend-mode: multiply;
+}
+.group-card.is-macrogroup .group-cover::before {
+    background: linear-gradient(180deg, rgba(13, 114, 116, .25) 0%, rgba(10, 84, 85, .85) 100%);
+}
+.group-card.is-macrogroup .srid-badge {
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, .25);
+}
+.group-card.is-macrogroup .srid-badge i {
+    margin-right: 4px;
+}
+
+/* Linked-groups chips */
+.mg-groups-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+    min-height: 28px;
+}
+.mg-group-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #eaf6f6;
+    color: #0d7274;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #d2eaeb;
+    line-height: 1.5;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.mg-group-chip:hover,
+.mg-group-chip:focus {
+    background: #149ea0;
+    color: #fff;
+    border-color: #149ea0;
+    text-decoration: none;
+}
+.mg-group-more {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #f3f7f7;
+    color: #6b7280;
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px dashed #cdebec;
+    line-height: 1.5;
+}
+.mg-groups-empty {
+    font-size: 12px;
+    color: #9aa3ac;
+    font-style: italic;
+}
+
+/* ===== Search results page (templates/search.html + core/search/*.html + qdjango/search/*.html) ===== */
+
+/* Hero with embedded search field */
+.search-hero .search-hero-query {
+    font-size: 14px;
+    margin: 6px 0 0;
+    opacity: .9;
+}
+.search-hero .search-results-query {
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .25);
+    quotes: none;
+    font-style: normal;
+    font-weight: 600;
+    margin-left: 4px;
+}
+.search-hero .search-results-query::before,
+.search-hero .search-results-query::after {
+    content: none;
+}
+
+.search-hero-form {
+    margin-top: 18px;
+}
+.search-hero-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px -8px rgba(10, 84, 85, .55);
+    overflow: hidden;
+    max-width: 720px;
+}
+.search-hero-input > i.fa-search {
+    color: #149ea0;
+    font-size: 16px;
+    padding: 0 14px;
+}
+.search-hero-input input[type="text"] {
+    flex: 1;
+    border: 0;
+    outline: none;
+    background: transparent;
+    padding: 12px 8px;
+    font-size: 14px;
+    color: #1f2937;
+}
+.search-hero-input input[type="text"]::placeholder {
+    color: #9aa3ac;
+}
+.search-hero-submit {
+    background: linear-gradient(135deg, #149ea0 0%, #0d7274 100%);
+    color: #fff;
+    border: 0;
+    padding: 12px 22px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    cursor: pointer;
+    transition: filter .15s ease;
+}
+.search-hero-submit:hover {
+    filter: brightness(1.06);
+}
+
+/* No-results empty state */
+.search-empty {
+    margin-top: 8px;
+}
+
+/* ----- Result section card (overrides AdminLTE box-* solid colors) ----- */
+.result-section.box {
+    background: #fff;
+    border: 1px solid #e6eef0;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px -10px rgba(10, 84, 85, .25);
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+.result-section.box.box-solid > .box-header {
+    background: #f7fbfb;
+    color: #0d7274;
+    border-bottom: 1px solid #e6eef0;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+}
+.result-section.box .box-header .box-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: #0d7274;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.result-section.box .box-header .box-title > i,
+.result-section.box .box-header .box-title > .ion {
+    font-size: 18px;
+    color: #149ea0;
+}
+.result-section.box .box-header .result-section-badge {
+    background: #149ea0;
+    color: #fff;
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+.result-section.box > .box-body {
+    padding: 8px 18px;
+    background: #fff;
+}
+
+/* Section accent stripes (left border colored per type) */
+.result-section.result-section-group {
+    border-left: 4px solid #149ea0;
+}
+.result-section.result-section-macrogroup {
+    border-left: 4px solid #0d7274;
+}
+.result-section.result-section-macrogroup .box-header .box-title > i {
+    color: #0d7274;
+}
+.result-section.result-section-macrogroup .result-section-badge {
+    background: #0d7274;
+}
+.result-section.result-section-project {
+    border-left: 4px solid #a4c639;
+}
+.result-section.result-section-project .box-header .box-title > i {
+    color: #6b9e1f;
+}
+.result-section.result-section-project .result-section-badge {
+    background: #6b9e1f;
+}
+
+/* ----- Single result row ----- */
+.result-search-item {
+    margin: 0;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f6;
+    transition: background .15s ease;
+}
+.result-search-item:last-child {
+    border-bottom: 0;
+}
+.result-search-item:hover {
+    background: #f7fbfb;
+}
+.result-search-item.row {
+    margin-left: -8px;
+    margin-right: -8px;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+.result-search-item.row > [class*="col-"] {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.result-search-item-thumb {
+    text-align: center;
+}
+.result-search-item-thumb img {
+    border-radius: 8px;
+    border: 1px solid #e6eef0;
+    background: #fff;
+    padding: 4px;
+    max-height: 64px;
+    width: auto;
+    margin: 0 auto;
+    box-shadow: 0 2px 6px -3px rgba(10, 84, 85, .3);
+    object-fit: contain;
+}
+.result-search-item-thumb a.project-thumb {
+    display: inline-block;
+}
+.result-search-item-thumb a.project-thumb:hover img {
+    border-color: #149ea0;
+}
+
+.result-search-item-title {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0d7274;
+    line-height: 1.3;
+}
+.result-search-item-title small.text-muted {
+    color: #6b7280 !important;
+    font-weight: 400;
+    font-size: 12px;
+    margin-left: 6px;
+}
+
+.result-search-item-desc {
+    color: #4a5358;
+    font-size: 13px;
+    margin: 4px 0 8px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.result-search-item-links {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.result-search-item-links > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #eaf6f6;
+    color: #0d7274;
+    font-size: 16px;
+    border: 1px solid #d2eaeb;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease, transform .1s ease;
+}
+.result-search-item-links > a:hover,
+.result-search-item-links > a:focus {
+    background: #149ea0;
+    color: #fff;
+    border-color: #149ea0;
+    transform: translateY(-1px);
+}
+.result-search-item-links > a.color-orange {
+    background: #fff4e6;
+    color: #d97706;
+    border-color: #fde2bf;
+}
+.result-search-item-links > a.color-orange:hover {
+    background: #d97706;
+    color: #fff;
+    border-color: #d97706;
+}
+
+/* Highlighted matches (<mark> from highlight tag) */
+.search-results-summary mark,
+.dash-hero mark {
+    background: #fff5b3;
+    color: #5a4500;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-weight: 600;
+    box-shadow: inset 0 -2px 0 #f3d54a;
+}
+
+/* Responsive tweaks */
+@media (max-width: 767px) {
+    .search-hero-input {
+        flex-wrap: wrap;
+    }
+    .search-hero-input input[type="text"] {
+        flex-basis: 100%;
+        padding: 10px 12px;
+    }
+    .search-hero-submit {
+        flex: 1;
+        border-radius: 0;
+    }
+    .result-search-item-thumb {
+        margin-bottom: 8px;
+    }
+    .result-search-item-thumb img {
+        max-height: 80px;
+    }
+}
