@@ -220,6 +220,7 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('bg', 'Bulgarian'),
     ('pt', 'Portuguese'),
+    ('es', 'Español'),
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
