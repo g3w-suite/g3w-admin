@@ -1402,18 +1402,18 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
     width: 30px;
     height: 30px;
     border-radius: 8px;
-    color: #95ad36;
-    background: #e8f7f7;
-    border: 1px solid #e7eecf;
+    color: #149ea0;
+    background: #e0f5f5;
+    border: 1px solid #c1e8e9;
     transition: all .15s ease;
     position: relative;
     text-decoration: none;
 }
 .layer-actions-grid a:hover,
 .layer-actions-grid a.layer-action:hover {
-    background: #95ad36;
+    background: #149ea0;
     color: #fff;
-    border-color: #95ad36;
+    border-color: #149ea0;
 }
 .layer-actions-grid .label-action-layer {
     position: absolute;
@@ -1431,7 +1431,7 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
 }
 .layer-actions-grid a:hover .label-action-layer {
     background: #fff;
-    color: #95ad36;
+    color: #149ea0;
 }
 
 .layers-table .max-preview-fields-input {
@@ -3478,4 +3478,1272 @@ table.users-table > tbody > tr:first-child > td {
     filter: brightness(1.07);
     color: #fff;
     transform: translateY(-1px);
+}
+
+/* ===== Login page (templates/login.html, base_login.html) =====
+   AdminLTE adds class `login-page` on <body> when `adminlte_skin='login-page'`.
+   We override the default light-grey panel with the client green palette and
+   modernise the login box, keeping the existing markup intact (works with
+   2FA wizard, captcha, social providers, password recovery and signup). */
+
+body.login-page {
+    background:
+        radial-gradient(ellipse at 0% 0%, rgba(149, 173, 54, .25) 0%, transparent 55%),
+        radial-gradient(ellipse at 100% 100%, rgba(122, 142, 38, .35) 0%, transparent 55%),
+        linear-gradient(135deg, #5d6b1c 0%, #7a8e26 60%, #95ad36 100%);
+    min-height: 100vh;
+    color: #5d6b1c;
+}
+
+body.login-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><g fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'><path d='M0 80h160M80 0v160'/></g></svg>");
+    background-size: 160px 160px;
+    opacity: .6;
+    z-index: 0;
+}
+
+body.login-page > .login-box,
+body.login-page .login-box {
+    margin: 7vh auto;
+    width: 92%;
+    max-width: 420px;
+    position: relative;
+    z-index: 1;
+}
+
+body.login-page .login-logo {
+    margin-bottom: 18px;
+    text-align: center;
+}
+body.login-page .login-logo .logo-lg img {
+    max-width: 220px;
+    max-height: 90px;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, .25));
+}
+
+/* Login card */
+body.login-page .login-box-body {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    padding: 30px 28px 24px;
+    box-shadow:
+        0 24px 60px -20px rgba(40, 50, 10, .55),
+        0 6px 18px -10px rgba(40, 50, 10, .35);
+    color: #374151;
+}
+
+body.login-page .login-box-msg {
+    color: #5d6b1c;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 18px;
+}
+body.login-page .login-box-msg span[style] {
+    color: #5d6b1c !important;
+}
+
+/* Form fields */
+body.login-page .form-group.has-feedback {
+    margin-bottom: 14px;
+    position: relative;
+}
+body.login-page .form-control {
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid #e3e6d4;
+    background: #f9faf2;
+    padding-left: 14px;
+    padding-right: 38px;
+    font-size: 14px;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+body.login-page .form-control:focus {
+    border-color: #95ad36;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .18);
+    outline: 0;
+}
+body.login-page .glyphicon.form-control-feedback {
+    color: #95ad36;
+    line-height: 44px;
+    width: 44px;
+    pointer-events: none;
+    opacity: .85;
+}
+
+/* Captcha row gets a soft frame */
+body.login-page .form-group.recaptcha {
+    display: flex;
+    justify-content: center;
+    margin: 14px 0;
+}
+
+/* Sign in button */
+body.login-page .btn-primary,
+body.login-page .btn.btn-primary.btn-block.btn-flat {
+    background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
+    border: 0;
+    color: #fff;
+    border-radius: 999px;
+    height: 46px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    font-size: 13px;
+    box-shadow: 0 8px 16px -8px rgba(93, 107, 28, .55);
+    transition: filter .15s ease, transform .1s ease;
+}
+body.login-page .btn-primary:hover,
+body.login-page .btn-primary:focus {
+    filter: brightness(1.07);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* Secondary buttons (forgot pwd, signup, social, 2FA backup) */
+body.login-page .btn-info,
+body.login-page .btn-secondary {
+    background: transparent;
+    color: #5d6b1c;
+    border: 1px solid #dde6b3;
+    border-radius: 999px;
+    min-height: 40px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: 600;
+    font-size: 13px;
+    box-shadow: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+body.login-page .btn-info.btn-block,
+body.login-page .btn-secondary.btn-block {
+    display: flex;
+    width: 100%;
+}
+body.login-page .btn-info:hover,
+body.login-page .btn-info:focus,
+body.login-page .btn-secondary:hover,
+body.login-page .btn-secondary:focus {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    border-color: #95ad36;
+}
+
+/* Spacing for stacked rows of secondary buttons */
+body.login-page .row + .row { margin-top: 10px; }
+body.login-page .margin-bottom-small { margin-top: 8px; }
+
+/* Login error alert */
+body.login-page .alert.alert-danger {
+    background: #fdecea;
+    color: #b03828;
+    border: 1px solid #f5c6c0;
+    border-left: 4px solid #c0392b;
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 8px -4px rgba(0, 0, 0, .08);
+}
+body.login-page .alert.alert-danger h4 {
+    font-size: 14px;
+    margin: 0 0 4px;
+    font-weight: 700;
+}
+
+/* Divider before social/recovery/signup links */
+body.login-page hr {
+    border-color: #e3e6d4;
+    margin: 18px 0;
+}
+
+/* 2FA wizard helper text */
+body.login-page p {
+    font-size: 13px;
+    color: #4b5563;
+}
+body.login-page p.login-box-msg {
+    color: #5d6b1c;
+}
+
+/* Backup tokens form: distinct soft card */
+body.login-page .backup_tokens_form {
+    background: #f9faf2;
+    border: 1px dashed #dde6b3;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 10px;
+}
+
+/* Social account list inside the box */
+body.login-page .socialaccount_providers {
+    list-style: none;
+    padding: 0;
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+body.login-page .socialaccount_providers > li > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+body.login-page .socialaccount_providers > li > a:hover {
+    background: #f3f6e3;
+    border-color: #95ad36;
+    color: #5d6b1c;
+}
+
+/* Version footer below the card */
+body.login-page .login-box > div[style*="text-align: center"] {
+    color: rgba(255, 255, 255, .85) !important;
+    margin-top: 14px !important;
+    font-size: 12px;
+}
+body.login-page .login-box > div[style*="text-align: center"] i {
+    color: #fff;
+}
+
+/* Hide the AdminLTE iCheck blue boxes legacy on login if any "remember me" appears */
+body.login-page .icheckbox_square-blue {
+    border-radius: 4px;
+}
+
+/* Two-factor wizard form labels */
+body.login-page label {
+    color: #5d6b1c;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+/* Backup token primary submit aligned with sign-in pill */
+body.login-page button[name="wizard_goto_step"].btn-secondary {
+    background: #fff;
+    color: #5d6b1c;
+    border: 1px solid #dde6b3;
+}
+
+/* ===== Editing layer active form (editing/editing_layer_active_form.html) =====
+   Loaded inside a Bootstrap 3 modal via data-widget-type="ajaxForm".
+   The form fragment is wrapped in .editing-active-shell so the modal-shell
+   selectors below can target ONLY this modal and recolor it green.
+   The crispy form layout is a single column with HTML helper paragraphs
+   between fields; we restyle them as soft callouts. */
+
+/* --- Modal shell (header / body / footer recoloured green) --- */
+.modal-dialog .modal-content:has(.editing-active-shell) {
+    border-radius: 14px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 24px 60px -20px rgba(93, 107, 28, .35);
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-header {
+    background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
+    color: #fff;
+    border: none;
+    padding: 16px 22px;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-header .modal-title,
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-header h4 {
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-header .close {
+    color: #fff;
+    opacity: .85;
+    text-shadow: none;
+    font-size: 26px;
+    line-height: 1;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-header .close:hover {
+    opacity: 1;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-body {
+    background: #f9faf2;
+    padding: 18px;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-footer {
+    border-top: 1px solid #e3e6d4;
+    background: #fff;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-footer .btn-primary {
+    background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
+    border: 0;
+    color: #fff;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-weight: 600;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-footer .btn-primary:hover {
+    filter: brightness(1.07);
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-footer .btn-default {
+    background: #fff;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-weight: 600;
+}
+.modal-dialog .modal-content:has(.editing-active-shell) .modal-footer .btn-default:hover {
+    background: #f3f6e3;
+    border-color: #95ad36;
+}
+
+/* --- Form body --- */
+.editing-active-form .editing-active-shell {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .2);
+}
+
+/* HTML helper paragraphs that crispy renders between fields:
+   <p>Check on uncheck to active/deactive editing layer capabilities:</p>
+   become soft instructional callouts. */
+.editing-active-form .editing-active-body > p,
+.editing-active-form .editing-active-body > div > p:not(.help-block) {
+    background: #f3f6e3;
+    border-left: 3px solid #95ad36;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 8px 0 12px;
+    color: #5d6b1c;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Field labels and form groups (scoped to the form, NOT to the global body) */
+.editing-active-form .form-group {
+    margin-bottom: 14px;
+}
+.editing-active-form .control-label,
+.editing-active-form label {
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: 6px;
+}
+
+.editing-active-form .form-control {
+    border-radius: 8px;
+    border: 1px solid #e3e6d4;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.editing-active-form .form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .18);
+    outline: 0;
+}
+.editing-active-form .help-block {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Checkbox rows (active / visible) shown as a coloured pill */
+.editing-active-form .form-group.checkbox > label,
+.editing-active-form .checkbox > label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f9faf2;
+    border: 1px solid #e3e6d4;
+    border-radius: 999px;
+    padding: 6px 14px 6px 10px;
+    color: #5d6b1c;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+.editing-active-form .form-group.checkbox > label:hover,
+.editing-active-form .checkbox > label:hover {
+    background: #f3f6e3;
+    border-color: #95ad36;
+}
+.editing-active-form .form-group.checkbox input[type="checkbox"],
+.editing-active-form .checkbox input[type="checkbox"] {
+    margin-right: 4px;
+}
+
+/* Select2 v3 (multi) used by the JS init: green chips */
+.editing-active-form .select2-container .select2-choice,
+.editing-active-form .select2-container-multi .select2-choices {
+    border-radius: 8px !important;
+    border: 1px solid #e3e6d4 !important;
+    background: #fff !important;
+    min-height: 36px;
+}
+.editing-active-form .select2-container-multi .select2-choices .select2-search-choice {
+    background: #f3f6e3 !important;
+    border: 1px solid #dde6b3 !important;
+    color: #5d6b1c !important;
+    border-radius: 999px !important;
+    padding: 3px 10px 3px 22px !important;
+    margin: 4px 4px 0 0;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Atomic capabilities slot rendered by JS underneath the user / group selects */
+.editing-active-form .users_atomic_capabilities,
+.editing-active-form .user_groups_atomic_capabilities {
+    background: #f9faf2;
+    border: 1px dashed #dde6b3;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 6px 0 14px;
+    font-size: 13px;
+    color: #5d6b1c;
+}
+.editing-active-form .users_atomic_capabilities:empty,
+.editing-active-form .user_groups_atomic_capabilities:empty {
+    display: none;
+}
+
+/* Form alerts inside the modal */
+.editing-active-form .form-alert.form-alert-warning {
+    background: #fff7e6;
+    color: #8a5a00;
+    border: 1px solid #f3d99c;
+    border-left: 4px solid #d97706;
+}
+
+/* ===== Layer detail overlay (qdjango/ajax/layer_detail.html) =====
+   Loaded inside the Bootstrap modal via data-widget-type="detailItem".
+   Wrapper .g3w-detail-overlay already triggers the green modal-shell. */
+
+.layer-detail-overlay .layer-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, #f3f6e3 0%, #ffffff 70%);
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.layer-detail-overlay .layer-detail-icon {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .4);
+}
+.layer-detail-overlay .layer-detail-titles {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+.layer-detail-overlay .layer-detail-titles h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #5d6b1c;
+    line-height: 1.25;
+    word-break: break-word;
+}
+.layer-detail-overlay .layer-detail-titles p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.layer-detail-overlay .layer-detail-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .2);
+}
+.layer-detail-overlay .layer-detail-list > li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 16px;
+    border-bottom: 1px dashed #eef0e2;
+    font-size: 13px;
+}
+.layer-detail-overlay .layer-detail-list > li:last-child {
+    border-bottom: 0;
+}
+.layer-detail-overlay .ld-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #5d6b1c;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-size: 12px;
+    flex: 0 0 170px;
+}
+.layer-detail-overlay .ld-key > i.fa {
+    color: #95ad36;
+    font-size: 13px;
+    width: 18px;
+    text-align: center;
+}
+.layer-detail-overlay .ld-value {
+    color: #374151;
+    flex: 1 1 auto;
+    min-width: 0;
+    word-break: break-word;
+}
+.layer-detail-overlay .ld-value.ld-mono {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: #4b5563;
+    background: #f9faf2;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #eef0e2;
+    line-height: 1.4;
+}
+.layer-detail-overlay .ld-value.ld-multiline {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+@media (max-width: 600px) {
+    .layer-detail-overlay .layer-detail-list > li {
+        flex-direction: column;
+        gap: 6px;
+    }
+    .layer-detail-overlay .ld-key {
+        flex: 0 0 auto;
+    }
+}
+
+/* ===== Filter by user layer form (qdjango/.../filter_by_user_layer_form.html)
+   Reuses the .editing-active-shell modal-shell + .editing-active-form scoped
+   styles. Adds a small intro callout above the two select2 multi pickers. */
+.filter-by-user-form .filter-by-user-intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.filter-by-user-form .filter-by-user-intro > i.fa {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex: 0 0 auto;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .4);
+}
+.filter-by-user-form .filter-by-user-intro > div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+.filter-by-user-form .filter-by-user-intro strong {
+    color: #5d6b1c;
+    font-size: 14px;
+    font-weight: 700;
+}
+.filter-by-user-form .filter-by-user-intro span {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+
+/* ===== New qplotly widget modal (qplotly/static/qplotly/js/data-widget-qplotlyWidgetList.js)
+   The modal body is built in JS, scoped under .qplotly-new-widget-form.
+   Contains a green intro callout and a click/drop XML upload zone. */
+.qplotly-new-widget-form .qplotly-new-widget-shell {
+    padding: 4px 2px 2px;
+}
+.qplotly-new-widget-form .form-errors:empty {
+    display: none;
+}
+.qplotly-new-widget-form .form-errors h4.badge {
+    display: block;
+    text-align: left;
+    white-space: normal;
+    background: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5c6c0;
+    border-left: 4px solid #c0392b;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 0 0 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+.qplotly-new-widget-form .form-errors p {
+    margin: 6px 0 0;
+    color: #7a2018;
+    font-weight: 500;
+}
+
+.qplotly-new-widget-form .qplotly-intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.qplotly-new-widget-form .qplotly-intro > i.fa {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex: 0 0 auto;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .4);
+}
+.qplotly-new-widget-form .qplotly-intro > div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+.qplotly-new-widget-form .qplotly-intro strong {
+    color: #5d6b1c;
+    font-size: 14px;
+    font-weight: 700;
+}
+.qplotly-new-widget-form .qplotly-intro span {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+
+.qplotly-new-widget-form .qplotly-dropzone {
+    margin: 0;
+}
+.qplotly-new-widget-form .qplotly-dropzone-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    padding: 28px 18px;
+    background: #f9faf2;
+    border: 2px dashed #b9c969;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease,
+                box-shadow .15s ease, transform .15s ease;
+    margin: 0;
+    color: #5d6b1c;
+    font-weight: 500;
+}
+.qplotly-new-widget-form .qplotly-dropzone-inner:hover {
+    background: #f3f6e3;
+    border-color: #95ad36;
+    box-shadow: 0 6px 18px -10px rgba(93, 107, 28, .4);
+    transform: translateY(-1px);
+}
+.qplotly-new-widget-form .qplotly-dropzone-inner:focus-within {
+    outline: none;
+    border-color: #7a8e26;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .25);
+}
+.qplotly-new-widget-form .qplotly-dropzone-inner > i.fa {
+    font-size: 38px;
+    color: #95ad36;
+    line-height: 1;
+}
+.qplotly-new-widget-form .qplotly-dropzone-inner > strong {
+    color: #5d6b1c;
+    font-size: 14.5px;
+    font-weight: 700;
+}
+.qplotly-new-widget-form .qplotly-dropzone-inner > span {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+.qplotly-new-widget-form .qplotly-dropzone-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.qplotly-new-widget-form .qplotly-filename {
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #e7eecf;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 999px;
+    max-width: 100%;
+    word-break: break-all;
+}
+.qplotly-new-widget-form .qplotly-filename::before {
+    content: "\f0c6"; /* fa-paperclip */
+    font-family: FontAwesome;
+    color: #95ad36;
+}
+
+/* ===== Geo-constraint form modal (qdjango/static/qdjango/js/widget.js > geoConstraintForm)
+   The modal body is built in JS, scoped under .geoconstraint-form. */
+.geoconstraint-form .geoconstraint-shell {
+    padding: 2px 2px 4px;
+}
+
+.geoconstraint-form .geoconstraint-intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.geoconstraint-form .geoconstraint-intro > i.fa {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex: 0 0 auto;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .4);
+}
+.geoconstraint-form .geoconstraint-intro > div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+.geoconstraint-form .geoconstraint-intro strong {
+    color: #5d6b1c;
+    font-size: 14.5px;
+    font-weight: 700;
+}
+.geoconstraint-form .geoconstraint-intro span {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+
+.geoconstraint-form .geoconstraint-field {
+    margin-bottom: 14px;
+}
+.geoconstraint-form .geoconstraint-field > .control-label {
+    display: block;
+    color: #5d6b1c;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+}
+.geoconstraint-form .geoconstraint-field .form-control,
+.geoconstraint-form .geoconstraint-field textarea.form-control {
+    border-radius: 8px;
+    border: 1px solid #dde6b3;
+    background: #ffffff;
+    color: #374151;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.geoconstraint-form .geoconstraint-field .form-control:focus,
+.geoconstraint-form .geoconstraint-field textarea.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+    outline: none;
+}
+.geoconstraint-form .geoconstraint-field .help-block {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.geoconstraint-form .geoconstraint-options {
+    background: #f9faf2;
+    border: 1px solid #eef0e2;
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+.geoconstraint-form .geoconstraint-options-title {
+    color: #5d6b1c;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+}
+.geoconstraint-form .geoconstraint-toggle {
+    margin: 0 0 8px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.geoconstraint-form .geoconstraint-toggle:last-of-type {
+    margin-bottom: 0;
+}
+.geoconstraint-form .geoconstraint-toggle:hover {
+    border-color: #b9c969;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.geoconstraint-form .geoconstraint-toggle .checkbox {
+    margin: 0;
+}
+.geoconstraint-form .geoconstraint-toggle label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+.geoconstraint-form .geoconstraint-toggle-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+.geoconstraint-form .geoconstraint-toggle-text strong {
+    color: #5d6b1c;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+.geoconstraint-form .geoconstraint-toggle-text small {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* ===== Alphanumeric constraint form modal (qdjango/static/qdjango/js/widget.js > singlelayerConstraintForm)
+   Modal body is built in JS, scoped under .alphaconstraint-form. */
+.alphaconstraint-form .alphaconstraint-shell {
+    padding: 2px 2px 4px;
+}
+
+.alphaconstraint-form .alphaconstraint-intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.alphaconstraint-form .alphaconstraint-intro > i.fa {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex: 0 0 auto;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .4);
+}
+.alphaconstraint-form .alphaconstraint-intro > div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+.alphaconstraint-form .alphaconstraint-intro strong {
+    color: #5d6b1c;
+    font-size: 14.5px;
+    font-weight: 700;
+}
+.alphaconstraint-form .alphaconstraint-intro span {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+
+.alphaconstraint-form .alphaconstraint-field {
+    margin-bottom: 14px;
+}
+.alphaconstraint-form .alphaconstraint-field > .control-label {
+    display: block;
+    color: #5d6b1c;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+}
+.alphaconstraint-form .alphaconstraint-field .form-control,
+.alphaconstraint-form .alphaconstraint-field textarea.form-control {
+    border-radius: 8px;
+    border: 1px solid #dde6b3;
+    background: #ffffff;
+    color: #374151;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.alphaconstraint-form .alphaconstraint-field .form-control:focus,
+.alphaconstraint-form .alphaconstraint-field textarea.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+    outline: none;
+}
+
+.alphaconstraint-form .alphaconstraint-options {
+    background: #f9faf2;
+    border: 1px solid #eef0e2;
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+.alphaconstraint-form .alphaconstraint-options-title {
+    color: #5d6b1c;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+}
+.alphaconstraint-form .alphaconstraint-toggle {
+    margin: 0 0 8px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.alphaconstraint-form .alphaconstraint-toggle:last-of-type {
+    margin-bottom: 0;
+}
+.alphaconstraint-form .alphaconstraint-toggle:hover {
+    border-color: #b9c969;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.alphaconstraint-form .alphaconstraint-toggle .checkbox {
+    margin: 0;
+}
+.alphaconstraint-form .alphaconstraint-toggle label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+.alphaconstraint-form .alphaconstraint-toggle-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+.alphaconstraint-form .alphaconstraint-toggle-text strong {
+    color: #5d6b1c;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+.alphaconstraint-form .alphaconstraint-toggle-text small {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* ===== Constraint rules form modal (qdjango/static/qdjango/js/widget.js > singlelayerConstraintRules / singlelayerConstraintRule)
+   Used by both "Constraint Rules based on QGIS Expression" and "...on provider's language / SQL dialect".
+   Body is built in JS, scoped under .constraint-rules-form. */
+.constraint-rules-form {
+    padding: 2px 2px 4px;
+}
+
+.constraint-rules-form .constraint-rules-intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-left: 4px solid #95ad36;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.constraint-rules-form .constraint-rules-intro > i.fa {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex: 0 0 auto;
+    box-shadow: 0 2px 6px -2px rgba(93, 107, 28, .4);
+}
+.constraint-rules-form .constraint-rules-intro > div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+    min-width: 0;
+}
+.constraint-rules-form .constraint-rules-intro strong {
+    color: #5d6b1c;
+    font-size: 14.5px;
+    font-weight: 700;
+}
+.constraint-rules-form .constraint-rules-intro span {
+    color: #6b7280;
+    font-size: 12.5px;
+}
+
+.constraint-rules-form .rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.constraint-rules-form .rules-list:empty {
+    margin-bottom: 4px;
+}
+
+.constraint-rules-form .rule-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: stretch;
+    padding: 14px;
+    background: #f9faf2;
+    border: 1px solid #eef0e2;
+    border-radius: 12px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.constraint-rules-form .rule-form:hover {
+    border-color: #b9c969;
+    box-shadow: 0 4px 14px -10px rgba(93, 107, 28, .25);
+}
+.constraint-rules-form .rule-form .form-errors {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 0;
+    color: #c0392b;
+    font-size: 13px;
+    min-height: 0;
+}
+.constraint-rules-form .rule-form .form-errors:empty {
+    display: none;
+}
+.constraint-rules-form .rule-form .form-errors h4.badge {
+    margin: 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+    display: inline-block;
+}
+.constraint-rules-form .rule-form .form-errors h4.badge.bg-green {
+    background: #95ad36;
+    color: #fff;
+}
+.constraint-rules-form .rule-form .form-errors h4.badge.bg-red {
+    background: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5c6c0;
+}
+
+.constraint-rules-form .rule-fields {
+    min-width: 0;
+}
+.constraint-rules-form .rule-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+    gap: 14px;
+    align-items: start;
+}
+.constraint-rules-form .rule-targets {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.constraint-rules-form .rule-field {
+    margin: 0;
+}
+.constraint-rules-form .rule-field > .control-label {
+    display: block;
+    color: #5d6b1c;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+}
+.constraint-rules-form .rule-field .form-control,
+.constraint-rules-form .rule-field textarea.form-control {
+    border-radius: 8px;
+    border: 1px solid #dde6b3;
+    background: #ffffff;
+    color: #374151;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.constraint-rules-form .rule-field .form-control:focus,
+.constraint-rules-form .rule-field textarea.form-control:focus {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .2);
+    outline: none;
+}
+.constraint-rules-form .rule-field textarea.form-control {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 120px;
+    resize: vertical;
+}
+
+.constraint-rules-form .rule-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 22px;
+}
+.constraint-rules-form .rule-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    text-decoration: none;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.constraint-rules-form .rule-action-btn:hover,
+.constraint-rules-form .rule-action-btn:focus {
+    background: #95ad36;
+    border-color: #95ad36;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 4px 12px -6px rgba(93, 107, 28, .5);
+}
+.constraint-rules-form .rule-action-btn-danger {
+    color: #c0392b;
+    border-color: #f5c6c0;
+}
+.constraint-rules-form .rule-action-btn-danger:hover,
+.constraint-rules-form .rule-action-btn-danger:focus {
+    background: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
+    box-shadow: 0 4px 12px -6px rgba(192, 57, 43, .5);
+}
+
+.constraint-rules-form .constraint-rules-actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+}
+.constraint-rules-form .constraint-rules-actions .add-rule.btn {
+    background: #95ad36;
+    border-color: #95ad36;
+    color: #fff;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px -6px rgba(93, 107, 28, .5);
+    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.constraint-rules-form .constraint-rules-actions .add-rule.btn:hover,
+.constraint-rules-form .constraint-rules-actions .add-rule.btn:focus {
+    background: #7a8e26;
+    border-color: #7a8e26;
+    color: #fff;
+    box-shadow: 0 6px 16px -6px rgba(93, 107, 28, .55);
+}
+.constraint-rules-form .constraint-rules-actions .add-rule.btn:active {
+    transform: translateY(1px);
+}
+
+@media (max-width: 768px) {
+    .constraint-rules-form .rule-form {
+        grid-template-columns: 1fr;
+    }
+    .constraint-rules-form .rule-grid {
+        grid-template-columns: 1fr;
+    }
+    .constraint-rules-form .rule-actions {
+        flex-direction: row;
+        padding-top: 0;
+        justify-content: flex-end;
+    }
 }

@@ -1913,58 +1913,93 @@ _.extend(g3wadmin.tpl, {
 
   geoConstraintForm: _.template(
     '\
-      <form action="<%= action %>" id="form-constraint-<%= layerId %>">\
+      <form action="<%= action %>" class="geoconstraint-form" id="form-constraint-<%= layerId %>">\
           <input type="hidden" name="layer" value="<%= layerId %>" />\
           <input type="hidden" name="active" value="1" />\
-          <div class="info"><h4>' +
+          <div class="geoconstraint-shell">\
+              <div class="geoconstraint-intro">\
+                  <i class="fa fa-object-ungroup" aria-hidden="true"></i>\
+                  <div>\
+                      <strong>' +
+      gettext("Geo-constraint") +
+      '</strong>\
+                      <span>' +
       gettext("Select the constraint layer, only Polygon or MultiPolygon geometry") +
-      ':</h4></div>\
-          <div class="controls">\
-              <label>' +
+      '</span>\
+                  </div>\
+              </div>\
+              <div class="form-group geoconstraint-field">\
+                  <label class="control-label" for="id_constraint_layer">' +
       gettext("Constraint layer") +
       '</label>\
-              <select name="constraint_layer" class="select form-control"></select>\
-          </div>\
-          <div class="form-group">\
-              <label class="control-label ">' +
+                  <div class="controls">\
+                      <select id="id_constraint_layer" name="constraint_layer" class="select form-control"></select>\
+                  </div>\
+                  <p class="help-block">' +
+      gettext("Only Polygon or MultiPolygon geometry layers are allowed.") +
+      '</p>\
+              </div>\
+              <div class="form-group geoconstraint-field">\
+                  <label class="control-label" for="id_description">' +
       gettext("Description") +
       '</label>\
-              <div class="controls ">\
-                 <textarea class="form-control" name="description" style="width:100%;"></textarea>\
+                  <div class="controls">\
+                      <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>\
+                  </div>\
               </div>\
-          </div>\
-          <div class="form-group">\
-              <div id="div_id_for_view" class="checkbox">\
-                  <label for="id_for_view" class="">\
-                      <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
-                      ' +
+              <div class="geoconstraint-options">\
+                  <div class="geoconstraint-options-title">' +
+      gettext("Options") +
+      '</div>\
+                  <div class="form-group geoconstraint-toggle">\
+                      <div id="div_id_for_view" class="checkbox">\
+                          <label for="id_for_view">\
+                              <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
+                              <span class="geoconstraint-toggle-text">\
+                                  <strong>' +
       gettext("Active for visualization") +
-      '\
-                  </label>\
-              </div>\
-              <input type="hidden" name="for_view" value="true">\
-          </div>\
-          <div class="form-group">\
-              <div id="div_id_for_editing" class="checkbox">\
-                  <label for="id_for_editing" class="">\
-                      <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
-                      ' +
+      '</strong>\
+                                  <small>' +
+      gettext("Restrict which features are visible on the map.") +
+      '</small>\
+                              </span>\
+                          </label>\
+                      </div>\
+                      <input type="hidden" name="for_view" value="true">\
+                  </div>\
+                  <div class="form-group geoconstraint-toggle">\
+                      <div id="div_id_for_editing" class="checkbox">\
+                          <label for="id_for_editing">\
+                              <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
+                              <span class="geoconstraint-toggle-text">\
+                                  <strong>' +
       gettext("Active for editing") +
-      '\
-                  </label>\
-              </div>\
-              <input type="hidden" name="for_editing">\
-          </div>\
-          <div class="form-group">\
-              <div id="div_id_autozoom" class="checkbox">\
-                  <label for="id_autozoom" class="">\
-                      <input type="checkbox" name="icheck_autozoom" id="id_autozoom" class="checkboxinput">\
-                      ' +
+      '</strong>\
+                                  <small>' +
+      gettext("Restrict which features can be edited.") +
+      '</small>\
+                              </span>\
+                          </label>\
+                      </div>\
+                      <input type="hidden" name="for_editing">\
+                  </div>\
+                  <div class="form-group geoconstraint-toggle">\
+                      <div id="div_id_autozoom" class="checkbox">\
+                          <label for="id_autozoom">\
+                              <input type="checkbox" name="icheck_autozoom" id="id_autozoom" class="checkboxinput">\
+                              <span class="geoconstraint-toggle-text">\
+                                  <strong>' +
       gettext("Autozoom on map bootstrap") +
-      '\
-                  </label>\
+      '</strong>\
+                                  <small>' +
+      gettext("Zoom the map to the constraint extent on initial load.") +
+      '</small>\
+                              </span>\
+                          </label>\
+                      </div>\
+                      <input type="hidden" name="autozoom">\
+                  </div>\
               </div>\
-              <input type="hidden" name="autozoom">\
           </div>\
       </form>'
   ),
