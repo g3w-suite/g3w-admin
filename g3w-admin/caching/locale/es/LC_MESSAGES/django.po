@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-18 17:01+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: caching/forms.py:11
+msgid "Active"
+msgstr "Activo"
+
+#: caching/forms.py:14
+msgid "Save as base layer"
+msgstr "Guardar como mapa base"
+
+#: caching/forms.py:15
+msgid "Base layer title"
+msgstr "Título del mapa base"
+
+#: caching/forms.py:16
+msgid "Base layer description"
+msgstr "Descripción del mapa base"
+
+#: caching/forms.py:17
+msgid "Base layer attribution"
+msgstr "Atribución del mapa base"
+
+#: caching/forms.py:27
+msgid "Check on uncheck to activate/deactivate caching layer capabilities:"
+msgstr ""
+"Marque o desmarque para activar/desactivar las capacidades de caché de la "
+"capa:"
+
+#: caching/forms.py:40
+msgid "Reset cache"
+msgstr "Restablecer caché"
+
+#: caching/forms.py:40
+msgid "Reset cache for project"
+msgstr "Restablecer caché del proyecto"
+
+#: caching/forms.py:52
+msgid "Base layer data"
+msgstr "Datos del mapa base"
+
+#: caching/forms.py:74
+msgid "This field is required"
+msgstr "Este campo es obligatorio"
+
+#: caching/templates/caching/caching_layer_active_form.html:7
+msgid "Alert"
+msgstr "Alerta"
+
+#: caching/templates/caching/caching_layer_active_form.html:8
+msgid "Some errors on form. Check it and send again."
+msgstr "Hay errores en el formulario. Revíselo y envíelo de nuevo."
+
+#: caching/templates/caching/layer_action.html:7
+msgid "Caching layer"
+msgstr "Capa de caché"
+
+#: caching/templates/caching/layer_action.html:9
+msgid "Activation layer caching"
+msgstr "Activación de caché de capa"
+
+#: caching/views.py:199
+msgid "Cache erased!"
+msgstr "¡Caché borrada!"
