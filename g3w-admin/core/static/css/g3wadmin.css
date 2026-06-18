@@ -6672,3 +6672,265 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     background: #fdecea;
     color: #c0392b;
 }
+
+/* ======================================================================
+   Copy editing permissions modal (#copy_editing_permission_form)
+   ====================================================================== */
+
+.copy-perm-form .cp-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    margin-bottom: 14px;
+    font-size: 13px;
+}
+.copy-perm-form .cp-alert > .fa {
+    font-size: 20px;
+    line-height: 1;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+.copy-perm-form .cp-alert strong {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+.copy-perm-form .cp-alert-warning {
+    background: #fff7e6;
+    border-color: #f3d99c;
+    color: #8a5a06;
+}
+.copy-perm-form .cp-alert-warning > .fa {
+    color: #d97706;
+}
+.copy-perm-form .cp-alert-error {
+    background: #fdecea;
+    border-color: #f5c6c0;
+    color: #8e2418;
+}
+.copy-perm-form .cp-alert-error > .fa {
+    color: #c0392b;
+}
+
+.copy-perm-form .cp-section {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+.copy-perm-form .cp-section:last-of-type {
+    margin-bottom: 0;
+}
+.copy-perm-form .cp-section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #eef0e2;
+}
+.copy-perm-form .cp-section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #f3f6e3;
+    color: #7a8e26;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.copy-perm-form .cp-section-icon > .fa {
+    font-size: 16px;
+}
+.copy-perm-form .cp-section-head h4 {
+    margin: 0 0 2px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #2c3e1f;
+}
+.copy-perm-form .cp-section-head p {
+    margin: 0;
+    font-size: 12px;
+    color: #6b7a4a;
+}
+.copy-perm-form .cp-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+}
+.copy-perm-form .cp-grid .form-group {
+    margin-bottom: 0;
+}
+.copy-perm-form .cp-grid label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #5d6b1c;
+    margin-bottom: 4px;
+}
+.copy-perm-form .cp-grid .help-block {
+    font-size: 11px;
+    color: #8a9268;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+/* Select2 fine-tuning inside the modal — keep palette consistent */
+.copy-perm-form .select2-container .select2-selection {
+    border-color: #dde6b3 !important;
+    border-radius: 8px !important;
+    min-height: 36px;
+}
+.copy-perm-form .select2-container--default.select2-container--focus .select2-selection {
+    border-color: #95ad36 !important;
+    box-shadow: 0 0 0 2px rgba(149, 173, 54, .15);
+}
+.copy-perm-form .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: #e7eecf;
+    border-color: #dde6b3;
+    color: #5d6b1c;
+    border-radius: 6px;
+    padding: 1px 8px;
+}
+
+@media (max-width: 600px) {
+    .copy-perm-form .cp-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ======================================================================
+   Project's Qplotly widgets order modal (#plots_list)
+   ====================================================================== */
+
+.qplotly-order-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.qplotly-order-modal .qo-intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    border-radius: 10px;
+}
+.qplotly-order-modal .qo-intro-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.qplotly-order-modal .qo-intro-icon > .fa {
+    font-size: 16px;
+}
+.qplotly-order-modal .qo-intro h4 {
+    margin: 0 0 2px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #2c3e1f;
+}
+.qplotly-order-modal .qo-intro p {
+    margin: 0;
+    font-size: 12px;
+    color: #5d6b1c;
+}
+
+.qplotly-order-modal .qo-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.qplotly-order-modal .qo-table thead th {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    border-bottom: 1px solid #dde6b3;
+    text-align: left;
+}
+.qplotly-order-modal .qo-table .qo-col-handle {
+    width: 44px;
+}
+.qplotly-order-modal .qo-table .qo-col-type {
+    width: 110px;
+}
+.qplotly-order-modal .qo-table tbody td {
+    padding: 8px 12px;
+    border-top: 1px solid #eef0e2;
+    vertical-align: middle;
+    background: #fff;
+    transition: background .15s ease;
+}
+.qplotly-order-modal .qo-table tbody tr:hover td {
+    background: #f9faf2;
+}
+.qplotly-order-modal .qo-drag-handle {
+    cursor: grab;
+    color: #95ad36;
+    text-align: center;
+    font-size: 14px;
+    user-select: none;
+}
+.qplotly-order-modal .qo-drag-handle:active {
+    cursor: grabbing;
+}
+.qplotly-order-modal .qo-title {
+    color: #2c3e1f;
+    font-weight: 600;
+    font-size: 13px;
+}
+.qplotly-order-modal .qo-related-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-left: 6px;
+    border-radius: 999px;
+    background: #e7eecf;
+    color: #7a8e26;
+    font-size: 10px;
+    vertical-align: middle;
+}
+.qplotly-order-modal .qo-type-chip {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: #eef0e2;
+    color: #5d6b1c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+/* Drag visual feedback */
+.qplotly-order-modal .qo-table tbody tr.qo-dragging td {
+    opacity: .45;
+    background: #f3f6e3;
+}
+.qplotly-order-modal .qo-table tbody tr.qo-dragover td {
+    box-shadow: inset 0 2px 0 0 #95ad36;
+    background: #f3f6e3;
+}
