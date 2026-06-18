@@ -7085,3 +7085,248 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     white-space: nowrap;
     vertical-align: middle;
 }
+
+/* ============================================================
+   Teal accent (g3wsuite logo "g") — sidebar + table action chips
+   ============================================================
+   Palette derived from the cyan-teal of the logo glyph #149ea0:
+     - primary  #149ea0
+     - deep     #0e7274  (sidebar bg)
+     - darkest  #08494a  (sidebar deepest, active border)
+     - light    #cfe9ea  (chip bg)
+     - lighter  #e3f2f3  (chip bg neutral)
+     - tint     #a8d8d9  (borders)
+     - text-on  #ffffff
+   This block overrides the green-olive accents on:
+     1. Left sidebar (.main-sidebar / .left-side)
+     2. Unified action icon chips inside any .table
+   It does NOT alter:
+     - the destructive trash chips (kept red for clarity)
+     - hero/info-card backgrounds, navbar, logo block, buttons
+   Remove this block to revert.
+   ============================================================ */
+
+/* ---- 1) Sidebar ---- */
+body .main-sidebar,
+body .left-side {
+    background: #0e7274;
+}
+body .main-sidebar .sidebar-menu > li > a {
+    color: #e3f2f3;
+    border-left-color: transparent;
+}
+body .main-sidebar .sidebar-menu > li > a > .fa,
+body .main-sidebar .sidebar-menu > li > a > .ion,
+body .main-sidebar .sidebar-menu > li > a > .glyphicon {
+    color: #a8d8d9;
+}
+body .main-sidebar .sidebar-menu > li:hover > a,
+body .main-sidebar .sidebar-menu > li.active > a,
+body .main-sidebar .sidebar-menu > li.menu-open > a {
+    background: #149ea0;
+    color: #fff;
+    border-left-color: #cfe9ea;
+}
+body .main-sidebar .sidebar-menu > li.header {
+    color: #8ec8ca;
+    border-top-color: rgba(255, 255, 255, .08);
+}
+body .main-sidebar .sidebar-menu > li.header > .fa,
+body .main-sidebar .sidebar-menu > li.header > .ion {
+    color: #cfe9ea;
+}
+body .main-sidebar .sidebar-menu .treeview-menu {
+    background: rgba(255, 255, 255, .06);
+    border-left-color: rgba(255, 255, 255, .1);
+}
+body .main-sidebar .sidebar-menu .treeview-menu > li > a {
+    color: #e3f2f3;
+}
+body .main-sidebar .sidebar-menu .treeview-menu > li > a > .fa,
+body .main-sidebar .sidebar-menu .treeview-menu > li > a > .ion,
+body .main-sidebar .sidebar-menu .treeview-menu > li > a > .glyphicon {
+    color: #a8d8d9;
+}
+body .main-sidebar .sidebar-menu .treeview-menu > li:hover > a,
+body .main-sidebar .sidebar-menu .treeview-menu > li.active > a {
+    background: #149ea0;
+    color: #fff;
+}
+body .main-sidebar .sidebar-menu > li > a > .fa-angle-left,
+body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-left {
+    color: #a8d8d9;
+}
+
+/* ---- 2) Unified table action chips — neutral / edit / view variant ---- */
+.table td a:not(.btn):not(.btn-app):has(> i.ion-edit:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-eye:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-eye-disabled:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-search:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-gear-b:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-clipboard:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-checkmark-circled:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-close-circled:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-android-download:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.ion-plus-round:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.fa-pencil:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.fa-pencil-square-o:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.fa-edit:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.fa-eye:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.fa-cog:only-child),
+.table td a:not(.btn):not(.btn-app):has(> i.fa-download:only-child),
+.table td button:not(.btn):not(.btn-app):has(> i.ion-edit:only-child) {
+    background: #e3f2f3;
+    color: #0e7274;
+    border-color: #a8d8d9;
+}
+.table td a:not(.btn):not(.btn-app):has(> i.ion-edit:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-edit:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-eye:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-eye:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-eye-disabled:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-eye-disabled:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-search:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-search:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-gear-b:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-gear-b:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-clipboard:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-clipboard:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-checkmark-circled:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-checkmark-circled:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-close-circled:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-close-circled:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-android-download:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-android-download:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-plus-round:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.ion-plus-round:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-pencil:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-pencil:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-pencil-square-o:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-pencil-square-o:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-edit:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-edit:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-eye:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-eye:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-cog:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-cog:only-child):focus,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-download:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i.fa-download:only-child):focus,
+.table td button:not(.btn):not(.btn-app):has(> i.ion-edit:only-child):hover,
+.table td button:not(.btn):not(.btn-app):has(> i.ion-edit:only-child):focus {
+    background: #149ea0;
+    color: #fff;
+    border-color: #149ea0;
+}
+
+/* Mirror the same teal style on the legacy .user-actions class so the
+   Users / User-Groups pages match (same chip, same color). */
+.user-actions a.user-action {
+    background: #e3f2f3;
+    color: #0e7274;
+    border-color: #a8d8d9;
+}
+.user-actions a.user-action:hover,
+.user-actions a.user-action:focus {
+    background: #149ea0;
+    color: #fff;
+    border-color: #149ea0;
+}
+/* Destructive variant kept on red palette — restore explicit values so
+   the generic teal rule above does not bleed onto .danger chips. */
+.user-actions a.user-action.danger {
+    background: #fdecea;
+    color: #c0392b;
+    border-color: #f5c6c0;
+}
+.user-actions a.user-action.danger:hover,
+.user-actions a.user-action.danger:focus {
+    background: #c0392b;
+    color: #fff;
+    border-color: #c0392b;
+}
+
+/* ---- 3) Generic text links inside the admin content area ---- */
+/* Apply teal ONLY to "free" links that render as inline text (optionally
+   prefixed by an icon). Explicitly skip:
+     - Bootstrap buttons (.btn, .btn-app)
+     - chips/badges/labels (.label, .badge, .role-badge, .mg-group-chip…)
+     - dropdown toggles
+     - action chip links (icon-only `<a><i …/></a>` inside .table — handled
+       further down with explicit overrides that win over this rule)
+     - DataTables paginate / dt-button controls
+     - Links sitting inside button-like containers (nav, pagination,
+       dropdown-menu, btn-group, box-tools, project-tabs, ws-card,
+       .user-actions, .group-actions, .project-view-toggle, .ptab) —
+       these reset to `color: inherit` further down. */
+.content-wrapper a:not(.btn):not(.btn-app):not(.label):not(.badge):not(.role-badge):not(.mg-group-chip):not(.dropdown-toggle):not(.user-action):not(.group-action):not(.pvt-btn):not([class*="paginate_button"]):not(.dt-button),
+.modal-body a:not(.btn):not(.btn-app):not(.label):not(.badge):not(.role-badge):not(.mg-group-chip):not(.dropdown-toggle):not(.user-action):not(.group-action):not(.pvt-btn) {
+    color: #0e7274;
+}
+.content-wrapper a:not(.btn):not(.btn-app):not(.label):not(.badge):not(.role-badge):not(.mg-group-chip):not(.dropdown-toggle):not(.user-action):not(.group-action):not(.pvt-btn):not([class*="paginate_button"]):not(.dt-button):hover,
+.content-wrapper a:not(.btn):not(.btn-app):not(.label):not(.badge):not(.role-badge):not(.mg-group-chip):not(.dropdown-toggle):not(.user-action):not(.group-action):not(.pvt-btn):not([class*="paginate_button"]):not(.dt-button):focus,
+.modal-body a:not(.btn):not(.btn-app):not(.label):not(.badge):not(.role-badge):not(.mg-group-chip):not(.dropdown-toggle):not(.user-action):not(.group-action):not(.pvt-btn):hover,
+.modal-body a:not(.btn):not(.btn-app):not(.label):not(.badge):not(.role-badge):not(.mg-group-chip):not(.dropdown-toggle):not(.user-action):not(.group-action):not(.pvt-btn):focus {
+    color: #149ea0;
+    text-decoration: underline;
+}
+
+/* Free icon+text links with explicit per-class color → teal */
+.group-card .group-projects-link,
+.group-card .group-projects-link i {
+    color: #0e7274;
+}
+.group-card .group-projects-link:hover,
+.group-card .group-projects-link:focus {
+    color: #149ea0;
+    text-decoration: underline;
+}
+.group-card .group-projects-link:hover i,
+.group-card .group-projects-link:focus i {
+    color: #149ea0;
+}
+
+/* Chip action links inside tables: the generic teal rule above would
+   make their hover/focus glyph teal-on-teal (invisible). Force white
+   glyph on the colored chip background. */
+.table td a:not(.btn):not(.btn-app):has(> i:only-child):hover,
+.table td a:not(.btn):not(.btn-app):has(> i:only-child):focus,
+.user-actions a.user-action:hover,
+.user-actions a.user-action:focus {
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+/* Reset to inherited color for links that live inside containers that
+   make them visually act as buttons / tabs / nav-items. */
+.dash-hero a,
+.box.box-success > .box-header a,
+.box.box-primary > .box-header a,
+.modal-header a,
+.main-header .navbar a,
+.project-tabs a,
+.nav > li > a,
+.nav-tabs > li > a,
+.nav-pills > li > a,
+.pagination a,
+.dropdown-menu > li > a,
+.btn-group > a,
+.box-tools a,
+.box-header > .pull-right a,
+.project-view-toggle a,
+.ws-card a,
+.qo-table a,
+.cp-section a {
+    color: inherit;
+    text-decoration: none;
+}
+.nav > li > a:hover,
+.nav-tabs > li > a:hover,
+.nav-pills > li > a:hover,
+.pagination a:hover,
+.dropdown-menu > li > a:hover,
+.btn-group > a:hover,
+.box-tools a:hover,
+.box-header > .pull-right a:hover,
+.project-view-toggle a:hover {
+    text-decoration: none;
+}
