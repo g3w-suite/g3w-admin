@@ -6107,7 +6107,7 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     border: 1px solid #e3e6d4;
     border-radius: 999px;
     padding: 3px;
-    margin: 0 8px;
+    margin: 0 8px 0 auto; /* push toggle (and following actions) to the right */
 }
 .project-view-toggle .pvt-btn {
     display: inline-flex;
@@ -6198,9 +6198,11 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     top: 6px;
     left: 6px;
 }
+/* Bookmark sits over the map thumbnail (top-right corner of the thumb) */
 .projects-cards-grid.is-list-view .project-card .pc-bookmark {
     top: 6px;
-    right: 6px;
+    left: 108px;
+    right: auto;
 }
 .projects-cards-grid.is-list-view .project-card .pc-drag-handle {
     top: auto;
@@ -6215,6 +6217,11 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     .projects-cards-grid.is-list-view .project-card .pc-thumb {
         width: 100%;
         height: 100px;
+    }
+    .projects-cards-grid.is-list-view .project-card .pc-bookmark {
+        top: 6px;
+        right: 6px;
+        left: auto;
     }
     .projects-cards-grid.is-list-view .project-card .pc-actions {
         border-left: none;
@@ -6391,4 +6398,277 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     background: #95ad36 !important;
     border-color: #7a8e26 !important;
     color: #fff !important;
+}
+
+/* ======================================================================
+   Groups & Macrogroups list — list view (toggle)
+   The container `#groups_list` / `#macrogroups_list` keeps its Bootstrap
+   `.row` markup so jQuery UI sortable still works on `col-*` children.
+   When `.is-list-view` is on, the columns collapse to full-width and the
+   `.group-card` switches to a horizontal layout.
+   ====================================================================== */
+
+#groups_list.is-list-view,
+#macrogroups_list.is-list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: 0;
+    margin-right: 0;
+}
+#groups_list.is-list-view > [class*="col-"],
+#macrogroups_list.is-list-view > [class*="col-"] {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding-left: 0;
+    padding-right: 0;
+    float: none;
+}
+
+#groups_list.is-list-view .group-card,
+#macrogroups_list.is-list-view .group-card {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-radius: 10px;
+    overflow: hidden;
+}
+#groups_list.is-list-view .group-card:hover,
+#macrogroups_list.is-list-view .group-card:hover {
+    transform: none;
+    box-shadow: 0 4px 14px -8px rgba(0, 0, 0, .18);
+}
+
+/* Cover becomes a left thumbnail */
+#groups_list.is-list-view .group-card .group-cover,
+#macrogroups_list.is-list-view .group-card .group-cover {
+    width: 220px;
+    min-width: 220px;
+    height: auto;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+}
+#groups_list.is-list-view .group-card .group-cover .group-name,
+#macrogroups_list.is-list-view .group-card .group-cover .group-name {
+    font-size: 15px;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#groups_list.is-list-view .group-card .group-cover .group-meta,
+#macrogroups_list.is-list-view .group-card .group-cover .group-meta {
+    font-size: 11px;
+    margin: 0;
+}
+
+/* Body fills the rest, actions on the right */
+#groups_list.is-list-view .group-card .group-body,
+#macrogroups_list.is-list-view .group-card .group-body {
+    flex: 1;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 10px 14px;
+    min-width: 0;
+}
+#groups_list.is-list-view .group-card .group-projects-link {
+    margin: 0;
+    flex-shrink: 0;
+}
+#macrogroups_list.is-list-view .group-card .mg-groups-list {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    overflow: hidden;
+}
+#groups_list.is-list-view .group-card .group-actions,
+#macrogroups_list.is-list-view .group-card .group-actions {
+    border-top: none;
+    padding: 0;
+    margin-top: 0;
+    margin-left: auto; /* push actions to the right */
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    display: flex;
+    gap: 4px;
+}
+/* Reset the grid-mode flex:1 stretch on action buttons so they keep their
+   icon-sized footprint when aligned to the right in list view */
+#groups_list.is-list-view .group-card .group-actions > a,
+#groups_list.is-list-view .group-card .group-actions > .action-wrap,
+#macrogroups_list.is-list-view .group-card .group-actions > a,
+#macrogroups_list.is-list-view .group-card .group-actions > .action-wrap {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* "Add" tile stays compact in list view */
+#groups_list.is-list-view #group_add .group-add-card,
+#macrogroups_list.is-list-view #macrogroup_add .group-add-card {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 18px;
+    min-height: auto;
+}
+
+@media (max-width: 768px) {
+    #groups_list.is-list-view .group-card,
+    #macrogroups_list.is-list-view .group-card {
+        flex-direction: column;
+    }
+    #groups_list.is-list-view .group-card .group-cover,
+    #macrogroups_list.is-list-view .group-card .group-cover {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+/* ======================================================================
+   WEB Services modal (project list — "showWEBServices" widget)
+   ====================================================================== */
+
+.webservices-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.webservices-modal .ws-card {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
+}
+.webservices-modal .ws-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #f3f6e3;
+    border-bottom: 1px solid #dde6b3;
+}
+.webservices-modal .ws-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #95ad36;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.webservices-modal .ws-icon > .fa {
+    font-size: 14px;
+}
+.webservices-modal .ws-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #5d6b1c;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.webservices-modal .ws-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.webservices-modal .ws-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eef0e2;
+}
+.webservices-modal .ws-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.webservices-modal .ws-row-name {
+    font-weight: 600;
+    color: #2c3e1f;
+    font-size: 13px;
+}
+.webservices-modal .ws-row-name > .fa {
+    color: #7a8e26;
+    margin-right: 4px;
+}
+.webservices-modal .ws-row-urls {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.webservices-modal .ws-url {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+    min-width: 0;
+}
+.webservices-modal .ws-url-label {
+    flex-shrink: 0;
+    background: #eef0e2;
+    color: #5d6b1c;
+    font-weight: 700;
+    letter-spacing: .04em;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.webservices-modal .ws-url-alias .ws-url-label {
+    background: #fff7e6;
+    color: #d97706;
+}
+.webservices-modal .ws-url > a {
+    color: #1f2d3d;
+    word-break: break-all;
+    text-decoration: none;
+    border-bottom: 1px dotted #95ad36;
+    transition: color .15s ease, border-color .15s ease;
+}
+.webservices-modal .ws-url > a:hover {
+    color: #95ad36;
+    border-bottom-color: #7a8e26;
+}
+.webservices-modal .ws-access {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+.webservices-modal .ws-access > .fa {
+    font-size: 11px;
+}
+.webservices-modal .ws-access-free {
+    background: #e7eecf;
+    color: #5d6b1c;
+}
+.webservices-modal .ws-access-locked {
+    background: #fdecea;
+    color: #c0392b;
 }

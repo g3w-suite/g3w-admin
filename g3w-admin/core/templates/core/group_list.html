@@ -58,6 +58,27 @@
             $card.toggleClass('is-collapsed');
         });
     })();
+
+    // View mode toggle (grid / list) — persisted in localStorage
+    (function(){
+        var STORAGE_KEY = 'g3w.groupsViewMode';
+        function applyViewMode(mode){
+            $('#groups_list').toggleClass('is-list-view', mode === 'list');
+            $('.groups-view-toggle .pvt-btn').removeClass('is-active');
+            $('.groups-view-toggle .pvt-btn[data-view="' + mode + '"]').addClass('is-active');
+        }
+        $(document).on('click', '.groups-view-toggle .pvt-btn', function(e){
+            e.preventDefault();
+            var mode = $(this).attr('data-view');
+            try { localStorage.setItem(STORAGE_KEY, mode); } catch(e) {}
+            applyViewMode(mode);
+        });
+        $(function(){
+            var saved = 'grid';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'grid'; } catch(e) {}
+            applyViewMode(saved);
+        });
+    })();
 </script>
 {% endblock %}
 
@@ -68,6 +89,16 @@
     <button type="button" id="filter-toggle" class="filter-toggle">
         <i class="fa fa-filter"></i> {% trans 'Filter groups' %}
     </button>
+    <div class="project-view-toggle groups-view-toggle" role="group" aria-label="{% trans 'View mode' %}">
+        <a href="#" class="pvt-btn is-active" data-view="grid"
+           data-toggle="tooltip" data-placement="top" title="{% trans 'Grid view' %}">
+            <i class="fa fa-th-large"></i>
+        </a>
+        <a href="#" class="pvt-btn" data-view="list"
+           data-toggle="tooltip" data-placement="top" title="{% trans 'List view' %}">
+            <i class="fa fa-list"></i>
+        </a>
+    </div>
     {% if perms.core.add_group %}
     <a class="qa-btn" href="{% url 'group-add' %}">
         <i class="fa fa-plus-circle"></i> {% trans 'New group' %}

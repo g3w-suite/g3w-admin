@@ -48,6 +48,28 @@
     });
 </script>
 {% endif %}
+<script>
+    // View mode toggle (grid / list) — persisted in localStorage
+    (function(){
+        var STORAGE_KEY = 'g3w.macrogroupsViewMode';
+        function applyViewMode(mode){
+            $('#macrogroups_list').toggleClass('is-list-view', mode === 'list');
+            $('.macrogroups-view-toggle .pvt-btn').removeClass('is-active');
+            $('.macrogroups-view-toggle .pvt-btn[data-view="' + mode + '"]').addClass('is-active');
+        }
+        $(document).on('click', '.macrogroups-view-toggle .pvt-btn', function(e){
+            e.preventDefault();
+            var mode = $(this).attr('data-view');
+            try { localStorage.setItem(STORAGE_KEY, mode); } catch(e) {}
+            applyViewMode(mode);
+        });
+        $(function(){
+            var saved = 'grid';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'grid'; } catch(e) {}
+            applyViewMode(saved);
+        });
+    })();
+</script>
 {% endblock %}
 
 {% block main_content %}
@@ -57,6 +79,16 @@
     <span class="filter-toolbar-title">
         <i class="fa fa-sitemap"></i> {% trans 'All macro groups' %}
     </span>
+    <div class="project-view-toggle macrogroups-view-toggle" role="group" aria-label="{% trans 'View mode' %}">
+        <a href="#" class="pvt-btn is-active" data-view="grid"
+           data-toggle="tooltip" data-placement="top" title="{% trans 'Grid view' %}">
+            <i class="fa fa-th-large"></i>
+        </a>
+        <a href="#" class="pvt-btn" data-view="list"
+           data-toggle="tooltip" data-placement="top" title="{% trans 'List view' %}">
+            <i class="fa fa-list"></i>
+        </a>
+    </div>
     {% if perms.core.add_macrogroup %}
     <a class="qa-btn" href="{% url 'macrogroup-add' %}">
         <i class="fa fa-plus-circle"></i> {% trans 'New macro group' %}
