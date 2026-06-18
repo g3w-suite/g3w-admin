@@ -2597,9 +2597,11 @@ body .left-side {
     background: #5d6b1c;
 }
 
-/* Sidebar menu */
+/* Sidebar menu — main items: green text on light olive */
 body .main-sidebar .sidebar-menu > li > a {
-    color: #e2e9c0;
+    color: #e7eecf;
+    font-weight: 600;
+    background: transparent;
     border-left: 3px solid transparent;
     transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
@@ -2611,18 +2613,24 @@ body .main-sidebar .sidebar-menu > li > a > .glyphicon {
     text-align: center;
     margin-right: 4px;
 }
+/* Hover / active / open — green highlight */
 body .main-sidebar .sidebar-menu > li:hover > a,
 body .main-sidebar .sidebar-menu > li.active > a,
 body .main-sidebar .sidebar-menu > li.menu-open > a {
-    background: #7a8e26;
+    background: #95ad36;
     color: #fff;
-    border-left-color: #a4c639;
+    border-left-color: #e7eecf;
 }
 body .main-sidebar .sidebar-menu > li:hover > a > .fa,
 body .main-sidebar .sidebar-menu > li:hover > a > .ion,
+body .main-sidebar .sidebar-menu > li:hover > a > .glyphicon,
 body .main-sidebar .sidebar-menu > li.active > a > .fa,
-body .main-sidebar .sidebar-menu > li.active > a > .ion {
-    color: #a4c639;
+body .main-sidebar .sidebar-menu > li.active > a > .ion,
+body .main-sidebar .sidebar-menu > li.active > a > .glyphicon,
+body .main-sidebar .sidebar-menu > li.menu-open > a > .fa,
+body .main-sidebar .sidebar-menu > li.menu-open > a > .ion,
+body .main-sidebar .sidebar-menu > li.menu-open > a > .glyphicon {
+    color: #fff;
 }
 
 /* Sidebar headers (section labels) */
@@ -2634,7 +2642,7 @@ body .main-sidebar .sidebar-menu > li.header {
     font-size: 11px;
     font-weight: 700;
     padding: 14px 16px 6px;
-    border-top: 1px solid rgba(255, 255, 255, .06);
+    border-top: 1px solid rgba(255, 255, 255, .08);
     margin-top: 6px;
 }
 body .main-sidebar .sidebar-menu > li.header:first-child {
@@ -2647,38 +2655,64 @@ body .main-sidebar .sidebar-menu > li.header > .ion {
     color: #a4c639;
 }
 
-/* Treeview submenu */
+/* Treeview submenu — sub-items: lighter background, neutral text */
 body .main-sidebar .sidebar-menu .treeview-menu {
-    background: rgba(0, 0, 0, .18);
+    background: rgba(255, 255, 255, .06);
+    border-left: 3px solid rgba(255, 255, 255, .1);
     padding: 4px 0;
 }
 body .main-sidebar .sidebar-menu .treeview-menu > li > a {
-    color: #cfd8a3;
+    color: #e7eecf;
+    font-weight: 500;
     padding-left: 38px;
+    background: transparent;
+    transition: background .15s ease, color .15s ease;
 }
 body .main-sidebar .sidebar-menu .treeview-menu > li > a > .fa,
-body .main-sidebar .sidebar-menu .treeview-menu > li > a > .ion {
+body .main-sidebar .sidebar-menu .treeview-menu > li > a > .ion,
+body .main-sidebar .sidebar-menu .treeview-menu > li > a > .glyphicon {
     color: #b9c969;
 }
 body .main-sidebar .sidebar-menu .treeview-menu > li:hover > a,
 body .main-sidebar .sidebar-menu .treeview-menu > li.active > a {
-    background: #7a8e26;
+    background: #95ad36;
     color: #fff;
 }
+body .main-sidebar .sidebar-menu .treeview-menu > li:hover > a > .fa,
+body .main-sidebar .sidebar-menu .treeview-menu > li:hover > a > .ion,
+body .main-sidebar .sidebar-menu .treeview-menu > li:hover > a > .glyphicon,
+body .main-sidebar .sidebar-menu .treeview-menu > li.active > a > .fa,
+body .main-sidebar .sidebar-menu .treeview-menu > li.active > a > .ion,
+body .main-sidebar .sidebar-menu .treeview-menu > li.active > a > .glyphicon {
+    color: #fff;
+}
+
+/* Chevron (fa-angle-left) — light olive default, white when active/open */
+body .main-sidebar .sidebar-menu > li > a > .fa-angle-left,
+body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-left {
+    color: #b9c969;
+}
+body .main-sidebar .sidebar-menu > li:hover > a > .fa-angle-left,
+body .main-sidebar .sidebar-menu > li:hover > a > .pull-right-container > .fa-angle-left,
+body .main-sidebar .sidebar-menu > li.active > a > .fa-angle-left,
 body .main-sidebar .sidebar-menu > li.active > a > .pull-right-container > .fa-angle-left,
+body .main-sidebar .sidebar-menu > li.menu-open > a > .fa-angle-left,
 body .main-sidebar .sidebar-menu > li.menu-open > a > .pull-right-container > .fa-angle-left {
-    color: #a4c639;
+    color: #fff;
 }
 
 /* Sidebar mini (collapsed) tweaks */
 body.sidebar-mini.sidebar-collapse .main-sidebar .sidebar-menu > li:hover > a {
-    background: #7a8e26;
+    background: #95ad36;
+    color: #fff;
 }
 body.sidebar-mini.sidebar-collapse .main-sidebar .sidebar-menu > li > a > span:not(.pull-right) {
-    background: #7a8e26;
+    background: #95ad36;
+    color: #fff;
 }
 body.sidebar-mini.sidebar-collapse .main-sidebar .sidebar-menu > li > .treeview-menu {
-    background: #7a8e26;
+    background: #5d6b1c;
+    border-left: 3px solid #95ad36;
 }
 
 /* ----- Footer (.main-footer) ----- */
@@ -6059,4 +6093,302 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     .scalevis-list {
         margin-left: 0 !important;
     }
+}
+
+/* ======================================================================
+   Project list — view mode toggle (Grid / List)
+   ====================================================================== */
+
+.project-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 999px;
+    padding: 3px;
+    margin: 0 8px;
+}
+.project-view-toggle .pvt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    color: #7a8e26;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease;
+}
+.project-view-toggle .pvt-btn:hover {
+    background: #f3f6e3;
+    color: #5d6b1c;
+}
+.project-view-toggle .pvt-btn.is-active {
+    background: #95ad36;
+    color: #fff;
+}
+.project-view-toggle .pvt-btn > .fa {
+    font-size: 14px;
+}
+
+/* ----- List view layout -----
+   Activated by toggling `.is-list-view` on `.projects-cards-grid`.
+   Cards collapse to a horizontal row: thumb + body + actions on one line. */
+
+.projects-cards-grid.is-list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.projects-cards-grid.is-list-view .project-card {
+    flex-direction: row;
+    align-items: stretch;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.projects-cards-grid.is-list-view .project-card:hover {
+    transform: none;
+    box-shadow: 0 4px 14px -8px rgba(0, 0, 0, .18);
+}
+.projects-cards-grid.is-list-view .project-card .pc-thumb {
+    height: auto;
+    width: 140px;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+.projects-cards-grid.is-list-view .project-card .pc-body {
+    flex: 1;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+.projects-cards-grid.is-list-view .project-card .pc-title {
+    margin: 0 0 4px;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.projects-cards-grid.is-list-view .project-card .pc-meta {
+    font-size: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 0;
+}
+.projects-cards-grid.is-list-view .project-card .pc-actions {
+    border-top: none;
+    border-left: 1px solid #eef0f3;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+}
+.projects-cards-grid.is-list-view .project-card .pc-actions > a {
+    width: 30px;
+    height: 30px;
+}
+/* Move floating accessories to corners in list mode */
+.projects-cards-grid.is-list-view .project-card .pc-panoramic {
+    top: 6px;
+    left: 6px;
+}
+.projects-cards-grid.is-list-view .project-card .pc-bookmark {
+    top: 6px;
+    right: 6px;
+}
+.projects-cards-grid.is-list-view .project-card .pc-drag-handle {
+    top: auto;
+    bottom: 6px;
+    right: 6px;
+}
+
+@media (max-width: 768px) {
+    .projects-cards-grid.is-list-view .project-card {
+        flex-direction: column;
+    }
+    .projects-cards-grid.is-list-view .project-card .pc-thumb {
+        width: 100%;
+        height: 100px;
+    }
+    .projects-cards-grid.is-list-view .project-card .pc-actions {
+        border-left: none;
+        border-top: 1px solid #eef0f3;
+    }
+}
+
+/* ======================================================================
+   Project messages list (qdjango/message/list.html)
+   ====================================================================== */
+
+.messages-panel {
+    background: #fff;
+    border: 1px solid #e3e6d4;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
+}
+.messages-panel .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #eef0e2;
+}
+.messages-panel .mh-intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+.messages-panel .mh-intro .mh-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #f3f6e3;
+    color: #7a8e26;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.messages-panel .mh-intro .mh-icon > .fa {
+    font-size: 16px;
+}
+.messages-panel .mh-intro h4 {
+    margin: 0 0 2px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2c3e1f;
+}
+.messages-panel .mh-intro p {
+    margin: 0;
+    font-size: 12px;
+    color: #6b7a4a;
+}
+.messages-panel .btn-add-message {
+    background: #95ad36;
+    border-color: #7a8e26;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .15s ease, box-shadow .15s ease;
+}
+.messages-panel .btn-add-message:hover,
+.messages-panel .btn-add-message:focus {
+    background: #7a8e26;
+    border-color: #5d6b1c;
+    color: #fff;
+    box-shadow: 0 4px 12px -4px rgba(149, 173, 54, .5);
+}
+
+.messages-panel .messages-table {
+    margin-bottom: 0;
+}
+.messages-panel .messages-table > thead > tr > th {
+    background: #f3f6e3;
+    color: #5d6b1c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #dde6b3;
+}
+.messages-panel .messages-table > tbody > tr > td {
+    vertical-align: middle;
+    border-top: 1px solid #f3f6e3;
+}
+.messages-panel .messages-table > tbody > tr:hover > td {
+    background: #f9faf2;
+}
+.messages-panel .messages-table .msg-title {
+    font-weight: 600;
+    color: #2c3e1f;
+}
+.messages-panel .messages-table .msg-empty {
+    color: #b5bea0;
+}
+.messages-panel .messages-table .icon {
+    display: inline-flex;
+}
+.messages-panel .messages-table .icon > a {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #7a8e26;
+    background: #f3f6e3;
+    margin-right: 4px;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease;
+}
+.messages-panel .messages-table .icon > a:hover {
+    background: #95ad36;
+    color: #fff;
+}
+.messages-panel .messages-table .icon:has(.ion-trash-b) > a:hover {
+    background: #c0392b;
+    color: #fff;
+}
+
+/* Level badge */
+.messages-panel .msg-level {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    background: #f3f6e3;
+    color: #5d6b1c;
+}
+.messages-panel .msg-level > .fa-circle {
+    font-size: 8px;
+}
+.messages-panel .msg-level-info {
+    background: #e7eecf;
+    color: #5d6b1c;
+}
+.messages-panel .msg-level-warning {
+    background: #fff7e6;
+    color: #d97706;
+}
+.messages-panel .msg-level-error {
+    background: #fdecea;
+    color: #c0392b;
+}
+.messages-panel .msg-level-critical {
+    background: #c0392b;
+    color: #fff;
+}
+
+/* DataTables wrapper overrides inside messages panel */
+.messages-panel .dataTables_wrapper .dataTables_filter input,
+.messages-panel .dataTables_wrapper .dataTables_length select {
+    border: 1px solid #dde6b3;
+    border-radius: 6px;
+    padding: 3px 8px;
+}
+.messages-panel .dataTables_wrapper .paginate_button.current,
+.messages-panel .dataTables_wrapper .paginate_button.current:hover {
+    background: #95ad36 !important;
+    border-color: #7a8e26 !important;
+    color: #fff !important;
 }

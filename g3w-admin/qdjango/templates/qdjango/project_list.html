@@ -17,6 +17,32 @@
         $content.find('.tab-pane').removeClass('active');
         $content.find(target).addClass('active');
     });
+
+    // View mode toggle (grid / list) — persisted in localStorage
+    var STORAGE_KEY = 'g3w.projectsViewMode';
+    function applyViewMode(mode, $scope){
+        var $grid = ($scope || $(document)).find('.projects-cards-grid');
+        $grid.toggleClass('is-list-view', mode === 'list');
+        $('.project-view-toggle .pvt-btn').removeClass('is-active');
+        $('.project-view-toggle .pvt-btn[data-view="' + mode + '"]').addClass('is-active');
+    }
+    $(document).off('click.pvt').on('click.pvt', '.project-view-toggle .pvt-btn', function(e){
+        e.preventDefault();
+        var mode = $(this).attr('data-view');
+        try { localStorage.setItem(STORAGE_KEY, mode); } catch(e) {}
+        applyViewMode(mode);
+    });
+    // Initial apply (also handles ajax re-load via htmlItem)
+    $(document).off('ajaxComplete.pvt').on('ajaxComplete.pvt', function(){
+        var saved = 'grid';
+        try { saved = localStorage.getItem(STORAGE_KEY) || 'grid'; } catch(e) {}
+        applyViewMode(saved);
+    });
+    $(function(){
+        var saved = 'grid';
+        try { saved = localStorage.getItem(STORAGE_KEY) || 'grid'; } catch(e) {}
+        applyViewMode(saved);
+    });
 })();
 </script>
 
@@ -29,6 +55,16 @@
         <a href="#tab-deactivated-projects" class="ptab">
             <i class="ion ion-trash-a"></i> {% trans 'Trash' %}
             <span class="count">{{ inactive_project_list|length }}</span>
+        </a>
+    </div>
+    <div class="project-view-toggle" role="group" aria-label="{% trans 'View mode' %}">
+        <a href="#" class="pvt-btn is-active" data-view="grid"
+           data-toggle="tooltip" data-placement="top" title="{% trans 'Grid view' %}">
+            <i class="fa fa-th-large"></i>
+        </a>
+        <a href="#" class="pvt-btn" data-view="list"
+           data-toggle="tooltip" data-placement="top" title="{% trans 'List view' %}">
+            <i class="fa fa-list"></i>
         </a>
     </div>
     {% if perms.qdjango.add_project and "add_project_to_group" in userObj_group_perms and group.is_active %}
