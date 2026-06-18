@@ -7330,3 +7330,36 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
 .project-view-toggle a:hover {
     text-decoration: none;
 }
+
+/* ---- 4) Project card action buttons hover → teal variant ---- */
+.project-card .pc-actions a:hover,
+.project-card .pc-actions a:focus {
+    background: #92dadb;
+    border-color: #92dadb;
+    color: #fff;
+}
+.project-card .pc-actions a.danger:hover,
+.project-card .pc-actions a.danger:focus {
+    background: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
+}
+
+/* ---- 5) Dashboard buttons hover → same light teal ---- */
+/* Quick action buttons (outline style) */
+.quick-actions .qa-btn i {
+    color: #149ea0;
+}
+.quick-actions .qa-btn:hover,
+.quick-actions .qa-btn:focus {
+    border-color: #92dadb;
+    color: #149ea0;
+    box-shadow: 0 4px 12px rgba(20, 158, 160, .15);
+}
+
+/* Bookmarked project card actions (filled style) */
+.prj-card .prj-actions a:hover,
+.prj-card .prj-actions a:focus {
+    background: #92dadb;
+    color: #fff;
+}
