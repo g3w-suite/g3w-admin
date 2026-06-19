@@ -7660,7 +7660,10 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
    Save/Redo remain reachable while scrolling long forms.
    Uses position:fixed (not sticky) because the form container is not
    tall enough to anchor a sticky element, and some AdminLTE wrappers
-   set overflow which would block sticky entirely. */
+   set overflow which would block sticky entirely.
+   The `bottom` offset is kept at 0 by default; a small inline script
+   in form_buttons.html lifts the bar when the .main-footer enters the
+   viewport so the copyright/version row stays visible. */
 .form-buttons {
     position: fixed;
     left: 230px;
@@ -7678,6 +7681,7 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
     border-top: 1px solid #e6eef0;
     box-shadow: 0 -4px 14px -8px rgba(20, 158, 160, .35);
     justify-content: flex-end;
+    transition: bottom .12s ease;
 }
 .form-buttons > .col-md-12 {
     display: flex;
@@ -7697,7 +7701,8 @@ body.sidebar-collapse .form-buttons {
         left: 0;
     }
 }
-/* Reserve space so the last fields are not hidden behind the fixed bar */
+/* Reserve space so the last fields are not hidden behind the fixed bar
+   (form-buttons ~60px + footer ~50px = ~130px). */
 .form-shell,
 form#group-form,
 form#project-qdjango-form,
@@ -7705,5 +7710,5 @@ form#user-form,
 form#user-group-form,
 form.ajaxUpload,
 form[data-widget-type="ajaxUpload"] {
-    padding-bottom: 80px;
+    padding-bottom: 130px;
 }
