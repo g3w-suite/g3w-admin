@@ -8101,3 +8101,99 @@ body .modal .modal-dialog.modal-warning .modal-footer .modal-button-confirm:focu
     border-color: #8b5d28;
     box-shadow: 0 4px 10px rgba(240, 173, 78, .35);
 }
+
+/* ============================================================
+   Teal accent — Block 13: Project layers actions bar
+   Visually ties the "Project layers actions" label on the left
+   to the icon buttons on the right inside .layers-panel
+   .panel-head (qdjango layers_list.html).
+   ============================================================ */
+
+.layers-panel .panel-head {
+    background: linear-gradient(90deg, #f3fbfb 0%, #ffffff 100%);
+    border: 1px solid #c1e8e9;
+    border-radius: 999px;
+    padding: 8px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(20, 158, 160, .08);
+}
+.layers-panel .panel-head .actions-label {
+    color: #0e7274;
+    font-weight: 700;
+    letter-spacing: .6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.layers-panel .panel-head .actions-label::before {
+    content: '\f0c9'; /* fa-bars */
+    font-family: 'FontAwesome';
+    font-size: 14px;
+    color: #149ea0;
+    background: #fff;
+    border: 1px solid #c1e8e9;
+    border-radius: 999px;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px rgba(20, 158, 160, .15);
+}
+.layers-panel .panel-head .actions-label::after {
+    content: ':';
+    color: #0e7274;
+    margin-left: 2px;
+    opacity: .65;
+}
+
+/* Icon action buttons on the right — teal outline pills */
+.layers-panel .panel-head .layers-bulk-actions {
+    gap: 6px;
+}
+.layers-panel .panel-head .layers-bulk-actions .btn,
+.layers-panel .panel-head .layers-bulk-actions a {
+    background: #fff;
+    border: 1px solid #c1e8e9;
+    color: #0e7274 !important;
+    border-radius: 999px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px rgba(20, 158, 160, .08);
+    transition: background .15s ease, border-color .15s ease, color .15s ease,
+                box-shadow .15s ease, transform .05s ease;
+}
+.layers-panel .panel-head .layers-bulk-actions .btn > .fa,
+.layers-panel .panel-head .layers-bulk-actions a > .fa,
+.layers-panel .panel-head .layers-bulk-actions .btn > .ion,
+.layers-panel .panel-head .layers-bulk-actions a > .ion {
+    color: #149ea0;
+    font-size: 15px;
+    margin: 0;
+}
+.layers-panel .panel-head .layers-bulk-actions .btn:hover,
+.layers-panel .panel-head .layers-bulk-actions a:hover,
+.layers-panel .panel-head .layers-bulk-actions .btn:focus,
+.layers-panel .panel-head .layers-bulk-actions a:focus {
+    background: #149ea0;
+    border-color: #0e7274;
+    color: #fff !important;
+    box-shadow: 0 4px 10px rgba(20, 158, 160, .3);
+    outline: none;
+}
+.layers-panel .panel-head .layers-bulk-actions .btn:hover > .fa,
+.layers-panel .panel-head .layers-bulk-actions a:hover > .fa,
+.layers-panel .panel-head .layers-bulk-actions .btn:focus > .fa,
+.layers-panel .panel-head .layers-bulk-actions a:focus > .fa,
+.layers-panel .panel-head .layers-bulk-actions .btn:hover > .ion,
+.layers-panel .panel-head .layers-bulk-actions a:hover > .ion {
+    color: #fff;
+}
+.layers-panel .panel-head .layers-bulk-actions .btn:active,
+.layers-panel .panel-head .layers-bulk-actions a:active {
+    transform: translateY(1px);
+}
