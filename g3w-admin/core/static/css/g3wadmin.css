@@ -3344,45 +3344,71 @@ table.users-table > tbody > tr:first-child > td {
     }
 }
 
-/* ===== Project form shortcuts (qdjango/project_form.html) ===== */
+/* ===== Intro-card action pills =====
+   Canonical rule for the `.qa-btn` class when used as a teal pill
+   button on intro cards / form summaries / toolbar:
+     - `.project-shortcut-actions .qa-btn`     (project_form.html — Project shortcuts)
+     - `.group-info-card .gi-actions .qa-btn`  (group_form / project_list /
+                                    layers_list intro cards)
+     - `.project-toolbar > .qa-btn`            (group_list / project_list — "New group" / "Add project")
+     - `.filter-toolbar > .qa-btn`             (group_list — "New group")
+   Modifier `.qa-btn-primary` switches to the solid teal variant.
+   Note: `.quick-actions .qa-btn` (dashboard rectangular cards) is a
+   different visual family and keeps its own rule above. */
 .project-shortcut-actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }
-.qa-shortcut {
+.project-shortcut-actions .qa-btn,
+.group-info-card .gi-actions .qa-btn,
+.project-toolbar > .qa-btn,
+.filter-toolbar > .qa-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 8px 14px;
     border-radius: 999px;
     background: #fff;
-    color: #5d6b1c;
-    border: 1px solid #dde6b3;
+    color: #149ea0;
+    border: 1px solid #c1e8e9;
     font-weight: 600;
     font-size: 13px;
     text-decoration: none;
+    box-shadow: 0 2px 6px -4px rgba(20, 158, 160, .25);
     transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
-    box-shadow: 0 2px 6px -4px rgba(93, 107, 28, .25);
 }
-.qa-shortcut > i { font-size: 16px; }
-.qa-shortcut:hover,
-.qa-shortcut:focus {
-    background: #f3f6e3;
-    color: #5d6b1c;
-    border-color: #95ad36;
+.project-shortcut-actions .qa-btn > i,
+.group-info-card .gi-actions .qa-btn > i,
+.project-toolbar > .qa-btn > i,
+.filter-toolbar > .qa-btn > i {
+    font-size: 16px;
+    color: inherit;
+}
+.project-shortcut-actions .qa-btn:hover,
+.project-shortcut-actions .qa-btn:focus,
+.group-info-card .gi-actions .qa-btn:hover,
+.group-info-card .gi-actions .qa-btn:focus,
+.project-toolbar > .qa-btn:hover,
+.project-toolbar > .qa-btn:focus,
+.filter-toolbar > .qa-btn:hover,
+.filter-toolbar > .qa-btn:focus {
+    background: #e0f5f5;
+    color: #0e7274;
+    border-color: #149ea0;
     transform: translateY(-1px);
 }
-.qa-shortcut.qa-shortcut-primary {
-    background: linear-gradient(135deg, #95ad36 0%, #7a8e26 100%);
+.project-shortcut-actions .qa-btn.qa-btn-primary {
+    background: #149ea0;
     color: #fff;
-    border-color: transparent;
-    box-shadow: 0 4px 10px -6px rgba(93, 107, 28, .55);
+    border-color: #149ea0;
+    box-shadow: 0 4px 10px -6px rgba(20, 158, 160, .55);
 }
-.qa-shortcut.qa-shortcut-primary:hover,
-.qa-shortcut.qa-shortcut-primary:focus {
-    filter: brightness(1.06);
+.project-shortcut-actions .qa-btn.qa-btn-primary:hover,
+.project-shortcut-actions .qa-btn.qa-btn-primary:focus {
+    background: #0e7274;
     color: #fff;
+    border-color: #0e7274;
 }
 
 /* Allow tabular form_summary content (long lists of group links) */
@@ -7412,50 +7438,11 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
 }
 
 /* ---- 7) Intro card right-side action buttons → teal pill style ---- */
-/* Unifies the assorted "right-side" call-to-action buttons on intro
-   cards (group-info-card .gi-actions, project_form .form-summary
-   shortcuts, Add-project .btn-info) to the same teal pill family used
-   on the layer list / search chips.
+/* Outline + primary pill rules for `.qa-btn` (in `.project-shortcut-actions`
+   and `.gi-actions`) live in the canonical "Intro-card action pills"
+   block earlier in the file. This block only maps the legacy Bootstrap
+   `.btn.btn-info` ("Add project") button to the same primary teal pill. */
 
-   Two visual variants:
-     - OUTLINE  → white bg, teal border, teal text/icon
-     - PRIMARY  → solid teal bg, white text
-   Both hover into the deeper teal. */
-
-/* Outline pill */
-.group-info-card .gi-actions .qa-btn,
-.qa-shortcut {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: #fff;
-    color: #149ea0;
-    border: 1px solid #c1e8e9;
-    font-weight: 600;
-    font-size: 13px;
-    text-decoration: none;
-    box-shadow: 0 2px 6px -4px rgba(20, 158, 160, .25);
-    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
-}
-.group-info-card .gi-actions .qa-btn > i,
-.qa-shortcut > i {
-    font-size: 16px;
-    color: inherit;
-}
-.group-info-card .gi-actions .qa-btn:hover,
-.group-info-card .gi-actions .qa-btn:focus,
-.qa-shortcut:hover,
-.qa-shortcut:focus {
-    background: #e0f5f5;
-    color: #0e7274;
-    border-color: #149ea0;
-    transform: translateY(-1px);
-}
-
-/* Primary (solid) pill — Show map shortcut + Add project button */
-.qa-shortcut.qa-shortcut-primary,
 .group-info-card .gi-actions a.btn.btn-info,
 .box-header a.btn.btn-info,
 .group-info-card a.btn.btn-info,
@@ -7475,7 +7462,6 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
     filter: none;
     transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
 }
-.qa-shortcut.qa-shortcut-primary > i,
 .group-info-card .gi-actions a.btn.btn-info > i,
 .box-header a.btn.btn-info > i,
 .group-info-card a.btn.btn-info > i,
@@ -7484,8 +7470,6 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
     color: inherit;
     margin-right: 0;
 }
-.qa-shortcut.qa-shortcut-primary:hover,
-.qa-shortcut.qa-shortcut-primary:focus,
 .group-info-card .gi-actions a.btn.btn-info:hover,
 .group-info-card .gi-actions a.btn.btn-info:focus,
 .box-header a.btn.btn-info:hover,
@@ -7586,4 +7570,88 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
 }
 .project-tabs .ptab:not(.is-active):hover {
     color: #0e7274 !important;
+}
+
+/* Generic teal link rule has higher specificity than the canonical
+   .qa-btn pill rule — force white text on primary variant. */
+.project-shortcut-actions .qa-btn.qa-btn-primary,
+.project-shortcut-actions .qa-btn.qa-btn-primary > i,
+.project-shortcut-actions .qa-btn.qa-btn-primary > span,
+.project-shortcut-actions .qa-btn.qa-btn-primary:hover,
+.project-shortcut-actions .qa-btn.qa-btn-primary:focus {
+    color: #fff !important;
+}
+
+/* Generic teal link rule above wins over .dash-hero .hero-back —
+   force white text/icon on the back pill (sits on dark hero bg). */
+.dash-hero .hero-back,
+.dash-hero .hero-back > i,
+.dash-hero .hero-back:hover,
+.dash-hero .hero-back:focus {
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+/* ---- 9) Form action buttons (Save / Redo-Back) → teal pill style ---- */
+/* Restyle the AdminLTE .btn-success / .btn-default inside the shared
+   `form_buttons.html` partial to match the teal pill family used on
+   intro-card .qa-btn buttons.
+     - Save  → primary filled teal
+     - Redo  → outline teal */
+.form-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.form-buttons .btn.btn-success,
+.form-buttons .btn.btn-default {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    border-width: 1px;
+    border-style: solid;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+.form-buttons .btn.btn-success > i,
+.form-buttons .btn.btn-default > i {
+    font-size: 16px;
+    color: inherit;
+}
+
+/* Save = primary filled */
+.form-buttons .btn.btn-success {
+    background: #149ea0;
+    color: #fff;
+    border-color: #149ea0;
+    box-shadow: 0 4px 10px -6px rgba(20, 158, 160, .55);
+}
+.form-buttons .btn.btn-success:hover,
+.form-buttons .btn.btn-success:focus,
+.form-buttons .btn.btn-success:active {
+    background: #0e7274 !important;
+    color: #fff !important;
+    border-color: #0e7274 !important;
+    transform: translateY(-1px);
+}
+
+/* Redo/Back = outline */
+.form-buttons .btn.btn-default {
+    background: #fff;
+    color: #149ea0;
+    border-color: #c1e8e9;
+    box-shadow: 0 2px 6px -4px rgba(20, 158, 160, .25);
+}
+.form-buttons .btn.btn-default:hover,
+.form-buttons .btn.btn-default:focus,
+.form-buttons .btn.btn-default:active {
+    background: #e0f5f5 !important;
+    color: #0e7274 !important;
+    border-color: #149ea0 !important;
+    transform: translateY(-1px);
 }

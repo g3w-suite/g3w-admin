@@ -62,13 +62,13 @@
             </div>
             <div class="form-summary-actions project-shortcut-actions">
                 <a href="{% url 'group-project-map' group.slug 'qdjango' form.instance.pk %}"
-                   class="qa-shortcut qa-shortcut-primary"
+                   class="qa-btn qa-btn-primary"
                    data-toggle="tooltip" data-placement="top"
                    title="{% trans 'Show map' %}" target="_blank">
                     <i class="ion ion-map"></i>
                     <span>{% trans 'Show map' %}</span>
                 </a>
-                <a href="#" class="qa-shortcut"
+                <a href="#" class="qa-btn"
                    data-toggle="tooltip" data-placement="top"
                    title="{% trans 'Show detail' %}"
                    data-widget-type="detailItem"
@@ -77,7 +77,7 @@
                     <span>{% trans 'Show detail' %}</span>
                 </a>
                 <a href="{% url 'qdjango-project-layers-list' group.slug form.instance.slug %}"
-                   class="qa-shortcut"
+                   class="qa-btn"
                    data-toggle="tooltip" data-placement="top"
                    title="{% trans 'Layers' %}">
                     <i class="ion ion-navicon-round"></i>
