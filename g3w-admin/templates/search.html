@@ -5,11 +5,13 @@
 <div class="dash-hero search-hero">
   <div class="row">
     <div class="col-md-8">
-      <h1><i class="fa fa-search"></i> {% trans 'Search results' %}</h1>
+      <h1><i class="fa fa-search"></i> {% if search_text %}{% trans 'Search results' %}{% else %}{% trans 'Search' %}{% endif %}</h1>
+      {% if search_text %}
       <p class="search-hero-query">
         {% trans 'for' %}
         <q class="search-results-query">{{ search_text }}</q>
       </p>
+      {% endif %}
     </div>
     <div class="col-md-4 text-right hero-meta">
       {% if n_tot_results > 0 %}

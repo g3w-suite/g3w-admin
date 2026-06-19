@@ -113,17 +113,20 @@ class SearchAdminView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Execute searches on modules
-        results = execute_search_on_models.send(self, request=self.request, search_text=self.request.GET['stext'])
-        context['search_text'] = self.request.GET['stext']
-        context['results'] = []
-        for r in results:
-            context['results'] += r[1]
+        stext = self.request.GET.get('stext', '').strip()
 
-        # Get _n_tot_results
-        context['n_tot_results'] = 0
-        for r in context['results']:
-            context['n_tot_results'] += r.n_tot_results
+        # Execute searches on modules
+        if stext:
+            results = execute_search_on_models.send(self, request=self.request, search_text=stext)
+            context['search_text'] = stext
+            context['results'] = []
+            for r in results:
+                context['results'] += r[1]
+
+            # Get _n_tot_results
+            context['n_tot_results'] = 0
+            for r in context['results']:
+                context['n_tot_results'] += r.n_tot_results
 
         return context
 
