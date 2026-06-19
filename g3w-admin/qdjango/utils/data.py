@@ -1632,9 +1632,13 @@ class QgisProject(XmlData):
                     'multilayer_querybybbox',
                     'multilayer_querybypolygon',
                     'autozoom_query',
-                    'geocoding_providers'
+                    'geocoding_providers',
+                    'show_metadata_section',
+                    'sidebar_collapse',
+                    'wms_getmap_format'
+
                 ):
-                    if kwargs.get(p):
+                    if kwargs.get(p) is not None:
                         data[p] = kwargs.get(p)
 
                 self.instance = self._project_model.objects.create(**data)
