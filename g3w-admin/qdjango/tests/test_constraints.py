@@ -61,7 +61,7 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
 
         super().setUp()
         
-        self.qdjango_project = Project.objects.all()[0]
+        self.qdjango_project = self.project.instance
         self.world = Layer.objects.get(qgs_layer_id='world20181008111156525', project=self.qdjango_project)
         self.spatialite_points = Layer.objects.get(qgs_layer_id='spatialite_points20190604101052075',
                                                    project=self.qdjango_project)
