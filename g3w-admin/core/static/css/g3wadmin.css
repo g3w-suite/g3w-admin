@@ -7712,3 +7712,212 @@ form.ajaxUpload,
 form[data-widget-type="ajaxUpload"] {
     padding-bottom: 130px;
 }
+
+/* ============================================================
+   Teal accent — Block 10: Language selector (navbar)
+   Restyles the Select2 control + dropdown used by the
+   #language-select widget in the top navbar.
+   ============================================================ */
+
+/* Trigger pill inside the olive navbar */
+body .main-header .navbar #language-select + .select2-container--default {
+    width: 160px !important;
+    min-width: 160px;
+}
+body .main-header .navbar #language-select + .select2-container--default .select2-selection--single {
+    height: 32px;
+    border: 1px solid #c1e8e9;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+body .main-header .navbar #language-select + .select2-container--default.select2-container--focus .select2-selection--single,
+body .main-header .navbar #language-select + .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #149ea0;
+    box-shadow: 0 0 0 3px rgba(20, 158, 160, .18);
+}
+body .main-header .navbar #language-select + .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #1f3437;
+    font-weight: 600;
+    line-height: 1;
+    padding-left: 8px;
+    padding-right: 22px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+body .main-header .navbar #language-select + .select2-container--default .select2-selection--single .select2-selection__rendered > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+}
+body .main-header .navbar #language-select + .select2-container--default .select2-selection--single .select2-selection__rendered .img-flag {
+    width: 18px;
+    height: auto;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .08);
+    flex: 0 0 auto;
+    display: block;
+}
+body .main-header .navbar #language-select + .select2-container--default .select2-selection--single .select2-selection__arrow {
+    position: static;
+    height: auto;
+    width: 16px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -16px;
+}
+body .main-header .navbar #language-select + .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    position: static;
+    margin: 0;
+    border-color: #149ea0 transparent transparent transparent;
+}
+body .main-header .navbar #language-select + .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent #149ea0 transparent;
+}
+
+/* Dropdown panel (rendered in <body>, scope by data attribute) */
+.select2-container--open .select2-dropdown {
+    border: 1px solid #c1e8e9;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px -8px rgba(20, 158, 160, .35), 0 2px 6px rgba(0, 0, 0, .08);
+    overflow: hidden;
+    margin-top: 4px;
+}
+.select2-container--open .select2-dropdown .select2-search--dropdown {
+    padding: 8px;
+    background: #f3fbfb;
+    border-bottom: 1px solid #e0f5f5;
+}
+.select2-container--open .select2-dropdown .select2-search--dropdown .select2-search__field {
+    border: 1px solid #c1e8e9;
+    border-radius: 6px;
+    padding: 6px 10px;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.select2-container--open .select2-dropdown .select2-search--dropdown .select2-search__field:focus {
+    border-color: #149ea0;
+    box-shadow: 0 0 0 3px rgba(20, 158, 160, .18);
+}
+.select2-container--open .select2-dropdown .select2-results__options {
+    padding: 4px 0;
+    max-height: 320px;
+}
+.select2-container--open .select2-dropdown .select2-results__option {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: #1f3437;
+}
+.select2-container--open .select2-dropdown .select2-results__option .img-flag {
+    width: 20px;
+    height: auto;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .08);
+    flex: 0 0 auto;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background: #149ea0 !important;
+    color: #fff !important;
+}
+.select2-container--default .select2-results__option[aria-selected="true"]:not(.select2-results__option--highlighted) {
+    background: #e0f5f5;
+    color: #0e7274;
+    font-weight: 600;
+}
+
+/* ============================================================
+   Teal accent — Block 11: User account dropdown (navbar)
+   Restyles the .user-menu .dropdown-menu panel (avatar header
+   + name/dates + Profile/Logout buttons).
+   ============================================================ */
+
+/* Outer panel */
+body .main-header .navbar .user-menu .dropdown-menu {
+    width: 280px;
+    padding: 0;
+    border: 1px solid #c1e8e9;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px -10px rgba(20, 158, 160, .35),
+                0 4px 10px rgba(0, 0, 0, .08);
+}
+
+/* Header banner — teal gradient instead of olive */
+body .main-header .navbar .user-menu .dropdown-menu > .user-header {
+    background: linear-gradient(135deg, #149ea0 0%, #0e7274 100%) !important;
+    color: #fff;
+    padding: 18px 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    height: auto;
+}
+body .main-header .navbar .user-menu .dropdown-menu > .user-header img {
+    width: 84px;
+    height: 84px;
+    border: 3px solid rgba(255, 255, 255, .85);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+    background: #fff;
+    padding: 2px;
+    margin-bottom: 10px;
+}
+body .main-header .navbar .user-menu .dropdown-menu > .user-header p {
+    color: #fff !important;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.35;
+}
+body .main-header .navbar .user-menu .dropdown-menu > .user-header p > small {
+    color: rgba(255, 255, 255, .85) !important;
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    margin-top: 4px;
+    line-height: 1.3;
+}
+
+/* Footer with Profile / Logout buttons */
+body .main-header .navbar .user-menu .dropdown-menu > .user-footer {
+    background: #f3fbfb;
+    padding: 12px 14px;
+    border-top: 1px solid #e0f5f5;
+    overflow: hidden;
+}
+body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default {
+    background: #fff;
+    border: 1px solid #c1e8e9;
+    color: #0e7274 !important;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 6px 14px;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default > .fa {
+    color: #149ea0;
+    margin-right: 4px;
+}
+body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default:hover,
+body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default:focus {
+    background: #149ea0;
+    border-color: #0e7274;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(20, 158, 160, .35);
+}
+body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default:hover > .fa,
+body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default:focus > .fa {
+    color: #fff;
+}
