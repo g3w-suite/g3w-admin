@@ -7655,3 +7655,55 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
     border-color: #149ea0 !important;
     transform: translateY(-1px);
 }
+
+/* Make the form action bar stick to the bottom of the viewport so
+   Save/Redo remain reachable while scrolling long forms.
+   Uses position:fixed (not sticky) because the form container is not
+   tall enough to anchor a sticky element, and some AdminLTE wrappers
+   set overflow which would block sticky entirely. */
+.form-buttons {
+    position: fixed;
+    left: 230px;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid #e6eef0;
+    box-shadow: 0 -4px 14px -8px rgba(20, 158, 160, .35);
+    justify-content: flex-end;
+}
+.form-buttons > .col-md-12 {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 0;
+}
+/* Adjust offset for collapsed sidebar */
+body.sidebar-collapse .form-buttons {
+    left: 50px;
+}
+/* Small screens: sidebar slides off-canvas */
+@media (max-width: 767px) {
+    .form-buttons {
+        left: 0;
+    }
+}
+/* Reserve space so the last fields are not hidden behind the fixed bar */
+.form-shell,
+form#group-form,
+form#project-qdjango-form,
+form#user-form,
+form#user-group-form,
+form.ajaxUpload,
+form[data-widget-type="ajaxUpload"] {
+    padding-bottom: 80px;
+}
