@@ -7921,3 +7921,183 @@ body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default:
 body .main-header .navbar .user-menu .dropdown-menu > .user-footer .btn-default:focus > .fa {
     color: #fff;
 }
+
+/* ============================================================
+   Teal accent — Block 12: Confirmation modals (Bootstrap)
+   Restyles the .modal panel used by buildDefaultModal /
+   buildDangerModal / buildWarningModal — header, body, footer,
+   Ok (confirm) and No (close) buttons.
+   ============================================================ */
+
+/* Backdrop a touch darker for better focus */
+body .modal-backdrop.in {
+    opacity: .55;
+}
+
+/* Panel */
+body .modal .modal-content {
+    border: 1px solid #c1e8e9;
+    border-radius: 12px;
+    box-shadow: 0 24px 48px -16px rgba(20, 158, 160, .35),
+                0 8px 20px rgba(0, 0, 0, .15);
+    overflow: hidden;
+}
+
+/* Header */
+body .modal .modal-header {
+    background: #f3fbfb;
+    border-bottom: 1px solid #e0f5f5;
+    padding: 14px 20px;
+    position: relative;
+}
+body .modal .modal-header::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, #149ea0 0%, #c1e8e9 100%);
+    border-radius: 2px;
+}
+body .modal .modal-header .modal-title {
+    color: #0e7274;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: .2px;
+}
+body .modal .modal-header .close {
+    color: #0e7274;
+    opacity: .55;
+    text-shadow: none;
+    font-size: 22px;
+    line-height: 1;
+    padding: 2px 6px;
+    margin-top: -2px;
+    border-radius: 6px;
+    transition: background .15s ease, color .15s ease, opacity .15s ease;
+}
+body .modal .modal-header .close:hover,
+body .modal .modal-header .close:focus {
+    background: #149ea0;
+    color: #fff;
+    opacity: 1;
+    outline: none;
+}
+
+/* Body */
+body .modal .modal-body {
+    padding: 20px;
+    color: #1f3437;
+    font-size: 14px;
+    line-height: 1.55;
+}
+body .modal .modal-body label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0e7274;
+    margin: 8px 0 6px;
+    cursor: pointer;
+}
+body .modal .modal-body input[type="checkbox"] {
+    accent-color: #149ea0;
+    width: 16px;
+    height: 16px;
+}
+body .modal .modal-body strong {
+    color: #0e7274;
+}
+
+/* Footer */
+body .modal .modal-footer {
+    background: #fafdfd;
+    border-top: 1px solid #e0f5f5;
+    padding: 12px 20px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* Buttons — Ok (confirm) and No (close) */
+body .modal .modal-footer .modal-button-confirm,
+body .modal .modal-footer .modal-button-confirm.btn-success {
+    background: #149ea0;
+    border: 1px solid #0e7274;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 7px 18px;
+    box-shadow: 0 2px 6px rgba(20, 158, 160, .25);
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+body .modal .modal-footer .modal-button-confirm:hover,
+body .modal .modal-footer .modal-button-confirm:focus {
+    background: #0e7274;
+    border-color: #0a5a5c;
+    box-shadow: 0 4px 10px rgba(20, 158, 160, .35);
+    color: #fff !important;
+}
+body .modal .modal-footer .modal-button-confirm:active {
+    transform: translateY(1px);
+}
+body .modal .modal-footer .modal-button-close,
+body .modal .modal-footer .modal-button-close.btn-default {
+    background: #fff;
+    border: 1px solid #c1e8e9;
+    color: #0e7274 !important;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 7px 18px;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+body .modal .modal-footer .modal-button-close:hover,
+body .modal .modal-footer .modal-button-close:focus {
+    background: #f3fbfb;
+    border-color: #149ea0;
+    color: #0e7274 !important;
+    outline: none;
+}
+body .modal .modal-footer .modal-button-confirm > .fa,
+body .modal .modal-footer .modal-button-close > .fa {
+    margin-right: 4px;
+}
+
+/* Danger variant — keep red accent for confirm */
+body .modal .modal-dialog.modal-danger .modal-header::after {
+    background: linear-gradient(90deg, #d9534f 0%, #f2b6b4 100%);
+}
+body .modal .modal-dialog.modal-danger .modal-title {
+    color: #b13b37;
+}
+body .modal .modal-dialog.modal-danger .modal-footer .modal-button-confirm {
+    background: #d9534f;
+    border-color: #b13b37;
+    box-shadow: 0 2px 6px rgba(217, 83, 79, .25);
+}
+body .modal .modal-dialog.modal-danger .modal-footer .modal-button-confirm:hover,
+body .modal .modal-dialog.modal-danger .modal-footer .modal-button-confirm:focus {
+    background: #b13b37;
+    border-color: #8e2c29;
+    box-shadow: 0 4px 10px rgba(217, 83, 79, .35);
+}
+
+/* Warning variant */
+body .modal .modal-dialog.modal-warning .modal-header::after {
+    background: linear-gradient(90deg, #f0ad4e 0%, #fce0bd 100%);
+}
+body .modal .modal-dialog.modal-warning .modal-title {
+    color: #b87a2a;
+}
+body .modal .modal-dialog.modal-warning .modal-footer .modal-button-confirm {
+    background: #f0ad4e;
+    border-color: #c08438;
+    box-shadow: 0 2px 6px rgba(240, 173, 78, .25);
+}
+body .modal .modal-dialog.modal-warning .modal-footer .modal-button-confirm:hover,
+body .modal .modal-dialog.modal-warning .modal-footer .modal-button-confirm:focus {
+    background: #c08438;
+    border-color: #8b5d28;
+    box-shadow: 0 4px 10px rgba(240, 173, 78, .35);
+}
