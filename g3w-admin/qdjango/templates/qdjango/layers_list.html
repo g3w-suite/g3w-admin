@@ -149,8 +149,8 @@
                             </td>
                             <td>
                                 {% if object.is_embedded %}
-                                <a href="{% url 'qdjango-project-layers-list' object.parent_project.group.slug object.parent_project.slug %}" class="label label-info" data-toggle="tooltip" data-placement="top" title="{% trans 'This layer is embedded from another project. Click to go to source project layers' %}">
-                                    <i class="fa fa-link"></i> {% trans 'Embedded' %}: {{ object.parent_project.title }}
+                                <a href="{% url 'qdjango-project-layers-list' object.parent_project.group.slug object.parent_project.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'This layer is embedded from another project. Click to go to source project layers' %}">
+                                    <i class="fa fa-link"></i> {{ object.parent_project.title }}
                                 </a>
                                 {% endif %}
                             </td>
