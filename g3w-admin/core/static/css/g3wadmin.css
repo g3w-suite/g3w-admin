@@ -7363,3 +7363,227 @@ body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-le
     background: #92dadb;
     color: #fff;
 }
+
+/* ---- 6) Search results action chips → same as layer-actions-grid ---- */
+/* Mirror the layer list chip style (30x30, teal palette) on the
+   `.result-search-item-links` anchors used in /search/ result cards
+   (projects, groups, macrogroups). */
+.result-search-item-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    margin: 0;
+}
+.result-search-item-links > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    color: #149ea0;
+    background: #e0f5f5;
+    border: 1px solid #c1e8e9;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all .15s ease;
+}
+.result-search-item-links > a:hover,
+.result-search-item-links > a:focus {
+    background: #149ea0;
+    color: #fff;
+    border-color: #149ea0;
+    transform: none;
+    text-decoration: none;
+}
+/* "Open map" link kept in orange for visual distinction (like the layer
+   list reserves orange for special actions). */
+.result-search-item-links > a.color-orange {
+    background: #fff4e6;
+    color: #d97706;
+    border-color: #fde2bf;
+}
+.result-search-item-links > a.color-orange:hover,
+.result-search-item-links > a.color-orange:focus {
+    background: #d97706;
+    color: #fff;
+    border-color: #d97706;
+}
+
+/* ---- 7) Intro card right-side action buttons → teal pill style ---- */
+/* Unifies the assorted "right-side" call-to-action buttons on intro
+   cards (group-info-card .gi-actions, project_form .form-summary
+   shortcuts, Add-project .btn-info) to the same teal pill family used
+   on the layer list / search chips.
+
+   Two visual variants:
+     - OUTLINE  → white bg, teal border, teal text/icon
+     - PRIMARY  → solid teal bg, white text
+   Both hover into the deeper teal. */
+
+/* Outline pill */
+.group-info-card .gi-actions .qa-btn,
+.qa-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff;
+    color: #149ea0;
+    border: 1px solid #c1e8e9;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    box-shadow: 0 2px 6px -4px rgba(20, 158, 160, .25);
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+.group-info-card .gi-actions .qa-btn > i,
+.qa-shortcut > i {
+    font-size: 16px;
+    color: inherit;
+}
+.group-info-card .gi-actions .qa-btn:hover,
+.group-info-card .gi-actions .qa-btn:focus,
+.qa-shortcut:hover,
+.qa-shortcut:focus {
+    background: #e0f5f5;
+    color: #0e7274;
+    border-color: #149ea0;
+    transform: translateY(-1px);
+}
+
+/* Primary (solid) pill — Show map shortcut + Add project button */
+.qa-shortcut.qa-shortcut-primary,
+.group-info-card .gi-actions a.btn.btn-info,
+.box-header a.btn.btn-info,
+.group-info-card a.btn.btn-info,
+.form-summary .form-summary-actions a.btn.btn-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #149ea0;
+    color: #fff;
+    border: 1px solid #149ea0;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px -6px rgba(20, 158, 160, .55);
+    filter: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+.qa-shortcut.qa-shortcut-primary > i,
+.group-info-card .gi-actions a.btn.btn-info > i,
+.box-header a.btn.btn-info > i,
+.group-info-card a.btn.btn-info > i,
+.form-summary .form-summary-actions a.btn.btn-info > i {
+    font-size: 16px;
+    color: inherit;
+    margin-right: 0;
+}
+.qa-shortcut.qa-shortcut-primary:hover,
+.qa-shortcut.qa-shortcut-primary:focus,
+.group-info-card .gi-actions a.btn.btn-info:hover,
+.group-info-card .gi-actions a.btn.btn-info:focus,
+.box-header a.btn.btn-info:hover,
+.box-header a.btn.btn-info:focus,
+.group-info-card a.btn.btn-info:hover,
+.group-info-card a.btn.btn-info:focus,
+.form-summary .form-summary-actions a.btn.btn-info:hover,
+.form-summary .form-summary-actions a.btn.btn-info:focus {
+    background: #0e7274;
+    color: #fff;
+    border-color: #0e7274;
+    filter: none;
+    transform: translateY(-1px);
+}
+
+/* ---- 8) Project toolbar tabs / view toggle / Add-project default btn ---- */
+/* Aligns project_list toolbar buttons (Projects/Trash tabs, Grid/List
+   view toggle, "+ Project QGIS" button) with the teal widget palette. */
+
+/* Active tab → solid teal */
+.project-tabs .ptab.is-active {
+    background: #149ea0;
+    color: #fff;
+    box-shadow: 0 4px 10px -4px rgba(20, 158, 160, .5);
+}
+.project-tabs .ptab.is-active::after {
+    background: #92dadb;
+}
+.project-tabs .ptab.is-active .count {
+    background: rgba(255, 255, 255, .22);
+    color: #fff;
+}
+.project-tabs .ptab:hover {
+    color: #0e7274;
+}
+
+/* View mode toggle (Grid / List) */
+.project-view-toggle {
+    border-color: #c1e8e9;
+}
+.project-view-toggle .pvt-btn {
+    color: #149ea0;
+}
+.project-view-toggle .pvt-btn:hover {
+    background: #e0f5f5;
+    color: #0e7274;
+}
+.project-view-toggle .pvt-btn.is-active {
+    background: #149ea0;
+    color: #fff;
+}
+
+/* "+ Project QGIS" button rendered by add_project.html tag inside the
+   project toolbar — outline pill in teal palette. */
+.project-toolbar h3.box-title a.btn.btn-default {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff;
+    color: #149ea0;
+    border: 1px solid #c1e8e9;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    box-shadow: 0 2px 6px -4px rgba(20, 158, 160, .25);
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+.project-toolbar h3.box-title a.btn.btn-default:hover,
+.project-toolbar h3.box-title a.btn.btn-default:focus {
+    background: #e0f5f5;
+    color: #0e7274;
+    border-color: #149ea0;
+    transform: translateY(-1px);
+}
+.project-toolbar h3.box-title a.btn.btn-default > i {
+    font-size: 16px;
+    color: inherit;
+}
+.project-toolbar h3.box-title a.btn.btn-default img {
+    height: 16px;
+    width: auto;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+.project-toolbar h3.box-title { margin: 0; }
+
+/* Generic teal link rule above has higher specificity than .ptab —
+   force white text on active tab and dark on inactive. */
+.project-tabs .ptab.is-active,
+.project-tabs .ptab.is-active > i,
+.project-tabs .ptab.is-active .count {
+    color: #fff !important;
+}
+.project-tabs .ptab:not(.is-active) {
+    color: #6c7a89 !important;
+}
+.project-tabs .ptab:not(.is-active):hover {
+    color: #0e7274 !important;
+}
