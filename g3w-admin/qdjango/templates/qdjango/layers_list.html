@@ -120,6 +120,7 @@
                             <th style="width:200px">{%  trans 'Label' %}</th>
                             <th style="width:200px">{%  trans 'Name' %}</th>
                             <th style="width: 40px">{% trans 'Type' %}</th>
+                            <th style="width: 80px">{% trans 'Embedded' %}</th>
                             {% if "change_project" in userPrj_perms %}
                             <th style="width:100px">{% trans 'WMS External' %}</th>
                             {% endif %}
@@ -137,7 +138,7 @@
                         <tr id="qdjango_project_layer_{{ object.slug }}">
 
 
-                            <td>{{ object.title }}</td>
+                            <td><strong style="font-size: 1.1em; color: #222d32;">{{ object.title }}</strong></td>
                             <td>{{ object.origname }}
                                 {% if "change_project" in userPrj_perms %}
                                 <a data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
@@ -145,6 +146,13 @@
                             </td>
                             <td>
                                 {% include 'qdjango/include/layer_icon.html' %}
+                            </td>
+                            <td>
+                                {% if object.is_embedded %}
+                                <a href="{% url 'qdjango-project-layers-list' object.parent_project.group.slug object.parent_project.slug %}" class="label label-info" data-toggle="tooltip" data-placement="top" title="{% trans 'This layer is embedded from another project. Click to go to source project layers' %}">
+                                    <i class="fa fa-link"></i> {% trans 'Embedded' %}: {{ object.parent_project.title }}
+                                </a>
+                                {% endif %}
                             </td>
                             {% if "change_project" in userPrj_perms %}
                             <td>
