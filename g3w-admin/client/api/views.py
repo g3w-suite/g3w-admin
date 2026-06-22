@@ -81,10 +81,9 @@ class ClientConfigApiView(APIView):
 
         # Fallback for "search.name" (← "search.options.title")
         for search in ps.data.get("search", []):
-            if not search.get("name"):
-                title = search.get("options", {}).get("title", "")
-                if title:
-                    search["name"] = title
+            title = search.get("options", {}).get("title", "")
+            if title:
+                search["name"] = title
 
         # signal after serialization project
         ps_data = ps.data
