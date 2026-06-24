@@ -423,7 +423,7 @@ export default ({
 
       isRowHidden(index) {
         if (this.search.search) {
-          return this.relations[index].fields.every(f => -1 === `${f.value}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
+          return this.relations[index].fields.every(f => !`${f.value}`.toLowerCase().includes(this.search.search.toLowerCase()));
         }
         const page      = Number(this.search.page);
         const page_size = Number(this.search.page_size);
@@ -1021,7 +1021,7 @@ export default ({
           const outputs = await (response.promise || workflow.start(options));
           // loop on features selected
           (outputs.features || []).forEach(relation => {
-            if (undefined === this.relations.find(rel => rel.id === relation.getId())) {
+            if (undefined === this.relations.find(rel => relation.getId() === rel.id)) {
               linked = linked || true;
               const originalRelation = relation.clone();
               Object
@@ -1083,7 +1083,7 @@ export default ({
          */
         return {
           // get editable fields from parent layer editing fields
-          editable: ownField.filter(f => ((parentLayer.state.editing.fields || []).find(_f => _f.name === f) || { editable: false }).editable),
+          editable: ownField.filter(f => ((parentLayer.state.editing.fields || []).find(_f => f === _f.name) || { editable: false }).editable),
           // check if father field is a pk and is not editable
           pk,
           // Check if the parent field is editable.
