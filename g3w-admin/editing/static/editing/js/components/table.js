@@ -282,7 +282,7 @@ export default ({
   methods: {
 
     showTool(type) {
-      return undefined !== this.inputs.layer.state.editing.capabilities.find(c => type === c);
+      return this.inputs.layer.state.editing.capabilities.includes(type);
     },
 
     isMediaField(name) {
@@ -312,7 +312,7 @@ export default ({
 
     isRowHidden(index) {
       if (this.search.search) {
-        return Object.keys(this.rows[index]).every(key => -1 === `${this.rows[index][key]}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
+        return Object.values(this.rows[index]).every(v => !`${v}`.toLowerCase().includes(this.search.search.toLowerCase()));
       }
       const page      = Number(this.search.page);
       const page_size = Number(this.search.page_size);
@@ -361,7 +361,7 @@ export default ({
         }</div>
       `);
       if (ok) {
-        const i    = this.features.findIndex(f => f.getUid() === uid);
+        const i    = this.features.findIndex(f => uid === f.getUid());
         const feat = this.features[i];
         this.inputs.layer.getEditor().getEditingSource().removeFeature(feat);
         this.context.session.pushDelete(this.inputs.layer.getId(), feat);
