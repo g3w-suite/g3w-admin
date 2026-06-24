@@ -67,7 +67,7 @@ new (class extends Plugin {
         messages: undefined,      // object to set custom message
         cb: {
           done:  () => {},       // function executed after commit change done
-          error: () => {}        // function executed after commit changes error
+          error: () => {},        // function executed after commit changes error
         }
       },
       show_errors:    false,
@@ -102,7 +102,7 @@ new (class extends Plugin {
   }
 
   /**BACKOMP v3.x */
-  subscribe(evt, cbk) {this.on(evt, cbk);}
+  subscribe(evt, cbk) { this.on(evt, cbk); }
   unsubscribe(evt, cbk) { this.off(evt, cbk); }
   fireEvent(e) { this.emit(e); }
 
@@ -294,8 +294,7 @@ new (class extends Plugin {
    * @since 4.1.0
    */
   getEditingFields(layerId, editable = false) {
-    const layer = this.getLayerById(layerId);
-    return (layer.state.editing.fields || []).filter(f => editable ? f.editable : true);
+    return (this.getLayerById(layerId)?.state.editing.fields ?? []).filter(f => editable ? f.editable : true);
   }
 
   /**
@@ -402,7 +401,7 @@ new (class extends Plugin {
     if (false === showToolboxesExcluded) {
       this.state.toolboxes.forEach(({ state: { show, id} }) => show = toolboxIds.includes(id));
     }
-    toolboxIds.forEach(id => this.getToolBoxById(id).setEditingConstraints(toolboxes[id]))
+    toolboxIds.forEach(id => this.getToolBoxById(id).setEditingConstraints(toolboxes[id]));
   }
 
   /**
@@ -424,7 +423,7 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getEditableLayers() {
-    return this.state.toolboxes.reduce((o,tb) => Object.assign(o, { [tb.getId()]: tb.getLayer() }), {}) ;
+    return this.state.toolboxes.reduce((o,tb) => Object.assign(o, { [tb.getId()]: tb.getLayer() }), {});
   }
 
   /**
@@ -439,7 +438,7 @@ new (class extends Plugin {
   async stop() {
     const commitpromises = this.state.toolboxes
       .filter(t => t.hasPendingCommits())
-      .map( toolbox => this.commit({ toolbox, modal : true }))
+      .map( toolbox => this.commit({ toolbox, modal : true }));
     try {
       await Promise.allSettled(commitpromises);    
     } catch(e) {
@@ -449,7 +448,7 @@ new (class extends Plugin {
     this.state.toolboxes.forEach(t => t.stop());
 
     this.state.toolboxselected     = null;
-    this.state.message             =  null;
+    this.state.message             = null;
 
     //reset unique values
     Object.keys(this.state.uniqueFieldsValues).forEach(id => this.state.uniqueFieldsValues[id] = {});
@@ -498,7 +497,7 @@ new (class extends Plugin {
     commitItems         = commitItems || toolbox.getCommitItems();
     const online        = ApplicationState.online;
     const has_changes   = [
-      ...(commitItems.add || []),
+      ...(commitItems.add    || []),
       ...(commitItems.delete || []),
       ...(commitItems.update || []),
       ...Object.keys(commitItems.relations || {})
@@ -624,7 +623,7 @@ new (class extends Plugin {
             data = changes;
           }
           if (!current && !has_relations) {
-            data[layerId] = changes[layerId]
+            data[layerId] = changes[layerId];
           }
         });
 
@@ -633,7 +632,7 @@ new (class extends Plugin {
         GUI.showUserMessage({
           type:      'success',
           message:   "plugins.editing.messages.saved_local",
-          autoclose: true
+          autoclose: true,
         });
         // clear history because it saved on browser
         toolbox.clearHistory();
@@ -646,7 +645,7 @@ new (class extends Plugin {
         //check if is online and there are some commit items
         const online2 = online && commit;
 
-        const result = online2 && response.result;
+        const result  = online2 && response.result;
 
         if (result && messages && messages.success) {
           // hide saving dialog
@@ -659,7 +658,7 @@ new (class extends Plugin {
             type:     'success',
             message:   messages.success.message || "plugins.editing.messages.saved",
             duration:  2000,
-            autoclose: undefined === messages.success.autoclose ? true : messages.success.autoclose,
+            autoclose: undefined === messages.success.autoclose || messages.success.autoclose,
           });
         }
 
@@ -711,7 +710,7 @@ new (class extends Plugin {
       //@TODO check if it is usefull
       if (modal) {
         try { await this.#rollback(commitItems.relations); }
-        catch (e) { console.warn(e); }
+        catch(e) { console.warn(e); }
       }
 
       // parse server error
@@ -749,8 +748,8 @@ new (class extends Plugin {
   */
   undoRedoLayerUniqueFieldValues({
     layerId,
-    sessionItems = [],
     action,
+    sessionItems = [],
   }) {
 
     // if not set
@@ -878,7 +877,7 @@ new (class extends Plugin {
       return Promise.reject();
     }
     return new Promise(async (resolve, reject) => {
-      const layer = this.getLayerById(layerId);
+      const layer   = this.getLayerById(layerId);
       // get session
       const session = this.getSessionById(layerId);
       // exclude an eventual attribute pk (primary key) not editable (mean autoincrement)
@@ -966,7 +965,7 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setSaveConfig({ mode = 'default', cb = {}, modal = false, messages } = {}) {
-    Object.assign(this.state.saveConfig, { mode, modal, messages, cb: { ...this.state.saveConfig.cb, ...cb }});
+    Object.assign(this.state.saveConfig, { mode, modal, messages, cb: { ...this.state.saveConfig.cb, ...cb } });
   }
 
   /**
@@ -1022,16 +1021,15 @@ new (class extends Plugin {
         this.state.show_errors = true;
       }
     } else {
-      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.errors.no_layers' })
+      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.errors.no_layers' });
     }
     return this.state.panel;
   }
 
   hideEditingPanel() {
-    if (null !== this.state.panel) {
-      GUI.closePanel();
-      this.state.panel = null;
-    }
+    if (null === this.state.panel) { return; }
+    GUI.closePanel();
+    this.state.panel = null;
   }
 
   /**
@@ -1076,8 +1074,8 @@ new (class extends Plugin {
         });
       } else if (undefined !== options.filter.bbox) { // bbox filter
         response = await XHR.post({
-          url:  layer.getUrl('editing'),
-          data: JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getToken() }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getToken() }),
           contentType: 'application/json',
         })
       } else if (undefined !== options.filter.fid) { // fid filter
@@ -1094,14 +1092,14 @@ new (class extends Plugin {
         })
       } else if (undefined !== options.filter.fids) {
         response = await XHR.post({
-          url:    layer.getUrl('editing'),
-          data:   JSON.stringify({ ...params, ...options.filter, }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, ...options.filter, }),
           contentType: 'application/json',
         })
       } else if (undefined !== options.filter.nofeatures) {
         response = await XHR.post({
-          url:  layer.getUrl('editing'),
-          data: JSON.stringify({ ...params, field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__` }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__` }),
           contentType: 'application/json',
         })
       }
@@ -1132,7 +1130,7 @@ new (class extends Plugin {
             return feature;
           });
         }
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
         features = [];
       }
@@ -1143,7 +1141,7 @@ new (class extends Plugin {
         featurelocks: response.featurelocks,
         features:     features.filter(f => lockIds.includes(`${f.getId()}`)).map(feature => new Feature({ feature })),
       };
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
     }
 
@@ -1301,7 +1299,7 @@ new (class extends Plugin {
 
       this.saveChange();
 
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
       toolBox.rollback();
     } finally {
@@ -1361,4 +1359,3 @@ new (class extends Plugin {
   }
 
 });
-
