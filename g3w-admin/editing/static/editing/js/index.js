@@ -174,9 +174,6 @@ new (class extends Plugin {
       });
     }
 
-    // after add layers to layerstore
-    ApplicationState.layers['editing'].addLayers(this.getLayers());
-  
     await GUI.isReady();
 
     // add sidebar item (left menu) 
