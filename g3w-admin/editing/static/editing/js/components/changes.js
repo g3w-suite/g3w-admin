@@ -162,7 +162,7 @@ template: /*html*/`
     isEdited(item, key) {
       const feat  = this.getFeature(item); // NB: undefined when added
       const efeat = this.getEditingFeature(item); // NB: undefined when deleted
-      if ([feat, efeat].includes(undefined)) { return false }
+      if ([feat, efeat].includes(undefined)) { return false; }
       if (this.getType(item) && 'geometry' === key) {
         return !areCoordinatesEqual({ feature: feat, coordinates: efeat.get(key).getCoordinates() });
       }
@@ -182,7 +182,7 @@ template: /*html*/`
 
   async mounted() {
     // insert a visual reference for `<empty>` values
-    (this.$refs.value || []).filter(d =>  [null, undefined].includes(d.textContent)).forEach(d => d.innerHTML = `<i><code>&lt;empty&gt;</code></i>`);
+    (this.$refs.value || []).filter(d => [null, undefined].includes(d.textContent)).forEach(d => d.innerHTML = `<i><code>&lt;empty&gt;</code></i>`);
   },
 
 });
