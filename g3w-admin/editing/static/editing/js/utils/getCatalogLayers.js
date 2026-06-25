@@ -6,5 +6,5 @@ const ApplicationState = g3w.state;
  * @since g3w-client-plugin-editing@v4.1.0
  */
 export function getCatalogLayers(filter, options = {}) {
-  return Object.values(ApplicationState.layers).flatMap(s => s.showOnCatalog() ? s.getLayers(filter, options) : []);
+  return ApplicationState.project.getLayers(filter, options);
 }
