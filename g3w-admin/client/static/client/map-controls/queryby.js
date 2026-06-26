@@ -630,18 +630,12 @@ export class QueryBy extends MapControl {
       let data       = [];
       const counts   = {};
       const GEOMETRY = 'querybbox' === type ? ol.geom.Polygon.fromExtent(feature) : feature.getGeometry();
-      const layers   = Object
-        .values(ApplicationState.layers)
-        .flatMap(s =>
-          s.isQueryable()
-            ? s.getLayers({
-                GEOLAYER: true,
-                ...('boolean' === typeof excludeSelected ? { SELECTED: !excludeSelected } : { SELECTED_OR_ALL: true }),
-                QUERYABLE: true,
-                VISIBLE: true
-              })
-            : []
-        );
+      const layers   = ApplicationState.project.getLayers({
+        GEOLAYER: true,
+        ...('boolean' === typeof excludeSelected ? { SELECTED: !excludeSelected } : { SELECTED_OR_ALL: true }),
+        QUERYABLE: true,
+        VISIBLE: true
+      })
       const params = {
         feature_count: ApplicationState.project.state.feature_count || 5,
         filterConfig,
@@ -766,15 +760,13 @@ function _getAvailableLayers(type) {
   return [...new Set([
 
     // QUERYABLE
-    ...Object.values(ApplicationState.layers)
-        .flatMap(s => s.isQueryable() ? s.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }).filter(l => l.state?.geometrytype) : []),
+    ...Object.values(ApplicationState.project.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }).filter(l => l.state?.geometrytype) ),
 
     // POLYGONS
     ...GUI.getExternalLayers('vector')
         .map(l => l._externalLayer).filter(l => 'querybypolygon' === type ? POLYGON_TYPES.includes(l.getGeometryType()) : true),
 
     // SELECTED POLYGONS
-    ...Object.values(ApplicationState.layers)
-        .flatMap(s => 'querybypolygon' === type && s.isQueryable() ? s.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }, {}).filter(l => l.state?.geometrytype) : []),
+    ...('querybypolygon' === type ? ApplicationState.project.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }, {}).filter(l => l.state?.geometrytype) : []),
   ])];
 }

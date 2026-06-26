@@ -24,7 +24,6 @@ new (class extends Plugin {
 
     super({
       name: 'editing',
-      layersStore: { queryable: false, catalog: false },
       fontClasses: [
         { name: 'measure',   className: "fas fa-ruler-combined" },
         { name: 'magnete',   className: "fas fa-magnet" },
