@@ -223,14 +223,10 @@
                         {% for object in object_list %}
                         <tr id="qdjango_project_layer_{{ object.slug }}">
                             <td data-label="{% trans 'Label' %}" class="layer-title">{{ object.title }}</strong></td>
-                            <td>{{ object.origname }}
+                            <td data-label="{% trans 'Name' %}">{{ object.origname }}
                                 {% if "change_project" in userPrj_perms %}
                                 <a class="layer-detail-icon" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
                                 {% endif %}
-                                {{ object.title }}
-                            </td>
-                            <td data-label="{% trans 'Name' %}">
-                                <span class="layer-origname">{{ object.origname }}</span>
                             </td>
                             <td data-label="{% trans 'Type' %}" class="layer-type-cell">
                                 {% include 'qdjango/include/layer_icon.html' %}
