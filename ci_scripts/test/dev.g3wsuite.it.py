@@ -6,7 +6,7 @@ import sys, glob
 
 from playwright.sync_api import sync_playwright
 
-SERVER_URL = 'https://dev.g3wsuite.it/'
+SERVER_URL = 'https://v311.g3wsuite.it/'
 
 def main():
     print("Starting script")
