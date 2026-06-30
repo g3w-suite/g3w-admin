@@ -3,19 +3,31 @@
 
 {% block page_header %}
 <h1>
-    {% trans 'Search results for' %} ...<i>{{ search_text }}</i>...
+    <i class="fa fa-search text-muted"></i>
+    {% trans 'Search results' %}
+    <small>{% trans 'for' %} <q class="search-results-query">{{ search_text }}</q></small>
 </h1>
-
-
-{% endblock%}
+{% endblock %}
 
 {% block main_content %}
-{% if n_tot_results == 0 %}
-<div><h4>{% trans 'Not results found!' %}</h4></div>
-{% else %}
-<div><h4>{% trans 'Found ' %} {{ n_tot_results }} {% trans ' results.' %}</h4></div>
-{% for r in results %}
-    {{ r.render }}
-{% endfor %}
-{% endif %}
+<div class="search-results-summary">
+    {% if n_tot_results == 0 %}
+        <div class="callout callout-warning search-results-empty">
+            <h4><i class="fa fa-info-circle"></i> {% trans 'No results found' %}</h4>
+            <p>{% blocktrans %}No item matches your query. Try a different keyword.{% endblocktrans %}</p>
+        </div>
+    {% else %}
+        <div class="callout callout-info search-results-count">
+            <h4>
+                <i class="fa fa-check-circle"></i>
+                {% blocktrans count counter=n_tot_results %}Found {{ counter }} result{% plural %}Found {{ counter }} results{% endblocktrans %}
+            </h4>
+        </div>
+        <div class="search-results-list">
+            {% for r in results %}
+                {{ r.render }}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

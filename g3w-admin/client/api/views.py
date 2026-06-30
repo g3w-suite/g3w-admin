@@ -79,6 +79,12 @@ class ClientConfigApiView(APIView):
         if "onlineresource" in ps.data["metadata"]:
             del ps.data["metadata"]["onlineresource"]
 
+        # Fallback for "search.name" (← "search.options.title")
+        for search in ps.data.get("search", []):
+            title = search.get("options", {}).get("title", "")
+            if title:
+                search["name"] = title
+
         # signal after serialization project
         ps_data = ps.data
         for signal_receiver, data in post_serialize_project.send(
