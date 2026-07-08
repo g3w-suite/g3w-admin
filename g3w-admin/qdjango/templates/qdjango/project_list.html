@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load g3wadmin_tags %}
 {% load guardian_tags %}
+{% load qdjango_tags %}
 {% load svg_icon %}
 {% get_obj_perms user for group as "userObj_group_perms" %}
 
@@ -80,7 +81,14 @@
         <div class="projects-cards-grid">
         {% for object in object_list %}
             {% get_obj_perms user for object as "userObj_perms" %}
-            <div class="project-card" id="qdjangoproject_{{ object.pk }}">
+            <div class="project-card{% if not object|is_public_project %} is-private{% endif %}" id="qdjangoproject_{{ object.pk }}">
+                {% if not object|is_public_project %}
+                <span class="pc-lock"
+                      data-toggle="tooltip" data-placement="top"
+                      title="{% trans 'Project not accessible to anonymous users' %}">
+                    <i class="fa fa-lock"></i>
+                </span>
+                {% endif %}
                 {% if perms.qdjango.add_project %}
                 <label class="pc-panoramic" title="{% trans 'Panoramic map' %}">
                     <input type="radio" name="panoramic_map"

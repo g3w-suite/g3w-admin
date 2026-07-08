@@ -8197,3 +8197,61 @@ body .modal .modal-dialog.modal-warning .modal-footer .modal-button-confirm:focu
 .layers-panel .panel-head .layers-bulk-actions a:active {
     transform: translateY(1px);
 }
+
+/* ============================================================
+   Teal accent — Block 14: Private project indicator
+   Highlights projects on which the anonymous user has NO
+   view_project permission (i.e. not accessible without login).
+   ============================================================ */
+
+/* Lock badge — placed bottom-left of the thumbnail so it does not
+   collide with the panoramic radio on the top-left corner. */
+.project-card .pc-lock {
+    position: absolute;
+    top: 88px; /* thumb height (130px) − badge (34px) − 8px inset */
+    left: 8px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: #d9534f;
+    color: #fff;
+    font-size: 16px;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .35),
+                0 0 0 1px rgba(217, 83, 79, .5);
+    cursor: default;
+    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.project-card .pc-lock:hover {
+    transform: scale(1.08);
+    background: #b13b37;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .4),
+                0 0 0 3px rgba(217, 83, 79, .35);
+}
+
+/* Card outline emphasis for private projects */
+.project-card.is-private {
+    /* keep the neutral card border — the lock badge already conveys the state */
+}
+.project-card.is-private .pc-title::before {
+    content: '\f023'; /* fa-lock */
+    font-family: 'FontAwesome';
+    color: #d9534f;
+    margin-right: 6px;
+    font-size: 15px;
+}
+
+/* List view — bottom-left corner of the compact 140px-wide thumb */
+.projects-cards-grid.is-list-view .project-card .pc-lock {
+    top: auto;
+    bottom: 6px;
+    left: 6px;
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+    border-width: 1px;
+}
