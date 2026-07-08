@@ -8255,3 +8255,43 @@ body .modal .modal-dialog.modal-warning .modal-footer .modal-button-confirm:focu
     font-size: 11px;
     border-width: 1px;
 }
+
+/* ============================================================
+   Teal accent — Block 15: Private project indicator on the
+   dashboard bookmarked-projects cards (.prj-card / .prj-thumb).
+   Mirrors Block 14 (project_list.html) for consistency.
+   ============================================================ */
+
+.prj-card .prj-thumb .prj-lock {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: #d9534f;
+    color: #fff;
+    font-size: 16px;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .35),
+                0 0 0 1px rgba(217, 83, 79, .5);
+    cursor: default;
+    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.prj-card .prj-thumb .prj-lock:hover {
+    transform: scale(1.08);
+    background: #b13b37;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .4),
+                0 0 0 3px rgba(217, 83, 79, .35);
+}
+.prj-card.is-private .prj-title::before {
+    content: '\f023'; /* fa-lock */
+    font-family: 'FontAwesome';
+    color: #d9534f;
+    margin-right: 6px;
+    font-size: 14px;
+}
