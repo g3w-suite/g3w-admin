@@ -650,7 +650,7 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue(len(resp["search"]) > 0)
         resp_serach = resp['search'][0]
-        self.assertEqual(resp_serach['name'], 'Test selectbox')
+        self.assertEqual(resp_serach['name'], 'asert')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
         # removed in v3.8
@@ -699,7 +699,7 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue(len(resp["search"]) == 2)
         resp_serach = resp['search'][1]
-        self.assertEqual(resp_serach['name'], 'Test autocompletebox')
+        self.assertEqual(resp_serach['name'], 'autocomplete test title')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'autocompletefield')
         self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
@@ -747,7 +747,7 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue(len(resp["search"]) > 0)
         resp_serach = resp['search'][0]
-        self.assertEqual(resp_serach['name'], 'Test selectbox for field with valuemap')
+        self.assertEqual(resp_serach['name'], 'asert')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
         # removed in v3.8

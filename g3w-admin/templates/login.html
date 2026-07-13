@@ -22,7 +22,17 @@
       <div class="alert alert-danger alert-dismissible">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         <h4><i class="icon fa fa-ban"></i> {% trans 'LOGIN ERROR' %}!</h4>
-        {% trans 'Username and/or password uncorrect' %}
+        {% if form.non_field_errors %}
+          {% for err in form.non_field_errors.as_data %}
+            {% if err.code == 'invalid_login' %}
+              <div>{% trans 'Username and/or password uncorrect' %}</div>
+            {% else %}
+              <div>{{ err.message }}</div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% trans 'Username and/or password uncorrect' %}
+        {% endif %}
       </div>
       {% endif %}
       {% if SETTINGS.ENABLE_TWO_FACTOR_AUTH %}
