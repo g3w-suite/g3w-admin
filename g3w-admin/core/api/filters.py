@@ -325,6 +325,10 @@ class FieldFilterBackend(BaseFilterBackend):
 
                 # Make lowercase field_operator
                 field_operator = field_operator.lower()
+
+                # URL-decode field_value (it is passed as a URL parameter)
+                field_value = unquote(field_value)
+
                 if not self._is_valid_field(qgis_layer, field_name):
                     raise Exception(
                         f"{field_name} doesn't belong from layer {qgis_layer.name()}!")

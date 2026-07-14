@@ -88,18 +88,51 @@ def catalog_provider(groups=[]):
                 logger.error(f"Getting Layer CRS {layer_metadata['crs']}, error: {e}")
                 crs = ''
 
-            # Reproject bounding_box
+            # Reproject bounding_box.
+            # Preferred: compute from layer.extent (WKT POLYGON in the
+            # layer's native CRS, i.e. layer.srid). Fallback to the
+            # bbox coming from ProjectSerializer metadata otherwise.
+            # The resulting WKT is a MULTIPOINT(minx miny, maxx maxy)
+            # in EPSG:4326, so pycsw's util.wkt2geom() will correctly
+            # populate west/south/east/north.
+            bounding_box = ''
             try:
-                geometry = QgsGeometry.fromWkt('MULTIPOINT({1} {0}, {3} {2})'.format(*list(layer_metadata['bbox'].values())))
-                to_srid = QgsCoordinateReferenceSystem(f'EPSG:{4326}')
-                from_srid = QgsCoordinateReferenceSystem(f'EPSG:{crs}')
-                ct = QgsCoordinateTransform(
-                    from_srid, to_srid, QgsCoordinateTransformContext())
-                geometry.transform(ct)
-                bounding_box = geometry.asWkt()
+                to_srid = QgsCoordinateReferenceSystem('EPSG:4326')
+                geometry = None
+                from_srid = None
+
+                if layer.extent and layer.srid:
+                    geom_from_layer = QgsGeometry.fromWkt(layer.extent)
+                    if (geom_from_layer is not None
+                            and not geom_from_layer.isNull()
+                            and not geom_from_layer.isEmpty()):
+                        geometry = geom_from_layer
+                        from_srid = QgsCoordinateReferenceSystem(f'EPSG:{layer.srid}')
+
+                if geometry is None:
+                    # Fallback: build from serializer bbox dict
+                    # {minx, miny, maxx, maxy} in the layer/project CRS.
+                    b = layer_metadata['bbox']
+                    geometry = QgsGeometry.fromWkt(
+                        f"MULTIPOINT({b['minx']} {b['miny']}, {b['maxx']} {b['maxy']})"
+                    )
+                    from_srid = QgsCoordinateReferenceSystem(f'EPSG:{crs}')
+
+                if from_srid is not None and from_srid != to_srid:
+                    ct = QgsCoordinateTransform(
+                        from_srid, to_srid, QgsCoordinateTransformContext())
+                    geometry.transform(ct)
+
+                rect = geometry.boundingBox()
+                bounding_box = (
+                    f"MULTIPOINT({rect.xMinimum()} {rect.yMinimum()}, "
+                    f"{rect.xMaximum()} {rect.yMaximum()})"
+                )
             except Exception as e:
-                print(e)
-                logger.error(f"Getting bbox {layer_metadata['bbox']} error: {e}")
+                logger.error(
+                    f"Getting bbox for layer {layer.pk} "
+                    f"(bbox={layer_metadata.get('bbox')}, extent={layer.extent}): {e}"
+                )
                 bounding_box = ''
 
             # Full list of Record fields
