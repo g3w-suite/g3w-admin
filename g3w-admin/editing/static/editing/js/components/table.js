@@ -431,13 +431,14 @@ export default ({
       return value;
     },
 
-    async reload(opts = {}) {
+    async reload() {
       this.show = false;
       await this.$nextTick();
       const features  = await this.context.session.getEditor().getFeatures({}, {
         page:      this.search.page,
         page_size: this.search.page_size,
         ordering:  this.headers.length ? this.headers[this.ordering[0]]?.name : undefined,
+        serach:    this.search.search,
       });
       this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount();
       this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
@@ -457,17 +458,14 @@ export default ({
         // features already bind to parent feature
         : features;
       await this.$nextTick();
-     
-      if (undefined !== opts.search) {
-        this.search.search = opts.search;
-      }
+
       this.show = true;
     },
 
   },
 
   beforeCreate() {
-    this.globalSearch = debounce(e => this.reload({ search: e.target.value }));
+    this.globalSearch = debounce(e => { this.search.search = e.target.value; this.reload(); }, 600);
   },
 
   async mounted() {
