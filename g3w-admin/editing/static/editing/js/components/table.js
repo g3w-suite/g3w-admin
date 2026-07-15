@@ -68,14 +68,11 @@ export default ({
         :key    = "feature.__g3w_uid"
         :id     = "feature.__g3w_uid"
         :index  = "index"
-        :hidden = "isRowHidden(index)"
       >
-
-        <td v-if = "!isrelation">
+        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "'locked by another user'">
           <div style = "display:flex;justify-content: space-between;">
-
             <!-- EDIT FEATURE -->
-            <span v-t-tooltip:right = "'plugins.editing.table.edit'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.edit'">
               <i
                 v-if             = "showTool('change_attr_feature')"
                 :class           = "g3wtemplate.font['pencil']"
@@ -87,7 +84,7 @@ export default ({
             </span>
 
             <!-- COPY FEATURE -->
-            <span v-t-tooltip:right = "'plugins.editing.table.copy'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.copy'">
               <i
                 v-if             = "showTool('add_feature')"
                 :class           = "g3wtemplate.font['copy-paste']"
@@ -99,7 +96,7 @@ export default ({
             </span>
 
             <!-- DELETE FEATURE -->
-            <span v-t-tooltip:right = "'plugins.editing.table.delete'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.delete'">
               <i
                 v-if             = "showTool('delete_feature')"
                 :class           = "g3wtemplate.font['trash-o']"
@@ -226,36 +223,24 @@ export default ({
       isrelation,
       promise
     }              = this.$options;
-    const features = (inputs.layer.getEditor().readEditingFeatures() || []);
-    const headers  = (inputs.layer.state.editing.fields || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
-    const excluded = isrelation ? (context.excludeFields || []) : [];
+     
     return {
       show: true,
+      excluded: isrelation ? (context.excludeFields || []) : [],
       inputs,
       context,
       isrelation,
       promise,
-      headers, // column names
-      features,
-      rows: features.length > 0
-        // ordered properties
-        ? (
-          excluded.length > 0
-            ? features.filter(feat => !excluded.reduce((a, f, i) => a && context.fatherValue[i] === `${feat.get(f)}` , true))
-            : features
-        )
-          .map(f => headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
-            [header]: getFeatureTableFieldValue({ layerId: inputs.layer.getId(), feature: f, property: header }),
-            '__g3w_uid': f.getUid(), // private attribute unique value
-          }), {}))
-        // features already bind to parent feature
-        : features,
+      headers:  [], // column names
+      features: [],
+      rows:     [],
       title:     `${inputs.layer.getName()}` || 'Link relation',
       layerId:   inputs.layer.getId(),
       workflow:  null,
       linked:    [],
       ordering:  [0, 'asc'],
       PAGELENGTHS,
+      count: 0,
       search: {
         page:      1,              // current page
         page_size: PAGELENGTHS[1],
@@ -266,7 +251,7 @@ export default ({
 
   computed: {
     pages() {
-      return Math.ceil(this.rows.length / this.search.page_size);
+      return Math.ceil(this.count / this.search.page_size);
     },
   },
 
@@ -310,16 +295,7 @@ export default ({
       this.reload({ ordering: index });
     },
 
-    isRowHidden(index) {
-      if (this.search.search) {
-        return Object.keys(this.rows[index]).every(key => -1 === `${this.rows[index][key]}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
-      }
-      const page      = Number(this.search.page);
-      const page_size = Number(this.search.page_size);
-      return !(index >= ((page-1) * page_size) && index < (page * page_size));
-    },
-
-    
+  
     save() {
       this.state.isrelation
         // link features (by indexes)
@@ -458,15 +434,30 @@ export default ({
     async reload(opts = {}) {
       this.show = false;
       await this.$nextTick();
-      if (undefined !== opts.page_size) {
-        this.search.page      = 1;
-        this.search.page_size = opts.page_size;
-      }
-      if (undefined !== opts.ordering) {
-        const attr = this.headers[this.ordering[0]].name;
-        const dir  = ('asc' === this.ordering[1] ? 1 : -1);
-        this.rows.sort((a, b) => dir * `${a[attr]}`.localeCompare(`${b[attr]}`, undefined, { numeric: true }));
-      }
+      const features  = await this.context.session.getEditor().getFeatures({}, {
+        page:      this.search.page,
+        page_size: this.search.page_size,
+        ordering:  this.headers.length ? this.headers[this.ordering[0]]?.name : undefined,
+      });
+      this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount();
+      this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
+      //const features = (inputs.layer.getEditor().readEditingFeatures() || []);
+      this.rows = features.length > 0
+        // ordered properties
+        ? (
+          this.excluded.length > 0
+            ? features.filter(feat => !this.excluded.reduce((a, f, i) => a && this.context.fatherValue[i] === `${feat.get(f)}` , true))
+            : features
+        )
+          .map(f => this.headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
+            [header]: getFeatureTableFieldValue({ layerId: this.inputs.layer.getId(), feature: f, property: header }),
+            '__g3w_uid':    f.getUid(), // private attribute unique value
+            '__g3w_locked': f.state.locked, //@since v4.0.0 private attribute locked value
+          }), {}))
+        // features already bind to parent feature
+        : features;
+      await this.$nextTick();
+     
       if (undefined !== opts.search) {
         this.search.search = opts.search;
       }
@@ -478,6 +469,10 @@ export default ({
   beforeCreate() {
     this.globalSearch = debounce(e => this.reload({ search: e.target.value }));
   },
+
+  async mounted() {
+    await this.reload();
+  }, 
 
   beforeDestroy() {
     this.promise.reject();
@@ -535,6 +530,12 @@ document.head.insertAdjacentHTML(
 
   .g3w-editing-table th.desc::after {
     content: "▾";
+  }
+
+  td.tools.locked .tool {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    opacity: .5 !important;
   }
 </style>`
 );

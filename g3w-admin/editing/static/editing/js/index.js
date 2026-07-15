@@ -776,8 +776,8 @@ new (class extends Plugin {
             oldVal = has_change ? (action === 'undo' ? item[1].feature.get(name) :  item[0].feature.get(name)) : undefined;
             newVal = has_change ? (action === 'undo' ? item[0].feature.get(name) :  item[1].feature.get(name)) : undefined;
           } else {
-            oldVal = 'add' === item.feature.getState()    ? item.feature.get(name) : undefined;
-            newVal = 'delete' === item.feature.getState() ? item.feature.get(name) : undefined;
+            oldVal = 'add' === item.feature.getAction()    ? item.feature.get(name) : undefined;
+            newVal = 'delete' === item.feature.getAction() ? item.feature.get(name) : undefined;
           }
           // delete layer unique field value
           if (undefined !== oldVal) {

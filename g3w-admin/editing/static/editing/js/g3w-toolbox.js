@@ -51,7 +51,7 @@ const {
   getResolutionFromScale,
 }                                                        = g3w.utils;
 
-const { GEOMETRY_TYPES }                                        = g3wsdk.constant;
+const { GEOMETRY_TYPES, PAGELENGTHS }                           = g3wsdk.constant;
 const { Geometry, dissolve, splitFeature, areCoordinatesEqual } = g3wsdk.core.geoutils;
 const { removeZValueToOLFeatureGeometry }                       = g3wsdk.core.geoutils.Geometry;
 const { toRawType, cloneDeep }                                  = g3wsdk.core.utils;
@@ -116,6 +116,8 @@ export class ToolBox extends Emitter {
 
   /** @type { Boolean } true, mean all features of layer are get (e.g. Table layer) */
   #allfeatures = false;
+
+  #count = 0; //@since 4.0.0 take in account number of all features useful for table layer pagination
 
   /** Original features (from server) */
   _features = [];
@@ -1831,7 +1833,7 @@ export class ToolBox extends Emitter {
 
       const plugin = GUI.getPlugin('editing');
       const id     = this.getId();
-
+      
       plugin.state.showselectlayers = options.showselectlayers ?? true;
       plugin.state.toolboxselected  = (options.selected ?? true) ? this : plugin.state.toolboxselected;
 
@@ -1915,6 +1917,7 @@ export class ToolBox extends Emitter {
       );
 
       this.startLoading();
+      const params = 'table' === this.state._layerType ? null : {};
       //ina case toolbox is not yet started and we are in mobile with map hidden we need to start session before set editing to true to avoid conflict with map controls disabled when set editing true and map not visible
       if (!is_started && isMobileHiddenMap) {
         await new Promise(res => GUI.onceafter('setHidden', () => setTimeout(res, 300))); // 300 = CSS transition?
@@ -1922,7 +1925,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.start(this.state._getFeaturesOption);
+        features = await this._session.start(this.state._getFeaturesOption, params);
       }
 
       /** In case of not yest started session and is not in mobile */
@@ -1930,7 +1933,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.start(this.state._getFeaturesOption);
+        features = await this._session.start(this.state._getFeaturesOption, params);
       }
 
       /**
@@ -1940,7 +1943,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.getFeatures(this.state._getFeaturesOption);
+        features = await this._session.getFeatures(this.state._getFeaturesOption, params);
 
       }
 
@@ -2920,11 +2923,11 @@ export class ToolBox extends Emitter {
     };
     items.forEach(item => {
       if (reverse) {
-        item.feature[Actions[item.feature.getState()].opposite]();
+        item.feature[Actions[item.feature.getAction()].opposite]();
       }
       // get method from object
       //@since 3.9.1 need to clone it otherwise it replace
-      this._featuresstore[Actions[item.feature.getState()].fnc](item.feature.clone());
+      this._featuresstore[Actions[item.feature.getAction()].fnc](item.feature.clone());
     });
   }
 
@@ -3009,7 +3012,7 @@ export class ToolBox extends Emitter {
   getCommitItems() {
     const itemsToCommit = this.__commit();
     const id            = this.state.layer.getId();
-    let state;
+    let action;
     let layer;
     const commitObj = {
       add:       [],      // features to add
@@ -3041,10 +3044,10 @@ export class ToolBox extends Emitter {
       items
         .forEach(item => {
           //check the state of feature item
-          state = item.getState();
+          action = item.getAction();
           const GeoJSONFormat = new ol.format.GeoJSON();
           // item needs to be deleted
-          if ('delete' === state) {
+          if ('delete' === action) {
             //check if is new. If is new mean is not present on server,
             //so no need to say to server to delete it
             if (!item.isNew()) {
@@ -3075,7 +3078,7 @@ export class ToolBox extends Emitter {
             }
           }
           // in case of adding, it has to remove not editable properties
-          layer[item.isNew() ? 'add' : item.getState()].push(itemObj);
+          layer[item.isNew() ? 'add' : item.getAction()].push(itemObj);
         });
       // check in case of no edit remove relation key
       if (
@@ -3157,9 +3160,9 @@ export class ToolBox extends Emitter {
   /**
    * Start session
    */
-  async __startSession(options = {}) {
+  async __startSession(options = {}, params = {}) {
     try {
-      const features = await this.__startEditor(options);
+      const features = await this.__startEditor(options, params);
       this.state.editing.session.started = true;
       return features;
     } catch(e) {
@@ -3275,6 +3278,8 @@ export class ToolBox extends Emitter {
     const { bbox } = options.filter || {};
     //check if bbox options filter (bbox of a current map) is passed and is a vector layer
     const is_vector = bbox && 'vector' === this._editor.getLayer().getType();
+    //check if table layer (alphanumerical)
+    const is_table  = 'table' === this._editor.getLayer().getType();
 
     // first request --> need to perform request
     if (is_vector && null === this.#filter.bbox) {
@@ -3304,13 +3309,15 @@ export class ToolBox extends Emitter {
 
     try {
       let response;
-      if (!options.filter) {
+      if (!options.filter && params) {
         response = await XHR.post({
           url,
           data:        JSON.stringify(params),
           contentType: 'application/json',
           signal,
         });
+      } else if (!options.filter && !params) { 
+        return []; //no features
       } else if (is_defined(options.filter.bbox)) { // bbox filter
         response = await XHR.post({
           url,
@@ -3369,10 +3376,10 @@ export class ToolBox extends Emitter {
 
       const { data, count }       = response.vector;
       const { featurelocks = [] } = response;
-      const lockIds               = featurelocks.map(lk => lk.featureid);
+      const lockIds               = featurelocks.map(lk => lk.featureid); //features loecked by user that can edit
       const dataProjection = 'NoGeometry' === response.vector.geometrytype ? null : this._editor.getLayer().getCrs();
       let features   = [];
-
+      this.#count    = count;
       try {
 
         features = (new ol.format.GeoJSON({
@@ -3381,11 +3388,12 @@ export class ToolBox extends Emitter {
           featureProjection: dataProjection,
         }))
         .readFeatures('string' === typeof data ? JSON.parse(data) : data)
-        .filter(f => lockIds.includes(`${f.getId()}`))
-        .map(feature => new Feature({ feature }));
+        .filter(f => is_table || lockIds.includes(`${f.getId()}`)) // in case of table layer no filter features
+        .map(feature => new Feature({ feature }, { locked: !lockIds.includes(`${feature.getId()}`) }));
 
         //if no features get from server (count === 0) and no featurelocks mean another user locks all feature requests
-        if (count > 0 && (0 === featurelocks.length || count > features.length)) {
+        //or in case of request pagination, check if the number of features requested is greater than the number of features returned, it means that another user locks these features
+        if (count > 0 && (0 === featurelocks.length || (params?.page_size ?? count) > features.length)) {
           //It means that another user locks these features
           this._editor.featuresLockedByOtherUser(features);
         }
@@ -3404,7 +3412,7 @@ export class ToolBox extends Emitter {
           const featureId = f.getId();
           //check if feature id is locked features
           //it means that is not locked by another user.
-          if (featurelocks.find(({ featureid }) => featureId == featureid)) {
+          if (is_vector && featurelocks.find(({ featureid }) => featureId == featureid)) {
             //check if feature is not yet added for the current user
             if (!GUI.getPlugin('editing').state.loaded_ids[layerId].includes(featureId)) {
               GUI.getPlugin('editing').state.loaded_ids[layerId].push(featureId);
@@ -3414,7 +3422,8 @@ export class ToolBox extends Emitter {
             }
           } else {
             lockFeatures.push(f);
-            return false; //feature locked by another user
+            console.log(f.isLocked())
+            return is_table || false;
           }
         });
 
@@ -3422,14 +3431,21 @@ export class ToolBox extends Emitter {
         console.warn(e);
       }
 
-      this._editor.readFeatures().push(...features); // add features to original features 
-      
-      // add features from server to editing features store (cloned from original)
-      this._featuresstore.addFeatures((features || []).map(f => f.clone()));
+      //Case vector layer
+      if ( is_vector) {
+        this._editor.readFeatures().push(...features); // add features to original features 
+        // add features from server to editing features store (cloned from original)
+        this._featuresstore.addFeatures((features || []).map(f => f.clone()));
+      }
 
-      //set all features to true if no filter is set (e.g., Table layer)
-      this.#allfeatures = !options.filter;
-
+      //Case table layer
+      if (is_table) {
+        this._editor.readFeatures().push(...features); // add features to original features 
+        // add features from server to editing features store (cloned from original)
+        this._featuresstore.addFeatures((features || []).map(f => f.clone()));
+        //set all features to true if no filter is set (e.g., Table layer)
+        //this.#allfeatures = !options.filter;
+      }
       return features;
     } catch(e) {
       console.warn(e);
@@ -3717,8 +3733,8 @@ export class ToolBox extends Emitter {
    * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
-  async __startEditor(options = {}) {
-    const features = await this._editor.getFeatures(options); // load layer features based on filter type
+  async __startEditor(options = {}, params = {}) {
+    const features = await this._editor.getFeatures(options, params); // load layer features based on filter type
     this.#started  = true; // if all ok set to started
     return features;       // features are already inside featuresstore
   }
@@ -3737,6 +3753,10 @@ export class ToolBox extends Emitter {
     return result;
   }
 
+  getCount() {
+    return this.#count;
+  }
+
   /**
    * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
    * 
@@ -3747,6 +3767,7 @@ export class ToolBox extends Emitter {
     this.#filter.bbox = null;
     this.#allfeatures = false;
     this.#controller  = null;
+    this.#count       = 0;
 
     this._features                                  = []; // clear features collection
     GUI.getPlugin('editing').state.lock_ids[this.getId()]   = [];
