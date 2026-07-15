@@ -589,7 +589,8 @@ class GeocodingControl extends ol.control.Control {
     }
 
     // Get editing layers that has Point/MultiPoint Geometry type
-    const editable_point_layers = ApplicationState.project.getLayers({ EDITABLE: true, GEOLAYER: true })
+    const editable_point_layers = Object.values(ApplicationState.layers)
+      .flatMap(s => s.showOnCatalog() ? s.getLayers({ EDITABLE: true, GEOLAYER: true }) : [])
       .flatMap(l => /^(Point|MultiPoint)/.test(l.getGeometryType()) ? ({ id: l.getId(), name: l.getName(), inediting: l.isInEditing() }) : []);
 
     // skip adding when there is no editable layer or  editing panel is open (ie. layer is in editing)
@@ -761,9 +762,10 @@ document.head.insertAdjacentHTML(
   'beforeend',
   /* css */`
 <style>
-  .ol-geocoder                                                         { width: 300px; margin-top: 3px; margin-left: 5px; --skin-color: #374146; }
+  .ol-geocoder                                                         { width: 300px; margin-top: 3px; margin-left: calc(var(--ml) + 5px) !important; --skin-color: #374146; }
   body:not(.sidebar-collapse) .ol-geocoder,
-  body.is-iframe:not(.sidebar-mini).sidebar-collapse .ol-geocoder      { margin-left: 40px; }
+  body.sidebar-open .ol-geocoder,
+  body.is-iframe:not(.sidebar-mini).sidebar-collapse .ol-geocoder      { margin-left: calc(var(--ml) + 40px) !important; }
   .ol-geocoder > ul                                                    { max-height: 400px; overflow-x: hidden; overflow-y: auto; transition: max-height 300ms ease-in; padding: 0; margin:unset; inset:unset; background: #fff;border: 1px solid #ccc; width: 300px; min-width: 215px; }
   .ol-geocoder > ul:not([style*="left"])                               { position-anchor: --ol-geocoder-form; position-area: bottom; }
   .ol-geocoder > ul > li                                               { width: 100%; overflow: hidden; padding: 0; min-height: 30px; padding-left: 3px; border-bottom: 2px solid var(--skin-color); min-height: 20px; padding: 10px; }
