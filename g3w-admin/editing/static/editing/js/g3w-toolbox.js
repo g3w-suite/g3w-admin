@@ -3386,7 +3386,8 @@ export class ToolBox extends Emitter {
 
         //if no features get from server (count === 0) and no featurelocks mean another user locks all feature requests
         //or in case of request pagination, check if the number of features requested is greater than the number of features returned, it means that another user locks these features
-        if (count > 0 && (0 === featurelocks.length || (params?.page_size ?? count) > features.length)) {
+        console.log(Math.min(params?.page_size ?? count, count))
+        if (count > 0 && (0 === featurelocks.length || Math.min(params?.page_size ?? count, count) > features.length)) {
           //It means that another user locks these features
           this._editor.featuresLockedByOtherUser(features);
         }
