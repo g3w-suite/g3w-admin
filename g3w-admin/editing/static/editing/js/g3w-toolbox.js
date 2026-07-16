@@ -193,7 +193,7 @@ export class ToolBox extends Emitter {
      * ORIGINAL SOURCE: g3w-client/src/app/core/layers/features/olfeaturesstore.js@v3.10.2
      */
     this._editor = layer._editor = Object.assign(new Emitter, {
-      _layer:     _layer,
+      _layer,
       setters: {
         save:                       () => _layer.save(),
         addFeature:                 f => this._collection.add(f),
