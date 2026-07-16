@@ -307,7 +307,7 @@ export default ({
         this.ordering[0] = index;
         this.ordering[1] = 'asc';
       }
-      this.reload({ ordering: index });
+      this.reload();
     },
 
   
@@ -452,7 +452,7 @@ export default ({
       this.features  = await this.context.session.getEditor().getFeatures({}, {
         page:      this.search.page,
         page_size: this.search.page_size,
-        ordering:  this.headers.length ? this.headers[this.ordering[0]]?.name : undefined,
+        ordering:  this.headers.length ? `${'asc' === this.ordering[1] ? '' : '-'}${this.headers[this.ordering[0]]?.name}` : undefined,
         search:    this.search.text?.trim() || undefined,
       });
       this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount();
