@@ -8269,3 +8269,228 @@ body .modal .modal-dialog.modal-warning .modal-footer .modal-button-confirm:focu
 .project-card.is-private .pc-title::before {
     font-size: 15px;
 }
+
+/* ============================================================
+   Teal accent — Block 15: File upload widget (django-file-form)
+   Restyles the ``<input type="file">`` + .dff-* markup rendered
+   by django-file-form (e.g. the QGIS project file field) with a
+   friendly dropzone look, cloud icons and teal accents.
+   ============================================================ */
+
+/* Outer container */
+form .dff-container,
+.form-shell .dff-container {
+    background: linear-gradient(180deg, #f7fdfd 0%, #ffffff 100%);
+    border: 1px solid #c1e8e9;
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(20, 158, 160, .08);
+}
+
+/* Native <input type=file> — flex row, teal pill "Browse" button */
+form input[type="file"],
+.form-shell input[type="file"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: #fff;
+    border: 1px solid #c1e8e9;
+    border-radius: 8px;
+    color: #556066;
+    font-size: 13px;
+    cursor: pointer;
+    max-width: 100%;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+form input[type="file"]:hover,
+.form-shell input[type="file"]:hover {
+    border-color: #149ea0;
+    box-shadow: 0 0 0 3px rgba(20, 158, 160, .15);
+}
+form input[type="file"]:focus,
+.form-shell input[type="file"]:focus {
+    outline: none;
+    border-color: #149ea0;
+    box-shadow: 0 0 0 3px rgba(20, 158, 160, .22);
+}
+
+/* Modern browsers — restyle the native "Browse..." button */
+form input[type="file"]::file-selector-button,
+.form-shell input[type="file"]::file-selector-button {
+    background: #149ea0;
+    color: #fff;
+    font-weight: 600;
+    border: 1px solid #0e7274;
+    border-radius: 999px;
+    padding: 6px 14px;
+    margin-right: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(20, 158, 160, .25);
+    transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+form input[type="file"]::file-selector-button:hover,
+.form-shell input[type="file"]::file-selector-button:hover {
+    background: #0e7274;
+    box-shadow: 0 4px 10px rgba(20, 158, 160, .35);
+}
+form input[type="file"]::file-selector-button:active,
+.form-shell input[type="file"]::file-selector-button:active {
+    transform: translateY(1px);
+}
+/* Webkit (older Safari/Chrome) */
+form input[type="file"]::-webkit-file-upload-button,
+.form-shell input[type="file"]::-webkit-file-upload-button {
+    background: #149ea0;
+    color: #fff;
+    font-weight: 600;
+    border: 1px solid #0e7274;
+    border-radius: 999px;
+    padding: 6px 14px;
+    margin-right: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(20, 158, 160, .25);
+}
+
+/* Drop hint — dashed dropzone with cloud icon */
+.dff-container .dff-drop-hint {
+    border: 2px dashed #c1e8e9;
+    border-radius: 10px;
+    padding: 18px 14px;
+    background: #fbfffe;
+    color: #0e7274;
+    font-weight: 500;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.dff-container .dff-drop-hint::before {
+    content: '\f0ee'; /* fa-cloud-upload */
+    font-family: 'FontAwesome';
+    font-size: 28px;
+    line-height: 1;
+    color: #149ea0;
+    opacity: .85;
+    margin-bottom: 2px;
+}
+.dff-container.dff-dropping .dff-drop-hint,
+.dff-container .dff-drop-hint:hover {
+    border-color: #149ea0;
+    background: #e0f5f5;
+    color: #0a5a5c;
+}
+.dff-container.dff-dropping .dff-drop-hint::before,
+.dff-container .dff-drop-hint:hover::before {
+    color: #0e7274;
+    opacity: 1;
+}
+
+/* Uploaded / uploading files list */
+.dff-container .dff-files {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.dff-container .dff-files:empty {
+    display: none;
+}
+.dff-container .dff-files .dff-file {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: #fff;
+    border: 1px solid #e0f5f5;
+    border-radius: 8px;
+    position: relative;
+}
+.dff-container .dff-files .dff-file::before {
+    content: '\f15b'; /* fa-file */
+    font-family: 'FontAwesome';
+    color: #149ea0;
+    font-size: 16px;
+    flex: 0 0 auto;
+}
+.dff-container .dff-files .dff-file.dff-upload-success::before {
+    content: '\f00c'; /* fa-check */
+    color: #5cb85c;
+}
+.dff-container .dff-files .dff-file.dff-upload-fail::before {
+    content: '\f00d'; /* fa-times */
+    color: #d9534f;
+}
+.dff-container .dff-files .dff-file .dff-filename {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    color: #1f3437;
+}
+.dff-container .dff-files .dff-file .dff-filesize {
+    color: #6b7280;
+    font-size: 12px;
+    flex: 0 0 auto;
+}
+.dff-container .dff-files .dff-file .dff-cancel,
+.dff-container .dff-files .dff-file .dff-delete {
+    background: transparent;
+    border: 1px solid #c1e8e9;
+    color: #0e7274;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.dff-container .dff-files .dff-file .dff-cancel:hover,
+.dff-container .dff-files .dff-file .dff-delete:hover {
+    background: #d9534f;
+    color: #fff;
+    border-color: #b13b37;
+}
+.dff-container .dff-files .dff-file .dff-error {
+    color: #d9534f;
+    font-size: 12px;
+    flex: 1 1 100%;
+    margin-top: 4px;
+}
+
+/* Progress bar */
+.dff-container .dff-files .dff-file .dff-progress {
+    flex: 1 1 100%;
+    height: 6px;
+    background: #e0f5f5;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+.dff-container .dff-files .dff-file .dff-progress .dff-progress-inner {
+    height: 100%;
+    background: linear-gradient(90deg, #149ea0 0%, #92dadb 100%);
+    transition: width .2s ease;
+}
+
+/* Invalid files summary — hide unless there is at least one error <li>
+   (django-file-form always injects an empty <ul>, so :empty is not enough) */
+.dff-container .dff-invalid-files:empty,
+.dff-container .dff-invalid-files:not(:has(li)) {
+    display: none;
+}
+.dff-container .dff-invalid-files {
+    color: #d9534f;
+    font-size: 12px;
+    background: #fbecec;
+    border: 1px solid #f2b6b4;
+    border-radius: 8px;
+    padding: 8px 10px;
+}
