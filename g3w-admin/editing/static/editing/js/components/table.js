@@ -38,13 +38,14 @@ export default ({
       type         = "search"
       class        = "form-control search"
       :placeholder = "$t('dosearch')"
-      style        = "margin-left: auto !important; margin-right: 1ch;"
-      @keyup       = "globalSearch"
+      style        = "margin-left: auto !important;"
+      @input       = "globalSearch"
+      @search      = "onSearchEvent"
     />
   </div>
 
   <!-- TABLE CONTENT -->
-  <table v-if = "show">
+  <table>
     <thead>
 
       <tr>
@@ -225,7 +226,6 @@ export default ({
     }              = this.$options;
      
     return {
-      show: true,
       excluded: isrelation ? (context.excludeFields || []) : [],
       inputs,
       context,
@@ -244,6 +244,7 @@ export default ({
       search: {
         page:      1,              // current page
         page_size: PAGELENGTHS[1],
+        text:    '',             // global search
       }
     };
 
@@ -256,15 +257,29 @@ export default ({
   },
 
   watch: {
-    async 'search.page_size'(page_size) {
-      this.reload({ page_size });
+    async 'search.page_size'() {
+      this.search.page = 1;
+      this.reload();
     },
-    async 'search.page'(page) {
-      this.reload({ page });
+    async 'search.page'() {
+      this.reload();
     },
+    async 'search.text'() {
+      this.search.page = 1;
+      this.reload();
+    }
   },
 
   methods: {
+
+    /**
+     * Handle native search event (Enter key and clear button on search inputs).
+     */
+    onSearchEvent(e) {
+      if ('' === e.target.value) {
+        this.search.text = '';
+      }
+    },
 
     showTool(type) {
       return undefined !== this.inputs.layer.state.editing.capabilities.find(c => type === c);
@@ -432,17 +447,16 @@ export default ({
     },
 
     async reload() {
-      this.show = false;
-      await this.$nextTick();
+      GUI.setLoadingContent(true);
+      GUI.disableContent(true);
       const features  = await this.context.session.getEditor().getFeatures({}, {
         page:      this.search.page,
         page_size: this.search.page_size,
         ordering:  this.headers.length ? this.headers[this.ordering[0]]?.name : undefined,
-        serach:    this.search.search,
+        search:    this.search.text?.trim() || undefined,
       });
       this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount();
       this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
-      //const features = (inputs.layer.getEditor().readEditingFeatures() || []);
       this.rows = features.length > 0
         // ordered properties
         ? (
@@ -458,14 +472,14 @@ export default ({
         // features already bind to parent feature
         : features;
       await this.$nextTick();
-
-      this.show = true;
+      GUI.setLoadingContent(false);
+      GUI.disableContent(false);
     },
 
   },
 
   beforeCreate() {
-    this.globalSearch = debounce(e => { this.search.search = e.target.value; this.reload(); }, 600);
+    this.globalSearch = debounce(e => this.search.text = e.target.value, 600);
   },
 
   async mounted() {
