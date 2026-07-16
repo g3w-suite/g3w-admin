@@ -114,9 +114,6 @@ export class ToolBox extends Emitter {
   /** Filter to getFeaturerequest */
   #filter = { bbox: null };
 
-  /** @type { Boolean } true, mean all features of layer are get (e.g. Table layer) */
-  #allfeatures = false;
-
   #count = 0; //@since 4.0.0 take in account number of all features useful for table layer pagination
 
   /** Original features (from server) */
@@ -3124,7 +3121,6 @@ export class ToolBox extends Emitter {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   __clearSession() {
-    this.#allfeatures                      = false;
     this.state.editing.session.started     = false;
     this.state.editing.session.getfeatures = false;
     this.clearHistory();
@@ -3240,15 +3236,12 @@ export class ToolBox extends Emitter {
    * Get features from server (by editor)
    */
   async __getFeatures(options = {}) {
-    if (!this.#allfeatures) {
-      try { 
-        const features = await this._editor.getFeatures(options);
-        this.state.editing.session.getfeatures = true;
-        return features;
-      } catch(e) {
-        console.warn(e);
-      }
-      
+    try { 
+      const features = await this._editor.getFeatures(options);
+      this.state.editing.session.getfeatures = true;
+      return features;
+    } catch(e) {
+      console.warn(e);
     }
     return [];
   }
@@ -3269,7 +3262,7 @@ export class ToolBox extends Emitter {
     const layerId = this.getId();
 
     // skip is not onlien or all features of layers are already got
-    if (!ApplicationState.online || this.#allfeatures) {
+    if (!ApplicationState.online) {
       return Promise.resolve();
     }
 
@@ -3277,9 +3270,9 @@ export class ToolBox extends Emitter {
 
     const { bbox } = options.filter || {};
     //check if bbox options filter (bbox of a current map) is passed and is a vector layer
-    const is_vector = bbox && 'vector' === this._editor.getLayer().getType();
+    const is_vector = bbox && 'vector' === this.getLayer().getType();
     //check if table layer (alphanumerical)
-    const is_table  = 'table' === this._editor.getLayer().getType();
+    const is_table  = 'table' === this.getLayer().getType();
 
     // first request --> need to perform request
     if (is_vector && null === this.#filter.bbox) {
@@ -3422,10 +3415,10 @@ export class ToolBox extends Emitter {
             }
           } else {
             lockFeatures.push(f);
-            console.log(f.isLocked())
             return is_table || false;
           }
         });
+
 
       } catch(e) {
         console.warn(e);
@@ -3440,12 +3433,21 @@ export class ToolBox extends Emitter {
 
       //Case table layer
       if (is_table) {
-        this._editor.readFeatures().push(...features); // add features to original features 
-        // add features from server to editing features store (cloned from original)
-        this._featuresstore.addFeatures((features || []).map(f => f.clone()));
-        //set all features to true if no filter is set (e.g., Table layer)
-        //this.#allfeatures = !options.filter;
+        return features
+          .map(f => {
+            //check if already feature is get in previous request (original features)
+            const ff = this._editor.readFeatures().find(ef => ef.getId() === f.getId());
+            if (ff) {
+              return ff; // feature already exists in original features
+            }
+            // add features to original features 
+            this._editor.readFeatures().push(f);
+            // add features from server to editing features store (cloned from original)
+            this._featuresstore.addFeature(f.clone());
+            return f;
+          });
       }
+
       return features;
     } catch(e) {
       console.warn(e);
@@ -3453,6 +3455,7 @@ export class ToolBox extends Emitter {
     } finally {
       this.#controller = null; //reset signal to null
     }
+
 
   }
 
@@ -3765,7 +3768,6 @@ export class ToolBox extends Emitter {
   __clearEditor() {
     this.#started     = false;
     this.#filter.bbox = null;
-    this.#allfeatures = false;
     this.#controller  = null;
     this.#count       = 0;
 
