@@ -31,7 +31,7 @@ export default ({
   <div style = "display: flex;">
 
     <!-- TOTAL ELEMENTS -->
-    <span style = "margin-left: .5ch;">{{ rows.length }} {{ $t('entries') }}</span>
+    <span style = "margin-left: .5ch;">{{ count }} {{ $t('entries') }}</span>
 
     <!-- GLOBAL SEARCH -->
     <input
@@ -449,20 +449,20 @@ export default ({
     async reload() {
       GUI.setLoadingContent(true);
       GUI.disableContent(true);
-      const features  = await this.context.session.getEditor().getFeatures({}, {
+      this.features  = await this.context.session.getEditor().getFeatures({}, {
         page:      this.search.page,
         page_size: this.search.page_size,
         ordering:  this.headers.length ? this.headers[this.ordering[0]]?.name : undefined,
         search:    this.search.text?.trim() || undefined,
       });
       this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount();
-      this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
-      this.rows = features.length > 0
+      this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
+      this.rows = this.features.length > 0
         // ordered properties
         ? (
           this.excluded.length > 0
-            ? features.filter(feat => !this.excluded.reduce((a, f, i) => a && this.context.fatherValue[i] === `${feat.get(f)}` , true))
-            : features
+            ? this.features.filter(feat => !this.excluded.reduce((a, f, i) => a && this.context.fatherValue[i] === `${feat.get(f)}` , true))
+            : this.features
         )
           .map(f => this.headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
             [header]: getFeatureTableFieldValue({ layerId: this.inputs.layer.getId(), feature: f, property: header }),
@@ -470,7 +470,7 @@ export default ({
             '__g3w_locked': f.state.locked, //@since v4.0.0 private attribute locked value
           }), {}))
         // features already bind to parent feature
-        : features;
+        : this.features;
       await this.$nextTick();
       GUI.setLoadingContent(false);
       GUI.disableContent(false);
