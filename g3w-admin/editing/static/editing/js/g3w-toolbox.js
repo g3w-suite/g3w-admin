@@ -3425,7 +3425,7 @@ export class ToolBox extends Emitter {
       }
 
       //Case vector layer
-      if ( is_vector) {
+      if (is_vector) {
         this._editor.readFeatures().push(...features); // add features to original features 
         // add features from server to editing features store (cloned from original)
         this._featuresstore.addFeatures((features || []).map(f => f.clone()));
@@ -3435,16 +3435,17 @@ export class ToolBox extends Emitter {
       if (is_table) {
         return features
           .map(f => {
-            //check if already feature is get in previous request (original features)
-            const ff = this._editor.readFeatures().find(ef => ef.getId() === f.getId());
+            //check if feature already exists in editing features store
+            const ff = this._featuresstore.getFeatureById(f.getId());
             if (ff) {
-              return ff; // feature already exists in original features
+              return ff; // feature already exists in editing features
             }
             // add features to original features 
             this._editor.readFeatures().push(f);
+            const efeature = f.clone();
             // add features from server to editing features store (cloned from original)
-            this._featuresstore.addFeature(f.clone());
-            return f;
+            this._featuresstore.addFeatures([efeature]);
+            return efeature;
           });
       }
 
