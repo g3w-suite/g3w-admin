@@ -209,8 +209,8 @@ export class ToolBox extends Emitter {
       getEditingSource:    this.getEditingSource.bind(this),
       getSource:           () => _layer.getSource(),
       getLayer:            () => _layer,
-      readFeatures:        () => this._features,
-      readEditingFeatures: this.readEditingFeatures.bind(this),
+      readFeatures:        () => this._features, //return original features from server (not modified)
+      readEditingFeatures: this.readEditingFeatures.bind(this), //return features changed/added by editing tools (not original features from server)
       commit:              this.__commitToEditor.bind(this),
       start:               this.__startEditor.bind(this),
       stop:                this.__stopEditor.bind(this),
@@ -3426,7 +3426,7 @@ export class ToolBox extends Emitter {
 
       //Case vector layer
       if (is_vector) {
-        this._editor.readFeatures().push(...features); // add features to original features 
+        this._features.push(...features); // add features to original features 
         // add features from server to editing features store (cloned from original)
         this._featuresstore.addFeatures((features || []).map(f => f.clone()));
       }
@@ -3441,7 +3441,7 @@ export class ToolBox extends Emitter {
               return ff; // feature already exists in editing features
             }
             // add features to original features 
-            this._editor.readFeatures().push(f);
+            this._features.push(f);
             const efeature = f.clone();
             // add features from server to editing features store (cloned from original)
             this._featuresstore.addFeatures([efeature]);
