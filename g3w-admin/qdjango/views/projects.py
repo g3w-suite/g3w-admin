@@ -28,7 +28,7 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
-if 'editing' in settings.INSTALLED_APPS:
+if 'qplotly' in settings.INSTALLED_APPS:
     from qplotly.utils.models import get_qplotlywidgets4layer
 
 from qdjango.signals import load_qdjango_widgets_data
