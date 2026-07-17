@@ -79,8 +79,6 @@ template: /*html*/`
   },
 
   data() {
-    window._features = this.layer.getEditor().readFeatures();
-    window._efeatures = this.layer.getEditor().readEditingFeatures();
     return {
       features:  this.layer.getEditor().readFeatures(),        // original features
       efeatures: this.layer.getEditor().readEditingFeatures(), // edited features,
