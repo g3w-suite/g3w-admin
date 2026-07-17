@@ -457,11 +457,15 @@ export default ({
       GUI.disableContent(true); //disable content table interaction
       //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
       //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
-      this.features  = await this.context.session.getEditor().getFeatures({}, {
-        page:      this.search.page,
-        page_size: this.search.page_size,
-        ordering:  this.headers.length ? `${'asc' === this.ordering[1] ? '' : '-'}${this.headers[this.ordering[0]]?.name}` : undefined,
-        search:    this.search.text?.trim() || undefined,
+      this.features  = await this.context.session.getEditor().getFeatures({
+        filter: {
+          pagination: {
+            page:      this.search.page,
+            page_size: this.search.page_size,
+            ordering:  this.headers.length ? `${'asc' === this.ordering[1] ? '' : '-'}${this.headers[this.ordering[0]]?.name}` : undefined,
+            search:    this.search.text?.trim() || undefined,
+            }
+        }
       });
       this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount(); // get total count of features from server
       //set headers

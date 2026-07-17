@@ -1914,7 +1914,6 @@ export class ToolBox extends Emitter {
       );
 
       this.startLoading();
-      const params = 'table' === this.state._layerType ? null : {};
       //ina case toolbox is not yet started and we are in mobile with map hidden we need to start session before set editing to true to avoid conflict with map controls disabled when set editing true and map not visible
       if (!is_started && isMobileHiddenMap) {
         await new Promise(res => GUI.onceafter('setHidden', () => setTimeout(res, 300))); // 300 = CSS transition?
@@ -1922,7 +1921,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.start(this.state._getFeaturesOption, params);
+        features = await this._session.start(this.state._getFeaturesOption);
       }
 
       /** In case of not yest started session and is not in mobile */
@@ -1930,7 +1929,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.start(this.state._getFeaturesOption, params);
+        features = await this._session.start(this.state._getFeaturesOption);
       }
 
       /**
@@ -1940,7 +1939,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.getFeatures(this.state._getFeaturesOption, params);
+        features = await this._session.getFeatures(this.state._getFeaturesOption);
 
       }
 
@@ -3156,9 +3155,9 @@ export class ToolBox extends Emitter {
   /**
    * Start session
    */
-  async __startSession(options = {}, params = {}) {
+  async __startSession(options = {}) {
     try {
-      const features = await this.__startEditor(options, params);
+      const features = await this.__startEditor(options);
       this.state.editing.session.started = true;
       return features;
     } catch(e) {
@@ -3258,7 +3257,7 @@ export class ToolBox extends Emitter {
    * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
-  async ___getFeatures(options = {}, params = {}) {
+  async ___getFeatures(options = {}) {
     const layerId = this.getId();
 
     // skip is not onlien or all features of layers are already got
@@ -3270,18 +3269,18 @@ export class ToolBox extends Emitter {
 
     const { bbox } = options.filter || {};
     //check if bbox options filter (bbox of a current map) is passed and is a vector layer
-    const is_vector = bbox && 'vector' === this.getLayer().getType();
+    const is_vector = 'vector' === this.getLayer().getType();
     //check if table layer (alphanumerical)
     const is_table  = 'table' === this.getLayer().getType();
 
     // first request --> need to perform request
-    if (is_vector && null === this.#filter.bbox) {
+    if (is_vector && bbox && null === this.#filter.bbox) {
       this.#filter.bbox = bbox;                                                      // store bbox
       doRequest         = true;
     }
 
     // subsequent requests --> check if bbox is contained into an already requested bbox
-    else if (is_vector) {
+    else if (is_vector && bbox) {
       //Boolean - Check if features are already got inside bbox
       const is_cached = ol.extent.containsExtent(this.#filter.bbox, bbox);
       if (!is_cached) {
@@ -3302,20 +3301,24 @@ export class ToolBox extends Emitter {
 
     try {
       let response;
-      if (!options.filter && params) {
+      // In case of no filter, return emp
+      if (!options.filter) { 
         response = await XHR.post({
           url,
-          data:        JSON.stringify(params),
           contentType: 'application/json',
           signal,
-        });
-      } else if (!options.filter && !params) { 
-        return []; //no features
+        }); 
+      }  else if (is_defined(options.filter.pagination)) {
+        response = await XHR.post({
+          url,
+          data:        JSON.stringify(options.filter.pagination),
+          contentType: 'application/json',
+          signal,
+        }); 
       } else if (is_defined(options.filter.bbox)) { // bbox filter
         response = await XHR.post({
           url,
           data: JSON.stringify({
-            ...params,
             in_bbox:     options.filter.bbox.join(','),
             filtertoken: this._editor.getLayer().getToken(),
           }),
@@ -3330,23 +3333,10 @@ export class ToolBox extends Emitter {
           data:        JSON.stringify({ formatter: 1 }),
           signal,
         });
-      } else if (options.filter.field) {
+      } else if (is_defined(options.filter.field) || is_defined(options.filter.fids)) {
         response = await XHR.post({
           url,
-          data:        JSON.stringify({ 
-            ...params,
-            ...options.filter,
-          }),
-          contentType: 'application/json',
-          signal,
-        })
-      } else if (is_defined(options.filter.fids)) {
-        response = await XHR.post({
-          url,
-          data:   JSON.stringify({
-            ...params,
-            ...options.filter,
-          }),
+          data:        JSON.stringify(options.filter),
           contentType: 'application/json',
           signal,
         })
@@ -3354,7 +3344,6 @@ export class ToolBox extends Emitter {
         response = await XHR.post({
           url,
           data: JSON.stringify({
-            ...params,
             field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__`
           }),
           contentType: 'application/json',
@@ -3369,7 +3358,7 @@ export class ToolBox extends Emitter {
 
       const { data, count }       = response.vector;
       const { featurelocks = [] } = response;
-      const lockIds               = featurelocks.map(lk => lk.featureid); //features loecked by user that can edit
+      const lockIds               = featurelocks.map(lk => lk.featureid); //features locked by user that can edit
       const dataProjection = 'NoGeometry' === response.vector.geometrytype ? null : this._editor.getLayer().getCrs();
       let features   = [];
       this.#count    = count;
@@ -3386,14 +3375,13 @@ export class ToolBox extends Emitter {
 
         //if no features get from server (count === 0) and no featurelocks mean another user locks all feature requests
         //or in case of request pagination, check if the number of features requested is greater than the number of features returned, it means that another user locks these features
-        if (count > 0 && (0 === featurelocks.length || Math.min(params?.page_size ?? count, count) > features.length)) {
+        if (count > 0 && (0 === featurelocks.length || Math.min(options.filter?.pagination?.page_size ?? count, count) > features.length)) {
           //It means that another user locks these features
           this._editor.featuresLockedByOtherUser(features);
         }
-        //get already loaded feature id locked by current user
-        const fids = lockIds.map(({ featureid }) => featureid);
+       
         featurelocks
-          .filter(({ featureid }) => !fids.includes(featureid)) //exclude features already locked by current user
+          .filter(({ featureid }) => !lockIds.includes(featureid)) //exclude features already locked by current user
           .forEach(fl => GUI.getPlugin('editing').state.lock_ids[layerId].push(fl)) //update lockIds based on a featurelocks array from response
 
         //store features locked by another user
@@ -3737,8 +3725,8 @@ export class ToolBox extends Emitter {
    * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
-  async __startEditor(options = {}, params = {}) {
-    const features = await this._editor.getFeatures(options, params); // load layer features based on filter type
+  async __startEditor(options = {}) {
+    const features = await this._editor.getFeatures(options); // load layer features based on filter type
     this.#started  = true; // if all ok set to started
     return features;       // features are already inside featuresstore
   }
