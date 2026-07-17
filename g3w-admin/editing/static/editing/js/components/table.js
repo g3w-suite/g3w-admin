@@ -259,14 +259,14 @@ export default ({
   watch: {
     async 'search.page_size'() {
       this.search.page = 1;
-      this.reload();
+      this.getData();
     },
     async 'search.page'() {
-      this.reload();
+      this.getData();
     },
     async 'search.text'() {
       this.search.page = 1;
-      this.reload();
+      this.getData();
     }
   },
 
@@ -307,7 +307,7 @@ export default ({
         this.ordering[0] = index;
         this.ordering[1] = 'asc';
       }
-      this.reload();
+      this.getData();
     },
 
   
@@ -446,17 +446,27 @@ export default ({
       return value;
     },
 
-    async reload() {
-      GUI.setLoadingContent(true);
-      GUI.disableContent(true);
+    /**
+     * Get data features from server based on current pagination table information (page, page_size, ordering and search text)
+     * @returns {Promise<void>}
+     * @since 4.0.0
+     */
+    async getData() {
+
+      GUI.setLoadingContent(true); // loading content
+      GUI.disableContent(true); //disable content table interaction
+      //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
+      //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
       this.features  = await this.context.session.getEditor().getFeatures({}, {
         page:      this.search.page,
         page_size: this.search.page_size,
         ordering:  this.headers.length ? `${'asc' === this.ordering[1] ? '' : '-'}${this.headers[this.ordering[0]]?.name}` : undefined,
         search:    this.search.text?.trim() || undefined,
       });
-      this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount();
+      this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount(); // get total count of features from server
+      //set headers
       this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
+      //set up table rows from features
       this.rows = this.features.length > 0
         // ordered properties
         ? (
@@ -472,8 +482,8 @@ export default ({
         // features already bind to parent feature
         : this.features;
       await this.$nextTick();
-      GUI.setLoadingContent(false);
-      GUI.disableContent(false);
+      GUI.setLoadingContent(false); //set loading content data to false
+      GUI.disableContent(false); //enable interaction with table content
     },
 
   },
@@ -483,7 +493,7 @@ export default ({
   },
 
   async mounted() {
-    await this.reload();
+    await this.getData();
   }, 
 
   beforeDestroy() {
