@@ -3765,7 +3765,7 @@ export class ToolBox extends Emitter {
     this.#controller  = null;
     this.#count       = 0;
 
-    this._features                                  = []; // clear features collection
+    this._features                                          = []; // clear features collection
     GUI.getPlugin('editing').state.lock_ids[this.getId()]   = [];
     GUI.getPlugin('editing').state.loaded_ids[this.getId()] = [];
     this._featuresstore.clear();
