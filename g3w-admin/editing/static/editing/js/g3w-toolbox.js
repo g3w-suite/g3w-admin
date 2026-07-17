@@ -3745,6 +3745,11 @@ export class ToolBox extends Emitter {
     return result;
   }
 
+  /**
+   * @since 4.0.0
+   * @returns { number } count of features on server 
+   * 
+   */
   getCount() {
     return this.#count;
   }
