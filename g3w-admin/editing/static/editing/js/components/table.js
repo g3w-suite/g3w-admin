@@ -40,7 +40,7 @@ export default ({
       :placeholder = "$t('dosearch')"
       style        = "margin-left: auto !important;"
       @input       = "globalSearch"
-      @search      = "onSearchEvent"
+      @search      = "onSearch"
     />
   </div>
 
@@ -275,7 +275,7 @@ export default ({
     /**
      * Handle native search event (Enter key and clear button on search inputs).
      */
-    onSearchEvent(e) {
+    onSearch(e) {
       if ('' === e.target.value) {
         this.search.text = '';
       }
