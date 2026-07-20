@@ -36,11 +36,10 @@ from qgis.PyQt.QtCore import (
     QObject,
     pyqtSignal,
     QDate,
-    QDateTime
-)
-from qgis.PyQt.Qt import (
+    QDateTime,
     Qt
 )
+
 from qgis.PyQt.QtGui import QColor
 # Change for original for g3w-suite
 from .plot_settings import PlotSettings
