@@ -13,6 +13,7 @@ from usersmanage.utils import get_users_for_object, get_groups_for_object, userH
 from usersmanage.forms import label_users
 from usersmanage.configs import *
 from qdjango.models import Layer
+from core.utils.qgisapi import qvariant_type_name
 
 from qgis.PyQt.QtCore import QVariant
 
@@ -210,7 +211,7 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
         fields = self.layer.qgis_layer.fields()
 
         for f in fields:
-            type = QVariant.typeToName(f.type()).upper()
+            type = (qvariant_type_name(f.type()) or '').upper()
             if type == 'QSTRING': # and f.length() > 200:
                 touse.append(f.name())
 

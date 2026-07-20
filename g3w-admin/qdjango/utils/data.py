@@ -31,19 +31,30 @@ from qgis.gui import QgsMapCanvas
 
 from qgis.server import QgsServerProjectUtils, QgsConfigCache
 
-from qgis.PyQt.QtCore import QVariant, Qt
+from qgis.PyQt.QtCore import (
+    QVariant, 
+    Qt, 
+    QMetaType
+)
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
-from core.utils.qgisapi import count_qgis_features
+from core.utils.qgisapi import count_qgis_features, qvariant_type_name
 from qdjango.models import Project, buildLayerTreeNodeObject
 from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
 
 from .exceptions import QgisProjectException
 from .structure import *
-from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
-                         IsGroupCompatibleValidator, ProjectTitleExists,
-                         UniqueLayername, EmbeddedLayersValidator)
+from .validators import (
+    CheckMaxExtent, 
+    ColumnName, 
+    DatasourceExists, 
+    ProjectExists,
+    IsGroupCompatibleValidator, 
+    ProjectTitleExists,
+    UniqueLayername, 
+    EmbeddedLayersValidator
+)
 from .qgis import get_aliases
 
 from qdjango.apps import get_qgs_project
@@ -639,9 +650,10 @@ class QgisProjectLayer(XmlData):
             fidx = qfields.indexFromName(ac.name)
             if fidx != -1:
                 f = qfields.field(fidx)
+                type_name = QMetaType(int(f.type())).name()
                 columns.append({
                     'name': f.name(),
-                    'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
+                    'type': type_name.upper() if type_name else None,
                     'label': f.displayName(),
                 })
 

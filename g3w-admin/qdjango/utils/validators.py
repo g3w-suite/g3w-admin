@@ -10,6 +10,7 @@ from django.db.models import Q
 from osgeo import gdal
 
 from core.utils.data import isXML
+from core.utils.qgisapi import qvariant_type_name
 from qdjango.models import Layer, Project
 
 from .exceptions import (
@@ -118,7 +119,7 @@ def feature_validator(feature, layer):
 
                 if not QVariant(value).convert(field.type()):
                     _set_error(field.name(), _(
-                        'Field value \'%s\' cannot be converted to %s') % (value, QVariant.typeToName(field.type())))
+                        'Field value \'%s\' cannot be converted to %s') % (value, qvariant_type_name(field.type())))
 
             unique = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintUnique) != QgsFieldConstraints.ConstraintOriginNotSet and

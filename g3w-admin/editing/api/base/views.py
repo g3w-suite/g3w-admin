@@ -25,7 +25,7 @@ from core.signals import (
     pre_delete_maplayer,
     pre_save_maplayer
     )
-from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids
+from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids, qvariant_type_name
 from editing.models import (
     EDITING_POST_DATA_ADDED, 
     EDITING_POST_DATA_DELETED,
@@ -342,7 +342,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For PostGis provider or oder provider with type int or double and with field can be null
                             # ----------------------------------------------------------------------------------------
-                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double', 'qlonglong') and \
+                            elif (qvariant_type_name(qgis_field.type()) or '').lower() in ('int', 'double', 'qlonglong') and \
                                     qgis_field.name() in geojson_feature['properties'] and \
                                     geojson_feature['properties'][qgis_field.name()] == '':
 
