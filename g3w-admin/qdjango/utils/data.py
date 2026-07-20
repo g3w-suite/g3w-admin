@@ -1623,7 +1623,16 @@ class QgisProject(XmlData):
         with transaction.atomic():
 
             if not instance and not self.instance:
-                
+
+                # ClearableFileInput can set thumbnail to False when the
+                # "clear" checkbox is checked or when no file is uploaded.
+                # Django 5.2 on Python 3.14 no longer normalizes this to
+                # None, so File/ImageField.pre_save() fails with
+                # AttributeError: 'bool' object has no attribute 'name'.
+                thumbnail = kwargs.get('thumbnail')
+                if not thumbnail:
+                    thumbnail = None
+
                 data = {
                     'qgis_file': self.qgisProjectFile,
                     'original_name': self.original_name,
@@ -1632,7 +1641,7 @@ class QgisProject(XmlData):
                     'initial_extent': self.initialExtent,
                     'max_extent': self.maxExtent,
                     'wms_use_layer_ids': self.wmsuselayerids,
-                    'thumbnail': kwargs.get('thumbnail'),
+                    'thumbnail': thumbnail,
                     'description': kwargs.get('description'),
                     'baselayer': kwargs.get('baselayer'),
                     'qgis_version': self.qgisVersion,
