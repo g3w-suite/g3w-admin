@@ -650,7 +650,7 @@ class QgisProjectLayer(XmlData):
             fidx = qfields.indexFromName(ac.name)
             if fidx != -1:
                 f = qfields.field(fidx)
-                type_name = QMetaType(int(f.type())).name()
+                type_name = qvariant_type_name(f.type())
                 columns.append({
                     'name': f.name(),
                     'type': type_name.upper() if type_name else None,
