@@ -4,8 +4,6 @@
  * @since 4.1.0
  */
 
-import { Feature } from "./g3w-feature";
-
 /**
  * Wrapper for native Array or ol.Collection
  */
@@ -39,7 +37,7 @@ export class Collection {
 
   /**
    * Update a feature in collection
-   * @param {Feature} feature 
+   * @param { Feature } feature 
    */
   update(feature) {
     if (this._is_ol) {
@@ -61,7 +59,7 @@ export class Collection {
 
   /**
    * Remove feature from collection
-   * @param {Feature} feature
+   * @param { Feature } feature
    * @returns { void }  
    */
   remove(feature) {
