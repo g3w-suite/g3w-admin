@@ -1248,8 +1248,13 @@ class QgisProject(XmlData):
                 raise QgisProjectException(
                     _('Could not read QGIS project file: {}').format(project_file))
 
+            # NOTE: in PyQt6 (QGIS 4.2) enum values are only accessible via
+            # their fully-qualified name (Qt.ConnectionType.DirectConnection).
+            # PyQt5 (QGIS 3.44) supports both the flattened `Qt.DirectConnection`
+            # and the namespaced form, so use the namespaced form for
+            # cross-version compatibility.
             self.qgs_project.readProject.connect(
-                _readCanvasSettings, Qt.DirectConnection)
+                _readCanvasSettings, Qt.ConnectionType.DirectConnection)
 
             # Re-read to get map canvas settings (extent)
             self.qgs_project.read(project_file)
