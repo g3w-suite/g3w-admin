@@ -27,7 +27,7 @@ from qgis.core import (
     QgsFields
 )
 
-from qgis.PyQt.QtCore import QVariant, Qt
+from qgis.PyQt.QtCore import QVariant, QMetaType, Qt
 import string
 import random
 import os
@@ -117,7 +117,11 @@ def feature_validator(feature, layer):
             if value != data_provider.defaultValueClause(field_index) and \
                 value != data_provider.defaultValue(field_index):
 
-                if not QVariant(value).convert(field.type()):
+                # NOTE: in Qt6 (QGIS 4.2) QVariant.convert() expects a QMetaType
+                # instance, while in Qt5 (QGIS 3.44) it accepted an int enum.
+                # Wrapping field.type() in QMetaType(int(...)) is compatible with
+                # both Qt5 and Qt6.
+                if not QVariant(value).convert(QMetaType(int(field.type()))):
                     _set_error(field.name(), _(
                         'Field value \'%s\' cannot be converted to %s') % (value, qvariant_type_name(field.type())))
 
