@@ -508,8 +508,11 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
         # formatter == 0 : default behavior
         if formatter == 0:
             fields = layer.qgis_layer.fields()
+            # NOTE: the `encoding` parameter of QgsJsonUtils.stringToFeatureList
+            # was removed in QGIS 4.2. Calling with 2 args is compatible with
+            # both QGIS 3.44 (encoding defaults to None) and QGIS 4.2.
             form_feature = QgsJsonUtils.stringToFeatureList(
-                json.dumps(form_data), fields, None)[0]
+                json.dumps(form_data), fields)[0]
 
             # Set attributes manually because QgsJsonUtils does not respect order
             for k, v in form_data['properties'].items():

@@ -261,10 +261,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             original_feature = qgis_layer.getFeature(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
+                        # NOTE: the `encoding` parameter of
+                        # QgsJsonUtils.stringToFeatureList was removed in QGIS 4.2.
+                        # Calling with 2 args is compatible with both QGIS 3.44
+                        # (encoding defaults to None) and QGIS 4.2.
                         imported_feature = QgsJsonUtils.stringToFeatureList(
                             json.dumps(geojson_feature),
                             qgis_layer.fields(),
-                            None  # UTF8 codec
                         )[0]
 
                         feature.setGeometry(imported_feature.geometry())
