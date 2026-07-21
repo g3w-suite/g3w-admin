@@ -13,13 +13,13 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-6">
-                        {%if user.is_superuser %}
+                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 or user|has_group:G3W_EDITOR2 %}
                         <h3>{%trans 'Users' %}:</h3>
                         <ul class="list-unstyled">
                             {% if user.is_superuser %}
                                 <li><strong>{%trans 'Editor level 1 user'%}</strong>: {% if object.editor %}{{object.editor|safe}}{% endif %}</li>
                             {% endif %}
-                            {% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+                            {% if user.is_superuser or user|has_group:"Editor Maps Groups" or user|has_group:G3W_EDITOR1 or user|has_group:G3W_EDITOR2 %}
                                 <li><strong>{%trans 'Editor level 2 user'%}</strong>: {% if object.editor2 %}{{object.editor2|safe}}{% endif %}</li>
                                 <li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
                                 <li><strong>{%trans 'Editor user groups'%}</strong>: {{object.editor_user_groups|safeseq|join:", "}}</li>
