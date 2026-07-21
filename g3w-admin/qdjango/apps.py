@@ -11,7 +11,12 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_migrate
 
-from qgis.core import QgsApplication, QgsProject, QgsPathResolver
+from qgis.core import (
+    QgsApplication, 
+    QgsProject, 
+    QgsPathResolver, 
+    QgsAuthConfigurationStorage
+)
 from qgis.server import QgsServer, QgsServerSettings, QgsConfigCache
 
 from usersmanage.configs import *
@@ -33,6 +38,10 @@ if settings.DEBUG:
 # Setup AUTH DB
 if hasattr(settings, 'QGIS_AUTH_DB_DIR_PATH') and settings.QGIS_AUTH_DB_DIR_PATH:
     os.environ['QGIS_AUTH_DB_DIR_PATH'] = settings.QGIS_AUTH_DB_DIR_PATH
+
+# Setup AUTH DB URI
+if hasattr(settings, 'QGIS_AUTH_DB_URI') and settings.QGIS_AUTH_DB_URI:
+    os.environ['QGIS_AUTH_DB_URI'] = settings.QGIS_AUTH_DB_URI
 
 if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_FILE:
     auth_file = settings.QGIS_AUTH_PASSWORD_FILE
@@ -98,9 +107,20 @@ def init_qgis():
     if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
         if QgsApplication.authManager().isDisabled():
             raise ImproperlyConfigured('QGIS AuthManager is not enabled')
+        
+        # Storage PSQL dovrebbe esserci
+        reg = QgsApplication.authManager().authConfigurationStorageRegistry()
+        s = reg.storages()[0]
+        if "QPSQL:" in s.name():
+            s.setReadOnly(False)
+            s.initialize()  # questo crea le tabelle se non ci sono
 
         if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
             raise ImproperlyConfigured('Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
+        
+        # Check pwd is set in the DB
+        if len(s.masterPasswords()) == 0:
+            raise ImproperlyConfigured('QGIS Auth DB master password is not set in the database')
 
     # Manipulate environment variables here
     os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
