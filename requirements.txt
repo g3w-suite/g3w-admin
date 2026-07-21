@@ -11,7 +11,7 @@ djangorestframework==3.15.2
 djangorestframework-gis==1.0
 djangorestframework-simplejwt==5.5.1
 drf-spectacular==0.29.0
-django-downloadview==2.3.0
+django-downloadview==2.4.0
 django-mptt==0.13.4
 django-ordered-model==3.7.4
 django-ajax-selects==3.0.3
