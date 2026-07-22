@@ -15,7 +15,6 @@ from lxml import etree
 from qgis.core import (
     QgsProject, QgsMapLayer,
     QgsUnitTypes,
-    QgsProjectVersion,
     QgsWkbTypes,
     QgsEditFormConfig,
     QgsAttributeEditorElement,
@@ -31,17 +30,16 @@ from qgis.gui import QgsMapCanvas
 
 from qgis.server import QgsServerProjectUtils, QgsConfigCache
 
-from qgis.PyQt.QtCore import (
-    QVariant, 
-    Qt, 
-    QMetaType
-)
+from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
 from core.utils.qgisapi import count_qgis_features, qvariant_type_name
 from qdjango.models import Project, buildLayerTreeNodeObject
-from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
+from qdjango.signals import (
+    load_qdjango_project_file, 
+    post_save_qdjango_project_file
+)
 
 from .exceptions import QgisProjectException
 from .structure import *

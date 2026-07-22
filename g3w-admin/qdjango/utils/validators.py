@@ -28,6 +28,9 @@ from qgis.core import (
 )
 
 from qgis.PyQt.QtCore import QVariant, QMetaType, Qt
+# NOTE: use typing_extensions.deprecated (PEP 702 backport) because
+# warnings.deprecated is only available from Python 3.13+.
+from typing_extensions import deprecated
 import string
 import random
 import os
@@ -406,6 +409,12 @@ class DatasourceExists(QgisProjectLayerValidator):
                     raise QgisProjectLayerException(err)
 
 
+@deprecated(
+    "ColumnName validator is no longer used: it is not registered in "
+    "QgisProjectLayer._defaultValidators (see qdjango/utils/data.py, where "
+    "the reference is commented out) and has no other consumers in the "
+    "codebase. Kept in case it needs to be re-enabled in the future."
+)
 class ColumnName(QgisProjectLayerValidator):
     """
     Check column data name: no whitespace, no special chars.
