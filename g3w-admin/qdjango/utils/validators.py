@@ -144,10 +144,10 @@ def feature_validator(feature, layer):
                         field.name().replace('"', '\\"'), value.replace("'", "\\'")))
                 elif field.type() == QVariant.Date:
                     request.setFilterExpression('to_date("%s") = \'%s\'' % (
-                        field.name().replace('"', '\\"'), value.toString(Qt.ISODate)))
+                        field.name().replace('"', '\\"'), value.toString(Qt.DateFormat.ISODate)))
                 elif field.type() == QVariant.DateTime:
                     request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string_ms}\''.format(
-                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate), date_time_string_ms=value.toString(Qt.ISODateWithMs)))
+                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.DateFormat.ISODate), date_time_string_ms=value.toString(Qt.DateFormat.ISODateWithMs)))
                 elif field.type() == QVariant.Bool:  # This does not make any sense, but still
                     request.setFilterExpression('"%s" = %s' % (
                         field.name().replace('"', '\\"'), 'true' if value else 'false'))

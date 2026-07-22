@@ -88,10 +88,12 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
     plot_built = pyqtSignal()
 
     # Add function to QDate and QDateTime classes that the PlotlyJSONEncoder expects from date objects
+    # NOTE: use the namespaced Qt.DateFormat.ISODate for PyQt6 (QGIS 4.2)
+    # compatibility; PyQt5 (QGIS 3.44) supports the namespaced form as well.
     if not hasattr(QDate, 'isoformat'):
-        QDate.isoformat = lambda d: d.toString(Qt.ISODate)
+        QDate.isoformat = lambda d: d.toString(Qt.DateFormat.ISODate)
     if not hasattr(QDateTime, 'isoformat'):
-        QDateTime.isoformat = lambda d: d.toString(Qt.ISODate)
+        QDateTime.isoformat = lambda d: d.toString(Qt.DateFormat.ISODate)
 
     def __init__(self, settings: PlotSettings = None, context_generator: QgsExpressionContextGenerator = None,
                  visible_region: QgsReferencedRectangle = None, polygon_filter: FilterRegion = None):

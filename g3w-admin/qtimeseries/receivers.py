@@ -82,10 +82,12 @@ def add_qtimeseries(sender, **kwargs):
             if isinstance(data['values']['qtimeseries']['start_date'], QDate) or isinstance(data['values']['qtimeseries']['start_date'],
                                                                                  QDateTime):
                 isdate = isinstance(data['values']['qtimeseries']['start_date'], QDate)
+                # NOTE: use the namespaced Qt.DateFormat.* for PyQt6 (QGIS 4.2)
+                # compatibility; PyQt5 (QGIS 3.44) supports it as well.
                 if not hasattr(QDate, 'isoformat'):
-                    QDate.isoformat = lambda d: d.toString(Qt.ISODate)
+                    QDate.isoformat = lambda d: d.toString(Qt.DateFormat.ISODate)
                 if not hasattr(QDateTime, 'isoformat'):
-                    QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
+                    QDateTime.isoformat = lambda d: d.toString(Qt.DateFormat.ISODateWithMs)
                 data['values']['qtimeseries']['start_date'] = data['values']['qtimeseries']['start_date'].isoformat()
                 data['values']['qtimeseries']['end_date'] = data['values']['qtimeseries']['end_date'].isoformat()
 
