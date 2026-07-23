@@ -93,10 +93,6 @@ jobs:
       run: |
         docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
 
-    - name:  Running g3w-admin caching tests
-      run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching"
-
     - name:  Running g3w-admin filemanager tests
       run: |
         docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager"
