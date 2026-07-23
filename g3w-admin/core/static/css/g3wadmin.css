@@ -1170,25 +1170,31 @@ input.uploadwidget {
     font-size: 15px;
     transition: background .15s ease, color .15s ease;
 }
-/* Shared hover state — kept identical to .group-card .group-actions a:hover */
+/* Shared hover state for project cards and trash list (green) */
 .project-card .pc-actions a:hover,
-.projects-trash-list .ptr-actions a:hover,
-.group-card .group-actions a:hover,
-.group-card .group-actions .action-wrap:hover {
+.projects-trash-list .ptr-actions a:hover {
     background: #95ad36;
     color: #fff;
 }
 .project-card .pc-actions a:hover i,
-.projects-trash-list .ptr-actions a:hover i,
-.group-card .group-actions a:hover i,
-.group-card .group-actions .action-wrap:hover i,
-.group-card .group-actions .action-wrap:hover a {
+.projects-trash-list .ptr-actions a:hover i {
     color: #fff;
 }
 .project-card .pc-actions a.danger:hover,
 .projects-trash-list .ptr-actions a.danger:hover,
 .group-card .group-actions a.danger:hover {
     background: #e74c3c;
+    color: #fff;
+}
+/* Group cards actions hover (teal — aligned with .prj-actions on home) */
+.group-card .group-actions a:hover,
+.group-card .group-actions .action-wrap:hover {
+    background: #92dadb;
+    color: #fff;
+}
+.group-card .group-actions a:hover i,
+.group-card .group-actions .action-wrap:hover i,
+.group-card .group-actions .action-wrap:hover a {
     color: #fff;
 }
 .project-card .pc-drag-handle {
@@ -2308,6 +2314,29 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
     font-weight: 700;
     line-height: 1.3;
 }
+/* Collapse button: make it visible against the light cream header */
+.result-section.box .box-header .box-tools {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+}
+.result-section.box .box-header .box-tools .btn-box-tool {
+    color: #7a8e26;
+    background: transparent;
+    border: 0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1;
+    transition: background .15s ease, color .15s ease;
+}
+.result-section.box .box-header .box-tools .btn-box-tool:hover,
+.result-section.box .box-header .box-tools .btn-box-tool:focus {
+    background: #95ad36;
+    color: #fff;
+    outline: 0;
+}
 .result-section.box > .box-body {
     padding: 8px 18px;
     background: #fff;
@@ -3281,6 +3310,22 @@ table.users-table > tbody > tr:first-child > td {
     padding: 2px 10px;
     font-weight: 600;
     font-size: 12px;
+}
+
+/* AnonymousUser choice highlight (group/project ACL forms) */
+.form-shell .select2-container--default .select2-selection--multiple .select2-selection__choice[title*="(AnonymousUser)"],
+.column-acl-form .select2-container--default .select2-selection--multiple .select2-selection__choice[title*="(AnonymousUser)"] {
+    background: #f39c12;
+    border-color: #d68910;
+    color: #fff;
+}
+.form-shell .select2-container--default .select2-selection--multiple .select2-selection__choice[title*="(AnonymousUser)"] .select2-selection__choice__remove,
+.column-acl-form .select2-container--default .select2-selection--multiple .select2-selection__choice[title*="(AnonymousUser)"] .select2-selection__choice__remove {
+    color: rgba(255, 255, 255, .85);
+}
+.form-shell .select2-container--default .select2-selection--multiple .select2-selection__choice[title*="(AnonymousUser)"] .select2-selection__choice__remove:hover,
+.column-acl-form .select2-container--default .select2-selection--multiple .select2-selection__choice[title*="(AnonymousUser)"] .select2-selection__choice__remove:hover {
+    color: #fff;
 }
 
 /* Color picker append */
@@ -8305,6 +8350,18 @@ form .dff-container,
     box-shadow: 0 1px 3px rgba(20, 158, 160, .08);
 }
 
+/* Reset upstream django-file-form width caps (file_form.css sets
+   `.dff-uploader .dff-files { max-width: 40em }` which shrinks the drop
+   area). We want the widget to fill the surrounding form column. */
+.dff-uploader,
+.dff-uploader .dff-files,
+.dff-container .dff-files,
+form .dff-container,
+.form-shell .dff-container {
+    max-width: none;
+    width: 100%;
+}
+
 /* Native <input type=file> — flex row, teal pill "Browse" button */
 form input[type="file"],
 .form-shell input[type="file"] {
@@ -8372,6 +8429,9 @@ form input[type="file"]::-webkit-file-upload-button,
 
 /* Drop hint — dashed dropzone with cloud icon */
 .dff-container .dff-drop-hint {
+    width: 100%;
+    align-self: stretch;
+    box-sizing: border-box;
     border: 2px dashed #c1e8e9;
     border-radius: 10px;
     padding: 18px 14px;
