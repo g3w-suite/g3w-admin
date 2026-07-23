@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        qgis_version: ['ltr', 'latest']
+        qgis_version: ['latest']
 
     steps:
 
