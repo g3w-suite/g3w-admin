@@ -857,23 +857,11 @@ input.uploadwidget {
     transition: background .15s ease, color .15s ease;
     cursor: pointer;
 }
-.group-card .group-actions a:hover,
-.group-card .group-actions .action-wrap:hover {
-    background: #95ad36;
-    color: #fff;
-}
-.group-card .group-actions a:hover i,
-.group-card .group-actions .action-wrap:hover i,
-.group-card .group-actions .action-wrap:hover a {
-    color: #fff;
-}
 .group-card .group-actions .action-wrap a {
     color: inherit;
     text-decoration: none;
 }
-.group-card .group-actions .danger:hover {
-    background: #e74c3c;
-}
+/* .group-actions hover state is defined in the shared block near .pc-actions */
 
 .group-add-card {
     background: #fff;
@@ -1164,28 +1152,44 @@ input.uploadwidget {
     border-top: 1px solid #f0f2f5;
     background: #fafbfc;
 }
-.project-card .pc-actions a {
+/* Shared action-button pill style (used by both active projects cards and trash list).
+   Visual identity aligned with .group-card .group-actions a (gray bg, no border,
+   green hover, red danger hover). */
+.project-card .pc-actions a,
+.projects-trash-list .ptr-actions a {
     width: 34px;
     height: 34px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    border: 1px solid #eef0f3;
+    background: #f4f6f8;
+    border: 0;
     border-radius: 8px;
     color: #1f2d3d;
     text-decoration: none;
     font-size: 15px;
-    transition: all .15s ease;
+    transition: background .15s ease, color .15s ease;
 }
-.project-card .pc-actions a:hover {
+/* Shared hover state — kept identical to .group-card .group-actions a:hover */
+.project-card .pc-actions a:hover,
+.projects-trash-list .ptr-actions a:hover,
+.group-card .group-actions a:hover,
+.group-card .group-actions .action-wrap:hover {
     background: #95ad36;
-    border-color: #95ad36;
     color: #fff;
 }
-.project-card .pc-actions a.danger:hover {
+.project-card .pc-actions a:hover i,
+.projects-trash-list .ptr-actions a:hover i,
+.group-card .group-actions a:hover i,
+.group-card .group-actions .action-wrap:hover i,
+.group-card .group-actions .action-wrap:hover a {
+    color: #fff;
+}
+.project-card .pc-actions a.danger:hover,
+.projects-trash-list .ptr-actions a.danger:hover,
+.group-card .group-actions a.danger:hover {
     background: #e74c3c;
-    border-color: #e74c3c;
+    color: #fff;
 }
 .project-card .pc-drag-handle {
     position: absolute;
@@ -1256,29 +1260,6 @@ input.uploadwidget {
 .projects-trash-list .ptr-actions {
     display: inline-flex;
     gap: 4px;
-}
-.projects-trash-list .ptr-actions a {
-    width: 34px;
-    height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-    border: 1px solid #eef0f3;
-    border-radius: 8px;
-    color: #1f2d3d;
-    text-decoration: none;
-    font-size: 15px;
-    transition: all .15s ease;
-}
-.projects-trash-list .ptr-actions a:hover {
-    background: #95ad36;
-    border-color: #95ad36;
-    color: #fff;
-}
-.projects-trash-list .ptr-actions a.danger:hover {
-    background: #e74c3c;
-    border-color: #e74c3c;
 }
 
 /* ===== Layers list (project) restyle ===== */
@@ -3264,6 +3245,40 @@ table.users-table > tbody > tr:first-child > td {
     border-radius: 999px !important;
     padding: 3px 10px 3px 22px !important;
     margin: 4px 4px 0 0;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Select2 v4 hooks (modern .select2-container--default markup) */
+.form-shell .select2-container--default .select2-selection--single,
+.form-shell .select2-container--default .select2-selection--multiple {
+    border: 1px solid #e3e6d4;
+    border-radius: 8px;
+    min-height: 36px;
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-shell .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 34px;
+    color: #1f2d3d;
+}
+.form-shell .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 34px;
+}
+.form-shell .select2-container--default.select2-container--focus .select2-selection--single,
+.form-shell .select2-container--default.select2-container--focus .select2-selection--multiple,
+.form-shell .select2-container--default.select2-container--open .select2-selection--single,
+.form-shell .select2-container--default.select2-container--open .select2-selection--multiple {
+    border-color: #95ad36;
+    box-shadow: 0 0 0 3px rgba(149, 173, 54, .18);
+    outline: 0;
+}
+.form-shell .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: #f3f6e3;
+    border: 1px solid #dde6b3;
+    color: #5d6b1c;
+    border-radius: 999px;
+    padding: 2px 10px;
     font-weight: 600;
     font-size: 12px;
 }

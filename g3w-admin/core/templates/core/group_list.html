@@ -106,10 +106,13 @@
     {% endif %}
 </div>
 
-<div id="filter-card" class="filter-card {% if collapsed_filter_form %}is-collapsed{% endif %}">
+<div id="filter-card" class="filter-card form-shell {% if collapsed_filter_form %}is-collapsed{% endif %}">
     <form method="get" id="group-filter">
         {% crispy filter_form %}
-        <button class="btn btn-primary">{% trans 'Apply filter' %}</button>
+        <button class="btn btn-success" type="submit">
+            <i class="fa fa-filter"></i>
+            {% trans 'Apply filter' %}
+        </button>
     </form>
 </div>
 
