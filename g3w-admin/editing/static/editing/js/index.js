@@ -142,8 +142,8 @@ new (class extends Plugin {
 
     this.setHookLoading({ loading: true });
 
-    // get editable layers config from server (sorted by "index" to keep TOC order)
-    const LAYERS = await Promise.allSettled(
+    //Loop through editable layers and get config to create toolboxes
+    for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
         .filter(layer => layer.isEditable())
         .map(async layer => {
@@ -154,37 +154,40 @@ new (class extends Plugin {
           }
           return ({ layer, config });
         })
-    );
-
-    if (LAYERS.length) {
-      const { ToolBox } = (await import('./g3w-toolbox.js'));
-      LAYERS.forEach(({ status, value, reason }) => {
-          if ('fulfilled' === status) {
-          const toolBox                                  = new ToolBox(value.layer, value.config);
-          this.state.toolboxes.push(toolBox);
-          this.state.lock_ids[toolBox.getId()]           = [];
-          this.state.loaded_ids[toolBox.getId()]         = [];
-          this.state.uniqueFieldsValues[toolBox.getId()] = {};
-          this.state.features[toolBox.getId()]           = toolBox._collection;
-        } else {
-          this.state.layers_in_error = true;
-          console.warn(reason);
-        }
-      });
-    }
-
+    )) {
+      if ('fulfilled' === status) {
+        const { ToolBox }                              = (await import('./g3w-toolbox.js'));
+        const toolBox                                  = new ToolBox(value.layer, value.config);
+        this.state.toolboxes.push(toolBox);
+        this.state.lock_ids[toolBox.getId()]           = [];
+        this.state.loaded_ids[toolBox.getId()]         = [];
+        this.state.uniqueFieldsValues[toolBox.getId()] = {};
+        this.state.features[toolBox.getId()]           = toolBox._collection;
+      } else {
+        this.state.layers_in_error = true;
+        console.warn(reason);
+      }
+    };
+    
+    //wait util application GUI is ready to add sidebar item (left menu) and iframe editor
     await GUI.isReady();
 
     // add sidebar item (left menu) 
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
       this.state.editFeatureKey = GUI.onafter('editFeature', this.#onEditFeature.bind(this)),
       this.config.name          = this.config.name || "plugins.editing.editing_data";
-      this.addToolGroup({ position: 0, title: 'EDITING' });
-      this.addTools({
-        action:  this.showEditingPanel,
-        offline: false,
-        icon:    'pencil'
-      }, { position: 0, title: 'EDITING' });
+      
+      const sidebar = this.createSideBarComponent({}, {
+        id:          'editing',
+        collapsible: false,
+        position:    1, 
+        title:       this.config.name,
+        offline:     false,
+        icon:        'pencil',
+        iconColor:   'yellow',
+      });
+
+      document.querySelector('#editing').addEventListener('click', () => this.showEditingPanel());
     }
 
     if (ApplicationState.iframe) {
