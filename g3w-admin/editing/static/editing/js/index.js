@@ -185,9 +185,10 @@ new (class extends Plugin {
         offline:     false,
         icon:        'pencil',
         iconColor:   'yellow',
+        events: {
+          click: () => this.showEditingPanel(),
+        }
       });
-
-      document.querySelector('#editing').addEventListener('click', () => this.showEditingPanel());
     }
 
     if (ApplicationState.iframe) {
