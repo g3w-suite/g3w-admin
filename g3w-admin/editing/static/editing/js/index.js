@@ -70,7 +70,6 @@ new (class extends Plugin {
         }
       },
       show_errors:    false,
-      editFeatureKey: undefined,
       panel:          null, // editing panel
       currentLayout:  ApplicationState.layout.__current,
       unwatchLayout:  Vue.watch(
@@ -174,7 +173,6 @@ new (class extends Plugin {
 
     // add sidebar item (left menu) 
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
-      this.state.editFeatureKey = GUI.onafter('editFeature', this.#onEditFeature.bind(this)),
       this.config.name          = this.config.name || "plugins.editing.editing_data";
       
       const sidebar = this.createSideBarComponent({}, {
@@ -190,6 +188,31 @@ new (class extends Plugin {
         }
       });
     }
+
+    GUI.onafter('addActionsForLayers', (actions, layers) => {
+      for (const id in actions) {
+        const layer = this.getLayerById(id);
+        if (layer) {
+          actions[id].push({
+            id:    'editing',
+            class: "fas fa-pencil-alt",
+            hint:  'Editing',
+            state:  Vue.observable({ disabled: layer.state.editing.inediting }), //disable when in editing
+            init() {
+              this.unwatch = Vue.watch(() => layer.state.editing.inediting, bool => this.state.disabled = bool );
+            },
+            clear() {
+              this.unwatch && this.unwatch(); // remove action when destroy
+            },
+            cbk: (layer, feature) => GUI.getPlugin('editing').editFeature({ layer, feature }),
+          });
+        }
+      }
+
+    })
+
+    // // edit
+    //     (layer.editable) && ,
 
     if (ApplicationState.iframe) {
       new (await import('./g3w-iframe.js')).IframeEditor(this);
@@ -1165,7 +1188,7 @@ new (class extends Plugin {
    *
    * Register query result action: edit selected feature from query results
    */
-  async #onEditFeature({ layer, feature } = {}) {
+  async editFeature({ layer, feature } = {}) {
 
     const fid = feature.attributes[G3W_FID] || feature.id;
 
