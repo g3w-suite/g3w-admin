@@ -364,7 +364,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 attr_value = geojson_feature['properties'][qgis_field.name()]
 
                                 # Optional: filter style properties via attribute_filter
-                                allowed_css = set(getattr(settings, 'NH3_ALLOWED_STYLES'))
+                                allowed_css = set(getattr(settings, 'NH3_ALLOWED_STYLES', []))
 
                                 def _style_filter(tag, attr, value, _allowed_css=allowed_css):
                                     if attr != 'style':
