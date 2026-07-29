@@ -466,23 +466,21 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                 # QPlotly widgets
 
-                try:
-                    if 'qplotly' in settings.INSTALLED_APPS:
-                        
-                        qp = {
-                            'layer': l,
-                            'plots': get_qplotlywidgets4layer(l),
-                        }
-
-                        if qp['plots']:
-                                if 'plots' not in ctx:
-                                    ctx['plots'] = [qp]
-                                else:
-                                    ctx['plots'].append(qp)
-                except Exception as e:
-                    logging.getLogger("g3wadmin.debug").debug(
-                        f"Qdjango project /api/config error get_qplotlywidgets4layer: {e}"
-                    )
+                if 'qplotly' in settings.INSTALLED_APPS and get_qplotlywidgets4layer:
+                    import logging
+                    try:
+                        plots = get_qplotlywidgets4layer(l)
+                    except Exception:
+                        logging.getLogger("g3wadmin.debug").exception(
+                            "Qdjango project /api/config error in get_qplotlywidgets4layer"
+                        )
+                    else:
+                        if plots:
+                            qp = {
+                                'layer': l,
+                                'plots': plots,
+                            }
+                            ctx.setdefault('plots', []).append(qp)
 
 
             if dl_capabilities:
