@@ -371,6 +371,15 @@ new (class extends Plugin {
   }
 
   /**
+   * @since 4.0.0
+   * @param {*} id 
+   * @returns { boolean }
+   */
+  isLayerInEditing(id) {
+    return this.getToolBoxById(id)?.inEditing();
+  }
+
+  /**
    * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
    * 
    * @param { string } id

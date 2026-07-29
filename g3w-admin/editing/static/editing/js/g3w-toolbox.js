@@ -137,7 +137,11 @@ export class ToolBox extends Emitter {
       geometrytype: _config.vector.geometrytype,                 // whether is a vector layer,
       visible:      _config.vector.editing?.visible ?? true,     // whether a layer should be editable directly (true) or through relation layer (false)
       layer_style:  _config.vector.editing?.layer_style ?? null, // @since v4.0.0 check if has a layer style to for editing form
-      inediting:    false, //@since 4.1.0 add in editng attribute when open editting panel
+      inediting:    false, //@since 4.1.0 add in editng attribute when open editting panel,
+      //@since 4.0.0 set editing url
+      urls: {
+        editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${_layer.getId()}/`,
+      }
     };
 
     // set vector layer color 
