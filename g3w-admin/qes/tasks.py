@@ -9,6 +9,10 @@ from qdjango.models import (
 )
 
 from .utils.indexer import QGISElasticsearchIndexer
+from .utils.config import (
+    get_periodic_task_project_ids,
+    should_register_periodic_task,
+)
 
 from functools import wraps
 
@@ -102,19 +106,20 @@ def es_project_delete(obj_to_index, users, task, **kwargs):
         indexer.delete_documents(project, layer)
 
 
-# If QES_INDEXING_PROJECT is True, then the periodic task
-# will be executed according to the schedule defined in settings, i.e.:
-# indexing every 4 hours,
+# The periodic task is registered when either:
+#   - the legacy ``settings.QES_INDEXING_PROJECT`` is True, OR
+#   - the ``es_conf`` plugin is installed (per-project ``enabled`` flag
+#     is consulted inside the task).
 #
 # QES_INDEXING_CRON_SCHEDULE = crontab(hour='*/4')
-# 
+#
 # If QES_INDEXING_CRON_PRJIDS is defined, then the task will
 # index only the projects defined in the list, otherwise it will index
 # every project. I.e.:
 #
 # QES_INDEXING_CRON_PRJIDS = '1 2 3'
 
-if settings.QES_INDEXING_PROJECT and settings.QES_INDEXING_CRON_SCHEDULE:
+if should_register_periodic_task() and settings.QES_INDEXING_CRON_SCHEDULE:
     @db_periodic_task(settings.QES_INDEXING_CRON_SCHEDULE, context=True)
     def es_project_cron_indexing(task):
         """
@@ -124,14 +129,23 @@ if settings.QES_INDEXING_PROJECT and settings.QES_INDEXING_CRON_SCHEDULE:
         process_info = ProcessInfo(
             task,
             desc='Cron-like process to index projects'
-        )        
-       
+        )
+
+        # 1) Explicit override from settings takes precedence.
         try:
-            # Indexing only project ids defined in settings
-            options =  settings.QES_INDEXING_CRON_PRJIDS
-        except:
-            # Indexing every project
-            options= {}
+            options = settings.QES_INDEXING_CRON_PRJIDS
+        except Exception:
+            options = {}
+
+        # 2) When es_conf is installed and no explicit override is set,
+        #    restrict to the projects with ``ProjectEsConfig.enabled=True``.
+        if not options:
+            enabled_ids = get_periodic_task_project_ids()
+            if enabled_ids is not None:
+                if not enabled_ids:
+                    # Nothing to index — skip the call entirely.
+                    return None
+                options = {'prj_ids': [str(pk) for pk in enabled_ids]}
 
         return call_command('qes_indexer', **options)
 

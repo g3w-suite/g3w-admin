@@ -17,6 +17,8 @@ from django.http import HttpRequest
 from qdjango.vector import LayerVectorView
 from usersmanage.models import User
 
+from .config import get_indexing_fields as _get_indexing_fields
+
 from qgis.core import (
     QgsVectorLayer,
     QgsRasterLayer,
@@ -130,6 +132,11 @@ class QGISElasticsearchIndexer:
         project_name = project.title
         project_id = project.id
 
+        # Resolve the "which fields to index" configuration once per
+        # (project, layer) — read either from the es_conf plugin (if
+        # installed) or from settings.QES_INDEXING_FIELDS.
+        indexing_fields = _get_indexing_fields(qlayer.id(), project=project)
+
         for feature in features:
 
             # Create text_content
@@ -139,9 +146,8 @@ class QGISElasticsearchIndexer:
                 if v is not None:
 
                     # Check for indexing fields settings
-                    # If settings.QES_INDEXING_FIELDS is set, only fields in the list are indexed
-                    if settings.QES_INDEXING_FIELDS and settings.QES_INDEXING_FIELDS.get(qlayer.id()) and \
-                       k not in settings.QES_INDEXING_FIELDS[qlayer.id()]:
+                    # If a per-layer whitelist exists, only listed fields are indexed.
+                    if indexing_fields and k not in indexing_fields:
                         continue
 
                     # Case for nested dictionaries, i.e for media file:
@@ -244,9 +250,15 @@ class QGISElasticsearchIndexer:
                 logger.info(f"{self.log_tag} - Generate documente from api - Layer {qlayer.name()} is not a vector layer, skipping")
                 continue
 
-            # Check for indexing fields settings
-            if settings.QES_INDEXING_FIELDS and not settings.QES_INDEXING_FIELDS.get(qlayer.id()):
-                logger.info(f"{self.log_tag} - Generate documente from api - No fields to index for layer {qlayer.name()}, skipping")
+            # Check for indexing fields configuration (es_conf plugin or
+            # settings.QES_INDEXING_FIELDS). When any configuration is
+            # active for the project/deployment, layers not present in it
+            # are skipped — matching the legacy whitelist behaviour.
+            indexing_fields = _get_indexing_fields(qlayer.id(), project=project)
+            if indexing_fields is None and (
+                settings.QES_INDEXING_FIELDS or 'es_conf' in settings.INSTALLED_APPS
+            ):
+                logger.info(f"{self.log_tag} - Generate document from api - No fields to index for layer {qlayer.name()}, skipping")
                 continue
 
             # Get features from API

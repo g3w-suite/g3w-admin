@@ -282,12 +282,14 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                             })
                     if "qes" in settings.INSTALLED_APPS and mapcontrol.name == 'geocoding':
 
-                        qes = {}
-                        
-                        # Check for settings
-                        if hasattr(settings, 'QES_RESULTS_OPTIONS'):
-                            qes.update(settings.QES_RESULTS_OPTIONS)
-                            
+                        # Read the {'toshow': {...}} payload either from
+                        # the es_conf plugin (DB-backed, per project) or
+                        # from settings.QES_RESULTS_OPTIONS. The hook
+                        # keeps the pre-plugin behaviour when es_conf is
+                        # absent.
+                        from qes.utils.config import get_all_results_options
+                        qes = get_all_results_options(self.project)
+
                         options['providers'].update({
                             'qes': qes
                         })
