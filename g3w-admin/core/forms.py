@@ -32,7 +32,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     """Group form."""
 
     propagate = True
-    decription = Nh3Field(required=False)
+    description = Nh3Field(required=False)
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
