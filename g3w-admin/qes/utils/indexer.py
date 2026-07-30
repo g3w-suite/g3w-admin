@@ -342,7 +342,7 @@ class QGISElasticsearchIndexer:
 
         self.generate_documents_from_api(project)
 
-        # Porecess every layer in the project
+        # Process every layer in the project
         for layer_id, layer in qgis_project.mapLayers().items():
             if isinstance(layer, QgsVectorLayer):
                 logger.info(f"{self.log_tag}Elaborazione layer: {layer.name()}")
