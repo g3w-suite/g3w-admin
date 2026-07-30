@@ -184,7 +184,9 @@ new (class extends Plugin {
         icon:        'pencil',
         iconColor:   'yellow',
         events: {
-          click: () => this.showEditingPanel(),
+          open: {
+            cb: () => this.showEditingPanel(),
+          }
         }
       });
     }
