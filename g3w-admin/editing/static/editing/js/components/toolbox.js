@@ -529,11 +529,17 @@ export default ({
 
   watch: {
 
-    async 'state.activetool'(tool) {
-      await this.$nextTick();
-      this.helpmessage = tool?.messages?.help || tool?.name;
+    /**
+     * @since 4.0.0
+     * check immediately if the active tool has changed to update the help message
+     */
+    'state.activetool': {
+      immediate: true,
+      async handler(tool) {
+        await this.$nextTick();
+        this.helpmessage = tool?.messages?.help || tool?.name;
+      }
     },
-    
     'state.toolsoftool'(nts = [], ots = []) {
       //no tools
       if (nts.length === ots.length) { return; }
