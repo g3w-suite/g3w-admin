@@ -97,9 +97,11 @@ export class Workflow extends Emitter {
     this.runOnce = options?.runOnce || false;
 
     /**
-     * @FIXME add description
+     * Set messages for workflow (ex. help message)
      */
-    this._messages = Step.MESSAGES;
+    this._messages = options.messages ?? {
+      help: options.helpMessage ?? null,
+    };
 
     /**
      * Store user messages steps to show when workflow
@@ -116,14 +118,7 @@ export class Workflow extends Emitter {
      * 
      * @since 3.9.0
      */
-    this.backbuttonlabel = options?.backbuttonlabel || null;
-
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-     * 
-     * @since g3w-client-editing@v3.8.0
-     */
-    this.helpMessage  = options.helpMessage ? { help: options.helpMessage } : null;
+    this.backbuttonlabel = options?.backbuttonlabel || null; 
 
     /**
      * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
@@ -389,7 +384,7 @@ export class Workflow extends Emitter {
           type:      'tool',
           closable:  false,
           iconClass: 'tasks',
-          subtitle:  this.helpMessage?.help && `plugins.${this.helpMessage?.help}`,
+          subtitle:  this._messages?.help && `plugins.${this._messages?.help}`,
           hooks: {
             body: {
               template: /* html */`
@@ -577,7 +572,7 @@ export class Workflow extends Emitter {
    * @since g3w-client-editing@v3.8.0
    */
   setHelpMessage(message) {
-    this.helpMessage = { help: message };
+    this._messages.help  = message ;
   }
 
   /**
@@ -586,7 +581,7 @@ export class Workflow extends Emitter {
    * @since g3w-client-editing@v3.8.0
    */
   getHelpMessage() {
-    return this.helpMessage;
+    return this._messages.help;
   }
 
   /**

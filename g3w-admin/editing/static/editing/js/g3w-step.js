@@ -540,10 +540,3 @@ export class Step extends Emitter {
   }
 
 }
-
-/**
- * @FIXME add description
- */
-Step.MESSAGES = {
-  help: null,
-};
