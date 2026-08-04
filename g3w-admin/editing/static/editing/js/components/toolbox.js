@@ -232,7 +232,6 @@ export default ({
   data() {
     return {
       active:      false,
-      helpmessage: null,
       //@since 3.8.0
       toggled:     {
         relation: false, //click on relation icon
@@ -243,6 +242,14 @@ export default ({
   },
 
   computed: {
+
+    /**
+     * @returns @since 4.0.0
+     * 
+     */
+    helpmessage() {
+      return this.state.activetool?.messages?.help ?? this.state.activetool?.name;
+    },
 
     /**
      * @since g3w-client-plugin-editing@v3.7.0
@@ -529,17 +536,6 @@ export default ({
 
   watch: {
 
-    /**
-     * @since 4.0.0
-     * check immediately if the active tool has changed to update the help message
-     */
-    'state.activetool': {
-      immediate: true,
-      async handler(tool) {
-        await this.$nextTick();
-        this.helpmessage = tool?.messages?.help || tool?.name;
-      }
-    },
     'state.toolsoftool'(nts = [], ots = []) {
       //no tools
       if (nts.length === ots.length) { return; }
