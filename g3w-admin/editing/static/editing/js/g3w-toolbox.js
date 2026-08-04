@@ -1639,7 +1639,7 @@ export class ToolBox extends Emitter {
         getOperator:          () => tool.op,
         setOperator:          op => tool.op = op,
         disableEdit:          !!tool.disableEdit, //@since v4.0.0 disable stop editing
-      })
+      });
     });
 
     Object.assign(this.state, {
@@ -2460,19 +2460,17 @@ export class ToolBox extends Emitter {
       this.state.activetool = tool;
 
       const workflow = tool.getOperator();
-
+      //only in case tool has a operator (workflow) start it and set messages
       if (workflow) {
+        tool.start();
         // filter eventually disable tools of tools
         workflow.on('settoolsoftool', ts => {
           //set empty tools of tools
           this.state.toolsoftool = (ts || []).filter(t => !tool.disabledtoolsoftools.includes(t.type))
-        })
-        // set tool messages
-        const messages      = (workflow.getHelpMessage() || workflow.getRunningStep()) ? this.state.activetool.messages : null;
-        this.state.toolmessages.help = messages && messages.help || null;
+        });
+        //In case of runnging step, check if help message is set otherwise return null
+        this.state.toolmessages.help = (workflow.getRunningStep() && this.state.activetool.messages?.help) ?? null;
       }
-
-      tool.start();
 
     } catch(e) {
       console.warn(e);
