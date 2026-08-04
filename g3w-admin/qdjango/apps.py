@@ -12,10 +12,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_migrate
 
 from qgis.core import (
-    QgsApplication, 
-    QgsProject, 
-    QgsPathResolver, 
-    QgsAuthConfigurationStorage
+    QgsApplication,
+    QgsProject,
+    QgsPathResolver,
 )
 from qgis.server import QgsServer, QgsServerSettings, QgsConfigCache
 
