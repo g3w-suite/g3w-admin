@@ -108,7 +108,7 @@ def init_qgis():
         if QgsApplication.authManager().isDisabled():
             raise ImproperlyConfigured('QGIS AuthManager is not enabled')
         
-        # Storage PSQL dovrebbe esserci
+        # Check for QPSQL torage type, create the tables in the database
         reg = QgsApplication.authManager().authConfigurationStorageRegistry()
         s = reg.storages()[0]
         if "QPSQL:" in s.name():
