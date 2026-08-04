@@ -2449,11 +2449,9 @@ export class ToolBox extends Emitter {
   async setActiveTool(tool) {
 
     try {
+      //stop current active tool
       await this.stopActiveTool(tool);
-
-      //set as active tool
-      this.state.activetool = tool;
-
+      //get workflow operator of tool
       const workflow = tool.getOperator();
       //only in case tool has a operator (workflow) start it and set messages
       if (workflow) {
@@ -2464,7 +2462,9 @@ export class ToolBox extends Emitter {
           this.state.toolsoftool = (ts || []).filter(t => !tool.disabledtoolsoftools.includes(t.type))
         });
         //In case of runnging step, check if help message is set otherwise return null
-        this.state.toolmessages.help = (workflow.getRunningStep() && this.state.activetool.messages?.help) ?? null;
+        this.state.toolmessages.help = (workflow.getRunningStep() && tool.messages?.help) ?? null;
+        //set as active tool
+        this.state.activetool = tool;
       }
 
     } catch(e) {
