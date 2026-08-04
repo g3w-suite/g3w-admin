@@ -2469,7 +2469,6 @@ export class ToolBox extends Emitter {
         })
         // set tool messages
         const messages      = (workflow.getHelpMessage() || workflow.getRunningStep()) ? this.state.activetool.messages : null;
-        console.log('messages', messages);
         this.state.toolmessages.help = messages && messages.help || null;
       }
 
