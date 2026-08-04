@@ -2391,12 +2391,7 @@ export class ToolBox extends Emitter {
             tool.visible              = undefined === options.visible              ? true :  options.visible;
             tool.enabled              = undefined === options.enabled              ? false : options.enabled;
             tool.disabledtoolsoftools = undefined === options.disabledtoolsoftools ? [] :    options.disabledtoolsoftools;
-            //@since 4.0.0 set help message of tool operator in case of external plugin
-            // https://github.com/g3w-suite/g3w-admin-simplereporting/blob/bb8727a966970491e08472b1e8f83a1a95bafb54/simplereporting/static/simplereporting/js/service.js#L227
-            // use startEditing api to start editing and set help message of tool operator 
-            if (options?.messages?.help) {
-              tool.getOperator()?.setHelpMessage(options?.messages?.help);
-            }
+            
             if (tool.visible) {
               toolsId.push(id);
             }
