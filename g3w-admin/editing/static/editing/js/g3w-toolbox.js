@@ -322,7 +322,7 @@ export class ToolBox extends Emitter {
       toolboxheader    : true,
       startstopediting : true,
       message          : null,
-      toolmessages     : { help: null },
+      toolmessages     : { help: null }, //@TODO Check if is used 
       toolsoftool      : [],
       selected         : false,
       activetool       : null,
