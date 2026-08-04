@@ -376,7 +376,7 @@ export class ToolBox extends Emitter {
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editfeatureattributesworkflow.js@v3.7.1 */
           op: new Workflow({
             layer,
-            helpMessage: 'editing.tools.update_feature',
+            messages: { help: 'editing.tools.update_feature' },
             type: 'editfeatureattributes',
             steps: [
               new PickFeatureStep(),
@@ -497,7 +497,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'modifygeometryvertex',
-            helpMessage: 'editing.tools.update_vertex',
+            messages: { help: 'editing.tools.update_vertex' },
             steps: [
               new PickFeatureStep({ layer }),
               new Step({ run: chooseFeature }),
@@ -515,7 +515,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'editmultiattributes',
-            helpMessage: 'editing.tools.update_multi_features',
+            messages: { help: 'editing.tools.update_multi_features' },
             registerEscKeyEvent: true,
             runOnce: true,
             steps: [
@@ -549,7 +549,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type:                'editmultiattributesrelationfeatures',
-            helpMessage:         'editing.tools.update_multi_features_relations_from_parents',
+            messages: { help: 'editing.tools.update_multi_features_relations_from_parents' },
             registerEscKeyEvent: true,
             runOnce:             true,
             steps: [
@@ -798,7 +798,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'movefeature',
-            helpMessage: 'editing.tools.move_feature',
+            messages: { help: 'editing.tools.move_feature' },
             steps: [
               new PickFeatureStep(),
               new Step({ run: chooseFeature }),
@@ -816,7 +816,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'rotatefeature',
-            helpMessage: 'editing.tools.rotate_feature',
+            messages: { help: 'editing.tools.rotate_feature' },
             steps: [
               new PickFeatureStep(),
               new Step({ run: chooseFeature }),
@@ -1047,7 +1047,7 @@ export class ToolBox extends Emitter {
                   }),
                   openFormStep,
                 ],
-                helpMessage: "editing.tools.pastefeaturesfromotherlayers",
+                messages: { help: "editing.tools.pastefeaturesfromotherlayers" },
                 registerEscKeyEvent: true
               });
             })(),
@@ -1204,7 +1204,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ].filter(Boolean),
-            helpMessage: "editing.tools.copy",
+            messages: { help: "editing.tools.copy" },
             registerEscKeyEvent: true,
           }),
         },
@@ -1219,7 +1219,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type:        'addparttomultigeometries',
-            helpMessage: 'editing.tools.addpart',
+            messages: { help: 'editing.tools.addpart' },
             runOnce:     true,
             steps: [
               new PickFeatureStep({
@@ -1358,7 +1358,7 @@ export class ToolBox extends Emitter {
                 },
               }),
             ],
-            helpMessage: 'editing.tools.deletepart',
+            messages: { help: 'editing.tools.deletepart' },
           }),
         },
         // Split Feature
@@ -1459,7 +1459,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ],
-            helpMessage: 'editing.tools.split',
+            messages: { help: 'editing.tools.split' },
             registerEscKeyEvent: true,
           }),
         },
@@ -1551,7 +1551,7 @@ export class ToolBox extends Emitter {
                 },
               }),
             ],
-            helpMessage: 'editing.tools.merge',
+            messages: { help: 'editing.tools.merge' },
             registerEscKeyEvent: true
           }),
         },
