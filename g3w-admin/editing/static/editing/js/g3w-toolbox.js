@@ -322,7 +322,6 @@ export class ToolBox extends Emitter {
       toolboxheader    : true,
       startstopediting : true,
       message          : null,
-      toolmessages     : { help: null }, //@TODO Check if is used 
       toolsoftool      : [],
       selected         : false,
       activetool       : null,
@@ -2172,7 +2171,6 @@ export class ToolBox extends Emitter {
    *
    */
   clearToolboxMessages() {
-    this.state.toolmessages.help = null;
     this.clearMessage();
   }
 
@@ -2461,8 +2459,6 @@ export class ToolBox extends Emitter {
           //set empty tools of tools
           this.state.toolsoftool = (ts || []).filter(t => !tool.disabledtoolsoftools.includes(t.type))
         });
-        //In case of runnging step, check if help message is set otherwise return null
-        this.state.toolmessages.help = (workflow.getRunningStep() && tool.helpMessage) ?? null;
         //set as active tool
         this.state.activetool = tool;
       }
@@ -2495,7 +2491,6 @@ export class ToolBox extends Emitter {
       }
       //@since 3.9.1 Changed to set empty array cause reactivity of vue instead of splice(0)
       this.state.toolsoftool       = [];
-      this.state.toolmessages.help = null;
       this.state.activetool        = null;
     } catch(e) {
       console.warn(e);
