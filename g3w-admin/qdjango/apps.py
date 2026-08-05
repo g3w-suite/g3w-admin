@@ -107,19 +107,23 @@ def init_qgis():
         if QgsApplication.authManager().isDisabled():
             raise ImproperlyConfigured('QGIS AuthManager is not enabled')
         
-        # Check for QPSQL torage type, create the tables in the database
+        # If using the QPSQL auth storage, ensure it's writable and initialized (creates tables if missing)
         reg = QgsApplication.authManager().authConfigurationStorageRegistry()
-        s = reg.storages()[0]
-        if "QPSQL:" in s.name():
-            s.setReadOnly(False)
-            s.initialize()  # questo crea le tabelle se non ci sono
+        storages = list(reg.storages())
+        qpsql_storage = next((st for st in storages if "QPSQL:" in st.name()), None)
+        if qpsql_storage is not None:
+            qpsql_storage.setReadOnly(False)
+            qpsql_storage.initialize()  # create tables if missing
 
         if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
             raise ImproperlyConfigured('Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
-        
-        # Check pwd is set in the DB
-        if len(s.masterPasswords()) == 0:
-            raise ImproperlyConfigured('QGIS Auth DB master password is not set in the database')
+
+        # Validate that the master password is persisted/available
+        if qpsql_storage is not None:
+            if not qpsql_storage.masterPasswords():
+                raise ImproperlyConfigured('QGIS Auth DB master password is not set in the database')
+        elif not QgsApplication.authManager().masterPasswordIsSet():
+            raise ImproperlyConfigured('QGIS Auth DB master password is not set')
 
     # Manipulate environment variables here
     os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
