@@ -48,6 +48,6 @@ django-cors-headers==4.9.0
 
 # For huey
 # --------------------------------------------------
-git+https://github.com/boxine/bx_py_utils.git@v118
+bx-py-utils==118
 bx-django-utils==97
 django-huey-monitor==0.10.1
