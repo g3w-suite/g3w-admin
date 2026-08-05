@@ -376,7 +376,7 @@ export class ToolBox extends Emitter {
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editfeatureattributesworkflow.js@v3.7.1 */
           op: new Workflow({
             layer,
-            messages: { help: 'editing.tools.update_feature' },
+            helpMessage: 'editing.tools.update_feature',
             type: 'editfeatureattributes',
             steps: [
               new PickFeatureStep(),
@@ -497,7 +497,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'modifygeometryvertex',
-            messages: { help: 'editing.tools.update_vertex' },
+            helpMessage: 'editing.tools.update_vertex',
             steps: [
               new PickFeatureStep({ layer }),
               new Step({ run: chooseFeature }),
@@ -515,7 +515,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'editmultiattributes',
-            messages: { help: 'editing.tools.update_multi_features' },
+            helpMessage: 'editing.tools.update_multi_features',
             registerEscKeyEvent: true,
             runOnce: true,
             steps: [
@@ -549,7 +549,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type:                'editmultiattributesrelationfeatures',
-            messages: { help: 'editing.tools.update_multi_features_relations_from_parents' },
+            helpMessage: 'editing.tools.update_multi_features_relations_from_parents',
             registerEscKeyEvent: true,
             runOnce:             true,
             steps: [
@@ -798,7 +798,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'movefeature',
-            messages: { help: 'editing.tools.move_feature' },
+            helpMessage: 'editing.tools.move_feature',
             steps: [
               new PickFeatureStep(),
               new Step({ run: chooseFeature }),
@@ -816,7 +816,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type: 'rotatefeature',
-            messages: { help: 'editing.tools.rotate_feature' },
+            helpMessage: 'editing.tools.rotate_feature',
             steps: [
               new PickFeatureStep(),
               new Step({ run: chooseFeature }),
@@ -1047,7 +1047,7 @@ export class ToolBox extends Emitter {
                   }),
                   openFormStep,
                 ],
-                messages: { help: "editing.tools.pastefeaturesfromotherlayers" },
+                helpMessage: "editing.tools.pastefeaturesfromotherlayers",
                 registerEscKeyEvent: true
               });
             })(),
@@ -1204,7 +1204,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ].filter(Boolean),
-            messages: { help: "editing.tools.copy" },
+            helpMessage: "editing.tools.copy",
             registerEscKeyEvent: true,
           }),
         },
@@ -1219,7 +1219,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type:        'addparttomultigeometries',
-            messages: { help: 'editing.tools.addpart' },
+            helpMessage: 'editing.tools.addpart',
             runOnce:     true,
             steps: [
               new PickFeatureStep({
@@ -1358,7 +1358,7 @@ export class ToolBox extends Emitter {
                 },
               }),
             ],
-            messages: { help: 'editing.tools.deletepart' },
+            helpMessage: 'editing.tools.deletepart',
           }),
         },
         // Split Feature
@@ -1459,7 +1459,7 @@ export class ToolBox extends Emitter {
                 }
               }),
             ],
-            messages: { help: 'editing.tools.split' },
+            helpMessage: 'editing.tools.split',
             registerEscKeyEvent: true,
           }),
         },
@@ -1551,7 +1551,7 @@ export class ToolBox extends Emitter {
                 },
               }),
             ],
-            messages: { help: 'editing.tools.merge' },
+            helpMessage: 'editing.tools.merge',
             registerEscKeyEvent: true
           }),
         },
@@ -1630,7 +1630,7 @@ export class ToolBox extends Emitter {
         enabled:              !!tool.enabled,
         active:               false,
         message:              null,
-        messages:             tool.op.getMessages(),
+        helpMessage:          tool.op.getHelpMessage(),
         visible:              tool.visible instanceof Function ? tool.visible(tool) : (undefined !== tool.visible ? tool.visible: true),
         state:                new Proxy({}, { get: (_, prop) => tool[prop], set:(_, prop, value) => { tool[prop] = value; return true; } }),
         start:                this._startTool.bind(this, tool),
@@ -2387,7 +2387,7 @@ export class ToolBox extends Emitter {
           if (tool) {
             const { active = false } = options;
             // set tool options
-            tool.messages             = options.messages || tool.messages;
+            tool.helpMessage          = options.helpMessage ?? tool.helpMessage;
             tool.visible              = undefined === options.visible              ? true :  options.visible;
             tool.enabled              = undefined === options.enabled              ? false : options.enabled;
             tool.disabledtoolsoftools = undefined === options.disabledtoolsoftools ? [] :    options.disabledtoolsoftools;
@@ -2462,7 +2462,7 @@ export class ToolBox extends Emitter {
           this.state.toolsoftool = (ts || []).filter(t => !tool.disabledtoolsoftools.includes(t.type))
         });
         //In case of runnging step, check if help message is set otherwise return null
-        this.state.toolmessages.help = (workflow.getRunningStep() && tool.messages?.help) ?? null;
+        this.state.toolmessages.help = (workflow.getRunningStep() && tool.helpMessage) ?? null;
         //set as active tool
         this.state.activetool = tool;
       }
@@ -2541,7 +2541,7 @@ export class ToolBox extends Emitter {
       this.state._tools.forEach(tool => {
         tool.visible              = true;
         tool.enabled              = false;
-        tool.messages             = tool.op.getMessages();
+        tool.helpMessage          = tool.op.getHelpMessage();
         tool.disabledtoolsoftools = []; //reset disabled tools eventually set by other
       });
     }

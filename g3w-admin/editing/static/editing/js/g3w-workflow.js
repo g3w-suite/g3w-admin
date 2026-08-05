@@ -97,11 +97,9 @@ export class Workflow extends Emitter {
     this.runOnce = options?.runOnce || false;
 
     /**
-     * Set messages for workflow (ex. help message)
+     * Workflow help message key
      */
-    this._messages = options.messages ?? {
-      help: options.helpMessage ?? null,
-    };
+    this._helpMessage = options?.helpMessage ?? null;
 
     /**
      * Store user messages steps to show when workflow
@@ -259,24 +257,10 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * @param messages
-   */
-  setMessages(messages) {
-    Object.assign(this._messages, messages);
-  }
-
-  /**
-   * @FIXME add description
-   */
-  getMessages() {
-    return this._messages;
-  }
-
-  /**
    * @FIXME add description
    */
   clearMessages() {
-    this._messages.help = null;
+    this.setHelpMessage(null);
     if (Object.keys(this._userMessageSteps).length > 0) {
       this.clearUserMessagesSteps();
     }
@@ -324,7 +308,7 @@ export class Workflow extends Emitter {
   async runStep(step, inputs) {
     try {
       //set step message
-      this.setMessages({ help: step.state.help });
+      this.setHelpMessage(step.state.help);
 
       //@since 3.9.1
       this.emit('settoolsoftool', (step.tools || []));
@@ -384,7 +368,7 @@ export class Workflow extends Emitter {
           type:      'tool',
           closable:  false,
           iconClass: 'tasks',
-          subtitle:  this._messages?.help && `plugins.${this._messages?.help}`,
+          subtitle:  this.getHelpMessage() && `plugins.${this.getHelpMessage()}`,
           hooks: {
             body: {
               template: /* html */`
@@ -572,7 +556,7 @@ export class Workflow extends Emitter {
    * @since g3w-client-editing@v3.8.0
    */
   setHelpMessage(message) {
-    this._messages.help  = message ;
+    this._helpMessage = message;
   }
 
   /**
@@ -581,7 +565,7 @@ export class Workflow extends Emitter {
    * @since g3w-client-editing@v3.8.0
    */
   getHelpMessage() {
-    return this._messages.help;
+    return this._helpMessage;
   }
 
   /**

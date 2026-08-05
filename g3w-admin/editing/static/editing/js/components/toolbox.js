@@ -248,7 +248,7 @@ export default ({
      * 
      */
     helpmessage() {
-      return this.state.activetool?.messages?.help ?? this.state.activetool?.name;
+      return this.state.activetool?.helpMessage ?? this.state.activetool?.name;
     },
 
     /**
