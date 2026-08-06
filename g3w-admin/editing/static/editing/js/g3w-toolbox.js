@@ -321,7 +321,6 @@ export class ToolBox extends Emitter {
       toolboxheader    : true,
       startstopediting : true,
       message          : null,
-      toolmessages     : { help: null },
       toolsoftool      : [],
       selected         : false,
       activetool       : null,
@@ -548,7 +547,7 @@ export class ToolBox extends Emitter {
           op: new Workflow({
             layer,
             type:                'editmultiattributesrelationfeatures',
-            helpMessage:         'editing.tools.update_multi_features_relations_from_parents',
+            helpMessage: 'editing.tools.update_multi_features_relations_from_parents',
             registerEscKeyEvent: true,
             runOnce:             true,
             steps: [
@@ -1629,7 +1628,7 @@ export class ToolBox extends Emitter {
         enabled:              !!tool.enabled,
         active:               false,
         message:              null,
-        messages:             tool.op.getMessages(),
+        helpMessage:          tool.op.getHelpMessage(),
         visible:              tool.visible instanceof Function ? tool.visible(tool) : (undefined !== tool.visible ? tool.visible: true),
         state:                new Proxy({}, { get: (_, prop) => tool[prop], set:(_, prop, value) => { tool[prop] = value; return true; } }),
         start:                this._startTool.bind(this, tool),
@@ -1638,7 +1637,7 @@ export class ToolBox extends Emitter {
         getOperator:          () => tool.op,
         setOperator:          op => tool.op = op,
         disableEdit:          !!tool.disableEdit, //@since v4.0.0 disable stop editing
-      })
+      });
     });
 
     Object.assign(this.state, {
@@ -2171,7 +2170,6 @@ export class ToolBox extends Emitter {
    *
    */
   clearToolboxMessages() {
-    this.state.toolmessages.help = null;
     this.clearMessage();
   }
 
@@ -2382,14 +2380,15 @@ export class ToolBox extends Emitter {
       enableTools
         .forEach(({ id, options = {} }) => {
           //check if id of tool passed as argument is right
-          const tool =this.getToolById(id);
+          const tool = this.getToolById(id);
           if (tool) {
             const { active = false } = options;
             // set tool options
-            tool.messages             = options.messages || tool.messages;
+            tool.helpMessage          = options.helpMessage ?? tool.helpMessage;
             tool.visible              = undefined === options.visible              ? true :  options.visible;
             tool.enabled              = undefined === options.enabled              ? false : options.enabled;
             tool.disabledtoolsoftools = undefined === options.disabledtoolsoftools ? [] :    options.disabledtoolsoftools;
+            
             if (tool.visible) {
               toolsId.push(id);
             }
@@ -2447,25 +2446,21 @@ export class ToolBox extends Emitter {
   async setActiveTool(tool) {
 
     try {
+      //stop current active tool
       await this.stopActiveTool(tool);
-
-      //set as active tool
-      this.state.activetool = tool;
-
+      //get workflow operator of tool
       const workflow = tool.getOperator();
-
+      //only in case tool has a operator (workflow) start it and set messages
       if (workflow) {
+        tool.start();
         // filter eventually disable tools of tools
         workflow.on('settoolsoftool', ts => {
           //set empty tools of tools
           this.state.toolsoftool = (ts || []).filter(t => !tool.disabledtoolsoftools.includes(t.type))
-        })
-        // set tool messages
-        const messages      = (workflow.getHelpMessage() || workflow.getRunningStep()) ? this.state.activetool.messages : null;
-        this.state.toolmessages.help = messages && messages.help || null;
+        });
+        //set as active tool
+        this.state.activetool = tool;
       }
-
-      tool.start();
 
     } catch(e) {
       console.warn(e);
@@ -2495,7 +2490,6 @@ export class ToolBox extends Emitter {
       }
       //@since 3.9.1 Changed to set empty array cause reactivity of vue instead of splice(0)
       this.state.toolsoftool       = [];
-      this.state.toolmessages.help = null;
       this.state.activetool        = null;
     } catch(e) {
       console.warn(e);
@@ -2541,7 +2535,7 @@ export class ToolBox extends Emitter {
       this.state._tools.forEach(tool => {
         tool.visible              = true;
         tool.enabled              = false;
-        tool.messages             = tool.op.getMessages();
+        tool.helpMessage          = tool.op.getHelpMessage();
         tool.disabledtoolsoftools = []; //reset disabled tools eventually set by other
       });
     }

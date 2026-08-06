@@ -542,10 +542,3 @@ export class Step extends Emitter {
   }
 
 }
-
-/**
- * Set type of messages
- */
-Step.MESSAGES = {
-  help: null,
-};
