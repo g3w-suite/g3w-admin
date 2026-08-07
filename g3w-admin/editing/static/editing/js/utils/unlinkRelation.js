@@ -1,4 +1,4 @@
-import { Workflow }                      from '../g3w-workflow.js';
+import { Tool }                          from '../g3w-tool.js';
 import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRelation.js';
 import { getEditingLayerById }           from '../utils/getEditingLayerById.js';
 
@@ -32,9 +32,9 @@ export async function unlinkRelation({
     const originalRelation = feature.clone();
     // loop on ownField (Array field child relation)
     getRelationFieldsFromRelation({ relation, layerId: id }).ownField.forEach(f => feature.set(f, null))
-    Workflow.Stack.current.session.pushUpdate(id, feature, originalRelation);
+    Tool.Stack.current.session.pushUpdate(id, feature, originalRelation);
     relations.splice(index, 1);
-    Workflow.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+    Tool.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
     return true;
   }
 }

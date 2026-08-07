@@ -5,7 +5,7 @@
  */
 
 import { Step }                      from '../g3w-step.js';
-import { Workflow }                  from '../g3w-workflow.js';
+import { Tool }                      from '../g3w-tool.js';
 import { OpenFormStep }              from '../actions/open-form.js';
 import { cloneFeature }              from '../utils/cloneFeature.js';
 import { getRelationsInEditing }     from '../utils/getRelationsInEditing.js';
@@ -252,7 +252,7 @@ export default ({
         : features,
       title:     `${inputs.layer.getName()}` || 'Link relation',
       layerId:   inputs.layer.getId(),
-      workflow:  null,
+      tool:  null,
       linked:    [],
       ordering:  [0, 'asc'],
       PAGELENGTHS,
@@ -379,7 +379,7 @@ export default ({
       );
 
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
-      this.workflow = new Workflow({
+      this.tool = new Tool({
         type: 'addtablefeature',
         steps: [
           new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
@@ -390,7 +390,7 @@ export default ({
       this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
+        const outputs = await this.tool.start({ context: this.context, inputs: this.inputs });
         const feature = outputs.features.at(-1);
         const newFeat = {};
         Object.entries(this.rows[0]).forEach(([ key, _ ]) => {
@@ -402,7 +402,7 @@ export default ({
         console.warn(e);
       }
 
-      this.workflow.stop();
+      this.tool.stop();
     },
 
     /**
@@ -413,12 +413,12 @@ export default ({
       const feature = this.features[index];
   
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
-      this.workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
+      this.tool = new Tool({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
     
       this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
+        const outputs = await this.tool.start({ context: this.context, inputs: this.inputs });
         
         const feature = outputs.features.at(-1);
         Object
@@ -432,7 +432,7 @@ export default ({
         console.warn(e);
       }
 
-      this.workflow.stop();
+      this.tool.stop();
     },
 
     /**

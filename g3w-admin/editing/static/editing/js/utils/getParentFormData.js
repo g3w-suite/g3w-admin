@@ -1,4 +1,4 @@
-import { Workflow } from '../g3w-workflow.js';
+import { Tool } from '../g3w-tool.js';
 
 /**
  * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
@@ -7,7 +7,7 @@ import { Workflow } from '../g3w-workflow.js';
  */
 export function getParentFormData() {
   // skip when ..
-  if (!(Workflow.Stack.length > 1)) {
+  if (!(Tool.Stack.length > 1)) {
     return;
   }
 
@@ -15,7 +15,7 @@ export function getParentFormData() {
     features,
     layer,
     fields = [],
-  } = Workflow.Stack.parent.getInputs();
+  } = Tool.Stack.parent.getInputs();
 
   // in the case of temporary fields (setted by form) set temporary value to feature (cloned) parent
   const feature = features[features.length - 1].clone();

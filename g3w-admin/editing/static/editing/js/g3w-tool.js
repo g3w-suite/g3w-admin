@@ -1,8 +1,5 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/workflow/workflow.js@v4.0.0
- * 
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
@@ -12,25 +9,23 @@ const { Emitter } = g3w;
 const GUI         = g3w.app;
 
 /**
- * Workflow Class (manage flow of steps)
+ * Tool Class (manage flow of steps)
  */
-export class Workflow extends Emitter {
+export class Tool extends Emitter {
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/services/workflow.js@v3.9.1
-   * 
-   * Store all activated workflows
+   * Store all activated tools
    * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   static Stack = {
-    /** @type { Workflow[] } */
+    /** @type { Tool[] } */
     items:         [],
-    get length()   { return Workflow.Stack.items.length; },
-    get parent()   { return Workflow.Stack.items.slice(-2)[0]; },
-    get parents()  { return Workflow.Stack.items.slice(0, -1); },
-    get current()  { return Workflow.Stack.items.at(-1); },
-    at(index)      { return Workflow.Stack.items.at(index); },
+    get length()   { return Tool.Stack.items.length; },
+    get parent()   { return Tool.Stack.items.slice(-2)[0]; },
+    get parents()  { return Tool.Stack.items.slice(0, -1); },
+    get current()  { return Tool.Stack.items.at(-1); },
+    at(index)      { return Tool.Stack.items.at(index); },
   };
 
   /**
@@ -42,6 +37,11 @@ export class Workflow extends Emitter {
 
   /**
    * @param {Object} options
+   * @param {String} options.id
+   * @param {String} options.name
+   * @param {String} options.icon
+   * @param {function} options.enable
+   * @param {String | Array.<string[]>} options.type
    * @param options.inputs
    * @param options.context
    * @param options.flow
@@ -53,13 +53,23 @@ export class Workflow extends Emitter {
 
     super();
 
+    this.id                   = options?.id;
+    this.type                 = options?.type ?? [];
+    this.name                 = options?.name;
+    this.icon                 = options?.icon;
+    this.enable               = options?.enable ?? true;
+    this.disabledtoolsoftools =  [];
+    this.enabled              = !!options?.enabled;
+    this.active               = false;
+    this.message              = null;
+    this.disableEdit          = !!options?.disableEdit; //@since v4.0.0 disable stop editing
+    this.visible              = options?.visible instanceof Function ? options.visible(this) : (undefined !== options?.visible ? options.visible: true);
+    this.state                = new Proxy({}, { get: (_, prop) => this[prop], set:(_, prop, value) => { this[prop] = value; return true; } }),
+
     /** @since g3w-client-plugin-editing@v3.8.0*/
     this._type = options?.type || null;
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
-    this._options = options;
+    
 
     /**
      * @FIXME add description
@@ -67,27 +77,17 @@ export class Workflow extends Emitter {
     this._promise = null;
 
     /**
-     * Mandatory inputs to work with editing
-     */
-    this._inputs = options?.inputs || null;
-
-    /**
-     * @FIXME add description
-     */
-    this._context = options?.context || null;
-
-    /**
      * All steps of flow
      */
     this._steps = options?.steps || [];
 
     /**
-     * Whether is child of another workflow
+     * Whether is child of another tool
      */
     this._child = null;
 
     /**
-     * stack workflowindex
+     * stack tool index)
      */
     this._stackIndex = null;
 
@@ -97,12 +97,12 @@ export class Workflow extends Emitter {
     this.runOnce = options?.runOnce || false;
 
     /**
-     * Workflow help message key
+     * Tool help message key
      */
     this._helpMessage = options?.helpMessage ?? null;
 
     /**
-     * Store user messages steps to show when workflow
+     * Store user messages steps to show when tool
      * use a mandatory steps (ex. select: {description}, merge: {description}}
      */
     this._userMessageSteps = {};
@@ -112,22 +112,18 @@ export class Workflow extends Emitter {
     }
 
     /**
-     * Holds back button label (in case of child workflow)
+     * Holds back button label (in case of child tool)
      * 
      * @since 3.9.0
      */
     this.backbuttonlabel = options?.backbuttonlabel || null; 
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-     * 
      * @since g3w-client-editing@v3.8.0
      */
     this._toolsoftool = [];
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-     * 
      * @since g3w-client-editing@v3.8.0
      */
     if (true === options.registerEscKeyEvent) {
@@ -135,14 +131,16 @@ export class Workflow extends Emitter {
     }
 
     /**
-     * ORIGINAL SOURCE: g3w-client/src/core/workflow/flow.js@v3.9.1
-     * 
      * Current flow step
      * 
      * @since g3w-client-editing@v3.8.0
      */
     this._stepIndex = 0;
 
+  }
+
+  getId() {
+    return this.id;
   }
 
   /**
@@ -186,19 +184,19 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * @param workflow
+   * @param tool
    */
-  addChild(workflow) {
+  addChild(tool) {
     if (this._child) {
-      this._child.addChild(workflow);
+      this._child.addChild(tool);
     } else {
-      this._child = workflow;
+      this._child = tool;
     }
   }
 
   /**
-   * @param input.key
-   * @param input.value
+   * @param key
+   * @param value
    */
   setInput({ key, value }) {
     this._inputs[key] = value;
@@ -300,7 +298,7 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * Method to run steps of workflow
+   * Method to run steps of tool
    * @param step
    * @param inputs
    * @return {Promise<unknown>}
@@ -316,22 +314,23 @@ export class Workflow extends Emitter {
       const outputs = await step.__run(inputs, this.getContext());
       // onDone → check if all step is resolved
       this._stepIndex++;
-      //check if is the last of workflow steps
+      //check if is the last of tool steps
       if (this._stepIndex === this.getSteps().length) {
         this._stepIndex = 0;
         return outputs;
       } else {
-        //recursion util the enf of all steps
+        //recursion until the end of all steps
         return this.runStep(this.getSteps()[this._stepIndex], outputs);
       }
-    } catch(e) { //In case of reject
+    } catch(e) { 
+      //In case of reject
       this._stepIndex = 0;
       return Promise.reject(e);
     }
   }
 
   /**
-   * Start workflow
+   * Start tool
    * 
    * @param options.inputs
    * @param options.context
@@ -348,18 +347,18 @@ export class Workflow extends Emitter {
   
       const isChild = this._context.isChild || false;
       
-      // stop child when a workflow is running 
-      if (!isChild && Workflow.Stack.length && this !== Workflow.Stack.current) {
-        Workflow.Stack.current.addChild(this);
+      // stop child when a tool is running
+      if (!isChild && Tool.Stack.length && this !== Tool.Stack.current) {
+        Tool.Stack.current.addChild(this);
       }
 
       //get stack index
-      this._stackIndex = Workflow.Stack.items.includes(this) ? Workflow.Stack.items.indexOf(this) : (Workflow.Stack.items.push(this) - 1);
+      this._stackIndex = Tool.Stack.items.includes(this) ? Tool.Stack.items.indexOf(this) : (Tool.Stack.items.push(this) - 1);
 
       //get steps
       this._steps      = options.steps || this._steps;
-      //for each step assign current workflow to _workflow
-      (this._steps || []).forEach(s => s._workflow = this);
+      //for each step assign current tool to _tool
+      (this._steps || []).forEach(s => s._tool = this);
   
       const showUserMessage = Object.keys(this._userMessageSteps).length > 0;  
       if (showUserMessage) {
@@ -428,12 +427,12 @@ export class Workflow extends Emitter {
           }
         });
       }
-      //emit start Workflow
+      //emit start Tool
       this.emit('start');
   
       try {
-        console.assert(0 === this._stepIndex, `reset workflow before restarting: ${this._stepIndex}`)
-        //start flow of workflow
+        console.assert(0 === this._stepIndex, `reset tool before restarting: ${this._stepIndex}`)
+        //start flow of tool
         const outputs = await this.runStep(this.getSteps()[this._stepIndex], this.getInputs());
         //In case of show user message (tool steps)
         if (showUserMessage) {
@@ -454,7 +453,7 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * Stop workflow during flow
+   * Stop tool during flow
    * 
    * @fires stop
    */
@@ -464,7 +463,7 @@ export class Workflow extends Emitter {
       this._promise = null;
 
       try {
-        // stop child workflow
+        // stop child tool
         if (this._child) {
           await this._child.stop();
         }
@@ -497,10 +496,10 @@ export class Workflow extends Emitter {
         console.warn(e);
         reject(e);
       } finally {
-        //remove workflow from stack
-        Workflow.Stack.items.splice(this.getStackIndex(), 1);
+        //remove tool from stack
+        Tool.Stack.items.splice(this.getStackIndex(), 1);
 
-        //emit stop Workflow
+        //emit stop Tool
         this.emit('stop');
       }
     });
@@ -539,8 +538,6 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @param step
    * @param tools
    * 
@@ -551,8 +548,6 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   setHelpMessage(message) {
@@ -560,8 +555,6 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   getHelpMessage() {
@@ -569,8 +562,6 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   getFeatures() {
@@ -578,8 +569,6 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   startFromLastStep(opts = {}) {
@@ -588,8 +577,6 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   getLayer() {
@@ -597,8 +584,6 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   getSession() {
@@ -606,22 +591,18 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * bind interupt event
    * 
    * @since g3w-client-editing@v3.8.0
    */
   escKeyUpHandler(evt) {
     if (27 === evt.keyCode) {
-      evt.data.workflow.reject();
+      evt.data.tool.reject();
       evt.data.callback();
     }
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   unbindEscKeyUp() {
@@ -629,17 +610,13 @@ export class Workflow extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   bindEscKeyUp(callback = () => {}) {
-    $(document).on('keyup', { workflow: this, callback }, this.escKeyUpHandler);
+    $(document).on('keyup', { tool: this, callback }, this.escKeyUpHandler);
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @since g3w-client-editing@v3.8.0
    */
   registerEscKeyEvent(callback) {

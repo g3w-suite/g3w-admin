@@ -419,8 +419,8 @@ export class Step extends Emitter {
 
     };
 
-    if (this._tools && 0 === this._workflow._toolsoftool.length) {
-      this._workflow._toolsoftool.push(...(
+    if (this._tools && 0 === this._tool._toolsoftool.length) {
+      this._tool._toolsoftool.push(...(
         this._tools
           .filter(tool => ('measure' !== tool || ('vector' === inputs.layer.getType() && !isPointGeometryType(inputs.layer.getGeometryType()))))
           .map(tool => toolsOfTools[tool])
@@ -428,8 +428,8 @@ export class Step extends Emitter {
     }
 
     if (this._tools) {
-      this._workflow._toolsoftool.forEach(t => t.options.run({ layer: inputs.layer }));
-      this._workflow.emit('settoolsoftool', this._workflow._toolsoftool);
+      this._tool._toolsoftool.forEach(t => t.options.run({ layer: inputs.layer }));
+      this._tool.emit('settoolsoftool', this._tool._toolsoftool);
     }
 
     this.emit('run', { inputs, context });
@@ -457,7 +457,7 @@ export class Step extends Emitter {
    * @fires stop
    */
   async __stop() {
-    this._workflow?._toolsoftool?.forEach?.(t => t.options.stop());
+    this._tool?._toolsoftool?.forEach?.(t => t.options.stop());
     await this._stop(this._inputs, this._context);   // stop task
     this.state.running = false;                // remove running state
     this.emit('stop');
@@ -529,13 +529,13 @@ export class Step extends Emitter {
   /**
    * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
    * 
-   * @param workflow
+   * @param tool
    * @param tools
    * 
    * @since g3w-client-editing@v3.8.0
    */
-  setToolsOfTools(workflow, tools = [] ) {
-    this._workflow = workflow;
+  setToolsOfTools(tool, tools = [] ) {
+    this._tool     = tool;
     this._tools    = tools;
   }
 

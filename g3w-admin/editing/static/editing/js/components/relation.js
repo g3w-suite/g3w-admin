@@ -4,7 +4,7 @@
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { Workflow }                         from '../g3w-workflow.js';
+import { Tool }                             from '../g3w-tool.js';
 import { Step }                             from '../g3w-step.js';
 import { Feature }                          from '../g3w-feature.js';
 import { cloneFeature }                     from '../utils/cloneFeature.js';
@@ -453,9 +453,9 @@ export default ({
         let external    = copyLayer.external;
         let layer       = external ? GUI.getLayerById(this.copylayerid) : getCatalogLayerById(this.copylayerid);
         const is_vector = external || layer.isGeoLayer();
-        this.runWorkflow({
-          workflow: is_vector
-            ? this._add_link_workflow.selectandcopy({
+        this.runTool({
+          tool: is_vector
+            ? this._add_link_tool.selectandcopy({
                 copyLayer: layer,
                 isVector:  true,
                 help:      'editing.steps.help.copy',
@@ -471,8 +471,8 @@ export default ({
       },
 
       addRelation() {
-        this.runWorkflow({
-          workflow: this._add_link_workflow.add(),
+        this.runTool({
+          tool: this._add_link_tool.add(),
           isVector: 'vector' === this._layerType,
         });
         this.show_tools = false;
@@ -482,8 +482,8 @@ export default ({
         if (this.isVectorRelation) {
           this.show_tools = !this.show_tools;
         } else {
-          this.runWorkflow({
-            workflow: this._add_link_workflow.add(),
+          this.runTool({
+            tool: this._add_link_tool.add(),
             isVector: 'vector' === this._layerType,
           });
         }
@@ -498,12 +498,12 @@ export default ({
        * Edit attributes of all relations
        */
       async editMulti() {
-        const workflow = new Workflow({
+        const tool = new Tool({
           type: 'editmultiattributes',
           steps: [ new OpenFormStep({ multi: true }) ],
         });
         try {
-          await workflow.start(
+          await tool.start(
             this._createWorkflowOptions({
               features: this.relations
                 .filter(r => r.select)
@@ -514,7 +514,7 @@ export default ({
           console.warn(e);
         }
 
-        workflow.stop();
+        tool.stop();
 
       },
 
@@ -679,7 +679,7 @@ export default ({
               new Promise(async (resolve, reject) => {
                 //replace current feature with clone
                 options.inputs.features = [cloneFeature(relationfeature, this.getLayer())];
-                const workflow = new Workflow({
+                const tool = new Tool({
                   type: 'addtablefeature',
                   steps: [
                     new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
@@ -687,7 +687,7 @@ export default ({
                   ],
                 });
                 try {
-                  const outputs = await workflow.start(options);
+                  const outputs = await tool.start(options);
                   const feature = outputs.features[outputs.features.length - 1];
                   this.relations.push({ id: feature.getId(), fields: getFieldsWithValues(this.getLayer(), feature, { relation: true }) });
                   resolve(feature);
@@ -702,7 +702,7 @@ export default ({
                   reject(e);
 
                 } finally {
-                  workflow.stop();
+                  tool.stop();
                   relationtool.state.active = false;
 
                 }
@@ -719,7 +719,7 @@ export default ({
 
             //confirm to delete
             if (ok) {
-              Workflow.Stack.current.session.pushDelete(this._relationLayerId, relationfeature);
+              Tool.Stack.current.session.pushDelete(this._relationLayerId, relationfeature);
               // remove feature from relation features
               this.relations.splice(index, 1);
               // remove tool from relation tools
@@ -744,14 +744,14 @@ export default ({
               // In this case, we need to check if there are temporary changes not related to this current feature
               if (
                 relationfeature.isNew()
-                && undefined === Workflow.Stack.items.find(w => w.getSession().state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
+                && undefined === Tool.Stack.items.find(w => w.getSession().state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
               ) {
-                Workflow.Stack.items
+                Tool.Stack.items
                   .filter(w => w.getContext().service instanceof FormService)
                   .forEach(w => setTimeout(() => w.getContext().service.state.update = false));
               } else {
-                //set parent workflow update to enable to save all buttons
-                Workflow.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                //set parent tool update to enable to save all buttons
+                Tool.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
               }
 
               d.resolve(ok);
@@ -767,10 +767,10 @@ export default ({
           // EDIT ATTRIBUTE FEATURE RELATION
           if ('editattributes' === toolId) {
             /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
-            const workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep({ selectStyle }) ] });
+            const tool = new Tool({ type: 'edittablefeature', steps: [ new OpenFormStep({ selectStyle }) ] });
 
             try {
-              await workflow.start(options);
+              await tool.start(options);
 
               //get relation layer fields
               getFieldsWithValues(this.getLayer(), relationfeature, { relation: true })
@@ -785,13 +785,13 @@ export default ({
             } catch(e) {
               console.warn(e);
               //need to rollback changes done at moment
-              Workflow.Stack.current.session.rollback();
+              Tool.Stack.current.session.rollback();
               //reset eventually state of form parent service (save changes or not)
-              Workflow.Stack.parents?.forEach(w => w?.getContext?.()?.service?.setUpdate?.( w?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
+              Tool.Stack.parents?.forEach(w => w?.getContext?.()?.service?.setUpdate?.( w?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
               d.reject(e);
             }
 
-            workflow.stop();
+            tool.stop();
           }
 
           // zoom to relation vector feature
@@ -805,7 +805,7 @@ export default ({
             // disable modal and buttons (saveAll and back)
             GUI.setModal(false);
             this.toggleDOM(false);
-            const workflow = new Workflow({
+            const tool = new Tool({
               type: relationtool.type,
               steps: [ new {
                 'movevertex':  ModifyGeometryVertexStep,
@@ -821,24 +821,24 @@ export default ({
                   //need to enable saveAll and back
                   this.toggleDOM(true);
                   GUI.setModal(true);
-                  workflow.unbindEscKeyUp();
-                  workflow.stop();
+                  tool.unbindEscKeyUp();
+                  tool.stop();
                   unwatch();
                   d.reject(false);
                 }
               }
             )
             // bind listen esc key
-            workflow.bindEscKeyUp(() => {
+            tool.bindEscKeyUp(() => {
               GUI.setModal(true);
               unwatch();
               d.reject(false);
             });
 
             try {
-              await workflow.start(options);
+              await tool.start(options);
 
-              Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+              Tool.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
               d.resolve(true);
               setTimeout(() => this.startTool(relationtool, index));
             } catch(e) {
@@ -846,8 +846,8 @@ export default ({
               d.reject(e);
             }
 
-            workflow.unbindEscKeyUp();
-            workflow.stop();
+            tool.unbindEscKeyUp();
+            tool.stop();
             unwatch();
           }
 
@@ -870,14 +870,14 @@ export default ({
       /**
        * Common method to add a relation
        */
-      async runWorkflow({ workflow, isVector = false } = {} ) {
+      async runTool({ tool, isVector = false } = {} ) {
 
         if (isVector) {
           GUI.setModal(false);
           GUI.hideContent(true);
         }
 
-        const options = this._createWorkflowOptions();
+        const options = this._createToolOptions();
 
         //Get fields and values from parent feature
         //@TODO fatherField is Array of child fields related with parent layer. Need to rename it
@@ -889,9 +889,9 @@ export default ({
         });
 
         try {
-          const outputs = await workflow.start(options);
+          const outputs = await tool.start(options);
 
-          if (isVector) { workflow.bindEscKeyUp(); }
+          if (isVector) { tool.bindEscKeyUp(); }
           
           const { newFeatures, originalFeatures } = outputs.relationFeatures;
 
@@ -944,10 +944,10 @@ export default ({
           this.rollback(options.context.session.getId(), [this._relationLayerId]);
         }
 
-        workflow.stop();
+        tool.stop();
 
         if (isVector) {
-          workflow.unbindEscKeyUp();
+          tool.unbindEscKeyUp();
           GUI.hideContent(false);
           GUI.setModal(true);
         }
@@ -961,10 +961,10 @@ export default ({
         this.disabled   = true;
 
         const is_vector = 'vector' === this._layerType;
-        const workflow  = this._add_link_workflow.link( is_vector ? {
+        const tool  = this._add_link_tool.link( is_vector ? {
           selectStyle: SELECTED_STYLES[this.getLayer().getGeometryType()]
         } : {});
-        const options  = this._createWorkflowOptions();
+        const options  = this._createToolOptions();
         const { ownField, relationField } = getRelationFieldsFromRelation({
           layerId:  this._relationLayerId,
           relation: this.relation
@@ -982,7 +982,7 @@ export default ({
           GUI.setModal(false);
         }
 
-        const feature = Workflow.Stack.current.getFeatures().at(-1);
+        const feature = Tool.Stack.current.getFeatures().at(-1);
 
         const getRelationFeatures = () => getLayersDependencyFeatures(this.layerId, {
           relations:  [this.relation],
@@ -1002,10 +1002,10 @@ export default ({
             await getRelationFeatures();
           };
 
-          workflow.bindEscKeyUp();
+          tool.bindEscKeyUp();
 
           response = {
-            promise:     workflow.start(options),
+            promise:     tool.start(options),
             showContent: true
           };
 
@@ -1018,7 +1018,7 @@ export default ({
         let linked = false;
 
         try {
-          const outputs = await (response.promise || workflow.start(options));
+          const outputs = await (response.promise || tool.start(options));
           // loop on features selected
           (outputs.features || []).forEach(relation => {
             if (undefined === this.relations.find(rel => relation.getId() === rel.id)) {
@@ -1029,7 +1029,7 @@ export default ({
                 .forEach(([field, value]) => {
                   relation.set(ownField[relationField.findIndex(rF => field === rF)], value);
                 })
-              Workflow.Stack.current.session.pushUpdate(this._relationLayerId , relation, originalRelation);
+              Tool.Stack.current.session.pushUpdate(this._relationLayerId , relation, originalRelation);
               this.relations.push({
                 fields: getFieldsWithValues(this.getLayer(), relation, { relation: true }),
                 id:     relation.getId()
@@ -1050,14 +1050,14 @@ export default ({
 
         if (response.showContent) {
           GUI.closeUserMessage();
-          workflow.unbindEscKeyUp();
+          tool.unbindEscKeyUp();
         }
 
         if (linked) {
-          Workflow.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+          Tool.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
         }
 
-        workflow.stop();
+        tool.stop();
 
         this.disabled = false;
       },
@@ -1073,7 +1073,7 @@ export default ({
       },
 
       getParent() {
-        const parentLayer  = this.parentWorkflow.getLayer();
+        const parentLayer  = this.parentTool.getLayer();
         const { ownField } = getRelationFieldsFromRelation({ layerId: this.layerId, relation: this.relation });
 
         const pk = ownField.find(f => isPkField(parentLayer, f))
@@ -1091,14 +1091,14 @@ export default ({
           // to fill the field with the relation layer feature when commit
           values: ownField.reduce((father, field) => {
             //get feature
-            const feature = this.parentWorkflow.getFeatures().at(-1);
+            const feature = this.parentTool.getFeatures().at(-1);
             //get fields of form because contains values that have temporary changes not yet saved
             // in case of form fields
-            const fields  = this.parentWorkflow.getInputs().fields;
+            const fields  = this.parentTool.getInputs().fields;
             return Object.assign(father, {
               [field]: (pk === field && feature.isNew()) //check if isPk and parent feature isNew
                 ? feature.getId()
-                //check if fields are set (parent workflow is a form)
+                //check if fields are set (parent tool is a form)
                 // or for example, for feature property field value
                 : fields ? fields.find(f => field === f.name).value: feature.get(field)
             });
@@ -1106,16 +1106,16 @@ export default ({
         };
       },
 
-      _createWorkflowOptions(opts = {}) {
+      _createToolOptions(opts = {}) {
         const fields = getRelationFieldsFromRelation({
           layerId:  this._relationLayerId,
           relation: this.relation
         });
         const parent = Object.entries(this.getParent().values);
         return  {
-          parentFeature:   Workflow.Stack.current.getFeatures().at(-1), // get parent feature
+          parentFeature:   Tool.Stack.current.getFeatures().at(-1), // get parent feature
           context: {
-            session:       Workflow.Stack.current.session,        // get parent workflow
+            session:       Tool.Stack.current.session,        // get parent tool
             excludeFields: fields.ownField,                                 // array of fields to be excluded
             fatherValue:   parent.map(([_, value]) => value),               // values of parent fields in relation
             fatherField:   parent.map(([field]) => fields.ownField[fields.relationField.findIndex(rField => field === rField)]), //children fields
@@ -1267,7 +1267,7 @@ export default ({
        */ 
       this._layerType    = this.getLayer().getType();
 
-      this.parentWorkflow = Workflow.Stack.current;
+      this.parentTool     = Tool.Stack.current;
 
       /**
        * editing a constraint type
@@ -1282,12 +1282,12 @@ export default ({
 
       const self = this;
 
-      this._add_link_workflow = ({
+      this._add_link_tool = ({
         table: {
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
           link(opts = {}) {
-            return new Workflow({
+            return new Tool({
               ...opts,
               type:            'edittable',
               backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
@@ -1324,7 +1324,7 @@ export default ({
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
           add(opts = {}) {
-            return new Workflow({
+            return new Tool({
               ...opts,
               type:  'addtablefeature',
               steps: [
@@ -1339,7 +1339,7 @@ export default ({
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/linkrelationworkflow.js@v3.7.1 */
           link(opts = {}) {
-            return new Workflow({
+            return new Tool({
               type:  'linkrelation',
               steps: [
                 new Step({
@@ -1405,7 +1405,7 @@ export default ({
               GUI.closeUserMessage();
             })
 
-            return new Workflow({
+            return new Tool({
               ...opts,
               type:  'addfeature',
               steps: [
@@ -1418,7 +1418,7 @@ export default ({
 
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/selectandcopyfeaturesfromotherlayerworkflow.js@v3.7.1 */
           selectandcopy(opts = {}) {
-            return new Workflow({
+            return new Tool({
               type:  'selectandcopyfeaturesfromotherlayer',
               steps: [
                 // pick project layer features
