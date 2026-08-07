@@ -397,6 +397,15 @@ new (class extends Plugin {
 
   /**
    * @since 4.0.0
+   * @returns { boolean }
+   * 
+   */
+  areLayersInEditing() {
+    return this.state.toolboxes.some(tb => tb.inEditing());
+  }
+
+  /**
+   * @since 4.0.0
    * @param {*} id 
    * @returns { boolean }
    */
@@ -539,7 +548,7 @@ new (class extends Plugin {
       ...(commitItems.update || []),
       ...Object.keys(commitItems.relations || {})
     ].length;
-    let workflow, dialog, serverError;
+    let tool, dialog, serverError;
 
     // skip when there is nothing to save
     if (!has_changes) {
@@ -552,7 +561,7 @@ new (class extends Plugin {
       // show commit modal window
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 */
       if (modal) {
-        workflow = new (await import('./g3w-workflow.js')).Workflow({
+        tool = new (await import('./g3w-tool.js')).Tool({
           type: 'commitfeatures',
           steps: [
             // confirm step
@@ -583,7 +592,7 @@ new (class extends Plugin {
         });
         //need to get to confirm or cancel choose from modal
         try {
-          await workflow.start({
+          await tool.start({
             inputs: {
               close,
               layer,
@@ -595,7 +604,7 @@ new (class extends Plugin {
             }
           })
           
-          await workflow.stop();
+          await tool.stop();
         } catch(e) {
           console.warn(e);
           // In the case of pressed cancel button to commit features modal
@@ -929,8 +938,8 @@ new (class extends Plugin {
       })
 
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/easyaddfeatureworkflow.js@v3.7.1 */
-      // create workflow
-      const workflow = new (await import('./g3w-workflow.js')).Workflow({
+      // create tool
+      const tool = new (await import('./g3w-tool.js')).Tool({
         type: 'addfeature',
         steps: [
           new (await import('./actions/open-form.js')).OpenFormStep({
@@ -942,7 +951,7 @@ new (class extends Plugin {
       });
 
       const stop = cb => {
-        workflow.stop();
+        tool.stop();
         session.stop();
         return cb();
       };
@@ -964,8 +973,8 @@ new (class extends Plugin {
           // add to session and source as new feature
           session.pushAdd(layerId, feature, false);
           getEditingLayer(layer).getSource().addFeature(feature);
-          //start workflow
-          await workflow.start({
+          //start tool
+          await tool.start({
             inputs:  { layer, features: [feature] },
             context: { session },
           });
@@ -1268,9 +1277,9 @@ new (class extends Plugin {
 
       // add geometry when vector layer feature has no geometry
       if (addPartTool) {
-        //get workflow
+        //get tool
         const op = addPartTool.getOperator();
-        const w = new (await import('./g3w-workflow.js')).Workflow({
+        const t = new (await import('./g3w-tool.js')).Tool({
           type: 'drawgeometry',
           helpMessage: 'editing.workflow.steps.draw_geometry',
           runOnce: true, // need to run once time
@@ -1283,7 +1292,7 @@ new (class extends Plugin {
                 }
               },
               onRun: ({inputs, context}) => {
-                w.emit('settoolsoftool', [
+                t.emit('settoolsoftool', [
                   {
                     type: 'snap',
                     options: {
@@ -1299,9 +1308,9 @@ new (class extends Plugin {
                     }
                   }
                 ]);
-                w.emit('active', ['snap']);
+                t.emit('active', ['snap']);
               },
-              onStop: () => w.emit('deactive', ['snap', 'measure'])
+              onStop: () => t.emit('deactive', ['snap', 'measure'])
             }),
             // add part to multi geometries
             new (await import('./g3w-step.js')).Step({ run: addPartToMultigeometries })
@@ -1309,7 +1318,7 @@ new (class extends Plugin {
           registerEscKeyEvent: true
         })
 
-        addPartTool.setOperator(w);
+        addPartTool.setOperator(t);
 
         this.on('closeeditingpanel', () => {
           addPartTool.setOperator(op);
@@ -1318,7 +1327,7 @@ new (class extends Plugin {
       }
 
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
-      w = (new (await import('./g3w-workflow.js')).Workflow({
+      t = (new (await import('./g3w-tool.js')).Tool({
         type:        'editnopickmapfeatureattributes',
         runOnce:     true,
         helpMessage: 'editing.tools.update_feature',
@@ -1326,7 +1335,7 @@ new (class extends Plugin {
       }));
 
 
-      await w.start({
+      await t.start({
         inputs:  { layer: _layer, features: [feature] },
         context: { session: toolBox.getSession() }
       });
@@ -1340,7 +1349,7 @@ new (class extends Plugin {
       console.warn(e);
       toolBox.rollback();
     } finally {
-      w?.stop?.(); // workflow can be undefined when feature is locked by another user 
+      t?.stop?.(); // tool can be undefined when feature is locked by another user 
     }
   }
 
