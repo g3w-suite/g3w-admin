@@ -368,7 +368,20 @@ export class OpenFormStep extends Step {
                 GUI.setLoadingContent(true);
                 GUI.disableContent(true);
   
-                await Workflow.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
+                const service    = Workflow.Stack.current.getContext().service;
+                const hasUpdates = !!service?.state?.fields?.some(f => f.update);
+                const isNew      = !!this._originalFeatures?.some(f => f.isNew?.());
+
+                // Avoid creating an "update" session change when nothing changed on an existing non-relation feature.
+                if (!this._isContentChild && !isNew && !hasUpdates) {
+                  GUI.setModal(false);
+                  GUI.setLoadingContent(false);
+                  GUI.disableContent(false);
+                  resolve(inputs);
+                  return;
+                }
+
+                await service.saveDefaultExpressionFieldsNotDependencies();
 
                 this._features.forEach(f => {
                   _setFieldsWithValues(inputs.layer, f, fields);
