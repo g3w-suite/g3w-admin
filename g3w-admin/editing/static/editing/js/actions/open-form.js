@@ -362,26 +362,23 @@ export class OpenFormStep extends Step {
                   return;
                 }
 
-                const newFeatures = [];
-
-                // @since 3.5.15
-                GUI.setLoadingContent(true);
-                GUI.disableContent(true);
-  
                 const service    = Workflow.Stack.current.getContext().service;
                 //Check if there are updates on the form fields or if the feature is new
                 const hasUpdates = !!service?.state?.fields?.some(f => f.update);
                 //Check if there are new features in the form (i.e., features that are not yet saved to the server)
                 const isNew      = !!this._originalFeatures?.some(f => f.isNew?.());
+                const newFeatures = [];
 
                 // Avoid creating an "update" session change when nothing changed on an existing non-relation feature.
                 if (!isNew && !hasUpdates) {
-                  GUI.setModal(false);
-                  GUI.setLoadingContent(false);
-                  GUI.disableContent(false);
+    
                   resolve(inputs);
                   return;
                 }
+
+                // @since 3.5.15
+                GUI.setLoadingContent(true);
+                GUI.disableContent(true);
 
                 await service.saveDefaultExpressionFieldsNotDependencies();
 
@@ -408,8 +405,6 @@ export class OpenFormStep extends Step {
                   fields,
                   task:     this,
                 });
-
-                GUI.setModal(false);
 
                 GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
                 GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
