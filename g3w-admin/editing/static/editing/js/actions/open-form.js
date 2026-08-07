@@ -373,7 +373,7 @@ export class OpenFormStep extends Step {
                 const isNew      = !!this._originalFeatures?.some(f => f.isNew?.());
 
                 // Avoid creating an "update" session change when nothing changed on an existing non-relation feature.
-                if (!this._isContentChild && !isNew && !hasUpdates) {
+                if (!isNew && !hasUpdates) {
                   GUI.setModal(false);
                   GUI.setLoadingContent(false);
                   GUI.disableContent(false);
