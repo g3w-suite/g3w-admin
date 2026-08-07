@@ -355,13 +355,6 @@ export class OpenFormStep extends Step {
               class: "btn-success",
               // save features
               cbk: async (fields = []) => {
-                fields = this._multi ? fields.filter(f => null !== f.value) : fields;
-                // skip when no fields
-                if (0 === fields.length) {
-                  resolve(inputs);
-                  return;
-                }
-
                 const service    = Workflow.Stack.current.getContext().service;
                 //Check if there are updates on the form fields or if the feature is new
                 const hasUpdates = !!service?.state?.fields?.some(f => f.update);
@@ -369,9 +362,10 @@ export class OpenFormStep extends Step {
                 const isNew      = !!this._originalFeatures?.some(f => f.isNew?.());
                 const newFeatures = [];
 
-                // Avoid creating an "update" session change when nothing changed on an existing non-relation feature.
-                if (!isNew && !hasUpdates) {
-    
+                fields = this._multi ? fields.filter(f => null !== f.value) : fields;
+                
+                // skip when no fields or Avoid creating an "update" session change when nothing changed on an existing non-relation feature.
+                if (0 === fields.length || (!isNew && !hasUpdates)) {
                   resolve(inputs);
                   return;
                 }
