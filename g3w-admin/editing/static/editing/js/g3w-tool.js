@@ -69,8 +69,6 @@ export class Tool extends Emitter {
     /** @since g3w-client-plugin-editing@v3.8.0*/
     this._type = options?.type || null;
 
-    
-
     /**
      * @FIXME add description
      */
@@ -282,9 +280,7 @@ export class Tool extends Emitter {
    * @FIXME add description
    */
   reject() {
-    if (this._promise) {
-      this._promise.reject();
-    }
+    this._promise?.reject?.();
     this.emit('reject');
   }
 
@@ -292,9 +288,7 @@ export class Tool extends Emitter {
    * @FIXME add description
    */
   resolve() {
-    if (this._promise) {
-      this._promise.resolve();
-    }
+    this._promise?.resolve?.();
   }
 
   /**
@@ -463,10 +457,8 @@ export class Tool extends Emitter {
       this._promise = null;
 
       try {
-        // stop child tool
-        if (this._child) {
-          await this._child.stop();
-        }
+
+        await this._child?.stop?.();
       } catch(e) {
         console.warn(e);
       }
