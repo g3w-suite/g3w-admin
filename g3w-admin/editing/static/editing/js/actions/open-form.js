@@ -355,7 +355,7 @@ export class OpenFormStep extends Step {
               class: "btn-success",
               // save features
               cbk: async (fields = []) => {
-                const service    = Workflow.Stack.current.getContext().service;
+                const service    = Tool.Stack.current.getContext().service;
                 const hasUpdates = !!service?.state?.fields?.some(f => f.update);    // check for updates in form fields or if the feature is new
                 const isNew      = !!this._originalFeatures?.some(f => f.isNew?.()); // check for new features in form (i.e., features that are not yet saved to the server)
                 const newFeatures = [];
@@ -373,7 +373,6 @@ export class OpenFormStep extends Step {
                 GUI.disableContent(true);
 
                 await service.saveDefaultExpressionFieldsNotDependencies();
-                await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
 
                 this._features.forEach(f => {
                   _setFieldsWithValues(inputs.layer, f, fields);
@@ -398,9 +397,7 @@ export class OpenFormStep extends Step {
                 }
 
                 await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
-                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
 
-                newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
                 newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
 
                 // check and handle if layer has relation 1:1
@@ -416,7 +413,7 @@ export class OpenFormStep extends Step {
 
                 // sync parent workflows when child is saved.
                 if (this._isContentChild) {
-                  Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                  Tool.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
                 }
               
                 GUI.setLoadingContent(false);
