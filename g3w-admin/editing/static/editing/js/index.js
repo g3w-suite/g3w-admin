@@ -1218,7 +1218,7 @@ new (class extends Plugin {
 
     const { scale } = toolBox.getEditingConstraints(); // get scale constraint from setting layer
 
-    let w;
+    let t;
 
     // start toolbox (filtered by feature id)
     try {
@@ -1268,21 +1268,19 @@ new (class extends Plugin {
 
       this.state.toolboxselected = toolBox;
 
-      const addPartTool = is_vector && !geom && toolBox.getTools().find(t => 'addPart' === t.getId());
-
-      // check if layer is single geometry. Need to show and change behaviour
-      if (addPartTool && !Geometry.isMultiGeometry(_layer.getGeometryType())) {
-        addPartTool.visible = true;
-      }
-
-      // add geometry when vector layer feature has no geometry
-      if (addPartTool) {
-        //get tool
-        const op = addPartTool.getOperator();
-        const t = new (await import('./g3w-tool.js')).Tool({
-          type: 'drawgeometry',
+      if (is_vector && !geom) {
+        t = (new (await import('./g3w-tool.js')).Tool(({
+          id:         'addPartFeature',
+          type:       ['add_feature', 'change_feature'],
+          name:       "editing.tools.addpart",
+          icon:       "mActionAddPart.svg",
+          visible:    !Geometry.isMultiGeometry(_layer.getGeometryType()),
+          type:        'addparttomultigeometries',
+          helpMessage: 'editing.tools.addpart',
+          runOnce:     true,
+          type:        'drawgeometry',
           helpMessage: 'editing.tool.steps.draw_geometry',
-          runOnce: true, // need to run once time
+          runOnce:     true, // need to run once time
           steps: [
             new (await import('./actions/add-feature.js')).AddFeatureStep({
               add: false,
@@ -1291,7 +1289,7 @@ new (class extends Plugin {
                   description: 'editing.tool.steps.draw_geometry',
                 }
               },
-              onRun: ({inputs, context}) => {
+              onRun: ({ inputs, context }) => {
                 t.emit('settoolsoftool', [
                   {
                     type: 'snap',
@@ -1316,25 +1314,19 @@ new (class extends Plugin {
             new (await import('./g3w-step.js')).Step({ run: addPartToMultigeometries })
           ],
           registerEscKeyEvent: true
-        })
-
-        addPartTool.setOperator(t);
-
-        this.on('closeeditingpanel', () => {
-          addPartTool.setOperator(op);
-          addPartTool.visible = Geometry.isMultiGeometry(_layer.getGeometryType());
-        })
+        })))
+      } 
+      
+      //In case of alfanumeric layer or vector layer with geometry, open form to edit attributes
+      if (!is_vector || (is_vector && geom)) {  
+        /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
+        t = (new (await import('./g3w-tool.js')).Tool({
+          type:        'editnopickmapfeatureattributes',
+          runOnce:     true,
+          helpMessage: 'editing.tools.update_feature',
+          steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
+        }));
       }
-
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
-      t = (new (await import('./g3w-tool.js')).Tool({
-        type:        'editnopickmapfeatureattributes',
-        runOnce:     true,
-        helpMessage: 'editing.tools.update_feature',
-        steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
-      }));
-
-
       await t.start({
         inputs:  { layer: _layer, features: [feature] },
         context: { session: toolBox.getSession() }
