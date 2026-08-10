@@ -1736,7 +1736,7 @@ export class ToolBox extends Emitter {
     }
 
     // set modal when running an `OpenFormStep`
-    if (this.state.editing.canEdit && this.state.activetool?.op.getRunningStep() instanceof OpenFormStep) {
+    if (this.state.editing.canEdit && this.state.activetool?.getRunningStep() instanceof OpenFormStep) {
       // check if current interaction is pickLayer 
       GUI.setModal('picklayer' !== map.getInteractions().item(map.getInteractions().getLength() -1).get('id') );
       return;
@@ -2478,7 +2478,7 @@ export class ToolBox extends Emitter {
       this.state._tools.forEach(tool => {
         tool.visible              = true;
         tool.enabled              = false;
-        tool.helpMessage          = tool.op.getHelpMessage();
+        tool.helpMessage          = tool.getHelpMessage();
         tool.disabledtoolsoftools = []; //reset disabled tools eventually set by other
       });
     }
