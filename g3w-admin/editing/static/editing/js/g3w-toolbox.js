@@ -512,7 +512,7 @@ export class ToolBox extends Emitter {
               type: 'multiple',
               steps: {
                 select: {
-                  description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectDrawBoxAtLeast2Feature' : 'selectMultiPointSHIFTAtLeast2Feature'}`,
+                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectDrawBoxAtLeast2Feature' : 'selectMultiPointSHIFTAtLeast2Feature'}`,
                   buttonnext: {
                     disabled: true,
                     condition:({ features = [] }) => features.length < 2,
@@ -543,7 +543,7 @@ export class ToolBox extends Emitter {
               type: 'multiple',
               steps: {
                 select: {
-                  description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectMultiPointSHIFT'}`,
+                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectMultiPointSHIFT'}`,
                   buttonnext: {
                     disabled: true,
                     condition: ({ features = [] }) => features.length < 1,
@@ -871,7 +871,7 @@ export class ToolBox extends Emitter {
                     done:         false,
                   },
                   selectgeometry: {
-                    description: `editing.workflow.steps.selectPoint`,
+                    description: `editing.tool.steps.selectPoint`,
                     done:        false,
                   }
                 },
@@ -1044,7 +1044,7 @@ export class ToolBox extends Emitter {
               type: ApplicationState.ismobile ? 'single' : 'multiple',
               steps: {
                 select: {
-                  description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
+                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
                   done:         false,
                 }
               },
@@ -1055,7 +1055,7 @@ export class ToolBox extends Emitter {
               help: 'editing.steps.help.select',
               steps: {
                 from: {
-                  description: 'editing.workflow.steps.selectStartVertex',
+                  description: 'editing.tool.steps.selectStartVertex',
                   done:        false,
                 }
               },
@@ -1095,7 +1095,7 @@ export class ToolBox extends Emitter {
               help: "editing.steps.help.select_vertex_to_paste",
               steps: {
                 to: {
-                  description: 'editing.workflow.steps.selectToPaste',
+                  description: 'editing.tool.steps.selectToPaste',
                   done:        false,
                 }
               },
@@ -1195,7 +1195,7 @@ export class ToolBox extends Emitter {
             new PickFeatureStep({
               steps: {
                 select: {
-                  description: 'editing.workflow.steps.select',
+                  description: 'editing.tool.steps.select',
                   done:         false,
                 }
               },
@@ -1210,7 +1210,7 @@ export class ToolBox extends Emitter {
               add:  false,
               steps: {
                 addfeature: {
-                  description: 'editing.workflow.steps.draw_part',
+                  description: 'editing.tool.steps.draw_part',
                   done:        false,
                 }
               },
@@ -1345,7 +1345,7 @@ export class ToolBox extends Emitter {
               type: ApplicationState.ismobile ? 'single' : 'multiple',
               steps: {
                 select: {
-                  description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
+                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
                   done:         false,
                 }
               },
@@ -1356,7 +1356,7 @@ export class ToolBox extends Emitter {
               help: '',
               steps: {
                 draw_line: {
-                  description: 'editing.workflow.steps.draw_split_line',
+                  description: 'editing.tool.steps.draw_split_line',
                   done:        false,
                 }
               },
@@ -1445,7 +1445,7 @@ export class ToolBox extends Emitter {
               help: 'editing.steps.help.merge',
               steps: {
                 select: {
-                  description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectSHIFT'}`,
+                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectSHIFT'}`,
                   done: false,
                 }
               },
@@ -1456,7 +1456,7 @@ export class ToolBox extends Emitter {
               help: 'editing.steps.help.merge',
               steps: {
                 choose: {
-                  description: 'editing.workflow.steps.merge',
+                  description: 'editing.tool.steps.merge',
                   done: false,
                 }
               },

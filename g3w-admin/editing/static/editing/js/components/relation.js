@@ -1427,7 +1427,7 @@ export default ({
                   help:  "editing.steps.help.pick_feature",
                   steps: {
                     select: {
-                      description: `editing.workflow.steps.selectPoint`,
+                      description: `editing.tool.steps.selectPoint`,
                       done:        false,
                     }
                   },

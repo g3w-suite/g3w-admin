@@ -1281,14 +1281,14 @@ new (class extends Plugin {
         const op = addPartTool.getOperator();
         const t = new (await import('./g3w-tool.js')).Tool({
           type: 'drawgeometry',
-          helpMessage: 'editing.workflow.steps.draw_geometry',
+          helpMessage: 'editing.tool.steps.draw_geometry',
           runOnce: true, // need to run once time
           steps: [
             new (await import('./actions/add-feature.js')).AddFeatureStep({
               add: false,
               steps: {
                 addfeature: {
-                  description: 'editing.workflow.steps.draw_geometry',
+                  description: 'editing.tool.steps.draw_geometry',
                 }
               },
               onRun: ({inputs, context}) => {

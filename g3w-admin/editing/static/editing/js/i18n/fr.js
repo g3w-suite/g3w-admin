@@ -68,7 +68,7 @@ export default {
       insert_attributes_feature: "Insérer les attributs de la fonctionnalité"
     }
   },
-  workflow: {
+  tool: {
     steps: {
       select: 'Cliquer sur la fonctionnalité à sélectionner',
       draw_part: "Dessiner la nouvelle partie",

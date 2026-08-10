@@ -73,7 +73,7 @@ export default {
     }
   },
 
-  workflow: {
+  tool: {
     steps: {
       select: 'Seleziona una geometria',
       draw_part: "Disegna il nuovo elemento da aggiungere alla geometria",

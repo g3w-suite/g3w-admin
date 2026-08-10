@@ -357,7 +357,7 @@ export class Tool extends Emitter {
       const showUserMessage = Object.keys(this._userMessageSteps).length > 0;  
       if (showUserMessage) {
         GUI.showUserMessage({
-          title:     'plugins.editing.workflow.title.steps',
+          title:     'plugins.editing.tool.title.steps',
           type:      'tool',
           closable:  false,
           iconClass: 'tasks',
@@ -386,7 +386,7 @@ export class Tool extends Emitter {
                       @click          = "completeStep(step)"
                       :class          = "'btn btn-success' + (step.buttonnext.disabled ? ' g3w-disabled' : '' )"
                       style           = "margin-left: 10px;"
-                      v-t-tooltip:top = "'plugins.editing.workflow.next'"
+                      v-t-tooltip:top = "'plugins.editing.tool.next'"
                     >
                       <i style = "font-weight: bold; font-size: 1.3em;" class = "fas fa-arrow-right"></i>
                     </button>

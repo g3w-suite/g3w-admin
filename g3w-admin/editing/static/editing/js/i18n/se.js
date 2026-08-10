@@ -68,7 +68,7 @@ export default {
       insert_attributes_feature: "Lägg till egenskapens attribut"
     }
   },
-  workflow: {
+  tool: {
     steps: {
       select: 'Välj egenskap',
       draw_part: "Rita ny del",
