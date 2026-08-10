@@ -100,6 +100,7 @@ export class OpenFormStep extends Step {
    * @returns {*}
    */
   async run(inputs, context) {
+    GUI.setModal(true);
     //@since 3.9.0 can set isContentChild attribute to force it
     // (case edit relation features from multi-parent features)
     this._isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
