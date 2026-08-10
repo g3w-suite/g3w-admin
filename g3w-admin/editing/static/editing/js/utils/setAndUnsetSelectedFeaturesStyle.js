@@ -36,8 +36,9 @@ export function setAndUnsetSelectedFeaturesStyle({ promise, inputs, style } = {}
     }
   };
 
-  // check if layer is vector and features has geometry (case add part to a feature that has no geometry)
-  const is_vector = 'vector' === layer.getType() && features.every(f => f.getGeometry());
+  // check if layer is vector and features have geometry (case: add part to a feature that has no geometry)
+  const _features = features.flat();
+  const is_vector = 'vector' === layer.getType() && _features.every(f => f?.getGeometry?.());
 
   if (is_vector && Workflow.Stack.length) {
     setTimeout(() => selectOriginalStyleHandle());
