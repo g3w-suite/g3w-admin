@@ -449,7 +449,7 @@ export default ({
      */
     addSnapFeatures(features = []) {
       //get current uid and style of selected features
-      this.uidsstyles = this.state.activetool.getOperator().getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
+      this.uidsstyles = this.state.activetool.getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
       features
         .forEach(f => {       
           setVertexStyle({
@@ -506,7 +506,7 @@ export default ({
         this.clearSnap();
         GUI.getPlugin('editing')
           .getLayers()
-          .filter(l => l.isInEditing() && 'vector' === l.getType()) // skip not in editing, raster, alphanumerical..
+          .filter(l => 'vector' === l.getType()) // skip not in editing, raster, alphanumerical..
           .filter(l => all || tool.options.layerId === l.getId())
           .forEach(l => {
             const source  = GUI.getPlugin('editing').getToolBoxById(l.getId()).getEditor().getEditingSource();

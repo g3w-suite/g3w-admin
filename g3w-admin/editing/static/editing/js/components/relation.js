@@ -636,7 +636,7 @@ export default ({
               )
               .map(tool => ({
                 state: Vue.observable({ ...tool, id: `${id}_${tool.id}` }),
-                type: tool.getOperator().type,
+                type: tool.type,
               }))
           )
 
