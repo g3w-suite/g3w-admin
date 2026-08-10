@@ -378,24 +378,14 @@ export class OpenFormStep extends Step {
                   _setFieldsWithValues(inputs.layer, f, fields);
                   newFeatures.push(f.clone());
                 });
-                this._features.forEach(f => {
-                  _setFieldsWithValues(inputs.layer, f, fields);
-                  newFeatures.push(f.clone());
-                });
-
+              
                 if (this._isContentChild) {
                   inputs.relationFeatures = {
                     newFeatures,
                     originalFeatures: this._originalFeatures
                   };
                 }
-                if (this._isContentChild) {
-                  inputs.relationFeatures = {
-                    newFeatures,
-                    originalFeatures: this._originalFeatures
-                  };
-                }
-
+            
                 await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
 
                 newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
