@@ -1218,9 +1218,8 @@ new (class extends Plugin {
     toolBox.setSelected(true);
 
     const { scale } = toolBox.getEditingConstraints(); // get scale constraint from setting layer
-
+    // store open form tool to stop it when user close editing panel
     let t;
-
     // start toolbox (filtered by feature id)
     try {
       // check map scale after zoom to feature
@@ -1268,10 +1267,18 @@ new (class extends Plugin {
       toolBox.setSelected(true);
 
       this.state.toolboxselected = toolBox;
+      const addPartTool = is_vector && !geom && toolBox.getTools().find(t => 'addPart' === t.getId());
 
-      if (is_vector && !geom) {
-        t = (new (await import('./g3w-tool.js')).Tool(({
-          id:         'addPartFeature',
+      // check if layer is single geometry. Need to show and change behaviour
+      if (addPartTool && !Geometry.isMultiGeometry(_layer.getGeometryType())) {
+        addPartTool.visible = true;
+      }
+
+      // add geometry when vector layer feature has no geometry
+      if (addPartTool) {
+        const index = toolBox.getTools().findIndex(t => 'addPart' === t.getId());
+        const customAddPartTool = (new (await import('./g3w-tool.js')).Tool(({
+          id:         'addPart',
           type:       ['add_feature', 'change_feature'],
           name:       "editing.tools.addpart",
           icon:       "mActionAddPart.svg",
@@ -1291,7 +1298,7 @@ new (class extends Plugin {
                 }
               },
               onRun: ({ inputs, context }) => {
-                t.emit('settoolsoftool', [
+                customAddPartTool.emit('settoolsoftool', [
                   {
                     type: 'snap',
                     options: {
@@ -1307,27 +1314,31 @@ new (class extends Plugin {
                     }
                   }
                 ]);
-                t.emit('active', ['snap']);
+                customAddPartTool.emit('active', ['snap']);
               },
-              onStop: () => t.emit('deactive', ['snap', 'measure'])
+              onStop: () => customAddPartTool.emit('deactive', ['snap', 'measure'])
             }),
             // add part to multi geometries
             new (await import('./g3w-step.js')).Step({ run: addPartToMultigeometries })
           ],
           registerEscKeyEvent: true
-        })))
+        })));
+        toolBox.getTools().splice(index, 0, customAddPartTool);
+
+        this.on('closeeditingpanel', () => {
+          toolBox.getTools().splice(index, 0, addPartTool);
+          addPartTool.visible = Geometry.isMultiGeometry(_layer.getGeometryType());
+        })
       } 
+           
+      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
+      t = (new (await import('./g3w-tool.js')).Tool({
+        type:        'editnopickmapfeatureattributes',
+        runOnce:     true,
+        helpMessage: 'editing.tools.update_feature',
+        steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
+      }));
       
-      //In case of alfanumeric layer or vector layer with geometry, open form to edit attributes
-      if (!is_vector || (is_vector && geom)) {  
-        /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
-        t = (new (await import('./g3w-tool.js')).Tool({
-          type:        'editnopickmapfeatureattributes',
-          runOnce:     true,
-          helpMessage: 'editing.tools.update_feature',
-          steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
-        }));
-      }
       await t.start({
         inputs:  { layer: _layer, features: [feature] },
         context: { session: toolBox.getSession() }
