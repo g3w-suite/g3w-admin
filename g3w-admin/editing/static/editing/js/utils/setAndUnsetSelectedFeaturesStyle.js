@@ -1,5 +1,5 @@
 import { Workflow }                 from '../g3w-workflow.js';
-import { setFeaturesSelectedStyle } from './setFeaturesSelectedStyle.js';
+import { setFeaturesSelectedStyle } from '../utils/setFeaturesSelectedStyle.js';
 
 /**
  * Set selected style to current editing features and reset original style when workflow (tool) is done.
