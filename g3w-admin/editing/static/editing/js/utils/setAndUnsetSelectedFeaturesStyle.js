@@ -40,9 +40,5 @@ export function setAndUnsetSelectedFeaturesStyle({ promise, inputs, style } = {}
     }
   };
 
-  if (Workflow.Stack.length) {
-    setTimeout(() => setStyle());
-  } else {
-    setStyle();
-  }
+  setTimeout(setStyle);
 }
