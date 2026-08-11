@@ -1,15 +1,14 @@
 import { Workflow }                 from '../g3w-workflow.js';
-import { setFeaturesSelectedStyle } from '../utils/setFeaturesSelectedStyle.js';
+import { setFeaturesSelectedStyle } from './setFeaturesSelectedStyle.js';
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
- * Method that set selected style to current editing features and
- * reset original style when workflow (tool) is done.
+ * Set selected style to current editing features and reset original style when workflow (tool) is done.
  * 
  * @param promise
  * @param { Object } inputs
- * @param { ol.style.Style }  style
+ * @param { Object } inputs.layer
+ * @param { Array }  inputs.features
+ * @param { ol.style.Style } style
  */
 export function setAndUnsetSelectedFeaturesStyle({ promise, inputs, style } = {}) {
   
@@ -19,13 +18,18 @@ export function setAndUnsetSelectedFeaturesStyle({ promise, inputs, style } = {}
       features = [],
   } = inputs;
 
+  // skip on invalid vector layer
+  if ('vector' !== layer.getType() || features.flat().some(f => !f?.getGeometry?.())) {
+    return;
+  }
+
   /**
    * @TODO if coming from relation ( Workflow.Stack.length > 1 )
    *       no need setTimeout because we already it has selected style
    *       so original is the same selected. In case of current layer
    *       need to wait.
    */
-  const selectOriginalStyleHandle = async () => {
+  const setStyle = async () => {
     const originalStyle = setFeaturesSelectedStyle(features, style);
     try {
       await promise;
@@ -36,12 +40,9 @@ export function setAndUnsetSelectedFeaturesStyle({ promise, inputs, style } = {}
     }
   };
 
-  // check if layer is vector and features have geometry (case: add part to a feature that has no geometry)
-  const is_vector = 'vector' === layer.getType() && features.flat().every(f => f?.getGeometry?.());
-
-  if (is_vector && Workflow.Stack.length) {
-    setTimeout(() => selectOriginalStyleHandle());
-  } else if (is_vector) {
-    selectOriginalStyleHandle();
+  if (Workflow.Stack.length) {
+    setTimeout(() => setStyle());
+  } else {
+    setStyle();
   }
 }
