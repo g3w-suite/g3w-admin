@@ -10,7 +10,7 @@ import { setFeaturesSelectedStyle } from '../utils/setFeaturesSelectedStyle.js';
  * @param { Array }  inputs.features
  * @param { ol.style.Style } style
  */
-export function setAndUnsetSelectedFeaturesStyle({ promise, inputs, style } = {}) {
+export function setAndUnsetSelectedFeaturesStyle({ promise, inputs = {}, style } = {}) {
   
   /** @FIXME temporary add in order to fix issue on pending promise (but which issue ?) */
   const {
@@ -19,7 +19,7 @@ export function setAndUnsetSelectedFeaturesStyle({ promise, inputs, style } = {}
   } = inputs;
 
   // skip on invalid vector layer
-  if ('vector' !== layer.getType() || features.flat().some(f => !f?.getGeometry?.())) {
+  if ('vector' !== layer?.getType?.() || features.flat().some(f => !f?.getGeometry?.())) {
     return;
   }
 
