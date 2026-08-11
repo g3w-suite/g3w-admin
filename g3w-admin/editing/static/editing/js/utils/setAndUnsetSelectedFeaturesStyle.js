@@ -23,13 +23,8 @@ export function setAndUnsetSelectedFeaturesStyle({ promise, inputs = {}, style }
     return;
   }
 
-  /**
-   * @TODO if coming from relation ( Workflow.Stack.length > 1 )
-   *       no need setTimeout because we already it has selected style
-   *       so original is the same selected. In case of current layer
-   *       need to wait.
-   */
-  const setStyle = async () => {
+  // wait for DOM changes
+  setTimeout(async () => {
     const originalStyle = setFeaturesSelectedStyle(features, style);
     try {
       await promise;
@@ -38,7 +33,5 @@ export function setAndUnsetSelectedFeaturesStyle({ promise, inputs = {}, style }
     } finally {
       features.flat().forEach((f => f.setStyle(originalStyle)))
     }
-  };
-
-  setTimeout(setStyle);
+  });
 }
