@@ -567,7 +567,7 @@ new (class extends Plugin {
             // confirm step
             new (await import('./g3w-step.js')).Step({
               run(inputs) {
-                return new Promise(async (resolve, reject) => {
+                const promise = new Promise(async (resolve, reject) => {
                   const dialog = GUI.dialog({
                     message: inputs.message,
                     title:   `${_("plugins.editing.messages.commit_feature")}: "${inputs.layer.getName()}"`,
@@ -579,12 +579,13 @@ new (class extends Plugin {
                   });
                   if (inputs.features) {
                     (await import('./utils/setAndUnsetSelectedFeaturesStyle.js')).setAndUnsetSelectedFeaturesStyle({
-                      promise: promise(),
+                      promise,
                       inputs,
                       style: this.selectStyle,
                     });
                   }
-                })
+                });
+                return promise;
               },
             }
             ),
