@@ -458,7 +458,7 @@ export default ({
       try {
         //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
         //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
-      this.features  = await this.context.session.getEditor().getFeatures({
+        this.features  = await this.context.session.getEditor().getFeatures({
         filter: {
           pagination: {
             page:      this.search.page,
@@ -467,28 +467,35 @@ export default ({
             search:    this.search.text?.trim() || undefined,
             }
         }
-      });
-      this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount(); // get total count of features from server
-      //set headers
-      this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
-      //set up table rows from features
-      this.rows = this.features.length > 0
-        // ordered properties
-        ? (
-          this.excluded.length > 0
-            ? this.features.filter(feat => !this.excluded.reduce((a, f, i) => a && this.context.fatherValue[i] === `${feat.get(f)}` , true))
-            : this.features
-        )
-          .map(f => this.headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
-            [header]: getFeatureTableFieldValue({ layerId: this.inputs.layer.getId(), feature: f, property: header }),
-            '__g3w_uid':    f.getUid(), // private attribute unique value
-            '__g3w_locked': f.state.locked, //@since v4.0.0 private attribute locked value
-          }), {}))
-        // features already bind to parent feature
-        : this.features;
-      await this.$nextTick();
-      GUI.setLoadingContent(false); //set loading content data to false
-      GUI.disableContent(false); //enable interaction with table content
+        });
+        this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount(); // get total count of features from server
+        //set headers
+        this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
+        //set up table rows from features
+        this.rows = this.features.length > 0
+          // ordered properties
+          ? (
+            this.excluded.length > 0
+              ? this.features.filter(feat => !this.excluded.reduce((a, f, i) => a && this.context.fatherValue[i] === `${feat.get(f)}` , true))
+              : this.features
+          )
+            .map(f => this.headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
+              [header]: getFeatureTableFieldValue({ layerId: this.inputs.layer.getId(), feature: f, property: header }),
+              '__g3w_uid':    f.getUid(), // private attribute unique value
+              '__g3w_locked': f.state.locked, //@since v4.0.0 private attribute locked value
+            }), {}))
+          // features already bind to parent feature
+          : this.features;
+        await this.$nextTick();
+      }
+      catch(e) {
+        console.warn(e);
+      }
+      finally {
+        GUI.setLoadingContent(false); //set loading content data to false
+        GUI.disableContent(false); //enable interaction with table content
+      }  
+     
     },
 
   },
