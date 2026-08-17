@@ -3353,7 +3353,13 @@ export class ToolBox extends Emitter {
       const { data, count }       = response.vector;
       const { featurelocks = [] } = response;
       const lockIds               = featurelocks.map(lk => lk.featureid); //features locked by user that can edit
-      const dataProjection = 'NoGeometry' === response.vector.geometrytype ? null : this._editor.getLayer().getCrs();
+      const dataProjection        = 'NoGeometry' === response.vector.geometrytype ? null : this._editor.getLayer().getCrs();
+      //current page count is the number of features requested from server (in case of pagination) or the total number of features (count)
+      let current_page_count      =  count;
+      if (options.filter?.pagination?.page_size) {
+        //get the number of features requested from server (in case of pagination) or the total number of features (count)
+        current_page_count = options.filter?.pagination?.page_size - (Math.max(options.filter?.pagination?.page_size * options.filter?.pagination?.page, count) - count);
+      }
       let features   = [];
       this.#count    = count;
       try {
@@ -3366,10 +3372,9 @@ export class ToolBox extends Emitter {
         .readFeatures('string' === typeof data ? JSON.parse(data) : data)
         .filter(f => is_table || lockIds.includes(`${f.getId()}`)) // in case of table layer no filter features
         .map(feature => new Feature({ feature }, { locked: !lockIds.includes(`${feature.getId()}`) }));
-
         //if no features get from server (count === 0) and no featurelocks mean another user locks all feature requests
         //or in case of request pagination, check if the number of features requested is greater than the number of features returned, it means that another user locks these features
-        if (count > 0 && (0 === featurelocks.length || Math.min(options.filter?.pagination?.page_size ?? count, count) > features.length)) {
+        if (count > 0 && (0 === featurelocks.length || current_page_count > features.length)) {
           //It means that another user locks these features
           this._editor.featuresLockedByOtherUser(features);
         }
