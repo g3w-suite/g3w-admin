@@ -70,7 +70,7 @@ export default ({
         :id     = "feature.__g3w_uid"
         :index  = "index"
       >
-        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "feature.__g3w_locked ? '🔒 locked by another user' : ''">
+        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "feature.__g3w_locked ? 'plugins.editing.messages.featureslockbyotheruser' : ''">
           <div style = "display:flex;justify-content: space-between;">
             <!-- EDIT FEATURE -->
             <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.edit'">
