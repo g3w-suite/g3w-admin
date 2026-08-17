@@ -3295,13 +3295,9 @@ export class ToolBox extends Emitter {
 
     try {
       let response;
-      // In case of no filter, return emp
+      // In case of no filter, return empty features
       if (!options.filter) { 
-        response = await XHR.post({
-          url,
-          contentType: 'application/json',
-          signal,
-        }); 
+        return [];
       }  else if (is_defined(options.filter.pagination)) {
         response = await XHR.post({
           url,
@@ -3343,7 +3339,7 @@ export class ToolBox extends Emitter {
           contentType: 'application/json',
           signal,
         })
-      }
+      } 
 
       // invalid response
       if (!response.result) {
