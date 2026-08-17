@@ -455,8 +455,9 @@ export default ({
 
       GUI.setLoadingContent(true); // loading content
       GUI.disableContent(true); //disable content table interaction
-      //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
-      //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
+      try {
+        //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
+        //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
       this.features  = await this.context.session.getEditor().getFeatures({
         filter: {
           pagination: {
