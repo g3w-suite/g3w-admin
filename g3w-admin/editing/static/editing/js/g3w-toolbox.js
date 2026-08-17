@@ -51,7 +51,7 @@ const {
   getResolutionFromScale,
 }                                                        = g3w.utils;
 
-const { GEOMETRY_TYPES } = g3wsdk.constant;
+const { GEOMETRY_TYPES }                                        = g3wsdk.constant;
 const { Geometry, dissolve, splitFeature, areCoordinatesEqual } = g3wsdk.core.geoutils;
 const { removeZValueToOLFeatureGeometry }                       = g3wsdk.core.geoutils.Geometry;
 const { toRawType, cloneDeep }                                  = g3wsdk.core.utils;
