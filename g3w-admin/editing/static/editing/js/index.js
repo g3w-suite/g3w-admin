@@ -24,7 +24,6 @@ new (class extends Plugin {
 
     super({
       name: 'editing',
-      layersStore: { queryable: false, catalog: false },
       fontClasses: [
         { name: 'measure',   className: "fas fa-ruler-combined" },
         { name: 'magnete',   className: "fas fa-magnet" },
@@ -67,11 +66,10 @@ new (class extends Plugin {
         messages: undefined,      // object to set custom message
         cb: {
           done:  () => {},       // function executed after commit change done
-          error: () => {}        // function executed after commit changes error
+          error: () => {},        // function executed after commit changes error
         }
       },
       show_errors:    false,
-      editFeatureKey: undefined,
       panel:          null, // editing panel
       currentLayout:  ApplicationState.layout.__current,
       unwatchLayout:  Vue.watch(
@@ -102,7 +100,7 @@ new (class extends Plugin {
   }
 
   /**BACKOMP v3.x */
-  subscribe(evt, cbk) {this.on(evt, cbk);}
+  subscribe(evt, cbk) { this.on(evt, cbk); }
   unsubscribe(evt, cbk) { this.off(evt, cbk); }
   fireEvent(e) { this.emit(e); }
 
@@ -143,8 +141,8 @@ new (class extends Plugin {
 
     this.setHookLoading({ loading: true });
 
-    // get editable layers config from server (sorted by "index" to keep TOC order)
-    const LAYERS = await Promise.allSettled(
+    //Loop through editable layers and get config to create toolboxes
+    for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
         .filter(layer => layer.isEditable())
         .map(async layer => {
@@ -155,41 +153,68 @@ new (class extends Plugin {
           }
           return ({ layer, config });
         })
-    );
-
-    if (LAYERS.length) {
-      const { ToolBox } = (await import('./g3w-toolbox.js'));
-      LAYERS.forEach(({ status, value, reason }) => {
-          if ('fulfilled' === status) {
-          const toolBox                                  = new ToolBox(value.layer, value.config);
-          this.state.toolboxes.push(toolBox);
-          this.state.lock_ids[toolBox.getId()]           = [];
-          this.state.loaded_ids[toolBox.getId()]         = [];
-          this.state.uniqueFieldsValues[toolBox.getId()] = {};
-          this.state.features[toolBox.getId()]           = toolBox._collection;
-        } else {
-          this.state.layers_in_error = true;
-          console.warn(reason);
-        }
-      });
-    }
-
-    // after add layers to layerstore
-    ApplicationState.layers['editing'].addLayers(this.getLayers());
-  
+    )) {
+      if ('fulfilled' === status) {
+        const { ToolBox }                              = (await import('./g3w-toolbox.js'));
+        const toolBox                                  = new ToolBox(value.layer, value.config);
+        this.state.toolboxes.push(toolBox);
+        this.state.lock_ids[toolBox.getId()]           = [];
+        this.state.loaded_ids[toolBox.getId()]         = [];
+        this.state.uniqueFieldsValues[toolBox.getId()] = {};
+        this.state.features[toolBox.getId()]           = toolBox._collection;
+      } else {
+        this.state.layers_in_error = true;
+        console.warn(reason);
+      }
+    };
+    
+    //wait util application GUI is ready to add sidebar item (left menu) and iframe editor
     await GUI.isReady();
 
     // add sidebar item (left menu) 
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
-      this.state.editFeatureKey = GUI.onafter('editFeature', this.#onEditFeature.bind(this)),
       this.config.name          = this.config.name || "plugins.editing.editing_data";
-      this.addToolGroup({ position: 0, title: 'EDITING' });
-      this.addTools({
-        action:  this.showEditingPanel,
-        offline: false,
-        icon:    'pencil'
-      }, { position: 0, title: 'EDITING' });
+      
+      this.createSideBarComponent({}, {
+        id:          'editing',
+        collapsible: false,
+        position:    1, 
+        title:       this.config.name,
+        offline:     false,
+        icon:        'pencil',
+        iconColor:   'yellow',
+        events: {
+          open: {
+            cb: () => this.showEditingPanel(),
+          }
+        }
+      });
     }
+
+    GUI.onafter('addActionsForLayers', (actions, layers) => {
+      for (const id in actions) {
+        const layer = this.getLayerById(id);
+        if (layer) {
+          actions[id].push({
+            id:    'editing',
+            class: "fas fa-pencil-alt",
+            hint:  'Editing',
+            state:  Vue.observable({ disabled: layer.state.editing.inediting }), //disable when in editing
+            init() {
+              this.unwatch = Vue.watch(() => layer.state.editing.inediting, bool => this.state.disabled = bool );
+            },
+            clear() {
+              this.unwatch && this.unwatch(); // remove action when destroy
+            },
+            cbk: (layer, feature) => GUI.getPlugin('editing').editFeature({ layer, feature }),
+          });
+        }
+      }
+
+    })
+
+    // // edit
+    //     (layer.editable) && ,
 
     if (ApplicationState.iframe) {
       new (await import('./g3w-iframe.js')).IframeEditor(this);
@@ -297,8 +322,7 @@ new (class extends Plugin {
    * @since 4.1.0
    */
   getEditingFields(layerId, editable = false) {
-    const layer = this.getLayerById(layerId);
-    return (layer.state.editing.fields || []).filter(f => editable ? f.editable : true);
+    return (this.getLayerById(layerId)?.state.editing.fields ?? []).filter(f => editable ? f.editable : true);
   }
 
   /**
@@ -372,6 +396,24 @@ new (class extends Plugin {
   }
 
   /**
+   * @since 4.0.0
+   * @returns { boolean }
+   * 
+   */
+  areLayersInEditing() {
+    return this.state.toolboxes.some(tb => tb.inEditing());
+  }
+
+  /**
+   * @since 4.0.0
+   * @param {*} id 
+   * @returns { boolean }
+   */
+  isLayerInEditing(id) {
+    return this.getToolBoxById(id)?.inEditing();
+  }
+
+  /**
    * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
    * 
    * @param { string } id
@@ -405,7 +447,7 @@ new (class extends Plugin {
     if (false === showToolboxesExcluded) {
       this.state.toolboxes.forEach(({ state: { show, id} }) => show = toolboxIds.includes(id));
     }
-    toolboxIds.forEach(id => this.getToolBoxById(id).setEditingConstraints(toolboxes[id]))
+    toolboxIds.forEach(id => this.getToolBoxById(id).setEditingConstraints(toolboxes[id]));
   }
 
   /**
@@ -427,7 +469,7 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getEditableLayers() {
-    return this.state.toolboxes.reduce((o,tb) => Object.assign(o, { [tb.getId()]: tb.getLayer() }), {}) ;
+    return this.state.toolboxes.reduce((o,tb) => Object.assign(o, { [tb.getId()]: tb.getLayer() }), {});
   }
 
   /**
@@ -442,7 +484,7 @@ new (class extends Plugin {
   async stop() {
     const commitpromises = this.state.toolboxes
       .filter(t => t.hasPendingCommits())
-      .map( toolbox => this.commit({ toolbox, modal : true }))
+      .map( toolbox => this.commit({ toolbox, modal : true }));
     try {
       await Promise.allSettled(commitpromises);    
     } catch(e) {
@@ -452,7 +494,7 @@ new (class extends Plugin {
     this.state.toolboxes.forEach(t => t.stop());
 
     this.state.toolboxselected     = null;
-    this.state.message             =  null;
+    this.state.message             = null;
 
     //reset unique values
     Object.keys(this.state.uniqueFieldsValues).forEach(id => this.state.uniqueFieldsValues[id] = {});
@@ -501,12 +543,12 @@ new (class extends Plugin {
     commitItems         = commitItems || toolbox.getCommitItems();
     const online        = ApplicationState.online;
     const has_changes   = [
-      ...(commitItems.add || []),
+      ...(commitItems.add    || []),
       ...(commitItems.delete || []),
       ...(commitItems.update || []),
       ...Object.keys(commitItems.relations || {})
     ].length;
-    let workflow, dialog, serverError;
+    let tool, dialog, serverError;
 
     // skip when there is nothing to save
     if (!has_changes) {
@@ -519,7 +561,7 @@ new (class extends Plugin {
       // show commit modal window
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 */
       if (modal) {
-        workflow = new (await import('./g3w-workflow.js')).Workflow({
+        tool = new (await import('./g3w-tool.js')).Tool({
           type: 'commitfeatures',
           steps: [
             // confirm step
@@ -551,7 +593,7 @@ new (class extends Plugin {
         });
         //need to get to confirm or cancel choose from modal
         try {
-          await workflow.start({
+          await tool.start({
             inputs: {
               close,
               layer,
@@ -563,7 +605,7 @@ new (class extends Plugin {
             }
           })
           
-          await workflow.stop();
+          await tool.stop();
         } catch(e) {
           console.warn(e);
           // In the case of pressed cancel button to commit features modal
@@ -628,7 +670,7 @@ new (class extends Plugin {
             data = changes;
           }
           if (!current && !has_relations) {
-            data[layerId] = changes[layerId]
+            data[layerId] = changes[layerId];
           }
         });
 
@@ -637,7 +679,7 @@ new (class extends Plugin {
         GUI.showUserMessage({
           type:      'success',
           message:   "plugins.editing.messages.saved_local",
-          autoclose: true
+          autoclose: true,
         });
         // clear history because it saved on browser
         toolbox.clearHistory();
@@ -650,7 +692,7 @@ new (class extends Plugin {
         //check if is online and there are some commit items
         const online2 = online && commit;
 
-        const result = online2 && response.result;
+        const result  = online2 && response.result;
 
         if (result && messages && messages.success) {
           // hide saving dialog
@@ -663,7 +705,7 @@ new (class extends Plugin {
             type:     'success',
             message:   messages.success.message || "plugins.editing.messages.saved",
             duration:  2000,
-            autoclose: undefined === messages.success.autoclose ? true : messages.success.autoclose,
+            autoclose: undefined === messages.success.autoclose || messages.success.autoclose,
           });
         }
 
@@ -715,7 +757,7 @@ new (class extends Plugin {
       //@TODO check if it is usefull
       if (modal) {
         try { await this.#rollback(commitItems.relations); }
-        catch (e) { console.warn(e); }
+        catch(e) { console.warn(e); }
       }
 
       // parse server error
@@ -753,8 +795,8 @@ new (class extends Plugin {
   */
   undoRedoLayerUniqueFieldValues({
     layerId,
-    sessionItems = [],
     action,
+    sessionItems = [],
   }) {
 
     // if not set
@@ -882,7 +924,7 @@ new (class extends Plugin {
       return Promise.reject();
     }
     return new Promise(async (resolve, reject) => {
-      const layer = this.getLayerById(layerId);
+      const layer   = this.getLayerById(layerId);
       // get session
       const session = this.getSessionById(layerId);
       // exclude an eventual attribute pk (primary key) not editable (mean autoincrement)
@@ -897,8 +939,8 @@ new (class extends Plugin {
       })
 
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/easyaddfeatureworkflow.js@v3.7.1 */
-      // create workflow
-      const workflow = new (await import('./g3w-workflow.js')).Workflow({
+      // create tool
+      const tool = new (await import('./g3w-tool.js')).Tool({
         type: 'addfeature',
         steps: [
           new (await import('./actions/open-form.js')).OpenFormStep({
@@ -910,7 +952,7 @@ new (class extends Plugin {
       });
 
       const stop = cb => {
-        workflow.stop();
+        tool.stop();
         session.stop();
         return cb();
       };
@@ -932,8 +974,8 @@ new (class extends Plugin {
           // add to session and source as new feature
           session.pushAdd(layerId, feature, false);
           getEditingLayer(layer).getSource().addFeature(feature);
-          //start workflow
-          await workflow.start({
+          //start tool
+          await tool.start({
             inputs:  { layer, features: [feature] },
             context: { session },
           });
@@ -970,7 +1012,7 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setSaveConfig({ mode = 'default', cb = {}, modal = false, messages } = {}) {
-    Object.assign(this.state.saveConfig, { mode, modal, messages, cb: { ...this.state.saveConfig.cb, ...cb }});
+    Object.assign(this.state.saveConfig, { mode, modal, messages, cb: { ...this.state.saveConfig.cb, ...cb } });
   }
 
   /**
@@ -1026,16 +1068,15 @@ new (class extends Plugin {
         this.state.show_errors = true;
       }
     } else {
-      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.errors.no_layers' })
+      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.errors.no_layers' });
     }
     return this.state.panel;
   }
 
   hideEditingPanel() {
-    if (null !== this.state.panel) {
-      GUI.closePanel();
-      this.state.panel = null;
-    }
+    if (null === this.state.panel) { return; }
+    GUI.closePanel();
+    this.state.panel = null;
   }
 
   /**
@@ -1080,8 +1121,8 @@ new (class extends Plugin {
         });
       } else if (undefined !== options.filter.bbox) { // bbox filter
         response = await XHR.post({
-          url:  layer.getUrl('editing'),
-          data: JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getToken() }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getToken() }),
           contentType: 'application/json',
         })
       } else if (undefined !== options.filter.fid) { // fid filter
@@ -1098,14 +1139,14 @@ new (class extends Plugin {
         })
       } else if (undefined !== options.filter.fids) {
         response = await XHR.post({
-          url:    layer.getUrl('editing'),
-          data:   JSON.stringify({ ...params, ...options.filter, }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, ...options.filter, }),
           contentType: 'application/json',
         })
       } else if (undefined !== options.filter.nofeatures) {
         response = await XHR.post({
-          url:  layer.getUrl('editing'),
-          data: JSON.stringify({ ...params, field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__` }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__` }),
           contentType: 'application/json',
         })
       }
@@ -1136,7 +1177,7 @@ new (class extends Plugin {
             return feature;
           });
         }
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
         features = [];
       }
@@ -1147,7 +1188,7 @@ new (class extends Plugin {
         featurelocks: response.featurelocks,
         features:     features.filter(f => lockIds.includes(`${f.getId()}`)).map(feature => new Feature({ feature })),
       };
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
     }
 
@@ -1159,7 +1200,7 @@ new (class extends Plugin {
    *
    * Register query result action: edit selected feature from query results
    */
-  async #onEditFeature({ layer, feature } = {}) {
+  async editFeature({ layer, feature } = {}) {
 
     const fid = feature.attributes[G3W_FID] || feature.id;
 
@@ -1177,9 +1218,8 @@ new (class extends Plugin {
     toolBox.setSelected(true);
 
     const { scale } = toolBox.getEditingConstraints(); // get scale constraint from setting layer
-
-    let w;
-
+    // store open form tool to stop it when user close editing panel
+    let t;
     // start toolbox (filtered by feature id)
     try {
       // check map scale after zoom to feature
@@ -1227,7 +1267,6 @@ new (class extends Plugin {
       toolBox.setSelected(true);
 
       this.state.toolboxselected = toolBox;
-
       const addPartTool = is_vector && !geom && toolBox.getTools().find(t => 'addPart' === t.getId());
 
       // check if layer is single geometry. Need to show and change behaviour
@@ -1237,22 +1276,29 @@ new (class extends Plugin {
 
       // add geometry when vector layer feature has no geometry
       if (addPartTool) {
-        //get workflow
-        const op = addPartTool.getOperator();
-        const w = new (await import('./g3w-workflow.js')).Workflow({
-          type: 'drawgeometry',
-          helpMessage: 'editing.workflow.steps.draw_geometry',
-          runOnce: true, // need to run once time
+        const index = toolBox.getTools().findIndex(t => 'addPart' === t.getId());
+        const customAddPartTool = (new (await import('./g3w-tool.js')).Tool(({
+          id:         'addPart',
+          type:       ['add_feature', 'change_feature'],
+          name:       "editing.tools.addpart",
+          icon:       "mActionAddPart.svg",
+          visible:    !Geometry.isMultiGeometry(_layer.getGeometryType()),
+          type:        'addparttomultigeometries',
+          helpMessage: 'editing.tools.addpart',
+          runOnce:     true,
+          type:        'drawgeometry',
+          helpMessage: 'editing.tool.steps.draw_geometry',
+          runOnce:     true, // need to run once time
           steps: [
             new (await import('./actions/add-feature.js')).AddFeatureStep({
               add: false,
               steps: {
                 addfeature: {
-                  description: 'editing.workflow.steps.draw_geometry',
+                  description: 'editing.tool.steps.draw_geometry',
                 }
               },
-              onRun: ({inputs, context}) => {
-                w.emit('settoolsoftool', [
+              onRun: ({ inputs, context }) => {
+                customAddPartTool.emit('settoolsoftool', [
                   {
                     type: 'snap',
                     options: {
@@ -1268,34 +1314,32 @@ new (class extends Plugin {
                     }
                   }
                 ]);
-                w.emit('active', ['snap']);
+                customAddPartTool.emit('active', ['snap']);
               },
-              onStop: () => w.emit('deactive', ['snap', 'measure'])
+              onStop: () => customAddPartTool.emit('deactive', ['snap', 'measure'])
             }),
             // add part to multi geometries
             new (await import('./g3w-step.js')).Step({ run: addPartToMultigeometries })
           ],
           registerEscKeyEvent: true
-        })
-
-        addPartTool.setOperator(w);
+        })));
+        toolBox.getTools().splice(index, 0, customAddPartTool);
 
         this.on('closeeditingpanel', () => {
-          addPartTool.setOperator(op);
+          toolBox.getTools().splice(index, 0, addPartTool);
           addPartTool.visible = Geometry.isMultiGeometry(_layer.getGeometryType());
         })
-      }
-
+      } 
+           
       /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
-      w = (new (await import('./g3w-workflow.js')).Workflow({
+      t = (new (await import('./g3w-tool.js')).Tool({
         type:        'editnopickmapfeatureattributes',
         runOnce:     true,
         helpMessage: 'editing.tools.update_feature',
         steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
       }));
-
-
-      await w.start({
+      
+      await t.start({
         inputs:  { layer: _layer, features: [feature] },
         context: { session: toolBox.getSession() }
       });
@@ -1305,11 +1349,11 @@ new (class extends Plugin {
 
       this.saveChange();
 
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
       toolBox.rollback();
     } finally {
-      w?.stop?.(); // workflow can be undefined when feature is locked by another user 
+      t?.stop?.(); // tool can be undefined when feature is locked by another user 
     }
   }
 
@@ -1365,4 +1409,3 @@ new (class extends Plugin {
   }
 
 });
-

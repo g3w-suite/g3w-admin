@@ -68,7 +68,7 @@ export default  {
       insert_attributes_feature: "Inserează atributele entității"
     }
   },
-  workflow: {
+  tool: {
     steps: {
       select: 'Click pe entitate pentru a o selecta',
       draw_part: "Desenează o parte nouă",

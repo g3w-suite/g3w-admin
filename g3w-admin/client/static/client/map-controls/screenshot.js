@@ -817,11 +817,24 @@ const vueComp = ({
         this._clearPrint();
         return false;
       }
+      
+      const map      = GUI.getMap();
+      const view     = map.getView();
+
+      const [padTop, padRight, padBottom, padLeft] = view.get('padding') || [0, 0, 0, 0];
+      
       const { h, w } = this.maps.find(m => !m.overview);
-      const res      = GUI.getMap().getView().getResolution() * ('m' === GUI.getMapUnits() ? 1  : ol.proj.Units.METERS_PER_UNIT.degrees); // resolution in meters
+      const res      = view.getResolution() * ('m' === GUI.getMapUnits() ? 1  : ol.proj.Units.METERS_PER_UNIT.degrees); // resolution in meters
       const w2       = (((w / 1000.0) * parseFloat(this.scale)) / res) / 2;
       const h2       = (((h / 1000.0) * parseFloat(this.scale)) / res) / 2;
-      const [x, y]   = GUI.getMap().getSize().map(size => size / 2); // current map center: [x, y] (in pixel)
+
+      // canvas size
+      const [mapSizeX, mapSizeY] = map.getSize();
+      
+      // current map center: [x, y] (in pixel)
+      const x        = padLeft + (mapSizeX - padLeft - padRight) / 2;
+      const y        = padTop + (mapSizeY - padTop - padBottom) / 2;
+      
       this.inner     = [x - w2, y + h2, x + w2, y - h2]; // inner bbox: [xmin, ymax, xmax, ymin] (in pixel)
       GUI.setInnerGreyCoverBBox({ type: 'pixel', inner: this.inner, rotation: this.rotation });
       return true;

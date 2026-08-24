@@ -68,7 +68,7 @@ export default {
       insert_attributes_feature: "Lisää ominaisuuden attribuutit"
     }
   },
-  workflow: {
+  tool: {
     steps: {
       select: 'Valitse ominaisuus',
       draw_part: "Piirrä uusi osa",
