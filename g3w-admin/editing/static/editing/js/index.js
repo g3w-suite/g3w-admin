@@ -175,7 +175,7 @@ new (class extends Plugin {
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
       this.config.name          = this.config.name || "plugins.editing.editing_data";
       
-      const sidebar = this.createSideBarComponent({}, {
+      this.createSideBarComponent({}, {
         id:          'editing',
         collapsible: false,
         position:    1, 
