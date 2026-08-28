@@ -20,7 +20,8 @@ RUN apt-get update && apt install -y \
     libsqlite3-mod-spatialite \
     dirmngr \
     xvfb \
-    postgresql-client
+    postgresql-client \
+    libqt6sql6-psql 
 
 # PyQGIS: set repository
 # -------------------------------------------------
