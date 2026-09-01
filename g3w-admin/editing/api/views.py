@@ -7,7 +7,8 @@ from core.api.views import USERMEDIAHANDLER_CLASSES
 from core.api.filters import (
     IntersectsBBoxFilter, 
     FieldFilterBackend, 
-    OrderingFilter
+    OrderingFilter, 
+    SearchFilter
     )
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
@@ -31,6 +32,7 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
     filter_backends = (
         OrderingFilter,
         GeoConstraintsFilter,
+        SearchFilter,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         IntersectsBBoxFilter,
