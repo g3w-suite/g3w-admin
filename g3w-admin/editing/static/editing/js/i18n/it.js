@@ -45,7 +45,9 @@ export default {
     update_multi_features: "Modifica gli attributi degli elementi selezionati",
     update_multi_features_relations: "Modifica gli attributi di tutte le relazioni selezionate",
     update_multi_features_relations_from_parents : "Aggiungi/Edita i record relazionati di uno o più padri",
-    copyfeaturefromexternallayer: "Crea elemento da un livello esterno"
+    copyfeaturefromexternallayer: "Crea elemento da un livello esterno",
+    addhole: "Aggiungi buco",
+    deletehole: "Rimuovi buco",
   },
   toolsoftool: {
     measure: "Visualizza misura",

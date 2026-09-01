@@ -41,7 +41,9 @@ export default {
     update_multi_features: "Modifier les attributs des fonctionnalités sélectionnées",
     update_multi_features_relations: "Update attributes of all selected relations",
     update_multi_features_relations_from_parents : "Ajouter/Modifier les enregistrements de relation à partir d'une ou plusieurs entités parents",
-    copyfeaturefromexternallayer: "Create Feature from added layer"
+    copyfeaturefromexternallayer: "Create Feature from added layer",
+    addhole: "Ajouter un trou",
+    deletehole: "Supprimer le trou",
   },
   toolsoftool: {
     measure: "Show measure",

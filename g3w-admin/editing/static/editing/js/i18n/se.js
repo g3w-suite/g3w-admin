@@ -41,7 +41,9 @@ export default {
     update_multi_features: "Ändra attributen för de valda funktionerna",
     update_multi_features_relations: "Update attributes of all selected relations",
     update_multi_features_relations_from_parents : "Add/Edit relations records from one or mode parent features",
-    copyfeaturefromexternallayer: "Create Feature from added layer"
+    copyfeaturefromexternallayer: "Create Feature from added layer",
+    addhole: "Lägg till hål",
+    deletehole: "Ta bort hålet",
   },
   toolsoftool: {
     measure: "Show measure",
