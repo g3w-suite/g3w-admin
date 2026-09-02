@@ -37,8 +37,42 @@ from qgis.core import (
 from qgis.PyQt.QtCore import (
     QDate,
     QDateTime,
-    QTime
+    QTime,
+    QMetaType
 )
+
+
+def qvariant_type_name(qgis_field_type):
+    """
+    Return the QVariant/QMetaType name for a ``QgsField.type()`` value in a
+    way that is compatible with both Qt5 (``QVariant.Type``) and Qt6
+    (``QMetaType.Type``).
+
+    In Qt6 ``QVariant.typeToName`` has been removed. ``QMetaType`` exists in
+    both Qt5 and Qt6 and produces the same names (e.g. ``QString``, ``int``,
+    ``double``, ``qlonglong``, ``QDate``, ``QDateTime``, ``bool``, ...), so
+    existing case-insensitive comparisons keep working unchanged.
+
+    The value is always returned as a plain Python ``str`` (not ``QByteArray``
+    or ``bytes``) so it can be safely JSON-serialized.
+
+    :param qgis_field_type: value returned by ``QgsField.type()``
+    :return: the type name as a string, or ``None`` if unknown
+    :rtype: str | None
+    """
+    try:
+        name = QMetaType(int(qgis_field_type)).name()
+        if not name:
+            return None
+        # Some Qt/PyQt versions return QByteArray or bytes; normalize to str
+        if isinstance(name, str):
+            return name
+        if isinstance(name, (bytes, bytearray)):
+            return name.decode('utf-8')
+        # QByteArray (or anything else): convert via bytes()
+        return bytes(name).decode('utf-8')
+    except Exception:
+        return None
 
 from django.utils.translation import gettext_lazy as _
 from qdjango.apps import get_qgs_project
@@ -474,8 +508,11 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
         # formatter == 0 : default behavior
         if formatter == 0:
             fields = layer.qgis_layer.fields()
+            # NOTE: the `encoding` parameter of QgsJsonUtils.stringToFeatureList
+            # was removed in QGIS 4.2. Calling with 2 args is compatible with
+            # both QGIS 3.44 (encoding defaults to None) and QGIS 4.2.
             form_feature = QgsJsonUtils.stringToFeatureList(
-                json.dumps(form_data), fields, None)[0]
+                json.dumps(form_data), fields)[0]
 
             # Set attributes manually because QgsJsonUtils does not respect order
             for k, v in form_data['properties'].items():

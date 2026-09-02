@@ -15,7 +15,6 @@ from lxml import etree
 from qgis.core import (
     QgsProject, QgsMapLayer,
     QgsUnitTypes,
-    QgsProjectVersion,
     QgsWkbTypes,
     QgsEditFormConfig,
     QgsAttributeEditorElement,
@@ -31,19 +30,29 @@ from qgis.gui import QgsMapCanvas
 
 from qgis.server import QgsServerProjectUtils, QgsConfigCache
 
-from qgis.PyQt.QtCore import QVariant, Qt
+from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
-from core.utils.qgisapi import count_qgis_features
+from core.utils.qgisapi import count_qgis_features, qvariant_type_name
 from qdjango.models import Project, buildLayerTreeNodeObject
-from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
+from qdjango.signals import (
+    load_qdjango_project_file, 
+    post_save_qdjango_project_file
+)
 
 from .exceptions import QgisProjectException
 from .structure import *
-from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
-                         IsGroupCompatibleValidator, ProjectTitleExists,
-                         UniqueLayername, EmbeddedLayersValidator)
+from .validators import (
+    CheckMaxExtent, 
+    ColumnName, 
+    DatasourceExists, 
+    ProjectExists,
+    IsGroupCompatibleValidator, 
+    ProjectTitleExists,
+    UniqueLayername, 
+    EmbeddedLayersValidator
+)
 from .qgis import get_aliases
 
 from qdjango.apps import get_qgs_project
@@ -639,9 +648,10 @@ class QgisProjectLayer(XmlData):
             fidx = qfields.indexFromName(ac.name)
             if fidx != -1:
                 f = qfields.field(fidx)
+                type_name = qvariant_type_name(f.type())
                 columns.append({
                     'name': f.name(),
-                    'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
+                    'type': type_name.upper() if type_name else None,
                     'label': f.displayName(),
                 })
 
@@ -1236,8 +1246,13 @@ class QgisProject(XmlData):
                 raise QgisProjectException(
                     _('Could not read QGIS project file: {}').format(project_file))
 
+            # NOTE: in PyQt6 (QGIS 4.2) enum values are only accessible via
+            # their fully-qualified name (Qt.ConnectionType.DirectConnection).
+            # PyQt5 (QGIS 3.44) supports both the flattened `Qt.DirectConnection`
+            # and the namespaced form, so use the namespaced form for
+            # cross-version compatibility.
             self.qgs_project.readProject.connect(
-                _readCanvasSettings, Qt.DirectConnection)
+                _readCanvasSettings, Qt.ConnectionType.DirectConnection)
 
             # Re-read to get map canvas settings (extent)
             self.qgs_project.read(project_file)
@@ -1611,7 +1626,16 @@ class QgisProject(XmlData):
         with transaction.atomic():
 
             if not instance and not self.instance:
-                
+
+                # ClearableFileInput can set thumbnail to False when the
+                # "clear" checkbox is checked or when no file is uploaded.
+                # Django 5.2 on Python 3.14 no longer normalizes this to
+                # None, so File/ImageField.pre_save() fails with
+                # AttributeError: 'bool' object has no attribute 'name'.
+                thumbnail = kwargs.get('thumbnail')
+                if not thumbnail:
+                    thumbnail = None
+
                 data = {
                     'qgis_file': self.qgisProjectFile,
                     'original_name': self.original_name,
@@ -1620,7 +1644,7 @@ class QgisProject(XmlData):
                     'initial_extent': self.initialExtent,
                     'max_extent': self.maxExtent,
                     'wms_use_layer_ids': self.wmsuselayerids,
-                    'thumbnail': kwargs.get('thumbnail'),
+                    'thumbnail': thumbnail,
                     'description': kwargs.get('description'),
                     'baselayer': kwargs.get('baselayer'),
                     'qgis_version': self.qgisVersion,

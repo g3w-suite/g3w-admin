@@ -2342,7 +2342,7 @@ class TestVisibilityScaleLayerConstraintFilters(QdjangoTestBase):
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.project.instance.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.project.instance.id})
 
-        expected_1_feature = b'{"crs":{"properties":{"name":"urn:ogc:def:crs:EPSG::3857"},"type":"name"},"features":[{"geometry":null,"id":"countries_simpl20171228095706310.18","properties":{"AREA_KM2":301230,"CAPITAL_BR":"Roma","CAPITAL_DE":"Rom","CAPITAL_EN":"Rome","CAPITAL_ES":"Roma","CAPITAL_FR":"Rome","CAPITAL_IT":"Roma","ISOCODE":"IT","ISO_NUM":380,"NAME_BR":"It\xef\xbf\xbdlia","NAME_DE":"Italien","NAME_EN":"Italy","NAME_ES":"Italia","NAME_FR":"Italie","NAME_IT":"Italia","NAME_LOCAL":"Italia","POPULATION":58103033},"type":"Feature"}],"type":"FeatureCollection"}'
+        expected_1_feature = b'{"crs":{"properties":{"name":"urn:ogc:def:crs:EPSG::3857"},"type":"name"},"features":[{"featureType":"countries_simpl20171228095706310","geometry":null,"id":"countries_simpl20171228095706310.18","properties":{"AREA_KM2":301230,"CAPITAL_BR":"Roma","CAPITAL_DE":"Rom","CAPITAL_EN":"Rome","CAPITAL_ES":"Roma","CAPITAL_FR":"Rome","CAPITAL_IT":"Roma","ISOCODE":"IT","ISO_NUM":380,"NAME_BR":"It\xef\xbf\xbdlia","NAME_DE":"Italien","NAME_EN":"Italy","NAME_ES":"Italia","NAME_FR":"Italie","NAME_IT":"Italia","NAME_LOCAL":"Italia","POPULATION":58103033},"type":"Feature"}],"type":"FeatureCollection"}'
         expected_no_feature = b'{"features":[],"type":"FeatureCollection"}'
 
 
