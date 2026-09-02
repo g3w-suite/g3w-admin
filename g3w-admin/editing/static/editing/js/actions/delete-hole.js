@@ -28,8 +28,8 @@ export class DeleteHoleStep extends Step {
 				}));
 
 				session.pushUpdate(layerId, feature, originalFeature);
-				resolve(inputs);
 			});
+			resolve(inputs);
 		});
 	}
 
