@@ -9,29 +9,41 @@ import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 
 
 const { Geometry } = g3wsdk.core.geometry;
-
-
-const PickHolesEvent = function(type, coordinate, layer, features) {
-  this.type       = type;
-  this.features   = features;
-  this.coordinate = coordinate;
-  this.layer      = layer;
-};
-
+/**
+ * Pointer interaction to pick hole features from polygon geometry
+ */
 class PickHolesInteraction extends ol.interaction.Pointer {
 	constructor(opts = {}) {
 		super({
 			...opts,
-			handleDownEvent: e => this.handleDownEvent_(e),
-			handleUpEvent:   e => this.handleUpEvent_(e),
-			handleMoveEvent: e => this.handleMoveEvent_(e)
+			handleDownEvent: e => {
+				this.pickedHoles = this.holesAtPixel(e);
+				this._holeLayer.getSource().clear();
+				return this.pickedHoles;
+			},
+			handleUpEvent:   e => {
+				if (this.pickedHoles.length > 0) {
+					this.dispatchEvent({
+						type:       'picked',
+						coordinate: e.coordinate,
+						layer:      this._holeLayer,
+						features:   this.pickedHoles,
+					});
+				}
+				return true;
+			},
+			handleMoveEvent: e => {
+				const intersectingHoles = this.holesAtPixel(e);
+				e.map.getTargetElement().style.cursor = intersectingHoles ? 'pointer': '';
+			},
 		});
+
 		this.map          = null;
 		//vector editing layer
 		this.layer        = opts.layer;
 		//store layer geometry type
 		this.geometryType = opts.geometryType;
-
+		//hole layer to store hole features from polygon geometry
 		this._holeLayer = new ol.layer.Vector({
 			style: new ol.style.Style({
 				fill: new ol.style.Fill({
@@ -44,46 +56,15 @@ class PickHolesInteraction extends ol.interaction.Pointer {
 		this.layer
 			.getSource()
 			.getFeatures()
-			.forEach( feature => this.addHoleFeature(feature));
+			.forEach(f => this.addHoleFeature(f));
 
 		//listen add feature due move map and get new feature from server
 		this.unByKey = this.layer
 			.getSource()
-			.on('addfeature', ({feature}) => this.addHoleFeature(feature));
+			.on('addfeature', ({ feature }) => this.addHoleFeature(feature));
 
 		this.pickedHoles = []; //store information about get hole
 	}
-
-	/**
-	 * Event handler Down
-	 * @param e
-	 * @returns {*}
-	 * @private
-	 */
-	handleDownEvent_(e) {
-		this.pickedHoles = this.holesAtPixel(e);
-		this._holeLayer.getSource().clear();
-		return this.pickedHoles;
-	};
-
-	/**
-	 * Eevent handler Up
-	 * @param e
-	 * @returns {boolean}
-	 * @private
-	 */
-	handleUpEvent_(e) {
-		if (this.pickedHoles.length > 0) {
-			this.dispatchEvent(
-				new PickHolesEvent(
-					'picked',
-					e.coordinate,
-					this._holeLayer,
-					this.pickedHoles)
-			);
-		}
-		return true;
-	};
 
 	/**
 	 * Get a feature from layer and check if it has hole/holes
@@ -92,7 +73,7 @@ class PickHolesInteraction extends ol.interaction.Pointer {
 	 */
 	addHoleFeature(feature) {
 		const featureGeometry = feature.getGeometry();
-		const id = feature.getId();
+		const id              = feature.getId();
 		//check if is multi geometry (MultiPolygon)
 		if (Geometry.isMultiGeometry(this.geometryType)) {
 			featureGeometry
@@ -103,7 +84,7 @@ class PickHolesInteraction extends ol.interaction.Pointer {
 						id,
 						index
 					})
-						.forEach(hf => this._holeLayer.getSource().addFeature(hf))
+					.forEach(hf => this._holeLayer.getSource().addFeature(hf))
 				})
 		} else {
 			//Polygon geometry
@@ -122,21 +103,11 @@ class PickHolesInteraction extends ol.interaction.Pointer {
 	 * @param map
 	 * @returns {*}
 	 */
-	holesAtPixel({pixel, map}={}) {
+	holesAtPixel({ pixel, map } = {}) {
 		return map.getFeaturesAtPixel(pixel, {
-			layerFilter: layer => layer === this._holeLayer,
+			layerFilter: l => l === this._holeLayer,
 			hitTolerance: (isMobile && isMobile.any) ? 10 : 0
 		});
-	};
-
-	/**
-	 * Event handler move pointer
-	 * @param e
-	 * @private
-	 */
-	handleMoveEvent_(e) {
-		const intersectingHoles = this.holesAtPixel(e);
-		e.map.getTargetElement().style.cursor = intersectingHoles ? 'pointer': '';
 	};
 
 	shouldStopEvent() {
@@ -167,7 +138,7 @@ class PickHolesInteraction extends ol.interaction.Pointer {
 };
 
 /**
- * 
+ * Pick hole step to pick hole features from polygon geometry
  */
 export class PickHoleStep extends Step {
   constructor(opts = {}) {
@@ -175,16 +146,17 @@ export class PickHoleStep extends Step {
 		this.pickFeatureInteraction = null;
 	}
 
+	/**
+	 * 
+	 * @param {*} inputs 
+	 * @returns 
+	 */
   run(inputs) {
 
 		return new Promise((resolve, reject) => {
-			//get OL editing layer
-			const editingLayer = getEditingLayer(inputs.layer);
-
 			this.pickFeatureInteraction = new PickHolesInteraction({
-				layer: editingLayer,
+				layer:        getEditingLayer(inputs.layer),
 				geometryType: inputs.layer.getGeometryType()
-
 			});
 
 			this.addInteraction(this.pickFeatureInteraction);
