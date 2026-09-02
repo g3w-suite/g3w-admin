@@ -80,7 +80,7 @@ template: /*html*/`
 
   data() {
     return {
-      features:  this.layer.getEditor().readFeatures(),                    // original features
+      features:  this.layer.getEditor().readFeatures(),        // original features
       efeatures: this.layer.getEditor().readEditingFeatures(), // edited features,
     };
   },
@@ -93,11 +93,13 @@ template: /*html*/`
       if ('geometry' === key && feat.get(key)) {
         return `(${ feat.get(key).getFlatCoordinates().length / 2 })`;
       }
-      return getFeatureTableFieldValue({
+      const value = getFeatureTableFieldValue({
         layerId:  this.layer.getId(),
         feature:  feat,
         property: key
       });
+
+      return value?.value ?? value; //@since 4.0.0 in case of object value, for example image or pdf, return value.value instead of [object Object] to show the value in the changes modal
     },
 
     /**

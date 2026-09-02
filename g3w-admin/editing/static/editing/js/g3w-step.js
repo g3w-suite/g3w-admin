@@ -16,16 +16,16 @@ const { isPointGeometryType } = g3wsdk.core.geoutils.Geometry;
 export class Step extends Emitter {
 
   /**
-   * @param {Object} options
-   * @param options.input
-   * @param options.context
-   * @param options.task
-   * @param options.outputs
-   * @param options.escKeyPressEventHandler
-   * @param options.id
-   * @param options.name
-   * @param options.help
-   * @param options.message
+   * @param { Object } options
+   * @param { Object } options.inputs
+   * @param { Object } options.context
+   * @param { Object } options.task
+   * @param { Object } options.outputs
+   * @param { Function } options.escKeyPressEventHandler
+   * @param { String } options.id
+   * @param { String } options.name
+   * @param { String } options.help
+   * @param { String } options.message
    */
   constructor(options = {}) {
 
@@ -39,12 +39,12 @@ export class Step extends Emitter {
     this._stop   = (options.stop || this.stop || (async () => true)).bind(this);
 
     /**
-     * @FIXME add description
+     * set inputs object (features, layer etc..)
      */
     this._inputs = options.inputs || null;
 
     /**
-     * @FIXME add description
+     * set context (session etc..)
      */
     this._context = options.context || null;
 
@@ -231,7 +231,7 @@ export class Step extends Emitter {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   removeInteraction(interaction) {
-    setTimeout(() => GUI.removeInteraction(interaction)) // timeout needed to work around an Openlayers issue
+    setTimeout(() => GUI.removeInteraction(interaction)); // timeout needed to work around an Openlayers issue
   }
 
   /**
@@ -316,9 +316,10 @@ export class Step extends Emitter {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   disableSidebar(bool = true) {
-    if (!this._isContentChild) {
-      GUI.disableSideBar(bool);
+    if (this._isContentChild) {
+      return;
     }
+    GUI.disableSideBar(bool);
   }
 
   /**
@@ -335,14 +336,14 @@ export class Step extends Emitter {
   }
 
   /**
-   * @FIXME add description
+   * Remove callback when press ESC key
    */
   unbindEscKeyUp() {
     $(document).unbind('keyup', this.escKeyUpHandler);
   }
 
   /**
-   * @FIXME add description
+   * Bind callback when press ESC key
    */
   bindEscKeyUp(callback = () => {}) {
     $(document).on('keyup', { callback, task: this }, this.escKeyUpHandler);
@@ -380,7 +381,7 @@ export class Step extends Emitter {
 
     const step         = this;
     const toolsOfTools = {
-
+      // use snap interaction to snap to features during drawing or change feature geometry
       snap: {
         type: 'snap',
         options: {
@@ -397,7 +398,7 @@ export class Step extends Emitter {
           }
         }
       },
-
+      // show measure interaction during drawing or change feature geometry
       measure: {
         type: 'measure',
         options: {
@@ -464,63 +465,64 @@ export class Step extends Emitter {
   }
 
   /**
-   * @FIXME add description
+   *  @returns { String } step id
    */
   getId() {
     return this.state.id;
   }
 
   /**
-   * @FIXME add description
+   * @returns { String } step name
    */
   getName() {
     return this.state.name;
   }
 
   /**
-   * @FIXME add description
+   * @returns { String } step help
    */
   getHelp() {
     return this.state.help;
   }
 
   /**
-   * @FIXME add description
+   * @returns { Error } step error
    */
   getError() {
     return this.state.error;
   }
 
   /**
-   * @FIXME add description
+   * @returns { String } step message
    */
   getMessage() {
     return this.state.message;
   }
 
   /**
-   * @FIXME add description
+   * @returns { Boolean } step running state
    */
   isRunning() {
     return this.state.running;
   }
 
   /**
-   * @FIXME add description
+   * @return { Step } step instance
    */
   getTask() {
     return this;
   }
 
   /**
-   * @FIXME add description
+   * @param { Object } outputs
+   * @returns { void }
    */
   setOutputs(outputs) {
     this._outputs = outputs;
   }
 
   /**
-   * @FIXME add description
+   * @returns { Object } step outputs
    */
   getOutputs() {
     return this._outputs;
