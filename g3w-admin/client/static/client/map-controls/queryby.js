@@ -67,6 +67,7 @@ export class QueryBy extends MapControl {
       ...opts,
       name:        'queryby',
       tipLabel:    'Query area',
+      clickmap:    true, //@since 4.2.0
       enabled:     true,
       cursorClass: null, //store cursorClass of a current sub control enabled (querybbox, etc..)
     });
@@ -767,7 +768,7 @@ function _getAvailableLayers(type) {
 
     // QUERYABLE
     ...Object.values(ApplicationState.layers)
-        .flatMap(s => s.isQueryable() ? s.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }) : []),
+        .flatMap(s => s.isQueryable() ? s.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }).filter(l => l.state?.geometrytype) : []),
 
     // POLYGONS
     ...GUI.getExternalLayers('vector')
@@ -775,6 +776,6 @@ function _getAvailableLayers(type) {
 
     // SELECTED POLYGONS
     ...Object.values(ApplicationState.layers)
-        .flatMap(s => 'querybypolygon' === type && s.isQueryable() ? s.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }, {}) : []),
+        .flatMap(s => 'querybypolygon' === type && s.isQueryable() ? s.getLayers({ GEOLAYER: true, QUERYABLE: true, SELECTED_OR_ALL: true }, {}).filter(l => l.state?.geometrytype) : []),
   ])];
 }
