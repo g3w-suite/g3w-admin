@@ -7,7 +7,6 @@
  * 
  * @returns { Array } hole features
  * 
- * @since g3w-client-plugin-editing@3.7.0
  */
 export function extractHolesFromPolygonGeometry({ geometry, id, index } = {}) {
   const holesFeatures   = [];
