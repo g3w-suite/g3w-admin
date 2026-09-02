@@ -102,6 +102,7 @@ export class AddHoleStep extends Step {
 			});
 
 			this.drawInteraction.on('drawend', evt => {
+				document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
 				// IN CASE OF Z VALUE OF COORDINATE ADD Z VALUE TO COORDINATES OF DRAW POLYGON HOLE
 				if (Geometry.is3DGeometry(this.geometryType)) {
 					evt.feature.setGeometry(Geometry.addZValueToOLFeatureGeometry(evt.feature.getGeometry()))
