@@ -22,7 +22,7 @@ export class AddHoleStep extends Step {
 		 * @private
 		 * callback of pressing esc to remove last point drawed
 		 */
-		this._delKeyRemoveLastPoint  = e => e.keyCode === 46 && this.removeLastPoint();
+		this._delKeyRemoveLastPoint  = e => 27 == e.keyCode && this.removeLastPoint();
 	}
 
 	/**
