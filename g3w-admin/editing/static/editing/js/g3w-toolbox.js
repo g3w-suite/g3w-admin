@@ -353,33 +353,6 @@ export class ToolBox extends Emitter {
       _disabledtools: undefined,
       _constraints: layer.state.editing.constraints || {},
       _tools: [
-        //Only in case of Polygon/MultiPolygon geometry
-        (is_vector) && is_poly && capabilities.includes('change_feature') && {
-          id: 'addhole',
-          name: "editing.tools.addhole",
-          icon: "addRing.png",
-          op: new Workflow({
-            layer,
-            type: 'change_feature',
-            steps: [
-              new AddHoleStep({}),
-            ]
-          }),
-        },
-        
-        (is_vector) && is_poly && capabilities.includes('change_feature') &&  {  
-          id: 'deletehole',
-          name: "editing.tools.deletehole",
-          icon: "deleteRing.png",
-          op: new Workflow({
-            layer,
-            type: 'change_feature',
-            steps: [
-              new PickHoleStep(),
-              new DeleteHoleStep(),
-            ]
-          }),
-        },
         // Add Feature
         (is_vector) && capabilities.includes('add_feature') && {
           id:   'addfeature',
@@ -514,6 +487,33 @@ export class ToolBox extends Emitter {
                 }
               }),
             ],
+          }),
+        },
+        //Only in case of Polygon/MultiPolygon geometry
+        (is_vector) && is_poly && capabilities.includes('change_feature') && {
+          id: 'addhole',
+          name: "editing.tools.addhole",
+          icon: "addRing.png",
+          op: new Workflow({
+            layer,
+            type: 'change_feature',
+            steps: [
+              new AddHoleStep({}),
+            ]
+          }),
+        },
+        
+        (is_vector) && is_poly && capabilities.includes('change_feature') &&  {  
+          id: 'deletehole',
+          name: "editing.tools.deletehole",
+          icon: "deleteRing.png",
+          op: new Workflow({
+            layer,
+            type: 'change_feature',
+            steps: [
+              new PickHoleStep(),
+              new DeleteHoleStep(),
+            ]
           }),
         },
         // Edit vertex Feature
