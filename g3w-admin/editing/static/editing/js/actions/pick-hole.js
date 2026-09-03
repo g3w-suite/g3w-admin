@@ -80,20 +80,20 @@ class PickHolesInteraction extends ol.interaction.Pointer {
 				.getPolygons()
 				.forEach((geometry, index) => {
 					extractHolesFromPolygonGeometry({
-						geometry,
 						id,
+						geometry,
 						index
 					})
-					.forEach(hf => this._holeLayer.getSource().addFeature(hf))
+					.forEach(hf => this._holeLayer.getSource().addFeature(hf));
 				})
 		} else {
 			//Polygon geometry
 			extractHolesFromPolygonGeometry({
-				geometry:featureGeometry,
 				id,
+				geometry: featureGeometry,
 				index: 0 //just one polygon
 			})
-				.forEach(hf => this._holeLayer.getSource().addFeature(hf))
+			.forEach(hf => this._holeLayer.getSource().addFeature(hf));
 		}
 	}
 
@@ -106,12 +106,8 @@ class PickHolesInteraction extends ol.interaction.Pointer {
 	holesAtPixel({ pixel, map } = {}) {
 		return map.getFeaturesAtPixel(pixel, {
 			layerFilter: l => l === this._holeLayer,
-			hitTolerance: (isMobile && isMobile.any) ? 10 : 0
+			hitTolerance: isMobile?.any ? 10 : 0
 		});
-	};
-
-	shouldStopEvent() {
-		return false;
 	};
 
 	/**
