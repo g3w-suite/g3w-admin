@@ -493,7 +493,7 @@ export class ToolBox extends Emitter {
         (is_vector) && is_poly && capabilities.includes('change_feature') && {
           id: 'addhole',
           name: "editing.tools.addhole",
-          icon: "addRing.png",
+          icon: "mActionAddRing.svg",
           op: new Workflow({
             layer,
             type: 'change_feature',
@@ -506,7 +506,7 @@ export class ToolBox extends Emitter {
         (is_vector) && is_poly && capabilities.includes('change_feature') &&  {  
           id: 'deletehole',
           name: "editing.tools.deletehole",
-          icon: "deleteRing.png",
+          icon: "mActionDeleteRing.svg",
           op: new Workflow({
             layer,
             type: 'change_feature',
