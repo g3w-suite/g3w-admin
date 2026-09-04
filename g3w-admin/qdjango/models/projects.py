@@ -549,11 +549,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 mode=mode,
             )
 
-            layerAction = (
-                'add_permissions_to_viewer_user_groups'
-                if mode == 'add'
-                else 'remove_permissions_to_viewer_user_groups'
-            )
+        layerAction = (
+            'add_permissions_to_viewer_user_groups'
+            if mode == 'add'
+            else 'remove_permissions_to_viewer_user_groups'
+        )
 
         layers = self.layer_set.all()
 
