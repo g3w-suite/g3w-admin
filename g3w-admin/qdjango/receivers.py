@@ -24,7 +24,8 @@ from django.db.models.signals import (
     post_delete,
     post_save,
     pre_delete,
-    pre_save
+    pre_save,
+    m2m_changed,
 )
 from django.dispatch import receiver
 from django.template import loader
@@ -125,21 +126,33 @@ def delete_project_file_on_update(sender, **kwargs):
 
 
 
-@receiver(post_delete, sender=Layer)
-def remove_embedded_layers(sender, **kwargs):
-    """
-    Checks for layers embedded from the deleted layer,
-    deletes them accordingly and remove the whole project if empty
-    """
+# @receiver(post_delete, sender=Layer)
+# def remove_embedded_layers(sender, **kwargs):
+#     """
+#     Checks for layers embedded from the deleted layer,
+#     deletes them accordingly and remove the whole project if empty
+#     """
 
-    layer = kwargs["instance"]
-    # If it is embedded make sure it is removed from the project
-    # because it may be a cascade
-    if layer.parent_project is not None:
-        project = QgsProject()
-        assert project.read(layer.project.qgis_file.file.name)
-        project.removeMapLayers([layer.qgs_layer_id])
-        assert project.write()
+#     layer = kwargs["instance"]
+#     origin = kwargs.get("origin")
+
+#     # True if the Layer deletion comes as a cascade from a Project
+#     cascaded_from_project = (
+#         isinstance(origin, Project)
+#         or (hasattr(origin, "model") and origin.model is Project)
+#     )
+
+#     if cascaded_from_project:
+#         # it's a cascade from the Project: probably no need to rewrite the .qgs
+#         return
+    
+#     # If it is embedded make sure it is removed from the project
+#     # because it may be a cascade
+#     if layer.parent_project is not None:
+#         project = QgsProject()
+#         assert project.read(layer.project.qgis_file.file.name)
+#         project.removeMapLayers([layer.qgs_layer_id])
+#         assert project.write()
 
 
 @receiver(post_save, sender=Project)
@@ -333,6 +346,25 @@ def invalid_prj_cache_by_columnacl(**kwargs):
         f"Parent qdjango project /api/config invalidate on create/update/delete of a layer columnacl: "
         f"{kwargs['instance'].layer.project}"
     )
+
+
+def _invalid_prj_cache_by_columnacl_m2m(sender, instance, **kwargs):
+    """Invalidate project cache when users or groups M2M on ColumnAcl change"""
+    instance.layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on M2M change of column acl users/groups: "
+        f"{instance.layer.project}"
+    )
+
+
+m2m_changed.connect(
+    _invalid_prj_cache_by_columnacl_m2m,
+    sender=ColumnAcl.users.through,
+)
+m2m_changed.connect(
+    _invalid_prj_cache_by_columnacl_m2m,
+    sender=ColumnAcl.groups.through,
+)
 
 @receiver(post_save, sender=Message)
 @receiver(pre_delete, sender=Message)

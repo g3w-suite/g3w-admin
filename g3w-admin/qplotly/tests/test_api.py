@@ -46,6 +46,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.client = APIClient()
 
     def setUp(self):
+
+        self.maxDiff = None
+
         # Main project group
         self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
@@ -97,7 +100,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.widget_country_histogram = QplotlyWidget.objects.create(
             xml=self.countries_histogram_plot_xml,
             datasource=layer.datasource,
-            project=self.project.instance,
             type='histogram',
             title=''
             )
@@ -108,7 +110,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.widget_country_histogram_3857 = QplotlyWidget.objects.create(
             xml=self.countries_histogram_plot_xml,
             datasource=layer.datasource,
-            project=self.project_3857.instance,
             type='histogram',
             title=''
             )
@@ -158,14 +159,12 @@ class QplotlyTestAPI(QdjangoTestBase):
         qplotly_widgets = get_qplotlywidget_for_project(self.project.instance)
         self.assertEqual(len(qplotly_widgets), 1)
 
-        # check project fk is saved
-        self.assertEqual(qplotly_widgets[0].project, self.project.instance)
+        self.assertTrue(qplotly_widgets[0].layers.filter(project=self.project.instance).exists())
 
         qplotly_widgets = get_qplotlywidget_for_project(self.project_3857.instance)
         self.assertEqual(len(qplotly_widgets), 1)
 
-        # check project fk is saved
-        self.assertEqual(qplotly_widgets[0].project, self.project_3857.instance)
+        self.assertTrue(qplotly_widgets[0].layers.filter(project=self.project_3857.instance).exists())
 
     def test_initconfig_plugin_start(self):
         """Test data added to API client config"""
@@ -315,8 +314,7 @@ class QplotlyTestAPI(QdjangoTestBase):
             xml=self.cities_histogram_plot_xml,
             datasource=cities.datasource,
             type='histogram',
-            title='',
-            project=self.project.instance
+            title=''
         )
 
         widget.layers.add(cities)
@@ -326,8 +324,7 @@ class QplotlyTestAPI(QdjangoTestBase):
             xml=self.cities_histogram_plot_xml,
             datasource=cities_3857.datasource,
             type='histogram',
-            title='',
-            project=self.project_3857.instance
+            title=''
         )
 
         widget_3857.layers.add(cities_3857)
@@ -438,27 +435,25 @@ class QplotlyTestAPI(QdjangoTestBase):
             xml=self.cities_histogram_plot_xml,
             datasource=cities.datasource,
             type='histogram',
-            title='',
-            project=self.project.instance
+            title=''
         )
+
 
         if created:
             widget.layers.add(cities)
 
         # also for 3857 project
+        # Now without model 'project' property the widget is the same!!!
         cities_3857 = self.project_3857.instance.layer_set.get(qgs_layer_id='cities10000eu_399beab0_e385_4ce1_9b59_688d02930517')
+
         widget_3857, created = QplotlyWidget.objects.get_or_create(
             xml=self.cities_histogram_plot_xml,
             datasource=cities_3857.datasource,
             type='histogram',
-            title='',
-            project=self.project_3857.instance
+            title=''
         )
 
-        if created:
-            widget_3857.layers.add(cities_3857)
-
-
+        widget_3857.layers.add(cities_3857)
 
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project.instance.pk,
@@ -681,26 +676,26 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(len(widgets), 2)
 
     def _check_constraints(self, jcontent):
-        #self.assertEqual(jcontent['results'][0]['pk'], 18)
-        self.assertFalse(jcontent['results'][0]['selected_features_only'])
-        self.assertFalse(jcontent['results'][0]['visible_features_only'])
-        self.assertEqual(jcontent['results'][0]['type'], 'histogram')
-        self.assertEqual(jcontent['results'][0]['title'], '')
-        self.assertTrue(len(jcontent['results'][0]['layers'])==1)
+        #self.assertEqual(jcontent[0]['pk'], 18)
+        self.assertFalse(jcontent[0]['selected_features_only'])
+        self.assertFalse(jcontent[0]['visible_features_only'])
+        self.assertEqual(jcontent[0]['type'], 'histogram')
+        self.assertEqual(jcontent[0]['title'], '')
+        self.assertTrue(len(jcontent[0]['layers'])==1)
 
     def test_widgets(self):
         """Test API"""
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}).content)
-        self.assertEqual(jcontent['count'], 2)
+        self.assertEqual(len(jcontent), 2)
         self._check_constraints(jcontent)
-        layer_pk = jcontent['results'][0]['layers'][0]
+        layer_pk = jcontent[0]['layers'][0]
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 2)
+        self.assertEqual(len(jcontent), 2)
         self._check_constraints(jcontent)
 
-        qplw_pk = jcontent['results'][0]['pk']
+        qplw_pk = jcontent[0]['pk']
 
 
         # TEST API VALIDATION
@@ -717,7 +712,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertIn('xml', jvcontent['error']['data'])
         self.assertIn('layers', jvcontent['error']['data'])
 
-        data = copy.copy(jcontent['results'][0])
+        data = copy.copy(jcontent[0])
         data['title'] = 'Test title create'
         data['xml'] = self.wrong_settings_source_layer_id_xml
         response = self.client.post(url, data=data)
@@ -735,7 +730,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST CREATE
         # -----------
-        data = jcontent['results'][0]
+        data = jcontent[0]
         data['title'] = 'Test title create'
         del(data['pk'])
         del(data['project'])
@@ -747,12 +742,13 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Test title create')
 
-        # check project instance into qplotlywidget not saved
-        self.assertIsNone(QplotlyWidget.objects.get(pk=jcontent['pk']).project)
+        self.assertTrue(
+            QplotlyWidget.objects.get(pk=jcontent['pk']).layers.filter(pk=layer_pk).exists()
+        )
 
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 3)
+        self.assertEqual(len(jcontent), 3)
 
         # TEST UPDATE
         # -----------
@@ -764,16 +760,16 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(jcontent['type'], 'scatter')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 3)
-        self.assertEqual(jcontent['results'][2]['type'], 'scatter')
+        self.assertEqual(len(jcontent), 3)
+        self.assertEqual(jcontent[2]['type'], 'scatter')
 
         # TEST DELETE
         # -----------
         self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, qplw_pk + 1], {}, data=None, method='DELETE')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 2)
-        self.assertEqual(jcontent['results'][0]['type'], 'histogram')
+        self.assertEqual(len(jcontent), 2)
+        self.assertEqual(jcontent[0]['type'], 'histogram')
 
         # TEST CREATE XML WITH TITLE
         # ----------------------------------------
@@ -793,10 +789,10 @@ class QplotlyTestAPI(QdjangoTestBase):
         """Test API ACL"""
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}).content)
-        self.assertEqual(jcontent['count'], 2)
+        self.assertEqual(len(jcontent), 2)
         self._check_constraints(jcontent)
-        pk = jcontent['results'][0]['pk']
-        layer_pk = jcontent['results'][0]['layers'][0]
+        pk = jcontent[0]['pk']
+        layer_pk = jcontent[0]['layers'][0]
 
         # as viewer1 without grant
         self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
@@ -853,7 +849,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.client.logout()
 
         # Create
-        data = jcontent['results'][0]
+        data = jcontent[0]
         data['type'] = 'pie'
         self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
         url = reverse('qplotly-widget-api-list')

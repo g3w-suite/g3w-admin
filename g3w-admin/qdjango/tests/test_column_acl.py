@@ -20,7 +20,6 @@ from django.db import transaction
 from django.test import Client
 from django.urls import reverse
 from qgis.core import QgsVectorLayer
-from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
 from qdjango.apps import QGS_SERVER, get_qgs_project
@@ -150,9 +149,10 @@ class TestColumnAcl(QdjangoTestBase):
             'APPROX', self.cloned_layer.visible_fields_for_user(self.test_user1))
         self.assertIn(
             'AREA', self.cloned_layer.visible_fields_for_user(self.test_user1))
-        acl = ColumnAcl(layer=self.cloned_layer, user=self.test_user1,
+        acl = ColumnAcl(layer=self.cloned_layer,
                         restricted_fields=['APPROX', 'AREA'])
         acl.save()
+        acl.users.add(self.test_user1)
         self.assertTrue(self.cloned_layer.has_column_acl)
         self.assertNotIn(
             'APPROX', self.cloned_layer.visible_fields_for_user(self.test_user1))
@@ -172,9 +172,10 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertIn(
             'AREA', self.cloned_layer.visible_fields_for_user(self.test_user1))
 
-        acl2 = ColumnAcl(layer=self.cloned_layer, user=self.test_user1,
+        acl2 = ColumnAcl(layer=self.cloned_layer,
                          restricted_fields=['SOURCETHM'])
         acl2.save()
+        acl2.users.add(self.test_user1)
 
         self.cloned_layer = Layer.objects.get(pk=self.cloned_layer.pk)
         self.assertTrue(self.cloned_layer.has_column_acl)
@@ -190,39 +191,39 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertFalse(self.cloned_layer.has_column_acl)
 
     def test_model_constraints(self):
-        """Test model validation"""
+        """Test model: ColumnAcl can be saved without users/groups (M2M are optional at DB level)"""
 
         acl = ColumnAcl(layer=self.cloned_layer,
                         restricted_fields=['APPROX', 'AREA'])
-
-        with self.assertRaises(IntegrityError):
-            acl.save()
+        acl.save()  # Should not raise: M2M validation is at the API/form level
+        self.assertTrue(ColumnAcl.objects.filter(pk=acl.pk).exists())
+        acl.delete()
 
     def test_model_constraints_group(self):
-        """Test model validation with both group and user"""
+        """Test model: ColumnAcl can have both users and groups (no mutex constraint anymore)"""
 
         acl = ColumnAcl(layer=self.cloned_layer,
-                        user=self.test_user1,
-                        group=self.test_user1.groups.all()[0],
                         restricted_fields=['APPROX', 'AREA'])
-
-        with self.assertRaises(IntegrityError):
-            acl.save()
+        acl.save()
+        acl.users.add(self.test_user1)
+        acl.groups.add(self.test_user1.groups.all()[0])
+        self.assertEqual(acl.users.count(), 1)
+        self.assertEqual(acl.groups.count(), 1)
+        acl.delete()
 
     def test_model_constraints_nogroup(self):
-        """Test model validation with no group and user"""
+        """Test model: ColumnAcl with only restricted_fields (no users/groups) is valid at DB level"""
 
         acl = ColumnAcl(layer=self.cloned_layer,
                         restricted_fields=['APPROX', 'AREA'])
-
-        with self.assertRaises(IntegrityError):
-            acl.save()
+        acl.save()  # No IntegrityError expected
+        self.assertTrue(ColumnAcl.objects.filter(pk=acl.pk).exists())
+        acl.delete()
 
     def test_model_validation_layer_type(self):
         """Test model validation: only accept vector layers"""
 
         acl = ColumnAcl(layer=Layer.objects.filter(layer_type='gdal')[0],
-                        user=self.test_user1,
                         restricted_fields=['APPROX', 'AREA'])
 
         with self.assertRaises(ValidationError):
@@ -231,9 +232,10 @@ class TestColumnAcl(QdjangoTestBase):
     def test_user_column_acl_data(self):
         """Test data retrieval"""
 
-        acl = ColumnAcl(layer=self.world, user=self.test_user1,
+        acl = ColumnAcl(layer=self.world,
                         restricted_fields=['APPROX', 'AREA'])
         acl.save()
+        acl.users.add(self.test_user1)
 
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
@@ -298,9 +300,10 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertTrue('SOURCETHM' in fields)
 
 
-        acl = ColumnAcl(layer=self.world, user=self.test_user1,
+        acl = ColumnAcl(layer=self.world,
                         restricted_fields=['AREA', 'SOURCETHM'])
         acl.save()
+        acl.users.add(self.test_user1)
 
         response = self._testApiCallAdmin01(
             'core-vector-api', [
@@ -402,9 +405,10 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertTrue('AREA' in metas)
         self.assertTrue('SOURCETHM' in metas)
 
-        acl = ColumnAcl(layer=self.world, user=self.test_user1,
+        acl = ColumnAcl(layer=self.world,
                         restricted_fields=['AREA', 'SOURCETHM'])
         acl.save()
+        acl.users.add(self.test_user1)
 
         response = self._testApiCallAdmin01(
             'group-project-map-config', [self.qdjango_project.group.slug, 'qdjango', self.qdjango_project.pk])
@@ -434,9 +438,10 @@ class TestColumnAcl(QdjangoTestBase):
 
         self.assertEqual(resp['count'], 0)
 
-        acl = ColumnAcl(layer=self.world, user=self.test_user1,
+        acl = ColumnAcl(layer=self.world,
                         restricted_fields=['APPROX', 'AREA'])
         acl.save()
+        acl.users.add(self.test_user1)
 
         response = self._testApiCallAdmin01(
             'qdjango-column-acl-api-list', [])
@@ -446,18 +451,17 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertEqual(resp['count'], 1)
         self.assertEqual(resp['results'][0]
                          ['restricted_fields'], ['APPROX', 'AREA'])
-        self.assertEqual(resp['results'][0]
-                         ['user'], self.test_user1.pk)
-        self.assertIsNone(resp['results'][0]
-                          ['group'])
+        self.assertIn(self.test_user1.pk, resp['results'][0]['users'])
+        self.assertEqual(resp['results'][0]['groups'], [])
 
         # Second acl, for group viewer 2
 
         viewer2_group = AuthGroup.objects.get(name='Viewer Level 2')
 
-        acl2 = ColumnAcl(layer=self.cloned_layer, group=viewer2_group,
+        acl2 = ColumnAcl(layer=self.cloned_layer,
                          restricted_fields=['AREA'])
         acl2.save()
+        acl2.groups.add(viewer2_group)
 
         response = self._testApiCallAdmin01(
             'qdjango-column-acl-api-list', [])
@@ -466,10 +470,8 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertEqual(resp['count'], 2)
         self.assertEqual(resp['results'][0]
                          ['restricted_fields'], ['AREA'])
-        self.assertIsNone(resp['results'][0]
-                          ['user'])
-        self.assertEqual(resp['results'][0]
-                         ['group'], viewer2_group.pk)
+        self.assertEqual(resp['results'][0]['users'], [])
+        self.assertIn(viewer2_group.pk, resp['results'][0]['groups'])
 
         # Test filter by layer id
         response = self._testApiCallAdmin01(
@@ -479,10 +481,8 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertEqual(resp['count'], 1)
         self.assertEqual(resp['results'][0]
                          ['restricted_fields'], ['APPROX', 'AREA'])
-        self.assertEqual(resp['results'][0]
-                         ['user'], self.test_user1.pk)
-        self.assertIsNone(resp['results'][0]
-                          ['group'])
+        self.assertIn(self.test_user1.pk, resp['results'][0]['users'])
+        self.assertEqual(resp['results'][0]['groups'], [])
 
         # Test filter by user
         response = self._testApiCallAdmin01(
@@ -492,10 +492,8 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertEqual(resp['count'], 1)
         self.assertEqual(resp['results'][0]
                          ['restricted_fields'], ['APPROX', 'AREA'])
-        self.assertEqual(resp['results'][0]
-                         ['user'], self.test_user1.pk)
-        self.assertIsNone(resp['results'][0]
-                          ['group'])
+        self.assertIn(self.test_user1.pk, resp['results'][0]['users'])
+        self.assertEqual(resp['results'][0]['groups'], [])
 
         # Test filter by group
         response = self._testApiCallAdmin01(
@@ -505,10 +503,8 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertEqual(resp['count'], 1)
         self.assertEqual(resp['results'][0]
                          ['restricted_fields'], ['AREA'])
-        self.assertIsNone(resp['results'][0]
-                          ['user'])
-        self.assertEqual(resp['results'][0]
-                         ['group'], viewer2_group.pk)
+        self.assertEqual(resp['results'][0]['users'], [])
+        self.assertIn(viewer2_group.pk, resp['results'][0]['groups'])
 
         # Test detail
         response = self._testApiCallAdmin01(
@@ -520,8 +516,8 @@ class TestColumnAcl(QdjangoTestBase):
         # Test POST
         payload = {
             'layer': self.world.pk,
-            'group': viewer2_group.pk,
-            'user': '',
+            'groups': [viewer2_group.pk],
+            'users': [],
             'restricted_fields': ['NAME']
         }
 
@@ -534,18 +530,18 @@ class TestColumnAcl(QdjangoTestBase):
 
         acl_pk = resp['pk']
         acl3 = ColumnAcl.objects.get(pk=acl_pk)
-        self.assertEqual(acl3.group, viewer2_group)
+        self.assertIn(viewer2_group, acl3.groups.all())
         self.assertEqual(acl3.layer, self.world)
         self.assertEqual(acl3.restricted_fields, ['NAME'])
-        self.assertIsNone(acl3.user)
-        self.assertEqual(resp['groupname'], 'Viewer Level 2')
+        self.assertEqual(acl3.users.count(), 0)
+        self.assertIn('Viewer Level 2', resp['groupnames'])
 
         # Test errors: field does not exist
 
         payload = {
             'layer': self.world.pk,
-            'group': viewer2_group.pk,
-            'user': '',
+            'groups': [viewer2_group.pk],
+            'users': [],
             'restricted_fields': ['I_DONT_EXIST']
         }
 
@@ -560,8 +556,8 @@ class TestColumnAcl(QdjangoTestBase):
 
         payload = {
             'layer': Layer.objects.filter(layer_type='gdal')[0].pk,
-            'group': viewer2_group.pk,
-            'user': '',
+            'groups': [viewer2_group.pk],
+            'users': [],
             'restricted_fields': ['I_DONT_EXIST']
         }
 

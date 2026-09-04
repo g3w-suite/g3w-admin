@@ -107,7 +107,7 @@ class QplotlyTraceAPIView(G3WAPIView):
                     'id': qplotly.pk,
                     'data': self._get_trace(factory)
                 })
-
+                
             if 'relations' not in res and relations:
                 res.update({'relations': relations})
 
@@ -135,7 +135,7 @@ class QplotlyTraceAPIView(G3WAPIView):
         factory = QplotlyFactoring(settings, visible_region=rect, request=request, layer=layer)
 
 
-        # is possible get the first layer
+        # If possible get the first layer
         factory.source_layer = get_qgis_layer(qplotly.layers.get(qgs_layer_id=settings.source_layer_id,
                                                                     project_id=kwargs['project_id']))
         factory.rebuild()
@@ -152,6 +152,7 @@ class QplotlyTraceAPIView(G3WAPIView):
             request_data = request.query_params
 
         with_relations = request_data.get(WITH_RELATIONS_PARAM)
+       
         if with_relations:
             self._get_relations(
                 with_relations=with_relations.split(','),

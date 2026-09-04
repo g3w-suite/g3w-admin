@@ -22,12 +22,14 @@ from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.models import Group as AuthGroup
-from usersmanage.decorators import user_passes_test_or_403
-from usersmanage.utils import userHasGroups, get_groups_for_object, get_users_for_object
+from usersmanage.utils import userHasGroups, get_groups_for_object
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
+
+if 'editing' in settings.INSTALLED_APPS:
+    from qplotly.utils.models import get_qplotlywidgets4layer
 
 from qdjango.signals import load_qdjango_widgets_data
 from qdjango.mixins.views import *
@@ -39,7 +41,8 @@ from qdjango.models import (
     GeoConstraint,
     SingleLayerConstraint,
     ColumnAcl, 
-    ProjectBookmark
+    ProjectBookmark,
+    ScaleVisibilityLayerConstraint
 )
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -301,6 +304,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
             project_user_groups_viewers = [v for v in project_user_groups_viewers]
 
             widgets = []
+            dl_capabilities = []
             for l in self.object.layer_set.all():
 
                 # Get geoconstraints by layer id
@@ -308,6 +312,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                 expconstraints = SingleLayerConstraint.objects.filter(layer=l)
                 hiddenlayers = LayerAcl.objects.filter(layer=l)
                 hiddenfields = ColumnAcl.objects.filter(layer=l)
+                scaleconstraints = ScaleVisibilityLayerConstraint.objects.filter(layer=l)
 
                 # Geoconstrain
                 gc = {
@@ -333,6 +338,39 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     'users': [],
                     'ugroups': []
                 }
+
+                # Scalevisibility constraints
+                sv = {
+                    'layer': l,
+                    'constraints': [],
+                }
+
+                for svc in scaleconstraints:
+                    sv['constraints'].append(svc)
+
+                if len(sv['constraints']) > 0:
+                    if 'scaleconstraints' not in ctx:
+                        ctx['scaleconstraints'] = [sv]
+                    else:
+                        ctx['scaleconstraints'].append(sv)
+
+                def dl_capabilities_by_layer(l):
+                    toret = []
+                    for dlf in ('', '_xls', '_gpx', '_csv', '_gpkg', '_pdf'):
+                        if getattr(l, f'download{dlf}', False):
+                            if dlf == '':
+                                toret.append('SHP/GEOTIFF')
+                            else:
+                                toret.append(dlf[1:].upper())
+                    return toret
+
+                dl = {
+                    'layer': l,
+                    'dl_capabilities': dl_capabilities_by_layer(l)
+                }
+
+                if len(dl['dl_capabilities']) > 0:
+                    dl_capabilities.append(dl)
 
                 # Widgets
                 for w in get_widgets4layer(l):
@@ -393,9 +431,11 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                         ctx['expconstraints'].append(ec)
 
                 for hidef in hiddenfields:
-
+                    user_names = list(hidef.users.values_list('username', flat=True))
+                    group_names = list(hidef.groups.values_list('name', flat=True))
+                    subject = ', '.join(user_names + group_names) or '—'
                     hf['hiddenfields'].append((
-                        hidef.user.username if hidef.user else hidef.group.name,
+                        subject,
                         hidef.restricted_fields
                     ))
 
@@ -419,6 +459,24 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                 if widgets:
                     ctx['widgets'] = widgets
+
+                # QPlotly widgets
+                if 'qplotly' in settings.INSTALLED_APPS:
+                    
+                    qp = {
+                        'layer': l,
+                        'plots': get_qplotlywidgets4layer(l),
+                    }
+
+                    if qp['plots']:
+                            if 'plots' not in ctx:
+                                ctx['plots'] = [qp]
+                            else:
+                                ctx['plots'].append(qp)
+
+
+            if dl_capabilities:
+                ctx['dl_capabilities'] = dl_capabilities
 
         return ctx
 
@@ -747,17 +805,6 @@ class QdjangoLayerWidgetCreateView(QdjangoLayerWidgetsMixin, G3WRequestViewMixin
         # add layer
         self.object.layers.add(self.layer)
 
-        '''
-        if not self.request.user.is_superuser:
-            self.object.addPermissionsToEditor(self.request.user)
-        else:
-            editor_users = get_users_for_object(self.layer, 'change_layer', 'Editor Maps Groups')
-            if editor_users:
-                self.object.addPermissionsToEditor(editor_users[0])
-
-        viewers = map(lambda o: o.id, get_users_for_object(self.layer, 'view_layer', 'Viewer Maps Groups'))
-        self.object.addPermissionsToViewers(viewers)
-        '''
 
         return ret
 
@@ -944,8 +991,9 @@ class ProjectSetOrderView(View):
 
     model = Project
 
-    # only user with change_group for this group can change overview map.
-    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    # only user with change_project permission on the project can change order.
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'pk', 'project_id'),
+                                          raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 

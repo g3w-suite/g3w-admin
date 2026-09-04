@@ -88,8 +88,8 @@ class QdjangoFormsTest(QdjangoTestBase):
 
         self.assertEqual(len(Project.objects.all()), 2)
 
-        # Toc_tab_default by base layers saved into parent group
-        self.assertEqual(len(form.fields['toc_tab_default'].choices), 2)
+        # Toc_tab_default saved into parent group
+        self.assertEqual(len(form.fields['toc_tab_default'].choices), 1)
 
         # Save project as into project CRUD views
         form.qgisProject.save(**form.cleaned_data)

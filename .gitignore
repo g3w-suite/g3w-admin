@@ -17,7 +17,7 @@ docs/locales/**/*.mo
 
 # vscode project file
 /.vscode/
-/venv/
+venv*/
 g3w-admin.code-workspace
 
 # temp_uploads for jqupload
@@ -27,6 +27,9 @@ g3w-admin.code-workspace
 /g3w-admin/base/settings/local_settings.py
 /g3w-admin/base/settings/local_settings.py.*
 /g3w-admin/base/settings/local_ldap_settings.py
+
+# Docker ovverides
+/g3w-admin/base/wsgi_docker.py
 
 # Node modules
 /node_modules

@@ -176,7 +176,7 @@ ga.Qdjango.widgetEditor = {
           }
 
           // Add relation_reference
-          if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
+          if (_.indexOf(fieldname, ga.Qdjango.localVars.layer_edittypes) != -1 && ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
               (fieldwidgettype == 'selectbox')) {
             options['relation_reference'] = true ? v.find(".cmpRelationReference").find("select").val() == '1': false
           }
@@ -440,16 +440,18 @@ ga.Qdjango.widgetEditor = {
       // Case QDATETIME
       //if (_.indexOf(['QDATETIME', 'QDATE'], $(this).find("option:selected").data().type) != -1 &&
       widgetSelect.find('[value="datetimebox"]').remove();
-      if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
-        // Append 'DatetimBox' to widget selectbox
-        widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
-      }
+      if (_.indexOf([$(this).val()], ga.Qdjango.localVars.layer_edittypes) != -1) {
+        if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
+          // Append 'DatetimBox' to widget selectbox
+          widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
+        }
 
-      // Remove `AutoCompleteBox` from widget type list
-      if (ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type == 'ValueRelation') {
-        widgetSelect.find("option[value=\"autocompletebox\"]").hide();
-      } else {
-        widgetSelect.find("option[value=\"autocompletebox\"]").show();
+        // Remove `AutoCompleteBox` from widget type list
+        if (ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type == 'ValueRelation') {
+          widgetSelect.find("option[value=\"autocompletebox\"]").hide();
+        } else {
+          widgetSelect.find("option[value=\"autocompletebox\"]").show();
+        }
       }
 
       // Tringger widgetSelect change if widgetSelect 'selectbox' or 'autocompletebox' are setted
@@ -598,7 +600,7 @@ ga.Qdjango.widgetEditor = {
 
         // Check if field has RelationReference widget
         fieldname = div.find(".fieldSelect").find("select").val();
-        if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
+        if (_.indexOf(fieldname, ga.Qdjango.localVars.layer_edittypes) != -1 && ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
           div.find(".cmpRelationReference").removeClass("invisible")
         } else {
           div.find(".cmpRelationReference").addClass("invisible")
@@ -2457,8 +2459,8 @@ _.extend(g3wadmin.widget, {
       `<thead>
         <tr>
             <th style="width:180px;">${gettext("Actions")}</th>
-            <th>${gettext("User")}</th>
-            <th>${gettext("Group")}</th>
+            <th>${gettext("Users")}</th>
+            <th>${gettext("Groups")}</th>
             <th>${gettext("Restricted Fields")}</th>
         </tr>
       </thead>`
@@ -2493,8 +2495,8 @@ _.extend(g3wadmin.widget, {
       $tbody.append(`
             <tr>
                 <td>${actions}</td>
-                <td>${v["username"]}</td>
-                <td>${v["groupname"]}</td>
+                <td>${v["usernames"].join(', ')}</td>
+                <td>${v["groupnames"].join(', ')}</td>
                 <td>${v["restricted_fields"]}</td>
             </tr>`)
     })
@@ -2661,16 +2663,13 @@ _.extend(g3wadmin.widget, {
       url: params["info-layer-user"],
       success: function (res) {
         let users = res["results"]
-        let $el = modal.$modal.find('[name="user"]')
+        let $el = modal.$modal.find('[name="users"]')
         $el.empty() // remove old options
-        $el.append($("<option></option>").attr("value", "").text("--"))
         $.each(users, function (key, value) {
           $el.append($("<option></option>").attr("value", value["pk"]).text(value["username"]))
         })
-        if (!isNew) {
-          if (form_params["column_acl_record"]["user"] != "") {
-            $el.val(form_params["column_acl_record"]["user"])
-          }
+        if (!isNew && form_params["column_acl_record"]["users"].length) {
+          $el.val(form_params["column_acl_record"]["users"])
         }
       },
       complete: function () {},
@@ -2684,17 +2683,13 @@ _.extend(g3wadmin.widget, {
       url: params["info-layer-authgroup"],
       success: function (res) {
         let groups = res["results"]
-        //let $el = $('[name="group"]')
-        let $el = modal.$modal.find('[name="group"]')
+        let $el = modal.$modal.find('[name="groups"]')
         $el.empty() // remove old options
-        $el.append($("<option></option>").attr("value", "").text("--"))
         $.each(groups, function (key, value) {
           $el.append($("<option></option>").attr("value", value["pk"]).text(value["name"]))
         })
-        if (!isNew) {
-          if (form_params["column_acl_record"]["group"] != "") {
-            $el.val(form_params["column_acl_record"]["group"])
-          }
+        if (!isNew && form_params["column_acl_record"]["groups"].length) {
+          $el.val(form_params["column_acl_record"]["groups"])
         }
       },
       complete: function () {},
@@ -2721,17 +2716,13 @@ _.extend(g3wadmin.widget, {
     modal.setConfirmButtonAction(function (e) {
       let dt = form.getData("array")
       // Validate
-      if (dt["user"] == "" && dt["group"] == "") {
-        let $ediv = form.$form.find(".form-errors")
-        $ediv.html("")
-        $ediv.append(`<h4 class="badge bg-red">${gettext("You must select a 'group' or a 'user'!")}</h4>`)
-        return
-      }
+      dt["users"] = form.$form.find('[name="users"]').val() || []
+      dt["groups"] = form.$form.find('[name="groups"]').val() || []
 
-      if (dt["user"] != "" && dt["group"] != "") {
+      if (dt["users"].length === 0 && dt["groups"].length === 0) {
         let $ediv = form.$form.find(".form-errors")
         $ediv.html("")
-        $ediv.append(`<h4 class="badge bg-red">${gettext("You cannot select both a 'group' and a 'user': they are mutually exclusive!")}</h4>`)
+        $ediv.append(`<h4 class="badge bg-red">${gettext("You must select at least one user or one group!")}</h4>`)
         return
       }
 
@@ -2755,8 +2746,8 @@ _.extend(g3wadmin.widget, {
 
     modal.show()
 
-    modal.$modal.find('[name="user"]').select2()
-    modal.$modal.find('[name="group"]').select2()
+    modal.$modal.find('[name="users"]').select2()
+    modal.$modal.find('[name="groups"]').select2()
     modal.$modal.find('[name="restricted_fields"]').select2()
   },
 })
@@ -2779,24 +2770,24 @@ _.extend(g3wadmin.tpl, {
 				<div class="col-md-12">
 					<div class="info"><%= title %></div>
 					<div class="form-group">
-						<label class="control-label ">${gettext("User (required if group is not set)")}</label>
-						<div class="controls ">
-							<select class="form-select" name="user" style="width:100%;"/>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label ">${gettext("Group (required if user is not set)")}</label>
-						<div class="controls ">
-                        <select class="form-select" name="group" style="width:100%;" />
-						</div>
-					</div>
-
-					<div class="form-group">
 						<label class="control-label ">${gettext("Hidden Fields (required)")}</label>
 						<div class="controls ">
 							<select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;">
                             </select>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label ">${gettext("Users (required if no group is set)")}</label>
+						<div class="controls ">
+							<select class="form-select" multiple name="users" style="width:100%;"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label ">${gettext("Groups (required if no user is set)")}</label>
+						<div class="controls ">
+                        <select class="form-select" multiple name="groups" style="width:100%;" />
 						</div>
 					</div>
 

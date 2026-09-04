@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'drf_spectacular',
     'import_export',
     'mptt',
@@ -71,6 +72,15 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.microsoft",
     "allauth.socialaccount.providers.google",
     "allauth.usersessions",
+    # django-two-factor-auth
+    # ------------------------------------------
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+     # Used for G3W-SUITE inside iframe
+    "corsheaders"
 ]
 
 G3WADMIN_APPS = [
@@ -92,9 +102,15 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+
+    # CORS
+    "corsheaders.middleware.CorsMiddleware",
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'usersmanage.middleware.JWTAutologinMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
@@ -172,6 +188,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
 LOGOUT_NEXT_PAGE = '/'
 LOGIN_REDIRECT_URL = '/'
 
@@ -203,6 +220,7 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('bg', 'Bulgarian'),
     ('pt', 'Portuguese'),
+    ('es', 'Español'),
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
@@ -221,6 +239,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'UNICODE_JSON': False,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.api.authentication.BasicAuthentication403',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
 
 # FOR MEDIA
@@ -334,6 +356,14 @@ REGISTRATION_ACTIVE_BY_ADMIN = False
 # CHANGE PASSWORD AT FIRST LOGIN
 # ------------------------------
 PASSWORD_CHANGE_FIRST_LOGIN = False
+
+# TWO FACTOR AUTHENTICATION SETTINGS
+# ----------------------------------
+ENABLE_TWO_FACTOR_AUTH = False
+
+# DJANGO OTP SETTINGS
+# ----------------------
+OTP_EMAIL_SUBJECT = 'Your second factor token for G3W-SUITE'
 
 
 # QPLOTLY DEFAULT SETTINGS
@@ -462,4 +492,22 @@ QES_SEARCH_SORT = {
 
 # By project id and qgis_layer_id is posssible se fileds to index
 QES_INDEXING_FIELDS = {}
+
+# If QES_INDEXING_CRON_SCHEDULE is defined, then the periodic task will be executed according to the schedule defined in settings, i.e.:
+# indexing every 4 hours,
+# from huey import crontab
+# QES_INDEXING_CRON_SCHEDULE = crontab(hour='*/4')
+QES_INDEXING_CRON_SCHEDULE = None
+
+# RESERVERD PRINT LAYOUT LABELS
+# ------------------------
+# Important: add here reserved labels for print layout, in particular if they are used by plugins
+# Reserved QGIS print layout labels
+RESERVED_PRINT_LAYOUT_LABELS = [
+    'g3w_username', # Reserved for the username of the logged in user
+    'g3w_user_email', # Reserved for the email of the logged in user
+    'g3w_user_first_name', # Reserved for the first name of the logged in user
+    'g3w_user_last_name' # Reserved for the last name of the logged in user
+]
+
 

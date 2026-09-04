@@ -28,7 +28,12 @@
     {{ SETTINGS.SENTRY_JS | safe }}
   {% endif %}
   <app id="app"></app>
-  <div id="startingspinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>
+  <div id="startingspinner">
+    <div class="double-bounce1"></div>
+    <div class="double-bounce2"></div>
+    <a href="https://g3wsuite.it/" target="_blank" style="position: fixed;right: 20px;bottom: 20px;"><img alt="g3w-suite" style="filter: opacity(0.7);width: 95px;" src="/static/client/images/g3wsuite_logo.png"></a>
+  </div>
+
   <script>{{ group_config | safe }}</script>
 
   <script src="{% with client_default|add:"/vendor.min.js" as vendor_js %}{% static vendor_js %}{% endwith %}"></script>

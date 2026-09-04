@@ -416,6 +416,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
+
         # Check Geoconstraint rule whit autozoom flagged and calculate new initentext
         try:
             initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
@@ -428,10 +429,21 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except Exception as e:
             logger.error(f'[Project serializer] Initextent by geocontraint error: {str(e)}')
 
+
+        # Add print layouts
+        # ---------------------------------------------------------
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
-        # Ordering
+        
+        # Ordering layouts by name
         ret['print'].sort(key=lambda x: x['name'])
+
+        # Filter labels reserved for print layout
+        for layout in ret['print']:
+            layout['labels'] = [
+                label for label in layout['labels'] 
+                if label['id'] not in settings.RESERVED_PRINT_LAYOUT_LABELS
+            ]
 
         # Get layer which request.user can view:
         if self.request:

@@ -52,19 +52,19 @@ msgstr "Permission refusée"
 
 #: api/views.py:36
 msgid "Expression evaluation error."
-msgstr "Erreur lors de l'évaluation de l'expression"
+msgstr "Erreur lors de l'évaluation de l'expression."
 
 #: api/views.py:41
 msgid "Expression parse error."
-msgstr "Erreur de lecture de l'expression"
+msgstr "Erreur de lecture de l'expression."
 
 #: api/views.py:47
 msgid "Expression empty error."
-msgstr "Erreur d'expression vide"
+msgstr "Erreur d'expression vide."
 
 #: api/views.py:53
 msgid "Expression form data error."
-msgstr "Erreur de données sur le formulaire d'expression"
+msgstr "Erreur de données sur le formulaire d'expression."
 
 #: api/views.py:59
 msgid "Layer error."
@@ -131,7 +131,7 @@ msgstr "Données de l'écran 'réseaux sociaux' du portail"
 
 #: forms.py:338
 msgid "Map client data"
-msgstr "Données du client cartographique"
+msgstr "Données client de carte"
 
 #: forms.py:356
 msgid "Registration"
@@ -139,18 +139,18 @@ msgstr "Inscription"
 
 #: forms.py:382
 msgid "Editor users"
-msgstr "Utilisateurs Editeur"
+msgstr "Utilisateurs avec le rôle d'édition"
 
 #: forms.py:402
 msgid "ACL Users"
-msgstr "Utilisateurs ACL"
+msgstr "Droits d'utilisation"
 
 #: forms.py:434
 msgid ""
 "<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
 msgstr ""
-"<b>Attention!</b> Ces paramètres sont valides seulement pour un groupe de cartes avec un seul "
+"<b>Attention !</b> Ces paramètres sont valides seulement pour un groupe de cartes avec un seul "
 "Groupe Macro"
 
 #: forms.py:475
@@ -159,19 +159,19 @@ msgstr "Groupe Cartographique Macro"
 
 #: forms.py:477
 msgid "Editor level 1"
-msgstr "Editeur Niveau 1"
+msgstr "Editeur de niveau 1"
 
 #: forms.py:478
 msgid "Editor level 2"
-msgstr "Editeur Niveau 2"
+msgstr "Editeur de niveau 2"
 
 #: forms.py:479
 msgid "User editor group"
-msgstr "Groupe Utilisateur Editeur"
+msgstr "Groupe utilisateur en édition"
 
 #: forms.py:480
 msgid "User viewer group"
-msgstr "Groupe Utilisateur Consultation"
+msgstr "Groupe utilisateur en consultation"
 
 #: models.py:27
 msgid "Qdjango2 module"
@@ -179,11 +179,11 @@ msgstr "Module Qdjango2"
 
 #: models.py:31
 msgid "Type header"
-msgstr "Entête de type"
+msgstr "En-tête de type"
 
 #: models.py:32
 msgid "Icon CSS class"
-msgstr "Classe icone CSS"
+msgstr "Classe d'icône CSS"
 
 #: models.py:39 models.py:151 templates/core/ajax/group_detail.html:8
 msgid "SRID"
@@ -203,7 +203,7 @@ msgstr "SRS WKT"
 
 #: models.py:43
 msgid "PROJ coordinate definition"
-msgstr "Définition des coordonnées PROJ"
+msgstr "Définition des coordonnées de projection"
 
 #: models.py:60 models.py:78 models.py:136
 msgid "Name"
@@ -278,11 +278,11 @@ msgstr "URL"
 
 #: models.py:128
 msgid "MACRO Group"
-msgstr "Groupe Macro"
+msgstr "Groupe macro"
 
 #: models.py:129 utils/forms.py:48
 msgid "MACRO Groups"
-msgstr "Groupes MACRO"
+msgstr "Groupes macro"
 
 #: models.py:142
 msgid "Is active"
@@ -298,7 +298,7 @@ msgstr "Couleur du fond de carte"
 
 #: models.py:164
 msgid "Terms of use text"
-msgstr "Texte de conditions d'utilisation"
+msgstr "Texte des conditions d'utilisation"
 
 #: models.py:167
 msgid "Terms of use link"
@@ -306,14 +306,14 @@ msgstr "Lien vers les conditions d'utilisation"
 
 #: models.py:170
 msgid "MACRO groups"
-msgstr "Groupes MACRO"
+msgstr "Groupes macro"
 
 #: models.py:173
 msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
 msgstr ""
-"Les options liées au Macro Group permettent d'utiliser le logo du groupe courant comme logo "
+"Les options liées au Macro groupe permettent d'utiliser le logo du groupe courant comme logo "
 "du client. Si l'option est active, elle prend le pas sur le logo du client."
 
 #: models.py:178 models.py:416 templates/core/group_form.html:11
@@ -331,7 +331,7 @@ msgstr "Type de projet"
 
 #: models.py:418
 msgid "Project type id"
-msgstr "ID du type de projet"
+msgstr "Identifiant du type de projet"
 
 #: models.py:426
 msgid "Subtitle"
@@ -343,27 +343,27 @@ msgstr "Message d'accueil"
 
 #: models.py:428
 msgid "About title"
-msgstr "Titre du bloc 'A propos'"
+msgstr "Titre du bloc 'À propos'"
 
 #: models.py:429
 msgid "About description"
-msgstr "Description du bloc 'A propos'"
+msgstr "Description du bloc 'À propos'"
 
 #: models.py:430
 msgid "About name"
-msgstr "Nom affiché dans 'A propos'"
+msgstr "Nom affiché dans 'À propos'"
 
 #: models.py:431
 msgid "About phone"
-msgstr "Numéro de téléphone affiché dans 'A propos'"
+msgstr "Numéro de téléphone affiché dans 'À propos'"
 
 #: models.py:432
 msgid "About email"
-msgstr "Email affiché dans 'A propos'"
+msgstr "Email affiché dans 'À propos'"
 
 #: models.py:433
 msgid "About address"
-msgstr "Adresse affichée dans 'A propos'"
+msgstr "Adresse affichée dans 'À propos'"
 
 #: models.py:434
 msgid "Groups title"
@@ -375,11 +375,11 @@ msgstr "Description de la carte de groupes"
 
 #: models.py:436
 msgid "Login title"
-msgstr "Titre du bloc Login"
+msgstr "Titre du bloc d'authentification"
 
 #: models.py:437
 msgid "Login description"
-msgstr "Description du bloc Login"
+msgstr "Description du bloc d'authentification"
 
 #: models.py:438
 msgid "Suite logo"
@@ -435,7 +435,7 @@ msgstr "Nom de l'application"
 
 #: models.py:463
 msgid "Project ID"
-msgstr "ID du projet"
+msgstr "Identifiant du projet"
 
 #: models.py:464
 msgid "Alias"
@@ -547,7 +547,7 @@ msgstr "Echelle min"
 
 #: templates/core/ajax/group_detail.html:13
 msgid "Overview Map"
-msgstr "Carte générale"
+msgstr "Carte d'aperçu"
 
 #: templates/core/ajax/group_detail.html:14
 msgid "Panoramic max scale"
@@ -563,23 +563,23 @@ msgstr "Utilisateurs"
 
 #: templates/core/ajax/group_detail.html:21
 msgid "Editor level 1 user"
-msgstr "Utilisateur Edition niveau 1"
+msgstr "Éditeur de niveau 1"
 
 #: templates/core/ajax/group_detail.html:25
 msgid "Editor level 2 user"
-msgstr "Utilisateur Edition niveau 2"
+msgstr "Éditeur de niveau 2"
 
 #: templates/core/ajax/group_detail.html:26
 msgid "Viewer users"
-msgstr "Utilisateurs Consultation"
+msgstr "Utilisateurs en consultation"
 
 #: templates/core/ajax/group_detail.html:27
 msgid "Editor user groups"
-msgstr "Groupes Utilisateurs Edition"
+msgstr "Groupes utilisateurs en édition"
 
 #: templates/core/ajax/group_detail.html:28
 msgid "Viewer user groups"
-msgstr "Groupes Utilisateurs Consultation"
+msgstr "Groupes utilisateurs en consultation"
 
 #: templates/core/ajax/group_detail.html:35
 msgid "Interface component"
@@ -587,11 +587,11 @@ msgstr "Composant d'interface"
 
 #: templates/core/ajax/group_detail.html:37
 msgid "Interface language"
-msgstr "Language d'interface"
+msgstr "Langage d'interface"
 
 #: templates/core/ajax/group_detail.html:38
 msgid "Language"
-msgstr "Language"
+msgstr "Langage"
 
 #: templates/core/ajax/group_detail.html:39
 msgid "Associated logo"
@@ -615,11 +615,11 @@ msgstr "Conditions d'utilisation"
 
 #: templates/core/ajax/group_detail.html:51
 msgid "HeaderTermsOfUseText"
-msgstr "Conditions d'utilisation"
+msgstr "En-tête des conditions d'utilisation"
 
 #: templates/core/ajax/group_detail.html:52
 msgid "HeaderTermsOfUseLink"
-msgstr "Lien associé"
+msgstr "Lien associé aux conditions d'utilisation"
 
 #: templates/core/ajax/system_info.html:4
 #: templates/core/ajax/system_info.html:17
@@ -644,7 +644,7 @@ msgstr "Python"
 
 #: templates/core/generalsuitedata_form.html:11
 msgid "General suite data"
-msgstr ""
+msgstr "Données de l'instance générale"
 
 #: templates/core/generalsuitedata_form.html:24
 #: templates/core/group_form.html:45 templates/core/macrogroup_form.html:54
@@ -658,7 +658,7 @@ msgstr "Des erreurs sont présentes sur le formulaire. Merci de vérifier avant 
 
 #: templates/core/group_deactive_list.html:10
 msgid "Cartographic groups deactivated"
-msgstr "Groupes cartographiques desactivés"
+msgstr "Groupes cartographiques désactivés"
 
 #: templates/core/group_deactive_list.html:34 templates/core/group_list.html:97
 #: templates/core/search/group.html:25
@@ -680,7 +680,7 @@ msgstr "Afficher les détails"
 
 #: templates/core/group_deactive_list.html:50
 msgid "Redo/Active"
-msgstr "Refaire/Activer"
+msgstr "Restaurer"
 
 #: templates/core/group_deactive_list.html:59
 #: templates/core/macrogroup_list.html:83
@@ -690,11 +690,11 @@ msgstr "Supprimer"
 
 #: templates/core/group_deactive_list.html:62
 msgid "Warning: deleting the group will delete the projects it contains!"
-msgstr "Attention: la suppression d'un groupe entraîne la suppression des projets associés !"
+msgstr "Attention : la suppression d'un groupe entraîne la suppression des projets associés !"
 
 #: templates/core/group_form.html:33
 msgid "Current"
-msgstr "Actuel"
+msgstr "Existant"
 
 #: templates/core/group_list.html:10 templates/core/search/group.html:9
 msgid "Cartographic groups"
@@ -733,11 +733,11 @@ msgstr ""
 
 #: templates/core/include/add_project.html:4
 msgid "Add project"
-msgstr "Ajouter projet"
+msgstr "Ajouter un projet"
 
 #: templates/core/include/add_project.html:10
 msgid "Select project type to add:"
-msgstr "Sélectionner le type de projet à ajouter:"
+msgstr "Sélectionner le type de projet à ajouter :"
 
 #: templates/core/include/cookieconsent.html:11
 msgid ""
@@ -757,15 +757,15 @@ msgstr "Sauvegarder"
 
 #: templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
-msgstr "Refaire/Revenir"
+msgstr "Restaurer"
 
 #: templates/core/macrogroup_form.html:10
 msgid "Macro Group"
-msgstr "Groupe Macro"
+msgstr "Macro groupe"
 
 #: templates/core/macrogroup_form.html:27
 msgid "Current groups"
-msgstr "Groupes actuels"
+msgstr "Groupes existants"
 
 #: templates/core/macrogroup_list.html:10
 #: templates/core/macrogroup_list_table.html:10
@@ -775,7 +775,7 @@ msgstr "Groupes macro cartographiques"
 
 #: templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
-msgstr "Groupe macro"
+msgstr "Macro groupe"
 
 #: templates/core/tags/add_layer.html:3
 msgid "Layer"
@@ -787,7 +787,7 @@ msgstr "Projet"
 
 #: utils/data.py:24
 msgid "[{} error on {}({})]-- {}"
-msgstr ""
+msgstr "[{} erreur sur {}({})]-- {}"
 
 #: utils/forms.py:21
 msgid "Default base layer"
@@ -807,15 +807,15 @@ msgstr "La couche QGIS avec l'id \"{}\" ne peut pas être trouvée !"
 
 #: utils/qgisapi.py:551
 msgid "QDjango project with id \"{}\" could not be found!"
-msgstr "Le projet QDjango avec l'id \"{}\" ne peut pas être trouvé !"
+msgstr "Le projet QDjango avec l'id \"{}\" n'a pas pu être trouvé !"
 
 #: utils/qgisapi.py:561
 msgid "A valid QGIS layer is required to process form data!"
-msgstr "Une couche QGIS valide est nécessaire pour traiter les données du formulaire"
+msgstr "Une couche QGIS valide est nécessaire pour traiter les données du formulaire !"
 
 #: utils/qgisapi.py:575
 msgid "A valid QGIS layer (parent layer) is required to process form data!"
-msgstr "Une coucche QGIS valide (couche parent) est nécessaire pour traiter les données du formulaire"
+msgstr "Une couche QGIS valide (couche parente) est nécessaire pour traiter les données du formulaire !"
 
 #: utils/structure.py:190
 msgid "Yes"

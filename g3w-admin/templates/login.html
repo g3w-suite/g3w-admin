@@ -2,6 +2,8 @@
 {% load socialaccount %}
 {% load static %}
 {% load i18n %}
+{% load two_factor_tags %}
+
 
 {% block body_content %}
  <div class="login-box">
@@ -15,55 +17,123 @@
     </span>
   </div><!-- /.login-logo -->
   <div class="login-box-body">
-    <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
+    <p class="login-box-msg"><span style="font-weight: bold;">{%  trans 'Sign in to start your session' %}</span></p>
       {% if form.errors %}
       <div class="alert alert-danger alert-dismissible">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         <h4><i class="icon fa fa-ban"></i> {% trans 'LOGIN ERROR' %}!</h4>
-        {% trans 'Username and/or password uncorrect' %}
+        {% if form.non_field_errors %}
+          {% for err in form.non_field_errors.as_data %}
+            {% if err.code == 'invalid_login' %}
+              <div>{% trans 'Username and/or password uncorrect' %}</div>
+            {% else %}
+              <div>{{ err.message }}</div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% trans 'Username and/or password uncorrect' %}
+        {% endif %}
       </div>
       {% endif %}
+      {% if SETTINGS.ENABLE_TWO_FACTOR_AUTH %}
+        {% if wizard.steps.current == 'token' %}
+          <p class="login-box-msg">{{ device|as_verbose_action }}</p>
+        {% elif wizard.steps.current == 'backup' %}
+          <p class="login-box-msg">{% blocktrans trimmed %}Use this form for entering backup tokens for logging in.
+            These tokens have been generated for you to print and keep safe. Please
+            enter one of these backup tokens to login to your account.{% endblocktrans %}</p>
+        {% endif %}
+      {% endif%}
+
         <form method="post">
+
           {% csrf_token %}
-          <div class="form-group has-feedback">
-            <input type="text" class="form-control" name="username" placeholder="Username">
-            <span class="glyphicon glyphicon-user form-control-feedback"></span>
-          </div>
-          <div class="form-group has-feedback">
-            <input type="password" class="form-control" name="password" placeholder="Password">
-            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-          </div>
-          <div class="form-group recaptcha">{{ form.captcha }}</div>
-          <div class="row margin-bottom" >
+        
+        {% if SETTINGS.ENABLE_TWO_FACTOR_AUTH %}
+        
+          <!-- TWO FACTOR AUTH -->
+          <!-- ============================================ -->
+
+          {% block main_form_content %}
+            {% include "two_factor/_wizard_forms.html" %}
+
+            {# hidden submit button to enable [enter] key #}
+            <input type="submit" value="" hidden />
+
+            {% if other_devices %}
+              <p>{% trans "Or, alternatively, use one of your other authentication methods:" %}</p>
+              <p>
+                {% for other in other_devices %}
+                <button name="challenge_device" value="{{ other.persistent_id }}"
+                        class="btn btn-secondary btn-block" type="submit">
+                  {{ other|as_action }}
+                </button>
+              {% endfor %}</p>
+            {% endif %}
+
+            {% include "two_factor/_wizard_actions_login.html" %}
+          {% endblock %}
+          <!-- ============================================ -->
+        {% else %}
+
+          <!-- STANDARD LOGIN -->
+          <!-- ============================================ -->
+            <div class="form-group has-feedback">
+              <input type="text" class="form-control" name="username" placeholder="Username">
+              <span class="glyphicon glyphicon-user form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+              <input type="password" class="form-control" name="password" placeholder="Password">
+              <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="form-group recaptcha">{{ form.captcha }}</div>
+            <div class="row margin-bottom" >
+              <div class="col-xs-12">
+                <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign In' %}</button>
+              </div><!-- /.col -->
+            </div>
+        {% endif %}
+
+        {% block 'backup_tokens' %}
+          {% if backup_tokens %}
+            <hr>
+            <div class="backup_tokens_form">
+            <form action="" method="post">
+                {% csrf_token %}
+                  <p class="login-box-msg">{% trans "As a last resort, you can use a backup token:" %}</p>
+                  <p>
+                      <button name="wizard_goto_step" type="submit" value="backup"
+                          class="btn btn-sm btn-secondary btn-block">{% trans "Use Backup Token" %}</button>
+                  </p>
+            </form>
+            </div>
+          {% endif %}
+        {% endblock %}        
+
+        <div class="row">
+          {% include "socialaccount/provider_list.html" with process="login" %}
+        </div>
+
+        {% if SETTINGS.RESET_USER_PASSWORD %}
+        <div class="row">
             <div class="col-xs-12">
-              <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign In' %}</button>
-            </div><!-- /.col -->
-          </div>
-
-          <div class="row">
-            {% include "socialaccount/provider_list.html" with process="login" %}
-          </div>
-
-          {% if SETTINGS.RESET_USER_PASSWORD %}
-          <div class="row">
-              <div class="col-xs-12">
-                  <a class="btn btn-info btn-block btn-flat" href="{% url 'password_reset' %}">{% trans 'Forgot your password?' %}</a>
-              </div>
-          </div>
-          <div class="row">
-              <div class="col-xs-12">
-                  <a class="btn btn-info btn-block btn-flat margin-bottom-small" href="{% url 'username_recovery' %}">{% trans 'Forgot your username?' %}</a>
-              </div>
-          </div>
-          {% endif %}
-          {% if SETTINGS.REGISTRATION_OPEN %}
-          <div class="row">
-              <div class="col-xs-12">
-                  <a class="btn btn-info btn-block btn-flat margin-bottom-small" href="{% url 'django_registration_register' %}">{% trans 'Sign up' %}</a>
-              </div>
-          </div>
-          {% endif %}
-        </form>
+                <a class="btn btn-info btn-block btn-flat" href="{% url 'password_reset' %}">{% trans 'Forgot your password?' %}</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <a class="btn btn-info btn-block btn-flat margin-bottom-small" href="{% url 'username_recovery' %}">{% trans 'Forgot your username?' %}</a>
+            </div>
+        </div>
+        {% endif %}
+        {% if SETTINGS.REGISTRATION_OPEN %}
+        <div class="row">
+            <div class="col-xs-12">
+                <a class="btn btn-info btn-block btn-flat margin-bottom-small" href="{% url 'django_registration_register' %}">{% trans 'Sign up' %}</a>
+            </div>
+        </div>
+        {% endif %}
+      </form>
   </div><!-- /.login-box-body -->
      {% include 'include/login_page_version.html' %}
 </div><!-- /.login-box -->

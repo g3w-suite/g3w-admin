@@ -164,7 +164,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     CLIENT_TOC_TABS = Choices(
         ('layers', _('Layers')),
-        ('baselayers', _('Base layers')),
         ('legend', _('Legend'))
     )
 
@@ -365,13 +364,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     autozoom_query = models.BooleanField(
         _('Automatic zoom to query result features'),
-        default=False,
+        default=True,
         help_text=_('Automatic zoom on query result features for only one layer'),
     )
 
     show_metadata_section = models.BooleanField(
         _("Show the 'Metadata' section on left bar"),
-        default=True,
+        default=False,
         help_text=_("It is possible choose if show or hide the 'Metadata' section on left bar"),
     )
 
@@ -416,7 +415,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     wms_getmap_format = models.CharField(
         _('WMS GetMap image format'),
-        default='image/png; mode=8bit',
+        default='image/png',
         max_length=255,
         null=True,
         choices=WMS_GETMAP_FORMAT,
@@ -1102,7 +1101,7 @@ class Layer(G3WACLModelMixins, models.Model):
                 if user.is_anonymous:
                     user = get_anonymous_user()
 
-                for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
+                for acl in self.columnacl_set.filter(models.Q(users=user) | models.Q(groups__in=user.groups.all())).distinct():
                     attributes = list(set(attributes) -
                                       set(acl.restricted_fields))
 

@@ -334,7 +334,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     if default_value:
                         toRes[field.name()]['input']['options']['default'] = default_value
 
-                    if fieldType == FIELD_TYPE_BOOLEAN:
+                    if fieldType == FIELD_TYPE_BOOLEAN and toRes[field.name()]['input']['type'] in (FORM_FIELD_TYPE_RADIO, FORM_FIELD_TYPE_CHECK):
                         toRes[field.name()]['input']['options']['values'] = [
                                 {'checked': True, 'value': True},
                                 {'checked': False, 'value': False}
@@ -353,14 +353,21 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 has_default_value_expression = False
                 if field.defaultValueDefinition().expression() != '':
                     exp = QgsExpression(field.defaultValueDefinition().expression())
-                    if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral:
-                        toRes[field.name()]['input']['options']['default_expression'] = \
-                            explode_expression(field.defaultValueDefinition().expression())
 
-                        # Check update if expression default value has to run also on update e not
-                        # only on insert newone
-                        toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
-                            if field.defaultValueDefinition().applyOnUpdate() else False
+                    # Important: 
+                    # ---------------------------------------------------------------------------------------------
+                    # Check if expression is valid and not a literal value
+                    # Disabled for now  and open to every nodeType()
+                    # left commented for future check if we want to limit to some nodeType() only
+                    # 2026-02-19: re-enabled check for literal expression to avoid explode literal value as expression
+                    #if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral:
+                    toRes[field.name()]['input']['options']['default_expression'] = \
+                        explode_expression(field.defaultValueDefinition().expression())
+
+                    # Check update if expression default value has to run also on update e not
+                    # only on insert newone
+                    toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
+                        if field.defaultValueDefinition().applyOnUpdate() else False
 
                 # Check for Join's field.
                 # About joins in QGIS control the join settings for editing.

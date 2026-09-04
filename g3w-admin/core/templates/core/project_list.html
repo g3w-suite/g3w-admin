@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block custom_js_links_page %}
-{% if user.is_superuser %}
+{% if user.is_superuser or user|has_group:G3W_EDITOR1 or user|has_group:G3W_EDITOR2 %}
 <script>
 
     $( document ).ajaxComplete(function() {
