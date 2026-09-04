@@ -91,13 +91,16 @@ class CoreUtilsTest(CoreTestBase):
     def test_get_adminlte_skin_by_user(self):
         """ Test same name function """
 
-        self.assertEqual(get_adminlte_skin_by_user(self.test_admin1), 'yellow')
-        self.assertEqual(get_adminlte_skin_by_user(self.test_admin2), 'red')
+        # The restyle uses a single role-independent palette: every user
+        # gets the same neutral AdminLTE skin ("blue"); the visual identity
+        # is applied via CSS overrides, not via role-based skin switching.
+        self.assertEqual(get_adminlte_skin_by_user(self.test_admin1), 'blue')
+        self.assertEqual(get_adminlte_skin_by_user(self.test_admin2), 'blue')
         self.assertEqual(get_adminlte_skin_by_user(
-            self.test_editor1), 'purple')
+            self.test_editor1), 'blue')
         self.assertEqual(get_adminlte_skin_by_user(
-            self.test_editor2), 'purple')
-        self.assertEqual(get_adminlte_skin_by_user(self.test_viewer1), 'green')
+            self.test_editor2), 'blue')
+        self.assertEqual(get_adminlte_skin_by_user(self.test_viewer1), 'blue')
 
     def test_project_type_permission_required(self):
         """ Test same name function decorator """

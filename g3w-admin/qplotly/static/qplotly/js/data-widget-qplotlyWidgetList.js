@@ -43,7 +43,7 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
     const $div = $(/* html */`
       <div class="qplotly" style="margin-left:40px;">
         <!-- add new plot -->
-        <a href="#" class="btn btn-default btn-add-new-plot"><i class="fa fa-plus-circle"></i> ${gettext('New qplotly widget')}</a>
+        <a href="#" class="btn btn-sm btn-default btn-add-new-plot"><i class="fa fa-plus-circle"></i> ${gettext('New qplotly widget')}</a>
         <!-- saved plots -->
         <p class="text-muted"><small>* ${gettext('Position options is valid for children layers of a relation')}</small></p>
         <table style="width: 100%;">
@@ -165,18 +165,28 @@ export default async function qplotlyWidgetList($datatable, $item, refresh = fal
         const modal = ga.currentModal = g3wadmin.ui._buildModal({
           modalTitle: gettext(PLOT ? 'Update widget' : 'New qplotly widget'),
           modalBody: /* html */ `
-            <form action="/${SITE_PREFIX_URL}qplotly/api/widget/${PLOT?.pk ? `detail/${project_pk}/${PLOT?.pk}/` : `layer/${layer_pk}/`}" id="form-qplotlywidget-${layer_pk}">
-              <div class="form-errors"></div>
-              <input type="hidden" name="xml" value="" />
-              <div class="form-group" style="text-align: center">
-                <div class="controls qq-upload-button-selector" style="position: relative; padding: 10px;">
-                  <input class="form-control" id="load_xml_plot" accept=".xml" title="" name="xml_file" type="file" style="top:0; left:0; cursor:pointer;opacity:0; width:100%; position:absolute; height: 100%;" />
-                  <h4>${gettext('Upload DataPlotly configuration xml file')}</h4>
+            <form action="/${SITE_PREFIX_URL}qplotly/api/widget/${PLOT?.pk ? `detail/${project_pk}/${PLOT?.pk}/` : `layer/${layer_pk}/`}" id="form-qplotlywidget-${layer_pk}" class="qplotly-new-widget-form">
+              <div class="qplotly-new-widget-shell">
+                <div class="form-errors"></div>
+                <input type="hidden" name="xml" value="" />
+
+                <div class="qplotly-intro">
+                  <i class="fa fa-area-chart"></i>
                   <div>
-                    <i class="fa fa-upload fa-3x"  aria-hidden="true"></i>
+                    <strong>${gettext(PLOT ? 'Update qplotly widget' : 'New qplotly widget')}</strong>
+                    <span>${gettext('Upload a DataPlotly configuration XML file to build the chart widget for this layer.')}</span>
                   </div>
                 </div>
-                <span id="xml_plot_filename" style="display: none;"></span>
+
+                <div class="form-group qplotly-dropzone">
+                  <label class="controls qq-upload-button-selector qplotly-dropzone-inner" for="load_xml_plot">
+                    <input class="form-control qplotly-dropzone-input" id="load_xml_plot" accept=".xml" title="" name="xml_file" type="file" />
+                    <i class="fa fa-upload" aria-hidden="true"></i>
+                    <strong>${gettext('Click to browse or drop your .xml file')}</strong>
+                    <span>${gettext('Only DataPlotly XML files are accepted')}</span>
+                  </label>
+                  <div id="xml_plot_filename" class="qplotly-filename" style="display: none;"></div>
+                </div>
               </div>
             </form>`,
         });
