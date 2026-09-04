@@ -41,7 +41,9 @@ export default  {
     update_multi_features: "Actualizează atributele entităților selectate",
     update_multi_features_relations: "Update attributes of all selected relations",
     update_multi_features_relations_from_parents : "Adaugă/Editați înregistrările relațiilor de la una sau mai multe caracteristici părinte",
-    copyfeaturefromexternallayer: "Create Feature from added layer"
+    copyfeaturefromexternallayer: "Create Feature from added layer",
+    addhole: "Adăugați gaura",
+    deletehole: "Scoateți gaura",
   },
   toolsoftool: {
     measure: "Arată măsurătorile",

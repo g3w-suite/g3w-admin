@@ -41,7 +41,9 @@ export default {
     update_multi_features: "Attribute ausgewählter Features aktualisieren",
     update_multi_features_relations: "Update attributes of all selected relations",
     update_multi_features_relations_from_parents : "Hinzufügen/Bearbeiten Sie Beziehungsdatensätze von einem oder mehreren übergeordneten features",
-    copyfeaturefromexternallayer: "Create Feature from added layer"
+    copyfeaturefromexternallayer: "Create Feature from added layer",
+    addhole: "Loch hinzufügen",
+    deletehole: "Loch entfernen",
   },
   toolsoftool: {
     measure: "Messung anzeigen",

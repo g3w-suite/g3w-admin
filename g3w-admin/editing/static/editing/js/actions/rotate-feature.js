@@ -251,7 +251,7 @@ class RotateInteraction extends ol.interaction.Pointer {
           return { feature, constraint: feature.get('constraint'), option: feature.get('option') }
         }
       },
-      { hitTolerance: (isMobile && isMobile.any) ? 10 : 0 }
+      { hitTolerance: isMobile?.any ? 10 : 0 }
     ) || {}
   }
 
