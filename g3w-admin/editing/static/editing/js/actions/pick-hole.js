@@ -69,12 +69,15 @@ export class PickHoleStep extends Step {
         },
         handleUpEvent: event => {
           if (this.#holes.length > 0) {
-            this.#interaction.dispatchEvent({
-              type: 'picked',
-              coordinate: event.coordinate,
-              layer: this.#holeLayer,
-              features: this.#holes,
-            });
+            if (!inputs.features.length) {
+              inputs.features   = this.#holes;
+              inputs.coordinate = event.coordinate;
+            }
+            setAndUnsetSelectedFeaturesStyle({ promise: resolve });
+            if (this._steps) {
+              this.setUserMessageStepDone('select');
+            }
+            resolve(inputs);
           }
           return true;
         },
@@ -101,18 +104,6 @@ export class PickHoleStep extends Step {
       };
 
       this.addInteraction(this.#interaction);
-
-      this.#interaction.on('picked', evt => {
-        if (!inputs.features.length) {
-          inputs.features   = evt.features;
-          inputs.coordinate = evt.coordinate;
-        }
-        setAndUnsetSelectedFeaturesStyle({ promise: resolve });
-        if (this._steps) {
-          this.setUserMessageStepDone('select');
-        }
-        resolve(inputs);
-      });
 
     })
 
