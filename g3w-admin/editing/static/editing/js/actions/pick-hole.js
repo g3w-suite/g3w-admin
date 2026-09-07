@@ -83,7 +83,7 @@ export class PickHoleStep extends Step {
         },
       });
 
-      layer.getSource().getFeatures().forEach(this.#addHoleFeature);
+      layer.getSource().getFeatures().forEach(f => this.#addHoleFeature(f));
       const unByKey = layer.getSource().on('addfeature', ({ feature }) => this.#addHoleFeature(feature));
       const setMap = this.#interaction.setMap.bind(this.#interaction);
       this.#interaction.setMap = map => {
