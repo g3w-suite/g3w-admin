@@ -1,6 +1,5 @@
 import { Step }                  from '../g3w-step.js';
 import { getEditingLayer }       from '../utils/getEditingLayer.js';
-import { coordinatesToGeometry } from '../utils/coordinatesToGeometry.js';
 
 const GUI          = g3w.app;
 const { Geometry } = g3wsdk.core.geometry;
@@ -11,146 +10,160 @@ const { within }   = g3wsdk.core.geoutils;
  */
 export class AddHoleStep extends Step {
 
-	constructor(opts = {}) {
-		super(opts);
-		this.drawInteraction = null;
-		this.snapInteraction = null;
-		/**
-		 *
-		 * @param event
-		 * @returns {boolean|void}
-		 * @private
-		 * callback of pressing esc to remove last point drawed
-		 */
-		this._delKeyRemoveLastPoint  = e => 27 == e.keyCode && this.removeLastPoint();
-	}
+  constructor(opts = {}) {
+    super(opts);
+    this.drawInteraction = null;
+    this.snapInteraction = null;
+    /**
+     *
+     * @param event
+     * @returns {boolean|void}
+     * @private
+     * callback of pressing esc to remove last point drawed
+     */
+    this._delKeyRemoveLastPoint  = e => 27 == e.keyCode && this.removeLastPoint();
+  }
 
-	/**
-	 * Method to create hole on polygon
-	 * @param holeFeature
-	 * @returns {{ newFeature, originalFeature }}
-	 */
-	createHole(hole, source) {
-		// In case of MultiPolygon
-		let newFeature;
-		let originalFeature;
+  #coordinatesToGeometry(geometryType = '', coordinates) {
+    const type = String(geometryType).toUpperCase();
 
-		if (Geometry.isMultiGeometry(this.geometryType)) {
-			// cycle on each MultiPolygon feature of layer Multipolygon
-			source
-				.getFeatures()
-				.find(feature => {
-					//feature is a multipolygon
-					//find single polygon of multipolygon that contain draw hole
-					const findPolygonIndex = feature
-						.getGeometry()
-						.getCoordinates()
-						.findIndex((singlePolygonCoordinates) => within(coordinatesToGeometry('Polygon', singlePolygonCoordinates), hole.getGeometry()))
-					//if it finds
-					if (findPolygonIndex !== -1) {
-						originalFeature = feature.clone();
-						newFeature = feature;
-						const coordinates = newFeature.getGeometry().getCoordinates();
-						coordinates[findPolygonIndex].push(hole.getGeometry().getCoordinates()[0]);
-						newFeature.getGeometry().setCoordinates(coordinates);
-						return true;
-					}
-				});
-		} else { // In case of Polygon
-			newFeature = source.getFeatures().find(f => within(f.getGeometry(), hole.getGeometry()));
+    if (type.includes('MULTIPOLYGON')) return new ol.geom.MultiPolygon(coordinates);
+    if (type.includes('POLYGON'))      return new ol.geom.Polygon(coordinates);
+    if (type.includes('MULTILINE'))    return new ol.geom.MultiLineString(coordinates);
+    if (type.includes('LINE'))         return new ol.geom.LineString(coordinates);
+    if (type.includes('MULTIPOINT'))   return new ol.geom.MultiPoint(coordinates);
+    if (type.includes('POINT'))        return new ol.geom.Point(coordinates);
 
-			if (newFeature) {
-				originalFeature = newFeature.clone();
-				//Get hole coordinates for polygon
-				const coordinates = newFeature.getGeometry().getCoordinates();
-				coordinates.push(hole.getGeometry().getCoordinates()[0]);
-				newFeature.getGeometry().setCoordinates(coordinates);
-			}
-		}
-		return {
-			newFeature,
-			originalFeature
-		}
-	}
+    console.warn('invalid geometry type: ', geometryType);
+    return new ol.geom.Point(coordinates);
+  }
 
-	/**
-	 * 
-	 * @param {*} inputs 
-	 * @param {*} context 
-	 * @returns 
-	 */
-	run(inputs, context) {
-		return new Promise((resolve, reject) => {
-			const originalLayer        = inputs.layer;
-			const session              = context.session;
-			const layerId              = originalLayer.getId();
-			const originalGeometryType = originalLayer.getGeometryType();
-			this.geometryType = Geometry.getOLGeometry(originalGeometryType);
-			//draw interaction to draw hole on polygon
-			this.drawInteraction = new ol.interaction.Draw({
-				type:              'Polygon',
-				source:            new ol.source.Vector(),
-				freehandCondition: ol.events.condition.never,
-			});
+  /**
+   * Method to create hole on polygon
+   * @param holeFeature
+   * @returns {{ newFeature, originalFeature }}
+   */
+  createHole(hole, source) {
+    // In case of MultiPolygon
+    let newFeature;
+    let originalFeature;
 
-			this.addInteraction(this.drawInteraction);
-			this.drawInteraction.setActive(true);
+    if (Geometry.isMultiGeometry(this.geometryType)) {
+      // cycle on each MultiPolygon feature of layer Multipolygon
+      source
+        .getFeatures()
+        .find(feature => {
+          //feature is a multipolygon
+          //find single polygon of multipolygon that contain draw hole
+          const findPolygonIndex = feature
+            .getGeometry()
+            .getCoordinates()
+            .findIndex((singlePolygonCoordinates) => within(this.#coordinatesToGeometry('Polygon', singlePolygonCoordinates), hole.getGeometry()))
+          //if it finds
+          if (findPolygonIndex !== -1) {
+            originalFeature = feature.clone();
+            newFeature = feature;
+            const coordinates = newFeature.getGeometry().getCoordinates();
+            coordinates[findPolygonIndex].push(hole.getGeometry().getCoordinates()[0]);
+            newFeature.getGeometry().setCoordinates(coordinates);
+            return true;
+          }
+        });
+    } else { // In case of Polygon
+      newFeature = source.getFeatures().find(f => within(f.getGeometry(), hole.getGeometry()));
 
-			this.drawInteraction.on('drawstart', ({ feature }) => {
-				this.drawingFeature = feature;
-				document.addEventListener('keydown', this._delKeyRemoveLastPoint);
-			});
+      if (newFeature) {
+        originalFeature = newFeature.clone();
+        //Get hole coordinates for polygon
+        const coordinates = newFeature.getGeometry().getCoordinates();
+        coordinates.push(hole.getGeometry().getCoordinates()[0]);
+        newFeature.getGeometry().setCoordinates(coordinates);
+      }
+    }
+    return {
+      newFeature,
+      originalFeature
+    }
+  }
 
-			this.drawInteraction.on('drawend', evt => {
-				document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
-				// IN CASE OF Z VALUE OF COORDINATE ADD Z VALUE TO COORDINATES OF DRAW POLYGON HOLE
-				if (Geometry.is3DGeometry(this.geometryType)) {
-					evt.feature.setGeometry(Geometry.addZValueToOLFeatureGeometry(evt.feature.getGeometry()))
-				}
-				const { newFeature, originalFeature } = this.createHole(evt.feature, getEditingLayer(originalLayer).getSource());
+  /**
+   * 
+   * @param {*} inputs 
+   * @param {*} context 
+   * @returns 
+   */
+  run(inputs, context) {
+    return new Promise((resolve, reject) => {
+      const originalLayer        = inputs.layer;
+      const session              = context.session;
+      const layerId              = originalLayer.getId();
+      const originalGeometryType = originalLayer.getGeometryType();
+      this.geometryType = Geometry.getOLGeometry(originalGeometryType);
+      //draw interaction to draw hole on polygon
+      this.drawInteraction = new ol.interaction.Draw({
+        type:              'Polygon',
+        source:            new ol.source.Vector(),
+        freehandCondition: ol.events.condition.never,
+      });
 
-				if (newFeature) {
-					session.pushUpdate(layerId, newFeature, originalFeature);
+      this.addInteraction(this.drawInteraction);
+      this.drawInteraction.setActive(true);
 
-					inputs.features.push(newFeature);
+      this.drawInteraction.on('drawstart', ({ feature }) => {
+        this.drawingFeature = feature;
+        document.addEventListener('keydown', this._delKeyRemoveLastPoint);
+      });
 
-					GUI.getPlugin('editing').fireEvent('modify', newFeature); // emit event to get from subscribers
+      this.drawInteraction.on('drawend', evt => {
+        document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
+        // IN CASE OF Z VALUE OF COORDINATE ADD Z VALUE TO COORDINATES OF DRAW POLYGON HOLE
+        if (Geometry.is3DGeometry(this.geometryType)) {
+          evt.feature.setGeometry(Geometry.addZValueToOLFeatureGeometry(evt.feature.getGeometry()))
+        }
+        const { newFeature, originalFeature } = this.createHole(evt.feature, getEditingLayer(originalLayer).getSource());
 
-					resolve(inputs);
-				} else {
-					GUI.showUserMessage({
-						type:    'warning',
-						message: 'No hole is created' //@TODO translation
-					})
-					reject();
-				}
-			})
+        if (newFeature) {
+          session.pushUpdate(layerId, newFeature, originalFeature);
 
-			this.snapInteraction = new ol.interaction.Snap({
-				source: getEditingLayer(originalLayer).getSource()
-			});
+          inputs.features.push(newFeature);
 
-			this.addInteraction(this.snapInteraction);
-		})
-		
-	};
+          GUI.getPlugin('editing').fireEvent('modify', newFeature); // emit event to get from subscribers
 
-	stop() {
-		this.removeInteraction(this.drawInteraction);
-		this.removeInteraction(this.snapInteraction);
-		this.drawInteraction = null;
-		document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
-		return true;
-	};
+          resolve(inputs);
+        } else {
+          GUI.showUserMessage({
+            type:    'warning',
+            message: 'No hole is created' //@TODO translation
+          })
+          reject();
+        }
+      })
 
-	removeLastPoint() {
-		if (this.drawInteraction) {
-			try {
-				this.drawInteraction.removeLastPoint();
-			}
-			catch (err) {
-				console.log(err)
-			}
-		}
-	};
+      this.snapInteraction = new ol.interaction.Snap({
+        source: getEditingLayer(originalLayer).getSource()
+      });
+
+      this.addInteraction(this.snapInteraction);
+    })
+    
+  };
+
+  stop() {
+    this.removeInteraction(this.drawInteraction);
+    this.removeInteraction(this.snapInteraction);
+    this.drawInteraction = null;
+    document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
+    return true;
+  };
+
+  removeLastPoint() {
+    if (this.drawInteraction) {
+      try {
+        this.drawInteraction.removeLastPoint();
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+  };
 }
