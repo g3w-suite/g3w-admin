@@ -19,9 +19,9 @@ export class AddHoleStep extends Step {
      * @param event
      * @returns {boolean|void}
      * @private
-     * callback of pressing DEL to remove last point drawed
+     * callback of pressing DEL (Delete) to remove last point drawn
      */
-    this._delKeyRemoveLastPoint  = e => 27 == e.keyCode && this.removeLastPoint();
+    this._delKeyRemoveLastPoint  = e => 46 === e.keyCode && this.removeLastPoint();
   }
 
   #coordinatesToGeometry(geometryType = '', coordinates) {
