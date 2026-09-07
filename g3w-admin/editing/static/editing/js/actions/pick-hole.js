@@ -1,13 +1,9 @@
-import { Step }                          from '../g3w-step.js';
-
-/**
- * @since g3w-client-plugin-editing@v3.7.0
- */
+import { Step }                             from '../g3w-step.js';
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 
-
 const { Geometry } = g3wsdk.core.geometry;
+
 /**
  * Pointer interaction to pick hole features from polygon geometry
  */

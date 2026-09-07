@@ -5,10 +5,6 @@ const { Geometry } = g3wsdk.core.geometry;
 
 export class DeleteHoleStep extends Step {
 
-  constructor(opts = {}) {
-    super(opts);
-  }
-
   #deleteHole({ geometry, polygonIndex, holeIndex } = {}) {
     const coords = geometry.getCoordinates();
     (
@@ -31,7 +27,7 @@ export class DeleteHoleStep extends Step {
         const polygonIndex    = fh.get('polygonIndex');
         //get feature
         const feature         = getEditingLayer(originalLayer).getSource().getFeatureById(featureId);
-        //cole original feature
+        // clone original feature
         const originalFeature = feature.clone();
         //change geometry
         feature.setGeometry(this.#deleteHole({
