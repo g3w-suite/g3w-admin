@@ -52,7 +52,7 @@ export class AddFeatureStep extends Step {
      * @param e event
      * @returns {boolean|void}
      * @private
-     * callback of pressing ESC to remove last point drawed
+     * callback of pressing DEL (Delete) to remove last point drawn
      */
     this._delKeyRemoveLastPoint  = e => 46 === e.keyCode && this.removeLastPoint();
 
