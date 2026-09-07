@@ -118,10 +118,10 @@ class PickHolesInteraction extends ol.interaction.Pointer {
    * @returns {*}
    */
   holesAtPixel({ pixel, map } = {}) {
-    return map.getFeaturesAtPixel(pixel, {
-      layerFilter: l => l === this._holeLayer,
-      hitTolerance: isMobile?.any ? 10 : 0
-    });
+    return (map?.getFeaturesAtPixel?.(pixel, {
+      layerFilter:  l => l === this._holeLayer,
+      hitTolerance: isMobile?.any ? 10 : 0,
+    }) ?? []);
   };
 
   /**
