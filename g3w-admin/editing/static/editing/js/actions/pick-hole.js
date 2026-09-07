@@ -5,185 +5,112 @@ import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 const { Geometry } = g3wsdk.core.geometry;
 
 /**
- * Pointer interaction to pick hole features from polygon geometry
- */
-class PickHolesInteraction extends ol.interaction.Pointer {
-  constructor(opts = {}) {
-    super({
-      ...opts,
-      handleDownEvent: e => {
-        this.pickedHoles = this.holesAtPixel(e);
-        this._holeLayer.getSource().clear();
-        return this.pickedHoles;
-      },
-      handleUpEvent:   e => {
-        if (this.pickedHoles.length > 0) {
-          this.dispatchEvent({
-            type:       'picked',
-            coordinate: e.coordinate,
-            layer:      this._holeLayer,
-            features:   this.pickedHoles,
-          });
-        }
-        return true;
-      },
-      handleMoveEvent: e => {
-        const intersectingHoles = this.holesAtPixel(e);
-        e.map.getTargetElement().style.cursor = intersectingHoles ? 'pointer': '';
-      },
-    });
-
-    this.map          = null;
-    //vector editing layer
-    this.layer        = opts.layer;
-    //store layer geometry type
-    this.geometryType = opts.geometryType;
-    //hole layer to store hole features from polygon geometry
-    this._holeLayer = new ol.layer.Vector({
-      style: new ol.style.Style({
-        fill: new ol.style.Fill({
-          color: 'rgba(255,255,255,0)' //set trasparent hole feature
-        })
-      }),
-      source: new ol.source.Vector()
-    });
-
-    this.layer
-      .getSource()
-      .getFeatures()
-      .forEach(f => this.addHoleFeature(f));
-
-    //listen add feature due move map and get new feature from server
-    this.unByKey = this.layer
-      .getSource()
-      .on('addfeature', ({ feature }) => this.addHoleFeature(feature));
-
-    this.pickedHoles = []; //store information about get hole
-  }
-
-  /**
-   * @returns { Array } hole features from polygon Geometry
-   */
-  #extractHoles({ geometry, id, index } = {}) {
-    const holes   = [];
-    const rings = geometry.getLinearRingCount();
-    if (rings > 1) {
-      for (let i = 1; i < rings; i++) {
-        holes.push(new ol.Feature({
-          geometry:     new ol.geom.Polygon([geometry.getLinearRing(i).getCoordinates()]), //geometry of hole
-          holeIndex:    i, // hole index, index of hole in feature geometry
-          polygonIndex: index, //in case of multipolygon index of polygon inside multipolygon
-          featureId:    id, // id of belong feature
-        }));
-      }
-    }
-    return holes;
-  }
-
-  /**
-   * Get a feature from layer and check if it has hole/holes
-   * and add to this._holeLayer
-   * @param feature
-   */
-  addHoleFeature(feature) {
-    const featureGeometry = feature.getGeometry();
-    const id              = feature.getId();
-    //check if is multi geometry (MultiPolygon)
-    if (Geometry.isMultiGeometry(this.geometryType)) {
-      featureGeometry
-        .getPolygons()
-        .forEach((geometry, index) => {
-          this.#extractHoles({
-            id,
-            geometry,
-            index
-          })
-          .forEach(hf => this._holeLayer.getSource().addFeature(hf));
-        })
-    } else {
-      //Polygon geometry
-      this.#extractHoles({
-        id,
-        geometry: featureGeometry,
-        index: 0 //just one polygon
-      })
-      .forEach(hf => this._holeLayer.getSource().addFeature(hf));
-    }
-  }
-
-  /**
-   * Check if pointer is over hole
-   * @param pixel
-   * @param map
-   * @returns {*}
-   */
-  holesAtPixel({ pixel, map } = {}) {
-    return (map?.getFeaturesAtPixel?.(pixel, {
-      layerFilter:  l => l === this._holeLayer,
-      hitTolerance: isMobile?.any ? 10 : 0,
-    }) ?? []);
-  };
-
-  /**
-   * Handle when interaction it adds or remove from map
-   * @param map
-   */
-  setMap(map) {
-    if (map) {
-      //case of add interaction to map
-      this.map = map;
-      map.addLayer(this._holeLayer);
-      ol.interaction.Pointer.prototype.setMap.call(this, map);
-    } else {
-      //case of remove interaction
-      const elem = this.getMap().getTargetElement();
-      elem.style.cursor = '';
-      this.map.removeLayer(this._holeLayer);
-      this.map = null;
-      ol.Observable.unByKey(this.unByKey);
-      this.unByKey = null;
-    }
-  };
-    
-};
-
-/**
  * Pick hole step to pick hole features from polygon geometry
  */
 export class PickHoleStep extends Step {
-  constructor(opts = {}) {
-    super(opts);
-    this.pickFeatureInteraction = null;
+
+  /** @type { string } */
+  #geometryType;
+
+  /** @type { ol.interaction.Pointer } */
+  #interaction = null;
+
+  /** picked holes */
+  #holes = [];
+
+  /** @type { ol.layer.Vector } */
+  #holeLayer = new ol.layer.Vector({
+    source: new ol.source.Vector(),
+    style: new ol.style.Style({ fill: new ol.style.Fill({ color: 'rgba(255,255,255,0)' }) }),
+  });
+
+  #holesAtPixel({ pixel, map } = {}) {
+      return map?.getFeaturesAtPixel?.(pixel, {
+      layerFilter: l => l === this.#holeLayer,
+      hitTolerance: isMobile?.any ? 10 : 0,
+    }) ?? []
   }
 
-  /**
-   * 
-   * @param {*} inputs 
-   * @returns 
-   */
+  #addHoleFeature(feature) {
+    const geometry = feature.getGeometry();
+    const id       = feature.getId();
+    const polygons = Geometry.isMultiGeometry(this.#geometryType) ? geometry.getPolygons() : [geometry];
+
+    polygons.forEach((geometry, index) => {
+      const holes = [];
+      const rings = geometry.getLinearRingCount();
+      // extract holes
+      for (let i = 1; i < rings; i++) {
+        holes.push(new ol.Feature({
+          geometry: new ol.geom.Polygon([geometry.getLinearRing(i).getCoordinates()]),
+          holeIndex: i,
+          polygonIndex: index,
+          featureId: id,
+        }));
+      }
+      holes.forEach(hole => this.#holeLayer.getSource().addFeature(hole));
+    });
+  }
+
   run(inputs) {
 
     return new Promise((resolve, reject) => {
-      this.pickFeatureInteraction = new PickHolesInteraction({
-        layer:        getEditingLayer(inputs.layer),
-        geometryType: inputs.layer.getGeometryType()
+      const layer = getEditingLayer(inputs.layer);
+      this.#geometryType = inputs.layer.getGeometryType();
+      
+      this.#holeLayer.getSource().clear();
+      this.#holes = [];
+
+      this.#interaction = new ol.interaction.Pointer({
+        handleDownEvent: event => {
+          this.#holes = this.#holesAtPixel(event);
+          this.#holeLayer.getSource().clear();
+          return this.#holes;
+        },
+        handleUpEvent: event => {
+          if (this.#holes.length > 0) {
+            this.#interaction.dispatchEvent({
+              type: 'picked',
+              coordinate: event.coordinate,
+              layer: this.#holeLayer,
+              features: this.#holes,
+            });
+          }
+          return true;
+        },
+        handleMoveEvent: event => {
+          event.map.getTargetElement().style.cursor = this.#holesAtPixel(event).length ? 'pointer' : '';
+        },
       });
 
-      this.addInteraction(this.pickFeatureInteraction);
+      layer.getSource().getFeatures().forEach(this.#addHoleFeature);
+      const unByKey = layer.getSource().on('addfeature', ({ feature }) => this.#addHoleFeature(feature));
+      const setMap = this.#interaction.setMap.bind(this.#interaction);
+      this.#interaction.setMap = map => {
+        if (map) {
+          map.addLayer(this.#holeLayer);
+          setMap(map);
+          return;
+        } else {
+          const _map = this.#interaction.getMap();
+          _map.getTargetElement().style.cursor = '';
+          _map.removeLayer(this.#holeLayer);
+          ol.Observable.unByKey(unByKey);
+          setMap(null);
+        }
+      };
 
-      this.pickFeatureInteraction
-        .on('picked', evt => {
-          const { features, coordinate } = evt;
-          if (0 === inputs.features.length) {
-            inputs.features   = features;
-            inputs.coordinate = coordinate;
-          }
-          setAndUnsetSelectedFeaturesStyle({promise: resolve});
+      this.addInteraction(this.#interaction);
 
+      this.#interaction.on('picked', evt => {
+        if (!inputs.features.length) {
+          inputs.features   = evt.features;
+          inputs.coordinate = evt.coordinate;
+        }
+        setAndUnsetSelectedFeaturesStyle({ promise: resolve });
         if (this._steps) {
           this.setUserMessageStepDone('select');
         }
-
         resolve(inputs);
       });
 
@@ -192,8 +119,8 @@ export class PickHoleStep extends Step {
   };
 
   stop() {
-    this.removeInteraction(this.pickFeatureInteraction);
-    this.pickFeatureInteraction = null;
+    this.removeInteraction(this.#interaction);
+    this.#interaction = null;
     return true;
   };
 
