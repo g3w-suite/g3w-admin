@@ -40,7 +40,6 @@ import { MoveFeatureStep }                              from './actions/move-fea
 import { RotateFeatureStep }                            from './actions/rotate-feature.js';
 import { ModifyGeometryVertexStep }                     from './actions/move-vertex.js';
 import { AddHoleStep }                                  from './actions/add-hole.js';
-import { PickHoleStep }                                 from './actions/pick-hole.js';
 import { DeleteHoleStep }                               from './actions/delete-hole.js';
 
 const { Emitter, Layer, Component }                      = g3w;
@@ -511,7 +510,6 @@ export class ToolBox extends Emitter {
             layer,
             type: 'change_feature',
             steps: [
-              new PickHoleStep(),
               new DeleteHoleStep(),
             ]
           }),
