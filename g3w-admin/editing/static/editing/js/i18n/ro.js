@@ -1,10 +1,10 @@
-export default  {
+export default {
   errors: {
     no_layers: "Avem o eroare. Straturile nu sunt editabile",
     some_layers: "Avem o eroare: Anumite straturi nu se pot edita"
   },
   search: "Caută",
-  editing_changes: "Modificare schimbări",
+  editing_changes: "Modificări de editare",
   editing_data: "Modificare straturi",
   editing_attributes: "Modificare atribute",
   relations: "Relații",
@@ -14,12 +14,8 @@ export default  {
   relation_data: "Date relații",
   relation_already_added: "Relație adăugată deja",
   list_of_relations_feature: "Lista relații entitatea ",
-  tooltip: {
-    edit_layer: "Modifică strat"
-  },
-  toolbox: {
-    title: 'Modifică'
-  },
+  tooltip: { edit_layer: "Modifică strat" },
+  toolbox: { title: 'Modifică' },
   table: {
     edit: "Modifică entitate",
     copy: "Creează o copie",
@@ -27,21 +23,21 @@ export default  {
   },
   tools: {
     copy: "Copiază entitățile",
-    pastefeaturesfromotherlayers: "Paste features from other layer",
+    pastefeaturesfromotherlayers: "Lipește entități din alt strat",
     addpart: "Adaugă o parte la multiparte",
     deletepart: "Elimină partea din multiparte",
     merge: "Dizolvare entități",
-    split: "Divizare Entitate",
+    split: "Divizare entitate",
     add_feature: "Adaugă entitate",
-    delete_feature: "Eliminare entitate",
+    delete_feature: "Elimină entitate",
     move_feature: "Mută entitate",
-    rotate_feature: "Rotire entitate",
+    rotate_feature: "Rotește entitatea",
     update_vertex: "Actualizează vertecșii entității",
     update_feature: "Actualizează atributul entității",
     update_multi_features: "Actualizează atributele entităților selectate",
-    update_multi_features_relations: "Update attributes of all selected relations",
-    update_multi_features_relations_from_parents : "Adaugă/Editați înregistrările relațiilor de la una sau mai multe caracteristici părinte",
-    copyfeaturefromexternallayer: "Create Feature from added layer",
+    update_multi_features_relations: "Actualizează atributele tuturor relațiilor selectate",
+    update_multi_features_relations_from_parents: "Adaugă/Editați înregistrările relațiilor de la una sau mai multe caracteristici părinte",
+    copyfeaturefromexternallayer: "Creează entitate din stratul adăugat",
     addhole: "Adăugați gaura",
     deletehole: "Scoateți gaura",
   },
@@ -56,7 +52,7 @@ export default  {
       select_element: "Selectează entitate",
       copy: "Creează o nouă copie a entităților selectate",
       merge: "Dizolvă entitățile",
-      split: "Divizare Entitate",
+      split: "Divizare entitate",
       new: "Creează o entitate",
       edit_table: "Modifică entitățile tabelare",
       draw_new_feature: "Desenează entitate pe hartă",
@@ -65,7 +61,7 @@ export default  {
       edit_feature_vertex: "Modifică sau adaugă un vertex la entitatea selectată",
       move: "Mută entitatea selectată",
       select_feature_to_relation: "Selectează entitate pentru relaționare",
-      show_edit_feature_form:  "Arată formularul entității pentru modificări",
+      show_edit_feature_form: "Arată formularul entității pentru modificări",
       pick_feature: "Selectează entitățile de modificat din hartă",
       insert_attributes_feature: "Inserează atributele entității"
     }
@@ -74,7 +70,7 @@ export default  {
     steps: {
       select: 'Click pe entitate pentru a o selecta',
       draw_part: "Desenează o parte nouă",
-      draw_geometry : "Desenați geometria",
+      draw_geometry: "Desenați geometria",
       merge: 'Selectează partea de dizolvat',
       selectSHIFT: 'Selectează entități prin desen triunghi apăsând SHIFT',
       selectDrawBox: "Selectează entități desenând un dreptunghi prin două puncte opuse",
@@ -106,7 +102,7 @@ export default  {
     commit_feature: "Rezumatul modificărilor",
     toolbox_has_relation: "acest strat face parte dintr-o relație",
     saved: "Datele sunt salvate",
-    saved_local:"Datele s-au salvat local",
+    saved_local: "Datele s-au salvat local",
     loading_data: "Datele se încarcă.",
     saving: "Salvăm datele. Așteptați ...",
     constraints: {
@@ -115,7 +111,7 @@ export default  {
     pdf: "Previzualizarea documentului nu este disponibilă. Click aici ",
     commit: {
       header: "Lista cu toate modificările.",
-      header_relation: "Relation",
+      header_relation: "Relație",
       header_add: "<b>Adăugate</b> arată nr. de entități adăugate",
       header_update_delete: "<b>Modificate</b> și <b>Șterse</b> arată lista de id-uri de entități",
       add: "Adăugate",
@@ -125,20 +121,20 @@ export default  {
     loading_table_data: "Încărcăm tabelul de date ...",
     copy_and_paste_from_other_layer_mandatory_fields: "Înainte de a salva, este necesar să completați toate câmpurile obligatorii ale entități introduse",
     no_feature_selected: "Nicio feature selectată",
-    select_min_2_features: 'Select at least 2 features'
+    select_min_2_features: 'Selectează cel puțin 2 entități',
   },
   relation: {
     table: {
       info: `<div>Selectează relațiile pentru a face legătura cu entitatea curentă.</div>`
     },
-    draw_new_feature:"Desenați o nouă feature",
+    draw_new_feature: "Desenați o nouă feature",
     draw_or_copy: "sau",
     copy_feature_from_other_layer: "Copiați feature dintr-un alt layer"
   },
   form: {
     relations: {
       tooltips: {
-        back_to_father:"Înapoi la modificările entității părinte",
+        back_to_father: "Înapoi la modificările entității părinte",
         add_relation: "Creează și fă legătura unei relații noi",
         link_relation: "Leagă o relație de entitate",
         open_relation_tools: "Arată instrumentele pentru relații",
@@ -155,11 +151,11 @@ export default  {
   modal: {
     tools: {
       copyfeaturefromotherlayer: {
-        title: "Select layer",
-        edit_attributes: "Edit attributes of pasted features in multiple mode"
+        title: "Selectează stratul",
+        edit_attributes: "Editează atributele entităților lipite în modul multiplu"
       },
       copyfeaturefromprojectlayer: {
-        title: "Select a feature"
+        title: "Selectează o entitate"
       }
     }
   }

@@ -4,7 +4,7 @@ export default {
     some_layers: "Tapahtui virhe. Jotkin tasot eivät ole muokattavissa."
   },
   search: "Haku",
-  editing_changes: "Editing Changes",
+  editing_changes: "Muokkausmuutokset",
   editing_data: "Muokataan tasoja",
   editing_attributes: "Muokataan attribuutteja",
   relations: "Relaatiot",
@@ -27,7 +27,7 @@ export default {
   },
   tools: {
     copy: "Kopio ominaisuuksia",
-    pastefeaturesfromotherlayers: "Paste features from other layer",
+    pastefeaturesfromotherlayers: "Liitä kohteita toiselta tasolta",
     addpart: "Lisää osa",
     deletepart: "Poista osa",
     merge: "Yhdistä ominaisuudet",
@@ -39,16 +39,16 @@ export default {
     update_vertex: "Päivitä pisteen ominaisuutta",
     update_feature: "Päivitä ominaisuus",
     update_multi_features: "Muokkaa valittujen ominaisuuksien attribuutteja",
-    update_multi_features_relations: "Update attributes of all selected relations",
-    update_multi_features_relations_from_parents : "Add/Edit relations records from one or mode parent features",
-    copyfeaturefromexternallayer: "Create Feature from added layer",
+    update_multi_features_relations: "Muokkaa kaikkien valittujen relaatioiden attribuutteja",
+    update_multi_features_relations_from_parents : "Lisää/muokkaa relaatiotietueita yhdestä tai useammasta yläkohteesta",
+    copyfeaturefromexternallayer: "Luo kohde lisätystä tasosta",
     addhole: "Lisää reikä",
     deletehole: "Poista reikä",
   },
   toolsoftool: {
-    measure: "Show measure",
-    snap: "Snap layer",
-    snapall: "Snap to all layers"
+    measure: "Näytä mittaus",
+    snap: "Kiinnitä tasoon",
+    snapall: "Kiinnitä kaikkiin tasoihin"
   },
   steps: {
     help: {
@@ -122,23 +122,23 @@ export default {
       delete: "Poistettu",
       update: "Muokattu"
     },
-    loading_table_data: "Building Data Table. Please wait ...",
+    loading_table_data: "Rakennetaan tietotaulukkoa. Odota ...",
     copy_and_paste_from_other_layer_mandatory_fields: "It is necessary to fill in any mandatory fields on the features pasted before saving",
-    no_feature_selected: "No feature selected",
-    select_min_2_features: 'Select at least 2 features'
+    no_feature_selected: "Kohdetta ei valittu",
+    select_min_2_features: 'Valitse vähintään 2 kohdetta'
   },
   relation: {
     table: {
       info: `<div>Valitse relaatiota linkittääksesi ne muokattavaan ominaisuuteen.</div>`
     },
-    draw_new_feature:"Draw new feature",
+    draw_new_feature:"Piirrä uusi kohde",
     draw_or_copy:"or",
-    copy_feature_from_other_layer:"Copy feature from other layer"
+    copy_feature_from_other_layer:"Kopioi kohde toiselta tasolta"
   },
   form: {
     relations: {
       tooltips: {
-        back_to_father:"Back to edit father",
+        back_to_father:"Palaa ylätason muokkaukseen",
         add_relation: "Luo ja linkitä uusi relaatio",
         link_relation: "Liitä relaatio tähän ominaisuuteen",
         open_relation_tools: "Näytä relaatiotyökalut",
@@ -155,11 +155,11 @@ export default {
   modal: {
     tools: {
       copyfeaturefromotherlayer: {
-        title: "Select layer",
-        edit_attributes: "Edit attributes of pasted features in multiple mode"
+        title: "Valitse taso",
+        edit_attributes: "Muokkaa liitettyjen kohteiden attribuutteja monikohdetilassa"
       },
       copyfeaturefromprojectlayer: {
-        title: "Select a feature"
+        title: "Valitse kohde"
       }
     }
   }
