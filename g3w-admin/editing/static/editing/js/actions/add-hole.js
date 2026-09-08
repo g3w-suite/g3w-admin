@@ -14,14 +14,20 @@ export class AddHoleStep extends Step {
     super(opts);
     this.drawInteraction = null;
     this.snapInteraction = null;
-    /**
-     *
-     * @param event
-     * @returns {boolean|void}
-     * @private
-     * callback of pressing DEL (Delete) to remove last point drawn
-     */
-    this._delKeyRemoveLastPoint  = e => 46 === e.keyCode && this.removeLastPoint();
+    this._removeLastPoint = this.#removeLastPoint.bind(this);
+  }
+
+  /**
+   * callback when pressing DEL key (removes last point drawn)
+   */
+  #removeLastPoint(e) {
+    try {
+      if (46 === e.keyCode) {
+        this?.drawInteraction?.removeLastPoint?.();
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   #coordinatesToGeometry(geometryType = '', coordinates) {
@@ -38,67 +44,9 @@ export class AddHoleStep extends Step {
     return new ol.geom.Point(coordinates);
   }
 
-  /**
-   * Method to create hole on polygon
-   * @param holeFeature
-   * @returns {{ newFeature, originalFeature }}
-   */
-  createHole(hole, source) {
-    // In case of MultiPolygon
-    let newFeature;
-    let originalFeature;
-
-    if (Geometry.isMultiGeometry(this.geometryType)) {
-      // cycle on each MultiPolygon feature of layer Multipolygon
-      source
-        .getFeatures()
-        .find(feature => {
-          //feature is a multipolygon
-          //find single polygon of multipolygon that contain draw hole
-          const findPolygonIndex = feature
-            .getGeometry()
-            .getCoordinates()
-            .findIndex((singlePolygonCoordinates) => within(this.#coordinatesToGeometry('Polygon', singlePolygonCoordinates), hole.getGeometry()))
-          //if it finds
-          if (findPolygonIndex !== -1) {
-            originalFeature = feature.clone();
-            newFeature = feature;
-            const coordinates = newFeature.getGeometry().getCoordinates();
-            coordinates[findPolygonIndex].push(hole.getGeometry().getCoordinates()[0]);
-            newFeature.getGeometry().setCoordinates(coordinates);
-            return true;
-          }
-        });
-    } else { // In case of Polygon
-      newFeature = source.getFeatures().find(f => within(f.getGeometry(), hole.getGeometry()));
-
-      if (newFeature) {
-        originalFeature = newFeature.clone();
-        //Get hole coordinates for polygon
-        const coordinates = newFeature.getGeometry().getCoordinates();
-        coordinates.push(hole.getGeometry().getCoordinates()[0]);
-        newFeature.getGeometry().setCoordinates(coordinates);
-      }
-    }
-    return {
-      newFeature,
-      originalFeature
-    }
-  }
-
-  /**
-   * 
-   * @param {*} inputs 
-   * @param {*} context 
-   * @returns 
-   */
   run(inputs, context) {
     return new Promise((resolve, reject) => {
-      const originalLayer        = inputs.layer;
-      const session              = context.session;
-      const layerId              = originalLayer.getId();
-      const originalGeometryType = originalLayer.getGeometryType();
-      this.geometryType = Geometry.getOLGeometry(originalGeometryType);
+      this.geometryType = Geometry.getOLGeometry(inputs.layer.getGeometryType());
       //draw interaction to draw hole on polygon
       this.drawInteraction = new ol.interaction.Draw({
         type:              'Polygon',
@@ -111,37 +59,63 @@ export class AddHoleStep extends Step {
 
       this.drawInteraction.on('drawstart', ({ feature }) => {
         this.drawingFeature = feature;
-        document.addEventListener('keydown', this._delKeyRemoveLastPoint);
+        document.addEventListener('keydown', this._removeLastPoint);
       });
 
       this.drawInteraction.on('drawend', evt => {
-        document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
+        document.removeEventListener('keydown', this._removeLastPoint);
         // IN CASE OF Z VALUE OF COORDINATE ADD Z VALUE TO COORDINATES OF DRAW POLYGON HOLE
         if (Geometry.is3DGeometry(this.geometryType)) {
           evt.feature.setGeometry(Geometry.addZValueToOLFeatureGeometry(evt.feature.getGeometry()))
         }
-        const { newFeature, originalFeature } = this.createHole(evt.feature, getEditingLayer(originalLayer).getSource());
+        const hole   = evt.feature;
+        const source = getEditingLayer(inputs.layer).getSource();
+        // In case of MultiPolygon
+        let newFeature, originalFeature;
+
+        if (Geometry.isMultiGeometry(this.geometryType)) {
+          // cycle on each MultiPolygon feature of layer Multipolygon
+          source
+            .getFeatures()
+            .find(feature => {
+              //feature is a multipolygon
+              //find single polygon of multipolygon that contain draw hole
+              const findPolygonIndex = feature
+                .getGeometry()
+                .getCoordinates()
+                .findIndex(coords => within(this.#coordinatesToGeometry('Polygon', coords), hole.getGeometry()))
+              //if it finds
+              if (findPolygonIndex !== -1) {
+                originalFeature = feature.clone();
+                newFeature = feature;
+                const coordinates = newFeature.getGeometry().getCoordinates();
+                coordinates[findPolygonIndex].push(hole.getGeometry().getCoordinates()[0]);
+                newFeature.getGeometry().setCoordinates(coordinates);
+                return true;
+              }
+            });
+        } else { // In case of Polygon
+          newFeature = source.getFeatures().find(f => within(f.getGeometry(), hole.getGeometry()));
+          if (newFeature) {
+            originalFeature = newFeature.clone();
+            //Get hole coordinates for polygon
+            const coordinates = newFeature.getGeometry().getCoordinates();
+            coordinates.push(hole.getGeometry().getCoordinates()[0]);
+            newFeature.getGeometry().setCoordinates(coordinates);
+          }
+        }
 
         if (newFeature) {
-          session.pushUpdate(layerId, newFeature, originalFeature);
-
+          context.session.pushUpdate(inputs.layer.getId(), newFeature, originalFeature);
           inputs.features.push(newFeature);
-
-          GUI.getPlugin('editing').fireEvent('modify', newFeature); // emit event to get from subscribers
-
           resolve(inputs);
         } else {
-          GUI.showUserMessage({
-            type:    'warning',
-            message: 'No hole is created' //@TODO translation
-          })
+          GUI.showUserMessage({ type: 'warning', message: 'No hole is created' });
           reject();
         }
       })
 
-      this.snapInteraction = new ol.interaction.Snap({
-        source: getEditingLayer(originalLayer).getSource()
-      });
+      this.snapInteraction = new ol.interaction.Snap({ source: getEditingLayer(inputs.layer).getSource() });
 
       this.addInteraction(this.snapInteraction);
     })
@@ -152,18 +126,7 @@ export class AddHoleStep extends Step {
     this.removeInteraction(this.drawInteraction);
     this.removeInteraction(this.snapInteraction);
     this.drawInteraction = null;
-    document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
+    document.removeEventListener('keydown', this._removeLastPoint);
     return true;
-  };
-
-  removeLastPoint() {
-    if (this.drawInteraction) {
-      try {
-        this.drawInteraction.removeLastPoint();
-      }
-      catch (err) {
-        console.log(err)
-      }
-    }
   };
 }

@@ -25,7 +25,6 @@ export class DeleteHoleStep extends Step {
             ...opts,
             handleDownEvent: e => {
               this.#holes = this.#holesAtPixel(e);
-              this.#holeLayer.getSource().clear();
               return this.#holes;
             },
             handleUpEvent: e => {
