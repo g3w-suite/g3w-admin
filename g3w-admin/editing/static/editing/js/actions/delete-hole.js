@@ -10,20 +10,18 @@ export class DeleteHoleStep extends Step {
   #interaction = null;
 
   /** @type {ol.layer.Vector} hole layer */
-  #layer  = new ol.layer.Vector({
+  #layer = new ol.layer.Vector({
     source: new ol.source.Vector(),
     style: new ol.style.Style({ fill: new ol.style.Fill({ color: 'rgba(255,255,255,0)' }) }),
   });
 
-  #unByKey    = null;
-  #holes      = [];
+  #holes = [];
 
   async run(inputs, context) {
     return new Promise(resolve => {
       this.#layer.getSource().clear();
       const layer = getEditingLayer(inputs.layer);
-      this.#unByKey = layer.getSource().on('addfeature', e => this.#addHole(e.feature));
-      layer.getSource().getFeatures().forEach(f => this.#addHole(f));
+      layer.getSource().getFeatures().forEach(f => this.#addHole(f, inputs));
       this.getMap().addLayer(this.#layer);
       this.#interaction = new ol.interaction.Pointer({
         handleDownEvent: e => this.#onPointerDown(e),
@@ -62,16 +60,16 @@ export class DeleteHoleStep extends Step {
     e.map.getTargetElement().style.cursor = this.#holesAtPixel(e).length ? 'pointer' : '';
   }
 
-  #addHole(feature) {
+  #addHole(feature, inputs) {
     const GEOM_TYPE = inputs.layer.getGeometryType();
     const geometry  = feature.getGeometry();
     const id        = feature.getId();
     const polygons  = Geometry.isMultiGeometry(GEOM_TYPE) ? geometry.getPolygons() : [geometry];
     polygons.forEach((polygon, polygonIndex) => {
-      for (let holeIndex = 1; holeIndex < polygon.getLinearRingCount(); holeIndex++) {
+      for (let i = 1; i < polygon.getLinearRingCount(); i++) {
         this.#layer.getSource().addFeature(new ol.Feature({
-          geometry: new ol.geom.Polygon([polygon.getLinearRing(holeIndex).getCoordinates()]),
-          holeIndex,
+          geometry: new ol.geom.Polygon([polygon.getLinearRing(i).getCoordinates()]),
+          holeIndex: i,
           polygonIndex,
           featureId: id,
         }));
@@ -95,7 +93,6 @@ export class DeleteHoleStep extends Step {
       map.getTargetElement().style.cursor = '';
     }
     map?.removeLayer(this.#layer);
-    ol.Observable.unByKey(this.#unByKey);
     return true;
   };
 
