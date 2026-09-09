@@ -49,21 +49,41 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
-        # add number groups
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
-             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        user = self.request.user
 
-        qs = qs.filter(is_active=1).order_by('order')
-        context['n_groups'] = len(qs)
+        # Map groups visible to the current user
+        groups_qs = get_objects_for_user(user, 'core.view_group', Group)\
+            .filter(is_active=1).order_by('order')
+        context['n_groups'] = groups_qs.count()
+
+        # Projects / layers counters scoped on permissions and visible groups
+        try:
+            from qdjango.models import Project, Layer
+            projects_qs = get_objects_for_user(user, 'qdjango.view_project', Project)\
+                .filter(group__in=groups_qs)
+            context['n_projects'] = projects_qs.count()
+            context['n_layers'] = Layer.objects.filter(project__in=projects_qs).count()
+        except Exception:
+            context['n_projects'] = 0
+            context['n_layers'] = 0
+
+        # Recent activity: only for staff/superuser since traces may be sensitive
+        context['recent_activity'] = []
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            from .models import StatusLog
+            context['recent_activity'] = list(
+                StatusLog.objects.all().order_by('-create_datetime')[:5]
+            )
+
+        # Module widgets
         context['widgets'] = []
-
         dashboard_widgets = load_dashboard_widgets.send(self)
         for widget in dashboard_widgets:
             if widget[1]:
                 context['widgets'].append(widget[1])
 
         # Get bookmarked projects for user
-        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user)
+        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=user)
 
         return context
 
@@ -93,17 +113,20 @@ class SearchAdminView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Execute searches on modules
-        results = execute_search_on_models.send(self, request=self.request, search_text=self.request.GET['stext'])
-        context['search_text'] = self.request.GET['stext']
-        context['results'] = []
-        for r in results:
-            context['results'] += r[1]
+        stext = self.request.GET.get('stext', '').strip()
 
-        # Get _n_tot_results
-        context['n_tot_results'] = 0
-        for r in context['results']:
-            context['n_tot_results'] += r.n_tot_results
+        # Execute searches on modules
+        if stext:
+            results = execute_search_on_models.send(self, request=self.request, search_text=stext)
+            context['search_text'] = stext
+            context['results'] = []
+            for r in results:
+                context['results'] += r[1]
+
+            # Get _n_tot_results
+            context['n_tot_results'] = 0
+            for r in context['results']:
+                context['n_tot_results'] += r.n_tot_results
 
         return context
 

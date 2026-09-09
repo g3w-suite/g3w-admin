@@ -1,17 +1,29 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
-<form method="post" id="fitler_by_user_layer_form">
-    <div class="row">
-        <div class="col-md-12 error-form-message hidden">
-            <div class="alert alert-danger alert-dismissable">
-                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                    {% trans 'Some errors on form. Check it and send again.' %}
+<form method="post" id="fitler_by_user_layer_form" class="editing-active-form filter-by-user-form">
+    <div class="editing-active-shell">
+
+        <div class="error-form-message hidden">
+            <div class="form-alert form-alert-error">
+                <i class="fa fa-exclamation-triangle"></i>
+                <div>
+                    <strong>{% trans 'Some errors on form' %}</strong>
+                    <span>{% trans 'Check the highlighted fields and submit again.' %}</span>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-        {% crispy form %}
+
+        <div class="filter-by-user-intro">
+            <i class="fa fa-filter"></i>
+            <div>
+                <strong>{% trans 'Filter layer visibility' %}</strong>
+                <span>{% trans 'Pick which viewer users and viewer groups are allowed to see this layer.' %}</span>
+            </div>
         </div>
+
+        <div class="editing-active-body">
+            {% crispy form %}
+        </div>
+
     </div>
 </form>

@@ -1,23 +1,19 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
-<form method="post" id="copy_editing_permission_form">
-    <div class="row">
-        <div class="col-md-12 error-form-message hidden">
-            <div class="alert alert-danger alert-dismissable">
-                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                    {% trans 'Some errors on form. Check it and send again.' %}
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="alert alert-warning">
-                <h4><i class="icon fa fa-warning"></i> {% trans 'Important' %}!</h4>
-                    {% trans 'The following actions will change the permissions of the selected users who will lose their previous settings.' %}
-            </div>
+<form method="post" id="copy_editing_permission_form" class="copy-perm-form">
+    <div class="cp-alert cp-alert-error error-form-message hidden">
+        <i class="fa fa-ban"></i>
+        <div>
+            <strong>{% trans 'Alert' %}!</strong>
+            <span>{% trans 'Some errors on form. Check it and send again.' %}</span>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-        {% crispy form %}
+    <div class="cp-alert cp-alert-warning">
+        <i class="fa fa-exclamation-triangle"></i>
+        <div>
+            <strong>{% trans 'Important' %}!</strong>
+            <span>{% trans 'The following actions will change the permissions of the selected users who will lose their previous settings.' %}</span>
         </div>
     </div>
+    {% crispy form %}
 </form>

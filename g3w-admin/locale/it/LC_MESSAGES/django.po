@@ -527,3 +527,19 @@ msgstr ""
 
 #~ msgid " results."
 #~ msgstr " risultati."
+
+# --- Dashboard section titles ---
+msgid "Bookmarked projects"
+msgstr "Progetti preferiti"
+
+msgid "Quick actions"
+msgstr "Azioni rapide"
+
+msgid "Projects bookmarked"
+msgstr "Progetti preferiti"
+
+msgid "Recent activity"
+msgstr "Attività recente"
+
+msgid "No bookmarked projects yet"
+msgstr "Nessun progetto preferito"

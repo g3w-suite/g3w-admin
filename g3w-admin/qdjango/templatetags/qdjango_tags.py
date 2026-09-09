@@ -1,9 +1,22 @@
 from django import template
+from guardian.shortcuts import get_anonymous_user
 from qdjango.models import Layer, MSG_LEVELS
 from qdjango.utils.models import get_geoconstraints4layer
 
 
 register = template.Library()
+
+
+@register.filter
+def is_public_project(project):
+    """
+    Return True if the anonymous user has ``view_project`` permission
+    on the given project (i.e. the project is publicly accessible).
+    """
+    try:
+        return get_anonymous_user().has_perm('qdjango.view_project', project)
+    except Exception:
+        return False
 
 
 @register.filter
