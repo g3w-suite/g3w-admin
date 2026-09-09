@@ -22,9 +22,7 @@ GUI.isMapReady().then(() => {
 
   GUI.getMapLayers().forEach(l => l.getOLLayer().getSource().setAttributions(attribution));
 
-  const has_baselayer = attribution || Object.values(ApplicationState.layers)
-    .flatMap(s => s.isQueryable() ? s.getLayers() : [])
-    .filter(l =>  l.isGeoLayer() && l.isBaseLayer()).length;
+  const has_baselayer = attribution || ApplicationState.project.getLayers({ BASELAYER: true, GEOLAYER: true })?.length > 0;
 
   // check if a base layer is set. If true, add attribution control
   if (has_baselayer) {

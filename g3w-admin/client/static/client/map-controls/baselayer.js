@@ -10,7 +10,7 @@ const { XHR, debounce } = g3w.utils;
 // wait for map ready
 GUI.on('after:setupControls', () => {
   if (ApplicationState.project.state.baselayers.length) {
-    new BaseLayerControl(ApplicationState.project.state.baselayers);
+    new BaseLayerControl();
   }
 });
 
@@ -21,14 +21,11 @@ class BaseLayerControl extends ol.control.Control {
   
   #activeLayer = null;
 
-  constructor(layers) {
+  constructor() {
     super({
       element: Object.assign(document.createElement('div'), { className: 'ol-baselayer-control ol-unselectable ol-control ol-control-tl' }),
       target:  document.querySelector('.g3w-map-controls-left-bottom'),
     });
-
-    // retrieve global map instance (open layers)
-    const map   = GUI.getService('map').getMap();
 
     // base layers
     this.layers = GUI.getBaseLayers();
@@ -109,7 +106,7 @@ class BaseLayerControl extends ol.control.Control {
     });
 
     // automatically attach current control to map
-    map.addControl(this);
+    GUI.getService('map').getMap().addControl(this);
 
     //Check if base layer is active
     if (this.#activeLayer) {

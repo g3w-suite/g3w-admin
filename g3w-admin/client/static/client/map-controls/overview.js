@@ -10,7 +10,6 @@
 
 const ApplicationState  = g3w.state;
 const GUI               = g3w.app;
-const Layer             = g3w.Layer;
 const { DOTS_PER_INCH } = g3w.constants;
 const {
   normalizeEpsg,
@@ -31,68 +30,33 @@ GUI.setupControl.overview = async function() {
       throw `Project doesn't exist ${gid}`;
     }
 
-    let PROJECT  = gid === g3wsdk.core.ApplicationState.project.getGid() ? g3wsdk.core.ApplicationState.project : null;
+    const PROJECT  = gid === g3w.app.state.project.getGid() ? g3w.app.state.project : null;
 
-    // fetch project configuration from remote server
-    if (!PROJECT) {
-      PROJECT = Object.assign({}, CONFIG, await XHR.get({ url:
-        `${window.initConfig.urls.baseurl}${window.initConfig.urls.config}/${window.initConfig.id}/${CONFIG.type}/${CONFIG.id}?_t=${CONFIG.modified}`
-      }), {
-        _layers: {},
-        get crs()      { return normalizeEpsg(CONFIG.crs, false) },
-        getType:       () => CONFIG.type,
-        getId:         () => CONFIG.id,
-        getProjection: () => ApplicationState.projections.get(PROJECT.crs),
-        getRelations() { return []; },
-      });
-
-       // loop layerstree and inject additional layer properties from server config (eg. visibile: true/false)
-      const traverse = nodes => {
-        nodes.forEach((node, i) => {
-          if (undefined !== node.id) {
-            PROJECT.layers.forEach(l => {
-              if (node.id === l.id) {
-                l.visible = node.visible ?? true; // @since v4.1.0 - add visible property to layer
-              }
-            });
+    // fetch project configuration from remote server in case of overview project is different from current project
+    const config = PROJECT?.state ?? await XHR.get({ 
+      url: `${window.initConfig.urls.baseurl}${window.initConfig.urls.config}/${window.initConfig.id}/${CONFIG.type}/${CONFIG.id}?_t=${CONFIG.modified}`
+    });
+    
+    //Array contains all layers that are visible in the overview map (from project configuration)
+    const layers = (
+      // loop layerstree and inject additional layer properties from server config (eg. visibile: true/false)
+      // ordering by TOC
+      function traverse(nodes = [], layers = []) {
+        nodes.forEach((node) => {
+          //esclude not visible node and alphanumerical layers (eg. NoGeometry) 
+          if (undefined !== node.id && node.visible) {
+            const l = config.layers.find(l => node.id === l.id);
+            if ('NoGeometry' !== l?.geometrytype) {
+              layers.push(l);
+            }
           }
           if (Array.isArray(node.nodes)) {
-            traverse(node.nodes);
+            traverse(node.nodes, layers);
           }
         });
-      };
-      traverse(PROJECT.layerstree);
-
-      // Layer factory: instance each layer and add to layersstore
-      PROJECT.layers.flatMap(l => {
-
-        l.wmsUrl = `${window.initConfig.urls.baseurl}${window.initConfig.urls.ows}/${window.initConfig.id}/${CONFIG.type}/${CONFIG.id}/`;
-
-        const config = Object.assign({}, l, {
-          crs:               normalizeEpsg(l.crs || PROJECT.crs, false), // @v4.0 Fix In case of missing layer crs, set project crs
-          projection:        l.crs ? ApplicationState.projections.get(l.crs) : PROJECT.getProjection(),
-          ows_method:        PROJECT?.ows_method ?? 'GET',
-          wms_use_layer_ids: PROJECT.wms_use_layer_ids,
-          //@since v4.0.0 - original config to maintain
-          styles:            l.styles && l.styles.map(s => ({...s})), // v4.0.0 pass a copy of styles
-        });
-
-        try {
-          if (!['OSM', 'Bing'].includes(config.servertype)) { // skip base layers
-            return new Layer(config, { project: PROJECT });
-          }
-        } catch(e) {
-          console.warn(e);
-        }
-        return [];
-      }).forEach(l => PROJECT._layers[l.getId()] = l);
-      
-    }
-
-    // BACKOMP v3.x
-    if (!PROJECT.state) {
-      Object.defineProperty(PROJECT, 'state', { get() { return PROJECT; }, configurable: false, enumerable: true });
-    }
+        return layers;
+      } 
+    )(config.layerstree, []);
 
     const collapseLabel = Object.assign(document.createElement('span'), { title: 'close' });
     const label         = Object.assign(document.createElement('span'), { title: 'Overview map' });
@@ -101,6 +65,7 @@ GUI.setupControl.overview = async function() {
     label        .insertAdjacentHTML('afterbegin', /* html */`<i aria-hidden = "true" class = "fas fa-globe-americas"></i><span hidden>Overview map<span>`);
 
     collapseLabel.dataset.placement = label.dataset.placement = 'top';
+    
 
     GUI.createMapControl({
       id: 'overview',
@@ -109,13 +74,13 @@ GUI.setupControl.overview = async function() {
         ol: new ol.control.OverviewMap({
           target: document.querySelector('.g3w-map-controls-left-bottom'),
           view:          new ol.View({
-            extent:        PROJECT.state.extent,
+            extent:        config.extent,
             projection:    GUI.getProjection(),
-            center:        ol.extent.getCenter(PROJECT.state.initextent),
-            resolution:    Math.max(ol.extent.getWidth(PROJECT.state.initextent) / 200, ol.extent.getHeight(PROJECT.state.initextent) / 150), // max(xInitRes, yInitRes)
+            center:        ol.extent.getCenter(config.initextent),
+            resolution:    Math.max(ol.extent.getWidth(config.initextent) / 200, ol.extent.getHeight(config.initextent) / 150), // max(xInitRes, yInitRes)
           }), // hardcoded
           rotateWithView: true,
-          collapsed:      ApplicationState.project.state.baselayers.length > 0,
+          collapsed:      CONFIG.baselayers.filter(l => ('Bing' === l.servertype ? ApplicationState.vendorkeys.bing : true)).length > 0,
           className:      'ol-overviewmap',
           tipLabel:       '',
           collapseLabel,
@@ -123,11 +88,9 @@ GUI.setupControl.overview = async function() {
           layers:        Object
             .entries(
               // group layer by multilayerId
-              Object
-                .values(PROJECT._layers)
-                .filter(l => !l.isBaseLayer() && l.isGeoLayer() && l.isVisible())
+              layers
                 .reduce((group, l) => {
-                  const id = l.getMultiLayerId();
+                  const id = l.multilayerid;
                   group[id] = group[id] || [];
                   group[id].push(l);
                   return group;
@@ -137,12 +100,18 @@ GUI.setupControl.overview = async function() {
               opacity:      1.0,
               source:       new ol.source.ImageWMS({
                 ratio:      1,
-                url:        layers?.at(-1)?.getWmsUrl?.() ?? `${window.initConfig.urls.baseurl}${window.initConfig.urls.ows}/${window.initConfig.id}/${CONFIG.type}/${CONFIG.id}/`,
+                url:        `${window.initConfig.urls.baseurl}${window.initConfig.urls.ows}/${CONFIG.id}/${CONFIG.type}/${CONFIG.id}/`,
                 params:     Object.fromEntries(
                   Object.entries({
                     DPI:         DOTS_PER_INCH,
                     TRANSPARENT: true,
-                    LAYERS:      layers.map(l => l.getWMSLayerName()).reverse() ?? '',
+                    LAYERS:      layers.map(l => {
+                                    const source_layer = l.source?.layers ?? l.source?.layer;
+                                    if (source_layer && l?.source?.url && l.source.external && l.source.crs.epsg === CONFIG.crs.epsg) {
+                                      return source_layer;
+                                    }
+                                    return config.wms_use_layer_ids ? l.id : l.name;  
+                                  }).reverse() ?? '',
                     VERSION:     '1.3.0',
                     SLD_VERSION: '1.1.0',
                   })
