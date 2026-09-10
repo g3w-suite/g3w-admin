@@ -480,36 +480,30 @@ export class ToolBox extends Emitter {
                   return promise;
                   
                 }
-              }),
-            ],
-          }),
-        },
+            }),
+          ],
+        }),
         //Only in case of Polygon/MultiPolygon geometry
-        (is_vector) && is_poly && capabilities.includes('change_feature') && {
+        (is_vector) && is_poly && capabilities.includes('change_feature') && new Tool({
           id: 'addhole',
           name: "editing.tools.addhole",
           icon: "mActionAddRing.svg",
-          op: new Workflow({
-            layer,
-            type: 'change_feature',
-            steps: [
-              new AddHoleStep({}),
-            ]
-          }),
-        },
-        
-        (is_vector) && is_poly && capabilities.includes('change_feature') &&  {  
+          type: 'change_feature',
+          layer,
+          steps: [
+            new AddHoleStep({}),
+          ],
+        }),
+        (is_vector) && is_poly && capabilities.includes('change_feature') &&  new Tool({  
           id: 'deletehole',
           name: "editing.tools.deletehole",
           icon: "mActionDeleteRing.svg",
-          op: new Workflow({
-            layer,
-            type: 'change_feature',
-            steps: [
-              new DeleteHoleStep(),
-            ]
-          }),
-        },
+          layer,
+          type: 'change_feature',
+          steps: [
+            new DeleteHoleStep(),
+          ],
+        }),
         // Edit vertex Feature
         (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
           id:   'movevertex',
