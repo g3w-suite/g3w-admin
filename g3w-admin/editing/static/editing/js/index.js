@@ -175,7 +175,7 @@ new (class extends Plugin {
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
       this.config.name          = this.config.name || "plugins.editing.editing_data";
       
-      this.createSideBarComponent({}, {
+      const comp = this.createSideBarComponent({}, {
         id:          'editing',
         collapsible: false,
         position:    1, 
@@ -183,12 +183,9 @@ new (class extends Plugin {
         offline:     false,
         icon:        'pencil',
         iconColor:   'yellow',
-        events: {
-          open: {
-            cb: () => this.showEditingPanel(),
-          }
-        }
       });
+      
+      comp.onbefore('setOpen', () => this.showEditingPanel());
     }
 
     GUI.onafter('addActionsForLayers', (actions, layers) => {
