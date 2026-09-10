@@ -396,18 +396,19 @@ new (class extends Plugin {
   }
 
   /**
-   * @since 4.0.0
    * @returns { boolean }
    * 
+   * @since 4.0.0
    */
-  areLayersInEditing() {
+  hasLayersInEditing() {
     return this.state.toolboxes.some(tb => tb.inEditing());
   }
 
   /**
-   * @since 4.0.0
-   * @param {*} id 
+   * @param   { string } id layer
    * @returns { boolean }
+   * 
+   * @since 4.0.0
    */
   isLayerInEditing(id) {
     return this.getToolBoxById(id)?.inEditing();
