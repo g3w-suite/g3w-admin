@@ -310,15 +310,6 @@ export default ({
       this.getData();
     },
 
-    isRowHidden(index) {
-      if (this.search.search) {
-        return Object.values(this.rows[index]).every(v => !`${v}`.toLowerCase().includes(this.search.search.toLowerCase()));
-      }
-      const page      = Number(this.search.page);
-      const page_size = Number(this.search.page_size);
-      return !(index >= ((page-1) * page_size) && index < (page * page_size));
-    },
-
     save() {
       this.state.isrelation
         // link features (by indexes)
