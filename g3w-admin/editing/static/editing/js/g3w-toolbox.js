@@ -39,6 +39,8 @@ import { AddFeatureStep }                               from './actions/add-feat
 import { MoveFeatureStep }                              from './actions/move-feature.js';
 import { RotateFeatureStep }                            from './actions/rotate-feature.js';
 import { ModifyGeometryVertexStep }                     from './actions/move-vertex.js';
+import { AddHoleStep }                                  from './actions/add-hole.js';
+import { DeleteHoleStep }                               from './actions/delete-hole.js';
 
 const { Emitter, Layer, Component }                      = g3w;
 const ApplicationState                                   = g3w.state;
@@ -475,12 +477,39 @@ export class ToolBox extends Emitter {
                   });
                 }
 
-                return promise;
-                
-              }
-            }),
-          ],
-        }),
+                  return promise;
+                  
+                }
+              }),
+            ],
+          }),
+        },
+        //Only in case of Polygon/MultiPolygon geometry
+        (is_vector) && is_poly && capabilities.includes('change_feature') && {
+          id: 'addhole',
+          name: "editing.tools.addhole",
+          icon: "mActionAddRing.svg",
+          op: new Workflow({
+            layer,
+            type: 'change_feature',
+            steps: [
+              new AddHoleStep({}),
+            ]
+          }),
+        },
+        
+        (is_vector) && is_poly && capabilities.includes('change_feature') &&  {  
+          id: 'deletehole',
+          name: "editing.tools.deletehole",
+          icon: "mActionDeleteRing.svg",
+          op: new Workflow({
+            layer,
+            type: 'change_feature',
+            steps: [
+              new DeleteHoleStep(),
+            ]
+          }),
+        },
         // Edit vertex Feature
         (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
           id:   'movevertex',

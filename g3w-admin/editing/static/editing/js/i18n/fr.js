@@ -4,7 +4,7 @@ export default {
     some_layers: "Une erreur s'est produite lors du chargement de certaines layers dans l'édition."
   },
   search: "Recherche",
-  editing_changes: "Editing Changes",
+  editing_changes: "Modifications en cours",
   editing_data: "Modifier les donnes",
   editing_attributes: "Modifier les attributs",
   relations: "Relations",
@@ -27,7 +27,7 @@ export default {
   },
   tools: {
     copy: "Copier les fonctionnalités",
-    pastefeaturesfromotherlayers: "Paste features from other layer",
+    pastefeaturesfromotherlayers: "Coller des entités depuis une autre couche",
     addpart: "Ajouter une pièce à la géométrie",
     deletepart: "Supprimer la partie de la géométrie",
     merge: "Dissoudre les fonctionnalités",
@@ -39,14 +39,16 @@ export default {
     update_vertex: "Mettre à jour les sommets des fonctionnalités",
     update_feature: "Modifier les attributs des fonctionnalités",
     update_multi_features: "Modifier les attributs des fonctionnalités sélectionnées",
-    update_multi_features_relations: "Update attributes of all selected relations",
+    update_multi_features_relations: "Modifier les attributs de toutes les relations sélectionnées",
     update_multi_features_relations_from_parents : "Ajouter/Modifier les enregistrements de relation à partir d'une ou plusieurs entités parents",
-    copyfeaturefromexternallayer: "Create Feature from added layer"
+    copyfeaturefromexternallayer: "Créer une entité depuis la couche ajoutée",
+    addhole: "Ajouter un trou",
+    deletehole: "Supprimer le trou",
   },
   toolsoftool: {
-    measure: "Show measure",
-    snap: "Snap layer",
-    snapall: "Snap to all layers"
+    measure: "Afficher la mesure",
+    snap: "Accrochage à la couche",
+    snapall: "Accrochage à toutes les couches"
   },
   steps: {
     help: {
@@ -120,10 +122,10 @@ export default {
       delete: "Supprimé",
       update: "Modifié"
     },
-    loading_table_data: "Building Data Table. Please wait ...",
+    loading_table_data: "Création de la table de données. Veuillez patienter ...",
     copy_and_paste_from_other_layer_mandatory_fields: "Avant d'enregistrer, il est nécessaire de remplir tous les champs obligatoires du features saisi",
     no_feature_selected: "Aucune feature sélectionnée",
-    select_min_2_features: 'Select at least 2 features'
+    select_min_2_features: 'Sélectionner au moins 2 entités'
   },
   relation: {
     table: {
@@ -131,12 +133,12 @@ export default {
     },
     draw_new_feature:"Dessiner une nouvelle feature",
     draw_or_copy:"ou",
-    copy_feature_from_other_layer:"Copier feature d'une autre layer"
+    copy_feature_from_other_layer:"Copier une entité depuis une autre couche"
   },
   form: {
     relations: {
       tooltips: {
-        back_to_father:"Back to edit father",
+        back_to_father:"Retourner à l'édition de l'entité parente",
         add_relation: "Créer et ajouter une nouvelle relation",
         link_relation: "Associer une relation existante à cette fonctionnalité",
         open_relation_tools: "Outils de relation ouverte",
@@ -153,11 +155,11 @@ export default {
   modal: {
     tools: {
       copyfeaturefromotherlayer: {
-        title: "Select layer",
-        edit_attributes: "Edit attributes of pasted features in multiple mode"
+        title: "Sélectionner une couche",
+        edit_attributes: "Modifier les attributs des entités collées en mode multiple"
       },
       copyfeaturefromprojectlayer: {
-        title: "Select a feature"
+        title: "Sélectionner une entité"
       }
     }
   }
