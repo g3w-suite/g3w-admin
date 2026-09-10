@@ -106,7 +106,7 @@ class BaseLayerControl extends ol.control.Control {
     });
 
     // automatically attach current control to map
-    GUI.getService('map').getMap().addControl(this);
+    GUI.getMap().addControl(this);
 
     //Check if base layer is active
     if (this.#activeLayer) {

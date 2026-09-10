@@ -589,8 +589,9 @@ class GeocodingControl extends ol.control.Control {
     }
 
     // Get editing layers that has Point/MultiPoint Geometry type
-    const editable_point_layers = ApplicationState.project.getLayers({ EDITABLE: true, GEOLAYER: true })
-      .flatMap(l => /^(Point|MultiPoint)/.test(l.getGeometryType()) ? ({ id: l.getId(), name: l.getName(), inediting: !!GUI.getPlugin('editing')?.isLayerInEditing?.(l.getId()) }) : []);
+    const editable_point_layers = ApplicationState.project
+      .getLayers({ EDITABLE: true, GEOLAYER: true })
+      .flatMap(l => /^(Point|MultiPoint)/.test(l.getGeometryType()) ? ({ id: l.getId(), name: l.getName(), inediting: !!l.isInEditing() }) : []);
 
     // skip adding when there is no editable layer or  editing panel is open (ie. layer is in editing)
     if (editable_point_layers.find(l => l.inediting)) {

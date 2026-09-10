@@ -30,33 +30,22 @@ GUI.setupControl.overview = async function() {
       throw `Project doesn't exist ${gid}`;
     }
 
-    const PROJECT  = gid === g3w.app.state.project.getGid() ? g3w.app.state.project : null;
+    const PROJECT  = gid === ApplicationState.project.getGid() ? ApplicationState.project : null;
 
-    // fetch project configuration from remote server in case of overview project is different from current project
+    // fetch project configuration
     const config = PROJECT?.state ?? await XHR.get({ 
       url: `${window.initConfig.urls.baseurl}${window.initConfig.urls.config}/${window.initConfig.id}/${CONFIG.type}/${CONFIG.id}?_t=${CONFIG.modified}`
     });
-    
-    //Array contains all layers that are visible in the overview map (from project configuration)
-    const layers = (
-      // loop layerstree and inject additional layer properties from server config (eg. visibile: true/false)
-      // ordering by TOC
-      function traverse(nodes = [], layers = []) {
-        nodes.forEach((node) => {
-          //esclude not visible node and alphanumerical layers (eg. NoGeometry) 
-          if (undefined !== node.id && node.visible) {
-            const l = config.layers.find(l => node.id === l.id);
-            if ('NoGeometry' !== l?.geometrytype) {
-              layers.push(l);
-            }
-          }
-          if (Array.isArray(node.nodes)) {
-            traverse(node.nodes, layers);
-          }
-        });
-        return layers;
-      } 
-    )(config.layerstree, []);
+
+    // visible layers (sorted by TOC)
+    const layers = config.layerstree.flatMap(function traverse(node) {
+      const layer = (node.id !== undefined && node.visible) ? config.layers.find(l => l.id === node.id) : null;
+      // recursion step
+      return [
+        ...(layer && layer.geometrytype !== 'NoGeometry' ? [layer] : []),  // current node
+        ...(Array.isArray(node.nodes) ? node.nodes.flatMap(traverse) : []) // child nodes
+      ];
+    });
 
     const collapseLabel = Object.assign(document.createElement('span'), { title: 'close' });
     const label         = Object.assign(document.createElement('span'), { title: 'Overview map' });
