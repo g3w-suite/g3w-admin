@@ -391,4 +391,5 @@ export default {
   'Layers settings': 'Configura livelli',
   'layers selected': 'livelli selezionati',
   'Type to search layers': 'Inizia a digitare per cercare i livelli',
+  'Open external link?': 'Vuoi aprire questo link esterno?',
 };
