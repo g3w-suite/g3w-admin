@@ -180,7 +180,7 @@ new (class extends Plugin {
       const comp = this.createSideBarComponent({}, {
         id:          'editing',
         collapsible: false,
-        position:    1, 
+        sidebarOptions: { position: 'tools' },
         title:       this.config.name,
         offline:     false,
         icon:        'pencil',
