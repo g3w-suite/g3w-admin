@@ -70,7 +70,7 @@ export default {
       insert_attributes_feature: "Attribute des Features einfügen"
     }
   },
-  workflow: {
+  tool: {
     steps: {
       select: 'Zum Auswählen auf ein Feature klicken',
       draw_part: "Neues Teil zeichnen",

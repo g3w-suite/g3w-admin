@@ -34,6 +34,6 @@ GUI.setupControl.zoombox = function() {
       { duration: 200, center:     view.getCenter() },
       { duration: 200, resolution: view.getResolution() }
     );
-    view.fit(e.extent, { constrainResolution: true, size: GUI.getMap().getSize() });
+    view.fit(e.extent);
   });
 };

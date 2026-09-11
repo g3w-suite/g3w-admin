@@ -73,7 +73,7 @@ export default {
       insert_attributes_feature: "Вставити атрибути об'єкта"
     }
   },
-  workflow: {
+  tool: {
     steps: {
       select: "Виберіть об'єкт",
       draw_part: "Оцифрувати нову частину",

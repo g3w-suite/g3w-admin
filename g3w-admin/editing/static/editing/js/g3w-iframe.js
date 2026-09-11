@@ -336,7 +336,7 @@ export class IframeEditor extends Emitter {
     const VECTOR_URL = ApplicationState.project.state.vectorurl;
     const GID        = `${ApplicationState.project.getType()}/${ApplicationState.project.getId()}`;
     const fid        = geojson?.id.toString(); //get id of the feature in string
-    const layer      = qgs_layer_id && GUI.getMap().getLayers().getArray().find(l => qgs_layer_id === l.get('id')); // get editing layer
+    const layer      = qgs_layer_id && GUI.getPlugin('editing').getLayerById(qgs_layer_id); // get editing layer
     let lock         = {};
     let commit       = { result: true };
 
@@ -413,7 +413,7 @@ export class IframeEditor extends Emitter {
       
       // add new feature (draw)
       if (!lock.feature) { 
-        const draw = new ol.interaction.Draw({ type: geom, source: layer.getSource() });
+        const draw = new ol.interaction.Draw({ type: geom, source: layer.getOLLayer().getSource() });
         draw.on(['drawstart', 'drawend'], e => {
           // clear layer and interactions
           if ('drawstart' === e.type) {
@@ -438,7 +438,7 @@ export class IframeEditor extends Emitter {
       }
 
       // modify
-      const modify = new ol.interaction.Modify({ source: layer.getSource() });
+      const modify = new ol.interaction.Modify({ source: layer.getOLLayer().getSource() });
       modify.on('modifyend', e => {
         window.parent.postMessage({
           action: 'editing:json',
@@ -453,7 +453,7 @@ export class IframeEditor extends Emitter {
       });
 
       // snap
-      const snap = new ol.interaction.Snap({ source: layer.getSource() });
+      const snap = new ol.interaction.Snap({ source: layer.getOLLayer().getSource() });
 
       GUI.getMap().addInteraction(modify);
       this.#interactions.push(modify);
@@ -465,8 +465,8 @@ export class IframeEditor extends Emitter {
     // save features (to layer)
     if ('save' === method) {
       if (layer) {
-        geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getSource().getFeatures()[0]);
-        layer.getSource().clear();
+        geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getOLLayer().getSource().getFeatures()[0]);
+        layer.getOLLayer().getSource().clear();
         this.#interactions.forEach(i => GUI.getMap().removeInteraction(i));
         this.#interactions = [];
       }
