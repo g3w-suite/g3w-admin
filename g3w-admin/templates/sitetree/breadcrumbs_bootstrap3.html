@@ -1,6 +1,6 @@
 {% load sitetree %}
 {% load i18n %}
-{% if sitetree_items|length_is:"1" %}
+{% if sitetree_items|length == 1 %}
 {% else %}
     {% for item in sitetree_items %}
         {% if not forloop.last %}
