@@ -53,10 +53,10 @@ const {
   getResolutionFromScale,
 }                                                        = g3w.utils;
 
-const { GEOMETRY_TYPES }                                        = g3wsdk.constant;
-const { Geometry, dissolve, splitFeature, areCoordinatesEqual } = g3wsdk.core.geoutils;
-const { removeZValueToOLFeatureGeometry }                       = g3wsdk.core.geoutils.Geometry;
-const { toRawType, cloneDeep }                                  = g3wsdk.core.utils;
+const { GEOMETRY_TYPES }                   = g3wsdk.constant;
+const { Geometry, dissolve, splitFeature } = g3wsdk.core.geoutils;
+const { removeZValueToOLFeatureGeometry }  = g3wsdk.core.geoutils.Geometry;
+const { toRawType, cloneDeep }             = g3wsdk.core.utils;
 
 const is_defined = d => undefined !== d;
 
@@ -3962,9 +3962,10 @@ function _isPointOnVertex({
   feature,
   coordinates,
  }) {
-  const geometry = feature.getGeometry();
-  const type     = geometry.getType();
-  const coords   = c => areCoordinatesEqual(coordinates, c); // whether element have same coordinates
+  const geometry            = feature.getGeometry();
+  const type                = geometry.getType();
+  const areCoordinatesEqual = (c1 = [], c2 = []) => (c1[0] === c2[0] && c1[1] === c2[1]);
+  const coords              = c => areCoordinatesEqual(coordinates, c); // whether element have same coordinates
  
   switch (type) {
     case 'Polygon':
