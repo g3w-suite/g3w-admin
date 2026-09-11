@@ -36,7 +36,7 @@ django-redis==6.0.0
 django-registration==5.2.1
 django-recaptcha==4.1.0
 pydantic==2.13.4
-weasyprint==68.0
+weasyprint==70
 distro==1.7.0
 django-allauth[socialaccount]==65.14.1
 django-elasticsearch-dsl==8.0
