@@ -1917,8 +1917,8 @@ export class ToolBox extends Emitter {
       this.state.layer.getOLLayer?.()?.setVisible(true);
 
       //add OL layer to map only is vector layer (eg. image layers whose catalog layer may be hidden)
-      if ('vector' === this.state._layerType) {
-        GUI.getMap().addLayer(this.state.layer.getOLLayer?.());
+      if ('vector' === this.state._layerType && this.state.layer.getOLLayer?.()) { 
+        GUI.getMap().addLayer(this.state.layer.getOLLayer());
       }
      
       //set start
@@ -2032,8 +2032,8 @@ export class ToolBox extends Emitter {
       //clear chain
       GUI.getPlugin('editing').state.stopChain.clear();
       //remove layer from map
-      if ('vector' === this.state._layerType) {
-        GUI.getMap().removeLayer(this.state.layer.getOLLayer?.());
+      if ('vector' === this.state._layerType && this.state.layer.getOLLayer?.()) {
+        GUI.getMap().removeLayer(this.state.layer.getOLLayer());
       }
       
       return true;
