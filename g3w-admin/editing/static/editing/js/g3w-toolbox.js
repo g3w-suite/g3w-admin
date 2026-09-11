@@ -3653,7 +3653,7 @@ export class ToolBox extends Emitter {
 
     features.forEach(f => f.clearState()); // reset state of the editing features (update, new etc..)
 
-    this._editor.getLayer().setFeatures([...features]); // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
+    this._featuresstore.setFeatures([...features]); // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
 
     // add lock ids
     GUI.getPlugin('editing').state.lock_ids[layerId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[layerId].concat(...response.response.new_lockids))]
