@@ -3,8 +3,6 @@
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { Step } from './g3w-step.js';
-
 const { Emitter } = g3w;
 const GUI         = g3w.app;
 
