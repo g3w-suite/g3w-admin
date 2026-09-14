@@ -34,6 +34,47 @@ export class Tool extends Emitter {
   }
 
   /**
+   * @FIXME add description
+   */
+  #promise = null;
+
+  /**
+   * @FIXME add description
+   */
+  #type = null;
+
+  /**
+   * All steps of flow
+   */
+  #steps = [];
+
+  /**
+   * Whether is child of another tool
+   */
+  #child = null;
+
+  /**
+   * stack tool index
+   */
+  #stackIndex = null;
+
+  /**
+   * Tool help message key
+   */
+  #helpMessage = null;
+
+  /**
+   * Current flow step
+   */
+  #stepIndex = 0;
+
+  /**
+   * Store user messages steps to show when tool
+   * use a mandatory steps (ex. select: {description}, merge: {description}}
+   */
+  #userMessageSteps = {};
+
+  /**
    * @param {Object} options
    * @param {String} options.id
    * @param {String} options.name
@@ -44,8 +85,8 @@ export class Tool extends Emitter {
    * @param options.context
    * @param options.flow
    * @param options.steps
-   * @param options.runOnce
-   * @param options.backbuttonlabel
+   * @param options.runOnce         stop when flow stop
+   * @param options.backbuttonlabel holds back button label (in case of child tool)
    */
   constructor(options = {}) {
 
@@ -56,62 +97,22 @@ export class Tool extends Emitter {
     this.name                 = options?.name;
     this.icon                 = options?.icon;
     this.enable               = options?.enable ?? true;
-    this.disabledtoolsoftools =  [];
+    this.disabledtoolsoftools = [];
     this.enabled              = !!options?.enabled;
     this.active               = false;
     this.message              = null;
     this.disableEdit          = !!options?.disableEdit; //@since v4.0.0 disable stop editing
     this.visible              = options?.visible instanceof Function ? options.visible(this) : (undefined !== options?.visible ? options.visible: true);
     this.state                = new Proxy({}, { get: (_, prop) => this[prop], set:(_, prop, value) => { this[prop] = value; return true; } }),
+    this.runOnce              = options?.runOnce     || false;
+    this.#type                = options?.type        || null;
+    this.#steps               = options?.steps       || [];
+    this.#helpMessage         = options?.helpMessage ?? null;
 
-    /** @since g3w-client-plugin-editing@v3.8.0*/
-    this._type = options?.type || null;
-
-    /**
-     * @FIXME add description
-     */
-    this._promise = null;
-
-    /**
-     * All steps of flow
-     */
-    this._steps = options?.steps || [];
-
-    /**
-     * Whether is child of another tool
-     */
-    this._child = null;
-
-    /**
-     * stack tool index)
-     */
-    this._stackIndex = null;
-
-    /**
-     * Stop when flow stop
-     */
-    this.runOnce = options?.runOnce || false;
-
-    /**
-     * Tool help message key
-     */
-    this._helpMessage = options?.helpMessage ?? null;
-
-    /**
-     * Store user messages steps to show when tool
-     * use a mandatory steps (ex. select: {description}, merge: {description}}
-     */
-    this._userMessageSteps = {};
-
-    if (this._steps.length > 0) {
-      this.setUserMessagesSteps(this._steps);
+    if (this.#steps.length > 0) {
+      this.setUserMessagesSteps(this.#steps);
     }
 
-    /**
-     * Holds back button label (in case of child tool)
-     * 
-     * @since 3.9.0
-     */
     this.backbuttonlabel = options?.backbuttonlabel || null; 
 
     /**
@@ -125,14 +126,6 @@ export class Tool extends Emitter {
     if (true === options.registerEscKeyEvent) {
       this.registerEscKeyEvent();
     }
-
-    /**
-     * Current flow step
-     * 
-     * @since g3w-client-editing@v3.8.0
-     */
-    this._stepIndex = 0;
-
   }
 
   getId() {
@@ -144,11 +137,10 @@ export class Tool extends Emitter {
    * @param steps
    */
   setUserMessagesSteps(steps) {
-    this._userMessageSteps = steps
-      .reduce((messagesSteps, step) => ({
-        ...messagesSteps,
-        ...(step.getUserMessageSteps() || {})
-      }), {});
+    this.#userMessageSteps = steps.reduce((messagesSteps, step) => ({
+      ...messagesSteps,
+      ...(step.getUserMessageSteps() || {})
+    }), {});
   }
 
   /**
@@ -160,9 +152,9 @@ export class Tool extends Emitter {
    */
   isType(type) {
     if (Array.isArray(type)) {
-      return Boolean(type.find(t => t === this._type));
+      return Boolean(type.find(t => t === this.#type));
     }
-    return type === this._type;
+    return type === this.#type;
   }
 
   /**
@@ -176,17 +168,17 @@ export class Tool extends Emitter {
    * @returns { null | * }
    */
   getStackIndex() {
-    return this._stackIndex;
+    return this.#stackIndex;
   }
 
   /**
    * @param tool
    */
   addChild(tool) {
-    if (this._child) {
-      this._child.addChild(tool);
+    if (this.#child) {
+      this.#child.addChild(tool);
     } else {
-      this._child = tool;
+      this.#child = tool;
     }
   }
 
@@ -223,14 +215,14 @@ export class Tool extends Emitter {
    * @param step
    */
   addStep(step) {
-    this._steps.push(step);
+    this.#steps.push(step);
   }
 
   /**
    * @param steps
    */
   setSteps(steps = []) {
-    this._steps = steps;
+    this.#steps = steps;
     this.setUserMessagesSteps(steps);
   }
 
@@ -238,7 +230,7 @@ export class Tool extends Emitter {
    * @returns { * | Array }
    */
   getSteps() {
-    return this._steps;
+    return this.#steps;
   }
 
   /**
@@ -247,7 +239,7 @@ export class Tool extends Emitter {
    * @returns { * }
    */
   getStep(index) {
-    return this._steps[index];
+    return this.#steps[index];
   }
 
   /**
@@ -255,7 +247,7 @@ export class Tool extends Emitter {
    */
   clearMessages() {
     this.setHelpMessage(null);
-    if (Object.keys(this._userMessageSteps).length > 0) {
+    if (Object.keys(this.#userMessageSteps).length > 0) {
       this.clearUserMessagesSteps();
     }
   }
@@ -264,21 +256,21 @@ export class Tool extends Emitter {
    * @returns { * | null }
    */
   getLastStep() {
-    return this._steps.length > 0 ? this._steps[ this._steps.length - 1 ] : null;
+    return this.#steps.at(-1) ?? null;
   }
 
   /**
    * @returns { Object }
    */
   getRunningStep() {
-    return this._steps.find(s => s.isRunning());
+    return this.#steps.find(s => s.isRunning());
   }
 
   /**
    * @FIXME add description
    */
   reject() {
-    this._promise?.reject?.();
+    this.#promise?.reject?.();
     this.emit('reject');
   }
 
@@ -286,7 +278,7 @@ export class Tool extends Emitter {
    * @FIXME add description
    */
   resolve() {
-    this._promise?.resolve?.();
+    this.#promise?.resolve?.();
   }
 
   /**
@@ -305,18 +297,18 @@ export class Tool extends Emitter {
       //run step
       const outputs = await step.__run(inputs, this.getContext());
       // onDone → check if all step is resolved
-      this._stepIndex++;
+      this.#stepIndex++;
       //check if is the last of tool steps
-      if (this._stepIndex === this.getSteps().length) {
-        this._stepIndex = 0;
+      if (this.#stepIndex === this.getSteps().length) {
+        this.#stepIndex = 0;
         return outputs;
       } else {
         //recursion until the end of all steps
-        return this.runStep(this.getSteps()[this._stepIndex], outputs);
+        return this.runStep(this.getSteps()[this.#stepIndex], outputs);
       }
     } catch(e) { 
       //In case of reject
-      this._stepIndex = 0;
+      this.#stepIndex = 0;
       return Promise.reject(e);
     }
   }
@@ -333,26 +325,26 @@ export class Tool extends Emitter {
    */
   start(options = {}) {
     return new Promise(async (resolve, reject) => {
-      this._promise = { resolve, reject };
+      this.#promise = { resolve, reject };
       this._inputs  = options.inputs;
       this._context = options.context || {};
-  
+
       const isChild = this._context.isChild || false;
-      
+
       // stop child when a tool is running
       if (!isChild && Tool.Stack.length && this !== Tool.Stack.current) {
         Tool.Stack.current.addChild(this);
       }
 
-      //get stack index
-      this._stackIndex = Tool.Stack.items.includes(this) ? Tool.Stack.items.indexOf(this) : (Tool.Stack.items.push(this) - 1);
+      // get stack index
+      this.#stackIndex = Tool.Stack.items.includes(this) ? Tool.Stack.items.indexOf(this) : (Tool.Stack.items.push(this) - 1);
 
-      //get steps
-      this._steps      = options.steps || this._steps;
-      //for each step assign current tool to _tool
-      (this._steps || []).forEach(s => s._tool = this);
-  
-      const showUserMessage = Object.keys(this._userMessageSteps).length > 0;  
+      // get steps
+      this.#steps      = options.steps || this.#steps;
+      // for each step assign current tool to _tool
+      (this.#steps || []).forEach(s => s._tool = this);
+
+      const showUserMessage = Object.keys(this.#userMessageSteps).length > 0;  
       if (showUserMessage) {
         GUI.showUserMessage({
           title:     'plugins.editing.tool.title.steps',
@@ -396,7 +388,7 @@ export class Tool extends Emitter {
                 </li>
               </ul>
               `,
-              data: () => ({ steps: this._userMessageSteps }),
+              data: () => ({ steps: this.#userMessageSteps }),
               methods: {
                 completeStep(step) { step.done = true; step.buttonnext.done(); },
               },
@@ -423,9 +415,9 @@ export class Tool extends Emitter {
       this.emit('start');
   
       try {
-        console.assert(0 === this._stepIndex, `reset tool before restarting: ${this._stepIndex}`)
+        console.assert(0 === this.#stepIndex, `reset tool before restarting: ${this.#stepIndex}`)
         //start flow of tool
-        const outputs = await this.runStep(this.getSteps()[this._stepIndex], this.getInputs());
+        const outputs = await this.runStep(this.getSteps()[this.#stepIndex], this.getInputs());
         //In case of show user message (tool steps)
         if (showUserMessage) {
           setTimeout(() => { this.clearUserMessagesSteps(); resolve(outputs); }, 500);
@@ -452,21 +444,21 @@ export class Tool extends Emitter {
   async stop() {
     return new Promise(async (resolve, reject) => {
 
-      this._promise = null;
+      this.#promise = null;
 
       try {
-
-        await this._child?.stop?.();
+        await this.#child?.stop?.();
       } catch(e) {
         console.warn(e);
       }
-      //remove child
-      this._child = null;
+
+      // remove child
+      this.#child = null;
 
       // stop flow
       try {
         //get current step
-        const step = this.getSteps()[this._stepIndex];
+        const step = this.getSteps()[this.#stepIndex];
         //check if it is running
         if (step.isRunning()) {
           //clear messages steps
@@ -475,8 +467,8 @@ export class Tool extends Emitter {
           await step.__stop();
         }
         // reset counter and reject flow
-        if (this._stepIndex > 0) {
-          this._stepIndex = 0;
+        if (this.#stepIndex > 0) {
+          this.#stepIndex = 0;
           reject();
           return Promise.reject();
         } else {
@@ -500,9 +492,9 @@ export class Tool extends Emitter {
    */
   clearUserMessagesSteps() {
     Object
-      .keys(this._userMessageSteps)
+      .keys(this.#userMessageSteps)
       .forEach(type => {
-        const step = this._userMessageSteps[type];
+        const step = this.#userMessageSteps[type];
         step.done  = false;
         if (step.buttonnext) {
           step.buttonnext.disabled = true;
@@ -541,14 +533,14 @@ export class Tool extends Emitter {
    * @since g3w-client-editing@v3.8.0
    */
   setHelpMessage(message) {
-    this._helpMessage = message;
+    this.#helpMessage = message;
   }
 
   /**
    * @since g3w-client-editing@v3.8.0
    */
   getHelpMessage() {
-    return this._helpMessage;
+    return this.#helpMessage;
   }
 
   /**
