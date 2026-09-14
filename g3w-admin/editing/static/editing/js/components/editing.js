@@ -605,6 +605,10 @@ export default ({
     if (control && !control.isToggled()) {
       control.toggle();
     }
+
+    //set editing panel null
+    GUI.getPlugin('editing').state.panel = null;
+
   },
 
 });
