@@ -188,7 +188,7 @@ new (class extends Plugin {
         iconColor:   'yellow',
       });
       
-      comp.onbefore('setOpen', () => this.showEditingPanel());
+      comp.onbefore('setOpen', bool => bool && this.showEditingPanel());
     }
 
     GUI.onafter('addActionsForLayers', (actions, layers) => {
