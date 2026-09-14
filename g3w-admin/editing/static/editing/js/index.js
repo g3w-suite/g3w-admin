@@ -142,8 +142,6 @@ new (class extends Plugin {
     this.setHookLoading({ loading: true });
 
     //Loop through editable layers and get config to create toolboxes
-    let ToolBox;
-
     for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
         .filter(layer => layer.isEditable())
@@ -157,7 +155,7 @@ new (class extends Plugin {
         })
     )) {
       if ('fulfilled' === status) {
-        ToolBox                                      ||= (await import('./g3w-toolbox.js')).ToolBox;
+        const ToolBox                                  = (await import('./g3w-toolbox.js')).ToolBox;
         const toolBox                                  = new ToolBox(value.layer, value.config);
         this.state.toolboxes.push(toolBox);
         this.state.lock_ids[toolBox.getId()]           = [];
