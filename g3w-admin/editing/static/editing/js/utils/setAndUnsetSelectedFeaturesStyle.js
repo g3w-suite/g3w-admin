@@ -2,7 +2,7 @@ import { Tool }                     from '../g3w-tool.js';
 import { setFeaturesSelectedStyle } from '../utils/setFeaturesSelectedStyle.js';
 
 /**
- * Set selected style to current editing features and reset original style when (tool) is done.
+ * Apply selected style to current editing features and reset original style upon tool completion.
  * 
  * @param promise
  * @param { Object } inputs
