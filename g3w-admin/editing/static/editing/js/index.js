@@ -17,7 +17,6 @@ const {
 
 const { Server: serverErrorParser } = g3wsdk.core.errors.parsers;
 const { Geometry }                  = g3wsdk.core.geoutils;
-const { t: _t }                     = g3wsdk.core.i18n;
 
 new (class extends Plugin {
 
@@ -176,7 +175,7 @@ new (class extends Plugin {
 
     // add sidebar item (left menu) 
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
-      this.config.name          = this.config.name || "plugins.editing.Editing Layers";
+      this.config.name          = this.config.name || "plugins.editing.editing_data";
       
       const comp = this.createSideBarComponent({}, {
         id:          'editing',
@@ -219,7 +218,7 @@ new (class extends Plugin {
     GUI.on('layer:context-menu', menu => {
       menu.items.push({
         icon: 'fas fa-pencil-alt',
-        label: _t('Edit Layer'),
+        label: _('Edit Layer'),
         cbk: () => {
           this.showPanel({ toolboxes: [menu.layer.id] });
           this.startEditing(menu.layer.id);
@@ -247,7 +246,7 @@ new (class extends Plugin {
       }
       menu.items.push({
         icon: 'fas fa-pencil-alt',
-        label: _t('Edit Layer'),
+        label: _('Edit Layer'),
         children: Object.entries(this.getEditableLayers()).filter(([_, layer]) => 'vector' === layer.getType())
                     .map(([id, layer]) => ({
                       label: layer.getName(),
@@ -1132,7 +1131,7 @@ new (class extends Plugin {
       this.state.panel = new Panel({
         ...opts,
         id:            "editing-panel",
-        title:         opts.title || "plugins.editing.Editing Layers",
+        title:         opts.title || "plugins.editing.editing_data",
         internalPanel: new (Vue.extend((await import('./components/editing.js')).default))({
           state:         this.state,
           resourcesurl:  opts.resourcesUrl || GUI.getResourcesUrl(),
