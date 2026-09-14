@@ -40,7 +40,7 @@ export class AddFeatureStep extends Step {
 
 
   constructor(opts = {}) {
-    opts.help = "editing.steps.help.draw_new_feature";
+    opts.help = "editing.draw_new_feature";
 
     super(opts);
 

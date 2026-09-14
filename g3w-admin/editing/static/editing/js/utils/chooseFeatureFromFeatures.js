@@ -14,7 +14,7 @@ export function chooseFeatureFromFeatures({
   return new Promise((resolve, reject) => {
     const feature = [];
     const dialog  = GUI.dialog({
-      title:       _('plugins.editing.modal.tools.copyfeaturefromprojectlayer.title'),
+      title:       _('plugins.editing.select_feature'),
       className:   'modal-left',
       closeButton: false,
       buttons: {

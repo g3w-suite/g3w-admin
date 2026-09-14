@@ -176,7 +176,7 @@ new (class extends Plugin {
 
     // add sidebar item (left menu) 
     if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
-      this.config.name          = this.config.name || "plugins.editing.editing_data";
+      this.config.name          = this.config.name || "plugins.editing.Editing Layers";
       
       const comp = this.createSideBarComponent({}, {
         id:          'editing',
@@ -615,7 +615,7 @@ new (class extends Plugin {
     modal = true,
     close = false,
   } = {}) {
-    const messages      = Object.assign({ success: { message: "plugins.editing.messages.saved", autoclose: true }, error: {} }, (this.state.saveConfig.messages || {}));
+    const messages      = Object.assign({ success: { message: "plugins.editing.saved", autoclose: true }, error: {} }, (this.state.saveConfig.messages || {}));
     toolbox             = toolbox || this.state.toolboxselected;
     let layer           = toolbox.getLayer();
     const items         = commitItems;
@@ -649,7 +649,7 @@ new (class extends Plugin {
                 const promise = new Promise(async (resolve, reject) => {
                   const dialog = GUI.dialog({
                     message: inputs.message,
-                    title:   `${_("plugins.editing.messages.commit_feature")}: "${inputs.layer.getName()}"`,
+                    title:   `${_("plugins.editing.commit_feature")}: "${inputs.layer.getName()}"`,
                     buttons: {
                       SAVE:   { className: "btn-success", callback() { resolve(inputs); }, label: _("save"),   },
                       CANCEL: { className: "btn-danger",  callback() { reject({cancel : true });        }, label: _(inputs.close ? "exitnosave" : "annul") },
@@ -698,7 +698,7 @@ new (class extends Plugin {
         //in case of online application
         if (online) {
           dialog = GUI.dialog({
-            message: /* html */`<h4 class="text-center"><i style="margin-right: 5px;" class="${GUI.getFontClass('spinner')}"></i>${_('plugins.editing.messages.saving')}</h4>`,
+            message: /* html */`<h4 class="text-center"><i style="margin-right: 5px;" class="${GUI.getFontClass('spinner')}"></i>${_('plugins.editing.saving')}</h4>`,
             closeButton: false
           });
         }
@@ -757,7 +757,7 @@ new (class extends Plugin {
 
         GUI.showUserMessage({
           type:      'success',
-          message:   "plugins.editing.messages.saved_local",
+          message:   "plugins.editing.saved_local",
           autoclose: true,
         });
         // clear history because it saved on browser
@@ -782,7 +782,7 @@ new (class extends Plugin {
           //Show save user message
           GUI.showUserMessage({
             type:     'success',
-            message:   messages.success.message || "plugins.editing.messages.saved",
+            message:   messages.success.message || "plugins.editing.saved",
             duration:  2000,
             autoclose: undefined === messages.success.autoclose || messages.success.autoclose,
           });
@@ -1132,7 +1132,7 @@ new (class extends Plugin {
       this.state.panel = new Panel({
         ...opts,
         id:            "editing-panel",
-        title:         opts.title || "plugins.editing.editing_data",
+        title:         opts.title || "plugins.editing.Editing Layers",
         internalPanel: new (Vue.extend((await import('./components/editing.js')).default))({
           state:         this.state,
           resourcesurl:  opts.resourcesUrl || GUI.getResourcesUrl(),
@@ -1143,11 +1143,11 @@ new (class extends Plugin {
       GUI.showPanel(this.state.panel);
 
       if (!this.state.show_errors && this.state.layers_in_error) {
-        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.errors.some_layers', closable: true });
+        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.some_layers', closable: true });
         this.state.show_errors = true;
       }
     } else {
-      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.errors.no_layers' });
+      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.no_layers' });
     }
     return this.state.panel;
   }
@@ -1327,7 +1327,7 @@ new (class extends Plugin {
       if (!feature) { 
         this.stop();
         this.hideEditingPanel();
-        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.messages.featureslockbyotheruser' });
+        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.featureslockbyotheruser' });
         return;
       }
 
@@ -1359,21 +1359,21 @@ new (class extends Plugin {
         const customAddPartTool = (new (await import('./g3w-tool.js')).Tool(({
           id:         'addPart',
           type:       ['add_feature', 'change_feature'],
-          name:       "editing.tools.addpart",
+          name:       "editing.addpart",
           icon:       "mActionAddPart.svg",
           visible:    !Geometry.isMultiGeometry(_layer.getGeometryType()),
           type:        'addparttomultigeometries',
-          helpMessage: 'editing.tools.addpart',
+          helpMessage: 'editing.addpart',
           runOnce:     true,
           type:        'drawgeometry',
-          helpMessage: 'editing.tool.steps.draw_geometry',
+          helpMessage: 'editing.draw_geometry',
           runOnce:     true, // need to run once time
           steps: [
             new (await import('./actions/add-feature.js')).AddFeatureStep({
               add: false,
               steps: {
                 addfeature: {
-                  description: 'editing.tool.steps.draw_geometry',
+                  description: 'editing.draw_geometry',
                 }
               },
               onRun: ({ inputs, context }) => {
@@ -1414,7 +1414,7 @@ new (class extends Plugin {
       t = (new (await import('./g3w-tool.js')).Tool({
         type:        'editnopickmapfeatureattributes',
         runOnce:     true,
-        helpMessage: 'editing.tools.update_feature',
+        helpMessage: 'editing.update_feature',
         steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
       }));
       

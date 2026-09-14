@@ -88,7 +88,7 @@ export default ({
         <!-- EDIT MULTI ATTRIBUTES -->
         <span
           v-if               = "relationsLength > 0 && capabilities.includes('change_attr_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.tools.update_multi_features_relations'"
+          v-t-tooltip:bottom = "'plugins.editing.update_multi_features_relations'"
           class              = "g3w-icon"
         >
           <span @click.stop = "editMulti()" v-disabled = "relations.every(r => !r.select)">
@@ -100,7 +100,7 @@ export default ({
         <span
           v-if               = "capabilities.includes('change_attr_feature')"
           class              = "g3w-icon add-link"
-          v-t-tooltip:bottom = "'plugins.editing.form.relations.tooltips.link_relation'"
+          v-t-tooltip:bottom = "'plugins.editing.link_relation'"
           @click.stop        = "show_add_link ? linkRelation() : null"
           :class             = "[{ 'disabled': !show_add_link }, g3wtemplate.font['link']]"
         ></span>
@@ -108,7 +108,7 @@ export default ({
         <!-- ADD FEATURE -->
         <span
           v-if               = "rcapabilities.includes('add_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.form.relations.tooltips.add_relation'"
+          v-t-tooltip:bottom = "'plugins.editing.add_relation'"
           @click.stop        = "show_add_link ? addRelation2() : null"
           class              = "g3w-icon add-link pull-right"
           :class             = "[{ 'disabled' : !show_add_link }, g3wtemplate.font['plus']]"
@@ -135,7 +135,7 @@ export default ({
       <div>
         <div
           style = "margin-bottom: 5px;font-weight: bold;"
-          v-t   = "'plugins.editing.relation.draw_new_feature'"
+          v-t   = "'plugins.editing.draw_new_feature'"
         ></div>
         <button
           class       = "btn skin-button"
@@ -153,7 +153,7 @@ export default ({
 
         <div
           style = "align-self: center"
-          v-t   = "'plugins.editing.relation.draw_or_copy'"
+          v-t   = "'plugins.editing.draw_or_copy'"
         ></div>
 
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
@@ -162,7 +162,7 @@ export default ({
 
           <div
             style = "margin-bottom: 5px;font-weight: bold;"
-            v-t   = "'plugins.editing.relation.copy_feature_from_other_layer'"
+            v-t   = "'plugins.editing.copy_feature_from_other_layer'"
           ></div>
 
           <select
@@ -256,7 +256,7 @@ export default ({
                 class             = "g3w-icon"
                 :class            = "g3wtemplate.font['unlink']"
                 @click.stop       = "unlinkRelation(index)"
-                v-t-tooltip:right = "'plugins.editing.form.relations.tooltips.unlink_relation'"
+                v-t-tooltip:right = "'plugins.editing.unlink_relation'"
                 style             = "color: var(--skin-color); cursor: pointer; font-size:12px; border-radius:5px;padding: 13px;"
               ></div>
             </td>
@@ -458,7 +458,7 @@ export default ({
             ? this._add_link_tool.selectandcopy({
                 copyLayer: layer,
                 isVector:  true,
-                help:      'editing.steps.help.copy',
+                help:      'editing.copy',
                 external,
               })
             : undefined,
@@ -594,7 +594,7 @@ export default ({
             state: Vue.observable({
               icon:   'mActionEditTable.svg',
               id:     `${id}_editattributes`,
-              name:   'editing.tools.update_feature',
+              name:   'editing.update_feature',
               enabled: true,
               active:  false,
             }),
@@ -606,7 +606,7 @@ export default ({
             state: Vue.observable({
               icon:   'mActionEditPaste.svg',
               id:     `${id}_copyfeature`,
-              name:   'editing.tools.copy',
+              name:   'editing.copy_features',
               enabled: true,
               active:  false,
             }),
@@ -618,7 +618,7 @@ export default ({
             state: Vue.observable({
               icon:   'mActionDeleteTable.svg',
               id:     `${id}_deletefeature`,
-              name:   'editing.tools.delete_feature',
+              name:   'editing.delete_feature',
               enabled: true,
               active:  false,
             }),
@@ -682,7 +682,7 @@ export default ({
                 const tool = new Tool({
                   type: 'addtablefeature',
                   steps: [
-                    new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+                    new Step({ help: 'editing.new_feature', run: addTableFeature }),
                     new OpenFormStep(),
                   ],
                 });
@@ -715,7 +715,7 @@ export default ({
 
             setAndUnsetSelectedFeaturesStyle({ promise, inputs: { features: [ relationfeature ], layer: this.getLayer() }, style: selectStyle })
 
-            const ok = await GUI.confirm(_("plugins.editing.messages.delete_feature"));
+            const ok = await GUI.confirm(_("plugins.editing.confirm_delete_feature"));
 
             //confirm to delete
             if (ok) {
@@ -1290,10 +1290,10 @@ export default ({
             return new Tool({
               ...opts,
               type:            'edittable',
-              backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
+              backbuttonlabel: 'plugins.editing.save_and_back_table',
               steps:           [
                 new Step({
-                  help: "editing.steps.help.edit_table",
+                  help: "editing.edit_table",
                   run(inputs, context) {
                     return new Promise(async (resolve, reject) => {
                       GUI.setContent({
@@ -1328,7 +1328,7 @@ export default ({
               ...opts,
               type:  'addtablefeature',
               steps: [
-                new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+                new Step({ help: 'editing.new_feature', run: addTableFeature }),
                 new OpenFormStep(),
               ],
             });
@@ -1344,7 +1344,7 @@ export default ({
               steps: [
                 new Step({
                   ...opts,
-                  help: "editing.steps.help.select_feature_to_relation",
+                  help: "editing.select_feature_to_relation",
                   run(inputs, context) {
                     return new Promise(async (resolve, reject) => {
                       //create a promise for setAndUnsetSelectedFeaturesStyle;
@@ -1393,7 +1393,7 @@ export default ({
               ...opts,
               steps: {
                 draw: {
-                  description: `editing.steps.help.draw_new_feature`,
+                  description: `editing.draw_new_feature`,
                   done:        false,
                 }
               },
@@ -1424,10 +1424,10 @@ export default ({
                 // pick project layer features
                 new Step({
                   ...opts,
-                  help:  "editing.steps.help.pick_feature",
+                  help:  "editing.pick_feature",
                   steps: {
                     select: {
-                      description: `editing.tool.steps.selectPoint`,
+                      description: `editing.selectPoint`,
                       done:        false,
                     }
                   },
@@ -1499,7 +1499,7 @@ export default ({
 
                     GUI.showUserMessage({
                       type:      'warning',
-                      message:   'plugins.editing.messages.no_feature_selected',
+                      message:   'plugins.editing.no_feature_selected',
                       closable:  false,
                       autoclose: true
                     });

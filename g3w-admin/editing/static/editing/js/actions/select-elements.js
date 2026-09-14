@@ -29,7 +29,7 @@ const { removeZValueToOLFeatureGeometry }               = g3wsdk.core.geoutils.G
 export class SelectElementsStep extends Step {
 
   constructor(opts = {}, chain) {
-    opts.help = opts.help ?? "editing.steps.help.select_elements";
+    opts.help = opts.help ?? "editing.select_elements";
 
     super(opts);
 
@@ -39,7 +39,7 @@ export class SelectElementsStep extends Step {
     this._vectorLayer;
 
     if (chain) {
-      this.on('run', () => { this.emit('next-step', _("plugins.editing.steps.help.select_elements")) });
+      this.on('run', () => { this.emit('next-step', _("plugins.editing.select_elements")) });
     }
   }
 

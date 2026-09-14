@@ -18,13 +18,13 @@ template: /*html*/`
     v-if    = "relation && Object.keys(commits).filter(c => commits[c].length).length"
     class   = "skin-color g3w-long-text"
     style   = "font-weight: bold; margin: 15px 0"
-    v-t:pre = "'plugins.editing.messages.commit.header_relation'"
+    v-t:pre = "'plugins.editing.commit.header_relation'"
   >: {{ layer.getName() }}</h4>
 
   <template
     v-for = "c in Object.keys(commits).filter(c => commits[c].length)"
   >
-    <h4 v-t:pre = "'plugins.editing.messages.commit.'+c"> ({{ commits[c].length }}) </h4>
+    <h4 v-t:pre = "'plugins.editing.commit.'+c"> ({{ commits[c].length }}) </h4>
     <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
     <ul>
       <li v-for = "item in commits[c]">

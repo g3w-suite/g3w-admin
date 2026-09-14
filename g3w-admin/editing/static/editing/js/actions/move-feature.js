@@ -17,7 +17,7 @@ import { Step }                                         from '../g3w-step.js';
 export class MoveFeatureStep extends Step {
 
   constructor(opts = {}) {
-    opts.help = "editing.steps.help.move";
+    opts.help = "editing.move_features";
 
     super(opts);
 

@@ -26,7 +26,7 @@ export default ({
         v-if  = "!ApplicationState.online"
         id    = "onlineofflinemessage"
       >
-        <div v-t = "'plugins.editing.messages.offline'"></div>
+        <div v-t = "'plugins.editing.offline'"></div>
       </div>
 
       <!-- COMMIT BAR -->

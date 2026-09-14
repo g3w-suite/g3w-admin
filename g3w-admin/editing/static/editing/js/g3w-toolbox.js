@@ -359,7 +359,7 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('add_feature') && new Tool({
           id:   'addfeature',
           type: ['add_feature'],
-          name: 'editing.tools.add_feature',
+          name: 'editing.add_feature',
           icon: `mActionCapture${iconGeometry}.svg`,
           layer,
           type: 'addfeature',
@@ -372,10 +372,10 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('change_attr_feature') && new Tool({
           id:   'editattributes',
           type: ['change_attr_feature'],
-          name: 'editing.tools.update_feature',
+          name: 'editing.update_feature',
           icon: 'mActionEditTable.svg',
           layer,
-          helpMessage: 'editing.tools.update_feature',
+          helpMessage: 'editing.update_feature',
           type: 'editfeatureattributes',
           steps: [
             new PickFeatureStep(),
@@ -387,7 +387,7 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('delete_feature') && new Tool({
           id:   'deletefeature',
           type: ['delete_feature'],
-          name: 'editing.tools.delete_feature',
+          name: 'editing.delete_feature',
           icon: `delete${iconGeometry}.png`,
           layer,
           type: 'deletefeature',
@@ -396,7 +396,7 @@ export class ToolBox extends Emitter {
             new Step({ run: chooseFeature }),
             // delete feature
             new Step({
-              help: "editing.steps.help.double_click_delete",
+              help: "editing.double_click_delete",
               async run(inputs, context) {
                 
                 const layerId = inputs.layer.getId();
@@ -446,10 +446,10 @@ export class ToolBox extends Emitter {
                 const layerId      = inputs.layer.getId();
                 const promise = new Promise(async (resolve, reject) => {
                   const ok = await GUI.confirm(/* html */`
-                    <h4>${_('plugins.editing.messages.delete_feature')}</h4>
+                    <h4>${_('plugins.editing.confirm_delete_feature')}</h4>
                     <div style="font-size:1.2em;">${
                       inputs.layer.getChildren().length && getRelationsInEditing({ layerId, relations: inputs.layer.getRelations().getArray() }).length
-                        ? _('plugins.editing.messages.delete_feature_relations')
+                        ? _('plugins.editing.delete_feature_relations')
                         : ''
                     }</div>
                   `);
@@ -485,7 +485,7 @@ export class ToolBox extends Emitter {
         //Only in case of Polygon/MultiPolygon geometry
         (is_vector) && is_poly && capabilities.includes('change_feature') && new Tool({
           id: 'addhole',
-          name: "editing.tools.addhole",
+          name: "editing.addhole",
           icon: "mActionAddRing.svg",
           type: 'change_feature',
           layer,
@@ -495,7 +495,7 @@ export class ToolBox extends Emitter {
         }),
         (is_vector) && is_poly && capabilities.includes('change_feature') &&  new Tool({  
           id: 'deletehole',
-          name: "editing.tools.deletehole",
+          name: "editing.deletehole",
           icon: "mActionDeleteRing.svg",
           layer,
           type: 'change_feature',
@@ -507,11 +507,11 @@ export class ToolBox extends Emitter {
         (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
           id:   'movevertex',
           type: ['change_feature'],
-          name: "editing.tools.update_vertex",
+          name: "editing.update_vertex",
           icon: "mActionVertexTool.svg",
           layer,
           type: 'modifygeometryvertex',
-          helpMessage: 'editing.tools.update_vertex',
+          helpMessage: 'editing.update_vertex',
           steps: [
             new PickFeatureStep({ layer }),
             new Step({ run: chooseFeature }),
@@ -522,11 +522,11 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('change_attr_feature') && new Tool({
           id:   'editmultiattributes',
           type: ['change_attr_feature'],
-          name: "editing.tools.update_multi_features",
+          name: "editing.update_multi_features",
           icon: "mActionMultiEdit.svg",
           layer,
           type: 'editmultiattributes',
-          helpMessage: 'editing.tools.update_multi_features',
+          helpMessage: 'editing.update_multi_features',
           registerEscKeyEvent: true,
           runOnce: true,
           steps: [
@@ -534,7 +534,7 @@ export class ToolBox extends Emitter {
               type: 'multiple',
               steps: {
                 select: {
-                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectDrawBoxAtLeast2Feature' : 'selectMultiPointSHIFTAtLeast2Feature'}`,
+                  description: `${ApplicationState.ismobile ? 'editing.selectDrawBoxAtLeast2Feature' : 'editing.selectMultiPointSHIFTAtLeast2Feature'}`,
                   buttonnext: {
                     disabled: true,
                     condition:({ features = [] }) => features.length < 2,
@@ -553,11 +553,11 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('change_attr_feature') && editable_relations.filter(r => 'ONE' !== r.getType()).length > 0 && new Tool({
           id:   'editmultiattributesrelationfeatures',
           type: ['change_attr_feature'],
-          name: "editing.tools.update_multi_features_relations_from_parents",
+          name: "editing.update_multi_features_relations_from_parents",
           icon: "relation.svg",
           layer,
           type:                'editmultiattributesrelationfeatures',
-          helpMessage: 'editing.tools.update_multi_features_relations_from_parents',
+          helpMessage: 'editing.update_multi_features_relations_from_parents',
           registerEscKeyEvent: true,
           runOnce:             true,
           steps: [
@@ -565,7 +565,7 @@ export class ToolBox extends Emitter {
               type: 'multiple',
               steps: {
                 select: {
-                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectMultiPointSHIFT'}`,
+                  description: `${ApplicationState.ismobile ? 'editing.selectDrawBox' : 'editing.selectMultiPointSHIFT'}`,
                   buttonnext: {
                     disabled: true,
                     condition: ({ features = [] }) => features.length < 1,
@@ -702,7 +702,7 @@ export class ToolBox extends Emitter {
                     }))
 
                     GUI.dialog({
-                      title:       _('plugins.editing.tools.update_multi_features_relations_from_parents'),
+                      title:       _('plugins.editing.update_multi_features_relations_from_parents'),
                       className:   'modal-left',
                       closeButton: false,
                       message:     vueInstance.$mount().$el,
@@ -799,11 +799,11 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('change_feature') && new Tool({
           id:   'movefeature',
           type: ['change_feature'],
-          name: 'editing.tools.move_feature',
+          name: 'editing.move_feature',
           icon: `mActionMoveFeature${iconGeometry}.svg`,
           layer,
           type: 'movefeature',
-          helpMessage: 'editing.tools.move_feature',
+          helpMessage: 'editing.move_feature',
           steps: [
             new PickFeatureStep(),
             new Step({ run: chooseFeature }),
@@ -814,12 +814,12 @@ export class ToolBox extends Emitter {
          (is_line || is_poly || is_point && (layer.state.editing.fields || []).find(f => 'rotation' === f.name )) && capabilities.includes('change_feature') && new Tool({
           id:           'rotatefeature',
           type:         ['change_feature'],
-          name:         'editing.tools.rotate_feature',
+          name:         'editing.rotate_feature',
           icon:         'mActionRotateFeature.svg',
           disableEdit:   is_point,
           layer,
           type: 'rotatefeature',
-          helpMessage: 'editing.tools.rotate_feature',
+          helpMessage: 'editing.rotate_feature',
           steps: [
             new PickFeatureStep(),
             new Step({ run: chooseFeature }),
@@ -832,7 +832,7 @@ export class ToolBox extends Emitter {
           return (is_vector) && capabilities.includes('add_feature') && new Tool({
             id:   'copyfeaturesfromotherlayer',
             type: ['add_feature'],
-            name: "editing.tools.pastefeaturesfromotherlayers",
+            name: "editing.pastefeaturesfromotherlayers",
             icon: "mActionEditPaste.svg",
             enable: (function() {
               const catalogService      = GUI.getService('catalog');
@@ -889,11 +889,11 @@ export class ToolBox extends Emitter {
                 //@since 3.9.0 to show user message steps
                 steps: {
                   chooselayer: {
-                    description: `editing.modal.tools.copyfeaturefromotherlayer.title`,
+                    description: `editing.select_layer`,
                     done:         false,
                   },
                   selectgeometry: {
-                    description: `editing.tool.steps.selectPoint`,
+                    description: `editing.selectPoint`,
                     done:        false,
                   }
                 },
@@ -931,7 +931,7 @@ export class ToolBox extends Emitter {
                       watch: { 'id'(id) { return this.$options.layers.forEach(l => l.selected = id === l.id); } },
                     }))({layers});
                     GUI.dialog({
-                      title:      _('plugins.editing.relation.copy_feature_from_other_layer'),
+                      title:      _('plugins.editing.copy_feature_from_other_layer'),
                       className:  'modal-left',
                       closeButton: false,
                       message:     vueInstance.$mount().$el,
@@ -1002,7 +1002,7 @@ export class ToolBox extends Emitter {
 
                                 GUI.showUserMessage({
                                   type:     'warning',
-                                  message:  'plugins.editing.messages.no_feature_selected',
+                                  message:  'plugins.editing.no_feature_selected',
                                   closable:  false,
                                   autoclose: true
                                 });
@@ -1044,9 +1044,9 @@ export class ToolBox extends Emitter {
                   });
                 },
               }),
-              new OpenFormStep({ layer, help: 'editing.steps.help.copy' }),
+              new OpenFormStep({ layer, help: 'editing.copy' }),
             ],
-            helpMessage: "editing.tools.pastefeaturesfromotherlayers",
+            helpMessage: "editing.pastefeaturesfromotherlayers",
             registerEscKeyEvent: true,
           })
         })(),
@@ -1054,7 +1054,7 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('add_feature') && new Tool({
           id:   'copyfeatures',
           type: ['add_feature'],
-          name: "editing.tools.copy",
+          name: "editing.copy_features",
           icon: `mActionMoveFeatureCopy${iconGeometry}.svg`,
           layer,
           type: 'copyfeatures',
@@ -1062,11 +1062,11 @@ export class ToolBox extends Emitter {
           steps: [
             new SelectElementsStep({
               layer,
-              help: 'editing.steps.help.copy',
+              help: 'editing.copy',
               type: ApplicationState.ismobile ? 'single' : 'multiple',
               steps: {
                 select: {
-                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
+                  description: `${ApplicationState.ismobile ? 'editing.selectPoint' : 'editing.selectPointSHIFT'}`,
                   done:         false,
                 }
               },
@@ -1077,7 +1077,7 @@ export class ToolBox extends Emitter {
               help: 'editing.steps.help.select',
               steps: {
                 from: {
-                  description: 'editing.tool.steps.selectStartVertex',
+                  description: 'editing.selectStartVertex',
                   done:        false,
                 }
               },
@@ -1117,7 +1117,7 @@ export class ToolBox extends Emitter {
               help: "editing.steps.help.select_vertex_to_paste",
               steps: {
                 to: {
-                  description: 'editing.tool.steps.selectToPaste',
+                  description: 'editing.selectToPaste',
                   done:        false,
                 }
               },
@@ -1199,40 +1199,40 @@ export class ToolBox extends Emitter {
               }
             }),
           ].filter(Boolean),
-          helpMessage: "editing.tools.copy",
+          helpMessage: "editing.copy_features",
           registerEscKeyEvent: true,
         }),
         // Add part to MultiGeometry Feature
         (is_vector) && capabilities.includes('add_feature') && capabilities.includes('change_feature') && new Tool({
           id:   'addPart',
           type: ['add_feature', 'change_feature'],
-          name: "editing.tools.addpart",
+          name: "editing.addpart",
           icon: "mActionAddPart.svg",
           visible: isMultiGeometry,
           layer,
           type:        'addparttomultigeometries',
-          helpMessage: 'editing.tools.addpart',
+          helpMessage: 'editing.addpart',
           runOnce:     true,
           steps: [
             new PickFeatureStep({
               steps: {
                 select: {
-                  description: 'editing.tool.steps.select',
+                  description: 'editing.click_on_feature',
                   done:         false,
                 }
               },
             }),
             new Step({
               run:   chooseFeature,
-              help: 'editing.steps.help.select_element',
+              help: 'editing.select_element',
             }),
             new AddFeatureStep({
               layer,
-              help: 'editing.steps.help.select_element',
+              help: 'editing.select_element',
               add:  false,
               steps: {
                 addfeature: {
-                  description: 'editing.tool.steps.draw_part',
+                  description: 'editing.draw_part',
                   done:        false,
                 }
               },
@@ -1241,7 +1241,7 @@ export class ToolBox extends Emitter {
             // add part to multi geometries
             new Step({
               layer,
-              help: 'editing.steps.help.select_element',
+              help: 'editing.select_element',
               run:   addPartToMultigeometries
             }),
           ],
@@ -1251,7 +1251,7 @@ export class ToolBox extends Emitter {
         (is_vector) && capabilities.includes('change_feature') && new Tool({
           id:   'deletePart',
           type: ['change_feature'],
-          name: "editing.tools.deletepart",
+          name: "editing.deletepart",
           icon: "mActionDeletePart.svg",
           visible: isMultiGeometry,
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/deletepartfrommultigeometriesworkflow.js@v3.7.1 */
@@ -1348,13 +1348,13 @@ export class ToolBox extends Emitter {
               },
             }),
           ],
-          helpMessage: 'editing.tools.deletepart',
+          helpMessage: 'editing.deletepart',
         }),
         // Split Feature
         (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
           id:          'splitfeature',
           type:        ['change_feature'],
-          name:        "editing.tools.split",
+          name:        "editing.split",
           icon:        "mActionSplitFeatures.svg",
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/splitfeatureworkflow.js@v3.7.1 */
           layer,
@@ -1363,11 +1363,11 @@ export class ToolBox extends Emitter {
           steps: [
             new SelectElementsStep({
               layer,
-              help: 'editing.steps.help.split',
+              help: 'editing.split_feature',
               type: ApplicationState.ismobile ? 'single' : 'multiple',
               steps: {
                 select: {
-                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
+                  description: `${ApplicationState.ismobile ? 'editing.selectPoint' : 'editing.selectPointSHIFT'}`,
                   done:         false,
                 }
               },
@@ -1378,7 +1378,7 @@ export class ToolBox extends Emitter {
               help: '',
               steps: {
                 draw_line: {
-                  description: 'editing.tool.steps.draw_split_line',
+                  description: 'editing.draw_split_line',
                   done:        false,
                 }
               },
@@ -1424,7 +1424,7 @@ export class ToolBox extends Emitter {
                         await new Promise(r => setTimeout(r, 600));
                         GUI.showUserMessage({
                           type:      isSplitted ? 'success': 'warning',
-                          message:   isSplitted ? 'plugins.editing.messages.splitted' : 'plugins.editing.messages.nosplittedfeature',
+                          message:   isSplitted ? 'plugins.editing.splitted' : 'plugins.editing.nosplittedfeature',
                           autoclose: true
                         })
                       }
@@ -1447,14 +1447,14 @@ export class ToolBox extends Emitter {
               }
             }),
           ],
-          helpMessage: 'editing.tools.split',
+          helpMessage: 'editing.split',
           registerEscKeyEvent: true,
         }),
         // Merge features in one
         (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
           id:   'mergefeatures',
           type: ['change_feature'],
-          name: "editing.tools.merge",
+          name: "editing.dissolve_features",
           icon: "mActionMergeFeatures.svg",
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/mergefeaturesworkflow.js@v3.7.1 */
           layer,
@@ -1464,10 +1464,10 @@ export class ToolBox extends Emitter {
             new SelectElementsStep({
               layer,
               type: 'bbox',
-              help: 'editing.steps.help.merge',
+              help: 'editing.dissolve_features',
               steps: {
                 select: {
-                  description: `editing.tool.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectSHIFT'}`,
+                  description: `${ApplicationState.ismobile ? 'editing.selectDrawBox' : 'editing.selectSHIFT'}`,
                   done: false,
                 }
               },
@@ -1475,10 +1475,10 @@ export class ToolBox extends Emitter {
             // merge features
             new Step({
               layer,
-              help: 'editing.steps.help.merge',
+              help: 'editing.dissolve_features',
               steps: {
                 choose: {
-                  description: 'editing.tool.steps.merge',
+                  description: 'editing.merge',
                   done: false,
                 }
               },
@@ -1496,7 +1496,7 @@ export class ToolBox extends Emitter {
                   if (features.length < 2) {
                     GUI.showUserMessage({
                       type:     'warning',
-                      message:  'plugins.editing.messages.select_min_2_features',
+                      message:  'plugins.editing.select_min_2_features',
                       autoclose: true
                     });
                     reject();
@@ -1525,7 +1525,7 @@ export class ToolBox extends Emitter {
                         } else {
                           GUI.showUserMessage({
                             type:     'warning',
-                            message:  'plugins.editing.messages.no_feature_selected',
+                            message:  'plugins.editing.no_feature_selected',
                             autoclose: true
                           });
                           reject();
@@ -1537,21 +1537,21 @@ export class ToolBox extends Emitter {
               },
             }),
           ],
-          helpMessage: 'editing.tools.merge',
+          helpMessage: 'editing.dissolve_features',
           registerEscKeyEvent: true
         }),
         // Add Table feature (alphanumerical layer - No geometry)
         is_table && capabilities.includes('add_feature') && new Tool({
           id:   'addfeature',
           type: ['add_feature'],
-          name: "editing.tools.add_feature",
+          name: "editing.add_feature",
           icon: "mActionCreateTable.svg",
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
           layer,
           type: 'addtablefeature',
           runOnce: true,
           steps: [
-            new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+            new Step({ help: 'editing.new_feature', run: addTableFeature }),
             new OpenFormStep(),
           ],
         }),
@@ -1559,16 +1559,16 @@ export class ToolBox extends Emitter {
         is_table && (capabilities.includes('delete_feature') || capabilities.includes('change_attr_feature')) && new Tool({
           id:   'edittable',
           type: ['delete_feature', 'change_attr_feature'],
-          name: "editing.tools.update_feature",
+          name: "editing.update_feature",
           icon: "mActionEditTable.svg",
           /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
           layer,
           type:            'edittable',
-          backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
+          backbuttonlabel: 'plugins.editing.save_and_back_table',
           runOnce:          true,
           steps:            [
             new Step({
-              help: "editing.steps.help.edit_table",
+              help: "editing.edit_table",
               run(inputs, context) {
                 return new Promise(async (resolve, reject) => {
                   GUI.getPlugin('editing').setCurrentLayout();
@@ -1618,7 +1618,7 @@ export class ToolBox extends Emitter {
     this.messages = {
       //set message of scale constraint
       constraint: {
-        scale: `${_('plugins.editing.messages.constraints.enable_editing')}${this.state._constraints.scale}`.toUpperCase()
+        scale: `${_('plugins.editing.zoom_to_enable')}${this.state._constraints.scale}`.toUpperCase()
       }
     }
 
@@ -1818,7 +1818,7 @@ export class ToolBox extends Emitter {
         GUI.showUserMessage({
           type:     'warning',
           subtitle: this.state.layer.getName().toUpperCase(),
-          message:  'plugins.editing.messages.featureslockbyotheruser',
+          message:  'plugins.editing.featureslockbyotheruser',
         })
       });
   

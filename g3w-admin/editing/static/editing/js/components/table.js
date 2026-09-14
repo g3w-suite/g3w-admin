@@ -70,10 +70,10 @@ export default ({
         :id     = "feature.__g3w_uid"
         :index  = "index"
       >
-        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "feature.__g3w_locked ? 'plugins.editing.messages.featureslockbyotheruser' : ''">
+        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "feature.__g3w_locked ? 'plugins.editing.featureslockbyotheruser' : ''">
           <div style = "display:flex;justify-content: space-between;">
             <!-- EDIT FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.edit'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.edit_feature'">
               <i
                 v-if             = "showTool('change_attr_feature')"
                 :class           = "g3wtemplate.font['pencil']"
@@ -85,7 +85,7 @@ export default ({
             </span>
 
             <!-- COPY FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.copy'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.create_a_copy'">
               <i
                 v-if             = "showTool('add_feature')"
                 :class           = "g3wtemplate.font['copy-paste']"
@@ -97,7 +97,7 @@ export default ({
             </span>
 
             <!-- DELETE FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.delete'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.delete_feature'">
               <i
                 v-if             = "showTool('delete_feature')"
                 :class           = "g3wtemplate.font['trash-o']"
@@ -191,7 +191,7 @@ export default ({
       <!-- SAVE CHANGES -->
       <button
         v-if        = "!isrelation"
-        v-t-plugin  = "'editing.form.buttons.save_and_back'"
+        v-t-plugin  = "'editing.save_and_back'"
         class       = "btn btn-success" 
         style       = "margin-right: 10px; font-weight: bold;"
         @click.stop = "save">
@@ -199,7 +199,7 @@ export default ({
 
       <!-- DISCARD CHANGES -->
       <button
-        v-t-plugin  = "'editing.form.buttons.cancel'"
+        v-t-plugin  = "'editing.ignore_changes'"
         class       = "btn btn-danger"
         style       = "font-weight: bold;"
         @click.stop = "cancel">
@@ -325,7 +325,7 @@ export default ({
       if (this.isrelation && !this.linked.length) {
         this.promise.reject();
       } else {
-        const ok = await GUI.confirm(_('plugins.editing.messages.link_relations'));
+        const ok = await GUI.confirm(_('plugins.editing.link_relations'));
         if (ok) {
           this.promise.resolve(this.isrelation ? { features: this.linked.map(i => this.features[i]) } : undefined);
         } else {
@@ -343,10 +343,10 @@ export default ({
         relations: this.inputs.layer.getRelations().getArray()
       }).length;
       const ok = await GUI.confirm(/* html */`
-        <h4>${_('plugins.editing.messages.delete_feature')}</h4>
+        <h4>${_('plugins.editing.confirm_delete_feature')}</h4>
         <div style = "font-size:1.2em;">${
           has_child_relation
-            ? _('plugins.editing.messages.delete_feature_relations')
+            ? _('plugins.editing.delete_feature_relations')
             : ''
         }</div>
       `);
@@ -372,7 +372,7 @@ export default ({
       this.tool = new Tool({
         type: 'addtablefeature',
         steps: [
-          new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+          new Step({ help: 'editing.new_feature', run: addTableFeature }),
           new OpenFormStep(),
         ],
       });

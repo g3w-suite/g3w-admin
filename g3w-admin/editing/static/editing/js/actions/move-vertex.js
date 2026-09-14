@@ -28,7 +28,7 @@ export class ModifyGeometryVertexStep extends Step {
 
   constructor(opts = {}) {
     opts.snap =  opts?.snap ?? true;
-    opts.help = "editing.steps.help.edit_feature_vertex";
+    opts.help = "editing.edit_feature_vertex";
     super(opts);
   }
 
@@ -48,7 +48,7 @@ export class ModifyGeometryVertexStep extends Step {
       //Show user message to save or not vertex changes
       GUI.showUserMessage({
         type:     'tool',
-        title:    'plugins.editing.tools.update_vertex',
+        title:    'plugins.editing.update_vertex',
         closable: false,
         hooks: {
           body: {

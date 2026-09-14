@@ -50,7 +50,7 @@ export class PickFeaturesInteraction extends ol.interaction.Pointer {
 export class PickFeatureStep extends Step {
 
   constructor(opts = {}) {
-    opts.help      = "editing.steps.help.pick_feature";
+    opts.help      = "editing.pick_feature";
     opts.highlight = opts?.highlight ?? false;
     opts.multi     = opts?.multi     ?? false;
     super(opts);

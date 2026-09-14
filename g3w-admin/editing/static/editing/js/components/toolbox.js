@@ -50,7 +50,7 @@ export default ({
         v-if              = "father"
         :class            = "'filter-by-relation ' + g3wtemplate.font['relation']"
         @click            = "toggleFilterByRelation"
-        v-t-tooltip:right = "'plugins.editing.tooltip.filter_by_relation'"
+        v-t-tooltip:right = "'plugins.editing.filter_by_relation'"
       ></i>
 
       <!-- PANEL TITLE -->
@@ -59,7 +59,7 @@ export default ({
       <!-- TOGGLE EDITING -->
       <span
         style            = "margin-left: auto"
-        :data-i18n-title = "editDisabled ? '⚠️ Stop active editing tool': 'plugins.editing.tooltip.edit_layer'"
+        :data-i18n-title = "editDisabled ? '⚠️ Stop active editing tool': 'plugins.editing.edit_layer'"
       > 
         <i
           v-disabled              = "editDisabled"
@@ -88,14 +88,14 @@ export default ({
       <!-- HAS NO GEOMETRY -->
       <div v-if = "!state.layer.isGeoLayer()" class = "info">
         <i :class = "g3wtemplate.font['info']"></i>
-        <span v-t = "'plugins.editing.messages.toolbox_has_no_geometry'"></span>
+        <span v-t = "'plugins.editing.toolbox_has_no_geometry'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
       <!-- HAS RELATION -->
       <div v-if = "hasRelations" class = "info">
         <i :class = "g3wtemplate.font['info']"></i>
-        <span v-t = "'plugins.editing.messages.toolbox_has_relation'"></span>
+        <span v-t = "'plugins.editing.toolbox_has_relation'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
@@ -151,7 +151,7 @@ export default ({
                   v-model = "tool.options.checked"
                   @change = "() => tool.options.onChange(tool.options.checked)"
                 />
-                <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right = "'plugins.editing.toolsoftool.measure'">
+                <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right = "'plugins.editing.show_measure_tool'">
                   <b :class = "g3wtemplate.font['measure']"></b>
                 </label>
               </div>
@@ -169,7 +169,7 @@ export default ({
                     :id     = "'snap_' + state.id"
                     v-model = "tool.options.checked"
                   />
-                  <label :for = "'snap_' + state.id" v-t-tooltip:right.create= " 'plugins.editing.toolsoftool.snap'">
+                  <label :for = "'snap_' + state.id" v-t-tooltip:right.create= " 'plugins.editing.snap'">
                     <span :class = "g3wtemplate.font['magnete']"></span>
                   </label>
                 </div>
@@ -186,7 +186,7 @@ export default ({
                   <label
                     v-if             = "snapAll"
                     :for             = "'snap_all_' + state.id + '_all'"
-                    v-t-tooltip:left = "'plugins.editing.toolsoftool.snapall'"
+                    v-t-tooltip:left = "'plugins.editing.snapall'"
                   >
                     <span :class = "g3wtemplate.font['magnete']"></span>
                     <b    :class = "g3wtemplate.font['layers']" style = "margin-left: 3px;"></b>

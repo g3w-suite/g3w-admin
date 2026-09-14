@@ -30,7 +30,7 @@ export class OpenFormStep extends Step {
 
   constructor(opts = {}) {
 
-    opts.help = "editing.steps.help.insert_attributes_feature";
+    opts.help = "editing.insert_attributes_feature";
 
     super(opts);
 
@@ -350,8 +350,8 @@ export class OpenFormStep extends Step {
             {
               id:    'save',
               title:  this._isContentChild
-                ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.form.buttons.save_and_back" // get custom back label from parent
-                : "plugins.editing.form.buttons.save",
+                ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" // get custom back label from parent
+                : "plugins.editing.insert_edit",
               type:  "save",
               class: "btn-success",
               // save features
@@ -416,7 +416,7 @@ export class OpenFormStep extends Step {
             },
             {
               id:    'cancel',
-              title: "plugins.editing.form.buttons.cancel",
+              title: "plugins.editing.ignore_changes",
               type:  "cancel",
               class: "btn-danger",
               /// buttons in case of change
@@ -450,7 +450,7 @@ export class OpenFormStep extends Step {
         // Skip when multi editing features
         // It is not possible to manage relationss when we edit multi-features
         if (this._multi) {
-          GUI.showUserMessage({ type: 'info', message: 'plugins.editing.errors.editing_multiple_relations', duration: 3000, autoclose: true });
+          GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
           return;
         }
         GUI.setLoadingContent(true);

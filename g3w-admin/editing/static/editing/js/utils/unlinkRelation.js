@@ -24,7 +24,7 @@ export async function unlinkRelation({
   index,
   dialog = true,
 }) {
-  const ok = dialog && await GUI.confirm(_("plugins.editing.messages.unlink_relation"));
+  const ok = dialog && await GUI.confirm(_("plugins.editing.confirm_unlink_relation"));
 
   if (!dialog || ok) {
     const id               = layerId === relation.child ? relation.father : relation.child; // relation layer id
