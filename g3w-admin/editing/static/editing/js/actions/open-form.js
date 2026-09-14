@@ -1,8 +1,6 @@
 /**
  * @file
  * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
@@ -22,10 +20,6 @@ import { Step }                             from '../g3w-step.js';
 const GUI                                   = g3w.app;
 const { FormService }                       = g3wsdk.gui.vue.services;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/openformtask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/openformstep.js@v3.7.1
- */
 export class OpenFormStep extends Step {
 
   constructor(opts = {}) {
@@ -170,8 +164,6 @@ export class OpenFormStep extends Step {
         });
       }
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/form/editingform.js@v3.7.8 */
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/form/editingformservice.js@v3.7.8 */
       const formService = GUI.showForm({
         feature:         this._originalFeatures[0],
         title:           "plugins.editing.editing_attributes",
@@ -402,7 +394,7 @@ export class OpenFormStep extends Step {
                 GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
                 GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
 
-                // sync parent workflows when child is saved.
+                // sync parent tools when child is saved.
                 if (this._isContentChild) {
                   Tool.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
                 }
@@ -558,8 +550,6 @@ const sortAlphabeticallyArray = (arr) => arr.sort((a, b) => a.localeCompare(b, u
 const sortNumericArray        = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getFormFields.js@v3.7.1
- * 
  * Get form fields
  *
  * @param form.inputs.layer
@@ -646,9 +636,6 @@ function _getFormFields({
   return _handleMulti(fields, multi);
 }
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getFormFields.js@v3.7.1
- */
 function _handleMulti(fields, multi) {
   if (multi) {
     fields = fields.map(field => {
@@ -665,8 +652,6 @@ function _handleMulti(fields, multi) {
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/handleRelation1_1LayerFields.js@v4.0.0
- * 
  * Handle layer relation 1:1 features related to feature
  *
  * @param opts.layerId Root layerId
@@ -790,8 +775,6 @@ async function _handleRelation1_1LayerFields({
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/listenRelation1_1FieldChange.js@v4.0.0
- * 
  * Listen changes on 1:1 relation fields (get child values from child layer)
  *
  * @param opts.layerId Current editing layer id
@@ -915,8 +898,6 @@ async function _listenRelation1_1FieldChange({
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getRelation1_1ChildFeature.js@v4.0.0
- * 
  * @param { Object } opts
  * @param opts.relation
  * @param opts.fatherFormRelationField
@@ -1002,8 +983,6 @@ async function _getRelation1_1ChildFeature({
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client/src/map/layers/tablelayer.js@v4.0.0
- * 
  * create attributes from fields
  */
 function _setFieldsWithValues(layer, feature, fields) {

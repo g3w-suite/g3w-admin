@@ -1,5 +1,5 @@
 /**
- * @file ORIGINAL SOURCE: g3w-client/src/services/iframe.js@4.0.0
+ * @file
  * 
  * @since 4.1.0
  * 

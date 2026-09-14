@@ -3,8 +3,6 @@ import { Feature } from '../g3w-feature.js';
 const { cloneDeep } = g3wsdk.core.utils;
 
 /**
- * ORIGINAL SOURCE: g3w-client/src/map/layers/tablelayer.js@v4.0.0
- * 
  * @param obj
  * @param opts
  */

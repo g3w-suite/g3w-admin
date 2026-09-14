@@ -1,9 +1,6 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * ORIGINAL SOURCE: g3w-client-plugin-editing/interactions/pickfeatures.j@v4.0.0
- * 
+ *
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
@@ -43,10 +40,6 @@ export class PickFeaturesInteraction extends ol.interaction.Pointer {
 
 }
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/pickfeaturetask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/pickfeaturestep.js@v3.7.1
- */
 export class PickFeatureStep extends Step {
 
   constructor(opts = {}) {

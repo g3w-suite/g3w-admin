@@ -2,9 +2,6 @@ const GUI = g3w.app;
 const _   = g3w.gettext;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/g3w-editing-components/choosefeaturetoedit.js@v3.6
- * 
  * @since g3w-client-plugin-editing@v3.5.13
  */
 export function chooseFeatureFromFeatures({

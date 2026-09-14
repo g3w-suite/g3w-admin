@@ -1,9 +1,6 @@
 /**
  * @file
  * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * ORIGINAL SOURCE: g3w-client-plugin-editing/interactions/rotate.j@v4.0.0
- * 
  * @since g3w-client-plugin-editing@v4.1.0
  */
 

@@ -1,8 +1,6 @@
 /**
  * @file
  * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
@@ -17,10 +15,6 @@ const { createMeasureTooltip } = g3w.utils;
 
 const { Geometry }             = g3wsdk.core.geoutils;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addfeaturestep.js@v3.7.1
- */
 export class AddFeatureStep extends Step {
 
   drawInteraction;

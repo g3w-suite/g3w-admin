@@ -1,8 +1,6 @@
 import { Tool } from '../g3w-tool.js';
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @returns { undefined | { feature: * , qgs_layer_id: * } }
  */
 export function getParentFormData() {

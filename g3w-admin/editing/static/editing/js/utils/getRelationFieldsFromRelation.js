@@ -1,6 +1,4 @@
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
- * 
  * Based on layerId and relation, extract field of relation.
  * ownField are array of fields related to relation and belong to layerId
  * relationField area array of fields related to relation thar belong to other layer in relation with layerId

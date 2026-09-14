@@ -1,8 +1,6 @@
 const ApplicationState = g3w.state;
 
 /**
- * ORIGINAL SOURCE: g3w-client/src/utils/getCatalogLayers.js@v4.0.0
- * 
  * @since g3w-client-plugin-editing@v4.1.0
  */
 export function getCatalogLayers(filter, options = {}) {

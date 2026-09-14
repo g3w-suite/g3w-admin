@@ -106,7 +106,6 @@ export default ({
       </div>
 
       <!-- TOOLS -->
-      <!-- ORIGINAL SOURCE: components/Tool.vue@v3.7.1 -->
       <div class = "tools-content">
         <div
           v-for               = "tool in state.tools"
@@ -130,13 +129,10 @@ export default ({
         class = "message"
       >
         <transition name = "fade">
-          <!-- ORIGINAL SOURCE: components/ToolsOfTool.vue@v3.7.1 -->
           <div
             v-if = "showtoolsoftool"
             id   = "toolsoftoolcontainer"
           >
-            <!-- ORIGINAL SOURCE: components\ToolsOfToolMeasure.vue@v3.7.1 -->
-            <!-- ORIGINAL SOURCE: components\ToolsOfToolSnap.vue@v3.7.1 -->
             <template v-for = "tool in state.toolsoftool">
 
               <!-- MEASURE TOOL -->
@@ -379,8 +375,6 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     _initSnap(tool) {
@@ -443,8 +437,6 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     addSnapFeatures(features = []) {
@@ -468,8 +460,6 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     setShowSnapAll(tool) {
@@ -494,10 +484,7 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
-     *
      */
     handleSnapInteractionFeatures({ tool, active, all } = {}) {
       // snap = true

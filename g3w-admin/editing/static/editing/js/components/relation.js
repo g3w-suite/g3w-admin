@@ -504,7 +504,7 @@ export default ({
         });
         try {
           await tool.start(
-            this._createWorkflowOptions({
+            this._createToolOptions({
               features: this.relations
                 .filter(r => r.select)
                 .map(({ id }) => this.getLayer().getEditor().getEditingSource().getFeatureById(id) )
@@ -671,7 +671,7 @@ export default ({
           const toolId          = relationtool.state.id.split(`${relation.id}_`)[1];
           const relationfeature = this.getLayer().getEditor().getEditingSource().getFeatureById(relation.id);
           const selectStyle     = is_vector && SELECTED_STYLES[this.getLayer().getGeometryType()]; // get selected vector style
-          const options         = this._createWorkflowOptions({ features: [relationfeature] });
+          const options         = this._createToolOptions({ features: [relationfeature] });
 
           //@since 3.9.0 COPY FEATURE FROM ATTRIBUTE TABLE LAYER
           if ('copyfeature' === toolId) {
@@ -766,7 +766,6 @@ export default ({
 
           // EDIT ATTRIBUTE FEATURE RELATION
           if ('editattributes' === toolId) {
-            /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
             const tool = new Tool({ type: 'edittablefeature', steps: [ new OpenFormStep({ selectStyle }) ] });
 
             try {
@@ -1285,7 +1284,6 @@ export default ({
       this._add_link_tool = ({
         table: {
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
           link(opts = {}) {
             return new Tool({
               ...opts,
@@ -1322,7 +1320,6 @@ export default ({
             });
           },
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
           add(opts = {}) {
             return new Tool({
               ...opts,
@@ -1337,7 +1334,6 @@ export default ({
         },
         vector: {
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/linkrelationworkflow.js@v3.7.1 */
           link(opts = {}) {
             return new Tool({
               type:  'linkrelation',
@@ -1387,7 +1383,6 @@ export default ({
             });
           },
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addfeatureworkflow.js@v3.7.1 */
           add: (opts = {}) => {
             const addStep = new AddFeatureStep({
               ...opts,
@@ -1416,7 +1411,6 @@ export default ({
             })
           },
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/selectandcopyfeaturesfromotherlayerworkflow.js@v3.7.1 */
           selectandcopy(opts = {}) {
             return new Tool({
               type:  'selectandcopyfeaturesfromotherlayer',

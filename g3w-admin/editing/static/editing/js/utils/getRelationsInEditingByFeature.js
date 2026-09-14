@@ -5,8 +5,6 @@ import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRel
 const GUI = g3w.app;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
- * 
  * Get Relation in editing
  *
  * @param { Object } opts

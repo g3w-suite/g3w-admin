@@ -1,8 +1,6 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/toolbox.js@v4.0.0
- * 
+ *
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
@@ -61,13 +59,11 @@ const { toRawType, cloneDeep }             = g3wsdk.core.utils;
 const is_defined = d => undefined !== d;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin/toolboxes/toolsfactory.js@v3.7.1
+ * Tools factory
  */
 export class ToolBox extends Emitter {
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/store/sessions.js@v3.9.1
-   *
    * Store editing sessions
    *
    * @since g3w-client-plugin-editing@v4.1.0
@@ -165,18 +161,8 @@ export class ToolBox extends Emitter {
     }
 
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/map/layers/featuresstore.js@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/app/core/layers/features/olfeaturesstore.js@v3.10.2
-     */
     this._collection = new Collection('table' !== _layer.getType());
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/map/layers/featuresstore.js@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/app/core/layers/features/olfeaturesstore.js@v3.10.2
-     */
     this._featuresstore = Object.assign(new Emitter, {
       setters: {
         addFeatures: (feats = []) => feats.forEach(f => this._featuresstore.addFeature(f)),
@@ -193,11 +179,6 @@ export class ToolBox extends Emitter {
       setFeatures:           (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
     });
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/map/layers/featuresstore.js@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/app/core/layers/features/olfeaturesstore.js@v3.10.2
-     */
     this._editor = layer._editor = Object.assign(new Emitter, {
       _layer,
       setters: {
@@ -275,9 +256,6 @@ export class ToolBox extends Emitter {
         return l && l.isEditable();
       });
 
-    /**
-     * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-     */
     this._session = Object.assign(new Emitter({ setters: {
       start:                        this.__startSession.bind(this),
       stop:                         this.__stopSession.bind(this),
@@ -1254,7 +1232,6 @@ export class ToolBox extends Emitter {
           name: "editing.deletepart",
           icon: "mActionDeletePart.svg",
           visible: isMultiGeometry,
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/deletepartfrommultigeometriesworkflow.js@v3.7.1 */
           layer,
           type: 'deletepartfrommultigeometries',
           steps: [
@@ -1356,7 +1333,6 @@ export class ToolBox extends Emitter {
           type:        ['change_feature'],
           name:        "editing.split",
           icon:        "mActionSplitFeatures.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/splitfeatureworkflow.js@v3.7.1 */
           layer,
           type: 'splitfeature',
           runOnce: true,
@@ -1456,7 +1432,6 @@ export class ToolBox extends Emitter {
           type: ['change_feature'],
           name: "editing.dissolve_features",
           icon: "mActionMergeFeatures.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/mergefeaturesworkflow.js@v3.7.1 */
           layer,
           type: 'mergefeatures',
           runOnce: true,
@@ -1546,7 +1521,6 @@ export class ToolBox extends Emitter {
           type: ['add_feature'],
           name: "editing.add_feature",
           icon: "mActionCreateTable.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
           layer,
           type: 'addtablefeature',
           runOnce: true,
@@ -1561,7 +1535,6 @@ export class ToolBox extends Emitter {
           type: ['delete_feature', 'change_attr_feature'],
           name: "editing.update_feature",
           icon: "mActionEditTable.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
           layer,
           type:            'edittable',
           backbuttonlabel: 'plugins.editing.save_and_back_table',
@@ -1625,12 +1598,9 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @param { string } layerId
-   *
    */
-  _stopSessionChildren(layerId) {
+  #stopSessionChildren(layerId) {
     const layer = GUI.getPlugin('editing').getLayerById(layerId);
      //add parent layerId to chain layerId stop
     GUI.getPlugin('editing').state.stopChain.add(layerId);
@@ -1730,9 +1700,8 @@ export class ToolBox extends Emitter {
 
   /**
    * @since 3.8.0 Handle scale constraint
-   * @private
    */
-  async _handleScaleConstraint() {
+  async #handleScaleConstraint() {
     // wait until previous toolbox is un-selected to prevent conflicts when running "GUI.setModal" and `control.setMouseCursor`.
     if (this.state.selected) {
       await Promise.resolve();
@@ -1830,13 +1799,13 @@ export class ToolBox extends Emitter {
         const { promise, resolve: res, reject: rej } = Promise.withResolvers();
         this.state.editing.canEdit = false;
         // reset user message scale (on stop)
-        this.state._unsetters.push(() => this._handleScaleConstraint());
+        this.state._unsetters.push(() => this.#handleScaleConstraint());
         // set as resolve handler to resolve waiting get features from server
         this.#startAsync = res;
         // listen selected attribute
-        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
+        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this.#handleScaleConstraint(), { immediate: true }));
         // await scale set for get features
-        this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
+        this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this.#handleScaleConstraint()), 600));
         // click to fit zoom scale constraint
         this.#events.push(
           GUI.getMap().on('click', e => {
@@ -1979,8 +1948,6 @@ export class ToolBox extends Emitter {
     this.#unwatches.forEach(uw => uw());
     this.#unwatches.splice(0);
 
-    
-
     const is_started = !!this.isSessionStarted();
 
     if (!is_started) {
@@ -2011,7 +1978,7 @@ export class ToolBox extends Emitter {
       this.stopActiveTool();
       this.enableTools(false);
       this.clearToolboxMessages();
-      this._stopSessionChildren(this.state.id);
+      this.#stopSessionChildren(this.state.id);
       // clear layer unique field values
       GUI.getPlugin('editing').state.uniqueFieldsValues[this.getId()] = {};
       //clear chain
@@ -2045,8 +2012,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Commit changes on server (save)
    * 
    * @param opts.ids
@@ -2512,8 +2477,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * @param uniqueId
    * @param items
    * 
@@ -2549,8 +2512,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
    * undo method
    *
    * @since g3w-client-plugin-editing@v3.8.0
@@ -2574,8 +2535,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
    * redo method
    *
    * @since g3w-client-plugin-editing@v3.8.0
@@ -2605,8 +2564,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
    * @param id
    * 
    * @returns { Object }
@@ -2618,8 +2575,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * @returns { boolean } true if we can commit
    *
    * @since g3w-client-plugin-editing@v3.8.0
@@ -2636,8 +2591,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * canUdo method
    *
    * @since g3w-client-plugin-editing@v3.8.0
@@ -2658,8 +2611,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * canRedo method
    *
    * @since g3w-client-plugin-editing@v3.8.0
@@ -2672,8 +2623,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * get all changes to send to server (mandare al server)
    *
    * @since g3w-client-plugin-editing@v3.8.0
@@ -2722,8 +2671,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
    * @returns {*|null}
    * 
    * @since g3w-client-plugin-editing@v4.1.0
@@ -2733,8 +2680,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   isSessionStarted() {
@@ -2742,8 +2687,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Add temporary features that will be added with save method
    * 
    * @param { { layerId: string, feature: * } } NewFeat 
@@ -2756,8 +2699,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Delete temporary feature
    * 
    * @param layerId
@@ -2771,8 +2712,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Save temporary changes to the layer in history instance and feature store
    * 
    * @param options
@@ -2795,8 +2734,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Add temporary feature
    * 
    * @param layerId 
@@ -2830,8 +2767,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Add temporary feature changes
    * 
    * @param layerId
@@ -2860,8 +2795,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/services/editing.js@v3.9.1
-   * 
    * Apply changes to source features (undo/redo)
    * 
    * @param items
@@ -2887,8 +2820,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   *
    * @param changes
    *
    * @since g3w-client-plugin-editing@v3.8.0
@@ -2928,8 +2859,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * @param items session items
    *
    * @since g3w-client-plugin-editing@v4.1.0
@@ -2942,8 +2871,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * @param items session items
    *
    * @since g3w-client-plugin-editing@v4.1.0
@@ -2956,8 +2883,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Serialize commit
    * 
    * @returns {{ add: *[], update: *[], relations: {}, delete: *[] }} JSON Object for a commit body send to server
@@ -3072,8 +2997,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Clear all things bind to session
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -3085,8 +3008,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
    * @param ids since g3w-client-plugin-editing@v3.8.0
    * 
    * @since g3w-client-plugin-editing@v4.1.0
@@ -3185,7 +3106,7 @@ export class ToolBox extends Emitter {
       return Promise.reject(e);
     } finally {
       if (ApplicationState.online) {
-        this._stopSessionChildren(this.state.id);
+        this.#stopSessionChildren(this.state.id);
       }
     }
   }
@@ -3205,8 +3126,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * Get features from server method.
    * Used when vector Layer's bbox is contained into an already requested bbox (so no a new request is done).
    *
@@ -3430,8 +3349,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/tool.js@v3.7.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   async _startTool(tool) {
@@ -3471,8 +3388,6 @@ export class ToolBox extends Emitter {
 
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/tool.js@v3.7.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   async _stopTool(tool, force = false) {
@@ -3488,8 +3403,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * Run after server has applied changes to origin resource
    *
    * @param commit commit items
@@ -3663,8 +3576,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * start editing
    * 
    * @since g3w-client-plugin-editing@v4.1.0
@@ -3676,8 +3587,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * stop editor (unlock)
    * 
    * @since g3w-client-plugin-editing@v4.1.0
@@ -3699,8 +3608,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * @since g3w-client-plugin-editing@v4.1.0 
    */
   __clearEditor() {
@@ -3815,8 +3722,6 @@ export class ToolBox extends Emitter {
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/checkSessionItems.js@v4.0.0
- * 
  * check if was done an update (update are array contains two items, old and new value)
  */
 function _checkSessionItems(historyId, items, action) {
@@ -3848,8 +3753,6 @@ function _checkSessionItems(historyId, items, action) {
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getDeltaXY.js@v4.0.0
- *
  * @param { Object } delta
  * @param delta.x
  * @param delta.y
@@ -3865,9 +3768,6 @@ function _getDeltaXY({ x, y, coordinates } = {}) {
   }
 }
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getDeltaXY.js@v4.0.0
- */
 function _getCoordinates(coords) {
   return Array.isArray(coords[0]) ? _getCoordinates(coords[0]) : {
     x: coords[0],
@@ -3876,8 +3776,6 @@ function _getCoordinates(coords) {
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/handleSplitFeature.js@v4.0.0
- *
  * @param feature
  * @param inputs
  * @param context
@@ -3951,8 +3849,6 @@ async function _handleSplitFeature({
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/handleSplitFeature.js@v4.0.0
- * 
  * @param feature
  * @param coordinates
  *
@@ -3988,8 +3884,6 @@ function _isPointOnVertex({
  }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @param layer,
  * @param feature
  *

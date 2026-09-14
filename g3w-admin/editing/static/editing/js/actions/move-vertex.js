@@ -1,8 +1,6 @@
 /**
  * @file
  * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
@@ -14,10 +12,6 @@ import { Step }                                         from '../g3w-step.js';
 const GUI                      = g3w.app;
 const { createMeasureTooltip } = g3w.utils;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/modifygeometryvertextask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/modifygeometryvertexstep.js@v3.7.1
- */
 export class ModifyGeometryVertexStep extends Step {
 
   _originalStyle = null;

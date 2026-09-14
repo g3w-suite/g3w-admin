@@ -59,7 +59,6 @@ export default ({
       ></div>
 
       <!-- LAYERS SELECT -->
-      <!-- ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1 -->
       <div
         v-if  = "state.showselectlayers && editinglayers.length > 1"
         id    = "g3w-select-editable-layers-content"
@@ -264,9 +263,6 @@ export default ({
      * which could be in relation with current level (eg. Join 1:1) in order to prevent an
      * out-of-sync database state on remote QGIS server.
      * 
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-     * 
      * @param { string } id
      *
      * @returns { Promise<unknown> }
@@ -312,8 +308,6 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * 
      * Check if already have off lines changes
      *
      * @param { Object }  opts
@@ -439,8 +433,6 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     selectedlayers(layers = []) {
@@ -508,8 +500,6 @@ export default ({
   },
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Called on a close editing panel panel
    */
   async beforeDestroy() {

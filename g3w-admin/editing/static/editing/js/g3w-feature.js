@@ -1,5 +1,6 @@
 /**
- * @file ORIGINAL SOURCE: src/map/layers/feature.js@v4.0.0
+ * @file
+ * 
  * @since 4.1.0
  */
 

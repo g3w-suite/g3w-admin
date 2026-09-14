@@ -1,6 +1,4 @@
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @param feature
  * @param coordinates
  *

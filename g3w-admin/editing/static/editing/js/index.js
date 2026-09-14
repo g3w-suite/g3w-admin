@@ -36,8 +36,6 @@ new (class extends Plugin {
     this.service = this;
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * 
      * Global plugin state
      * 
      * @since g3w-client-plugin-editing@v3.8.0
@@ -106,7 +104,6 @@ new (class extends Plugin {
 
   /**BACKOMP v3.x */
   getApi() {
-    /** ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1 */
     return {
       getSession:                       this.getSession.bind(this),
       getFeature:                       this.getFeature.bind(this),
@@ -133,8 +130,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   async #init() {
@@ -300,9 +295,7 @@ new (class extends Plugin {
   }
 
  /**
-  * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.8
-  * 
-  * Get session
+  * [API Method] Get session
   *
   * @param layerId
   *
@@ -315,8 +308,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Get layer session by id (layer id is the same of session)
    *
    * @param id
@@ -330,7 +321,7 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.8
+   * [API Method]
    *
    * @param layerId
    *
@@ -343,8 +334,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Undo method
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -363,8 +352,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   redo() {
@@ -381,8 +368,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @param id
    *
    * @returns {*}
@@ -401,8 +386,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @param toolbox
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -412,8 +395,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Reset default values
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -432,7 +413,7 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
+   * [API Method]
    *
    * Reset default toolbox state modified by other plugin
    *
@@ -447,8 +428,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @returns { Array }
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -458,8 +437,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @param { string } id
    *
    * @returns {*} editing layer by id
@@ -490,8 +467,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @param { string } id
    *
    * @returns {*}
@@ -527,8 +502,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @returns { Array }
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -538,8 +511,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @returns {*|{}}
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -549,8 +520,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Stop editing
    *
    * @returns { Promise<unknown> }
@@ -579,8 +548,6 @@ new (class extends Plugin {
   }
 
  /**
-  * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-  * 
   * Function called very single change saved temporary
   * 
   * @since g3w-client-plugin-editing@v3.8.0
@@ -592,8 +559,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Commit and save changes on server persistently
    *
    * @param { Object } commit
@@ -635,7 +600,6 @@ new (class extends Plugin {
     try {
 
       // show commit modal window
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 */
       if (modal) {
         tool = new (await import('./g3w-tool.js')).Tool({
           type: 'commitfeatures',
@@ -706,7 +670,6 @@ new (class extends Plugin {
       const changes = !online && JSON.parse(window.localStorage.getItem('EDITING_CHANGES') || null);
 
       // handle offline changes
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 */
       Object.keys(changes || {})
         .forEach(layerId => {
           const currLayerId = Object.keys(data)[0];
@@ -860,8 +823,6 @@ new (class extends Plugin {
   }
 
  /**
-  * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-  * 
   * @param { Object } opts
   * @param { string } opts.layerId
   * @param { Array }  opts.sessionItems
@@ -911,8 +872,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @param { Object } opts
    * @param opts.relationSessionItems
    * @param opts.action
@@ -941,9 +900,7 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
-   *
-   * Stop editing on layerId
+   * [API Method] Stop editing on layerId
    *
    * @param layerId
    * @param options
@@ -957,9 +914,7 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
-   *
-   * Start editing API
+   * [API Method] Start editing API
    *
    * @param layerId
    * @param { Object } options
@@ -981,9 +936,7 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
-   *
-   * Add Feature
+   * [API Method] Add Feature
    *
    * @param { Object } opts
    * @param opts.layerId
@@ -1014,7 +967,6 @@ new (class extends Plugin {
         editing: true,
       })
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/easyaddfeatureworkflow.js@v3.7.1 */
       // create tool
       const tool = new (await import('./g3w-tool.js')).Tool({
         type: 'addfeature',
@@ -1077,8 +1029,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * @param { Object } save
    * @param save.mode     - default or autosave
    * @param save.cb       - object contain done/error two functions
@@ -1092,8 +1042,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   addFormComponents({ layerId, components = [] } = {}) {
@@ -1101,9 +1049,7 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
-   *
-   * Show editing panel
+   * [API Method] Show editing panel
    *
    * @param options
    * @param options.toolboxes
@@ -1119,9 +1065,6 @@ new (class extends Plugin {
 
   /**
    * Show editing panel toolbars
-   * 
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3w-editing-components/editing.js.js@v3.6
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3w-editing-components/panel.js.js@v3.6
    */
   async showEditingPanel(opts = {}) {
     //need to filter visible
@@ -1177,8 +1120,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/layers/layer.js.js@v4.0.0
-   * 
    * Retrieve features from server (editing mode)
    * 
    * @since g3w-client-plugin-editing@v4.1.0
@@ -1272,8 +1213,6 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin/toolboxes/toolboxesfactory.js@v3.7.1
-   *
    * Register query result action: edit selected feature from query results
    */
   async editFeature({ layer, feature } = {}) {
@@ -1406,8 +1345,7 @@ new (class extends Plugin {
           addPartTool.visible = Geometry.isMultiGeometry(_layer.getGeometryType());
         })
       } 
-           
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
+
       t = (new (await import('./g3w-tool.js')).Tool({
         type:        'editnopickmapfeatureattributes',
         runOnce:     true,

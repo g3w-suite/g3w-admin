@@ -5,8 +5,6 @@ const ApplicationState = g3w.state;
 const { XHR }          = g3w.utils;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @param expression.inputs.layer
  * @param expression.context.excludeFields
  * @param expression.context.get_default_value
@@ -37,7 +35,6 @@ export async function evaluateExpressionFields({
       if (field.input.options.default_expression && (field.input.options.default_expression.apply_on_update || feature.isNew())) {
         promises.push(
           new Promise(async (resolve, reject) => {
-            /** ORIGINAL SOURCE: g3w-client/src/utils/getDefaultExpression.js@4.0.0 */
             try {
               const parentData = getParentFormData();
               if (field.input.options.default_expression) {
@@ -90,7 +87,6 @@ export async function evaluateExpressionFields({
       if (field.input.options.filter_expression) {
         promises.push(
           new Promise(async (resolve, reject) => {
-            /** ORIGINAL SOURCE: g3w-client/src/utils/getFilterExpression.js@4.0.0 */
             try {
               const parentData = getParentFormData();
                 if (field.input.options.filter_expression) {

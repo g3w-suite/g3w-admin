@@ -1,8 +1,6 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/workflow/step.js@v4.0.0
- * 
+ *
  * @since g3w-client-plugin-editing@v4.1.0
  */
 
@@ -63,26 +61,18 @@ export class Step extends Emitter {
       running: false,                   // running
       error:   null,                    // error
       message: options.message || null, // message
-      /**
-       * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
-       */
+      /** @since g3w-client-plugin-editing@v3.8.0 */
       usermessagesteps: {}
     };
 
     this.registerEscKeyEvent(options.escKeyPressEventHandler)
 
     /**
-     * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     this.selectStyle = options.selectStyle;
 
     /**
-     * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     if (options.steps) {
@@ -90,9 +80,6 @@ export class Step extends Emitter {
     }
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addfeaturestep.js@v3.7.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     if (options.onRun) {
@@ -100,9 +87,6 @@ export class Step extends Emitter {
     }
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addfeaturestep.js@v3.7.1
-     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     if (options.onStop) {
@@ -119,8 +103,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * Set and get task usefult properties used to run
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -130,8 +112,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getInputs() {
@@ -139,8 +119,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @param context
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -150,8 +128,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getContext() {
@@ -159,8 +135,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   panic() {
@@ -168,8 +142,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @param task
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -179,8 +151,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @returns { Object }
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -190,8 +160,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @param steps
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -201,8 +169,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
    * @param type
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -214,8 +180,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   addInteraction(interaction, events = {}) {
@@ -226,8 +190,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   removeInteraction(interaction) {
@@ -246,8 +208,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   registerPointerMoveCursor() {
@@ -255,8 +215,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   unregisterPointerMoveCursor() {
@@ -264,8 +222,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @param evt
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -275,8 +231,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @param steps
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -287,8 +241,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @returns { Object }
    * 
    * @since g3w-client-plugin-editing@v3.8.0
@@ -298,8 +250,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getMap() {
@@ -307,8 +257,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   *
    * Disable sidebar
    *
    * @param {Boolean} bool
@@ -361,10 +309,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * 
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
    * Start task
    * 
    * @param inputs
@@ -450,9 +394,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   *
    * Stop step
    *
    * @fires stop
@@ -529,8 +470,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
-   * 
    * @param tool
    * @param tools
    * 

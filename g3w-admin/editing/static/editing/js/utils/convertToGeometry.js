@@ -11,8 +11,6 @@ const {
 const { isMultiGeometry }            = g3wsdk.core.geoutils.Geometry;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @param { Array }  features     to be converted (eg. Polygon)
  * @param { string } geometryType target geometry type (eg. MultiPolygon)
  *

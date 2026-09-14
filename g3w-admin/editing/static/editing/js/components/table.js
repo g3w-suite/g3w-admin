@@ -368,7 +368,6 @@ export default ({
         getEditingLayer(this.inputs.layer)
       );
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
       this.tool = new Tool({
         type: 'addtablefeature',
         steps: [
@@ -401,8 +400,7 @@ export default ({
     async editFeature(uid) {
       const index   = this.features.findIndex(f => uid === f.getUid());
       const feature = this.features[index];
-  
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
+
       this.tool = new Tool({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
     
       this.inputs.features.push(feature);

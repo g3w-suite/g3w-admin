@@ -6,9 +6,8 @@ const GUI = g3w.app;
 const _   = g3w.gettext;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/relationservice.js@v3.7.1
- * 
  * Unlink relation
+ * 
  * @param layerId
  * @param relation
  * @param relations

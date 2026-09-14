@@ -2,9 +2,6 @@ import { evaluateExpressionFields } from '../utils/evaluateExpressionFields.js';
 import { getEditingLayer }          from '../utils/getEditingLayer.js';
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addparttomultigeometriestask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addparttomultigeometriesstep.js@v3.7.1
- * 
  * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function addPartToMultigeometries(inputs, context) {
