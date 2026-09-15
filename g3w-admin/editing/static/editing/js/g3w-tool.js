@@ -7,26 +7,39 @@ const { Emitter } = g3w;
 const GUI         = g3w.app;
 
 /**
- * Tool Class (manage flow of steps)
+ * Coordinates a sequential flow of editing steps.
+ *
+ * A tool owns its steps, keeps the current inputs and context, and exposes a
+ * promise-based lifecycle through {@link Tool#start} and {@link Tool#stop}.
+ * Nested tools are linked to the currently active tool through {@link Tool.Stack}.
  */
 export class Tool extends Emitter {
 
   /**
-   * Store all activated tools
-   * 
+   * Active tools, ordered from the root tool to the current child tool.
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   static Stack = {
-    /** @type { Tool[] } */
+    /** @type {Tool[]} */
     items:         [],
+    /** @returns {number} Number of active tools. */
     get length()   { return Tool.Stack.items.length; },
+    /** @returns {Tool|undefined} Immediate parent of the current tool. */
     get parent()   { return Tool.Stack.items.slice(-2)[0]; },
+    /** @returns {Tool[]} All tools except the current one. */
     get parents()  { return Tool.Stack.items.slice(0, -1); },
+    /** @returns {Tool|undefined} Current active tool. */
     get current()  { return Tool.Stack.items.at(-1); },
+    /** @param {number} index Zero-based stack index. @returns {Tool|undefined} */
     at(index)      { return Tool.Stack.items.at(index); },
   };
 
   /**
+   * Return the session associated with the current tool context.
+   *
+   * @returns {unknown} Current editing session.
+   * 
    * @since g3w-client-editing@v4.1.0
    */
   get session() {
@@ -34,88 +47,194 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @FIXME add description
+   * Promise controls the currently running tool flow.
+   *
+   * @type {{resolve: Function, reject: Function}|null}
    */
   #promise = null;
 
   /**
-   * @FIXME add description
+   * Original type value used to identify this tool.
+   * 
+   * @type {string|string[]|null}
    */
   #type = null;
 
   /**
-   * All steps of flow
+   * Steps executed in order when the tool starts.
+   * 
+   * @type {Object[]}
    */
   #steps = [];
 
   /**
-   * Whether is child of another tool
+   * First nested tool attached to this tool.
+   * 
+   * @type {Tool|null}
    */
   #child = null;
 
   /**
-   * stack tool index
+   * Position of this tool in {@link Tool.Stack} while it is active.
+   * 
+   * @type {number|null}
    */
   #stackIndex = null;
 
   /**
-   * Tool help message key
+   * Translation key displayed as the current tool help message.
+   * 
+   * @type {string|null}
    */
   #helpMessage = null;
 
   /**
-   * Current flow step
+   * Zero-based index of the step currently being executed.
+   * 
+   * @type {number}
    */
   #stepIndex = 0;
 
   /**
-   * Store user messages steps to show when tool
-   * use a mandatory steps (ex. select: {description}, merge: {description}}
+   * User-facing progress entries collected from the tool steps.
+   * 
+   * @type {Object<string, Object>}
    */
   #userMessageSteps = {};
 
   /**
-   * @param {Object} options
-   * @param {String} options.id
-   * @param {String} options.name
-   * @param {String} options.icon
-   * @param {function} options.enable
-   * @param {String | Array.<string[]>} options.type
-   * @param options.inputs
-   * @param options.context
-   * @param options.flow
-   * @param options.steps
-   * @param options.runOnce         stop when flow stop
-   * @param options.backbuttonlabel holds back button label (in case of child tool)
+  * @param {Object} [options={}] Tool configuration.
+  * @param {string} [options.id] Identifier used by the toolbox.
+  * @param {string} [options.name] Display name or translation key.
+  * @param {string} [options.icon] Icon name or asset path.
+  * @param {boolean|Function} [options.enable=true] Whether the tool is available.
+  * @param {string|string[]} [options.type=[]] Tool type or accepted types.
+  * @param {Object} [options.inputs] Initial step inputs.
+  * @param {Object} [options.context] Shared context passed to every step.
+  * @param {Object[]} [options.steps=[]] Steps executed by the tool.
+  * @param {boolean} [options.runOnce=false] Whether the tool runs only once.
+  * @param {string} [options.backbuttonlabel] Label for a child-tool back button.
+  * @param {boolean} [options.enabled=false] Initial enabled state.
+  * @param {boolean} [options.disableEdit=false] Prevent stopping the edit session.
+  * @param {boolean|Function} [options.visible=true] Whether the tool is visible.
+  * @param {string} [options.helpMessage] Initial help-message translation key.
+  * @param {boolean} [options.registerEscKeyEvent=false] Bind Escape to reject the flow.
    */
   constructor(options = {}) {
 
     super();
 
-    this.id                   = options?.id;
-    this.type                 = options?.type ?? [];
-    this.name                 = options?.name;
-    this.icon                 = options?.icon;
-    this.enable               = options?.enable ?? true;
+    /**
+     * Identifier used to register and retrieve the tool.
+     *
+     * @type {string|undefined}
+     */
+    this.id = options?.id;
+
+    /**
+     * Capability or editing operation handled by the tool.
+     *
+     * @type {string|string[]}
+     */
+    this.type = options?.type ?? [];
+
+    /**
+     * Display label or translation key shown by the toolbox.
+     *
+     * @type {string|undefined}
+     */
+    this.name = options?.name;
+
+    /**
+     * Icon asset or icon name displayed by the toolbox.
+     *
+     * @type {string|undefined}
+     */
+    this.icon = options?.icon;
+
+    /**
+     * Predicate or flag used to determine whether the tool can be used.
+     *
+     * @type {boolean|Function}
+     */
+    this.enable = options?.enable ?? true;
+
+    /**
+     * Tools disabled while this tool is active.
+     *
+     * @type {string[]}
+     */
     this.disabledtoolsoftools = [];
-    this.enabled              = !!options?.enabled;
-    this.active               = false;
-    this.message              = null;
-    this.disableEdit          = !!options?.disableEdit; //@since v4.0.0 disable stop editing
-    this.visible              = options?.visible instanceof Function ? options.visible(this) : (undefined !== options?.visible ? options.visible: true);
-    this.state                = new Proxy({}, { get: (_, prop) => this[prop], set:(_, prop, value) => { this[prop] = value; return true; } }),
-    this.runOnce              = options?.runOnce     || false;
-    this.#type                = options?.type        || null;
-    this.#steps               = options?.steps       || [];
-    this.#helpMessage         = options?.helpMessage ?? null;
+
+    /**
+     * Whether the tool is currently enabled in the toolbox.
+     *
+     * @type {boolean}
+     */
+    this.enabled = !!options?.enabled;
+
+    /**
+     * Whether the tool is currently executing a flow.
+     *
+     * @type {boolean}
+     */
+    this.active = false;
+
+    /**
+     * Message associated with the current tool operation.
+     *
+     * @type {string|null}
+     */
+    this.message = null;
+
+    /**
+     * Prevents the tool from stopping the active edit session when enabled.
+     *
+     * @type {boolean}
+     */
+    this.disableEdit = !!options?.disableEdit; //@since v4.0.0 disable stop editing
+
+    /**
+     * Whether the tool is shown in the toolbox; can be computed from the tool.
+     *
+     * @type {boolean}
+     */
+    this.visible = options?.visible instanceof Function ? options.visible(this) : (undefined !== options?.visible ? options.visible: true);
+
+    /**
+     * Public reactive view of the tool properties.
+     *
+     * @type {Object<string, *>}
+     */
+    this.state = new Proxy({}, { get: (_, prop) => this[prop], set:(_, prop, value) => { this[prop] = value; return true; } }),
+
+    /**
+     * Whether the tool should execute only once during its lifecycle.
+     *
+     * @type {boolean}
+     */
+    this.runOnce = options?.runOnce || false;
+
+    this.#type        = options?.type        || null;
+    this.#steps       = options?.steps       || [];
+    this.#helpMessage = options?.helpMessage ?? null;
 
     if (this.#steps.length > 0) {
       this.setUserMessagesSteps(this.#steps);
     }
 
+    /**
+     * Label used by a parent tool to navigate back from this tool.
+     *
+     * @type {string|null}
+     */
     this.backbuttonlabel = options?.backbuttonlabel || null; 
 
     /**
+     * Tools exposed by the current step through the tool-of-tools event.
+     *
+     * @type {string[]}
+     * 
      * @since g3w-client-editing@v3.8.0
      */
     this._toolsoftool = [];
@@ -128,13 +247,21 @@ export class Tool extends Emitter {
     }
   }
 
+  /**
+   * Return the identifier used to register the tool.
+   *
+   * @returns {string|undefined} Tool identifier.
+   */
   getId() {
     return this.id;
   }
 
   /**
+   * Collect the progress entries exposed by each step.
    *
-   * @param steps
+   * @param {Object[]} steps Steps whose user-message entries should be collected.
+   * 
+   * @returns {void}
    */
   setUserMessagesSteps(steps) {
     this.#userMessageSteps = steps.reduce((messagesSteps, step) => ({
@@ -144,9 +271,11 @@ export class Tool extends Emitter {
   }
 
   /**
-   * Check if it is in same type
+   * Check whether the tool matches one of the requested types.
    *
-   * @param {String | Array.<string[]>} type
+   * @param {string|string[]} type Type or types to compare with this tool.
+   * 
+   * @returns {boolean} Whether the tool has one of the requested types.
    * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
@@ -158,21 +287,27 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @param service
+   * Store a service in the shared tool context.
+   *
+   * @param {unknown} service Service stored in the tool context.
    */
   setContextService(service) {
     this.getContext().service = service;
   }
 
   /**
-   * @returns { null | * }
+   * @returns {number|null} Position in {@link Tool.Stack}, or null before start.
    */
   getStackIndex() {
     return this.#stackIndex;
   }
 
   /**
-   * @param tool
+   * Attach a child tool, preserving the existing child chain.
+   *
+   * @param {Tool} tool Child tool to attach.
+   * 
+   * @returns {void}
    */
   addChild(tool) {
     if (this.#child) {
@@ -183,43 +318,59 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @param key
-   * @param value
+   * Set one value in the inputs passed between steps.
+   *
+   * @param {string} key Input name.
+   * @param {unknown} value Input value.
+   * 
+   * @returns {void}
    */
   setInput({ key, value }) {
     this._inputs[key] = value;
   }
 
   /**
-   * @returns { null | * }
+   * @returns {Object|undefined} Inputs passed to the current step.
    */
   getInputs() {
     return this._inputs;
   }
 
   /**
-   * @param context
+   * Replace the context shared by all steps.
+   *
+   * @param {Object} context Context shared with the steps.
+   * 
+   * @returns {void}
    */
   setContext(context) {
     this._context = context;
   }
 
   /**
-   * @returns { * | {} | null }
+   * @returns {Object|undefined} The current step context.
    */
   getContext() {
     return this._context;
   }
 
   /**
-   * @param step
+   * Append a step to the current flow.
+   *
+   * @param {Object} step Step appended to the flow.
+   * 
+   * @returns {void}
    */
   addStep(step) {
     this.#steps.push(step);
   }
 
   /**
-   * @param steps
+   * Replace the current flow and rebuild its progress entries.
+   *
+   * @param {Object[]} [steps=[]] Replacement step flow.
+   * 
+   * @returns {void}
    */
   setSteps(steps = []) {
     this.#steps = steps;
@@ -227,23 +378,27 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @returns { * | Array }
+   * @returns {Object[]} The configured steps.
    */
   getSteps() {
     return this.#steps;
   }
 
   /**
-   * @param index
+   * Return the step at a given position.
+   *
+   * @param {number} index Zero-based step index.
    * 
-   * @returns { * }
+   * @returns {Object|undefined} The step at the requested index.
    */
   getStep(index) {
     return this.#steps[index];
   }
 
   /**
-   * @FIXME add description
+   * Clear the help message and all step-progress messages.
+   *
+   * @returns {void}
    */
   clearMessages() {
     this.setHelpMessage(null);
@@ -253,21 +408,29 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @returns { * | null }
+   * Return the final step in the flow.
+   *
+   * @returns {Object|null} The final configured step, if present.
    */
   getLastStep() {
     return this.#steps.at(-1) ?? null;
   }
 
   /**
-   * @returns { Object }
+   * Find the step whose execution is currently active.
+   *
+   * @returns {Object|undefined} The first step currently running.
    */
   getRunningStep() {
     return this.#steps.find(s => s.isRunning());
   }
 
   /**
-   * @FIXME add description
+   * Reject the promise returned by {@link Tool#start} and notify listeners.
+   *
+   * @returns {void}
+   * 
+   * @fires reject
    */
   reject() {
     this.#promise?.reject?.();
@@ -275,7 +438,9 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @FIXME add description
+   * Resolve the promise returned by {@link Tool#start}.
+   *
+   * @returns {void}
    */
   resolve() {
     this.#promise?.resolve?.();
@@ -283,9 +448,14 @@ export class Tool extends Emitter {
 
   /**
    * Method to run steps of tool
-   * @param step
-   * @param inputs
-   * @return {Promise<unknown>}
+   * Execute the supplied step and continue through the remaining flow.
+   *
+   * @param {Object} step Step to execute.
+   * @param {Object} inputs Inputs passed to the step.
+   * 
+   * @returns {Promise<*>} Outputs from the final step.
+   * 
+   * @fires settoolsoftool
    */
   async runStep(step, inputs) {
     try {
@@ -314,19 +484,25 @@ export class Tool extends Emitter {
   }
 
   /**
-   * Start tool
+   * Start the tool and execute all configured steps in sequence.
+   *
+   * The returned promise rejects when a step rejects or the flow is stopped.
+   *
+   * @param {Object} [options={}] Runtime options.
+   * @param {Object} [options.inputs] Inputs passed to the first step.
+   * @param {Object} [options.context] Context shared with every step.
+   * @param {Object[]} [options.steps] Temporary replacement flow.
    * 
-   * @param options.inputs
-   * @param options.context
-   * @param options.flow
-   * @param options.steps
+   * @returns {Promise<*>} Outputs from the final step.
    * 
    * @fires start
    */
   start(options = {}) {
     return new Promise(async (resolve, reject) => {
       this.#promise = { resolve, reject };
+      /** @type {Object|undefined} Inputs shared by the current step flow. */
       this._inputs  = options.inputs;
+      /** @type {Object} Context shared by the current step flow. */
       this._context = options.context || {};
 
       const isChild = this._context.isChild || false;
@@ -437,7 +613,9 @@ export class Tool extends Emitter {
   }
 
   /**
-   * Stop tool during flow
+   * Stop the current step and any nested tool, then remove this tool from the stack.
+   *
+   * @returns {Promise<void>} Resolves after the current step and child tools stop.
    * 
    * @fires stop
    */
@@ -488,7 +666,9 @@ export class Tool extends Emitter {
   }
 
   /**
-   * Reset user message steps
+   * Reset progress state and close the tool-progress message.
+   *
+   * @returns {void}
    */
   clearUserMessagesSteps() {
     Object
@@ -504,6 +684,12 @@ export class Tool extends Emitter {
   }
 
   /**
+   * Set the label used by a parent tool to return from this tool.
+   *
+   * @param {string|null} label Back-button label, or null to clear it.
+   * 
+   * @returns {void}
+   * 
    * @since 3.9.0
    */
   setBackButtonLabel(label = null) {
@@ -511,8 +697,8 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @returns { null }
-   * 
+   * @returns {string|null} The configured back-button label.
+   *
    * @since 3.9.0
    */
   getBackButtonLabel() {
@@ -520,8 +706,12 @@ export class Tool extends Emitter {
   }
 
   /**
-   * @param step
-   * @param tools
+   * Register tools exposed by a step during the current tool flow.
+   *
+   * @param {Object} step Step that owns the nested tools.
+   * @param {string[]} [tools=[]] Names of tools available to that step.
+   * 
+   * @returns {void}
    * 
    * @since g3w-client-editing@v3.8.0
    */
@@ -530,6 +720,12 @@ export class Tool extends Emitter {
   }
 
   /**
+   * Set the translation key for the current help message.
+   *
+   * @param {string|null} message Help-message translation key.
+   * 
+   * @returns {void}
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   setHelpMessage(message) {
@@ -537,6 +733,8 @@ export class Tool extends Emitter {
   }
 
   /**
+   * @returns {string|null} Current help-message translation key.
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   getHelpMessage() {
@@ -544,6 +742,8 @@ export class Tool extends Emitter {
   }
 
   /**
+   * @returns {unknown} Features from the current inputs.
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   getFeatures() {
@@ -551,6 +751,12 @@ export class Tool extends Emitter {
   }
 
   /**
+   * Run only the last configured step.
+   *
+   * @param {Object} [opts={}] Runtime options passed to {@link Tool#start}.
+   * 
+   * @returns {Promise<*>} Outputs from the last step.
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   startFromLastStep(opts = {}) {
@@ -559,6 +765,9 @@ export class Tool extends Emitter {
   }
 
   /**
+   * 
+   * @returns {unknown} Layer from the current inputs.
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   getLayer() {
@@ -566,6 +775,8 @@ export class Tool extends Emitter {
   }
 
   /**
+   * @returns {unknown} Session from the current context.
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   getSession() {
@@ -573,7 +784,11 @@ export class Tool extends Emitter {
   }
 
   /**
-   * bind interupt event
+   * Reject the active flow when Escape is released.
+   * 
+   * @param {KeyboardEvent} evt Keyup event carrying the tool and callback data.
+   * 
+   * @listens document:keyup
    * 
    * @since g3w-client-editing@v3.8.0
    */
@@ -585,6 +800,8 @@ export class Tool extends Emitter {
   }
 
   /**
+   * Remove the Escape key listener for this tool.
+   *
    * @since g3w-client-editing@v3.8.0
    */
   unbindEscKeyUp() {
@@ -592,6 +809,10 @@ export class Tool extends Emitter {
   }
 
   /**
+   * Bind Escape to reject the current flow and run a callback.
+   *
+   * @param {Function} [callback=() => {}] Callback invoked after rejection.
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   bindEscKeyUp(callback = () => {}) {
@@ -599,6 +820,13 @@ export class Tool extends Emitter {
   }
 
   /**
+   * Register Escape handling for the tool lifecycle.
+   *
+   * @param {Function} [callback=() => {}] Callback invoked on Escape.
+   * 
+   * @listens start
+   * @listens stop
+   * 
    * @since g3w-client-editing@v3.8.0
    */
   registerEscKeyEvent(callback) {
