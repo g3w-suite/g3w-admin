@@ -102,7 +102,7 @@ export class ToolBox extends Emitter {
    * start()       -> load features and enable editing interaction
    * tool run      -> push temporary changes into session history
    * save()        -> serialize pending operations into a commit payload
-   * __commitToEditor() -> reconcile server response and local state
+   * commitToEditor() -> reconcile server response and local state
    * stop()        -> release listeners, locks and derived resources
    */
 
@@ -305,7 +305,7 @@ export class ToolBox extends Emitter {
         updateFeature:              f => this._featuresstore.updateFeature(f),
         deleteFeature:              f => this._featuresstore.deleteFeature(f),
         setFeatures:               (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
-        getFeatures:               this.___getFeatures.bind(this),
+        getFeatures:               this.#requestFeatures.bind(this),
         featuresLockedByOtherUser: f => {},
       },
       addFeature:          f => this._featuresstore.addFeature(f),
@@ -316,10 +316,10 @@ export class ToolBox extends Emitter {
       getLayer:            () => _layer,
       readFeatures:        () => this._features, //return original features from server (not modified)
       readEditingFeatures: this.readEditingFeatures.bind(this), //return features changed/added by editing tools (not original features from server)
-      commit:              this.__commitToEditor.bind(this),
-      start:               this.__startEditor.bind(this),
-      stop:                this.__stopEditor.bind(this),
-      clear:               this.__clearEditor.bind(this),
+      commit:              this.#commitToEditor.bind(this),
+      start:               this.#startEditor.bind(this),
+      stop:                this.#stopEditor.bind(this),
+      clear:               this.#clearEditor.bind(this),
     });
 
     this.on('start-editing', this.#onEditingStart.bind(this));
@@ -373,9 +373,9 @@ export class ToolBox extends Emitter {
       });
 
     this._session = Object.assign(new Emitter({ setters: {
-      start:                        this.__startSession.bind(this),
-      stop:                         this.__stopSession.bind(this),
-      getFeatures:                  this.__getFeatures.bind(this),
+      start:                        this.#startSession.bind(this),
+      stop:                         this.#stopSession.bind(this),
+      getFeatures:                  this.#getFeatures.bind(this),
       saveChangesOnServer:          this.saveChangesOnServer.bind(this),
     }}), {
       state:                        new Proxy({}, { get: (_, prop) => this.state.editing.session[prop] }),
@@ -383,9 +383,9 @@ export class ToolBox extends Emitter {
       getLastHistoryState:          this.getLastHistoryState.bind(this),
       isStarted:                    this.isSessionStarted.bind(this),
       getEditor:                    this.getEditor.bind(this),
-      push:                         this.__push.bind(this),
+      push:                         this.#pushChange.bind(this),
       pushDelete:                   this.pushDelete.bind(this),
-      save:                         this.__save.bind(this),
+      save:                         this.#saveChanges.bind(this),
       pushAdd:                      this.pushAdd.bind(this),
       pushUpdate:                   this.pushUpdate.bind(this),
       rollback:                     this.rollback.bind(this),
@@ -393,7 +393,7 @@ export class ToolBox extends Emitter {
       redo:                         this.redo.bind(this),
       getCommitItems:               this.getCommitItems.bind(this),
       commit:                       this.save.bind(this),
-      clear:                        this.__clearSession.bind(this),
+      clear:                        this.#clearSession.bind(this),
       clearHistory:                 this.clearHistory.bind(this),
     });
 
@@ -881,7 +881,7 @@ export class ToolBox extends Emitter {
                   session.rollback();
                 }
 
-                this._stopTool(tool);
+                this.#stopTool(tool);
 
                 GUI.setModal(false);
                 return Promise.resolve(inputs, tool.context);
@@ -1175,7 +1175,7 @@ export class ToolBox extends Emitter {
                     return reject('no feature');
                   }
                   this.addInteraction(
-                    new ol.interaction.Draw({ type: 'Point', condition: e => inputs.features.some(f => SELF.#isPointOnVertex({ feature: f, coordinates: e.coordinate}))}), {
+                      new ol.interaction.Draw({ type: 'Point', condition: e => inputs.features.some(f => SELF.#isVertex({ feature: f, coordinates: e.coordinate}))}), {
                     'drawend': e => {
                       inputs.coordinates = e.feature.getGeometry().getCoordinates();
                       this.setUserMessageStepDone('from');
@@ -1220,7 +1220,7 @@ export class ToolBox extends Emitter {
                     new ol.interaction.Draw({ type: 'Point', features: new ol.Collection() }), {
                       'drawend': evt => {
                         const [x, y]                    = evt.feature.getGeometry().getCoordinates();
-                        const deltaXY                   = coordinates ? SELF.#getDeltaXY({x, y, coordinates}) : null;
+                        const deltaXY                   = coordinates ? SELF.#getDelta({x, y, coordinates}) : null;
                         const featuresLength            = features.length;
                         const promisesDefaultEvaluation = [];
 
@@ -1231,7 +1231,7 @@ export class ToolBox extends Emitter {
                           }
                           else {
                             const coordinates = feature.getGeometry().getCoordinates();
-                            const deltaXY     = SELF.#getDeltaXY({ x, y, coordinates });
+                            const deltaXY     = SELF.#getDelta({ x, y, coordinates });
                             feature.getGeometry().translate(deltaXY.x, deltaXY.y)
                           }
                           // evaluated geometry expression
@@ -1245,7 +1245,7 @@ export class ToolBox extends Emitter {
                               /**
                                * @todo improve client core to handle this situation on session.pushAdd not copy pk field not editable only
                                */
-                              const noteditablefieldsvalues = SELF.#getNotEditableFieldsNoPkValues({ layer, feature });
+                              const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer, feature });
                               const newFeature              = session.pushAdd(layerId, feature);
                               // after pushAdd need to set not edit
                               if (Object.entries(noteditablefieldsvalues).length) {
@@ -1488,7 +1488,7 @@ export class ToolBox extends Emitter {
                         for (let i = 0; i < splittedGeometriesLength; i++) {
                           if (splittedGeometries[i].geometries.length > 1) {
                             isSplitted = true;
-                            await SELF.#handleSplitFeature({
+                            await SELF.#applySplitFeature({
                               context,
                               inputs,
                               feature:            inputs.features.find(f => f.getUid() === splittedGeometries[i].uid),
@@ -1747,8 +1747,8 @@ export class ToolBox extends Emitter {
    * 
    * @returns {{ x: number, y: number }} Offset applied to the selected geometry.
    */
-  #getDeltaXY({ x, y, coordinates } = {}) {
-    const coords = this.#getCoordinates(coordinates);
+  #getDelta({ x, y, coordinates } = {}) {
+    const coords = this.#unwrapCoordinates(coordinates);
     return {
       x: x - coords.x,
       y: y - coords.y
@@ -1765,8 +1765,8 @@ export class ToolBox extends Emitter {
    * 
    * @returns {{ x: number, y: number }} Plain coordinate pair.
    */
-  #getCoordinates(coords) {
-    return Array.isArray(coords[0]) ? this.#getCoordinates(coords[0]) : {
+  #unwrapCoordinates(coords) {
+    return Array.isArray(coords[0]) ? this.#unwrapCoordinates(coords[0]) : {
       x: coords[0],
       y: coords[1]
     };
@@ -1784,7 +1784,7 @@ export class ToolBox extends Emitter {
    * 
    * @returns {Promise<Array>} Array of generated features.
    */
-  async #handleSplitFeature({
+  async #applySplitFeature({
     feature,
     inputs,
     context,
@@ -1822,7 +1822,7 @@ export class ToolBox extends Emitter {
           console.warn(e);
         }
 
-        const noteditablefieldsvalues = SELF.#getNotEditableFieldsNoPkValues({ layer, feature });
+        const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer, feature });
 
         if (Object.entries(noteditablefieldsvalues).length) {
           const createdFeature = session.pushAdd(layerId, feature);
@@ -1850,7 +1850,7 @@ export class ToolBox extends Emitter {
    * 
    * @returns {boolean} True when the coordinate matches a vertex.
    */
-  #isPointOnVertex({ feature, coordinates }) {
+  #isVertex({ feature, coordinates }) {
     const geometry = feature.getGeometry();
     const type = geometry.getType();
     const areCoordinatesEqual = (c1 = [], c2 = []) => (c1[0] === c2[0] && c1[1] === c2[1]);
@@ -1886,7 +1886,7 @@ export class ToolBox extends Emitter {
    * 
    * @returns {Object} Mapping of field names to safe values.
    */
-  #getNotEditableFieldsNoPkValues({ layer, feature }) {
+  #getNonEditableValues({ layer, feature }) {
     return layer.state.editing.fields
       .filter(f => !f.editable)
       .map(f => f.name)
@@ -1904,7 +1904,7 @@ export class ToolBox extends Emitter {
    *
    * @param {string} layerId Identifier of the layer whose children must be stopped.
    */
-  #stopSessionChildren(layerId) {
+  #stopChildren(layerId) {
     const layer = GUI.getPlugin('editing').getLayerById(layerId);
     // add parent layerId to chain layerId stop
     GUI.getPlugin('editing').state.stopChain.add(layerId);
@@ -2316,7 +2316,7 @@ export class ToolBox extends Emitter {
       this.stopActiveTool();
       this.enableTools(false);
       this.clearToolboxMessages();
-      this.#stopSessionChildren(this.state.id);
+      this.#stopChildren(this.state.id);
       // clear layer unique field values
       GUI.getPlugin('editing').state.uniqueFieldsValues[this.getId()] = {};
       //clear chain
@@ -2375,18 +2375,18 @@ export class ToolBox extends Emitter {
       // skip when ..
       //@TODO Check if deprecated
       if (ids) {
-        commit = this.__commit(ids);
+        commit = this.#buildCommitItems(ids);
         this.clearHistory(ids);
         return resolve(commit);
       }
 
-      commit = items || this.getCommitItems(this.__commit());
+      commit = items || this.getCommitItems(this.#buildCommitItems());
 
       if (!relations) {
         commit.relations = {};
       }
       try {
-        const response = await this.__commitToEditor(commit);
+        const response = await this.#commitToEditor(commit);
   
         // skip when response is null or undefined and response.result is false
         if (!(response && response.result)) {
@@ -2789,7 +2789,7 @@ export class ToolBox extends Emitter {
       });
       //set as active tool
       this.state.activetool = tool;
-      await this._startTool(tool);     
+      await this.#startTool(tool);
     } catch(e) {
       console.warn(e);
     }
@@ -2817,7 +2817,7 @@ export class ToolBox extends Emitter {
       // remove all event listeners and stop active tool
       if (activeTool) {
         activeTool.off();
-        await this._stopTool(activeTool, true);
+        await this.#stopTool(activeTool, true);
       }
       // set empty array cause reactivity of vue instead of splice(0)
       this.state.toolsoftool       = [];
@@ -2900,7 +2900,7 @@ export class ToolBox extends Emitter {
    * 
    * @fires Tool#stop
    */
-  __add(uniqueId, items) {
+  #addHistoryState(uniqueId, items) {
     //state object is an array of feature/features changed in a transaction
     return new Promise((resolve) => {
       // before insert an item into the history
@@ -2920,9 +2920,9 @@ export class ToolBox extends Emitter {
 
       this.state.editing.session.current = uniqueId;
       // set internal state
-      this.__canUndo();
-      this.__canCommit();
-      this.__canRedo();
+      this.#updateUndoAvailability();
+      this.#updateCommitAvailability();
+      this.#updateRedoAvailability();
       // return unique id key
       // it can be used in save relation
       resolve(uniqueId);
@@ -2937,7 +2937,7 @@ export class ToolBox extends Emitter {
    *
    * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the undo action.
    */
-  __undo() {
+  #undoHistory() {
     let items;
     this.#states.find((state, idx) => {
       if (state.id === this.state.editing.session.current) {
@@ -2949,9 +2949,9 @@ export class ToolBox extends Emitter {
       }
     })
     // set internal state
-    this.__canUndo();
-    this.__canCommit();
-    this.__canRedo();
+    this.#updateUndoAvailability();
+    this.#updateCommitAvailability();
+    this.#updateRedoAvailability();
     return items;
   }
 
@@ -2963,7 +2963,7 @@ export class ToolBox extends Emitter {
    *
    * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the redo action.
    */
-  __redo() {
+  #redoHistory() {
     let items;
     // if not set get first state
     if (!this.state.editing.session.current) {
@@ -2981,9 +2981,9 @@ export class ToolBox extends Emitter {
     }
     items = this.#checkSessionItems(this.state.id, items, 1);
     // set internal state
-    this.__canUndo();
-    this.__canCommit();
-    this.__canRedo();
+    this.#updateUndoAvailability();
+    this.#updateCommitAvailability();
+    this.#updateRedoAvailability();
     return items;
   }
 
@@ -2994,15 +2994,15 @@ export class ToolBox extends Emitter {
    * 
    * @returns {Object|undefined} Matching state entry or undefined when absent.
    */
-  __getState(id) {
+  #getHistoryState(id) {
     return this.#states.find(s => id === s.id);
   }
 
   /**
    * @returns { boolean } true if we can commit
    */
-  __canCommit() {
-    const checkCommitItems = this.__commit();
+  #updateCommitAvailability() {
+    const checkCommitItems = this.#buildCommitItems();
     let canCommit          = false;
     for (let layerId in checkCommitItems) {
       const commitItem = checkCommitItems[layerId];
@@ -3015,7 +3015,7 @@ export class ToolBox extends Emitter {
   /**
    * canUdo method
    */
-  __canUndo() {
+  #updateUndoAvailability() {
     let currentStateIndex = null;
     if (this.state.editing.session.current && this.#states.length) {
       this.#states.forEach((state, idx) => {
@@ -3033,7 +3033,7 @@ export class ToolBox extends Emitter {
   /**
    * canRedo method
    */
-  __canRedo() {
+  #updateRedoAvailability() {
     this.#constrains.redo = (
       (this.#states.at(-1) && this.#states.at(-1).id != this.state.editing.session.current))
       || (null === this.state.editing.session.current && this.#states.length > 0);
@@ -3048,7 +3048,7 @@ export class ToolBox extends Emitter {
    *
    * @returns {Object<string, Array>} Commit candidate map keyed by layer id.
    */
-  __commit() {
+  #buildCommitItems() {
     const commitItems = {};
     const statesToCommit = this.#states.filter(s => s.id <= this.state.editing.session.current);
     statesToCommit
@@ -3115,7 +3115,7 @@ export class ToolBox extends Emitter {
    * @param { { layerId: string, feature: * } } NewFeat 
    * @param { { layerId: string, feature: * } } OldFeat
    */
-  __push(newFeat, oldFeat) {
+  #pushChange(newFeat, oldFeat) {
     this.state.editing.session.changes.push(oldFeat ? [oldFeat, newFeat] : newFeat); // check is set old (edit)
   }
 
@@ -3126,7 +3126,7 @@ export class ToolBox extends Emitter {
    * @param feature
    */
   pushDelete(layerId, feature) {
-    this.__push({ layerId, feature: feature.delete() });
+    this.#pushChange({ layerId, feature: feature.delete() });
     return feature;
   }
 
@@ -3135,12 +3135,12 @@ export class ToolBox extends Emitter {
    * 
    * @param options
    */
-  async __save(options = {}) {
+  async #saveChanges(options = {}) {
     // add temporary modify to history
     if (this.state.editing.session.changes.length > 0) {
       //  get array of uniqueIds. Case of modify vertex. Multi changes in one save
       const uniqueId = options.id || Date.now();
-      await this.__add(uniqueId, this.state.editing.session.changes);
+      await this.#addHistoryState(uniqueId, this.state.editing.session.changes);
       // clear to temporary changes
       this.state.editing.session.changes = [];
       return [uniqueId];
@@ -3175,7 +3175,7 @@ export class ToolBox extends Emitter {
 
     const newFeature = feature.clone();
 
-    this.__push({ layerId, feature: newFeature.add() });
+    this.#pushChange({ layerId, feature: newFeature.add() });
 
     return newFeature;
   }
@@ -3200,7 +3200,7 @@ export class ToolBox extends Emitter {
       return;
     }
 
-    this.__push(
+    this.#pushChange(
       { layerId, feature: newFeature.update() },
       { layerId, feature: oldFeature.update() }
     )
@@ -3215,7 +3215,7 @@ export class ToolBox extends Emitter {
    * @param {Array} [items=[]] Session items to apply.
    * @param {boolean} [reverse=true] Whether the operation should be reversed.
    */
-  __setChanges(items = [], reverse = true) {
+  #applyChanges(items = [], reverse = true) {
     /** known actions */
     const Actions = {
       'add':    { fnc: 'addFeature',    opposite: 'delete' },
@@ -3237,7 +3237,7 @@ export class ToolBox extends Emitter {
   async rollback(changes) {
     // skip when..
     if (changes) {
-      return this.__setChanges(changes);
+      return this.#applyChanges(changes);
     }
 
     // Handle temporary changes of layer
@@ -3256,7 +3256,7 @@ export class ToolBox extends Emitter {
     });
 
     try {
-      this.__setChanges(changes.own);
+      this.#applyChanges(changes.own);
       for (const id in changes.dependencies) {
         ToolBox._sessions[id].rollback(changes.dependencies[id]);
       }
@@ -3272,9 +3272,9 @@ export class ToolBox extends Emitter {
    * @param items session items
    */
   undo(items) {
-    items = items || this.__undo();
-    this.__setChanges(items.own, true);
-    this.__canCommit();
+    items = items || this.#undoHistory();
+    this.#applyChanges(items.own, true);
+    this.#updateCommitAvailability();
     return items.dependencies;
   }
 
@@ -3282,9 +3282,9 @@ export class ToolBox extends Emitter {
    * @param items session items
    */
   redo(items) {
-    items = items || this.__redo();
-    this.__setChanges(items.own, true);
-    this.__canCommit();
+    items = items || this.#redoHistory();
+    this.#applyChanges(items.own, true);
+    this.#updateCommitAvailability();
     return items.dependencies;
   }
 
@@ -3303,7 +3303,7 @@ export class ToolBox extends Emitter {
    * }} Commit payload for the server API.
    */
   getCommitItems() {
-    const itemsToCommit = this.__commit();
+    const itemsToCommit = this.#buildCommitItems();
     const id            = this.state.layer.getId();
     let action;
     let layer;
@@ -3416,7 +3416,7 @@ export class ToolBox extends Emitter {
    * This keeps the toolbox ready for a fresh cycle without retaining temporary
    * transaction data from the previous session.
    */
-  __clearSession() {
+  #clearSession() {
     this.state.editing.session.started     = false;
     this.state.editing.session.getfeatures = false;
     this.clearHistory();
@@ -3434,7 +3434,7 @@ export class ToolBox extends Emitter {
       this.#states.forEach((state, idx) => {
         if (ids.includes(state.id)) {
           if (this.state.editing.session.current && state.id === this.state.editing.session.current) {
-            this.__undo();
+            this.#undoHistory();
           }
           this.#states.splice(idx, 1);
         }
@@ -3461,9 +3461,9 @@ export class ToolBox extends Emitter {
    * 
    * @listens ol.Map#moveend
    */
-  async __startSession(options = {}) {
+  async #startSession(options = {}) {
     try {
-      const features = await this.__startEditor(options);
+      const features = await this.#startEditor(options);
       this.state.editing.session.started = true;
       return features;
     } catch(e) {
@@ -3523,18 +3523,18 @@ export class ToolBox extends Emitter {
    *
    * @fires stop-editing
    */
-  async __stopSession() {
+  async #stopSession() {
     try {
       if (this.state.editing.session.started || this.state.editing.session.getfeatures) {
-        await this.__stopEditor();
-        this.__clearSession();
+        await this.#stopEditor();
+        this.#clearSession();
       }      
     } catch(e) {
       console.warn(e);
       return Promise.reject(e);
     } finally {
       if (ApplicationState.online) {
-        this.#stopSessionChildren(this.state.id);
+        this.#stopChildren(this.state.id);
       }
     }
   }
@@ -3542,7 +3542,7 @@ export class ToolBox extends Emitter {
   /**
    * Get features from server (by editor)
    */
-  async __getFeatures(options = {}) {
+  async #getFeatures(options = {}) {
     try { 
       const features = await this._editor.getFeatures(options);
       this.state.editing.session.getfeatures = true;
@@ -3561,7 +3561,7 @@ export class ToolBox extends Emitter {
    *
    * @returns { boolean } whether can perform a server request
    */
-  async ___getFeatures(options = {}) {
+  async #requestFeatures(options = {}) {
     const layerId = this.getId();
 
     // skip is not onlien or all features of layers are already got
@@ -3773,7 +3773,7 @@ export class ToolBox extends Emitter {
   }
 
   /** @TODO add description */
-  async _startTool(tool) {
+  async #startTool(tool) {
     tool.active       = true;
     const hideSidebar = !!GUI.isMapHidden();
 
@@ -3802,7 +3802,7 @@ export class ToolBox extends Emitter {
         this.stopActiveTool();
       }
       if (!tool.runOnce && 'vector' === this.getLayer().getType() ) {
-        await this._startTool(tool);
+        await this.#startTool(tool);
       }
     }
 
@@ -3810,7 +3810,7 @@ export class ToolBox extends Emitter {
 
 
   /** @TODO add description */
-  async _stopTool(tool, force = false) {
+  async #stopTool(tool, force = false) {
     try {
       await tool.stop(force); // stop tool binded to tool
     } catch(e) {
@@ -3834,7 +3834,7 @@ export class ToolBox extends Emitter {
    * 
    * @returns {Promise<Object>} Normalized server response.
    */
-  async __commitToEditor(commit) {
+  async #commitToEditor(commit) {
 
     const layerId = this.getId();
     let relations = [];
@@ -4003,7 +4003,7 @@ export class ToolBox extends Emitter {
   /**
    * start editing
    */
-  async __startEditor(options = {}) {
+  async #startEditor(options = {}) {
     const features = await this._editor.getFeatures(options); // load layer features based on filter type
     this.#started  = true; // if all ok set to started
     return features;       // features are already inside featuresstore
@@ -4012,10 +4012,10 @@ export class ToolBox extends Emitter {
   /**
    * stop editor (unlock)
    */
-  async __stopEditor() {
+  async #stopEditor() {
     this.#controller?.abort(); //abort request if exist
     const { result } = await XHR.post({ url: `${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/` });
-    this.__clearEditor();
+    this.#clearEditor();
     return result;
   }
 
@@ -4039,7 +4039,7 @@ export class ToolBox extends Emitter {
    * registry and empties the local editing collection so the layer is ready for
    * a new lifecycle.
    */
-  __clearEditor() {
+  #clearEditor() {
     this.#started     = false;
     this.#filter.bbox = null;
     this.#controller  = null;
