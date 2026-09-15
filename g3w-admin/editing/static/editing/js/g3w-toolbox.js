@@ -1180,7 +1180,28 @@ export class ToolBox extends Emitter {
                     return reject('no feature');
                   }
                   this.addInteraction(
-                      new ol.interaction.Draw({ type: 'Point', condition: e => inputs.features.some(f => SELF.#isVertex({ feature: f, coordinates: e.coordinate}))}), {
+                    new ol.interaction.Draw({
+                      type: 'Point',
+                      condition: e => inputs.features.some(f => {
+                        const geom   = f.getGeometry();
+                        const equals = (c1 = [], c2 = []) => (c1[0] === c2[0] && c1[1] === c2[1]);
+                        const coords = c => equals(e.coordinate, c);
+                        switch (geom.getType()) {
+                          case 'Polygon':
+                          case 'MultiLineString':
+                            return geom.getCoordinates().flat().some(coords);
+                          case 'LineString':
+                          case 'MultiPoint':
+                            return geom.getCoordinates().some(coords);
+                          case 'MultiPolygon':
+                            return geom.getPolygons().some(poly => poly.getCoordinates().flat().some(coords));
+                          case 'Point':
+                            return equals(e.coordinate, geom.getCoordinates());
+                          default:
+                            return false;
+                        }
+                      })
+                    }), {
                     'drawend': e => {
                       inputs.coordinates = e.feature.getGeometry().getCoordinates();
                       this.setUserMessageStepDone('from');
@@ -1480,36 +1501,71 @@ export class ToolBox extends Emitter {
                       freehandCondition: ol.events.condition.never,
                     }), {
                       'drawend': async e => {
-                        let isSplitted                 = false;
-                        const splittedGeometries       = (inputs.features || []).reduce((a, f) => {
-                          const geometries = splitFeature({ splitfeature: e.feature, feature: f });
-                          if (geometries.length > 1) {
-                            a.push({ uid: f.getUid(), geometries });
-                          }
-                          return a;
-                        }, []);
-                        const splittedGeometriesLength = splittedGeometries.length;
+                        // splitted geometries
+                        const splitted  = (inputs.features || [])
+                          .map(f => ({ uid: f.getUid(), geometries: splitFeature({ splitfeature: e.feature, feature: f }) }))
+                          .filter(item => item.geometries.length > 1);
+                        let is_splitted = false;
 
-                        for (let i = 0; i < splittedGeometriesLength; i++) {
-                          if (splittedGeometries[i].geometries.length > 1) {
-                            isSplitted = true;
-                            await SELF.#applySplitFeature({
-                              context,
-                              inputs,
-                              feature:            inputs.features.find(f => f.getUid() === splittedGeometries[i].uid),
-                              splittedGeometries: splittedGeometries[i].geometries,
-                              session:            context.session,
-                            });
+                        for (let i = 0; i < splitted.length; i++) {
+                          if (!(splitted[i].geometries.length > 1)) {
+                            continue;
+                          }
+
+                          is_splitted = true;
+
+                          let feature = inputs.features.find(f => f.getUid() === splitted[i].uid);
+                          const oriFeature = feature.clone();
+                          const layerId = inputs.layer.getId();
+                          const session = context.session;
+
+                          for (let j = 0; j < splitted[i].geometries.length; j++) {
+                            const geom = splitted[i].geometries[j];
+                            if (0 === j) {
+                              feature.setGeometry(geom);
+                              try {
+                                await evaluateExpressionFields({ inputs, context, feature });
+                              } catch (e) {
+                                console.warn(e);
+                              }
+                              session.pushUpdate(layerId, feature, oriFeature);
+                            }
+                            if (j > 0) {
+                              const newFeature = cloneFeature(oriFeature, inputs.layer);
+                              newFeature.setGeometry(geom);
+
+                              feature = new Feature({ feature: newFeature });
+                              feature.setTemporaryId();
+
+                              try {
+                                await evaluateExpressionFields({ inputs, context, feature });
+                              } catch (e) {
+                                console.warn(e);
+                              }
+
+                              const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer: inputs.layer, feature });
+
+                              if (Object.entries(noteditablefieldsvalues).length) {
+                                const createdFeature = session.pushAdd(layerId, feature);
+                                Object.entries(noteditablefieldsvalues).forEach(([field, value]) => createdFeature.set(field, value));
+                                source.addFeature(createdFeature);
+                              } else {
+                                session.pushAdd(layerId, feature);
+                                source.addFeature(feature);
+                              }
+                            }
+                            inputs.features.push(feature);
                           }
                         }
 
-                        (isSplitted ? resolve : reject)(inputs);
+                        (is_splitted ? resolve : reject)(inputs);
 
-                        //need to set timeout promise, because at the end of the tool all user messages are cleared
+                        // set timeout because at the end of the tool all user messages are cleared
                         await new Promise(r => setTimeout(r, 600));
+
                         GUI.showUserMessage({
-                          type:      isSplitted ? 'success': 'warning',
-                          message:   isSplitted ? 'plugins.editing.splitted' : 'plugins.editing.nosplittedfeature',
+                          type:      is_splitted ? 'success': 'warning',
+                          message:   is_splitted ? 'plugins.editing.splitted' : 'plugins.editing.nosplittedfeature',
                           autoclose: true
                         })
                       }
@@ -1767,110 +1823,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Splits a feature into multiple geometries and updates the corresponding
-   * editing session state.
-   *
-   * @param {Object} [params={}] Split operation parameters.
-   * @param {object} params.feature Original feature to split.
-   * @param {object} params.inputs Editing context and current tool inputs.
-   * @param {object} params.context Current editing session context.
-   * @param {Array} [params.splittedGeometries=[]] Geometry fragments to apply.
-   * 
-   * @returns {Promise<Array>} Array of generated features.
-   */
-  async #applySplitFeature({
-    feature,
-    inputs,
-    context,
-    splittedGeometries = []
-  } = {}) {
-    const newFeatures = [];
-    const { layer } = inputs;
-    const session = context.session;
-    const source = getEditingLayer(layer).getSource();
-    const layerId = layer.getId();
-    const oriFeature = feature.clone();
-    const splittedGeometriesLength = splittedGeometries.length;
-
-    for (let index = 0; index < splittedGeometriesLength; index++) {
-      const splittedGeometry = splittedGeometries[index];
-      if (0 === index) {
-        feature.setGeometry(splittedGeometry);
-        try {
-          await evaluateExpressionFields({ inputs, context, feature });
-        } catch (e) {
-          console.warn(e);
-        }
-
-        session.pushUpdate(layerId, feature, oriFeature);
-      } else {
-        const newFeature = cloneFeature(oriFeature, layer);
-        newFeature.setGeometry(splittedGeometry);
-
-        feature = new Feature({ feature: newFeature });
-        feature.setTemporaryId();
-
-        try {
-          await evaluateExpressionFields({ inputs, context, feature });
-        } catch (e) {
-          console.warn(e);
-        }
-
-        const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer, feature });
-
-        if (Object.entries(noteditablefieldsvalues).length) {
-          const createdFeature = session.pushAdd(layerId, feature);
-          Object.entries(noteditablefieldsvalues).forEach(([field, value]) => createdFeature.set(field, value));
-          newFeatures.push(createdFeature);
-          source.addFeature(createdFeature);
-        } else {
-          newFeatures.push(session.pushAdd(layerId, feature));
-          source.addFeature(feature);
-        }
-      }
-      inputs.features.push(feature);
-    }
-
-    return newFeatures;
-  }
-
-  /**
-   * Checks whether the given coordinates fall on one of the vertices of a
-   * feature geometry.
-   *
-   * @param {Object} params Function parameters.
-   * @param {object} params.feature Feature to inspect.
-   * @param {Array} params.coordinates Coordinate pair to test.
-   * 
-   * @returns {boolean} True when the coordinate matches a vertex.
-   */
-  #isVertex({ feature, coordinates }) {
-    const geometry = feature.getGeometry();
-    const type = geometry.getType();
-    const areCoordinatesEqual = (c1 = [], c2 = []) => (c1[0] === c2[0] && c1[1] === c2[1]);
-    const coords = c => areCoordinatesEqual(coordinates, c);
-
-    switch (type) {
-      case 'Polygon':
-      case 'MultiLineString':
-        return geometry.getCoordinates().flat().some(coords);
-
-      case 'LineString':
-      case 'MultiPoint':
-        return geometry.getCoordinates().some(coords);
-
-      case 'MultiPolygon':
-        return geometry.getPolygons().some(poly => poly.getCoordinates().flat().some(coords));
-
-      case 'Point':
-        return areCoordinatesEqual(coordinates, geometry.getCoordinates());
-
-      default:
-        return false;
-    }
-  }
-
-  /**
    * Returns all non-editable fields for a feature, while keeping primary-key
    * fields as null when required by the data model.
    *
@@ -1884,10 +1836,9 @@ export class ToolBox extends Emitter {
     return layer.state.editing.fields
       .filter(f => !f.editable)
       .map(f => f.name)
-      .reduce((fields, field) => {
-        fields[field] = isPkField(layer, field) ? null : feature.get(field);
-        return fields;
-      }, {});
+      .reduce((fields, field) => Object.assign(fields, {
+        [field]: isPkField(layer, field) ? null : feature.get(field)
+      }), {});
   }
 
   /**
