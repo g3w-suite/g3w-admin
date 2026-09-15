@@ -6,7 +6,7 @@ from django import forms
 from django.core.files.base import ContentFile
 from django.urls import reverse
 from django.forms import ValidationError, widgets
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 from django.utils.html import mark_safe
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from guardian.shortcuts import get_objects_for_user
@@ -95,6 +95,13 @@ class QdjangoProjectFormMixin(object):
                 os.remove(qgis_file.path)
 
         except Exception as e:
+            # show every collected error at once instead of only the first one
+            errors = getattr(e, 'errors', None)
+            if errors and len(errors) > 1:
+                summary = ngettext(
+                    '%(count)d error found:', '%(count)d errors found:', len(errors)
+                ) % {'count': len(errors)}
+                raise ValidationError([summary, *errors])
             raise ValidationError(str(e))
         return qgis_file
 
