@@ -1,7 +1,5 @@
 /**
  * @file Relation form editor
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { Tool }                             from '../g3w-tool.js';
@@ -601,7 +599,7 @@ export default ({
             type: 'editfeatureattributes',
           },
 
-          // @since 3.9.0 copy featureonly for table layer
+          // copy featureonly for table layer
           'table' === this._layerType && this.capabilities.includes('add_feature') && {
             state: Vue.observable({
               icon:   'mActionEditPaste.svg',
@@ -673,7 +671,7 @@ export default ({
           const selectStyle     = is_vector && SELECTED_STYLES[this.getLayer().getGeometryType()]; // get selected vector style
           const options         = this._createToolOptions({ features: [relationfeature] });
 
-          //@since 3.9.0 COPY FEATURE FROM ATTRIBUTE TABLE LAYER
+          // COPY FEATURE FROM ATTRIBUTE TABLE LAYER
           if ('copyfeature' === toolId) {
             await (
               new Promise(async (resolve, reject) => {
@@ -935,7 +933,7 @@ export default ({
           // in case of save all pressed on openformtask
           if (inputs?.relationFeatures) {
             this.relations.push(
-              //@since 4.1.0 replace temporary id with real id from server
+              // replace temporary id with real id from server
               ...(inputs.relationFeatures.newFeatures || []).map(f => ({ id: this._new_relations_ids.find(({_, clientid }) => clientid === f.getId())?.id, fields: getFieldsWithValues(this.getLayer(), f, { relation: true }) }))
             )
           }
@@ -1155,7 +1153,6 @@ export default ({
     },
 
     created() {
-      /** @since 4.0.4 */
       this._current_style = null;
 
       const relationLayer = getEditingLayerById(this.relation.child);
@@ -1164,19 +1161,17 @@ export default ({
        * Array of new relations features objects saved on server id
        * {clientid, id} where client id is a temporary id of relation
        * feature, id is saved id on server.
-       *
-       * @since g3w-client-plugin-editing@v3.7.2
        */
       this._new_relations_ids =  [];
 
       this.onCommit           = this.onCommit.bind(this);
 
-      /** @since 3.7.2 Listen commit when is click on save all button disk icon*/
+      // Listen commit when is click on save all button disk icon
       GUI.getPlugin('editing').on('commit', this.onCommit);
 
       this.isVectorRelation = 'vector' === relationLayer.getType();
 
-      /** @since 4.0.2 add relation capabilities */ 
+      // add relation capabilities
       this.rcapabilities = relationLayer.state.editing?.capabilities || [];
 
       // vector relation → get all layers with the same geometry
@@ -1251,8 +1246,6 @@ export default ({
 
       /**
        * Current relation feature (in editing)
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
        */
       this.currentRelationFeatureId = null;
 

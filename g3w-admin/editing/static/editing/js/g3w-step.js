@@ -1,7 +1,5 @@
 /**
  * @file
- *
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { getEditingLayer } from './utils/getEditingLayer.js';
@@ -88,36 +86,27 @@ export class Step extends Emitter {
       running: false,                   // running
       error:   null,                    // error
       message: options.message || null, // message
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       usermessagesteps: {}
     };
 
     this.registerEscKeyEvent(options.escKeyPressEventHandler)
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (options.steps) {
       this.setSteps(options.steps);
     }
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (options.onRun) {
       this.on('run', options.onRun);
     }
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (options.onStop) {
       this.on('stop', options.onStop);
     }
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (options.tools) {
       this._tools = options.tools;
     }
@@ -130,8 +119,6 @@ export class Step extends Emitter {
    * @param {Object|null} inputs Values passed to the step task.
    * 
    * @returns {void}
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   setInputs(inputs) {
     this._inputs = this.inputs = inputs;
@@ -141,8 +128,6 @@ export class Step extends Emitter {
    * Return the inputs currently assigned to the step.
    *
    * @returns {Object|null} Current step inputs.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   getInputs() {
     return this._inputs;
@@ -154,8 +139,6 @@ export class Step extends Emitter {
    * @param {Object|null} context Shared execution context.
    * 
    * @returns {Object|null} The assigned context.
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   setContext(context) {
     return this._context = this.context = context;
@@ -165,8 +148,6 @@ export class Step extends Emitter {
    * Return the context currently assigned to the step.
    *
    * @returns {Object|null} Current execution context.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   getContext() {
     return this.context;
@@ -176,8 +157,6 @@ export class Step extends Emitter {
    * Hook for subclasses to report an unrecoverable implementation state.
    *
    * @returns {void}
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   panic() {
     console.log('Panic to implement ..');
@@ -189,8 +168,6 @@ export class Step extends Emitter {
    * @param {*} task Root task or parent operation.
    * 
    * @returns {void}
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   setRoot(task) {
     this.state.root = task;
@@ -198,8 +175,6 @@ export class Step extends Emitter {
 
   /**
    * @returns {Object} Progress entries shown for this step.
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   getUserMessageSteps() {
     return this.state.usermessagesteps;
@@ -211,8 +186,6 @@ export class Step extends Emitter {
    * @param {Object} steps Progress entries keyed by their type.
    * 
    * @returns {void}
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   setUserMessageSteps(steps = {}) {
     this.state.usermessagesteps = steps;
@@ -224,8 +197,6 @@ export class Step extends Emitter {
    * @param {string} type Progress-entry key.
    * 
    * @returns {void}
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   setUserMessageStepDone(type) {
     if (type) {
@@ -242,8 +213,6 @@ export class Step extends Emitter {
    * @returns {Object} The registered interaction.
    * 
    * @listens stop
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   addInteraction(interaction, events = {}) {
     GUI.addInteraction(interaction);
@@ -258,8 +227,6 @@ export class Step extends Emitter {
    * @param {Object} interaction Map interaction to remove.
    * 
    * @returns {void}
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   removeInteraction(interaction) {
     setTimeout(() => GUI.removeInteraction(interaction)); // timeout needed to work around an Openlayers issue
@@ -280,8 +247,6 @@ export class Step extends Emitter {
    * @returns {void}
    * 
    * @listens pointermove
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   registerPointerMoveCursor() {
     GUI.getMap().on("pointermove", this._pointerMoveCursor)
@@ -291,8 +256,6 @@ export class Step extends Emitter {
    * Stop listening for map pointer movement.
    *
    * @returns {void}
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   unregisterPointerMoveCursor() {
     GUI.getMap().un("pointermove", this._pointerMoveCursor)
@@ -304,8 +267,6 @@ export class Step extends Emitter {
    * @param {Object} evt Map pointer-move event.
    * 
    * @returns {void}
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   _pointerMoveCursor(evt) {
     this.getTargetElement().style.cursor = (this.forEachFeatureAtPixel(evt.pixel, () => true) ? 'pointer' : '');
@@ -317,8 +278,6 @@ export class Step extends Emitter {
    * @param {Object[]} [steps=[]] Steps in the nested flow.
    * 
    * @returns {void}
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   setSteps(steps = {}) {
     this._steps = steps;
@@ -327,8 +286,6 @@ export class Step extends Emitter {
 
   /**
    * @returns {Object[]} Configured nested steps.
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   getSteps() {
     return this._steps;
@@ -338,8 +295,6 @@ export class Step extends Emitter {
    * Return the application map instance.
    *
    * @returns {Object} Current map.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   getMap() {
     return GUI.getMap();
@@ -351,8 +306,6 @@ export class Step extends Emitter {
    * @param {boolean} [bool=true] Whether the sidebar should be disabled.
    * 
    * @returns {void}
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   disableSidebar(bool = true) {
     if (this._isContentChild) {
@@ -599,8 +552,6 @@ export class Step extends Emitter {
    * @param {string[]} [tools=[]] Tool-of-tools names.
    * 
    * @returns {void}
-   *
-   * @since g3w-client-editing@v3.8.0
    */
   setToolsOfTools(tool, tools = [] ) {
     this._tool     = tool;

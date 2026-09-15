@@ -1,8 +1,6 @@
 import { chooseFeatureFromFeatures } from '../utils/chooseFeatureFromFeatures.js';
 
-/**
- * @since g3w-client-plugin-editing@v3.8.0
- */
+/** @TODO add description */
 export async function chooseFeature(inputs) {
   try {
     if (1 !== inputs.features.length) {

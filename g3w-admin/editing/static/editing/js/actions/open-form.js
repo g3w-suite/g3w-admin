@@ -1,7 +1,5 @@
 /**
  * @file
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { getParentFormData }                from '../utils/getParentFormData.js';
@@ -30,15 +28,11 @@ export class OpenFormStep extends Step {
 
     /**
      * Show saveAll button
-     *
-     * @since v3.7
      */
     this._saveAll = false === opts.saveAll ? opts.saveAll : async () => {};
 
-     /**
+    /**
      * In case of commit error from saveAll methods, need to set it to true to undo changes
-     * @since 4.0.1
-     * 
      */
     this._saveAllError = false;
 
@@ -73,14 +67,13 @@ export class OpenFormStep extends Step {
     this.promise;
 
     /**
-     * @since g3w-client-plugin-editing@v3.7.0
+     * @TODO add description
      */
     this._unwatchs = [];
 
   }
 
   /**
-   * @since v3.7
    * @param bool
    */
   updateMulti(bool = false) {
@@ -95,14 +88,12 @@ export class OpenFormStep extends Step {
    */
   async run(inputs, context) {
     GUI.setModal(true);
-    //@since 3.9.0 can set isContentChild attribute to force it
-    // (case edit relation features from multi-parent features)
+    // set isContentChild attribute to force it (case edit relation features from multi-parent features)
     this._isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
     this.layerId           = inputs.layer.getId();
     this._features         = this._multi ? inputs.features : [inputs.features[inputs.features.length - 1]];
     this._originalFeatures = this._features.map(f => f.clone());
 
-    //@since 3.9.0 promise
     const promise = new Promise((resolve) => {
       GUI.getPlugin('editing').once(`closeform_${this.layerId}`, () => resolve());
     })
@@ -149,11 +140,9 @@ export class OpenFormStep extends Step {
       const feature = !this._multi && inputs?.features?.[inputs.features.length - 1];
       const layerId = !this._multi && inputs.layer.getId();
 
-      // @since g3w-client-plugin-editing@v3.7.2
       // skip relations that don't have a form structure
       if (feature && !feature.isNew() && inputs.layer.getLayerEditingFormStructure()) {
         await getLayersDependencyFeatures(inputs.layer.getId(), {
-          // @since g3w-client-plugin-editin@v3.7.0
           relations: inputs.layer.getRelations().getArray().filter(r =>
             inputs.layer.getId() === r.getFather() && // get only child relation features of current editing layer
             getEditingLayerById(r.getChild()) &&      // child layer is in editing
@@ -178,8 +167,8 @@ export class OpenFormStep extends Step {
         context_inputs:  this._multi ? false: { context, inputs },
         formStructure:   inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
         modal:           true,
-        push:            this._options.push || this._isContentChild, /** @since v3.7 force push content on top without clear previous content */
-        showgoback:      this._options?.showgoback ?? !this._isContentChild, /** @since v3.7 force show back button */
+        push:            this._options.push || this._isContentChild,         // force push content on top without clear previous content
+        showgoback:      this._options?.showgoback ?? !this._isContentChild, // force show back button
         /** @TODO make it straightforward: `headerComponent` vs `buttons` ? */
         headerComponent: this._saveAll && {
           template: /* html */ `
@@ -201,7 +190,6 @@ export class OpenFormStep extends Step {
                   ></i>
                 </span>
               </div>
-              <!-- @since 3.9.0 -->
               <div
                 v-if       = "isChild"  
                 class      = "close-form-button"
@@ -242,8 +230,6 @@ export class OpenFormStep extends Step {
             methods: {
               /**
                * Set this._saveAllError 
-               * @param {@since 4.0.1 } bool 
-               * @returns 
                */
               setError: (bool = false) => this._saveAllError = bool,
               async saveAll() {
@@ -321,7 +307,6 @@ export class OpenFormStep extends Step {
                 GUI.disableContent(false);
               },
               /**
-               * @since 3.9.0
                * Close editing form
                */
               async closeForm() {
@@ -361,7 +346,6 @@ export class OpenFormStep extends Step {
                   return;
                 }
 
-                // @since 3.5.15
                 GUI.setLoadingContent(true);
                 GUI.disableContent(true);
 
@@ -527,7 +511,7 @@ export class OpenFormStep extends Step {
       contextService.setUpdate(false, { force: false });
     }
 
-    //@since 3.9.0 add GUI.getContentLength() in case of edit multi relationfeatures tool
+    // add GUI.getContentLength() in case of edit multi relationfeatures tool
     GUI.closeForm({ pop: this.push || this._isContentChild && GUI.getContentLength() > 1 });
 
     GUI.getPlugin('editing').resetCurrentLayout();
@@ -641,7 +625,7 @@ function _handleMulti(fields, multi) {
     fields = fields.map(field => {
       const f             = JSON.parse(JSON.stringify(field));
       f.value             = null;
-      f._value            = null; // @since v3.9.0 Fix update form field: Set the same value of value
+      f._value            = null; // Fix update form field: Set the same value of value
       f.forceNull         = true;
       f.validate.required = false; //set false because all features have already required field filled
       return f;
@@ -657,8 +641,6 @@ function _handleMulti(fields, multi) {
  * @param opts.layerId Root layerId
  * @param opts.features Array of update/new features belong to Root layer
  * @param opts.fields Array of form fields father
- *
- * @since g3w-client-plugin-editing@v3.7.0
  */
 async function _handleRelation1_1LayerFields({
   layerId,
@@ -782,8 +764,6 @@ async function _handleRelation1_1LayerFields({
  * @param opts.formService form service
  *
  * @returns Array of watch function event to remove listen
- *
- * @since g3w-client-plugin-editing@v3.7.0
  */
 async function _listenRelation1_1FieldChange({
   layerId,
@@ -880,9 +860,9 @@ async function _listenRelation1_1FieldChange({
               field.editable = locked
                 ? false
                 : editableRelatedFatherChild[fn];
-              //need to check if feature is new and not locked ot not present on a source
+              // need to check if feature is new and not locked ot not present on a source
               field.value = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null;
-              //@since 3.9.0 call change input to run eventually default expression
+              // change input to run eventually default expression
               formService.changeInput(field);
             });
 
@@ -903,8 +883,6 @@ async function _listenRelation1_1FieldChange({
  * @param opts.fatherFormRelationField
  * 
  * @returns {Promise<{feature: *, locked: boolean}>}
- * 
- * @since g3w-client-plugin-editing@v3.7.0
  */
 async function _getRelation1_1ChildFeature({
   relation,

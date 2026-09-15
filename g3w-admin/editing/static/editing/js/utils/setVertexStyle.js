@@ -7,8 +7,6 @@ const { Geometry } = g3wsdk.core.geoutils;
  * @param opts.fillVertex
  * @param opts.strokeWidth
  * @param opts.radius
- * 
- * @since 3.9.1
  */
 export function setVertexStyle({
   feature,

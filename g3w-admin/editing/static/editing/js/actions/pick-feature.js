@@ -1,7 +1,5 @@
 /**
  * @file
- *
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';

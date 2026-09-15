@@ -1,6 +1,5 @@
 /**
  * @file
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 const { Emitter } = g3w;
@@ -17,8 +16,6 @@ export class Tool extends Emitter {
 
   /**
    * Active tools, ordered from the root tool to the current child tool.
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   static Stack = {
     /** @type {Tool[]} */
@@ -39,8 +36,6 @@ export class Tool extends Emitter {
    * Return the session associated with the current tool context.
    *
    * @returns {unknown} Current editing session.
-   * 
-   * @since g3w-client-editing@v4.1.0
    */
   get session() {
     return this.getSession();
@@ -106,8 +101,6 @@ export class Tool extends Emitter {
    * Tools exposed by the current step through the tool-of-tools event.
    *
    * @type {string[]}
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   _toolsoftool = [];
 
@@ -201,7 +194,7 @@ export class Tool extends Emitter {
      *
      * @type {boolean}
      */
-    this.disableEdit = !!options?.disableEdit; //@since v4.0.0 disable stop editing
+    this.disableEdit = !!options?.disableEdit;
 
     /**
      * Whether the tool is shown in the toolbox; can be computed from the tool.
@@ -239,9 +232,7 @@ export class Tool extends Emitter {
      */
     this.backbuttonlabel = options?.backbuttonlabel || null; 
 
-    /**
-     * @since g3w-client-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (true === options.registerEscKeyEvent) {
       this.registerEscKeyEvent();
     }
@@ -276,8 +267,6 @@ export class Tool extends Emitter {
    * @param {string|string[]} type Type or types to compare with this tool.
    * 
    * @returns {boolean} Whether the tool has one of the requested types.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   isType(type) {
     if (Array.isArray(type)) {
@@ -462,7 +451,6 @@ export class Tool extends Emitter {
       //set step message
       this.setHelpMessage(step.state.help);
 
-      //@since 3.9.1
       this.emit('settoolsoftool', (step.tools || []));
       //run step
       const outputs = await step.__run(inputs, this.getContext());
@@ -689,8 +677,6 @@ export class Tool extends Emitter {
    * @param {string|null} label Back-button label, or null to clear it.
    * 
    * @returns {void}
-   * 
-   * @since 3.9.0
    */
   setBackButtonLabel(label = null) {
     this.backbuttonlabel = label;
@@ -698,8 +684,6 @@ export class Tool extends Emitter {
 
   /**
    * @returns {string|null} The configured back-button label.
-   *
-   * @since 3.9.0
    */
   getBackButtonLabel() {
     return this.backbuttonlabel;
@@ -712,8 +696,6 @@ export class Tool extends Emitter {
    * @param {string[]} [tools=[]] Names of tools available to that step.
    * 
    * @returns {void}
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   addToolsOfTools({ step, tools = [] }) {
     step.setToolsOfTools(this, tools);
@@ -725,8 +707,6 @@ export class Tool extends Emitter {
    * @param {string|null} message Help-message translation key.
    * 
    * @returns {void}
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   setHelpMessage(message) {
     this.#helpMessage = message;
@@ -734,8 +714,6 @@ export class Tool extends Emitter {
 
   /**
    * @returns {string|null} Current help-message translation key.
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   getHelpMessage() {
     return this.#helpMessage;
@@ -743,8 +721,6 @@ export class Tool extends Emitter {
 
   /**
    * @returns {unknown} Features from the current inputs.
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   getFeatures() {
     return this.getInputs().features;
@@ -756,8 +732,6 @@ export class Tool extends Emitter {
    * @param {Object} [opts={}] Runtime options passed to {@link Tool#start}.
    * 
    * @returns {Promise<*>} Outputs from the last step.
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   startFromLastStep(opts = {}) {
     this.setSteps([ this.getSteps().pop() ]);
@@ -765,10 +739,7 @@ export class Tool extends Emitter {
   }
 
   /**
-   * 
    * @returns {unknown} Layer from the current inputs.
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   getLayer() {
     return this.getInputs().layer;
@@ -776,8 +747,6 @@ export class Tool extends Emitter {
 
   /**
    * @returns {unknown} Session from the current context.
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   getSession() {
     return this.getContext().session;
@@ -789,8 +758,6 @@ export class Tool extends Emitter {
    * @param {KeyboardEvent} evt Keyup event carrying the tool and callback data.
    * 
    * @listens document:keyup
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   escKeyUpHandler(evt) {
     if (27 === evt.keyCode) {
@@ -801,8 +768,6 @@ export class Tool extends Emitter {
 
   /**
    * Remove the Escape key listener for this tool.
-   *
-   * @since g3w-client-editing@v3.8.0
    */
   unbindEscKeyUp() {
     $(document).unbind('keyup', this.escKeyUpHandler);
@@ -812,8 +777,6 @@ export class Tool extends Emitter {
    * Bind Escape to reject the current flow and run a callback.
    *
    * @param {Function} [callback=() => {}] Callback invoked after rejection.
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   bindEscKeyUp(callback = () => {}) {
     $(document).on('keyup', { tool: this, callback }, this.escKeyUpHandler);
@@ -826,8 +789,6 @@ export class Tool extends Emitter {
    * 
    * @listens start
    * @listens stop
-   * 
-   * @since g3w-client-editing@v3.8.0
    */
   registerEscKeyEvent(callback) {
     this.on('start', () => this.bindEscKeyUp(callback));

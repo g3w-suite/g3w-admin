@@ -4,8 +4,6 @@
  * @param opts.relation
  *
  * @returns the layer id of the other layer that is in relation with layerId
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export function getRelationId({
   layerId,

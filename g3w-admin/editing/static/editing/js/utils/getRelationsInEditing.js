@@ -8,8 +8,6 @@ const GUI = g3w.app;
  * @param opts.relations
  *
  * @returns { Array }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export function getRelationsInEditing({
   layerId,

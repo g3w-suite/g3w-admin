@@ -11,8 +11,6 @@ const { XHR }          = g3w.utils;
  * @param expression.feature
  *
  * @returns {Promise<void>}
- *
- * @since g3w-client-plugin-editing@v3.5.14
  */
 export async function evaluateExpressionFields({
   inputs,
@@ -114,7 +112,7 @@ export async function evaluateExpressionFields({
                       }),
                       formatter:  0,
                       expression: field.input.options.filter_expression.expression,
-                      ordering:   [undefined, false].includes(field.input.options.orderbyvalue) ? field.input.options.key : field.input.options.value, //@since 3.11.0
+                      ordering:   [undefined, false].includes(field.input.options.orderbyvalue) ? field.input.options.key : field.input.options.value,
                     }),
                   });
                   if (response.result) {

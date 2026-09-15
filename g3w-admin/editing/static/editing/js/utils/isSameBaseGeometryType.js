@@ -10,8 +10,6 @@
  *  MultiPoint <--> Point   => true
  *  Point      <--> Polygon => false
  * ```
- * 
- * @since g3w-client-plugin-editing@v3.9.0
  */
 export function isSameBaseGeometryType(a, b) {
   return a.replace('Multi','') === b.replace('Multi','');

@@ -1,7 +1,5 @@
 /**
  * @file Editing table (form editor)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { Step }                      from '../g3w-step.js';
@@ -445,8 +443,8 @@ export default ({
 
     /**
      * Get data features from server based on current pagination table information (page, page_size, ordering and search text)
+     * 
      * @returns {Promise<void>}
-     * @since 4.0.0
      */
     async getData() {
 
@@ -478,8 +476,8 @@ export default ({
           )
             .map(f => this.headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
               [header]: getFeatureTableFieldValue({ layerId: this.inputs.layer.getId(), feature: f, property: header }),
-              '__g3w_uid':    f.getUid(), // private attribute unique value
-              '__g3w_locked': f.state.locked, //@since v4.0.0 private attribute locked value
+              '__g3w_uid':    f.getUid(),     // private attribute unique value
+              '__g3w_locked': f.state.locked, // private attribute locked value
             }), {}))
           // features already bind to parent feature
           : this.features;

@@ -1,7 +1,5 @@
 /**
  * @file Editing panel (left menu)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import ToolboxComponent             from '../components/toolbox.js';
@@ -109,16 +107,13 @@ export default ({
       resourcesurl:          this.$options.resourcesurl,
       showcommitbar:         this.$options.showcommitbar,
       saving:                false, // whether to show loading bar while committing to server (click on save disk icon)
-      layersInEditing:       0, //@since 3.8.0 Number of layers in editing
+      layersInEditing:       0,     // Number of layers in editing
       editingButtonsEnabled: true,
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       selectedlayers:        [],
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       editinglayers:         Object.entries(GUI.getPlugin('editing')
                               .getEditableLayers())
                               .filter(([_,l]) => l.config.editing.visible) //exclude layers that are set visible to false
                               .map(([id, layer]) => ({ id, name: layer.getName(), title: layer.getTitle() })),
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       activetool:            null,
     };
   },
@@ -266,8 +261,6 @@ export default ({
      * @param { string } id
      *
      * @returns { Promise<unknown> }
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     async commit_dirty(id) {
       const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
@@ -315,8 +308,6 @@ export default ({
      * @param { boolean } [opts.unlock=false]
      *
      * @returns { Promise<unknown> }
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     checkOfflineChanges({
       modal  = true,
@@ -362,8 +353,7 @@ export default ({
 
   computed: {
     /**
-     * @since 4.1.0 Listen changes of each layers
-     * @returns 
+     * Listen changes of each layers
      */
     changes() {
       return this.state.toolboxes.filter(t => t.state.editing.history.commit).length > 0;
@@ -424,17 +414,13 @@ export default ({
 
     /**
      * @param { Boolean } bool true if at least one layer has changes. false if all layer haven't changes
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     changes(bool) {
       ApplicationState.sidebar.btn_close     = !bool;
       ApplicationState.sidebar.tooltip_close = bool ? '⚠️ Confirm changes (✅) on each level to close' : '';
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     selectedlayers(layers = []) {
       const has_layers = layers.length > 0;
 

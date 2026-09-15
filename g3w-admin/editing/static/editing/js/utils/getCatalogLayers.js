@@ -1,8 +1,6 @@
 const ApplicationState = g3w.state;
 
-/**
- * @since g3w-client-plugin-editing@v4.1.0
- */
+/** @TODO add description */
 export function getCatalogLayers(filter, options = {}) {
   return ApplicationState.project.getLayers(filter, options);
 }

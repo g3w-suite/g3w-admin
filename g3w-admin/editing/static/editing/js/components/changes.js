@@ -1,7 +1,5 @@
 /**
  * @file List of edits (changes modal)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { areCoordinatesEqual }       from '../utils/areCoordinatesEqual.js';
@@ -99,7 +97,9 @@ template: /*html*/`
         property: key
       });
 
-      return value?.value ?? value; //@since 4.0.0 in case of object value, for example image or pdf, return value.value instead of [object Object] to show the value in the changes modal
+      // return value.value instead of [object Object] to show
+      // the value in the changes modal (eg. in case of object value, for example image or pdf)
+      return value?.value ?? value; 
     },
 
     /**

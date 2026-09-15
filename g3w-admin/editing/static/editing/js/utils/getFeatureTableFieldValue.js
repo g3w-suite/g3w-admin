@@ -8,8 +8,6 @@ const GUI = g3w.app;
  * @param { string }   opts.property
  *
  * @returns (field.key) or (field.value)
- *
- * @since g3w-client-plugin-editing@v3.7.0
  */
 export function getFeatureTableFieldValue({
   layerId,

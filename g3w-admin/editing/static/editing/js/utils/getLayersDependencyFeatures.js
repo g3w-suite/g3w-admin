@@ -10,8 +10,6 @@ const GUI              = g3w.app;
  * @param opts
  *
  * @returns { Promise<Awaited<unknown>[]> }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function getLayersDependencyFeatures(layerId, opts = {}) {
 

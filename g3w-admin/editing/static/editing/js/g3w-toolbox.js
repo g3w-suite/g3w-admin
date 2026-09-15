@@ -14,8 +14,6 @@
  * - manage session history for undo/redo and temporary pending changes;
  * - coordinate the lifecycle of tool execution and stop/start editing events;
  * - serialize commit data for add, update, delete and relation operations.
- *
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { Collection }                                   from './g3w-collection.js';
@@ -94,8 +92,6 @@ export class ToolBox extends Emitter {
    *
    * Each active edit session is stored here so other parts of the application
    * can resolve the current toolbox and editor state for a given layer.
-   *
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   static _sessions = {};
 
@@ -115,8 +111,6 @@ export class ToolBox extends Emitter {
    * editing session.
    *
    * @type {AbortController|null}
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   #controller = null;
 
@@ -131,8 +125,6 @@ export class ToolBox extends Emitter {
    * Original layer style used before the toolbox switched to the editing style.
    *
    * @type {string|undefined}
-   * 
-   * @since g3w-client-plugin-editing@v4.0.1
    */
   #current_style;
 
@@ -197,8 +189,6 @@ export class ToolBox extends Emitter {
    * OpenLayers event keys registered while the toolbox is in editing mode.
    *
    * @type {Array}
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   #events = [];
 
@@ -221,8 +211,6 @@ export class ToolBox extends Emitter {
    * Total number of rows/features available for the current load request.
    *
    * @type {number}
-   * 
-   * @since g3w-client-plugin-editing@v4.0.0
    */
   #count = 0;
 
@@ -258,14 +246,13 @@ export class ToolBox extends Emitter {
       format:       _config.vector.format,
       constraints:  _config.constraints ?? {},
       capabilities: _config.capabilities || ['add_feature', 'change_feature', 'change_attr_feature', 'delete_feature' ], // default editing capabilities
-      form:         { perc: null },                             // set editing form `perc` to null at beginning
+      form:         { perc: null },                              // set editing form `perc` to null at beginning
       style:        _config.vector.style,                        // get vector layer style
       geometrytype: _config.vector.geometrytype,                 // whether is a vector layer,
-      visible:      _config.vector.editing?.visible ?? true,     // whether a layer should be editable directly (true) or through relation layer (false)
-      layer_style:  _config.vector.editing?.layer_style ?? null, // @since v4.0.0 check if has a layer style to for editing form
-      inediting:    false, //@since 4.1.0 add in editng attribute when open editting panel,
-      //@since 4.0.0 set editing url
-      urls: {
+      visible:      _config.vector.editing?.visible     ?? true, // whether a layer should be editable directly (true) or through relation layer (false)
+      layer_style:  _config.vector.editing?.layer_style ?? null, // whether has a layer style to for editing form
+      inediting:    false,                                       // add in editng attribute when open editting panel,
+      urls: {                                                    // set editing url
         editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${_layer.getId()}/`,
       }
     };
@@ -343,8 +330,6 @@ export class ToolBox extends Emitter {
      * Check if layer has relation 1:1 (type ONE) and if fields
      *
      * belongs to relation where child layer is editable
-     *
-     * @since g3w-client-plugin-editing@v3.7.0
      */
     getCatalogLayerById(layer.getId())
       .getRelations()
@@ -380,7 +365,7 @@ export class ToolBox extends Emitter {
     const isMultiGeometry    = geometryType && Geometry.isMultiGeometry(geometryType);
     const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
 
-    //@since 3.9.0 Check if layer has "relation layers" that are editable
+    // Check if layer has "relation layers" that are editable
     const editable_relations = layer.getRelations().getArray()
       .filter(relation => {
         const l = getCatalogLayerById(getRelationId({ layerId: layer.getId(), relation }));
@@ -658,7 +643,7 @@ export class ToolBox extends Emitter {
             new OpenFormStep({ multi: true }),
           ],
         }),
-        // @since 3.9.0  Edit Attributes of relations features to Multi features
+        // Edit Attributes of relations features to Multi features
         (is_vector) && capabilities.includes('change_attr_feature') && editable_relations.filter(r => 'ONE' !== r.getType()).length > 0 && new Tool({
           id:   'editmultiattributesrelationfeatures',
           type: ['change_attr_feature'],
@@ -883,8 +868,8 @@ export class ToolBox extends Emitter {
                   await tool.start({
                   context: {
                     session,        
-                    excludeFields:  fields.ownField,                                 // array of fields to be excluded
-                    isContentChild: false, //@since 3.9.0 force child to false
+                    excludeFields:  fields.ownField, // array of fields to be excluded
+                    isContentChild: false,           // force child to false
                   },
                   inputs: {
                     layer: rLayer,
@@ -919,7 +904,7 @@ export class ToolBox extends Emitter {
             new MoveFeatureStep(),
           ],
         }),
-         // @since v4.0.0 Rotate Feature. Check, in case of Point geometry, if layer has rotation input field
+         // Rotate Feature. Check, in case of Point geometry, if layer has rotation input field
          (is_line || is_poly || is_point && (layer.state.editing.fields || []).find(f => 'rotation' === f.name )) && capabilities.includes('change_feature') && new Tool({
           id:           'rotatefeature',
           type:         ['change_feature'],
@@ -995,16 +980,9 @@ export class ToolBox extends Emitter {
             steps: [
               new Step({
                 layer,
-                //@since 3.9.0 to show user message steps
                 steps: {
-                  chooselayer: {
-                    description: `editing.select_layer`,
-                    done:         false,
-                  },
-                  selectgeometry: {
-                    description: `editing.selectPoint`,
-                    done:        false,
-                  }
+                  chooselayer:    { description: `editing.select_layer`, done: false, },
+                  selectgeometry: { description: `editing.selectPoint`, done: false,  }
                 },
                 run(inputs, context) {
                   return new Promise((resolve, reject) => {
@@ -1191,7 +1169,6 @@ export class ToolBox extends Emitter {
                 }
               },
               async run(inputs) {
-                /** @since g3w-client-plugin-editing@v3.8.0 */
                 const promise = new Promise((resolve, reject) => {
                   this.reject = reject;
                   if (0 === inputs.features.length) {
@@ -1209,13 +1186,11 @@ export class ToolBox extends Emitter {
                     new ol.interaction.Snap({ edge: false, features: new ol.Collection(inputs.features) })
                   );
                 })
-                /** @since g3w-client-plugin-editing@v3.8.0 */
                 setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle })
                 return promise;
               },
               stop() {
-                /** @since g3w-client-plugin-editing@v3.8.0 */
-                //Always resolve promise (in case of a press esc key)
+                // always resolve promise (in case of a press esc key)
                 this.reject();
                 this.reject = null;
               },
@@ -1297,10 +1272,9 @@ export class ToolBox extends Emitter {
                   );
                 });
 
-                /** @since g3w-client-plugin-editing@v3.8.0 */
                 setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
                 return promise;
-                
+
               },
               stop() {
                 this.reject();
@@ -1490,7 +1464,6 @@ export class ToolBox extends Emitter {
                 }
               },
               async run(inputs, context) {
-                /** @since g3w-client-plugin-editing@v3.8.0 */
                 const source  = getEditingLayer(inputs.layer).getSource();
                 
                 const promise = new Promise((resolve, reject) => {
@@ -1525,8 +1498,8 @@ export class ToolBox extends Emitter {
                           }
                         }
 
-                        /** @since g3w-client-plugin-editing@v3.8.0 */
                         (isSplitted ? resolve : reject)(inputs);
+
                         //need to set timeout promise, because at the end of the tool all user messages are cleared
                         await new Promise(r => setTimeout(r, 600));
                         GUI.showUserMessage({
@@ -1542,7 +1515,6 @@ export class ToolBox extends Emitter {
                   );
                 })
 
-                /** @since g3w-client-plugin-editing@v3.8.0 */
                 setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
 
                 return promise;
@@ -1718,7 +1690,9 @@ export class ToolBox extends Emitter {
     // BACKOMP v3.x
     this.originalState     = this.state.originalState;
 
-    // @since v3.8.0 constraint messages to show
+    /**
+     * constraint messages to show
+     */
     this.messages = {
       //set message of scale constraint
       constraint: {
@@ -1809,8 +1783,6 @@ export class ToolBox extends Emitter {
    * @param {Array} [params.splittedGeometries=[]] Geometry fragments to apply.
    * 
    * @returns {Promise<Array>} Array of generated features.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   async #handleSplitFeature({
     feature,
@@ -2051,7 +2023,7 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @since 3.8.0 Handle scale constraint
+   * Handle scale constraint
    */
   async #handleScaleConstraint() {
     // wait until previous toolbox is un-selected to prevent conflicts when running "GUI.setModal" and `control.setMouseCursor`.
@@ -2390,8 +2362,6 @@ export class ToolBox extends Emitter {
    * @param {boolean} [opts.relations=true] Whether relation changes must be committed.
    * 
    * @returns {Promise<*>} Server response for the save transaction.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   save({
     ids         = null,
@@ -2426,7 +2396,7 @@ export class ToolBox extends Emitter {
       
         this.clearHistory();
 
-        /** @since v3.9.0 After commit get new unique values */
+        // After commit get new unique values
         this._session.saveChangesOnServer(commit);
 
         resolve({ commit, response });
@@ -2849,7 +2819,7 @@ export class ToolBox extends Emitter {
         activeTool.off();
         await this._stopTool(activeTool, true);
       }
-      //@since 3.9.1 Changed to set empty array cause reactivity of vue instead of splice(0)
+      // set empty array cause reactivity of vue instead of splice(0)
       this.state.toolsoftool       = [];
       this.state.activetool        = null;
     } catch(e) {
@@ -2911,9 +2881,9 @@ export class ToolBox extends Emitter {
       });
     }
     this.state._disabledtools = null;
-    /** since 3.9.0  set show based on visibile property of config editing object setting*/
+    // set show based on visibile property of config editing object setting
     this.state.show           = this.state.layer.state.editing.visible;
-    //need to set selected false
+    // need to set selected false
     this.state.selected = false;
   }
 
@@ -2925,10 +2895,8 @@ export class ToolBox extends Emitter {
    *
    * @param {string|number} uniqueId Unique transaction identifier.
    * @param {Array} items Session items produced by the current action.
-   * 
+   *
    * @returns {Promise<string|number>} The transaction identifier used for the history entry.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    * 
    * @fires Tool#stop
    */
@@ -2968,8 +2936,6 @@ export class ToolBox extends Emitter {
    * and moves the cursor back to the previous history entry.
    *
    * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the undo action.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __undo() {
     let items;
@@ -2996,8 +2962,6 @@ export class ToolBox extends Emitter {
    * items that must be re-applied to the local editing store.
    *
    * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the redo action.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __redo() {
     let items;
@@ -3029,8 +2993,6 @@ export class ToolBox extends Emitter {
    * @param {string|number} id Transaction identifier.
    * 
    * @returns {Object|undefined} Matching state entry or undefined when absent.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __getState(id) {
     return this.#states.find(s => id === s.id);
@@ -3038,8 +3000,6 @@ export class ToolBox extends Emitter {
 
   /**
    * @returns { boolean } true if we can commit
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __canCommit() {
     const checkCommitItems = this.__commit();
@@ -3054,8 +3014,6 @@ export class ToolBox extends Emitter {
 
   /**
    * canUdo method
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __canUndo() {
     let currentStateIndex = null;
@@ -3074,8 +3032,6 @@ export class ToolBox extends Emitter {
 
   /**
    * canRedo method
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __canRedo() {
     this.#constrains.redo = (
@@ -3091,8 +3047,6 @@ export class ToolBox extends Emitter {
    * update and delete operations ready to be serialized for the backend.
    *
    * @returns {Object<string, Array>} Commit candidate map keyed by layer id.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __commit() {
     const commitItems = {};
@@ -3141,8 +3095,6 @@ export class ToolBox extends Emitter {
    * Returns the latest transaction snapshot stored in the edit history.
    *
    * @returns {{ id: string|number, items: Array }|null} Latest history entry or null when empty.
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   getLastHistoryState() {
     return this.#states.at(-1) || null;
@@ -3152,8 +3104,6 @@ export class ToolBox extends Emitter {
    * Reports whether the current editing session has already been initialized.
    *
    * @returns {boolean} True when the session is active.
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   isSessionStarted() {
     return !!this.state.editing.session.started;
@@ -3164,8 +3114,6 @@ export class ToolBox extends Emitter {
    * 
    * @param { { layerId: string, feature: * } } NewFeat 
    * @param { { layerId: string, feature: * } } OldFeat
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __push(newFeat, oldFeat) {
     this.state.editing.session.changes.push(oldFeat ? [oldFeat, newFeat] : newFeat); // check is set old (edit)
@@ -3176,8 +3124,6 @@ export class ToolBox extends Emitter {
    * 
    * @param layerId
    * @param feature
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   pushDelete(layerId, feature) {
     this.__push({ layerId, feature: feature.delete() });
@@ -3188,14 +3134,11 @@ export class ToolBox extends Emitter {
    * Save temporary changes to the layer in history instance and feature store
    * 
    * @param options
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   async __save(options = {}) {
     // add temporary modify to history
     if (this.state.editing.session.changes.length > 0) {
-      //@since 3.9.1 get array of uniqueIds
-      //case of modify vertex. Multi changes in one save
+      //  get array of uniqueIds. Case of modify vertex. Multi changes in one save
       const uniqueId = options.id || Date.now();
       await this.__add(uniqueId, this.state.editing.session.changes);
       // clear to temporary changes
@@ -3212,8 +3155,6 @@ export class ToolBox extends Emitter {
    * @param layerId 
    * @param feature 
    * @param removeNotEditableProperties
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   pushAdd(layerId, feature, removeNotEditableProperties=true) {
     /**
@@ -3245,8 +3186,6 @@ export class ToolBox extends Emitter {
    * @param layerId
    * @param newFeature
    * @param oldFeature
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   pushUpdate(layerId, newFeature, oldFeature) {
     // get index of temporary changes
@@ -3275,8 +3214,6 @@ export class ToolBox extends Emitter {
    *
    * @param {Array} [items=[]] Session items to apply.
    * @param {boolean} [reverse=true] Whether the operation should be reversed.
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   __setChanges(items = [], reverse = true) {
     /** known actions */
@@ -3289,16 +3226,13 @@ export class ToolBox extends Emitter {
       if (reverse) {
         item.feature[Actions[item.feature.getAction()].opposite]();
       }
-      // get method from object
-      //@since 3.9.1 need to clone it otherwise it replace
+      // get method from object. Need to clone it otherwise it replace.
       this._featuresstore[Actions[item.feature.getAction()].fnc](item.feature.clone());
     });
   }
 
   /**
    * @param changes
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   async rollback(changes) {
     // skip when..
@@ -3336,8 +3270,6 @@ export class ToolBox extends Emitter {
 
   /**
    * @param items session items
-   *
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   undo(items) {
     items = items || this.__undo();
@@ -3348,8 +3280,6 @@ export class ToolBox extends Emitter {
 
   /**
    * @param items session items
-   *
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   redo(items) {
     items = items || this.__redo();
@@ -3371,8 +3301,6 @@ export class ToolBox extends Emitter {
    *   delete: Array,
    *   relations: Object
    * }} Commit payload for the server API.
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   getCommitItems() {
     const itemsToCommit = this.__commit();
@@ -3400,7 +3328,7 @@ export class ToolBox extends Emitter {
           add:       [],
           update:    [],
           delete:    [],
-          relations: {} //@since v3.7.1
+          relations: {},
         };
         layer = commitObj.relations[key];
       } else {
@@ -3462,7 +3390,8 @@ export class ToolBox extends Emitter {
       .map(id => {
         const fatherId = ToolBox._sessions[id]._editor.getLayer().getRelations().getArray()
           .find(r => id === r.getChild()).getFather() // parent relation layer
-        //@since 4.1.0 In case of missing changes child relaztion, need to create relation object with empty changes to mantain relation structure in commit object
+        // In case of missing changes child relaztion, need to create relation object
+        // with empty changes to mantain relation structure in commit object
         if (!commitObj.relations[fatherId]) {
           commitObj.relations[fatherId] = { 
             lockids:   ToolBox._sessions[fatherId]._editor.getLockIds?.() || [],
@@ -3486,8 +3415,6 @@ export class ToolBox extends Emitter {
    *
    * This keeps the toolbox ready for a fresh cycle without retaining temporary
    * transaction data from the previous session.
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   __clearSession() {
     this.state.editing.session.started     = false;
@@ -3501,8 +3428,6 @@ export class ToolBox extends Emitter {
    * When no ids are given, the entire history is reset. When a subset is	handed, only the matching transaction entries are removed.
    *
    * @param {Array<string|number>} [ids] Transaction ids to remove from history.
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   clearHistory(ids) {
     if (ids) {
@@ -3635,8 +3560,6 @@ export class ToolBox extends Emitter {
    * @param { number[] } options.filter.bbox bounding box Array [xmin, ymin, xmax, ymax]
    *
    * @returns { boolean } whether can perform a server request
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   async ___getFeatures(options = {}) {
     const layerId = this.getId();
@@ -3675,8 +3598,8 @@ export class ToolBox extends Emitter {
     }
 
     const url = `${ApplicationState.project.state.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`;
-    
-    /**@since 4.1.0 - Add signal to stop request */
+
+    // signal to stop request
     this.#controller  = new AbortController();
     const signal = this.#controller.signal; 
 
@@ -3833,8 +3756,6 @@ export class ToolBox extends Emitter {
   /**
    * Hook to get informed that are saved on server
    * Get unique id for each commited layer/relation
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   async saveChangesOnServer(commit) {
     const promises = [ setLayerUniqueFieldValues(this.getId()) ];
@@ -3851,9 +3772,7 @@ export class ToolBox extends Emitter {
     await Promise.allSettled(promises);
   }
 
-  /**
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
+  /** @TODO add description */
   async _startTool(tool) {
     tool.active       = true;
     const hideSidebar = !!GUI.isMapHidden();
@@ -3890,9 +3809,7 @@ export class ToolBox extends Emitter {
   }
 
 
-  /**
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
+  /** @TODO add description */
   async _stopTool(tool, force = false) {
     try {
       await tool.stop(force); // stop tool binded to tool
@@ -3916,8 +3833,6 @@ export class ToolBox extends Emitter {
    * @param {Object} commit Server response payload for the committed items.
    * 
    * @returns {Promise<Object>} Normalized server response.
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   async __commitToEditor(commit) {
 
@@ -3950,7 +3865,7 @@ export class ToolBox extends Emitter {
       commit.lockids = GUI.getPlugin('editing').state.lock_ids[layerId];
       response = await XHR.post({
         url:         `${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`,
-        //@since 4.0.1 need to add style parameter to commit url in case of layer has a specific editing style
+        // add style parameter to commit url in case of layer has a specific editing style
         data:        JSON.stringify(Object.assign(commit, { style: this.state.layer.config?.editing?.layer_style || undefined })),
         contentType: 'application/json',
       });
@@ -4021,7 +3936,7 @@ export class ToolBox extends Emitter {
 
     });
 
-    //@since 3.9.0 take in account update properties returned by server (Useful in case of media input changes)
+    // take in account update properties returned by server (Useful in case of media input changes)
     (response.response.update || []).forEach(({ id, properties } = {}) => {
       //get feature from current layer in editing
       const feature  = this._featuresstore.getFeatureById(id);
@@ -4087,8 +4002,6 @@ export class ToolBox extends Emitter {
 
   /**
    * start editing
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   async __startEditor(options = {}) {
     const features = await this._editor.getFeatures(options); // load layer features based on filter type
@@ -4098,8 +4011,6 @@ export class ToolBox extends Emitter {
 
   /**
    * stop editor (unlock)
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   async __stopEditor() {
     this.#controller?.abort(); //abort request if exist
@@ -4116,8 +4027,6 @@ export class ToolBox extends Emitter {
    * logic that must know whether more items are available on the backend.
    *
    * @returns {number} Feature count.
-   * 
-   * @since 4.0.0
    */
   getCount() {
     return this.#count;
@@ -4129,8 +4038,6 @@ export class ToolBox extends Emitter {
    * It clears the loaded feature set, aborts pending fetches, resets the lock
    * registry and empties the local editing collection so the layer is ready for
    * a new lifecycle.
-   *
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   __clearEditor() {
     this.#started     = false;
@@ -4151,30 +4058,22 @@ export class ToolBox extends Emitter {
 
   /**
    * @returns { boolean } whether temp changes are waiting to save on server
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   hasPendingCommits() {
     return this.#constrains.commit;
   }
 
-  /**
-   * @since g3w-client-plugin-editing@v4.1.0
-   */
+  /** @TODO add description */
   getFeaturesCollection() {
     return this._collection._store;
   }
 
-  /**
-   * @since g3w-client-plugin-editing@v4.1.0
-   */
+  /** @TODO add description */
   getEditingSource() {
     return this._featuresstore;
   }
 
-  /**
-   * @since g3w-client-plugin-editing@v4.1.0
-   */
+  /** @TODO add description */
   readEditingFeatures() {
     return this._collection.getArray();
   }

@@ -1,7 +1,5 @@
 /**
  * @file
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
@@ -27,8 +25,6 @@ export class AddFeatureStep extends Step {
 
   /**
    * Handle tasks that stops after `run(inputs, context)` promise (or if ESC key is pressed)
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   _stopPromise;
 
@@ -61,7 +57,6 @@ export class AddFeatureStep extends Step {
       // Skip when a layer type is vector
       if ('vector' !== inputs.layer.getType()) { return  }
 
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       setAndUnsetSelectedFeaturesStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
 
       const originalGeometryType = inputs.layer.state.editing.geometrytype;

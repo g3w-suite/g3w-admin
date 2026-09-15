@@ -7,9 +7,7 @@
  * @param opts.layerId
  * @param opts.relation
  *
- * @returns {{ ownField: [], relationField: [] }} `ownField` and `relationField` are Arrays since g3w-client-plugin-editing@v3.7.0
- * 
- * @since g3w-client-plugin-editing@v3.8.0
+ * @returns {{ ownField: [], relationField: [] }}
  */
 export function getRelationFieldsFromRelation({
   layerId,

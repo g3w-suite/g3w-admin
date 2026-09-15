@@ -11,8 +11,6 @@ const { XHR } = g3w.utils;
  * @param { string } layerId
  *
  * @returns { Promise<*> }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function setLayerUniqueFieldValues(layerId) {
   await new Promise(async (resolve, reject) => {

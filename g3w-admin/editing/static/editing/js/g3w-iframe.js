@@ -1,8 +1,6 @@
 /**
  * @file
  * 
- * @since 4.1.0
- * 
  * @example template.html
  * 
  * ```html
@@ -52,7 +50,7 @@ export class IframeEditor extends Emitter {
   };
 
   /**
-   * @since 4.0.3 - array of OL Interactions
+   * Array of OL Interactions
    */
   #interactions = [];
 
@@ -329,8 +327,6 @@ export class IframeEditor extends Emitter {
    * @param { string } qgs_layer_id                                  - layer id
    * @param {*} geojson                                              - spatial data 
    * @returns
-   * 
-   * @since 4.0.3
    */
   async 'editing:json'({ qgs_layer_id, geojson, method }) {
     const VECTOR_URL = ApplicationState.project.state.vectorurl;

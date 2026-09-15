@@ -13,8 +13,6 @@ const GUI = g3w.app;
  * @param opts.feature
  *
  * @returns { Array }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export function getRelationsInEditingByFeature({
   layerId,
@@ -47,7 +45,7 @@ export function getRelationsInEditingByFeature({
           .map(relation => ({
             fields: getFieldsWithValues(layer, relation, { relation: true }),
             id:     relation.getId(),
-            select: false, /** @since v3.9.0 Used to set relation select or not **/
+            select: false, // whether select relation
           }))
       };
       relationinediting.validate = { valid: true };

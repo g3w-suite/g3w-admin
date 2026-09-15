@@ -1,9 +1,7 @@
 const GUI = g3w.app;
 const _   = g3w.gettext;
 
-/**
- * @since g3w-client-plugin-editing@v3.5.13
- */
+/** @TODO add description */
 export function chooseFeatureFromFeatures({
   features = [],
   inputs

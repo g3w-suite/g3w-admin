@@ -13,8 +13,6 @@ const _   = g3w.gettext;
  * @param relations
  * @param index
  * @param dialog
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function unlinkRelation({
   layerId,

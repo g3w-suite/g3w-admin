@@ -1,9 +1,7 @@
 import { Feature }         from '../g3w-feature.js';
 import { getEditingLayer } from '../utils/getEditingLayer.js';
 
-/**
- * @since g3w-client-plugin-editing@v3.8.0
- */
+/** @TODO add description */
 export async function addTableFeature(inputs, context) {
   let feature;
 

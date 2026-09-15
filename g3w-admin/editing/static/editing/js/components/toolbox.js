@@ -1,7 +1,5 @@
 /**
  * @file Editing toolbox (left menu)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { setVertexStyle }      from '../utils/setVertexStyle.js';
@@ -228,7 +226,6 @@ export default ({
   data() {
     return {
       active:      false,
-      //@since 3.8.0
       toggled:     {
         relation: false, //click on relation icon
         layer:    false, //click on pencil icon
@@ -239,25 +236,18 @@ export default ({
 
   computed: {
 
-    /**
-     * @returns @since 4.0.0
-     * 
-     */
+    /** @TODO add description */
     helpmessage() {
       return this.state.activetool?.helpMessage ?? this.state.activetool?.name;
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.7.0
-     */
+    /** @TODO add description */
     editDisabled() {
       return this.state.loading && !this.state.startstopediting || (this.state.editing.on && !!this.state.activetool?.disableEdit);
     },
 
     /**
      * @returns { boolean } whether current has related layer(s) (aka. layer relations / joins)
-     *
-     * @since g3w-client-plugin-editing@v3.7.0
      */
     hasRelations() {
       return this.state.editing.dependencies.length > 0;
@@ -302,9 +292,7 @@ export default ({
       return (!this.isLayerReady || !this.canEdit) ? `url(${this.resourcesurl}cursors/mZoomIn.svg), zoom-in` : undefined;
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.9.0
-     */
+    /** @TODO add description */
     get_tool_title() {
       return title => ApplicationState.language && _(`plugins.${title}`);
     },
@@ -324,8 +312,6 @@ export default ({
 
     /**
      * Handle click to fit zoom scale
-     * 
-     * @since g3w-client-plugin-editing@v3.9.0 
      */
     fitZoomToScale() {
       if (this.state.selected && !this.canEdit) {
@@ -354,8 +340,6 @@ export default ({
     /**
      * @fires setactivetool
      * @fires stopactivetool
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     toggleTool(toolId) {
       if (undefined === toolId) {
@@ -366,20 +350,16 @@ export default ({
       this.select();
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     toggleFilterByRelation() {
       this.toggled.relation = !this.toggled.relation;
       this.$emit('update-filter-layers', this.toggled.relation ? [this.state.id, ...this.state.editing.dependencies] : []);
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     _initSnap(tool) {
 
-      //@since 4.1.0 store current selected features uid and relative style
+      // store current selected features uid and relative style
       this.uidsstyles    = []
 
       /**
@@ -436,9 +416,7 @@ export default ({
 
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     addSnapFeatures(features = []) {
       //get current uid and style of selected features
       this.uidsstyles = this.state.activetool.getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
@@ -459,9 +437,7 @@ export default ({
         });
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     setShowSnapAll(tool) {
       this.snapAll            = !!this.snapToolboxes.find(editing => editing.on);
       tool.options.checkedAll = tool.options.showSnapAll ? tool.options.checkedAll : false;
@@ -483,9 +459,7 @@ export default ({
       }
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     handleSnapInteractionFeatures({ tool, active, all } = {}) {
       // snap = true
       if (active) {
