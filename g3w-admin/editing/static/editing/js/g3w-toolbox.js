@@ -278,6 +278,14 @@ export class ToolBox extends Emitter {
       layer = new Layer(_layer.state, { TYPE: 'vector' });
     }
 
+    const is_vector          = [undefined, 'vector'].includes(layer.getType());
+    const geometryType       = is_vector && layer.getGeometryType();
+    const is_point           = is_vector && Geometry.isPointGeometryType(geometryType);
+    const is_line            = is_vector && Geometry.isLineGeometryType(geometryType);
+    const is_poly            = is_vector && Geometry.isPolygonGeometryType(geometryType);
+    const is_table           = 'table' === layer.getType();
+    const isMultiGeometry    = geometryType && Geometry.isMultiGeometry(geometryType);
+    const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
 
     this._collection = new Collection('table' !== _layer.getType());
 
@@ -322,6 +330,26 @@ export class ToolBox extends Emitter {
       clear:               this.#clearEditor.bind(this),
     });
 
+    // Set editing layer color and toolbox style
+    if (!layer.getColor()) {
+      layer.setColor(layer.isGeoLayer() ? [
+        "#C43C39", "#d95f02", "#91522D", "#7F9801", "#0B2637",
+        "#8D5A99", "#85B66F", "#8D2307", "#2B83BA", "#7D8B8F",
+        "#E8718D", "#1E434C", "#9B4F07", '#1b9e77', "#FF9E17",
+        "#7570b3", "#204B24", "#9795A3", "#C94F44", "#7B9F35",
+        "#373276", "#882D61", "#AA9039", "#F38F3A", "#712333",
+        "#3B3A73", "#9E5165", "#A51E22", "#261326", "#e4572e",
+        "#29335c", "#f3a712", "#669bbc", "#eb6841", "#4f372d",
+        "#cc2a36", "#00a0b0", "#00b159", "#f37735", "#ffc425",
+      ][Object.keys(ToolBox._sessions).length % 40] : '#fff');
+    }
+
+    //set vector layer source
+    if (is_vector) {
+      layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
+    }
+
+
     this.on('start-editing', this.#onEditingStart.bind(this));
 
     /**
@@ -341,34 +369,6 @@ export class ToolBox extends Emitter {
           .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())  // father layer fields (in editing)
           .forEach(f => { f.editable = (f.editable && isChildEditable); });      // current editable boolean value + child editable layer
       });
-
-    // Set editing layer color and toolbox style
-    if (!layer.getColor()) {
-      layer.setColor(layer.isGeoLayer() ? [
-        "#C43C39", "#d95f02", "#91522D", "#7F9801", "#0B2637",
-        "#8D5A99", "#85B66F", "#8D2307", "#2B83BA", "#7D8B8F",
-        "#E8718D", "#1E434C", "#9B4F07", '#1b9e77', "#FF9E17",
-        "#7570b3", "#204B24", "#9795A3", "#C94F44", "#7B9F35",
-        "#373276", "#882D61", "#AA9039", "#F38F3A", "#712333",
-        "#3B3A73", "#9E5165", "#A51E22", "#261326", "#e4572e",
-        "#29335c", "#f3a712", "#669bbc", "#eb6841", "#4f372d",
-        "#cc2a36", "#00a0b0", "#00b159", "#f37735", "#ffc425",
-      ][Object.keys(ToolBox._sessions).length % 40] : '#fff');
-    }
-
-    const is_vector          = [undefined, 'vector'].includes(layer.getType());
-    const geometryType       = is_vector && layer.getGeometryType();
-    const is_point           = is_vector && Geometry.isPointGeometryType(geometryType);
-    const is_line            = is_vector && Geometry.isLineGeometryType(geometryType);
-    const is_poly            = is_vector && Geometry.isPolygonGeometryType(geometryType);
-    const is_table           = 'table' === layer.getType();
-    const isMultiGeometry    = geometryType && Geometry.isMultiGeometry(geometryType);
-    const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
-
-    //set vector layer source
-    if (is_vector) {
-      layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
-    }
 
     // Check if layer has "relation layers" that are editable
     const editable_relations = layer.getRelations().getArray()
