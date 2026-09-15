@@ -1,0 +1,46 @@
+{% extends "base_login.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block login_page_box_body %}
+  <div class="register-box-body">
+    <h4 style="text-align: center">{% trans 'Activate your account' %}</h4>
+    <p class="register-box-msg">
+        {% trans 'Click the button below to activate your account.' %}
+    </p>
+    {% if form.errors %}
+    <div class="alert alert-danger alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+      <h4><i class="icon fa fa-ban"></i> {% trans 'ERROR' %}!</h4>
+      {{ form.errors }}
+    </div>
+    {% endif %}
+    <form method="post" action="">
+      {% csrf_token %}
+
+      <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" name="{{form.activation_key.name}}" placeholder="{{form.activation_key.label|capfirst}}" value="{{ view.kwargs.activation_key|default:form.activation_key.value|default:'' }}">
+                <span class="glyphicon glyphicon-key form-control-feedback"></span>
+                {% if form.activation_key.help_text %}
+                <p class="help">{{ form.activation_key.help_text|safe }}</p>
+                {% endif %}
+            </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">
+            {% trans 'Activate' %}
+          </button>
+        </div>
+      </div>
+    </form>
+    {% if activation_error %}
+      <p class="register-box-msg text-danger" style="margin-top: 15px;">
+        {% trans 'Activation error' %}: {{ activation_error.message }}
+      </p>
+    {% endif %}
+  </div><!-- /.login-box-body -->
+{% endblock %}
