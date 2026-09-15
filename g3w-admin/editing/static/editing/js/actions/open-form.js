@@ -1,9 +1,5 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { getParentFormData }                from '../utils/getParentFormData.js';
@@ -16,35 +12,27 @@ import { getFieldsWithValues }              from '../utils/getFieldsWithValues.j
 import { isPkField }                        from '../utils/isPkField.js';
 import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
 
-import { Workflow }                         from '../g3w-workflow.js';
+import { Tool }                             from '../g3w-tool.js';
 import { Step }                             from '../g3w-step.js';
 
 const GUI                                   = g3w.app;
 const { FormService }                       = g3wsdk.gui.vue.services;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/openformtask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/openformstep.js@v3.7.1
- */
 export class OpenFormStep extends Step {
 
   constructor(opts = {}) {
 
-    opts.help = "editing.steps.help.insert_attributes_feature";
+    opts.help = "editing.insert_attributes_feature";
 
     super(opts);
 
     /**
      * Show saveAll button
-     *
-     * @since v3.7
      */
     this._saveAll = false === opts.saveAll ? opts.saveAll : async () => {};
 
-     /**
+    /**
      * In case of commit error from saveAll methods, need to set it to true to undo changes
-     * @since 4.0.1
-     * 
      */
     this._saveAllError = false;
 
@@ -79,14 +67,13 @@ export class OpenFormStep extends Step {
     this.promise;
 
     /**
-     * @since g3w-client-plugin-editing@v3.7.0
+     * @TODO add description
      */
     this._unwatchs = [];
 
   }
 
   /**
-   * @since v3.7
    * @param bool
    */
   updateMulti(bool = false) {
@@ -100,14 +87,13 @@ export class OpenFormStep extends Step {
    * @returns {*}
    */
   async run(inputs, context) {
-    //@since 3.9.0 can set isContentChild attribute to force it
-    // (case edit relation features from multi-parent features)
-    this._isContentChild   = context?.isContentChild ?? Workflow.Stack.length > 1;
+    GUI.setModal(true);
+    // set isContentChild attribute to force it (case edit relation features from multi-parent features)
+    this._isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
     this.layerId           = inputs.layer.getId();
     this._features         = this._multi ? inputs.features : [inputs.features[inputs.features.length - 1]];
     this._originalFeatures = this._features.map(f => f.clone());
 
-    //@since 3.9.0 promise
     const promise = new Promise((resolve) => {
       GUI.getPlugin('editing').once(`closeform_${this.layerId}`, () => resolve());
     })
@@ -148,17 +134,15 @@ export class OpenFormStep extends Step {
       });
 
       // set fields. Useful getParentFormData
-      Workflow.Stack.current.setInput({ key: 'fields', value: fields });
+      Tool.Stack.current.setInput({ key: 'fields', value: fields });
 
       // whether disable relations editing (ref: "editmultiattributes")
       const feature = !this._multi && inputs?.features?.[inputs.features.length - 1];
       const layerId = !this._multi && inputs.layer.getId();
 
-      // @since g3w-client-plugin-editing@v3.7.2
       // skip relations that don't have a form structure
       if (feature && !feature.isNew() && inputs.layer.getLayerEditingFormStructure()) {
         await getLayersDependencyFeatures(inputs.layer.getId(), {
-          // @since g3w-client-plugin-editin@v3.7.0
           relations: inputs.layer.getRelations().getArray().filter(r =>
             inputs.layer.getId() === r.getFather() && // get only child relation features of current editing layer
             getEditingLayerById(r.getChild()) &&      // child layer is in editing
@@ -169,8 +153,6 @@ export class OpenFormStep extends Step {
         });
       }
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/form/editingform.js@v3.7.8 */
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/form/editingformservice.js@v3.7.8 */
       const formService = GUI.showForm({
         feature:         this._originalFeatures[0],
         title:           "plugins.editing.editing_attributes",
@@ -185,8 +167,8 @@ export class OpenFormStep extends Step {
         context_inputs:  this._multi ? false: { context, inputs },
         formStructure:   inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
         modal:           true,
-        push:            this._options.push || this._isContentChild, /** @since v3.7 force push content on top without clear previous content */
-        showgoback:      this._options?.showgoback ?? !this._isContentChild, /** @since v3.7 force show back button */
+        push:            this._options.push || this._isContentChild,         // force push content on top without clear previous content
+        showgoback:      this._options?.showgoback ?? !this._isContentChild, // force show back button
         /** @TODO make it straightforward: `headerComponent` vs `buttons` ? */
         headerComponent: this._saveAll && {
           template: /* html */ `
@@ -208,7 +190,6 @@ export class OpenFormStep extends Step {
                   ></i>
                 </span>
               </div>
-              <!-- @since 3.9.0 -->
               <div
                 v-if       = "isChild"  
                 class      = "close-form-button"
@@ -232,12 +213,12 @@ export class OpenFormStep extends Step {
             props: { update: { type: Boolean }, valid: { type: Boolean } },
             data() {
               return {
-                enabled: Workflow.Stack.items.slice(0, Workflow.Stack.length - 1)
+                enabled: Tool.Stack.items.slice(0, Tool.Stack.length - 1)
                   .every(w => {
                     const valid = ((w.getContext().service instanceof FormService) ? w.getContext().service.getState() : {}).valid;
                     return valid || undefined === valid;
                   }),
-                isChild: Workflow.Stack.length > 1 && !(2 === Workflow.Stack.length && Workflow.Stack.at(0).isType('edittable'))
+                isChild: Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable'))
               };
             },
             computed: {
@@ -249,8 +230,6 @@ export class OpenFormStep extends Step {
             methods: {
               /**
                * Set this._saveAllError 
-               * @param {@since 4.0.1 } bool 
-               * @returns 
                */
               setError: (bool = false) => this._saveAllError = bool,
               async saveAll() {
@@ -260,14 +239,14 @@ export class OpenFormStep extends Step {
                 GUI.disableContent(true);
                 try {
                 await Promise.allSettled(
-                  [...Workflow.Stack.items]
+                  [...Tool.Stack.items]
                     .reverse()
-                    .filter(w => "function" === typeof w.getLastStep()._saveAll) // need to filter only workflow that
-                    .map( w => new Promise(async (resolve) => {
-                      const task   = w.getLastStep();
+                    .filter(t => "function" === typeof t.getLastStep()._saveAll) // need to filter only tool that
+                    .map( t => new Promise(async (resolve) => {
+                      const task   = t.getLastStep();
                       //get features fields of form service that has value not null to set of all features
-                      const fields = w.getContext().service.state.fields.filter(f => task._multi ? null !== f.value : true);
-                      await Workflow.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
+                      const fields = t.getContext().service.state.fields.filter(f => task._multi ? null !== f.value : true);
+                      await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
                       task._features.forEach(f => _setFieldsWithValues(task.getInputs().layer, f, fields));
                       const newFeatures = task._features.map(f => f.clone());
                       //Is a relation form
@@ -290,11 +269,11 @@ export class OpenFormStep extends Step {
                   await GUI.getPlugin('editing').commit({ modal: false });
                   //set Error to false
                     this.setError(false);
-                  [...Workflow.Stack.items]
+                    [...Tool.Stack.items]
                     .reverse()
-                    .filter(w => "function" === typeof w.getLastStep()._saveAll)
-                    .forEach(w => {
-                      const service = w.getContext().service; //form service
+                    .filter(t => "function" === typeof t.getLastStep()._saveAll)
+                    .forEach(t => {
+                      const service = t.getContext().service; //form service
                       //need to set update form false because already saved on server
                       service.setUpdate(false, { force: false });
                       const feature = service.feature;
@@ -305,7 +284,7 @@ export class OpenFormStep extends Step {
                         service.force.update = false;
                       }
                       Object.entries(
-                        w.getInputs().layer.getEditor().getEditingSource().readFeatures()
+                        t.getInputs().layer.getEditor().getEditingSource().readFeatures()
                           .find(f => f.getUid() === feature.getUid()) //Find current form editing feature by unique id of feature uid
                           .getProperties() //get properties
                       )
@@ -328,7 +307,6 @@ export class OpenFormStep extends Step {
                 GUI.disableContent(false);
               },
               /**
-               * @since 3.9.0
                * Close editing form
                */
               async closeForm() {
@@ -336,10 +314,10 @@ export class OpenFormStep extends Step {
                 const tool = GUI.getPlugin('editing').state.toolboxselected.getActiveTool();
                 //stop active tool and wait
                 await tool.stop();
-                //clear all workflow stacks
-                Workflow.Stack.items.splice(0);
+                //clear all tool stacks
+                Tool.Stack.items.splice(0);
                 //check if the tool needs to run on time. If not, start again
-                if (!tool.getOperator().runOnce) {
+                if (!tool.runOnce) {
                   tool.start();
                 }
               }
@@ -349,13 +327,13 @@ export class OpenFormStep extends Step {
             {
               id:    'save',
               title:  this._isContentChild
-                ? Workflow.Stack.parent.getBackButtonLabel() || "plugins.editing.form.buttons.save_and_back" // get custom back label from parent
-                : "plugins.editing.form.buttons.save",
+                ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" // get custom back label from parent
+                : "plugins.editing.insert_edit",
               type:  "save",
               class: "btn-success",
               // save features
               cbk: async (fields = []) => {
-                const service    = Workflow.Stack.current.getContext().service;
+                const service    = Tool.Stack.current.getContext().service;
                 const hasUpdates = !!service?.state?.fields?.some(f => f.update);    // check for updates in form fields or if the feature is new
                 const isNew      = !!this._originalFeatures?.some(f => f.isNew?.()); // check for new features in form (i.e., features that are not yet saved to the server)
                 const newFeatures = [];
@@ -368,7 +346,6 @@ export class OpenFormStep extends Step {
                   return;
                 }
 
-                // @since 3.5.15
                 GUI.setLoadingContent(true);
                 GUI.disableContent(true);
 
@@ -378,14 +355,14 @@ export class OpenFormStep extends Step {
                   _setFieldsWithValues(inputs.layer, f, fields);
                   newFeatures.push(f.clone());
                 });
-
+              
                 if (this._isContentChild) {
                   inputs.relationFeatures = {
                     newFeatures,
                     originalFeatures: this._originalFeatures
                   };
                 }
-
+            
                 await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
 
                 newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
@@ -401,9 +378,9 @@ export class OpenFormStep extends Step {
                 GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
                 GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
 
-                // sync parent workflows when child is saved.
+                // sync parent tools when child is saved.
                 if (this._isContentChild) {
-                  Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                  Tool.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
                 }
               
                 GUI.setLoadingContent(false);
@@ -415,7 +392,7 @@ export class OpenFormStep extends Step {
             },
             {
               id:    'cancel',
-              title: "plugins.editing.form.buttons.cancel",
+              title: "plugins.editing.ignore_changes",
               type:  "cancel",
               class: "btn-danger",
               /// buttons in case of change
@@ -431,10 +408,10 @@ export class OpenFormStep extends Step {
               },
               cbk: () => {
                 if (this._saveAllError) {
-                  [...Workflow.Stack.items]
+                  [...Tool.Stack.items]
                     .reverse()
-                    .filter(w => "function" === typeof w.getLastStep()._saveAll) // need to filter only workflow that
-                    .map( w => w.getLastStep().getContext().session.undo())
+                    .filter(t => "function" === typeof t.getLastStep()._saveAll) // need to filter only tool that
+                    .map( t => t.getLastStep().getContext().session.undo())
                 }
                 GUI.getPlugin('editing').emit('cancelform', inputs.features); // fire event cancel form to emit to subscribers
                 reject(inputs);
@@ -449,7 +426,7 @@ export class OpenFormStep extends Step {
         // Skip when multi editing features
         // It is not possible to manage relationss when we edit multi-features
         if (this._multi) {
-          GUI.showUserMessage({ type: 'info', message: 'plugins.editing.errors.editing_multiple_relations', duration: 3000, autoclose: true });
+          GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
           return;
         }
         GUI.setLoadingContent(true);
@@ -495,8 +472,8 @@ export class OpenFormStep extends Step {
         }
       );
 
-      // set context service to form Service in case of a single task (i.e., no workflow)
-      Workflow.Stack?.current?.setContextService?.(formService);
+      // set context service to form Service in case of a single task (i.e., no tool)
+      Tool.Stack?.current?.setContextService?.(formService);
 
       //listen eventually field relation 1:1 changes value
       _listenRelation1_1FieldChange({ layerId: this.layerId, fields, formService }).then(d => this._unwatchs = d);
@@ -513,11 +490,11 @@ export class OpenFormStep extends Step {
     this.disableSidebar(false);
 
     //Check if form coming from the parent table component
-    const is_parent_table = false === this._isContentChild || // no child workflow
+    const is_parent_table = false === this._isContentChild || // no child tool
       (
         // case edit feature of a table (edit layer alphanumeric)
-        2 === Workflow.Stack.length && //open features table
-        Workflow.Stack.parent.isType('edittable')
+        2 === Tool.Stack.length && //open features table
+        Tool.Stack.parent.isType('edittable')
       );
     // when the last feature of features is Array
     // and is resolved without setting form service
@@ -527,14 +504,14 @@ export class OpenFormStep extends Step {
       GUI.setModal(false);
     }
 
-    const contextService = is_parent_table && Workflow.Stack.current.getContext().service;
+    const contextService = is_parent_table && Tool.Stack.current.getContext().service;
 
     // force update parent form update
     if (contextService && contextService.setUpdate && false === this._isContentChild) {
       contextService.setUpdate(false, { force: false });
     }
 
-    //@since 3.9.0 add GUI.getContentLength() in case of edit multi relationfeatures tool
+    // add GUI.getContentLength() in case of edit multi relationfeatures tool
     GUI.closeForm({ pop: this.push || this._isContentChild && GUI.getContentLength() > 1 });
 
     GUI.getPlugin('editing').resetCurrentLayout();
@@ -557,8 +534,6 @@ const sortAlphabeticallyArray = (arr) => arr.sort((a, b) => a.localeCompare(b, u
 const sortNumericArray        = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getFormFields.js@v3.7.1
- * 
  * Get form fields
  *
  * @param form.inputs.layer
@@ -645,15 +620,12 @@ function _getFormFields({
   return _handleMulti(fields, multi);
 }
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getFormFields.js@v3.7.1
- */
 function _handleMulti(fields, multi) {
   if (multi) {
     fields = fields.map(field => {
       const f             = JSON.parse(JSON.stringify(field));
       f.value             = null;
-      f._value            = null; // @since v3.9.0 Fix update form field: Set the same value of value
+      f._value            = null; // Fix update form field: Set the same value of value
       f.forceNull         = true;
       f.validate.required = false; //set false because all features have already required field filled
       return f;
@@ -664,15 +636,11 @@ function _handleMulti(fields, multi) {
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/handleRelation1_1LayerFields.js@v4.0.0
- * 
  * Handle layer relation 1:1 features related to feature
  *
  * @param opts.layerId Root layerId
  * @param opts.features Array of update/new features belong to Root layer
  * @param opts.fields Array of form fields father
- *
- * @since g3w-client-plugin-editing@v3.7.0
  */
 async function _handleRelation1_1LayerFields({
   layerId,
@@ -789,8 +757,6 @@ async function _handleRelation1_1LayerFields({
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/listenRelation1_1FieldChange.js@v4.0.0
- * 
  * Listen changes on 1:1 relation fields (get child values from child layer)
  *
  * @param opts.layerId Current editing layer id
@@ -798,8 +764,6 @@ async function _handleRelation1_1LayerFields({
  * @param opts.formService form service
  *
  * @returns Array of watch function event to remove listen
- *
- * @since g3w-client-plugin-editing@v3.7.0
  */
 async function _listenRelation1_1FieldChange({
   layerId,
@@ -896,9 +860,9 @@ async function _listenRelation1_1FieldChange({
               field.editable = locked
                 ? false
                 : editableRelatedFatherChild[fn];
-              //need to check if feature is new and not locked ot not present on a source
+              // need to check if feature is new and not locked ot not present on a source
               field.value = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null;
-              //@since 3.9.0 call change input to run eventually default expression
+              // change input to run eventually default expression
               formService.changeInput(field);
             });
 
@@ -914,15 +878,11 @@ async function _listenRelation1_1FieldChange({
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getRelation1_1ChildFeature.js@v4.0.0
- * 
  * @param { Object } opts
  * @param opts.relation
  * @param opts.fatherFormRelationField
  * 
  * @returns {Promise<{feature: *, locked: boolean}>}
- * 
- * @since g3w-client-plugin-editing@v3.7.0
  */
 async function _getRelation1_1ChildFeature({
   relation,
@@ -1001,8 +961,6 @@ async function _getRelation1_1ChildFeature({
 }
 
 /**
- * ORIGINAL SOURCE: g3w-client/src/map/layers/tablelayer.js@v4.0.0
- * 
  * create attributes from fields
  */
 function _setFieldsWithValues(layer, feature, fields) {

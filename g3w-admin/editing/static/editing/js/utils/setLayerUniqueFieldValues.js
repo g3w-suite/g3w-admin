@@ -2,8 +2,8 @@ const GUI     = g3w.app;
 const { XHR } = g3w.utils;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
  * Method to get unique values of unique input values from server
+ * 
  * It's called
  * - When toolbox start (parent layer and relation)
  * - After commit to server (to get fresh new data)
@@ -11,8 +11,6 @@ const { XHR } = g3w.utils;
  * @param { string } layerId
  *
  * @returns { Promise<*> }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function setLayerUniqueFieldValues(layerId) {
   await new Promise(async (resolve, reject) => {

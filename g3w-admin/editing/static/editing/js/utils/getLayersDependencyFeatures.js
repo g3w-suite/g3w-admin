@@ -6,14 +6,10 @@ const ApplicationState = g3w.state;
 const GUI              = g3w.app;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
- * 
  * @param { string } layerId
  * @param opts
  *
  * @returns { Promise<Awaited<unknown>[]> }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function getLayersDependencyFeatures(layerId, opts = {}) {
 

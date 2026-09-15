@@ -2,8 +2,6 @@ import { Feature }         from '../g3w-feature.js';
 import { getEditingLayer } from '../utils/getEditingLayer.js';
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
- * 
  * Create a new feature
  *
  * @param layerId
@@ -11,8 +9,6 @@ import { getEditingLayer } from '../utils/getEditingLayer.js';
  * @param options.geometry.coordinates
  *
  * @returns { Feature }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export function createFeature(layerId, options = {}) {
   const feature = new Feature();

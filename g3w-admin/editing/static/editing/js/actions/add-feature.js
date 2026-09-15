@@ -1,9 +1,5 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
@@ -17,10 +13,6 @@ const { createMeasureTooltip } = g3w.utils;
 
 const { Geometry }             = g3wsdk.core.geoutils;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addfeaturestep.js@v3.7.1
- */
 export class AddFeatureStep extends Step {
 
   drawInteraction;
@@ -33,14 +25,12 @@ export class AddFeatureStep extends Step {
 
   /**
    * Handle tasks that stops after `run(inputs, context)` promise (or if ESC key is pressed)
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   _stopPromise;
 
 
   constructor(opts = {}) {
-    opts.help = "editing.steps.help.draw_new_feature";
+    opts.help = "editing.draw_new_feature";
 
     super(opts);
 
@@ -67,7 +57,6 @@ export class AddFeatureStep extends Step {
       // Skip when a layer type is vector
       if ('vector' !== inputs.layer.getType()) { return  }
 
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       setAndUnsetSelectedFeaturesStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
 
       const originalGeometryType = inputs.layer.state.editing.geometrytype;

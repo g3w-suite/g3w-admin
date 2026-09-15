@@ -1,13 +1,23 @@
 /**
- * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/toolbox.js@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
+ * @file Handles the editing toolbox lifecycle for a single layer.
+ *
+ * This module is the orchestration layer between the map editing UI, the layer
+ * feature store, and the server-side commit API. Each instance of {@link ToolBox}
+ * builds the available tools for a specific catalog layer, keeps the local
+ * editing state synchronized with the original dataset, and serializes pending
+ * changes into the payload sent to the editing backend.
+ *
+ * Core responsibilities:
+ * - build the list of editing tools according to layer type, geometry and
+ *   capabilities;
+ * - load, track and expose editing features in the local feature store;
+ * - manage session history for undo/redo and temporary pending changes;
+ * - coordinate the lifecycle of tool execution and stop/start editing events;
+ * - serialize commit data for add, update, delete and relation operations.
  */
 
 import { Collection }                                   from './g3w-collection.js';
-import { Workflow }                                     from './g3w-workflow.js';
+import { Tool }                                         from './g3w-tool.js';
 import { Step }                                         from './g3w-step.js';
 import { Feature }                                      from './g3w-feature.js';
 import { setLayerUniqueFieldValues }                    from './utils/setLayerUniqueFieldValues.js';
@@ -53,76 +63,181 @@ const {
   getResolutionFromScale,
 }                                                        = g3w.utils;
 
-const { GEOMETRY_TYPES }                                        = g3wsdk.constant;
-const { Geometry, dissolve, splitFeature, areCoordinatesEqual } = g3wsdk.core.geoutils;
-const { removeZValueToOLFeatureGeometry }                       = g3wsdk.core.geoutils.Geometry;
-const { toRawType, cloneDeep }                                  = g3wsdk.core.utils;
+const { GEOMETRY_TYPES }                   = g3wsdk.constant;
+const { Geometry, dissolve, splitFeature } = g3wsdk.core.geoutils;
+const { removeZValueToOLFeatureGeometry }  = g3wsdk.core.geoutils.Geometry;
+const { toRawType, cloneDeep }             = g3wsdk.core.utils;
 
 const is_defined = d => undefined !== d;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin/toolboxes/toolsfactory.js@v3.7.1
+ * Manages the editing workflow for a single layer.
+ *
+ * A ToolBox instance represents the editing context for one layer in the
+ * catalog. It keeps the relation-aware editing state, creates the toolset that
+ * is shown in the UI, and exposes the local feature store used during editing.
+ *
+ * The class is responsible for:
+ * - registering the layer in the global session registry;
+ * - creating feature collections and editor references for the current layer;
+ * - reacting to start/stop editing lifecycle events;
+ * - tracking temporary and committed history states for undo/redo;
+ * - converting pending local changes into the commit payload expected by the
+ *   server-side editing endpoint.
  */
 export class ToolBox extends Emitter {
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/store/sessions.js@v3.9.1
+   * Session registry keyed by layer id.
    *
-   * Store editing sessions
-   *
-   * @since g3w-client-plugin-editing@v4.1.0
+   * Each active edit session is stored here so other parts of the application
+   * can resolve the current toolbox and editor state for a given layer.
    */
   static _sessions = {};
 
-  #controller = null; //@since 4.1.0
+  /**
+   * High-level editing lifecycle:
+   *
+   * constructor() -> build layer metadata, feature store and tool list
+   * start()       -> load features and enable editing interaction
+   * tool run      -> push temporary changes into session history
+   * save()        -> serialize pending operations into a commit payload
+   * commitToEditor() -> reconcile server response and local state
+   * stop()        -> release listeners, locks and derived resources
+   */
 
+  /**
+   * Active abort controller for feature requests triggered by the current
+   * editing session.
+   *
+   * @type {AbortController|null}
+   */
+  #controller = null;
+
+  /**
+   * Whether the current toolbox has entered the start lifecycle for editing.
+   *
+   * @type {boolean}
+   */
   #start = false;
 
-  /** @since 4.0.1 */
+  /**
+   * Original layer style used before the toolbox switched to the editing style.
+   *
+   * @type {string|undefined}
+   */
   #current_style;
 
-  /** @type { boolean } Whether editor is active or not */
+  /**
+   * Whether the toolbox has already started and is currently active.
+   *
+   * @type {boolean}
+   */
   #started = false;
 
-  /** @type { Promise | null } store Promise resolve when start toolbox but non editing is enabled (scale constraint, etc..) */
+  /**
+   * Deferred promise resolver used when the toolbox must wait for a scale
+   * constraint before continuing the start routine.
+   *
+   * @type {Promise|Function|null}
+   */
   #startAsync = null;
 
-  /** constraint loading features to a filter set */
+  /**
+   * External filter metadata used to scope feature requests and re-enable tools
+   * based on the current editing context.
+   *
+   * @type {{ filter: any, show: any, tools: Array }}
+   */
   constraints = { filter: null, show: null, tools: [] };
 
-  /** reactive state of history */
+  /**
+   * Reactive flags describing whether the current session can perform commit,
+   * undo and redo operations.
+   *
+   * @type {{ commit: boolean, undo: boolean, redo: boolean }}
+   */
   #constrains  = { commit: false, undo: false, redo: false };
 
   /**
-   * Array of states of a layer in editing
+   * Snapshot history for the current layer session.
+   *
+   * Each entry stores the change state associated with a transaction id and is
+   * used by undo/redo flows to reconstruct previous versions of the feature set.
+   *
+   * Example structure:
    * {
-   * _states: [
-   *     { id: unique key state: [state] } // example: history contains features state (array because a tool can apply changes to more than one features at time, split di una feature)
-   *     { id: unique key state: [state] },
-   *   ]   *
-   *  _current: unique key // usefult to undo redo
+   *   _states: [
+   *     { id: "transaction-id", ... },
+   *     { id: "transaction-id", ... }
+   *   ],
+   *   _current: "latest-transaction-id"
+   * }
+   *
+   * @type {Array<Object>}
    */
   #states = [];
 
-  /** event features */
+  /**
+   * Metadata used to track the map feature-fetch lifecycle.
+   *
+   * @type {{ event: string|null, fnc: Function|null }}
+   */
   #getFeaturesEvent = { event: null, fnc: null };
 
-  /** @since 3.8.0 store ol keys event start when we are in editing */
+  /**
+   * OpenLayers event keys registered while the toolbox is in editing mode.
+   *
+   * @type {Array}
+   */
   #events = [];
 
-  /** store all unwatches */
+  /**
+   * Registered unwatch callbacks used to clean up reactivity when the toolbox
+   * stops or resets.
+   *
+   * @type {Array<Function>}
+   */
   #unwatches = [];
 
-  /** Filter to getFeaturerequest */
+  /**
+   * Last requested server feature bbox used to avoid redundant fetches.
+   *
+   * @type {{ bbox: Array|null }}
+   */
   #filter = { bbox: null };
 
-  #count = 0; //@since 4.0.0 take in account number of all features useful for table layer pagination
+  /**
+   * Total number of rows/features available for the current load request.
+   *
+   * @type {number}
+   */
+  #count = 0;
 
-  /** Original features (from server) */
+  /**
+   * Original features loaded from the server and kept as the baseline state.
+   *
+   * @type {Array}
+   */
   _features = [];
 
+  /**
+   * Creates the editing toolbox and initializes the session state for a layer.
+   *
+   * The constructor configures the editing metadata for the layer, builds the
+   * associated feature store, registers the editor instance, and instantiates
+   * the tool list that will be shown based on geometry, capabilities and
+   * relation configuration.
+   *
+   * @param {object} _layer Layer instance being edited.
+   * @param {object} _config Editing configuration for the layer.
+   *
+   * @listens start-editing
+   */
   constructor(_layer, _config) {
-    super();
+    super({});
+
+    this.setters = [ 'featuresLockedByOtherUser' ];
 
     // add editing configurations
     _layer.state.editing = {
@@ -133,12 +248,15 @@ export class ToolBox extends Emitter {
       format:       _config.vector.format,
       constraints:  _config.constraints ?? {},
       capabilities: _config.capabilities || ['add_feature', 'change_feature', 'change_attr_feature', 'delete_feature' ], // default editing capabilities
-      form:         { perc: null },                             // set editing form `perc` to null at beginning
+      form:         { perc: null },                              // set editing form `perc` to null at beginning
       style:        _config.vector.style,                        // get vector layer style
       geometrytype: _config.vector.geometrytype,                 // whether is a vector layer,
-      visible:      _config.vector.editing?.visible ?? true,     // whether a layer should be editable directly (true) or through relation layer (false)
-      layer_style:  _config.vector.editing?.layer_style ?? null, // @since v4.0.0 check if has a layer style to for editing form
-      inediting:    false, //@since 4.1.0 add in editng attribute when open editting panel
+      visible:      _config.vector.editing?.visible     ?? true, // whether a layer should be editable directly (true) or through relation layer (false)
+      layer_style:  _config.vector.editing?.layer_style ?? null, // whether has a layer style to for editing form
+      inediting:    false,                                       // add in editng attribute when open editting panel,
+      urls: {                                                    // set editing url
+        editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${_layer.getId()}/`,
+      }
     };
 
     // set vector layer color 
@@ -147,6 +265,8 @@ export class ToolBox extends Emitter {
     }
 
     _layer.state.editing.ready = true;
+
+    const SELF = this;
 
     // set editing layer
     let layer = _layer;
@@ -160,19 +280,17 @@ export class ToolBox extends Emitter {
       layer = new Layer(_layer.state, { TYPE: 'vector' });
     }
 
+    const is_vector          = [undefined, 'vector'].includes(layer.getType());
+    const geometryType       = is_vector && layer.getGeometryType();
+    const is_point           = is_vector && Geometry.isPointGeometryType(geometryType);
+    const is_line            = is_vector && Geometry.isLineGeometryType(geometryType);
+    const is_poly            = is_vector && Geometry.isPolygonGeometryType(geometryType);
+    const is_table           = 'table' === layer.getType();
+    const isMultiGeometry    = geometryType && Geometry.isMultiGeometry(geometryType);
+    const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/map/layers/featuresstore.js@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/app/core/layers/features/olfeaturesstore.js@v3.10.2
-     */
     this._collection = new Collection('table' !== _layer.getType());
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/map/layers/featuresstore.js@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/app/core/layers/features/olfeaturesstore.js@v3.10.2
-     */
     this._featuresstore = Object.assign(new Emitter, {
       setters: {
         addFeatures: (feats = []) => feats.forEach(f => this._featuresstore.addFeature(f)),
@@ -189,57 +307,28 @@ export class ToolBox extends Emitter {
       setFeatures:           (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
     });
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/map/layers/featuresstore.js@v4.0.0
-     * ORIGINAL SOURCE: g3w-client/src/app/core/layers/features/olfeaturesstore.js@v3.10.2
-     */
-    this._editor = layer._editor = Object.assign(new Emitter, {
+    this._editor = Object.assign(new Emitter, {
       _layer,
       setters: {
-        save:                       () => _layer.save(),
         addFeature:                 f => this._collection.add(f),
         updateFeature:              f => this._featuresstore.updateFeature(f),
         deleteFeature:              f => this._featuresstore.deleteFeature(f),
         setFeatures:               (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
-        getFeatures:               this.___getFeatures.bind(this),
-        featuresLockedByOtherUser: f => {},
+        getFeatures:               this.#requestFeatures.bind(this),
       },
       addFeature:          f => this._featuresstore.addFeature(f),
       isStarted:           () => this.#started,
       getLockIds:          () => GUI.getPlugin('editing').state.lock_ids[_layer.getId()],
       getEditingSource:    this.getEditingSource.bind(this),
-      getSource:           () => _layer.getSource(),
+      getSource:           () => this._featuresstore,
       getLayer:            () => _layer,
       readFeatures:        () => this._features, //return original features from server (not modified)
       readEditingFeatures: this.readEditingFeatures.bind(this), //return features changed/added by editing tools (not original features from server)
-      commit:              this.__commitToEditor.bind(this),
-      start:               this.__startEditor.bind(this),
-      stop:                this.__stopEditor.bind(this),
-      clear:               this.__clearEditor.bind(this),
+      commit:              this.#commitToEditor.bind(this),
+      start:               this.#startEditor.bind(this),
+      stop:                this.#stopEditor.bind(this),
+      clear:               this.#clearEditor.bind(this),
     });
-
-    this.on('start-editing', this.#onEditingStart.bind(this));
-
-    /**
-     * set 1:1 relation fields editable
-     * 
-     * Check if layer has relation 1:1 (type ONE) and if fields
-     *
-     * belongs to relation where child layer is editable
-     *
-     * @since g3w-client-plugin-editing@v3.7.0
-     */
-    getCatalogLayerById(layer.getId())
-      .getRelations()
-      .getArray()
-      .filter(relation => 'ONE' === relation.getType() && layer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
-      .forEach(relation => {
-        const isChildEditable = getCatalogLayerById(relation.getChild()).isEditable();        // check if child layerId is editable (in editing)
-        (getCatalogLayerById(relation.getFather()).state.editing.fields || [])
-          .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())  // father layer fields (in editing)
-          .forEach(f => { f.editable = (f.editable && isChildEditable); });      // current editable boolean value + child editable layer
-      });
 
     // Set editing layer color and toolbox style
     if (!layer.getColor()) {
@@ -255,29 +344,43 @@ export class ToolBox extends Emitter {
       ][Object.keys(ToolBox._sessions).length % 40] : '#fff');
     }
 
-    const is_vector          = [undefined, 'vector'].includes(layer.getType());
-    const geometryType       = is_vector && layer.getGeometryType();
-    const is_point           = is_vector && Geometry.isPointGeometryType(geometryType);
-    const is_line            = is_vector && Geometry.isLineGeometryType(geometryType);
-    const is_poly            = is_vector && Geometry.isPolygonGeometryType(geometryType);
-    const is_table           = 'table' === layer.getType();
-    const isMultiGeometry    = geometryType && Geometry.isMultiGeometry(geometryType);
-    const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
+    //set vector layer source
+    if (is_vector) {
+      layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
+    }
 
-    //@since 3.9.0 Check if layer has "relation layers" that are editable
+
+    this.on('start-editing', this.#onEditingStart.bind(this));
+
+    /**
+     * set 1:1 relation fields editable
+     * 
+     * Check if layer has relation 1:1 (type ONE) and if fields
+     *
+     * belongs to relation where child layer is editable
+     */
+    getCatalogLayerById(layer.getId())
+      .getRelations()
+      .getArray()
+      .filter(relation => 'ONE' === relation.getType() && layer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
+      .forEach(relation => {
+        const isChildEditable = getCatalogLayerById(relation.getChild()).isEditable();        // check if child layerId is editable (in editing)
+        (getCatalogLayerById(relation.getFather()).state.editing.fields || [])
+          .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())  // father layer fields (in editing)
+          .forEach(f => { f.editable = (f.editable && isChildEditable); });      // current editable boolean value + child editable layer
+      });
+
+    // Check if layer has "relation layers" that are editable
     const editable_relations = layer.getRelations().getArray()
       .filter(relation => {
         const l = getCatalogLayerById(getRelationId({ layerId: layer.getId(), relation }));
         return l && l.isEditable();
       });
 
-    /**
-     * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-     */
     this._session = Object.assign(new Emitter({ setters: {
-      start:                        this.__startSession.bind(this),
-      stop:                         this.__stopSession.bind(this),
-      getFeatures:                  this.__getFeatures.bind(this),
+      start:                        this.#startSession.bind(this),
+      stop:                         this.#stopSession.bind(this),
+      getFeatures:                  this.#getFeatures.bind(this),
       saveChangesOnServer:          this.saveChangesOnServer.bind(this),
     }}), {
       state:                        new Proxy({}, { get: (_, prop) => this.state.editing.session[prop] }),
@@ -285,9 +388,9 @@ export class ToolBox extends Emitter {
       getLastHistoryState:          this.getLastHistoryState.bind(this),
       isStarted:                    this.isSessionStarted.bind(this),
       getEditor:                    this.getEditor.bind(this),
-      push:                         this.__push.bind(this),
+      push:                         this.#pushChange.bind(this),
       pushDelete:                   this.pushDelete.bind(this),
-      save:                         this.__save.bind(this),
+      save:                         this.#saveChanges.bind(this),
       pushAdd:                      this.pushAdd.bind(this),
       pushUpdate:                   this.pushUpdate.bind(this),
       rollback:                     this.rollback.bind(this),
@@ -295,7 +398,7 @@ export class ToolBox extends Emitter {
       redo:                         this.redo.bind(this),
       getCommitItems:               this.getCommitItems.bind(this),
       commit:                       this.save.bind(this),
-      clear:                        this.__clearSession.bind(this),
+      clear:                        this.#clearSession.bind(this),
       clearHistory:                 this.clearHistory.bind(this),
     });
 
@@ -352,375 +455,282 @@ export class ToolBox extends Emitter {
       _constraints: layer.state.editing.constraints || {},
       _tools: [
         // Add Feature
-        (is_vector) && capabilities.includes('add_feature') && {
+        (is_vector) && capabilities.includes('add_feature') && new Tool({
           id:   'addfeature',
           type: ['add_feature'],
-          name: 'editing.tools.add_feature',
+          name: 'editing.add_feature',
           icon: `mActionCapture${iconGeometry}.svg`,
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addfeatureworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'addfeature',
-            steps: [
-              new AddFeatureStep({ layer, tools: ['snap', 'measure'] }),
-              new OpenFormStep({ layer }),
-            ],
-          }),
-        },
+          layer,
+          type: 'addfeature',
+          steps: [
+            new AddFeatureStep({ layer, tools: ['snap', 'measure'] }),
+            new OpenFormStep({ layer }),
+          ],
+        }),
         // Edit Attributes Feature
-        (is_vector) && capabilities.includes('change_attr_feature') && {
+        (is_vector) && capabilities.includes('change_attr_feature') && new Tool({
           id:   'editattributes',
           type: ['change_attr_feature'],
-          name: 'editing.tools.update_feature',
+          name: 'editing.update_feature',
           icon: 'mActionEditTable.svg',
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editfeatureattributesworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            helpMessage: 'editing.tools.update_feature',
-            type: 'editfeatureattributes',
-            steps: [
-              new PickFeatureStep(),
-              new Step({ run: chooseFeature }),
-              new OpenFormStep(),
-            ],
-          }),
-        },
+          layer,
+          helpMessage: 'editing.update_feature',
+          type: 'editfeatureattributes',
+          steps: [
+            new PickFeatureStep(),
+            new Step({ run: chooseFeature }),
+            new OpenFormStep(),
+          ],
+        }),
         // Delete Feature
-        (is_vector) && capabilities.includes('delete_feature') && {
+        (is_vector) && capabilities.includes('delete_feature') && new Tool({
           id:   'deletefeature',
           type: ['delete_feature'],
-          name: 'editing.tools.delete_feature',
+          name: 'editing.delete_feature',
           icon: `delete${iconGeometry}.png`,
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/deletefeatureworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'deletefeature',
-            steps: [
-              new PickFeatureStep(),
-              new Step({ run: chooseFeature }),
-              // delete feature
-              new Step({
-                help: "editing.steps.help.double_click_delete",
-                async run(inputs, context) {
-                  
-                  const layerId = inputs.layer.getId();
-                  const feature = inputs.features[0];
+          layer,
+          type: 'deletefeature',
+          steps: [
+            new PickFeatureStep(),
+            new Step({ run: chooseFeature }),
+            // delete feature
+            new Step({
+              help: "editing.double_click_delete",
+              async run(inputs, context) {
+                
+                const layerId = inputs.layer.getId();
+                const feature = inputs.features[0];
 
-                  // get all relations of the current editing layer that are in editing
-                  // and filter relations
-                  // get relation layer id that are in relation with layerId (current layer in editing)
-                  // get fields of relation layer that are in relation with layerId
-                  // Exclude relation child layer that has at least one
-                  // editing field required because when unlink relation feature from
-                  // delete father, when try to commit update relation, we receive an error
-                  // due missing value /null to required field.
-                  const relations = getRelationsInEditing({
-                    layerId,
-                    relations: inputs.layer.getRelations() ? inputs.layer.getRelations().getArray() : []
-                  }).filter(
-                    relation => 
-                      (getEditingLayerById(getRelationId({ layerId, relation })).state.editing.fields || []) //get editing field of relation layer
-                      .filter(f => getRelationFieldsFromRelation({ relation, layerId: getRelationId({ layerId, relation }) }).ownField.includes(f.name)) //filter only relation fields
-                      .every(f => !f.validate.required) // check required
-                  );
+                // get all relations of the current editing layer that are in editing
+                // and filter relations
+                // get relation layer id that are in relation with layerId (current layer in editing)
+                // get fields of relation layer that are in relation with layerId
+                // Exclude relation child layer that has at least one
+                // editing field required because when unlink relation feature from
+                // delete father, when try to commit update relation, we receive an error
+                // due missing value /null to required field.
+                const relations = getRelationsInEditing({
+                  layerId,
+                  relations: inputs.layer.getRelations() ? inputs.layer.getRelations().getArray() : []
+                }).filter(
+                  relation => 
+                    (getEditingLayerById(getRelationId({ layerId, relation })).state.editing.fields || []) //get editing field of relation layer
+                    .filter(f => getRelationFieldsFromRelation({ relation, layerId: getRelationId({ layerId, relation }) }).ownField.includes(f.name)) //filter only relation fields
+                    .every(f => !f.validate.required) // check required
+                );
 
-                  // promise return features relations and add to relation layer child
-                  if (relations.length > 0) {
-                    await getLayersDependencyFeatures(layerId, { feature, relations});
+                // promise return features relations and add to relation layer child
+                if (relations.length > 0) {
+                  await getLayersDependencyFeatures(layerId, { feature, relations});
+                }
+
+                inputs.features = [feature];
+
+                // Unlink relation features related to layer id
+                getRelationsInEditingByFeature({ layerId, relations, feature }).forEach(({ relation, relations }) => {
+                  relations.forEach(r => unlinkRelation({ layerId, relation, relations, index: 0, dialog: false }));
+                });
+
+                context.session.pushDelete(layerId, feature);
+
+                return inputs;
+                
+              },
+            }),
+            // confirm step
+            new Step({
+              async run(inputs) {
+                const editingLayer = getEditingLayer(inputs.layer);
+                const feature      = inputs.features[0];
+                const layerId      = inputs.layer.getId();
+                const promise = new Promise(async (resolve, reject) => {
+                  const ok = await GUI.confirm(/* html */`
+                    <h4>${_('plugins.editing.confirm_delete_feature')}</h4>
+                    <div style="font-size:1.2em;">${
+                      inputs.layer.getChildren().length && getRelationsInEditing({ layerId, relations: inputs.layer.getRelations().getArray() }).length
+                        ? _('plugins.editing.delete_feature_relations')
+                        : ''
+                    }</div>
+                  `);
+                  if (!ok) {
+                    return reject(inputs);
                   }
-
-                  inputs.features = [feature];
-
-                  // Unlink relation features related to layer id
-                  getRelationsInEditingByFeature({ layerId, relations, feature }).forEach(({ relation, relations }) => {
-                    relations.forEach(r => unlinkRelation({ layerId, relation, relations, index: 0, dialog: false }));
-                  });
-
-                  context.session.pushDelete(layerId, feature);
-
-                  return inputs;
-                  
-                },
-              }),
-              // confirm step
-              new Step({
-                async run(inputs) {
-                  const editingLayer = getEditingLayer(inputs.layer);
-                  const feature      = inputs.features[0];
-                  const layerId      = inputs.layer.getId();
-                  const promise = new Promise(async (resolve, reject) => {
-                    const ok = await GUI.confirm(/* html */`
-                      <h4>${_('plugins.editing.messages.delete_feature')}</h4>
-                      <div style="font-size:1.2em;">${
-                        inputs.layer.getChildren().length && getRelationsInEditing({ layerId, relations: inputs.layer.getRelations().getArray() }).length
-                          ? _('plugins.editing.messages.delete_feature_relations')
-                          : ''
-                      }</div>
-                    `);
-                    if (!ok) {
-                      return reject(inputs);
-                    }
-                    editingLayer.getSource().removeFeature(feature);
-                    // Remove unique values from unique fields of a layer (when deleting a feature)
-                    const fields = GUI.getPlugin('editing').state.uniqueFieldsValues[layerId];
-                    if (fields) {
-                      Object
-                      .keys(feature.getProperties())
-                      .filter(f => undefined !== fields[f])
-                      .forEach(f => fields[f].delete(feature.get(f)));
-                    }
-                    resolve(inputs);
-                  });
-
-                  if (inputs.features) {
-                    setAndUnsetSelectedFeaturesStyle({
-                      promise,
-                      inputs,
-                      style:   this.selectStyle,
-                    });
+                  editingLayer.getSource().removeFeature(feature);
+                  // Remove unique values from unique fields of a layer (when deleting a feature)
+                  const fields = GUI.getPlugin('editing').state.uniqueFieldsValues[layerId];
+                  if (fields) {
+                    Object
+                    .keys(feature.getProperties())
+                    .filter(f => undefined !== fields[f])
+                    .forEach(f => fields[f].delete(feature.get(f)));
                   }
+                  resolve(inputs);
+                });
+
+                if (inputs.features) {
+                  setAndUnsetSelectedFeaturesStyle({
+                    promise,
+                    inputs,
+                    style:   this.selectStyle,
+                  });
+                }
 
                   return promise;
                   
                 }
-              }),
-            ],
-          }),
-        },
+            }),
+          ],
+        }),
         //Only in case of Polygon/MultiPolygon geometry
-        (is_vector) && is_poly && capabilities.includes('change_feature') && {
+        (is_vector) && is_poly && capabilities.includes('change_feature') && new Tool({
           id: 'addhole',
-          name: "editing.tools.addhole",
+          name: "editing.addhole",
           icon: "mActionAddRing.svg",
-          op: new Workflow({
-            layer,
-            type: 'change_feature',
-            steps: [
-              new AddHoleStep({}),
-            ]
-          }),
-        },
-        
-        (is_vector) && is_poly && capabilities.includes('change_feature') &&  {  
+          type: 'change_feature',
+          layer,
+          steps: [
+            new AddHoleStep({}),
+          ],
+        }),
+        (is_vector) && is_poly && capabilities.includes('change_feature') &&  new Tool({  
           id: 'deletehole',
-          name: "editing.tools.deletehole",
+          name: "editing.deletehole",
           icon: "mActionDeleteRing.svg",
-          op: new Workflow({
-            layer,
-            type: 'change_feature',
-            steps: [
-              new DeleteHoleStep(),
-            ]
-          }),
-        },
+          layer,
+          type: 'change_feature',
+          steps: [
+            new DeleteHoleStep(),
+          ],
+        }),
         // Edit vertex Feature
-        (is_line || is_poly) && capabilities.includes('change_feature') && {
+        (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
           id:   'movevertex',
           type: ['change_feature'],
-          name: "editing.tools.update_vertex",
+          name: "editing.update_vertex",
           icon: "mActionVertexTool.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/modifygeometryvertexworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'modifygeometryvertex',
-            helpMessage: 'editing.tools.update_vertex',
-            steps: [
-              new PickFeatureStep({ layer }),
-              new Step({ run: chooseFeature }),
-              new ModifyGeometryVertexStep({ tools: ['snap', 'measure'] }),
-            ],
-          }),
-        },
+          layer,
+          type: 'modifygeometryvertex',
+          helpMessage: 'editing.update_vertex',
+          steps: [
+            new PickFeatureStep({ layer }),
+            new Step({ run: chooseFeature }),
+            new ModifyGeometryVertexStep({ tools: ['snap', 'measure'] }),
+          ],
+        }),
         // Edit Attributes to Multi features
-        (is_vector) && capabilities.includes('change_attr_feature') && {
+        (is_vector) && capabilities.includes('change_attr_feature') && new Tool({
           id:   'editmultiattributes',
           type: ['change_attr_feature'],
-          name: "editing.tools.update_multi_features",
+          name: "editing.update_multi_features",
           icon: "mActionMultiEdit.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editmultifeatureattributesworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'editmultiattributes',
-            helpMessage: 'editing.tools.update_multi_features',
-            registerEscKeyEvent: true,
-            runOnce: true,
-            steps: [
-              new SelectElementsStep({
-                type: 'multiple',
-                steps: {
-                  select: {
-                    description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectDrawBoxAtLeast2Feature' : 'selectMultiPointSHIFTAtLeast2Feature'}`,
-                    buttonnext: {
-                      disabled: true,
-                      condition:({ features = [] }) => features.length < 2,
-                      done:     () => { Workflow.Stack.current.clearUserMessagesSteps(); },
-                    },
-                    dynamic: 0,
-                    done:    false,
-                    reset() { this.dynamic = 0; },
-                  }
+          layer,
+          type: 'editmultiattributes',
+          helpMessage: 'editing.update_multi_features',
+          registerEscKeyEvent: true,
+          runOnce: true,
+          steps: [
+            new SelectElementsStep({
+              type: 'multiple',
+              steps: {
+                select: {
+                  description: `${ApplicationState.ismobile ? 'editing.selectDrawBoxAtLeast2Feature' : 'editing.selectMultiPointSHIFTAtLeast2Feature'}`,
+                  buttonnext: {
+                    disabled: true,
+                    condition:({ features = [] }) => features.length < 2,
+                    done:     () => { Tool.Stack.current.clearUserMessagesSteps(); },
+                  },
+                  dynamic: 0,
+                  done:    false,
+                  reset() { this.dynamic = 0; },
                 }
-              }),
-              new OpenFormStep({ multi: true }),
-            ],
-          }),
-        },
-        // @since 3.9.0  Edit Attributes of relations features to Multi features
-        (is_vector) && capabilities.includes('change_attr_feature') && editable_relations.filter(r => 'ONE' !== r.getType()).length > 0 && {
+              }
+            }),
+            new OpenFormStep({ multi: true }),
+          ],
+        }),
+        // Edit Attributes of relations features to Multi features
+        (is_vector) && capabilities.includes('change_attr_feature') && editable_relations.filter(r => 'ONE' !== r.getType()).length > 0 && new Tool({
           id:   'editmultiattributesrelationfeatures',
           type: ['change_attr_feature'],
-          name: "editing.tools.update_multi_features_relations_from_parents",
+          name: "editing.update_multi_features_relations_from_parents",
           icon: "relation.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editmultifeatureattributesworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type:                'editmultiattributesrelationfeatures',
-            helpMessage: 'editing.tools.update_multi_features_relations_from_parents',
-            registerEscKeyEvent: true,
-            runOnce:             true,
-            steps: [
-              new SelectElementsStep({
-                type: 'multiple',
-                steps: {
-                  select: {
-                    description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectMultiPointSHIFT'}`,
-                    buttonnext: {
-                      disabled: true,
-                      condition: ({ features = [] }) => features.length < 1,
-                      done:      () => { Workflow.Stack.current.clearUserMessagesSteps(); }
-                    },
-                    dynamic: 0,
-                    done:    false,
-                    reset() { this.dynamic = 0; },
-                  }
+          layer,
+          type:                'editmultiattributesrelationfeatures',
+          helpMessage: 'editing.update_multi_features_relations_from_parents',
+          registerEscKeyEvent: true,
+          runOnce:             true,
+          steps: [
+            new SelectElementsStep({
+              type: 'multiple',
+              steps: {
+                select: {
+                  description: `${ApplicationState.ismobile ? 'editing.selectDrawBox' : 'editing.selectMultiPointSHIFT'}`,
+                  buttonnext: {
+                    disabled: true,
+                    condition: ({ features = [] }) => features.length < 1,
+                    done:      () => { Tool.Stack.current.clearUserMessagesSteps(); }
+                  },
+                  dynamic: 0,
+                  done:    false,
+                  reset() { this.dynamic = 0; },
                 }
-              }),
-              new Step({
-                run: async (inputs, context)  => {
-                  GUI.setModal(true);
-                  const relations = editable_relations.filter(r => 'ONE' !== r.getType());
-                  //get relation features from feature parent layer
-                  //specific for ech relations
-                  const relationsFeatures = (await Promise.allSettled(inputs.features.map(feature => getLayersDependencyFeatures(inputs.layer.getId(), {
-                    relations,
-                    feature,
-                    filterType: 'fid',
-                  }))))
-                    .filter(({ status })  => "fulfilled" === status)
-                    .reduce((acc, { value: relations } ) => {
-                      relations.forEach(r => Object.entries(r).forEach(([id, features]) => {
-                        if (undefined === acc[id]) {
-                          acc[id] = [];
-                        }
-                        acc[id] = acc[id].concat(features);
-                      }))
-                      return acc;
-                    }, {})
-                  //get first relation layer id
-                  let relationLayerId = relations[0].getChild();
-                  //get first relation id
-                  let relationId      = relations[0].state.id;
-                  //get action type (update or add relation) for ech parent features
-                  let action;
-                  //In case of multi relation in editing
-                  if (relations.length > 1) {
-                    //ser relation layer id
-                    try {
-                      await new Promise((resolve, reject) => {
-                        const vueInstance = new (Vue.extend({
-                          name: 'multi-relations-fetures',
-                          template: /* html */`
-                          <div>
-                            <select v-select2 = "'relationId'" :dropdownParent="true">
-                              <option v-for = "relation in relations" 
-                                :key   = "relation.state.id" 
-                                :value = "relation.state.id">
-                                  {{ relation.state.name }}
-                              </option>
-                            </select>
-                          </div>
-                        `,
-                          data() {
-                            return {
-                              relations:  this.$options.relations,
-                              relationId: this.$options.relationId
-                            }
-                          }
-                        }))({ relations, relationId })
-
-                        GUI.dialog({
-                          title:       _('plugins.editing.relations'),
-                          className:   'modal-left',
-                          closeButton: false,
-                          message:     vueInstance.$mount().$el,
-                          buttons: {
-                            cancel: {
-                              label: 'Cancel',
-                              className: 'btn-danger',
-                              callback() { reject(); }
-                            },
-                            ok: {
-                              label: 'Ok',
-                              className: 'btn-success',
-                              callback: async () => {
-                                //set relation layer id to editin
-                                relationLayerId = relations.find(r => vueInstance.relationId === r.state.id).getChild();
-                                relationId      = vueInstance.relationId;
-                                resolve();
-                              }
-                            }
-                          }
-                        });
-                        //hide user message step
-                      })
-                    } catch(e) {
-                      console.warn(e);
-                      GUI.setModal(false);
-                      return Promise.reject(e);
-                    }
-                  }
-                    //Relations layer
-                  const rLayer = getEditingLayerById(relationLayerId);
-                  const actions = []
-                    .concat(![undefined, 'vector'].includes(rLayer.getType()) ? ['add'] : [])
-                    .concat(relationsFeatures[relationLayerId].length > 0 ? ['update'] : [])
-                  //In case of norelations featire and no vector layer
-                  if (0 === actions.length) {
-                    GUI.setModal(false);
-
-                    GUI.showUserMessage({
-                      type:      'warning',
-                      message:   'plugins.editing.no_relations_found',
-                      autoclose: true,
-                    })
-                    return Promise.reject();
-                  }
+              }
+            }),
+            new Step({
+              run: async (inputs, context)  => {
+                GUI.setModal(true);
+                const relations = editable_relations.filter(r => 'ONE' !== r.getType());
+                //get relation features from feature parent layer
+                //specific for ech relations
+                const relationsFeatures = (await Promise.allSettled(inputs.features.map(feature => getLayersDependencyFeatures(inputs.layer.getId(), {
+                  relations,
+                  feature,
+                  filterType: 'fid',
+                }))))
+                  .filter(({ status })  => "fulfilled" === status)
+                  .reduce((acc, { value: relations } ) => {
+                    relations.forEach(r => Object.entries(r).forEach(([id, features]) => {
+                      if (undefined === acc[id]) {
+                        acc[id] = [];
+                      }
+                      acc[id] = acc[id].concat(features);
+                    }))
+                    return acc;
+                  }, {})
+                //get first relation layer id
+                let relationLayerId = relations[0].getChild();
+                //get first relation id
+                let relationId      = relations[0].state.id;
+                //get action type (update or add relation) for ech parent features
+                let action;
+                //In case of multi relation in editing
+                if (relations.length > 1) {
+                  //ser relation layer id
                   try {
                     await new Promise((resolve, reject) => {
                       const vueInstance = new (Vue.extend({
                         name: 'multi-relations-fetures',
                         template: /* html */`
                         <div>
-                          <select v-select2 = "'action'" :dropdownParent="true">
-                            <option v-for = "a in actions" 
-                              :key   = "a" 
-                              :value = "a">
-                                {{ a }}
+                          <select v-select2 = "'relationId'" :dropdownParent="true">
+                            <option v-for = "relation in relations" 
+                              :key   = "relation.state.id" 
+                              :value = "relation.state.id">
+                                {{ relation.state.name }}
                             </option>
                           </select>
                         </div>
                       `,
                         data() {
                           return {
-                            actions,
-                            action: actions[0], 
+                            relations:  this.$options.relations,
+                            relationId: this.$options.relationId
                           }
-                        },
-                        watch: { action: a => action = a }
-                      }))
+                        }
+                      }))({ relations, relationId })
 
                       GUI.dialog({
-                        title:       _('plugins.editing.tools.update_multi_features_relations_from_parents'),
+                        title:       _('plugins.editing.relations'),
                         className:   'modal-left',
                         closeButton: false,
                         message:     vueInstance.$mount().$el,
@@ -735,7 +745,8 @@ export class ToolBox extends Emitter {
                             className: 'btn-success',
                             callback: async () => {
                               //set relation layer id to editin
-                              action = vueInstance.action;
+                              relationLayerId = relations.find(r => vueInstance.relationId === r.state.id).getChild();
+                              relationId      = vueInstance.relationId;
                               resolve();
                             }
                           }
@@ -748,115 +759,179 @@ export class ToolBox extends Emitter {
                     GUI.setModal(false);
                     return Promise.reject(e);
                   }
-                  
-                  const relation = relations.find(r => relationId === r.getId());
-                  //gte relation layer fields
-                  const fields = getRelationFieldsFromRelation({
-                    layerId: relation.getChild(),
-                    relation
-                  });
-
-
-                  //relation feature to edit attributes
-                  let features;
-
-                  if ('add' === action) {
-                    //relations features
-                    features = [];
-                    //loop over father features to build a relation chiled feature
-                    for (const f of inputs.features) {
-                      const feature = (await addTableFeature({ features: [], layer: rLayer }, { session: Workflow.Stack.current.session })).features[0];
-                      fields.relationField.forEach((field, _i) => feature.set(fields.ownField[_i], f.get(field)));
-                      features.push(feature);
-                    }  
-                  } 
-                  
-                  //update action
-                  if ('update' === action) {
-                    //get alla relation features belown to fathers
-                    features = relationsFeatures[relationLayerId];
-                  }
-
-                  //start child workflow
-                  const workflow = new Workflow({
-                    type: 'editmultiattributes',
-                    steps: [
-                      new OpenFormStep({ multi: true }),
-                    ],
-                  });
-                  // get parent workflow
-                  const session = Workflow.Stack.current.session;
-                  try {
-                    //set eventually unique values
-                    await setLayerUniqueFieldValues(relationLayerId);
-                    await workflow.start({
-                    context: {
-                      session,        
-                      excludeFields:  fields.ownField,                                 // array of fields to be excluded
-                      isContentChild: false, //@since 3.9.0 force child to false
-                    },
-                    inputs: {
-                      layer: rLayer,
-                      features,
-                    }
-                  });
-                  } catch(e) {
-                    console.warn(e);
-                    session.rollback();
-                  }
-
-                  workflow.stop();
-
-                  GUI.setModal(false);
-                  return Promise.resolve(inputs, context);
                 }
-              }),
-            ],
-          }),
-        },
+                  //Relations layer
+                const rLayer = getEditingLayerById(relationLayerId);
+                const actions = []
+                  .concat(![undefined, 'vector'].includes(rLayer.getType()) ? ['add'] : [])
+                  .concat(relationsFeatures[relationLayerId].length > 0 ? ['update'] : [])
+                //In case of norelations featire and no vector layer
+                if (0 === actions.length) {
+                  GUI.setModal(false);
+
+                  GUI.showUserMessage({
+                    type:      'warning',
+                    message:   'plugins.editing.no_relations_found',
+                    autoclose: true,
+                  })
+                  return Promise.reject();
+                }
+                try {
+                  await new Promise((resolve, reject) => {
+                    const vueInstance = new (Vue.extend({
+                      name: 'multi-relations-fetures',
+                      template: /* html */`
+                      <div>
+                        <select v-select2 = "'action'" :dropdownParent="true">
+                          <option v-for = "a in actions" 
+                            :key   = "a" 
+                            :value = "a">
+                              {{ a }}
+                          </option>
+                        </select>
+                      </div>
+                    `,
+                      data() {
+                        return {
+                          actions,
+                          action: actions[0], 
+                        }
+                      },
+                      watch: { action: a => action = a }
+                    }))
+
+                    GUI.dialog({
+                      title:       _('plugins.editing.update_multi_features_relations_from_parents'),
+                      className:   'modal-left',
+                      closeButton: false,
+                      message:     vueInstance.$mount().$el,
+                      buttons: {
+                        cancel: {
+                          label: 'Cancel',
+                          className: 'btn-danger',
+                          callback() { reject(); }
+                        },
+                        ok: {
+                          label: 'Ok',
+                          className: 'btn-success',
+                          callback: async () => {
+                            //set relation layer id to editin
+                            action = vueInstance.action;
+                            resolve();
+                          }
+                        }
+                      }
+                    });
+                    //hide user message step
+                  })
+                } catch(e) {
+                  console.warn(e);
+                  GUI.setModal(false);
+                  return Promise.reject(e);
+                }
+                
+                const relation = relations.find(r => relationId === r.getId());
+                //gte relation layer fields
+                const fields = getRelationFieldsFromRelation({
+                  layerId: relation.getChild(),
+                  relation
+                });
+
+
+                //relation feature to edit attributes
+                let features;
+
+                if ('add' === action) {
+                  //relations features
+                  features = [];
+                  //loop over father features to build a relation chiled feature
+                  for (const f of inputs.features) {
+                    const feature = (await addTableFeature({ features: [], layer: rLayer }, { session: Tool.Stack.current.session })).features[0];
+                    fields.relationField.forEach((field, _i) => feature.set(fields.ownField[_i], f.get(field)));
+                    features.push(feature);
+                  }  
+                } 
+                
+                //update action
+                if ('update' === action) {
+                  //get alla relation features belown to fathers
+                  features = relationsFeatures[relationLayerId];
+                }
+
+                //start child tool
+                const tool = new Tool({
+                  type: 'editmultiattributes',
+                  steps: [
+                    new OpenFormStep({ multi: true }),
+                  ],
+                });
+                // get parent tool
+                const session = Tool.Stack.current.session;
+                try {
+                  //set eventually unique values
+                  await setLayerUniqueFieldValues(relationLayerId);
+                  await tool.start({
+                  context: {
+                    session,        
+                    excludeFields:  fields.ownField, // array of fields to be excluded
+                    isContentChild: false,           // force child to false
+                  },
+                  inputs: {
+                    layer: rLayer,
+                    features,
+                  }
+                });
+                } catch(e) {
+                  console.warn(e);
+                  session.rollback();
+                }
+
+                this.#stopTool(tool);
+
+                GUI.setModal(false);
+                return Promise.resolve(inputs, tool.context);
+              }
+            }),
+          ],
+        }),
         // Move Feature
-        (is_vector) && capabilities.includes('change_feature') && {
+        (is_vector) && capabilities.includes('change_feature') && new Tool({
           id:   'movefeature',
           type: ['change_feature'],
-          name: 'editing.tools.move_feature',
+          name: 'editing.move_feature',
           icon: `mActionMoveFeature${iconGeometry}.svg`,
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/movefeatureworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'movefeature',
-            helpMessage: 'editing.tools.move_feature',
-            steps: [
-              new PickFeatureStep(),
-              new Step({ run: chooseFeature }),
-              new MoveFeatureStep(),
-            ],
-          }),
-        },
-         // @since v4.0.0 Rotate Feature. Check, in case of Point geometry, if layer has rotation input field
-         (is_line || is_poly || is_point && (layer.state.editing.fields || []).find(f => 'rotation' === f.name )) && capabilities.includes('change_feature') && {
+          layer,
+          type: 'movefeature',
+          helpMessage: 'editing.move_feature',
+          steps: [
+            new PickFeatureStep(),
+            new Step({ run: chooseFeature }),
+            new MoveFeatureStep(),
+          ],
+        }),
+         // Rotate Feature. Check, in case of Point geometry, if layer has rotation input field
+         (is_line || is_poly || is_point && (layer.state.editing.fields || []).find(f => 'rotation' === f.name )) && capabilities.includes('change_feature') && new Tool({
           id:           'rotatefeature',
           type:         ['change_feature'],
-          name:         'editing.tools.rotate_feature',
+          name:         'editing.rotate_feature',
           icon:         'mActionRotateFeature.svg',
           disableEdit:   is_point,
-          op: new Workflow({
-            layer,
-            type: 'rotatefeature',
-            helpMessage: 'editing.tools.rotate_feature',
-            steps: [
-              new PickFeatureStep(),
-              new Step({ run: chooseFeature }),
-              new RotateFeatureStep(),
-            ],
-          }),
-        },
+          layer,
+          type: 'rotatefeature',
+          helpMessage: 'editing.rotate_feature',
+          steps: [
+            new PickFeatureStep(),
+            new Step({ run: chooseFeature }),
+            new RotateFeatureStep(),
+          ],
+        }),
         // Copy Feature from another layer
         (() => {
           let layers = [];
-          return (is_vector) && capabilities.includes('add_feature') && {
+          return (is_vector) && capabilities.includes('add_feature') && new Tool({
             id:   'copyfeaturesfromotherlayer',
             type: ['add_feature'],
-            name: "editing.tools.pastefeaturesfromotherlayers",
+            name: "editing.pastefeaturesfromotherlayers",
             icon: "mActionEditPaste.svg",
             enable: (function() {
               const catalogService      = GUI.getService('catalog');
@@ -903,770 +978,766 @@ export class ToolBox extends Emitter {
                 return updatelayers()
               }
             }()),
-            /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/copyfeaturesfromotherlayerworkflow.js@v3.7.1 */
-            op: (() => {
-              const openFormStep = new OpenFormStep({ layer, help: 'editing.steps.help.copy' });
-              return new Workflow({
+
+            layer,
+            type: 'copyfeaturesfromotherlayer',
+            runOnce: true,
+            steps: [
+              new Step({
                 layer,
-                type: 'copyfeaturesfromotherlayer',
-                runOnce: true,
-                steps: [
-                  new Step({
-                    layer,
-                    //@since 3.9.0 to show user message steps
-                    steps: {
-                      chooselayer: {
-                        description: `editing.modal.tools.copyfeaturefromotherlayer.title`,
-                        done:         false,
-                      },
-                      selectgeometry: {
-                        description: `editing.workflow.steps.selectPoint`,
-                        done:        false,
-                      }
-                    },
-                    run(inputs, context) {
-                      return new Promise((resolve, reject) => {
-                        const originalLayer    = inputs.layer;
-                        const geometryType     = originalLayer.getGeometryType();
-                        const layerId          = originalLayer.getId();
-                        //get attributes/properties from current layer in editing
-                        const attributes       = (originalLayer.state.editing.fields || []).filter(a => !a.pk);
-                        const session          = context.session;
-                        const editingLayer     = getEditingLayer(originalLayer);
-                        const source           = editingLayer.getSource();
-                        //set reactive
-                        const vueInstance      = new (Vue.extend({
-                          template: /* html */`
-                            <section>
-                              <div id = "g3w-select-editable-layers-content">
-                                <select
-                                  id              = "g3w-select-editable-layers-to-copy"
-                                  v-select2       = "'id'"
-                                  :dropdownParent = "true"
-                                >
-                                  <option
-                                    v-for  = "layer in $options.layers"
-                                    :key   = "layer.id"
-                                    :value = "layer.id"
-                                  >{{ layer.name }}</option>
-                                </select>
-                              </div>
-                            </section>
-                          `,
-                          name: 'Copyfeaturesfromotherlayers',
-                          data() { return ({ id: this.$options.layers.find(l => l.selected).id }) },
-                          watch: { 'id'(id) { return this.$options.layers.forEach(l => l.selected = id === l.id); } },
-                        }))({layers});
-                        GUI.dialog({
-                          title:      _('plugins.editing.relation.copy_feature_from_other_layer'),
-                          className:  'modal-left',
-                          closeButton: false,
-                          message:     vueInstance.$mount().$el,
-                          buttons: {
-                            cancel: {
-                              label: 'Cancel',
-                              className: 'btn-danger',
-                              callback() { reject(); }
-                            },
-                            ok: {
-                              label: 'Ok',
-                              className: 'btn-success',
-                              callback: async () => {
-                                //set choose layer step done
-                                this.setUserMessageStepDone('chooselayer');
-                                try {
-                                  const feature = await (async () => {
-                                  //get selected layer
-                                  const layer   = layers.find(l => l.selected);
-                                    const features = await (new Promise(async resolve => {
-                                      this.addInteraction(
-                                        layer.external
-                                          ? new PickFeaturesInteraction({ layer: GUI.getLayerById(layer.id) })
-                                          : new g3w.utils.PickCoordinatesInteraction(), {
-                                        'picked': async e => {
-                                          try {
-                                            resolve(convertToGeometry(
-                                              layer.external
-                                                ? e.features                             // external layer
-                                                : ((await GUI.getData('query:coordinates', { // TOC/PROJECT layer
-                                                  inputs: {
-                                                    coordinates:           e.coordinate,
-                                                    query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
-                                                    layerIds:              [layer.id],
-                                                    multilayers:           false
-                                                  },
-                                                  outputs: null
-                                                })).data[0] || { features: [] }).features,
-                                              geometryType,
-                                            ))
-                                          } catch(e) {
-                                            console.warn(e);
-                                          }
-                                        }
+                steps: {
+                  chooselayer:    { description: `editing.select_layer`, done: false, },
+                  selectgeometry: { description: `editing.selectPoint`, done: false,  }
+                },
+                run(inputs, context) {
+                  return new Promise((resolve, reject) => {
+                    const originalLayer    = inputs.layer;
+                    const geometryType     = originalLayer.getGeometryType();
+                    const layerId          = originalLayer.getId();
+                    //get attributes/properties from current layer in editing
+                    const attributes       = (originalLayer.state.editing.fields || []).filter(a => !a.pk);
+                    const session          = context.session;
+                    const editingLayer     = getEditingLayer(originalLayer);
+                    const source           = editingLayer.getSource();
+                    //set reactive
+                    const vueInstance      = new (Vue.extend({
+                      template: /* html */`
+                        <section>
+                          <div id = "g3w-select-editable-layers-content">
+                            <select
+                              id              = "g3w-select-editable-layers-to-copy"
+                              v-select2       = "'id'"
+                              :dropdownParent = "true"
+                            >
+                              <option
+                                v-for  = "layer in $options.layers"
+                                :key   = "layer.id"
+                                :value = "layer.id"
+                              >{{ layer.name }}</option>
+                            </select>
+                          </div>
+                        </section>
+                      `,
+                      name: 'Copyfeaturesfromotherlayers',
+                      data() { return ({ id: this.$options.layers.find(l => l.selected).id }) },
+                      watch: { 'id'(id) { return this.$options.layers.forEach(l => l.selected = id === l.id); } },
+                    }))({layers});
+                    GUI.dialog({
+                      title:      _('plugins.editing.copy_feature_from_other_layer'),
+                      className:  'modal-left',
+                      closeButton: false,
+                      message:     vueInstance.$mount().$el,
+                      buttons: {
+                        cancel: {
+                          label: 'Cancel',
+                          className: 'btn-danger',
+                          callback() { reject(); }
+                        },
+                        ok: {
+                          label: 'Ok',
+                          className: 'btn-success',
+                          callback: async () => {
+                            //set choose layer step done
+                            this.setUserMessageStepDone('chooselayer');
+                            try {
+                              const feature = await (async () => {
+                              //get selected layer
+                              const layer   = layers.find(l => l.selected);
+                                const features = await (new Promise(async resolve => {
+                                  this.addInteraction(
+                                    layer.external
+                                      ? new PickFeaturesInteraction({ layer: GUI.getLayerById(layer.id) })
+                                      : new g3w.utils.PickCoordinatesInteraction(), {
+                                    'picked': async e => {
+                                      try {
+                                        resolve(convertToGeometry(
+                                          layer.external
+                                            ? e.features                             // external layer
+                                            : ((await GUI.getData('query:coordinates', { // TOC/PROJECT layer
+                                              inputs: {
+                                                coordinates:           e.coordinate,
+                                                query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
+                                                layerIds:              [layer.id],
+                                                multilayers:           false
+                                              },
+                                              outputs: null
+                                            })).data[0] || { features: [] }).features,
+                                          geometryType,
+                                        ))
+                                      } catch(e) {
+                                        console.warn(e);
                                       }
-                                      );
-                                    }));
-
-                                    let _feature;
-
-                                    try {
-                                      _feature = features.length > 1
-                                        ? await chooseFeatureFromFeatures({ features, inputs })
-                                        : features[0];
-                                    } catch (e) {
-                                      console.warn(e);
                                     }
+                                  }
+                                  );
+                                }));
 
-                                    if (_feature) {
-                                      const feature = new Feature({
-                                        feature:    _feature,
-                                        properties: attributes.map(a => a.name)
-                                      })
+                                let _feature;
 
-                                      feature.setTemporaryId();
-                                      return feature;
-                                    }
+                                try {
+                                  _feature = features.length > 1
+                                    ? await chooseFeatureFromFeatures({ features, inputs })
+                                    : features[0];
+                                } catch (e) {
+                                  console.warn(e);
+                                }
 
-                                    GUI.showUserMessage({
-                                      type:     'warning',
-                                      message:  'plugins.editing.messages.no_feature_selected',
-                                      closable:  false,
-                                      autoclose: true
-                                    });
-
-                                    return Promise.reject();
-                                  })();
-
-                                  //@TODO check better way
-                                  //Set undefined property to null otherwise on commit
-                                  // property are lost
-                                  attributes.forEach(({ name }) => {
-                                    if (undefined === feature.get(name)) { feature.set(name, null) }
+                                if (_feature) {
+                                  const feature = new Feature({
+                                    feature:    _feature,
+                                    properties: attributes.map(a => a.name)
                                   })
 
-                                  originalLayer.config.editing.fields
-                                    .filter(f => !f.editable) // un-editable fields
-                                    .map(f => f.name)
-                                    .find(field => {
-                                      if (isPkField(originalLayer, field)) { feature.set(field, null) }
-                                    });
-                                  //remove eventually Z Values
-                                  removeZValueToOLFeatureGeometry({ feature });
                                   feature.setTemporaryId();
-                                  source.addFeature(feature);
-                                  session.pushAdd(layerId, feature, false);
-                                  inputs.features.push(feature)
-                                  GUI.getPlugin('editing').emit('addfeature', feature)
-                                  resolve(inputs);
+                                  return feature;
                                 }
-                                catch(e) {
-                                  console.warn(e);
-                                  reject(e);
-                                }
-                              }
+
+                                GUI.showUserMessage({
+                                  type:     'warning',
+                                  message:  'plugins.editing.no_feature_selected',
+                                  closable:  false,
+                                  autoclose: true
+                                });
+
+                                return Promise.reject();
+                              })();
+
+                              //@TODO check better way
+                              //Set undefined property to null otherwise on commit
+                              // property are lost
+                              attributes.forEach(({ name }) => {
+                                if (undefined === feature.get(name)) { feature.set(name, null) }
+                              })
+
+                              originalLayer.config.editing.fields
+                                .filter(f => !f.editable) // un-editable fields
+                                .map(f => f.name)
+                                .find(field => {
+                                  if (isPkField(originalLayer, field)) { feature.set(field, null) }
+                                });
+                              //remove eventually Z Values
+                              removeZValueToOLFeatureGeometry({ feature });
+                              feature.setTemporaryId();
+                              source.addFeature(feature);
+                              session.pushAdd(layerId, feature, false);
+                              inputs.features.push(feature)
+                              GUI.getPlugin('editing').emit('addfeature', feature)
+                              resolve(inputs);
+                            }
+                            catch(e) {
+                              console.warn(e);
+                              reject(e);
                             }
                           }
-                        });
-                        //hide user message step
-                      });
-                    },
-                  }),
-                  openFormStep,
-                ],
-                helpMessage: "editing.tools.pastefeaturesfromotherlayers",
-                registerEscKeyEvent: true
-              });
-            })(),
-          }
-        })(),
-        // Copy Feature from layer
-        (is_vector) && capabilities.includes('add_feature') && {
-          id:   'copyfeatures',
-          type: ['add_feature'],
-          name: "editing.tools.copy",
-          icon: `mActionMoveFeatureCopy${iconGeometry}.svg`,
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/copyfeaturesworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'copyfeatures',
-            runOnce: true,
-            steps: [
-              new SelectElementsStep({
-                layer,
-                help: 'editing.steps.help.copy',
-                type: ApplicationState.ismobile ? 'single' : 'multiple',
-                steps: {
-                  select: {
-                    description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
-                    done:         false,
-                  }
-                },
-              }, true),
-              // get vertex
-              layer.getGeometryType().includes('Point') ? undefined : new Step({
-                layer,
-                help: 'editing.steps.help.select',
-                steps: {
-                  from: {
-                    description: 'editing.workflow.steps.selectStartVertex',
-                    done:        false,
-                  }
-                },
-                async run(inputs) {
-                  /** @since g3w-client-plugin-editing@v3.8.0 */
-                  const promise = new Promise((resolve, reject) => {
-                    this.reject = reject;
-                    if (0 === inputs.features.length) {
-                      return reject('no feature');
-                    }
-                    this.addInteraction(
-                      new ol.interaction.Draw({ type: 'Point', condition: e => inputs.features.some(f => _isPointOnVertex({ feature: f, coordinates: e.coordinate}))}), {
-                      'drawend': e => {
-                        inputs.coordinates = e.feature.getGeometry().getCoordinates();
-                        this.setUserMessageStepDone('from');
-                        resolve(inputs);
+                        }
                       }
                     });
-                    this.addInteraction(
-                      new ol.interaction.Snap({ edge: false, features: new ol.Collection(inputs.features) })
-                    );
-                  })
-                  /** @since g3w-client-plugin-editing@v3.8.0 */
-                  setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle })
-                  return promise;
-                },
-                stop() {
-                  /** @since g3w-client-plugin-editing@v3.8.0 */
-                  //Always resolve promise (in case of a press esc key)
-                  this.reject();
-                  this.reject = null;
-                },
-              }),
-              // move elements
-              new Step({
-                layer,
-                help: "editing.steps.help.select_vertex_to_paste",
-                steps: {
-                  to: {
-                    description: 'editing.workflow.steps.selectToPaste',
-                    done:        false,
-                  }
-                },
-                async run(inputs, context) {
-                  const {
-                    layer,
-                    features,
-                    coordinates
-                  }             = inputs;
-                  const source  = getEditingLayer(layer).getSource();
-                  const layerId = layer.getId();
-                  const session = context.session;
-                  const promise = new Promise((resolve, reject) => {
-                    this.reject = reject;
-                    this.addInteraction(
-                      new ol.interaction.Draw({ type: 'Point', features: new ol.Collection() }), {
-                        'drawend': evt => {
-                          const [x, y]                    = evt.feature.getGeometry().getCoordinates();
-                          const deltaXY                   = coordinates ? _getDeltaXY({x, y, coordinates}) : null;
-                          const featuresLength            = features.length;
-                          const promisesDefaultEvaluation = [];
-
-                          for (let i = 0; i < featuresLength; i++) {
-                            const feature = cloneFeature(features[i], layer);
-                            if (deltaXY) {
-                              feature.getGeometry().translate(deltaXY.x, deltaXY.y);
-                            }
-                            else {
-                              const coordinates = feature.getGeometry().getCoordinates();
-                              const deltaXY     = _getDeltaXY({ x, y, coordinates });
-                              feature.getGeometry().translate(deltaXY.x, deltaXY.y)
-                            }
-                            // evaluated geometry expression
-                            promisesDefaultEvaluation.push(evaluateExpressionFields({ inputs, context, feature }))
-                          }
-                          Promise
-                            .allSettled(promisesDefaultEvaluation)
-                            .then(promises => promises
-                              .forEach(({ status, value:feature }) => {
-
-                                /**
-                                 * @todo improve client core to handle this situation on session.pushAdd not copy pk field not editable only
-                                 */
-                                const noteditablefieldsvalues = _getNotEditableFieldsNoPkValues({ layer, feature });
-                                const newFeature              = session.pushAdd(layerId, feature);
-                                // after pushAdd need to set not edit
-                                if (Object.entries(noteditablefieldsvalues).length) {
-                                  Object
-                                    .entries(noteditablefieldsvalues)
-                                    .forEach(([field, value]) => newFeature.set(field, value));
-                                }
-
-                                //need to add to editing layer source newFeature
-                                source.addFeature(newFeature);
-
-                                inputs.features.push(newFeature);
-                              })
-                            )
-                            .finally(() => {
-                              this.setUserMessageStepDone('to');
-                              resolve(inputs);
-                            })
-                          }
-                        });
-
-                    this.addInteraction(
-                      new ol.interaction.Snap({ source, edge: false })
-                    );
+                    //hide user message step
                   });
-
-                  /** @since g3w-client-plugin-editing@v3.8.0 */
-                  setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
-                  return promise;
-                  
                 },
-                stop() {
-                  this.reject();
-                  this.reject = null;
-                }
               }),
-            ].filter(Boolean),
-            helpMessage: "editing.tools.copy",
+              new OpenFormStep({ layer, help: 'editing.copy' }),
+            ],
+            helpMessage: "editing.pastefeaturesfromotherlayers",
             registerEscKeyEvent: true,
-          }),
-        },
-        // Add part to MultiGeometry Feature
-        (is_vector) && capabilities.includes('add_feature') && capabilities.includes('change_feature') && {
-          id:   'addPart',
-          type: ['add_feature', 'change_feature'],
-          name: "editing.tools.addpart",
-          icon: "mActionAddPart.svg",
-          visible: isMultiGeometry,
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addparttomultigeometriesworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type:        'addparttomultigeometries',
-            helpMessage: 'editing.tools.addpart',
-            runOnce:     true,
-            steps: [
-              new PickFeatureStep({
-                steps: {
-                  select: {
-                    description: 'editing.workflow.steps.select',
-                    done:         false,
+          })
+        })(),
+        // Copy Feature from layer
+        (is_vector) && capabilities.includes('add_feature') && new Tool({
+          id:   'copyfeatures',
+          type: ['add_feature'],
+          name: "editing.copy_features",
+          icon: `mActionMoveFeatureCopy${iconGeometry}.svg`,
+          layer,
+          type: 'copyfeatures',
+          runOnce: true,
+          steps: [
+            new SelectElementsStep({
+              layer,
+              help: 'editing.copy',
+              type: ApplicationState.ismobile ? 'single' : 'multiple',
+              steps: {
+                select: {
+                  description: `${ApplicationState.ismobile ? 'editing.selectPoint' : 'editing.selectPointSHIFT'}`,
+                  done:         false,
+                }
+              },
+            }, true),
+            // get vertex
+            layer.getGeometryType().includes('Point') ? undefined : new Step({
+              layer,
+              help: 'editing.steps.help.select',
+              steps: {
+                from: {
+                  description: 'editing.selectStartVertex',
+                  done:        false,
+                }
+              },
+              async run(inputs) {
+                const promise = new Promise((resolve, reject) => {
+                  this.reject = reject;
+                  if (0 === inputs.features.length) {
+                    return reject('no feature');
                   }
-                },
-              }),
-              new Step({
-                run:   chooseFeature,
-                help: 'editing.steps.help.select_element',
-              }),
-              new AddFeatureStep({
-                layer,
-                help: 'editing.steps.help.select_element',
-                add:  false,
-                steps: {
-                  addfeature: {
-                    description: 'editing.workflow.steps.draw_part',
-                    done:        false,
-                  }
-                },
-                tools: ['snap', 'measure'],
-              }),
-              // add part to multi geometries
-              new Step({
-                layer,
-                help: 'editing.steps.help.select_element',
-                run:   addPartToMultigeometries
-              }),
-            ],
-            registerEscKeyEvent: true
-          }),
-        },
-        // Remove part from MultiGeometry Feature
-        (is_vector) && capabilities.includes('change_feature') && {
-          id:   'deletePart',
-          type: ['change_feature'],
-          name: "editing.tools.deletepart",
-          icon: "mActionDeletePart.svg",
-          visible: isMultiGeometry,
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/deletepartfrommultigeometriesworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'deletepartfrommultigeometries',
-            steps: [
-              new PickFeatureStep(),
-              new Step({ run: chooseFeature }),
-              // delete part from multi geometries
-              new Step({
-                layer,
-                run(inputs, context) {
-                  return new Promise((resolve, reject) => {
-                    const originaLayer    = inputs.layer;
-                    const editingLayer    = getEditingLayer(inputs.layer);
-                    const layerId         = originaLayer.getId();
-                    const session         = context.session;
-                    const {
-                      features,
-                      coordinate
-                    }                     = inputs;
-                    const feature         = features[0];
-                    const originalFeature = feature.clone();
-                    const geometry        = feature.getGeometry();
-                    let geometries        = [];
-
-                    // ensure single geometry
-                    switch (geometry.getType()) {
-                      case GEOMETRY_TYPES.MULTIPOLYGON:    geometries = geometry.getPolygons(); break;
-                      case GEOMETRY_TYPES.MULTILINE:       geometries = geometry.getLineStrings(); break;
-                      case GEOMETRY_TYPES.MULTILINESTRING: geometries = geometry.getLineStrings(); break;
-                      case GEOMETRY_TYPES.MULTIPOINT:      geometries = geometry.getPoints(); break;
-                      default:                             console.warn('invalid geometry type', geometry.getType()); break;
-                    }
-
-                    const source          = new ol.source.Vector({features: geometries.map(geometry => new ol.Feature(geometry))});
-                    const map             = this.getMap();
-                    const pixel           = map.getPixelFromCoordinate(coordinate);
-                    let tempLayer         = new ol.layer.Vector({
-                      source,
-                      style: editingLayer.getStyle()
-                    });
-                
-                    map.addLayer(tempLayer);
-                
-                    map.once('postrender', () => {
-                      let found = false;
-                      //need to call map.forEachFeatureAtPixel and not this.forEachFeatureAtPixel
-                      //because we use arrow function, and it referred this to outside context
-                      map.forEachFeatureAtPixel(pixel, _feature => {
-                        if (!found) {
-                          source.removeFeature(_feature);
-                          if (source.getFeatures().length) {
-                            const geometries = source.getFeatures().map(f => f.getGeometry());
-                            const type       = geometries[0] && geometries[0].getType();
-                            feature.setGeometry(
-                              type && new ol.geom[`Multi${type}`](geometries.map(g => g.getCoordinates())) // ensures multi geometry
-                            );
-                            /**
-                             * evaluated geometry expression
-                             */
-                            evaluateExpressionFields({
-                              inputs,
-                              context,
-                              feature
-                            }).finally(() => {
-                              session.pushUpdate(layerId, feature, originalFeature);
-                              resolve(inputs);
-                            });
-                            /**
-                             * end of evaluated
-                             */
-                            } else {
-                              editingLayer.getSource().removeFeature(feature);
-                              session.pushDelete(layerId, feature);
-                              resolve(inputs);
-                            }
-                            found = true;
-                          }
-                        },
-                        {
-                          layerFilter(layer) {
-                            return layer === tempLayer;
-                          },
-                          hitTolerance: 1
+                  this.addInteraction(
+                    new ol.interaction.Draw({
+                      type: 'Point',
+                      condition: e => inputs.features.some(f => {
+                        const geom   = f.getGeometry();
+                        const equals = (c1 = [], c2 = []) => (c1[0] === c2[0] && c1[1] === c2[1]);
+                        const coords = c => equals(e.coordinate, c);
+                        switch (geom.getType()) {
+                          case 'Polygon':
+                          case 'MultiLineString':
+                            return geom.getCoordinates().flat().some(coords);
+                          case 'LineString':
+                          case 'MultiPoint':
+                            return geom.getCoordinates().some(coords);
+                          case 'MultiPolygon':
+                            return geom.getPolygons().some(poly => poly.getCoordinates().flat().some(coords));
+                          case 'Point':
+                            return equals(e.coordinate, geom.getCoordinates());
+                          default:
+                            return false;
                         }
-                      );
-                      //need to call map.forEachFeatureAtPixel and not this.forEachFeatureAtPixel
-                      //because we use arrow function, and it referred this to outside context
-                      map.removeLayer(tempLayer);
-                      tempLayer = null;
-                    });
+                      })
+                    }), {
+                    'drawend': e => {
+                      inputs.coordinates = e.feature.getGeometry().getCoordinates();
+                      this.setUserMessageStepDone('from');
+                      resolve(inputs);
+                    }
                   });
-                },
-              }),
-            ],
-            helpMessage: 'editing.tools.deletepart',
-          }),
-        },
-        // Split Feature
-        (is_line || is_poly) && capabilities.includes('change_feature') && {
-          id:          'splitfeature',
-          type:        ['change_feature'],
-          name:        "editing.tools.split",
-          icon:        "mActionSplitFeatures.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/splitfeatureworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'splitfeature',
-            runOnce: true,
-            steps: [
-              new SelectElementsStep({
-                layer,
-                help: 'editing.steps.help.split',
-                type: ApplicationState.ismobile ? 'single' : 'multiple',
-                steps: {
-                  select: {
-                    description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectPoint' : 'selectPointSHIFT'}`,
-                    done:         false,
-                  }
-                },
-              }, true),
-              // split feature
-              new Step({
-                layer,
-                help: '',
-                steps: {
-                  draw_line: {
-                    description: 'editing.workflow.steps.draw_split_line',
-                    done:        false,
-                  }
-                },
-                async run(inputs, context) {
-                  /** @since g3w-client-plugin-editing@v3.8.0 */
-                  const source  = getEditingLayer(inputs.layer).getSource();
-                  
-                  const promise = new Promise((resolve, reject) => {
-                    this.reject = reject;
-                    this.addInteraction(
-                      new ol.interaction.Draw({
-                        type:              'LineString',
-                        features:          new ol.Collection(),
-                        freehandCondition: ol.events.condition.never,
-                      }), {
-                        'drawend': async e => {
-                          let isSplitted                 = false;
-                          const splittedGeometries       = (inputs.features || []).reduce((a, f) => {
-                            const geometries = splitFeature({ splitfeature: e.feature, feature: f });
-                            if (geometries.length > 1) {
-                              a.push({ uid: f.getUid(), geometries });
-                            }
-                            return a;
-                          }, []);
-                          const splittedGeometriesLength = splittedGeometries.length;
+                  this.addInteraction(
+                    new ol.interaction.Snap({ edge: false, features: new ol.Collection(inputs.features) })
+                  );
+                })
+                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle })
+                return promise;
+              },
+              stop() {
+                // always resolve promise (in case of a press esc key)
+                this.reject();
+                this.reject = null;
+              },
+            }),
+            // move elements
+            new Step({
+              layer,
+              help: "editing.steps.help.select_vertex_to_paste",
+              steps: {
+                to: {
+                  description: 'editing.selectToPaste',
+                  done:        false,
+                }
+              },
+              async run(inputs, context) {
+                const {
+                  layer,
+                  features,
+                  coordinates
+                }             = inputs;
+                const source  = getEditingLayer(layer).getSource();
+                const layerId = layer.getId();
+                const session = context.session;
+                const promise = new Promise((resolve, reject) => {
+                  this.reject = reject;
+                  this.addInteraction(
+                    new ol.interaction.Draw({ type: 'Point', features: new ol.Collection() }), {
+                      'drawend': evt => {
+                        const [x, y]                    = evt.feature.getGeometry().getCoordinates();
+                        const deltaXY                   = coordinates ? SELF.#getDelta({x, y, coordinates}) : null;
+                        const featuresLength            = features.length;
+                        const promisesDefaultEvaluation = [];
 
-                          for (let i = 0; i < splittedGeometriesLength; i++) {
-                            if (splittedGeometries[i].geometries.length > 1) {
-                              isSplitted = true;
-                              await _handleSplitFeature({
-                                context,
-                                inputs,
-                                feature:            inputs.features.find(f => f.getUid() === splittedGeometries[i].uid),
-                                splittedGeometries: splittedGeometries[i].geometries,
-                                session:            context.session,
-                              });
-                            }
+                        for (let i = 0; i < featuresLength; i++) {
+                          const feature = cloneFeature(features[i], layer);
+                          if (deltaXY) {
+                            feature.getGeometry().translate(deltaXY.x, deltaXY.y);
                           }
+                          else {
+                            const coordinates = feature.getGeometry().getCoordinates();
+                            const deltaXY     = SELF.#getDelta({ x, y, coordinates });
+                            feature.getGeometry().translate(deltaXY.x, deltaXY.y)
+                          }
+                          // evaluated geometry expression
+                          promisesDefaultEvaluation.push(evaluateExpressionFields({ inputs, context, feature }))
+                        }
+                        Promise
+                          .allSettled(promisesDefaultEvaluation)
+                          .then(promises => promises
+                            .forEach(({ status, value:feature }) => {
 
-                          /** @since g3w-client-plugin-editing@v3.8.0 */
-                          (isSplitted ? resolve : reject)(inputs);
-                          //need to set timeout promise, because at the end of the workflow all user messages are cleared
-                          await new Promise(r => setTimeout(r, 600));
-                          GUI.showUserMessage({
-                            type:      isSplitted ? 'success': 'warning',
-                            message:   isSplitted ? 'plugins.editing.messages.splitted' : 'plugins.editing.messages.nosplittedfeature',
-                            autoclose: true
+                              /**
+                               * @todo improve client core to handle this situation on session.pushAdd not copy pk field not editable only
+                               */
+                              const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer, feature });
+                              const newFeature              = session.pushAdd(layerId, feature);
+                              // after pushAdd need to set not edit
+                              if (Object.entries(noteditablefieldsvalues).length) {
+                                Object
+                                  .entries(noteditablefieldsvalues)
+                                  .forEach(([field, value]) => newFeature.set(field, value));
+                              }
+
+                              //need to add to editing layer source newFeature
+                              source.addFeature(newFeature);
+
+                              inputs.features.push(newFeature);
+                            })
+                          )
+                          .finally(() => {
+                            this.setUserMessageStepDone('to');
+                            resolve(inputs);
                           })
                         }
-                    });
+                      });
 
-                    this.addInteraction(
-                      new ol.interaction.Snap({ source, edge: true })
-                    );
-                  })
+                  this.addInteraction(
+                    new ol.interaction.Snap({ source, edge: false })
+                  );
+                });
 
-                  /** @since g3w-client-plugin-editing@v3.8.0 */
-                  setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+                return promise;
 
-                  return promise;
-                  
-                },
-                stop() {
-                  this.reject();
-                  this.reject = null;
+              },
+              stop() {
+                this.reject();
+                this.reject = null;
+              }
+            }),
+          ].filter(Boolean),
+          helpMessage: "editing.copy_features",
+          registerEscKeyEvent: true,
+        }),
+        // Add part to MultiGeometry Feature
+        (is_vector) && capabilities.includes('add_feature') && capabilities.includes('change_feature') && new Tool({
+          id:   'addPart',
+          type: ['add_feature', 'change_feature'],
+          name: "editing.addpart",
+          icon: "mActionAddPart.svg",
+          visible: isMultiGeometry,
+          layer,
+          type:        'addparttomultigeometries',
+          helpMessage: 'editing.addpart',
+          runOnce:     true,
+          steps: [
+            new PickFeatureStep({
+              steps: {
+                select: {
+                  description: 'editing.click_on_feature',
+                  done:         false,
                 }
-              }),
-            ],
-            helpMessage: 'editing.tools.split',
-            registerEscKeyEvent: true,
-          }),
-        },
+              },
+            }),
+            new Step({
+              run:   chooseFeature,
+              help: 'editing.select_element',
+            }),
+            new AddFeatureStep({
+              layer,
+              help: 'editing.select_element',
+              add:  false,
+              steps: {
+                addfeature: {
+                  description: 'editing.draw_part',
+                  done:        false,
+                }
+              },
+              tools: ['snap', 'measure'],
+            }),
+            // add part to multi geometries
+            new Step({
+              layer,
+              help: 'editing.select_element',
+              run:   addPartToMultigeometries
+            }),
+          ],
+          registerEscKeyEvent: true
+        }),
+        // Remove part from MultiGeometry Feature
+        (is_vector) && capabilities.includes('change_feature') && new Tool({
+          id:   'deletePart',
+          type: ['change_feature'],
+          name: "editing.deletepart",
+          icon: "mActionDeletePart.svg",
+          visible: isMultiGeometry,
+          layer,
+          type: 'deletepartfrommultigeometries',
+          steps: [
+            new PickFeatureStep(),
+            new Step({ run: chooseFeature }),
+            // delete part from multi geometries
+            new Step({
+              layer,
+              run(inputs, context) {
+                return new Promise((resolve, reject) => {
+                  const originaLayer    = inputs.layer;
+                  const editingLayer    = getEditingLayer(inputs.layer);
+                  const layerId         = originaLayer.getId();
+                  const session         = context.session;
+                  const {
+                    features,
+                    coordinate
+                  }                     = inputs;
+                  const feature         = features[0];
+                  const originalFeature = feature.clone();
+                  const geometry        = feature.getGeometry();
+                  let geometries        = [];
+
+                  // ensure single geometry
+                  switch (geometry.getType()) {
+                    case GEOMETRY_TYPES.MULTIPOLYGON:    geometries = geometry.getPolygons(); break;
+                    case GEOMETRY_TYPES.MULTILINE:       geometries = geometry.getLineStrings(); break;
+                    case GEOMETRY_TYPES.MULTILINESTRING: geometries = geometry.getLineStrings(); break;
+                    case GEOMETRY_TYPES.MULTIPOINT:      geometries = geometry.getPoints(); break;
+                    default:                             console.warn('invalid geometry type', geometry.getType()); break;
+                  }
+
+                  const source          = new ol.source.Vector({features: geometries.map(geometry => new ol.Feature(geometry))});
+                  const map             = this.getMap();
+                  const pixel           = map.getPixelFromCoordinate(coordinate);
+                  let tempLayer         = new ol.layer.Vector({
+                    source,
+                    style: editingLayer.getStyle()
+                  });
+              
+                  map.addLayer(tempLayer);
+              
+                  map.once('postrender', () => {
+                    let found = false;
+                    //need to call map.forEachFeatureAtPixel and not this.forEachFeatureAtPixel
+                    //because we use arrow function, and it referred this to outside context
+                    map.forEachFeatureAtPixel(pixel, _feature => {
+                      if (!found) {
+                        source.removeFeature(_feature);
+                        if (source.getFeatures().length) {
+                          const geometries = source.getFeatures().map(f => f.getGeometry());
+                          const type       = geometries[0] && geometries[0].getType();
+                          feature.setGeometry(
+                            type && new ol.geom[`Multi${type}`](geometries.map(g => g.getCoordinates())) // ensures multi geometry
+                          );
+                          /**
+                           * evaluated geometry expression
+                           */
+                          evaluateExpressionFields({
+                            inputs,
+                            context,
+                            feature
+                          }).finally(() => {
+                            session.pushUpdate(layerId, feature, originalFeature);
+                            resolve(inputs);
+                          });
+                          /**
+                           * end of evaluated
+                           */
+                          } else {
+                            editingLayer.getSource().removeFeature(feature);
+                            session.pushDelete(layerId, feature);
+                            resolve(inputs);
+                          }
+                          found = true;
+                        }
+                      },
+                      {
+                        layerFilter(layer) {
+                          return layer === tempLayer;
+                        },
+                        hitTolerance: 1
+                      }
+                    );
+                    //need to call map.forEachFeatureAtPixel and not this.forEachFeatureAtPixel
+                    //because we use arrow function, and it referred this to outside context
+                    map.removeLayer(tempLayer);
+                    tempLayer = null;
+                  });
+                });
+              },
+            }),
+          ],
+          helpMessage: 'editing.deletepart',
+        }),
+        // Split Feature
+        (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
+          id:          'splitfeature',
+          type:        ['change_feature'],
+          name:        "editing.split",
+          icon:        "mActionSplitFeatures.svg",
+          layer,
+          type: 'splitfeature',
+          runOnce: true,
+          steps: [
+            new SelectElementsStep({
+              layer,
+              help: 'editing.split_feature',
+              type: ApplicationState.ismobile ? 'single' : 'multiple',
+              steps: {
+                select: {
+                  description: `${ApplicationState.ismobile ? 'editing.selectPoint' : 'editing.selectPointSHIFT'}`,
+                  done:         false,
+                }
+              },
+            }, true),
+            // split feature
+            new Step({
+              layer,
+              help: '',
+              steps: {
+                draw_line: {
+                  description: 'editing.draw_split_line',
+                  done:        false,
+                }
+              },
+              async run(inputs, context) {
+                const source  = getEditingLayer(inputs.layer).getSource();
+                
+                const promise = new Promise((resolve, reject) => {
+                  this.reject = reject;
+                  this.addInteraction(
+                    new ol.interaction.Draw({
+                      type:              'LineString',
+                      features:          new ol.Collection(),
+                      freehandCondition: ol.events.condition.never,
+                    }), {
+                      'drawend': async e => {
+                        // splitted geometries
+                        const splitted  = (inputs.features || [])
+                          .map(f => ({ uid: f.getUid(), geometries: splitFeature({ splitfeature: e.feature, feature: f }) }))
+                          .filter(item => item.geometries.length > 1);
+                        let is_splitted = false;
+
+                        for (let i = 0; i < splitted.length; i++) {
+                          if (!(splitted[i].geometries.length > 1)) {
+                            continue;
+                          }
+
+                          is_splitted = true;
+
+                          let feature = inputs.features.find(f => f.getUid() === splitted[i].uid);
+                          const oriFeature = feature.clone();
+                          const layerId = inputs.layer.getId();
+                          const session = context.session;
+
+                          for (let j = 0; j < splitted[i].geometries.length; j++) {
+                            const geom = splitted[i].geometries[j];
+                            if (0 === j) {
+                              feature.setGeometry(geom);
+                              try {
+                                await evaluateExpressionFields({ inputs, context, feature });
+                              } catch (e) {
+                                console.warn(e);
+                              }
+                              session.pushUpdate(layerId, feature, oriFeature);
+                            }
+                            if (j > 0) {
+                              const newFeature = cloneFeature(oriFeature, inputs.layer);
+                              newFeature.setGeometry(geom);
+
+                              feature = new Feature({ feature: newFeature });
+                              feature.setTemporaryId();
+
+                              try {
+                                await evaluateExpressionFields({ inputs, context, feature });
+                              } catch (e) {
+                                console.warn(e);
+                              }
+
+                              const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer: inputs.layer, feature });
+
+                              if (Object.entries(noteditablefieldsvalues).length) {
+                                const createdFeature = session.pushAdd(layerId, feature);
+                                Object.entries(noteditablefieldsvalues).forEach(([field, value]) => createdFeature.set(field, value));
+                                source.addFeature(createdFeature);
+                              } else {
+                                session.pushAdd(layerId, feature);
+                                source.addFeature(feature);
+                              }
+                            }
+                            inputs.features.push(feature);
+                          }
+                        }
+
+                        (is_splitted ? resolve : reject)(inputs);
+
+                        // set timeout because at the end of the tool all user messages are cleared
+                        await new Promise(r => setTimeout(r, 600));
+
+                        GUI.showUserMessage({
+                          type:      is_splitted ? 'success': 'warning',
+                          message:   is_splitted ? 'plugins.editing.splitted' : 'plugins.editing.nosplittedfeature',
+                          autoclose: true
+                        })
+                      }
+                  });
+
+                  this.addInteraction(
+                    new ol.interaction.Snap({ source, edge: true })
+                  );
+                })
+
+                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+
+                return promise;
+                
+              },
+              stop() {
+                this.reject();
+                this.reject = null;
+              }
+            }),
+          ],
+          helpMessage: 'editing.split',
+          registerEscKeyEvent: true,
+        }),
         // Merge features in one
-        (is_line || is_poly) && capabilities.includes('change_feature') && {
+        (is_line || is_poly) && capabilities.includes('change_feature') && new Tool({
           id:   'mergefeatures',
           type: ['change_feature'],
-          name: "editing.tools.merge",
+          name: "editing.dissolve_features",
           icon: "mActionMergeFeatures.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/mergefeaturesworkflow.js@v3.7.1 */
-          op: new Workflow({
-            layer,
-            type: 'mergefeatures',
-            runOnce: true,
-            steps: [
-              new SelectElementsStep({
-                layer,
-                type: 'bbox',
-                help: 'editing.steps.help.merge',
-                steps: {
-                  select: {
-                    description: `editing.workflow.steps.${ApplicationState.ismobile ? 'selectDrawBox' : 'selectSHIFT'}`,
-                    done: false,
-                  }
-                },
-              }, true),
-              // merge features
-              new Step({
-                layer,
-                help: 'editing.steps.help.merge',
-                steps: {
-                  choose: {
-                    description: 'editing.workflow.steps.merge',
-                    done: false,
-                  }
-                },
-                run(inputs, context) {
-                  return new Promise((resolve, reject) => {
-                    const {
-                      layer,
-                      features
-                    }                  = inputs;
-                    const editingLayer = getEditingLayer(layer);
-                    const source       = editingLayer.getSource();
-                    const layerId      = layer.getId();
-                    const session      = context.session;
-                
-                    if (features.length < 2) {
-                      GUI.showUserMessage({
-                        type:     'warning',
-                        message:  'plugins.editing.messages.select_min_2_features',
-                        autoclose: true
-                      });
-                      reject();
-                    } else {
-                      chooseFeatureFromFeatures({ features, inputs })
-                        .then(async (feature) => {
-                          const index           = features.findIndex(_feature => feature === _feature);
-                          const originalFeature = feature.clone();
-                          const newFeature      = dissolve({features, index});
-                
-                          if (newFeature) {
-                            try {
-                              await evaluateExpressionFields({ inputs, context, feature: newFeature });
-                            } catch(e) {
-                              console.warn(e);
-                            }
-                            session.pushUpdate(layerId, newFeature, originalFeature);
-                            features
-                              .filter(_feature => _feature !== feature)
-                              .forEach(deleteFeature => {
-                                session.pushDelete(layerId, deleteFeature);
-                                source.removeFeature(deleteFeature);
-                              });
-                            inputs.features = [feature];
-                            resolve(inputs);
-                          } else {
-                            GUI.showUserMessage({
-                              type:     'warning',
-                              message:  'plugins.editing.messages.no_feature_selected',
-                              autoclose: true
-                            });
-                            reject();
+          layer,
+          type: 'mergefeatures',
+          runOnce: true,
+          steps: [
+            new SelectElementsStep({
+              layer,
+              type: 'bbox',
+              help: 'editing.dissolve_features',
+              steps: {
+                select: {
+                  description: `${ApplicationState.ismobile ? 'editing.selectDrawBox' : 'editing.selectSHIFT'}`,
+                  done: false,
+                }
+              },
+            }, true),
+            // merge features
+            new Step({
+              layer,
+              help: 'editing.dissolve_features',
+              steps: {
+                choose: {
+                  description: 'editing.merge',
+                  done: false,
+                }
+              },
+              run(inputs, context) {
+                return new Promise((resolve, reject) => {
+                  const {
+                    layer,
+                    features
+                  }                  = inputs;
+                  const editingLayer = getEditingLayer(layer);
+                  const source       = editingLayer.getSource();
+                  const layerId      = layer.getId();
+                  const session      = context.session;
+              
+                  if (features.length < 2) {
+                    GUI.showUserMessage({
+                      type:     'warning',
+                      message:  'plugins.editing.select_min_2_features',
+                      autoclose: true
+                    });
+                    reject();
+                  } else {
+                    chooseFeatureFromFeatures({ features, inputs })
+                      .then(async (feature) => {
+                        const index           = features.findIndex(_feature => feature === _feature);
+                        const originalFeature = feature.clone();
+                        const newFeature      = dissolve({features, index});
+              
+                        if (newFeature) {
+                          try {
+                            await evaluateExpressionFields({ inputs, context, feature: newFeature });
+                          } catch(e) {
+                            console.warn(e);
                           }
-                        })
-                        .catch(e => { console.warn(e); reject(); })
-                    }
-                  });
-                },
-              }),
-            ],
-            helpMessage: 'editing.tools.merge',
-            registerEscKeyEvent: true
-          }),
-        },
+                          session.pushUpdate(layerId, newFeature, originalFeature);
+                          features
+                            .filter(_feature => _feature !== feature)
+                            .forEach(deleteFeature => {
+                              session.pushDelete(layerId, deleteFeature);
+                              source.removeFeature(deleteFeature);
+                            });
+                          inputs.features = [feature];
+                          resolve(inputs);
+                        } else {
+                          GUI.showUserMessage({
+                            type:     'warning',
+                            message:  'plugins.editing.no_feature_selected',
+                            autoclose: true
+                          });
+                          reject();
+                        }
+                      })
+                      .catch(e => { console.warn(e); reject(); })
+                  }
+                });
+              },
+            }),
+          ],
+          helpMessage: 'editing.dissolve_features',
+          registerEscKeyEvent: true
+        }),
         // Add Table feature (alphanumerical layer - No geometry)
-        is_table && capabilities.includes('add_feature') && {
+        is_table && capabilities.includes('add_feature') && new Tool({
           id:   'addfeature',
           type: ['add_feature'],
-          name: "editing.tools.add_feature",
+          name: "editing.add_feature",
           icon: "mActionCreateTable.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
-          op:   new Workflow({
-            layer,
-            type: 'addtablefeature',
-            runOnce: true,
-            steps: [
-              new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
-              new OpenFormStep(),
-            ],
-          }),
-        },
+          layer,
+          type: 'addtablefeature',
+          runOnce: true,
+          steps: [
+            new Step({ help: 'editing.new_feature', run: addTableFeature }),
+            new OpenFormStep(),
+          ],
+        }),
         // Edit Table feature (alphanumerical layer - No geometry)
-        is_table && (capabilities.includes('delete_feature') || capabilities.includes('change_attr_feature')) && {
+        is_table && (capabilities.includes('delete_feature') || capabilities.includes('change_attr_feature')) && new Tool({
           id:   'edittable',
           type: ['delete_feature', 'change_attr_feature'],
-          name: "editing.tools.update_feature",
+          name: "editing.update_feature",
           icon: "mActionEditTable.svg",
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
-          op: new Workflow({
-            layer,
-            type:            'edittable',
-            backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
-            runOnce:          true,
-            steps:            [
-              new Step({
-                help: "editing.steps.help.edit_table",
-                run(inputs, context) {
-                  return new Promise(async (resolve, reject) => {
-                    GUI.getPlugin('editing').setCurrentLayout();
-                    GUI.disableSideBar(true);
-                    GUI.setContent({
-                      content: new Component({
-                        title:             `${inputs.layer.getName()}`,
-                        push:              false,
-                        internalComponent: new (Vue.extend((await import('../js/components/table.js')).default))({
-                          inputs,
-                          context,
-                          promise:    { resolve, reject },
-                          isrelation: false,
-                        }),
+          layer,
+          type:            'edittable',
+          backbuttonlabel: 'plugins.editing.save_and_back_table',
+          runOnce:          true,
+          steps:            [
+            new Step({
+              help: "editing.edit_table",
+              run(inputs, context) {
+                return new Promise(async (resolve, reject) => {
+                  GUI.getPlugin('editing').setCurrentLayout();
+                  GUI.disableSideBar(true);
+                  GUI.setContent({
+                    content: new Component({
+                      title:             `${inputs.layer.getName()}`,
+                      push:              false,
+                      internalComponent: new (Vue.extend((await import('../js/components/table.js')).default))({
+                        inputs,
+                        context,
+                        promise:    { resolve, reject },
+                        isrelation: false,
                       }),
-                      perc:       isMobile.any ? 100 : undefined,
-                      push:       false,
-                      showgoback: false,
-                      closable:   false,
-                    });
-                  })
-                },
-                stop() {
-                  GUI.disableSideBar(false);
-                  GUI.closeContent();
-                  GUI.getPlugin('editing').resetCurrentLayout();
-                }
-              })
-            ],
-          }),
-        },
-      ].filter(Boolean).map(tool => Object.assign(new Emitter, tool)),
+                    }),
+                    perc:       isMobile.any ? 100 : undefined,
+                    push:       false,
+                    showgoback: false,
+                    closable:   false,
+                  });
+                })
+              },
+              stop() {
+                GUI.disableSideBar(false);
+                GUI.closeContent();
+                GUI.getPlugin('editing').resetCurrentLayout();
+              }
+            })
+          ],
+        }),
+      ].filter(Boolean),
     };
-
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/tool.js@v3.7.1
-     */
-    this.state._tools.forEach(tool => {
-      Object.assign(tool, {
-        disabledtoolsoftools: [],
-        enabled:              !!tool.enabled,
-        active:               false,
-        message:              null,
-        helpMessage:          tool.op.getHelpMessage(),
-        visible:              tool.visible instanceof Function ? tool.visible(tool) : (undefined !== tool.visible ? tool.visible: true),
-        state:                new Proxy({}, { get: (_, prop) => tool[prop], set:(_, prop, value) => { tool[prop] = value; return true; } }),
-        start:                this._startTool.bind(this, tool),
-        stop:                 this._stopTool.bind(this, tool),
-        getId:                () => tool.id,
-        getOperator:          () => tool.op,
-        setOperator:          op => tool.op = op,
-        disableEdit:          !!tool.disableEdit, //@since v4.0.0 disable stop editing
-      });
-    });
 
     Object.assign(this.state, {
       tools: this.state._tools,
@@ -1680,25 +1751,113 @@ export class ToolBox extends Emitter {
     // BACKOMP v3.x
     this.originalState     = this.state.originalState;
 
-    // @since v3.8.0 constraint messages to show
+    /**
+     * constraint messages to show
+     */
     this.messages = {
       //set message of scale constraint
       constraint: {
-        scale: `${_('plugins.editing.messages.constraints.enable_editing')}${this.state._constraints.scale}`.toUpperCase()
+        scale: `${_('plugins.editing.zoom_to_enable')}${this.state._constraints.scale}`.toUpperCase()
       }
     }
 
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
    * 
-   * @param { string } layerId
-   *
+   * @param {@since 4.0.0} f 
    */
-  _stopSessionChildren(layerId) {
+  featuresLockedByOtherUser(f) {}
+
+  /**
+   * Rebuilds the session dependency mapping for undo/redo operations.
+   *
+   * Each change can be an add/delete/update action and can be paired with a
+   * previous state in the transaction history. This helper distinguishes between
+   * changes belonging to the current layer and those belonging to related layers.
+   *
+   * @param {string} historyId Current session layer id.
+   * @param {Array} items Session items to classify.
+   * @param {number} action Undo (0) or redo (1) direction.
+   * 
+   * @returns {{ own: Array, dependencies: Object }} Normalized session items.
+   */
+  #checkSessionItems(historyId, items, action) {
+    const newItems = {
+      own: [],
+      dependencies: {}
+    };
+
+    items.forEach((item) => {
+      if (Array.isArray(item)) { item = item[action]; }
+      if (historyId === item.layerId) { newItems.own.push(item); }
+      else {
+        newItems.dependencies[item.layerId] = newItems.dependencies[item.layerId] || {
+          own: [],
+          dependencies: {}
+        };
+        newItems.dependencies[item.layerId].own.push(item);
+      }
+    });
+
+    return newItems;
+  }
+
+  /**
+   * Computes the planar offset between a clicked coordinate and the reference
+   * point used by the current geometry action.
+   *
+   * This helper unwraps nested coordinate structures such as Polygon rings or
+   * multi-part geometries until it reaches a single pair of x/y values.
+   *
+   * @param {Object} [params={}] Geometry delta payload.
+   * @param {number} [params.x] Target x coordinate.
+   * @param {number} [params.y] Target y coordinate.
+   * @param {Array|number[]} [params.coordinates] Original coordinate tuple used as anchor.
+   *
+   * @returns {{ x: number, y: number }} Offset applied to the selected geometry.
+   */
+  #getDelta({ x, y, coordinates } = {}) {
+    let curr = coordinates;
+    while (Array.isArray(curr?.[0])) {
+      curr = curr[0];
+    }
+    return {
+      x: x - curr?.[0],
+      y: y - curr?.[1]
+    };
+  }
+
+  /**
+   * Returns all non-editable fields for a feature, while keeping primary-key
+   * fields as null when required by the data model.
+   *
+   * @param {Object} params Parameters.
+   * @param {object} params.layer Current layer definition.
+   * @param {object} params.feature Feature being serialized.
+   * 
+   * @returns {Object} Mapping of field names to safe values.
+   */
+  #getNonEditableValues({ layer, feature }) {
+    return layer.state.editing.fields
+      .filter(f => !f.editable)
+      .map(f => f.name)
+      .reduce((fields, field) => Object.assign(fields, {
+        [field]: isPkField(layer, field) ? null : feature.get(field)
+      }), {});
+  }
+
+  /**
+   * Stops child sessions that are chained through relation-based editing.
+   *
+   * When a parent layer is stopped, dependent relation layers must be stopped
+   * in the same order to avoid leaving locks or session state behind.
+   *
+   * @param {string} layerId Identifier of the layer whose children must be stopped.
+   */
+  #stopChildren(layerId) {
     const layer = GUI.getPlugin('editing').getLayerById(layerId);
-     //add parent layerId to chain layerId stop
+    // add parent layerId to chain layerId stop
     GUI.getPlugin('editing').state.stopChain.add(layerId);
     getRelationsInEditing({
       layerId,
@@ -1715,51 +1874,69 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @returns toolbox state
+   * Returns the current toolbox state snapshot.
+   *
+   * @returns {Object} Reactive session state for the current editing layer.
    */
   getState() {
     return this.state;
   }
 
   /**
-   * @param bool
+   * Sets the toolbox visibility state.
+   *
+   * @param {boolean} [bool=true] Whether the toolbox should be displayed.
    */
   setShow(bool = true) {
     this.state.show = bool;
   }
 
   /**
-   * @returns {*}
+   * Returns the current catalog layer instance managed by this toolbox.
+   *
+   * @returns {object} Layer metadata and runtime instance.
    */
   getLayer() {
     return this.state.layer;
   }
 
   /**
-   * @returns {boolean}
+   * Checks whether the current layer is the father in a relation hierarchy.
+   *
+   * @returns {boolean} True when the layer participates as a parent relation.
    */
   isFather() {
     return this.state.editing.father;
   }
 
   /**
-   * @returns { Array } parent and child layers
+   * Lists the parent and child layer ids that participate in the current
+   * editing dependency chain.
+   *
+   * @returns {Array<string>} Dependent layer identifiers.
    */
   getDependencies() {
     return this.state.editing.dependencies;
   }
 
   /**
-   * @returns {boolean}
+   * Checks whether the current layer has any dependency layers involved in the
+   * editing workflow.
+   *
+   * @returns {boolean} True when at least one dependency exists.
    */
   hasDependencies() {
     return this.state.editing.dependencies.length > 0;
   }
 
   /**
-   * Create getFeatures options
-   * 
-   * @param filter
+   * Configures the feature-loading filter for the current editing session.
+   *
+   * This method prepares the payload used by the fetch logic and optionally
+   * attaches a map bbox or a custom server-side filter.
+   *
+   * @param {Object} [options={}] Feature request options.
+   * @param {Object} [options.filter] Optional filter payload or bbox metadata.
    */
   setFeaturesOptions({
     filter
@@ -1788,17 +1965,18 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @param constraints
+   * Applies the editing constraints declared by the current tool or context.
+   *
+   * @param {Object} [constraints={}] Constraint mapping to merge into the toolbox state.
    */
   setEditingConstraints(constraints = {}) {
     Object.keys(constraints).forEach(c => this.constraints[c] = constraints[c]);
   }
 
   /**
-   * @since 3.8.0 Handle scale constraint
-   * @private
+   * Handle scale constraint
    */
-  async _handleScaleConstraint() {
+  async #handleScaleConstraint() {
     // wait until previous toolbox is un-selected to prevent conflicts when running "GUI.setModal" and `control.setMouseCursor`.
     if (this.state.selected) {
       await Promise.resolve();
@@ -1824,7 +2002,7 @@ export class ToolBox extends Emitter {
     }
 
     // set modal when running an `OpenFormStep`
-    if (this.state.editing.canEdit && this.state.activetool?.op.getRunningStep() instanceof OpenFormStep) {
+    if (this.state.editing.canEdit && this.state.activetool?.getRunningStep() instanceof OpenFormStep) {
       // check if current interaction is pickLayer 
       GUI.setModal('picklayer' !== map.getInteractions().item(map.getInteractions().getLength() -1).get('id') );
       return;
@@ -1835,20 +2013,25 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Start editing
+   * Starts the editing session for the current layer.
+   *
+   * The workflow is:
+   * 1. validate and prepare the current toolbox state;
+   * 2. register the selected set of tools and UI state;
+   * 3. load features from the server or the current view;
+   * 4. bind the session to the editing source and enable interaction.
+   *
+   * @param {Object} [options={}] Startup options such as selected state,
+   * toolbar visibility, custom title or tool subset.
    * 
-   * @param options
-   * @param { Object } options
-   * @param { boolean } [options.selected=true]
-   * @param { boolean } [options.disablemapcontrols=false]
-   * @param { boolean } [options.showselectlayers=true]
-   * @param { string }  [options.title]
-   * @param { Array }   [options.tools]
+   * @returns {Promise<unknown>} Data from the feature-loading step once the
+   * editing session is ready.
    * 
-   * @returns { Promise<unknown> } info about start editing has features loaded
+   * @listens ol.View#change:resolution
+   * @listens ol.Map#click
+   * @fires start-editing
    */
   async start(options = {}) {
-
     let features;
 
     try {
@@ -1881,29 +2064,29 @@ export class ToolBox extends Emitter {
       options.filter = constraints?.filter || this.constraints.filter || options.filter;
 
       // register lock features to show a message
-      const unKeyLock = this._editor.onceafter('featuresLockedByOtherUser', () => {
+      const unKeyLock = this.onceafter('featuresLockedByOtherUser', () => {
         GUI.showUserMessage({
           type:     'warning',
           subtitle: this.state.layer.getName().toUpperCase(),
-          message:  'plugins.editing.messages.featureslockbyotheruser',
+          message:  'plugins.editing.featureslockbyotheruser',
         })
       });
   
       // add featuresLockedByOtherUser setter
-      this.state._unsetters.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
+      this.state._unsetters.push(() => this.un('featuresLockedByOtherUser', unKeyLock));
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
         const { promise, resolve: res, reject: rej } = Promise.withResolvers();
         this.state.editing.canEdit = false;
         // reset user message scale (on stop)
-        this.state._unsetters.push(() => this._handleScaleConstraint());
+        this.state._unsetters.push(() => this.#handleScaleConstraint());
         // set as resolve handler to resolve waiting get features from server
         this.#startAsync = res;
         // listen selected attribute
-        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this._handleScaleConstraint(), { immediate: true }));
+        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this.#handleScaleConstraint(), { immediate: true }));
         // await scale set for get features
-        this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this._handleScaleConstraint()), 600));
+        this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this.#handleScaleConstraint()), 600));
         // click to fit zoom scale constraint
         this.#events.push(
           GUI.getMap().on('click', e => {
@@ -1983,6 +2166,11 @@ export class ToolBox extends Emitter {
       // force vector layer visibity when starting toolbox (eg. image layers whose catalog layer may be hidden)
       this.state.layer.getOLLayer?.()?.setVisible(true);
 
+      //add OL layer to map only is vector layer (eg. image layers whose catalog layer may be hidden)
+      if ('vector' === this.state._layerType && this.state.layer.getOLLayer?.()) { 
+        GUI.getMap().addLayer(this.state.layer.getOLLayer());
+      }
+     
       //set start
       this.#start = true;
       //stop loading
@@ -2003,21 +2191,29 @@ export class ToolBox extends Emitter {
   };
 
   /**
-   *
+   * Marks the toolbox as busy while an async editing workflow is running.
    */
   startLoading() {
     this.state.loading = true;
   }
 
   /**
-   *
+   * Clears the toolbox busy state once the async workflow has finished.
    */
   stopLoading() {
     this.state.loading = false;
   }
 
   /**
-   * @returns {*}
+   * Stops the current editing session and cleans up all transient listeners,
+   * locks and feature subscriptions created during editing.
+   *
+   * This method is also responsible for propagating the stop to dependent
+   * layers when the current layer participates in relation-based editing.
+   *
+   * @returns {Promise<*>} Result of the stop operation.
+   * 
+   * @fires stop-editing
    */
   async stop() {
 
@@ -2040,8 +2236,6 @@ export class ToolBox extends Emitter {
 
     this.#unwatches.forEach(uw => uw());
     this.#unwatches.splice(0);
-
-    
 
     const is_started = !!this.isSessionStarted();
 
@@ -2073,7 +2267,7 @@ export class ToolBox extends Emitter {
       this.stopActiveTool();
       this.enableTools(false);
       this.clearToolboxMessages();
-      this._stopSessionChildren(this.state.id);
+      this.#stopChildren(this.state.id);
       // clear layer unique field values
       GUI.getPlugin('editing').state.uniqueFieldsValues[this.getId()] = {};
       //clear chain
@@ -2093,6 +2287,11 @@ export class ToolBox extends Emitter {
       GUI.getPlugin('editing').state.uniqueFieldsValues[this.getId()] = {};
       //clear chain
       GUI.getPlugin('editing').state.stopChain.clear();
+      //remove layer from map
+      if ('vector' === this.state._layerType && this.state.layer.getOLLayer?.()) {
+        GUI.getMap().removeLayer(this.state.layer.getOLLayer());
+      }
+      
       return true;
     } catch(e) {
       console.warn(e);
@@ -2102,15 +2301,18 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
+   * Persists all pending session changes to the backend.
+   *
+   * The commit payload is assembled from the history snapshot and includes
+   * additions, modifications, deletions and relation updates for the current
+   * layer and any dependent relation layers.
+   *
+   * @param {Object} [opts={}] Commit options.
+   * @param {Array|null} [opts.ids=null] Optional list of IDs to restrict the save.
+   * @param {Array} [opts.items] Explicit change items to include.
+   * @param {boolean} [opts.relations=true] Whether relation changes must be committed.
    * 
-   * Commit changes on server (save)
-   * 
-   * @param opts.ids
-   * @param opts.items
-   * @param opts.relations
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Promise<*>} Server response for the save transaction.
    */
   save({
     ids         = null,
@@ -2124,18 +2326,18 @@ export class ToolBox extends Emitter {
       // skip when ..
       //@TODO Check if deprecated
       if (ids) {
-        commit = this.__commit(ids);
+        commit = this.#buildCommitItems(ids);
         this.clearHistory(ids);
         return resolve(commit);
       }
 
-      commit = items || this.getCommitItems(this.__commit());
+      commit = items || this.getCommitItems(this.#buildCommitItems());
 
       if (!relations) {
         commit.relations = {};
       }
       try {
-        const response = await this.__commitToEditor(commit);
+        const response = await this.#commitToEditor(commit);
   
         // skip when response is null or undefined and response.result is false
         if (!(response && response.result)) {
@@ -2145,7 +2347,7 @@ export class ToolBox extends Emitter {
       
         this.clearHistory();
 
-        /** @since v3.9.0 After commit get new unique values */
+        // After commit get new unique values
         this._session.saveChangesOnServer(commit);
 
         resolve({ commit, response });
@@ -2160,63 +2362,78 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @returns {*|{}}
+   * Returns the editing constraints currently configured for the layer.
+   *
+   * @returns {Object} Constraint metadata used during editing checks.
    */
   getEditingConstraints() {
     return this.state._constraints;
   }
 
   /**
-   * @returns {boolean}
+   * Reports whether the layer can currently be edited under the active scale and
+   * session constraints.
+   *
+   * @returns {boolean} True when editing is allowed.
    */
   canEdit() {
     return this.state.editing.canEdit;
   }
 
   /**
-   * @param message
+   * Sets a user-facing message on the toolbox status area.
+   *
+   * @param {string|null} message Message to display, or null to clear it.
    */
   setMessage(message) {
     this.state.message = message;
   }
 
   /**
-   * @returns {null}
+   * Returns the current toolbox message.
+   *
+   * @returns {string|null} Active status message.
    */
   getMessage() {
     return this.state.message;
   }
 
   /**
-   *
+   * Clears the toolbox status message without changing the session itself.
    */
   clearMessage() {
     this.state.message = null;
   }
 
   /**
-   *
+   * Clears all visible toolbox notifications.
    */
   clearToolboxMessages() {
     this.clearMessage();
   }
 
   /**
-   * @returns {*}
+   * Returns the layer identifier managed by this toolbox.
+   *
+   * @returns {string} Layer id.
    */
   getId() {
     return this.state.id;
   }
 
   /**
-   * @returns {string}
+   * Returns the current title displayed in the toolbox header.
+   *
+   * @returns {string} Current toolbox title.
    */
   getTitle() {
     return this.state.title;
   }
 
   /**
-   * @param title
+   * Overrides the default title shown in the editing UI.
+   *
+   * @param {string} title New title.
    */
   setTitle(title) {
     this.state.customTitle = true;
@@ -2224,16 +2441,18 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @returns {string}
+   * Returns the current color used to represent the layer in the editor UI.
+   *
+   * @returns {string} Layer color.
    */
   getColor() {
     return this.state.color;
   }
 
   /**
-   * Enable toolbox
-   * 
-   * @param bool
+   * Enables or disables the editing state of the current toolbox.
+   *
+   * @param {boolean} [bool=true] Whether the layer is currently in editing mode.
    */
   setEditing(bool = true) {
     this.setEnable(bool);
@@ -2243,23 +2462,30 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @returns {boolean}
+   * Returns whether the layer is currently in an editing lifecycle.
+   *
+   * @returns {boolean} True when editing is active.
    */
   inEditing() {
     return this.state.editing.on;
   }
 
   /**
-   * @returns {boolean}
+   * Returns whether the toolbox is enabled for interaction.
+   *
+   * @returns {boolean} True when the toolbox is active for user actions.
    */
   isEnabled() {
     return this.state.enabled;
   }
 
   /**
-   * @param bool
+   * Enables or disables the toolbox itself without resetting the editing
+   * session.
+   *
+   * @param {boolean} [bool=false] New enabled state.
    * 
-   * @returns {boolean}
+   * @returns {boolean} Current enabled state.
    */
   setEnable(bool = false) {
     this.state.enabled = bool;
@@ -2267,28 +2493,36 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @returns {boolean}
+   * Returns the current loading status of the toolbox.
+   *
+   * @returns {boolean} True while an async operation is running.
    */
   isLoading() {
     return this.state.loading;
   }
 
   /**
-   * @returns {*}
+   * Reports whether the current session has unsaved changes.
+   *
+   * @returns {boolean} Dirty flag for the current editing history.
    */
   isDirty() {
     return this.state.editing.history.commit;
   }
 
   /**
-   * @returns {boolean}
+   * Returns whether the toolbox is currently selected in the UI.
+   *
+   * @returns {boolean} Selection state.
    */
   isSelected() {
     return this.state.selected;
   }
 
   /**
-   * @param bool
+   * Selects or clears the toolbox selection state.
+   *
+   * @param {boolean} [bool=false] True to select this toolbox.
    */
   setSelected(bool = false) {
     // un-select current toolbox
@@ -2307,23 +2541,29 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @returns {*}
+   * Returns the full list of tools available to the current layer.
+   *
+   * @returns {Array} Tool instances.
    */
   getTools() {
     return this.state._tools;
   }
 
   /**
-   * @param toolId
+   * Finds a tool by its id.
+   *
+   * @param {string} toolId Tool identifier.
    * 
-   * @returns {*|number|bigint|T|T} tool by id
+   * @returns {object|undefined} Matching tool instance.
    */
   getToolById(toolId) {
     return this.state._tools.find(tool => toolId === tool.getId());
   }
 
   /**
-   * @param toolId
+   * Enables a specific tool instance by id.
+   *
+   * @param {string} toolId Tool identifier to enable.
    */
   setEnableTool(toolId) {
     this.state._tools.find(tool => toolId === tool.getId()).state.enabled = true;
@@ -2355,9 +2595,13 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Set tools bases on update
-   * 
+   * Enables the update-related tool subset while preserving any exclusions.
+   *
    * @see g3w-client-plugin-sispi-worksite
+   * @param {Object} [options={}] Tool enablement configuration.
+   * @param {Object} [options.tools={}] Per-tool settings.
+   * @param {Array} [options.excludetools=[]] Tool ids to exclude from the update set.
+   * @param {Object} [options.options={ editing_constraints: true }] Additional flags.
    */
   setUpdateEnableTools({
     tools        = {},
@@ -2390,9 +2634,10 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Set enable tools
+   * Enables or disables a subset of tools while keeping the rest of the toolbox
+   * configuration consistent.
    *
-   * @param tools
+   * @param {Object} [tools={}] Explicit enabled/disabled tool configuration.
    */
   setEnablesDisablesTools(tools) {
     if (tools) {
@@ -2449,7 +2694,12 @@ export class ToolBox extends Emitter {
   };
 
   /**
-   * @param {*} bool whehter enable all tools
+   * Enables or disables the available tool set for the current layer.
+   *
+   * Tools are selected from either the explicit enabled subset or the full
+   * internal tool list, depending on the current session configuration.
+   *
+   * @param {boolean} [bool=false] Whether all tools should be enabled.
    */
   enableTools(bool = false) {
     const tools         = this.state._enabledtools || this.state._tools;
@@ -2469,27 +2719,28 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @param tool
+   * Activates a specific editing tool and keeps the toolbox state aligned with
+   * the current interaction flow.
+   *
+   * @param {object} tool Tool instance to activate.
+   * 
+   * @returns {Promise<void>} Resolution of the activation lifecycle.
+   * 
+   * @listens Tool#settoolsoftool
    */
   async setActiveTool(tool) {
 
     try {
       //stop current active tool
-      await this.stopActiveTool(tool);
-      //get workflow operator of tool
-      const workflow = tool.getOperator();
-      //only in case tool has a operator (workflow) start it and set messages
-      if (workflow) {
-        tool.start();
-        // filter eventually disable tools of tools
-        workflow.on('settoolsoftool', ts => {
-          //set empty tools of tools
-          this.state.toolsoftool = (ts || []).filter(t => !tool.disabledtoolsoftools.includes(t.type))
-        });
-        //set as active tool
-        this.state.activetool = tool;
-      }
-
+      await this.stopActiveTool(tool); 
+      // filter eventually disable tools of tool
+      tool.on('settoolsoftool', ts => {
+        //set empty tools of tools
+        this.state.toolsoftool = (ts || []).filter(t => !tool.disabledtoolsoftools.includes(t.type))
+      });
+      //set as active tool
+      this.state.activetool = tool;
+      await this.#startTool(tool);
     } catch(e) {
       console.warn(e);
     }
@@ -2497,9 +2748,12 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @param tool
+   * Stops the currently active tool, optionally forcing a clean shutdown of the
+   * selected tool instance.
    *
-   * @returns {*}
+   * @param {object} [tool] Tool instance to stop explicitly.
+   * 
+   * @returns {Promise<void>} Completion of the stop routine.
    */
   async stopActiveTool(tool) {   
     const activeTool = this.getActiveTool();
@@ -2514,9 +2768,9 @@ export class ToolBox extends Emitter {
       // remove all event listeners and stop active tool
       if (activeTool) {
         activeTool.off();
-        await activeTool.stop(true);
+        await this.#stopTool(activeTool, true);
       }
-      //@since 3.9.1 Changed to set empty array cause reactivity of vue instead of splice(0)
+      // set empty array cause reactivity of vue instead of splice(0)
       this.state.toolsoftool       = [];
       this.state.activetool        = null;
     } catch(e) {
@@ -2526,28 +2780,38 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * @returns {null}
+   * Returns the currently active tool instance.
+   *
+   * @returns {object|null} Active tool or null when no tool is running.
    */
   getActiveTool() {
     return this.state.activetool;
   }
 
   /**
-   * @returns {*}
+   * Returns the session runtime object attached to this toolbox.
+   *
+   * @returns {object} Current editing session instance.
    */
   getSession() {
     return this._session;
   }
 
   /**
-   * @returns {*}
+   * Returns the editor runtime used by the underlying layer.
+   *
+   * @returns {object} Layer editor instance.
    */
   getEditor() {
     return this._editor;
   }
 
   /**
-   * Reset default values
+   * Resets the toolbox UI to the original default configuration.
+   *
+   * This method clears tool constraints and restores the default title,
+   * visibility and selection state so a new editing cycle starts from a clean
+   * baseline.
    */
   resetDefault() {
     this.state.title            = this.state.originalState.title;
@@ -2563,87 +2827,52 @@ export class ToolBox extends Emitter {
       this.state._tools.forEach(tool => {
         tool.visible              = true;
         tool.enabled              = false;
-        tool.helpMessage          = tool.op.getHelpMessage();
+        tool.helpMessage          = tool.getHelpMessage();
         tool.disabledtoolsoftools = []; //reset disabled tools eventually set by other
       });
     }
     this.state._disabledtools = null;
-    /** since 3.9.0  set show based on visibile property of config editing object setting*/
+    // set show based on visibile property of config editing object setting
     this.state.show           = this.state.layer.state.editing.visible;
-    //need to set selected false
+    // need to set selected false
     this.state.selected = false;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
+   * Reverts the last applied transaction in the current history stack.
    *
-   * @param uniqueId
-   * @param items
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  __add(uniqueId, items) {
-    //state object is an array of feature/features changed in a transaction
-    return new Promise((resolve) => {
-      // before insert an item into the history
-      // check if are at last state step (no redo was done)
-      // If we are in the middle of undo, delete all changes
-      // in the history from the current "state" so if it
-      // can create a new history
-      if (null === this.state.editing.session.current) {
-        this.#states = [{ id: uniqueId, items }];
-      } else {
-        //last state
-        if (this.#states.length > 0 && this.state.editing.session.current < this.#states.at(-1).id) {
-          this.#states = this.#states.filter(s => s.id <= this.state.editing.session.current);
-        }
-        this.#states.push({ id: uniqueId, items });
-      }
-
-      this.state.editing.session.current = uniqueId;
-      // set internal state
-      this.__canUndo();
-      this.__canCommit();
-      this.__canRedo();
-      // return unique id key
-      // it can be used in save relation
-      resolve(uniqueId);
-    })
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
-   * undo method
+   * The method resolves the current state, computes the set of items to restore,
+   * and moves the cursor back to the previous history entry.
    *
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the undo action.
    */
-  __undo() {
+  #undoHistory() {
     let items;
     this.#states.find((state, idx) => {
       if (state.id === this.state.editing.session.current) {
         //get item of current state
-        items = _checkSessionItems(this.state.id, this.#states[idx].items, 0);
+        items = this.#checkSessionItems(this.state.id, this.#states[idx].items, 0);
         //set current the previous one
         this.state.editing.session.current = 0 === idx ? null : this.#states[idx - 1].id;
         return true;
       }
     })
     // set internal state
-    this.__canUndo();
-    this.__canCommit();
-    this.__canRedo();
+    this.#updateUndoAvailability();
+    this.#updateCommitAvailability();
+    this.#updateRedoAvailability();
     return items;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
-   * redo method
+   * Re-applies a previously undone transaction from the history stack.
    *
-   * @since g3w-client-plugin-editing@v3.8.0
+   * This moves the session forward to the next state snapshot and returns the
+   * items that must be re-applied to the local editing store.
+   *
+   * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the redo action.
    */
-  __redo() {
+  #redoHistory() {
     let items;
     // if not set get first state
     if (!this.state.editing.session.current) {
@@ -2659,36 +2888,30 @@ export class ToolBox extends Emitter {
         }
       })
     }
-    items = _checkSessionItems(this.state.id, items, 1);
+    items = this.#checkSessionItems(this.state.id, items, 1);
     // set internal state
-    this.__canUndo();
-    this.__canCommit();
-    this.__canRedo();
+    this.#updateUndoAvailability();
+    this.#updateCommitAvailability();
+    this.#updateRedoAvailability();
     return items;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
-   * @param id
-   * 
-   * @returns { Object }
+   * Returns the history snapshot associated with a specific transaction id.
    *
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @param {string|number} id Transaction identifier.
+   * 
+   * @returns {Object|undefined} Matching state entry or undefined when absent.
    */
-  __getState(id) {
+  #getHistoryState(id) {
     return this.#states.find(s => id === s.id);
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * @returns { boolean } true if we can commit
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
-  __canCommit() {
-    const checkCommitItems = this.__commit();
+  #updateCommitAvailability() {
+    const checkCommitItems = this.#buildCommitItems();
     let canCommit          = false;
     for (let layerId in checkCommitItems) {
       const commitItem = checkCommitItems[layerId];
@@ -2699,13 +2922,9 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * canUdo method
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
-  __canUndo() {
+  #updateUndoAvailability() {
     let currentStateIndex = null;
     if (this.state.editing.session.current && this.#states.length) {
       this.#states.forEach((state, idx) => {
@@ -2721,13 +2940,9 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   *
    * canRedo method
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
-  __canRedo() {
+  #updateRedoAvailability() {
     this.#constrains.redo = (
       (this.#states.at(-1) && this.#states.at(-1).id != this.state.editing.session.current))
       || (null === this.state.editing.session.current && this.#states.length > 0);
@@ -2735,13 +2950,14 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
+   * Builds the effective commit payload for the current history window.
    *
-   * get all changes to send to server (mandare al server)
+   * This method collapses the transaction history into a per-layer set of add,
+   * update and delete operations ready to be serialized for the backend.
    *
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Object<string, Array>} Commit candidate map keyed by layer id.
    */
-  __commit() {
+  #buildCommitItems() {
     const commitItems = {};
     const statesToCommit = this.#states.filter(s => s.id <= this.state.editing.session.current);
     statesToCommit
@@ -2785,88 +3001,95 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
-   * @returns {*|null}
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
+   * Returns the latest transaction snapshot stored in the edit history.
+   *
+   * @returns {{ id: string|number, items: Array }|null} Latest history entry or null when empty.
    */
   getLastHistoryState() {
     return this.#states.at(-1) || null;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Reports whether the current editing session has already been initialized.
+   *
+   * @returns {boolean} True when the session is active.
    */
   isSessionStarted() {
     return !!this.state.editing.session.started;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Add temporary features that will be added with save method
    * 
    * @param { { layerId: string, feature: * } } NewFeat 
    * @param { { layerId: string, feature: * } } OldFeat
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
    */
-  __push(newFeat, oldFeat) {
+  #pushChange(newFeat, oldFeat) {
     this.state.editing.session.changes.push(oldFeat ? [oldFeat, newFeat] : newFeat); // check is set old (edit)
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Delete temporary feature
    * 
    * @param layerId
    * @param feature
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   pushDelete(layerId, feature) {
-    this.__push({ layerId, feature: feature.delete() });
+    this.#pushChange({ layerId, feature: feature.delete() });
     return feature;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
-   * Save temporary changes to the layer in history instance and feature store
-   * 
-   * @param options
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Moves pending session changes into the undo/redo history.
+   *
+   * If the history cursor is at its initial position, the pending changes
+   * start a new history branch. Otherwise, any states ahead of the cursor are
+   * discarded before the new state is appended.
+   *
+   * @param {Object} [options={}] Save options.
+   * @param {string|number} [options.id] Explicit history state identifier.
+   * @returns {Promise<Array<string|number>|null>} New state id, or `null` when there are no pending changes.
    */
-  async __save(options = {}) {
-    // add temporary modify to history
-    if (this.state.editing.session.changes.length > 0) {
-      //@since 3.9.1 get array of uniqueIds
-      //case of modify vertex. Multi changes in one save
-      const uniqueId = options.id || Date.now();
-      await this.__add(uniqueId, this.state.editing.session.changes);
-      // clear to temporary changes
-      this.state.editing.session.changes = [];
-      return [uniqueId];
+  async #saveChanges(options = {}) {
+    // no changes
+    if (!this.state.editing.session.changes.length) {
+      return null;
     }
-    return null;
-    
+
+    const id    = options.id || Date.now();
+    const items = this.state.editing.session.changes;
+    const isNew = null === this.state.editing.session.current;
+
+    if (isNew) {
+      this.#states = [{ id, items }];
+    }
+
+    if (!isNew && this.#states.length > 0 && this.state.editing.session.current < this.#states.at(-1).id) {
+      this.#states = this.#states.filter(s => s.id <= this.state.editing.session.current);
+    }
+
+    if (!isNew) {
+      this.#states.push({ id, items });
+    }
+
+    this.state.editing.session.current = id;
+
+    this.#updateUndoAvailability();
+    this.#updateCommitAvailability();
+    this.#updateRedoAvailability();
+
+    // reset changes
+    this.state.editing.session.changes = [];
+
+    return [id];
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Add temporary feature
    * 
    * @param layerId 
    * @param feature 
    * @param removeNotEditableProperties
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   pushAdd(layerId, feature, removeNotEditableProperties=true) {
     /**
@@ -2887,21 +3110,17 @@ export class ToolBox extends Emitter {
 
     const newFeature = feature.clone();
 
-    this.__push({ layerId, feature: newFeature.add() });
+    this.#pushChange({ layerId, feature: newFeature.add() });
 
     return newFeature;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * Add temporary feature changes
    * 
    * @param layerId
    * @param newFeature
    * @param oldFeature
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   pushUpdate(layerId, newFeature, oldFeature) {
     // get index of temporary changes
@@ -2916,23 +3135,22 @@ export class ToolBox extends Emitter {
       return;
     }
 
-    this.__push(
+    this.#pushChange(
       { layerId, feature: newFeature.update() },
       { layerId, feature: oldFeature.update() }
     )
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/services/editing.js@v3.9.1
-   * 
-   * Apply changes to source features (undo/redo)
-   * 
-   * @param items
-   * @param { boolean } reverse whether change to opposite
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
+   * Reapplies a set of serialized changes to the current feature source.
+   *
+   * Used mainly by undo/redo flows, this method mirrors the action type stored
+   * in the history snapshot and swaps between the original and modified state.
+   *
+   * @param {Array} [items=[]] Session items to apply.
+   * @param {boolean} [reverse=true] Whether the operation should be reversed.
    */
-  __setChanges(items = [], reverse = true) {
+  #applyChanges(items = [], reverse = true) {
     /** known actions */
     const Actions = {
       'add':    { fnc: 'addFeature',    opposite: 'delete' },
@@ -2943,23 +3161,18 @@ export class ToolBox extends Emitter {
       if (reverse) {
         item.feature[Actions[item.feature.getAction()].opposite]();
       }
-      // get method from object
-      //@since 3.9.1 need to clone it otherwise it replace
+      // get method from object. Need to clone it otherwise it replace.
       this._featuresstore[Actions[item.feature.getAction()].fnc](item.feature.clone());
     });
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   *
    * @param changes
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   async rollback(changes) {
     // skip when..
     if (changes) {
-      return this.__setChanges(changes);
+      return this.#applyChanges(changes);
     }
 
     // Handle temporary changes of layer
@@ -2978,7 +3191,7 @@ export class ToolBox extends Emitter {
     });
 
     try {
-      this.__setChanges(changes.own);
+      this.#applyChanges(changes.own);
       for (const id in changes.dependencies) {
         ToolBox._sessions[id].rollback(changes.dependencies[id]);
       }
@@ -2991,44 +3204,41 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * @param items session items
-   *
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   undo(items) {
-    items = items || this.__undo();
-    this.__setChanges(items.own, true);
-    this.__canCommit();
+    items = items || this.#undoHistory();
+    this.#applyChanges(items.own, true);
+    this.#updateCommitAvailability();
     return items.dependencies;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
    * @param items session items
-   *
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   redo(items) {
-    items = items || this.__redo();
-    this.__setChanges(items.own, true);
-    this.__canCommit();
+    items = items || this.#redoHistory();
+    this.#applyChanges(items.own, true);
+    this.#updateCommitAvailability();
     return items.dependencies;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
-   * Serialize commit
-   * 
-   * @returns {{ add: *[], update: *[], relations: {}, delete: *[] }} JSON Object for a commit body send to server
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
+   * Serializes the current session history into a backend-friendly payload.
+   *
+   * The result is shaped as a commit body and includes the set of add/update/
+   * delete operations plus the relation payload for child/father layers involved
+   * in the current transaction.
+   *
+   * @returns {{
+   *   add: Array,
+   *   update: Array,
+   *   delete: Array,
+   *   relations: Object
+   * }} Commit payload for the server API.
    */
   getCommitItems() {
-    const itemsToCommit = this.__commit();
+    const itemsToCommit = this.#buildCommitItems();
     const id            = this.state.layer.getId();
     let action;
     let layer;
@@ -3053,7 +3263,7 @@ export class ToolBox extends Emitter {
           add:       [],
           update:    [],
           delete:    [],
-          relations: {} //@since v3.7.1
+          relations: {},
         };
         layer = commitObj.relations[key];
       } else {
@@ -3115,7 +3325,8 @@ export class ToolBox extends Emitter {
       .map(id => {
         const fatherId = ToolBox._sessions[id]._editor.getLayer().getRelations().getArray()
           .find(r => id === r.getChild()).getFather() // parent relation layer
-        //@since 4.1.0 In case of missing changes child relaztion, need to create relation object with empty changes to mantain relation structure in commit object
+        // In case of missing changes child relaztion, need to create relation object
+        // with empty changes to mantain relation structure in commit object
         if (!commitObj.relations[fatherId]) {
           commitObj.relations[fatherId] = { 
             lockids:   ToolBox._sessions[fatherId]._editor.getLockIds?.() || [],
@@ -3135,31 +3346,30 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-   * 
-   * Clear all things bind to session
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Clears the current session state and resets the editing history.
+   *
+   * This keeps the toolbox ready for a fresh cycle without retaining temporary
+   * transaction data from the previous session.
    */
-  __clearSession() {
+  #clearSession() {
     this.state.editing.session.started     = false;
     this.state.editing.session.getfeatures = false;
     this.clearHistory();
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/editing/history.js@v3.9.1
-   * 
-   * @param ids since g3w-client-plugin-editing@v3.8.0
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
+   * Clears one or more history snapshots from the active transaction log.
+   *
+   * When no ids are given, the entire history is reset. When a subset is	handed, only the matching transaction entries are removed.
+   *
+   * @param {Array<string|number>} [ids] Transaction ids to remove from history.
    */
   clearHistory(ids) {
     if (ids) {
       this.#states.forEach((state, idx) => {
         if (ids.includes(state.id)) {
           if (this.state.editing.session.current && state.id === this.state.editing.session.current) {
-            this.__undo();
+            this.#undoHistory();
           }
           this.#states.splice(idx, 1);
         }
@@ -3175,18 +3385,29 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Start session
+   * Starts the underlying editing session and prepares the feature source.
+   *
+   * This method initializes the session-level state, loads the layer data and
+   * updates the UI flags used by the rest of the editing workflow.
+   *
+   * @param {Object} [options={}] Session start options.
+   * 
+   * @returns {Promise<*>} Results from the session initialization process.
+   * 
+   * @listens ol.Map#moveend
    */
-  async __startSession(options = {}) {
+  async #startSession(options = {}) {
     try {
-      const features = await this.__startEditor(options);
+      const features = await this.#startEditor(options);
       this.state.editing.session.started = true;
       return features;
     } catch(e) {
       console.warn(e);
       return Promise.reject(e);
     } finally {
-      if (!options.registerEvents) { return }
+      if (!options.registerEvents) {
+        return;
+      }
       this.state._getFeaturesOption = options;
       // register get features event (only in case filter bbox)
       if (('vector' === this.state._layerType) && this.state._getFeaturesOption.filter.bbox) {
@@ -3236,19 +3457,21 @@ export class ToolBox extends Emitter {
 
   /**
    * Stop session
+   *
+   * @fires stop-editing
    */
-  async __stopSession() {
+  async #stopSession() {
     try {
       if (this.state.editing.session.started || this.state.editing.session.getfeatures) {
-        await this.__stopEditor();
-        this.__clearSession();
+        await this.#stopEditor();
+        this.#clearSession();
       }      
     } catch(e) {
       console.warn(e);
       return Promise.reject(e);
     } finally {
       if (ApplicationState.online) {
-        this._stopSessionChildren(this.state.id);
+        this.#stopChildren(this.state.id);
       }
     }
   }
@@ -3256,7 +3479,7 @@ export class ToolBox extends Emitter {
   /**
    * Get features from server (by editor)
    */
-  async __getFeatures(options = {}) {
+  async #getFeatures(options = {}) {
     try { 
       const features = await this._editor.getFeatures(options);
       this.state.editing.session.getfeatures = true;
@@ -3268,18 +3491,14 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * Get features from server method.
    * Used when vector Layer's bbox is contained into an already requested bbox (so no a new request is done).
    *
    * @param { number[] } options.filter.bbox bounding box Array [xmin, ymin, xmax, ymax]
    *
    * @returns { boolean } whether can perform a server request
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
-  async ___getFeatures(options = {}) {
+  async #requestFeatures(options = {}) {
     const layerId = this.getId();
 
     // skip is not onlien or all features of layers are already got
@@ -3316,8 +3535,8 @@ export class ToolBox extends Emitter {
     }
 
     const url = `${ApplicationState.project.state.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`;
-    
-    /**@since 4.1.0 - Add signal to stop request */
+
+    // signal to stop request
     this.#controller  = new AbortController();
     const signal = this.#controller.signal; 
 
@@ -3400,7 +3619,7 @@ export class ToolBox extends Emitter {
         //or in case of request pagination, check if the number of features requested is greater than the number of features returned, it means that another user locks these features
         if (count > 0 && (0 === featurelocks.length || current_page_count > features.length)) {
           //It means that another user locks these features
-          this._editor.featuresLockedByOtherUser(features);
+          this.featuresLockedByOtherUser(features);
         }
        
         featurelocks
@@ -3474,8 +3693,6 @@ export class ToolBox extends Emitter {
   /**
    * Hook to get informed that are saved on server
    * Get unique id for each commited layer/relation
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   async saveChangesOnServer(commit) {
     const promises = [ setLayerUniqueFieldValues(this.getId()) ];
@@ -3492,71 +3709,47 @@ export class ToolBox extends Emitter {
     await Promise.allSettled(promises);
   }
 
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/tool.js@v3.7.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  _startTool(tool) {
-    if (tool.getOperator()) {
-      tool.active = true;
-      setTimeout(async() => await this._startOp(
-        tool,
-        {
-          inputs:  { layer: this.getLayer(), features: [] },
-          context: { session: this._session }
-        },
-        !!GUI.isMapHidden())
-      ); // prevent rendering change state
-    }
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/tool.js@v3.7.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  async _startOp(tool, options, hideSidebar) {
-    // reset features
-    options.inputs.features = options.features || [];
+  /** @TODO add description */
+  async #startTool(tool) {
+    tool.active       = true;
+    const hideSidebar = !!GUI.isMapHidden();
 
     if (hideSidebar) {
       GUI.hideSidebar();
     }
 
     try {
-      await tool.op.start(options);
+      await tool.start({
+        inputs:  { layer: this.getLayer(), features: [] },
+        context: { session: this._session }
+      });
+      
       await this._session.save();
       GUI.getPlugin('editing').saveChange(); // after save temp change check if editing service has a autosave
     } catch(e) {
       console.warn(e);
       if (hideSidebar) {
         GUI.showSidebar();
-      }
+      }    
+      tool.active       = false;
       this.rollback();
     } finally {
-      //In case of runOnce stop activ tool tnat stop workflow;
-      if (tool.getOperator().runOnce) {
+      //In case of runOnce stop activ tool tnat stop tool;
+      if (tool.runOnce) {
         this.stopActiveTool();
       }
-      if (!tool.getOperator().runOnce && 'vector' === this.getLayer().getType() ) {
-        await this._startOp(tool, options, hideSidebar);
+      if (!tool.runOnce && 'vector' === this.getLayer().getType() ) {
+        await this.#startTool(tool);
       }
     }
+
   }
 
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/toolboxes/tool.js@v3.7.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  async _stopTool(tool, force = false) {
-    if (!tool.getOperator()) {
-      tool.emit('stop', { session: this._session });
-      return;
-    }
+
+  /** @TODO add description */
+  async #stopTool(tool, force = false) {
     try {
-      await tool.getOperator().stop(force); // stop workflow binded to tool
+      await tool.stop(force); // stop tool binded to tool
     } catch(e) {
       console.warn(e);
       this.rollback();
@@ -3567,15 +3760,18 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
-   * Run after server has applied changes to origin resource
+   * Synchronizes the client-side feature store after the server confirms a
+   * commit.
    *
-   * @param commit commit items
+   * This is the main post-save reconciliation step: incoming database IDs,
+   * generated properties and relation updates are applied back to the client
+   * features so the local state matches the authoritative server state.
+   *
+   * @param {Object} commit Server response payload for the committed items.
    * 
-   * @since g3w-client-plugin-editing@v4.1.0
+   * @returns {Promise<Object>} Normalized server response.
    */
-  async __commitToEditor(commit) {
+  async #commitToEditor(commit) {
 
     const layerId = this.getId();
     let relations = [];
@@ -3606,7 +3802,7 @@ export class ToolBox extends Emitter {
       commit.lockids = GUI.getPlugin('editing').state.lock_ids[layerId];
       response = await XHR.post({
         url:         `${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`,
-        //@since 4.0.1 need to add style parameter to commit url in case of layer has a specific editing style
+        // add style parameter to commit url in case of layer has a specific editing style
         data:        JSON.stringify(Object.assign(commit, { style: this.state.layer.config?.editing?.layer_style || undefined })),
         contentType: 'application/json',
       });
@@ -3677,7 +3873,7 @@ export class ToolBox extends Emitter {
 
     });
 
-    //@since 3.9.0 take in account update properties returned by server (Useful in case of media input changes)
+    // take in account update properties returned by server (Useful in case of media input changes)
     (response.response.update || []).forEach(({ id, properties } = {}) => {
       //get feature from current layer in editing
       const feature  = this._featuresstore.getFeatureById(id);
@@ -3732,7 +3928,7 @@ export class ToolBox extends Emitter {
 
     features.forEach(f => f.clearState()); // reset state of the editing features (update, new etc..)
 
-    this._editor.getLayer().setFeatures([...features]); // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
+    this._featuresstore.setFeatures([...features]); // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
 
     // add lock ids
     GUI.getPlugin('editing').state.lock_ids[layerId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[layerId].concat(...response.response.new_lockids))]
@@ -3742,47 +3938,45 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * start editing
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
-  async __startEditor(options = {}) {
+  async #startEditor(options = {}) {
     const features = await this._editor.getFeatures(options); // load layer features based on filter type
     this.#started  = true; // if all ok set to started
     return features;       // features are already inside featuresstore
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
    * stop editor (unlock)
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
-  async __stopEditor() {
+  async #stopEditor() {
     this.#controller?.abort(); //abort request if exist
     const { result } = await XHR.post({ url: `${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/` });
-    this.__clearEditor();
+    this.#clearEditor();
     return result;
   }
 
   /**
-   * @since 4.0.0
-   * @returns { number } count of features on server 
-   * 
+   * Returns the number of server-side features associated with the current
+   * layer context.
+   *
+   * This value is used for paginated table editing and by features-loading
+   * logic that must know whether more items are available on the backend.
+   *
+   * @returns {number} Feature count.
    */
   getCount() {
     return this.#count;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/editing/editor.j@v4.0.0
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0 
+   * Resets the editor runtime state after a stop or a session reset.
+   *
+   * It clears the loaded feature set, aborts pending fetches, resets the lock
+   * registry and empties the local editing collection so the layer is ready for
+   * a new lifecycle.
    */
-  __clearEditor() {
+  #clearEditor() {
     this.#started     = false;
     this.#filter.bbox = null;
     this.#controller  = null;
@@ -3801,30 +3995,22 @@ export class ToolBox extends Emitter {
 
   /**
    * @returns { boolean } whether temp changes are waiting to save on server
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
    */
   hasPendingCommits() {
     return this.#constrains.commit;
   }
 
-  /**
-   * @since g3w-client-plugin-editing@v4.1.0
-   */
+  /** @TODO add description */
   getFeaturesCollection() {
     return this._collection._store;
   }
 
-  /**
-   * @since g3w-client-plugin-editing@v4.1.0
-   */
+  /** @TODO add description */
   getEditingSource() {
     return this._featuresstore;
   }
 
-  /**
-   * @since g3w-client-plugin-editing@v4.1.0
-   */
+  /** @TODO add description */
   readEditingFeatures() {
     return this._collection.getArray();
   }
@@ -3832,6 +4018,9 @@ export class ToolBox extends Emitter {
   /**
    * attach layer widgets event: get data from api when a field of a layer
    * is related to a wgis form widget (ex. relation reference, value map, etc..)
+   * 
+   * @listens start-editing
+   * @fires editing#autocomplete
    */
   #onEditingStart() {
 
@@ -3893,195 +4082,3 @@ export class ToolBox extends Emitter {
 
 }
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/checkSessionItems.js@v4.0.0
- * 
- * check if was done an update (update are array contains two items, old and new value)
- */
-function _checkSessionItems(historyId, items, action) {
-  /**
-   * action: <referred to array index>
-   *  0: undo;
-   *  1: redo;
-   **/
-  const newItems = {
-    own:          [], //array of changes of layer of the current session
-    dependencies: {} // dependencies
-  };
-
-  items
-    .forEach((item) => {
-      if (Array.isArray(item)) { item = item[action] }
-      // check if belong to session
-      if (historyId === item.layerId) { newItems.own.push(item) }
-      else {
-        newItems.dependencies[item.layerId] = newItems.dependencies[item.layerId] || {
-          own:          [],
-          dependencies: {}
-        };
-        newItems.dependencies[item.layerId].own.push(item);
-      }
-    });
-
-  return newItems;
-}
-
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getDeltaXY.js@v4.0.0
- *
- * @param { Object } delta
- * @param delta.x
- * @param delta.y
- * @param delta.coordinates
- * 
- * @returns {{ x: number, y: number }}
- */
-function _getDeltaXY({ x, y, coordinates } = {}) {
-  const coords = _getCoordinates(coordinates);
-  return {
-    x: x - coords.x,
-    y: y - coords.y
-  }
-}
-
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/getDeltaXY.js@v4.0.0
- */
-function _getCoordinates(coords) {
-  return Array.isArray(coords[0]) ? _getCoordinates(coords[0]) : {
-    x: coords[0],
-    y: coords[1]
-  };
-}
-
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/handleSplitFeature.js@v4.0.0
- *
- * @param feature
- * @param inputs
- * @param context
- * @param splittedGeometries
- * 
- * @returns {Promise<*[]>}
- * 
- * @since g3w-client-plugin-editing@v3.8.0
- */
-async function _handleSplitFeature({
-  feature,
-  inputs,
-  context,
-  splittedGeometries = []
-} = {}) {
-  const newFeatures              = [];
-  const { layer }                = inputs;
-  const session                  = context.session;
-  const source                   = getEditingLayer(layer).getSource();
-  const layerId                  = layer.getId();
-  const oriFeature               = feature.clone();
-  const splittedGeometriesLength = splittedGeometries.length;
-  for (let index = 0; index < splittedGeometriesLength; index++) {
-    const splittedGeometry = splittedGeometries[index];
-    if (0 === index) {
-      /**
-       * check geometry evaluated expression
-       */
-      feature.setGeometry(splittedGeometry);
-      try {
-        await evaluateExpressionFields({ inputs, context, feature });
-      } catch(e) {
-        console.warn(e);
-      }
-
-      session.pushUpdate(layerId, feature, oriFeature);
-
-    } else {
-      const newFeature = cloneFeature(oriFeature, layer);
-      newFeature.setGeometry(splittedGeometry);
-
-      feature = new Feature({ feature: newFeature });
-
-      feature.setTemporaryId();
-
-      // evaluate geometry expression
-      try { await evaluateExpressionFields({ inputs, context, feature }); }
-      catch(e) { console.warn(e); }
-
-      /**
-       * @todo improve client core to handle this situation on sesssion.pushAdd not copy pk field not editable only
-       */
-      const noteditablefieldsvalues = _getNotEditableFieldsNoPkValues({ layer, feature });
-
-      if (Object.entries(noteditablefieldsvalues).length) {
-        const newFeature = session.pushAdd(layerId, feature);
-        Object.entries(noteditablefieldsvalues).forEach(([field, value]) => newFeature.set(field, value));
-        newFeatures.push(newFeature);
-        //need to add features with no editable fields on layers source
-        source.addFeature(newFeature);
-      } else {
-        newFeatures.push(session.pushAdd(layerId, feature));
-        //add feature to source
-        source.addFeature(feature);
-      }
-    }
-    inputs.features.push(feature);
-  }
-
-  return newFeatures;
-}
-
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/handleSplitFeature.js@v4.0.0
- * 
- * @param feature
- * @param coordinates
- *
- * @returns { boolean }
- */
-function _isPointOnVertex({
-  feature,
-  coordinates,
- }) {
-  const geometry = feature.getGeometry();
-  const type     = geometry.getType();
-  const coords   = c => areCoordinatesEqual(coordinates, c); // whether element have same coordinates
- 
-  switch (type) {
-    case 'Polygon':
-    case 'MultiLineString':
-      return geometry.getCoordinates().flat().some(coords);
- 
-    case 'LineString':
-    case 'MultiPoint':
-      return geometry.getCoordinates().some(coords);
- 
-    case 'MultiPolygon':
-      return geometry.getPolygons().some(poly => poly.getCoordinates().flat().some(coords));
- 
-    case 'Point':
-      return areCoordinatesEqual(coordinates, geometry.getCoordinates());
- 
-    default:
-      return false;
-  }
- }
-
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
- * @param layer,
- * @param feature
- *
- * @returns Array of fields
- */
-function _getNotEditableFieldsNoPkValues({
-  layer,
-  feature,
-}) {
-  return layer.state.editing.fields
-    .filter(f => !f.editable) // un-editable fields
-    .map(f => f.name)
-    .reduce((fields, field) => {
-      fields[field] = isPkField(layer, field) ? null : feature.get(field); // NB: Primary Key fields need to be `null`
-      return fields;
-    }, {});
-}

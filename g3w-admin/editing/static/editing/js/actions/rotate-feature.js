@@ -1,10 +1,5 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * ORIGINAL SOURCE: g3w-client-plugin-editing/interactions/rotate.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { evaluateExpressionFields }         from '../utils/evaluateExpressionFields.js';
@@ -19,8 +14,6 @@ const GUI = g3w.app;
  * ol-ext v4.0.30 (https://github.com/Viglino/ol-ext)
  * Copyright 2016-2018 - Jean-Marc Viglino, IGN-France 
  * Licensed under BSD-3-Clause (https://github.com/Viglino/ol-ext/blob/master/LICENSE)
- * 
- * @since 4.0.0
  */
 
 function _setCursor(elt, cursor) {
@@ -566,9 +559,7 @@ class RotateInteraction extends ol.interaction.Pointer {
 
 }
 
-/**
- * @since g3w-client-plugin-editing@v4.0.0 Rotate feature
- */
+/** @TODO add description */
 export class RotateFeatureStep extends Step {
 
   constructor(opts = {}) {

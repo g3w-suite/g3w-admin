@@ -1,7 +1,5 @@
 /**
  * @file Editing panel (left menu)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import ToolboxComponent             from '../components/toolbox.js';
@@ -26,7 +24,7 @@ export default ({
         v-if  = "!ApplicationState.online"
         id    = "onlineofflinemessage"
       >
-        <div v-t = "'plugins.editing.messages.offline'"></div>
+        <div v-t = "'plugins.editing.offline'"></div>
       </div>
 
       <!-- COMMIT BAR -->
@@ -59,7 +57,6 @@ export default ({
       ></div>
 
       <!-- LAYERS SELECT -->
-      <!-- ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1 -->
       <div
         v-if  = "state.showselectlayers && editinglayers.length > 1"
         id    = "g3w-select-editable-layers-content"
@@ -110,16 +107,13 @@ export default ({
       resourcesurl:          this.$options.resourcesurl,
       showcommitbar:         this.$options.showcommitbar,
       saving:                false, // whether to show loading bar while committing to server (click on save disk icon)
-      layersInEditing:       0, //@since 3.8.0 Number of layers in editing
+      layersInEditing:       0,     // Number of layers in editing
       editingButtonsEnabled: true,
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       selectedlayers:        [],
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       editinglayers:         Object.entries(GUI.getPlugin('editing')
                               .getEditableLayers())
                               .filter(([_,l]) => l.config.editing.visible) //exclude layers that are set visible to false
                               .map(([id, layer]) => ({ id, name: layer.getName(), title: layer.getTitle() })),
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       activetool:            null,
     };
   },
@@ -264,14 +258,9 @@ export default ({
      * which could be in relation with current level (eg. Join 1:1) in order to prevent an
      * out-of-sync database state on remote QGIS server.
      * 
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-     * 
      * @param { string } id
      *
      * @returns { Promise<unknown> }
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     async commit_dirty(id) {
       const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
@@ -312,8 +301,6 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * 
      * Check if already have off lines changes
      *
      * @param { Object }  opts
@@ -321,8 +308,6 @@ export default ({
      * @param { boolean } [opts.unlock=false]
      *
      * @returns { Promise<unknown> }
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     checkOfflineChanges({
       modal  = true,
@@ -368,8 +353,7 @@ export default ({
 
   computed: {
     /**
-     * @since 4.1.0 Listen changes of each layers
-     * @returns 
+     * Listen changes of each layers
      */
     changes() {
       return this.state.toolboxes.filter(t => t.state.editing.history.commit).length > 0;
@@ -430,19 +414,13 @@ export default ({
 
     /**
      * @param { Boolean } bool true if at least one layer has changes. false if all layer haven't changes
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     changes(bool) {
       ApplicationState.sidebar.btn_close     = !bool;
       ApplicationState.sidebar.tooltip_close = bool ? '⚠️ Confirm changes (✅) on each level to close' : '';
     },
 
-    /**
-     * ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     selectedlayers(layers = []) {
       const has_layers = layers.length > 0;
 
@@ -508,8 +486,6 @@ export default ({
   },
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Called on a close editing panel panel
    */
   async beforeDestroy() {
@@ -605,6 +581,10 @@ export default ({
     if (control && !control.isToggled()) {
       control.toggle();
     }
+
+    //set editing panel null
+    GUI.getPlugin('editing').state.panel = null;
+
   },
 
 });

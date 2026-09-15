@@ -5,16 +5,12 @@ const ApplicationState = g3w.state;
 const { XHR }          = g3w.utils;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @param expression.inputs.layer
  * @param expression.context.excludeFields
  * @param expression.context.get_default_value
  * @param expression.feature
  *
  * @returns {Promise<void>}
- *
- * @since g3w-client-plugin-editing@v3.5.14
  */
 export async function evaluateExpressionFields({
   inputs,
@@ -37,7 +33,6 @@ export async function evaluateExpressionFields({
       if (field.input.options.default_expression && (field.input.options.default_expression.apply_on_update || feature.isNew())) {
         promises.push(
           new Promise(async (resolve, reject) => {
-            /** ORIGINAL SOURCE: g3w-client/src/utils/getDefaultExpression.js@4.0.0 */
             try {
               const parentData = getParentFormData();
               if (field.input.options.default_expression) {
@@ -90,7 +85,6 @@ export async function evaluateExpressionFields({
       if (field.input.options.filter_expression) {
         promises.push(
           new Promise(async (resolve, reject) => {
-            /** ORIGINAL SOURCE: g3w-client/src/utils/getFilterExpression.js@4.0.0 */
             try {
               const parentData = getParentFormData();
                 if (field.input.options.filter_expression) {
@@ -118,7 +112,7 @@ export async function evaluateExpressionFields({
                       }),
                       formatter:  0,
                       expression: field.input.options.filter_expression.expression,
-                      ordering:   [undefined, false].includes(field.input.options.orderbyvalue) ? field.input.options.key : field.input.options.value, //@since 3.11.0
+                      ordering:   [undefined, false].includes(field.input.options.orderbyvalue) ? field.input.options.key : field.input.options.value,
                     }),
                   });
                   if (response.result) {

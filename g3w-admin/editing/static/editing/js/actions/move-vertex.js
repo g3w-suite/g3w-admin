@@ -1,9 +1,5 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
@@ -14,10 +10,6 @@ import { Step }                                         from '../g3w-step.js';
 const GUI                      = g3w.app;
 const { createMeasureTooltip } = g3w.utils;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/modifygeometryvertextask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/modifygeometryvertexstep.js@v3.7.1
- */
 export class ModifyGeometryVertexStep extends Step {
 
   _originalStyle = null;
@@ -28,7 +20,7 @@ export class ModifyGeometryVertexStep extends Step {
 
   constructor(opts = {}) {
     opts.snap =  opts?.snap ?? true;
-    opts.help = "editing.steps.help.edit_feature_vertex";
+    opts.help = "editing.edit_feature_vertex";
     super(opts);
   }
 
@@ -48,7 +40,7 @@ export class ModifyGeometryVertexStep extends Step {
       //Show user message to save or not vertex changes
       GUI.showUserMessage({
         type:     'tool',
-        title:    'plugins.editing.tools.update_vertex',
+        title:    'plugins.editing.update_vertex',
         closable: false,
         hooks: {
           body: {

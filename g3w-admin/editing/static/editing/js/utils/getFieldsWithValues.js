@@ -3,8 +3,6 @@ import { Feature } from '../g3w-feature.js';
 const { cloneDeep } = g3wsdk.core.utils;
 
 /**
- * ORIGINAL SOURCE: g3w-client/src/map/layers/tablelayer.js@v4.0.0
- * 
  * @param obj
  * @param opts
  */
@@ -42,7 +40,7 @@ export function getFieldsWithValues(layer, obj, opts = {}) {
       field.validate = {};
     }
 
-    field.nullOption               = undefined === field.nullOption || field.nullOption ; //@since 3.11.0 used in InputSelect.vue component.
+    field.nullOption               = undefined === field.nullOption || field.nullOption ; // used in InputSelect.vue component.
     field.forceNull                = false;
     field.validate.valid           = true;
     field.validate._valid          = true;                            // useful to get previous value in certain case

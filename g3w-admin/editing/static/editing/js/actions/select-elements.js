@@ -1,9 +1,5 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
@@ -22,14 +18,10 @@ const { convertSingleMultiGeometry }                    = g3w.utils;
 
 const { removeZValueToOLFeatureGeometry }               = g3wsdk.core.geoutils.Geometry;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/selectelementstask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/selectelementsstep.js@v3.7.1
- */
 export class SelectElementsStep extends Step {
 
   constructor(opts = {}, chain) {
-    opts.help = opts.help ?? "editing.steps.help.select_elements";
+    opts.help = opts.help ?? "editing.select_elements";
 
     super(opts);
 
@@ -39,7 +31,7 @@ export class SelectElementsStep extends Step {
     this._vectorLayer;
 
     if (chain) {
-      this.on('run', () => { this.emit('next-step', _("plugins.editing.steps.help.select_elements")) });
+      this.on('run', () => { this.emit('next-step', _("plugins.editing.select_elements")) });
     }
   }
 
@@ -217,9 +209,6 @@ export class SelectElementsStep extends Step {
 
 }
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/addRemoveToMultipleSelectFeatures.js@v4.0.0
- */
 function _addRemoveToMultipleSelectFeatures(features, inputs, selected, task) {
   (features || []).forEach(f => {
     const selIndex = selected.indexOf(f);

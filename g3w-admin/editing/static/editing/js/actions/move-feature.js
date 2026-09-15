@@ -1,23 +1,15 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
 import { setAndUnsetSelectedFeaturesStyle }             from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { Step }                                         from '../g3w-step.js';
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/movefeaturetask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/movefeaturestep.js@v3.7.1
- */
 export class MoveFeatureStep extends Step {
 
   constructor(opts = {}) {
-    opts.help = "editing.steps.help.move";
+    opts.help = "editing.move_features";
 
     super(opts);
 
