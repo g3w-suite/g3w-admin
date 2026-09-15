@@ -115,6 +115,7 @@ export class ToolBox extends Emitter {
    * editing session.
    *
    * @type {AbortController|null}
+   * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
   #controller = null;
@@ -130,6 +131,7 @@ export class ToolBox extends Emitter {
    * Original layer style used before the toolbox switched to the editing style.
    *
    * @type {string|undefined}
+   * 
    * @since g3w-client-plugin-editing@v4.0.1
    */
   #current_style;
@@ -195,6 +197,7 @@ export class ToolBox extends Emitter {
    * OpenLayers event keys registered while the toolbox is in editing mode.
    *
    * @type {Array}
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   #events = [];
@@ -218,6 +221,7 @@ export class ToolBox extends Emitter {
    * Total number of rows/features available for the current load request.
    *
    * @type {number}
+   * 
    * @since g3w-client-plugin-editing@v4.0.0
    */
   #count = 0;
@@ -1732,6 +1736,7 @@ export class ToolBox extends Emitter {
    * @param {string} historyId Current session layer id.
    * @param {Array} items Session items to classify.
    * @param {number} action Undo (0) or redo (1) direction.
+   * 
    * @returns {{ own: Array, dependencies: Object }} Normalized session items.
    */
   #checkSessionItems(historyId, items, action) {
@@ -1763,6 +1768,7 @@ export class ToolBox extends Emitter {
    * @param {number} [params.x] Target x coordinate.
    * @param {number} [params.y] Target y coordinate.
    * @param {Array|number[]} [params.coordinates] Original coordinate tuple used as anchor.
+   * 
    * @returns {{ x: number, y: number }} Offset applied to the selected geometry.
    */
   #getDeltaXY({ x, y, coordinates } = {}) {
@@ -1780,6 +1786,7 @@ export class ToolBox extends Emitter {
    * multi-part geometries until it reaches a single pair of x/y values.
    *
    * @param {Array|number[]} coords Coordinate structure to unwrap.
+   * 
    * @returns {{ x: number, y: number }} Plain coordinate pair.
    */
   #getCoordinates(coords) {
@@ -1798,7 +1805,9 @@ export class ToolBox extends Emitter {
    * @param {object} params.inputs Editing context and current tool inputs.
    * @param {object} params.context Current editing session context.
    * @param {Array} [params.splittedGeometries=[]] Geometry fragments to apply.
+   * 
    * @returns {Promise<Array>} Array of generated features.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   async #handleSplitFeature({
@@ -1864,6 +1873,7 @@ export class ToolBox extends Emitter {
    * @param {Object} params Function parameters.
    * @param {object} params.feature Feature to inspect.
    * @param {Array} params.coordinates Coordinate pair to test.
+   * 
    * @returns {boolean} True when the coordinate matches a vertex.
    */
   #isPointOnVertex({ feature, coordinates }) {
@@ -1899,6 +1909,7 @@ export class ToolBox extends Emitter {
    * @param {Object} params Parameters.
    * @param {object} params.layer Current layer definition.
    * @param {object} params.feature Feature being serialized.
+   * 
    * @returns {Object} Mapping of field names to safe values.
    */
   #getNotEditableFieldsNoPkValues({ layer, feature }) {
@@ -2087,6 +2098,7 @@ export class ToolBox extends Emitter {
    *
    * @param {Object} [options={}] Startup options such as selected state,
    * toolbar visibility, custom title or tool subset.
+   * 
    * @returns {Promise<unknown>} Data from the feature-loading step once the
    * editing session is ready.
    */
@@ -2368,7 +2380,9 @@ export class ToolBox extends Emitter {
    * @param {Array|null} [opts.ids=null] Optional list of IDs to restrict the save.
    * @param {Array} [opts.items] Explicit change items to include.
    * @param {boolean} [opts.relations=true] Whether relation changes must be committed.
+   * 
    * @returns {Promise<*>} Server response for the save transaction.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   save({
@@ -2541,6 +2555,7 @@ export class ToolBox extends Emitter {
    * session.
    *
    * @param {boolean} [bool=false] New enabled state.
+   * 
    * @returns {boolean} Current enabled state.
    */
   setEnable(bool = false) {
@@ -2609,6 +2624,7 @@ export class ToolBox extends Emitter {
    * Finds a tool by its id.
    *
    * @param {string} toolId Tool identifier.
+   * 
    * @returns {object|undefined} Matching tool instance.
    */
   getToolById(toolId) {
@@ -2778,6 +2794,7 @@ export class ToolBox extends Emitter {
    * the current interaction flow.
    *
    * @param {object} tool Tool instance to activate.
+   * 
    * @returns {Promise<void>} Resolution of the activation lifecycle.
    */
   async setActiveTool(tool) {
@@ -2804,6 +2821,7 @@ export class ToolBox extends Emitter {
    * selected tool instance.
    *
    * @param {object} [tool] Tool instance to stop explicitly.
+   * 
    * @returns {Promise<void>} Completion of the stop routine.
    */
   async stopActiveTool(tool) {   
@@ -2897,7 +2915,9 @@ export class ToolBox extends Emitter {
    *
    * @param {string|number} uniqueId Unique transaction identifier.
    * @param {Array} items Session items produced by the current action.
+   * 
    * @returns {Promise<string|number>} The transaction identifier used for the history entry.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   __add(uniqueId, items) {
@@ -2936,6 +2956,7 @@ export class ToolBox extends Emitter {
    * and moves the cursor back to the previous history entry.
    *
    * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the undo action.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   __undo() {
@@ -2963,6 +2984,7 @@ export class ToolBox extends Emitter {
    * items that must be re-applied to the local editing store.
    *
    * @returns {{ own: Array, dependencies: Object }|undefined} Session items restored by the redo action.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   __redo() {
@@ -2993,7 +3015,9 @@ export class ToolBox extends Emitter {
    * Returns the history snapshot associated with a specific transaction id.
    *
    * @param {string|number} id Transaction identifier.
+   * 
    * @returns {Object|undefined} Matching state entry or undefined when absent.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   __getState(id) {
@@ -3055,6 +3079,7 @@ export class ToolBox extends Emitter {
    * update and delete operations ready to be serialized for the backend.
    *
    * @returns {Object<string, Array>} Commit candidate map keyed by layer id.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   __commit() {
@@ -3104,6 +3129,7 @@ export class ToolBox extends Emitter {
    * Returns the latest transaction snapshot stored in the edit history.
    *
    * @returns {{ id: string|number, items: Array }|null} Latest history entry or null when empty.
+   * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
   getLastHistoryState() {
@@ -3114,6 +3140,7 @@ export class ToolBox extends Emitter {
    * Reports whether the current editing session has already been initialized.
    *
    * @returns {boolean} True when the session is active.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   isSessionStarted() {
@@ -3236,6 +3263,7 @@ export class ToolBox extends Emitter {
    *
    * @param {Array} [items=[]] Session items to apply.
    * @param {boolean} [reverse=true] Whether the operation should be reversed.
+   * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
   __setChanges(items = [], reverse = true) {
@@ -3331,6 +3359,7 @@ export class ToolBox extends Emitter {
    *   delete: Array,
    *   relations: Object
    * }} Commit payload for the server API.
+   * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
   getCommitItems() {
@@ -3460,6 +3489,7 @@ export class ToolBox extends Emitter {
    * When no ids are given, the entire history is reset. When a subset is	handed, only the matching transaction entries are removed.
    *
    * @param {Array<string|number>} [ids] Transaction ids to remove from history.
+   * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
   clearHistory(ids) {
@@ -3489,6 +3519,7 @@ export class ToolBox extends Emitter {
    * updates the UI flags used by the rest of the editing workflow.
    *
    * @param {Object} [options={}] Session start options.
+   * 
    * @returns {Promise<*>} Results from the session initialization process.
    */
   async __startSession(options = {}) {
@@ -3867,7 +3898,9 @@ export class ToolBox extends Emitter {
    * features so the local state matches the authoritative server state.
    *
    * @param {Object} commit Server response payload for the committed items.
+   * 
    * @returns {Promise<Object>} Normalized server response.
+   * 
    * @since g3w-client-plugin-editing@v4.1.0
    */
   async __commitToEditor(commit) {
@@ -4067,6 +4100,7 @@ export class ToolBox extends Emitter {
    * logic that must know whether more items are available on the backend.
    *
    * @returns {number} Feature count.
+   * 
    * @since 4.0.0
    */
   getCount() {
