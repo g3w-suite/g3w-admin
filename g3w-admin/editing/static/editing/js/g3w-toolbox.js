@@ -322,11 +322,6 @@ export class ToolBox extends Emitter {
       clear:               this.#clearEditor.bind(this),
     });
 
-    if ('vector' === layer.getType()) {
-      layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
-    }
-    //this._editor.getLayer().getOLLayer().getSource().setFeatures(this.readEditingFeatures());
-
     this.on('start-editing', this.#onEditingStart.bind(this));
 
     /**
@@ -359,6 +354,11 @@ export class ToolBox extends Emitter {
         "#29335c", "#f3a712", "#669bbc", "#eb6841", "#4f372d",
         "#cc2a36", "#00a0b0", "#00b159", "#f37735", "#ffc425",
       ][Object.keys(ToolBox._sessions).length % 40] : '#fff');
+
+      //set vector layer source
+      if ('vector' === layer.getType()) {
+        layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
+      }
     }
 
     const is_vector          = [undefined, 'vector'].includes(layer.getType());
