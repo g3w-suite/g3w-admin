@@ -14,45 +14,72 @@ const { isPointGeometryType } = g3wsdk.core.geoutils.Geometry;
 export class Step extends Emitter {
 
   /**
-   * @param { Object } options
-   * @param { Object } options.inputs
-   * @param { Object } options.context
-   * @param { Object } options.task
-   * @param { Object } options.outputs
-   * @param { Function } options.escKeyPressEventHandler
-   * @param { String } options.id
-   * @param { String } options.name
-   * @param { String } options.help
-   * @param { String } options.message
+   * @param {Object} [options={}] Step configuration.
+   * @param {Object} [options.inputs] Initial values passed to the step.
+   * @param {Object} [options.context] Shared context available during execution.
+   * @param {Object} [options.outputs] Initial step outputs.
+   * @param {Function} [options.run] Function executed by {@link Step#__run}.
+   * @param {Function} [options.stop] Function executed by {@link Step#__stop}.
+   * @param {Function} [options.escKeyPressEventHandler] Callback invoked on Escape.
+   * @param {string} [options.id] Step identifier.
+   * @param {string} [options.name] Step name or translation key.
+   * @param {string} [options.help] Help message or translation key.
+   * @param {string} [options.message] Current step message.
+   * @param {Object[]} [options.steps] Nested steps in this flow.
+   * @param {Function} [options.onRun] Listener registered for the `run` event.
+   * @param {Function} [options.onStop] Listener registered for the `stop` event.
+   * @param {string[]} [options.tools] Tool-of-tools names exposed by the step.
    */
   constructor(options = {}) {
 
     super();
 
+    /**
+     * Original configuration passed to the step.
+     * 
+     * @type {Object}
+     */
     this._options = options;
 
-    //store promise of current running step when call run
+    /**
+     * Bound function that executes the step task.
+     * 
+     * @type {Function}
+     */
     this._run    = (options.run  || this.run  || (async () => true)).bind(this);
-    //store promise of current running step when call stop
+
+    /**
+     * Bound function that stops the step task.
+     * 
+     * @type {Function}
+     */
     this._stop   = (options.stop || this.stop || (async () => true)).bind(this);
 
     /**
-     * set inputs object (features, layer etc..)
+     * Inputs consumed by the step, such as features or layer.
+     *
+     * @type {Object|null}
      */
     this._inputs = options.inputs || null;
 
     /**
-     * set context (session etc..)
+     * Shared context, such as the current editing session.
+     *
+     * @type {Object|null}
      */
     this._context = options.context || null;
 
     /**
-     * @FIXME add description
+     * Outputs produced by the step task.
+     *
+     * @type {Object|null}
      */
     this._outputs = options.outputs || null;
 
     /**
-     * Dynamic state of a step
+     * Mutable state exposed while the step is running.
+     *
+     * @type {{id: (string|null), name: (string|null), help: (string|null), running: boolean, error: (Error|null), message: (string|null), usermessagesteps: Object}}
      */
     this.state = {
       id:      options.id   || null,
@@ -66,11 +93,6 @@ export class Step extends Emitter {
     };
 
     this.registerEscKeyEvent(options.escKeyPressEventHandler)
-
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
-    this.selectStyle = options.selectStyle;
 
     /**
      * @since g3w-client-plugin-editing@v3.8.0
@@ -103,7 +125,11 @@ export class Step extends Emitter {
   }
 
   /**
-   * Set and get task usefult properties used to run
+   * Replace the inputs used by the current step execution.
+   *
+   * @param {Object|null} inputs Values passed to the step task.
+   * 
+   * @returns {void}
    * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
@@ -112,6 +138,10 @@ export class Step extends Emitter {
   }
 
   /**
+   * Return the inputs currently assigned to the step.
+   *
+   * @returns {Object|null} Current step inputs.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getInputs() {
@@ -119,8 +149,12 @@ export class Step extends Emitter {
   }
 
   /**
-   * @param context
+   * Replace the context used by the current step execution.
+   *
+   * @param {Object|null} context Shared execution context.
    * 
+   * @returns {Object|null} The assigned context.
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setContext(context) {
@@ -128,6 +162,10 @@ export class Step extends Emitter {
   }
 
   /**
+   * Return the context currently assigned to the step.
+   *
+   * @returns {Object|null} Current execution context.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getContext() {
@@ -135,6 +173,10 @@ export class Step extends Emitter {
   }
 
   /**
+   * Hook for subclasses to report an unrecoverable implementation state.
+   *
+   * @returns {void}
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   panic() {
@@ -142,8 +184,12 @@ export class Step extends Emitter {
   }
 
   /**
-   * @param task
+   * Set the root task associated with this step.
+   *
+   * @param {*} task Root task or parent operation.
    * 
+   * @returns {void}
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setRoot(task) {
@@ -151,8 +197,8 @@ export class Step extends Emitter {
   }
 
   /**
-   * @returns { Object }
-   * 
+   * @returns {Object} Progress entries shown for this step.
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getUserMessageSteps() {
@@ -160,8 +206,12 @@ export class Step extends Emitter {
   }
 
   /**
-   * @param steps
+   * Replace the progress entries shown for this step.
+   *
+   * @param {Object} steps Progress entries keyed by their type.
    * 
+   * @returns {void}
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setUserMessageSteps(steps = {}) {
@@ -169,8 +219,12 @@ export class Step extends Emitter {
   }
 
   /**
-   * @param type
+   * Mark one progress entry as completed.
+   *
+   * @param {string} type Progress-entry key.
    * 
+   * @returns {void}
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setUserMessageStepDone(type) {
@@ -180,6 +234,15 @@ export class Step extends Emitter {
   }
 
   /**
+   * Add an interaction to the map and remove it when the step stops.
+   *
+   * @param {Object} interaction Map interaction to register.
+   * @param {Object<string, Function>} [events={}] Event handlers to bind.
+   * 
+   * @returns {Object} The registered interaction.
+   * 
+   * @listens stop
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   addInteraction(interaction, events = {}) {
@@ -190,6 +253,12 @@ export class Step extends Emitter {
   }
 
   /**
+   * Remove an interaction after the current event cycle.
+   *
+   * @param {Object} interaction Map interaction to remove.
+   * 
+   * @returns {void}
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   removeInteraction(interaction) {
@@ -197,17 +266,21 @@ export class Step extends Emitter {
   }
 
   /**
-   * @TODO code implementation
+   * Return the editing type configured for the step.
    *
-   * Get editing type from editing config
-   *
-   * @returns { null }
+   * @returns {null} Not implemented by the base step.
    */
   getEditingType() {
     return null;
   }
 
   /**
+   * Listen for map pointer movement and update the cursor.
+   *
+   * @returns {void}
+   * 
+   * @listens pointermove
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   registerPointerMoveCursor() {
@@ -215,6 +288,10 @@ export class Step extends Emitter {
   }
 
   /**
+   * Stop listening for map pointer movement.
+   *
+   * @returns {void}
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   unregisterPointerMoveCursor() {
@@ -222,8 +299,12 @@ export class Step extends Emitter {
   }
 
   /**
-   * @param evt
+   * Update the cursor according to the feature under the pointer.
+   *
+   * @param {Object} evt Map pointer-move event.
    * 
+   * @returns {void}
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   _pointerMoveCursor(evt) {
@@ -231,8 +312,12 @@ export class Step extends Emitter {
   }
 
   /**
-   * @param steps
+   * Replace the nested step flow and its user-message entries.
+   *
+   * @param {Object[]} [steps=[]] Steps in the nested flow.
    * 
+   * @returns {void}
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   setSteps(steps = {}) {
@@ -241,8 +326,8 @@ export class Step extends Emitter {
   }
 
   /**
-   * @returns { Object }
-   * 
+   * @returns {Object[]} Configured nested steps.
+   *
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getSteps() {
@@ -250,6 +335,10 @@ export class Step extends Emitter {
   }
 
   /**
+   * Return the application map instance.
+   *
+   * @returns {Object} Current map.
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   getMap() {
@@ -259,7 +348,9 @@ export class Step extends Emitter {
   /**
    * Disable sidebar
    *
-   * @param {Boolean} bool
+   * @param {boolean} [bool=true] Whether the sidebar should be disabled.
+   * 
+   * @returns {void}
    *
    * @since g3w-client-plugin-editing@v3.8.0
    */
@@ -271,11 +362,13 @@ export class Step extends Emitter {
   }
 
   /**
-   * Bind interrupt event on keys escape pressed
+   * Invoke the registered callback when Escape is released.
+   *
+   * @param {Object} evt Keyup event with callback data.
    * 
-   * @param evt.key
-   * @param evt.data.callback
-   * @param evt.data.task
+   * @returns {void}
+   * 
+   * @listens document:keyup
    */
   escKeyUpHandler(evt) {
     if ('Escape' === evt.key) {
@@ -284,20 +377,30 @@ export class Step extends Emitter {
   }
 
   /**
-   * Remove callback when press ESC key
+   * Remove the document keyup listener for Escape.
+   *
+   * @returns {void}
    */
   unbindEscKeyUp() {
     $(document).unbind('keyup', this.escKeyUpHandler);
   }
 
   /**
-   * Bind callback when press ESC key
+   * Bind a callback to the document Escape key event.
+   *
+   * @param {Function} [callback=() => {}] Callback invoked on Escape.
+   * 
+   * @returns {void}
    */
   bindEscKeyUp(callback = () => {}) {
     $(document).on('keyup', { callback, task: this }, this.escKeyUpHandler);
   }
 
   /**
+   * Register and unregister Escape handling with the step lifecycle.
+   *
+   * @param {Function} [callback] Callback invoked on Escape.
+   * 
    * @listens run
    * @listens stop
    */
@@ -309,13 +412,15 @@ export class Step extends Emitter {
   }
 
   /**
-   * Start task
+   * Execute the configured task and manage its running state.
+   *
+   * @param {Object} inputs Inputs passed to the task.
+   * @param {Object} context Context passed to the task.
    * 
-   * @param inputs
-   * @param context
-   * 
+   * @returns {Promise<*>} Outputs returned by the task.
+   *
    * @fires run
-   */ 
+   */
   async __run(inputs, context) {
   
     //set step inputs
@@ -394,8 +499,9 @@ export class Step extends Emitter {
   }
 
   /**
-   * Stop step
+   * Stop the configured task and emit the stop event.
    *
+   * @returns {Promise<void>}
    * @fires stop
    */
   async __stop() {
@@ -406,73 +512,94 @@ export class Step extends Emitter {
   }
 
   /**
-   *  @returns { String } step id
+   * Return the step identifier.
+   *
+   * @returns {string|null} Step identifier.
    */
   getId() {
     return this.state.id;
   }
 
   /**
-   * @returns { String } step name
+   * Return the step name or label.
+   *
+   * @returns {string|null} Step name.
    */
   getName() {
     return this.state.name;
   }
 
   /**
-   * @returns { String } step help
+   * Return the current help message or translation key.
+   *
+   * @returns {string|null} Step help.
    */
   getHelp() {
     return this.state.help;
   }
 
   /**
-   * @returns { Error } step error
+   * Return the error produced by the task, if any.
+   *
+   * @returns {Error|null} Step error.
    */
   getError() {
     return this.state.error;
   }
 
   /**
-   * @returns { String } step message
+   * Return the current user-facing message.
+   *
+   * @returns {string|null} Step message.
    */
   getMessage() {
     return this.state.message;
   }
 
   /**
-   * @returns { Boolean } step running state
+   * Return whether the step task is currently running.
+   *
+   * @returns {boolean} Running state.
    */
   isRunning() {
     return this.state.running;
   }
 
   /**
-   * @return { Step } step instance
+   * Return this step instance for task-oriented APIs.
+   *
+   * @returns {Step} This step.
    */
   getTask() {
     return this;
   }
 
   /**
-   * @param { Object } outputs
-   * @returns { void }
+   * Store the outputs produced by the step task.
+   *
+   * @param {Object} outputs Step outputs.
+   * 
+   * @returns {void}
    */
   setOutputs(outputs) {
     this._outputs = outputs;
   }
 
   /**
-   * @returns { Object } step outputs
+   * @returns {Object|null} Step outputs.
    */
   getOutputs() {
     return this._outputs;
   }
 
   /**
-   * @param tool
-   * @param tools
+   * Associate this step with its parent tool and exposed tools.
+   *
+   * @param {Object} tool Parent tool.
+   * @param {string[]} [tools=[]] Tool-of-tools names.
    * 
+   * @returns {void}
+   *
    * @since g3w-client-editing@v3.8.0
    */
   setToolsOfTools(tool, tools = [] ) {
