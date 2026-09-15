@@ -235,7 +235,9 @@ export class ToolBox extends Emitter {
    * @listens start-editing
    */
   constructor(_layer, _config) {
-    super();
+    super({});
+
+    this.setters = [ 'featuresLockedByOtherUser' ];
 
     // add editing configurations
     _layer.state.editing = {
@@ -314,7 +316,6 @@ export class ToolBox extends Emitter {
         deleteFeature:              f => this._featuresstore.deleteFeature(f),
         setFeatures:               (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
         getFeatures:               this.#requestFeatures.bind(this),
-        featuresLockedByOtherUser: f => {},
       },
       addFeature:          f => this._featuresstore.addFeature(f),
       isStarted:           () => this.#started,
@@ -1764,6 +1765,12 @@ export class ToolBox extends Emitter {
   }
 
   /**
+   * 
+   * @param {@since 4.0.0} f 
+   */
+  featuresLockedByOtherUser(f) {}
+
+  /**
    * Rebuilds the session dependency mapping for undo/redo operations.
    *
    * Each change can be an add/delete/update action and can be paired with a
@@ -2058,7 +2065,7 @@ export class ToolBox extends Emitter {
       options.filter = constraints?.filter || this.constraints.filter || options.filter;
 
       // register lock features to show a message
-      const unKeyLock = this._editor.onceafter('featuresLockedByOtherUser', () => {
+      const unKeyLock = this.onceafter('featuresLockedByOtherUser', () => {
         GUI.showUserMessage({
           type:     'warning',
           subtitle: this.state.layer.getName().toUpperCase(),
@@ -2067,7 +2074,7 @@ export class ToolBox extends Emitter {
       });
   
       // add featuresLockedByOtherUser setter
-      this.state._unsetters.push(() => this._editor.un('featuresLockedByOtherUser', unKeyLock));
+      this.state._unsetters.push(() => this.un('featuresLockedByOtherUser', unKeyLock));
 
       // check if can we edit based on scale contraint (vector layer)
       if (this.state._constraints.scale) {
@@ -3613,7 +3620,7 @@ export class ToolBox extends Emitter {
         //or in case of request pagination, check if the number of features requested is greater than the number of features returned, it means that another user locks these features
         if (count > 0 && (0 === featurelocks.length || current_page_count > features.length)) {
           //It means that another user locks these features
-          this._editor.featuresLockedByOtherUser(features);
+          this.featuresLockedByOtherUser(features);
         }
        
         featurelocks
