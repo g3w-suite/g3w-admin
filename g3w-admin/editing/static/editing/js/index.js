@@ -15,8 +15,7 @@ const {
   getResolutionFromScale,
 }                         = g3w.utils;
 
-const { Server: serverErrorParser } = g3wsdk.core.errors.parsers;
-const { Geometry }                  = g3wsdk.core.geoutils;
+const { Geometry }        = g3wsdk.core.geoutils;
 
 /**
  * Editing plugin entry point.
@@ -84,6 +83,7 @@ new (class extends Plugin {
         () => ApplicationState.layout.__current,
         layoutName => this.state.currentLayout = layoutName !== this.getName() ? layoutName : this.state.currentLayout
       ),
+      /** @TODO Why the onMapControlToggled function is stored within the state? Is it used by any external plugin? */
       // Stops the active map tool when a map control is toggled.
       onMapControlToggled: ({ target }) => {
         target.isToggled() && target.isClickMap() && this.state?.toolboxselected?.getActiveTool?.() && this.state.toolboxselected.stopActiveTool();
@@ -852,6 +852,28 @@ new (class extends Plugin {
         try { await this.#rollback(commitItems.relations); }
         catch(e) { console.warn(e); }
       }
+
+      const serverErrorParser = (opts = {}) => {
+        const _traverse = (err, message = 'Error in server saving') => {
+          try {
+            const entries   = Object.entries(err);
+            const entry     = entries.find(([key, _]) => 'fields' === key);
+            const [, value] = (entry || entries[0]);
+            if (!entry && !Array.isArray(value) && 'object' === typeof value) { return _traverse(value, message) }
+            if (entry && 'string' === typeof value)                           { message = `[${ entries.find(([key]) => 'fields' !== key)[0] }] ${value}`; }
+            if (entry && 'string' !== typeof value)                           { message = Object.entries(value).reduce((text, [field, error]) => `${text}${field} ${ Array.isArray(error) ? error[0] : error }\n`, ''); }
+            if (entry)                                                        { return message.replace(/\:|\./g, ''); }
+          } catch(e) { console.warn(e); }
+        }
+        return ({
+          parse({ type = 'responseJSON' } = {}) {
+            if ('responseJSON' === type && opts?.error?.responseJSON?.error?.message) { return opts.error.responseJSON.error.message; }
+            if ('responseJSON' === type && opts?.error?.errors)                       { return _traverse(opts.error.errors); }
+            if ('String' === type && 'string' === typeof opts.error)                  { return opts.error; }
+            if ('String' === type)                                                    { return _traverse(opts.error); }
+            return _('Error in server saving');
+        }})
+      };
 
       // parse server error
       if (serverError || modal) {
