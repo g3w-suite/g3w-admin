@@ -354,11 +354,6 @@ export class ToolBox extends Emitter {
         "#29335c", "#f3a712", "#669bbc", "#eb6841", "#4f372d",
         "#cc2a36", "#00a0b0", "#00b159", "#f37735", "#ffc425",
       ][Object.keys(ToolBox._sessions).length % 40] : '#fff');
-
-      //set vector layer source
-      if ('vector' === layer.getType()) {
-        layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
-      }
     }
 
     const is_vector          = [undefined, 'vector'].includes(layer.getType());
@@ -369,6 +364,11 @@ export class ToolBox extends Emitter {
     const is_table           = 'table' === layer.getType();
     const isMultiGeometry    = geometryType && Geometry.isMultiGeometry(geometryType);
     const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
+
+    //set vector layer source
+    if (is_vector) {
+      layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
+    }
 
     // Check if layer has "relation layers" that are editable
     const editable_relations = layer.getRelations().getArray()
