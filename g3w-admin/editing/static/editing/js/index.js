@@ -1377,7 +1377,7 @@ new (class extends Plugin {
       const is_vector = 'vector' === _layer.getType();
 
       // get feature from an Editing layer source (with styles)
-      const features = is_vector ? getEditingLayer(_layer).getSource().getFeatures() : getEditingLayer(_layer).getEditor().readEditingFeatures();
+      const features = is_vector ? getEditingLayer(_layer).getSource().getFeatures() : this.getToolBoxById(_layer.getId()).getEditor().readEditingFeatures();
       const feature  = features.find(f => fid == f.getId());
 
       // no feature is get from server (locked feature)
@@ -1509,7 +1509,7 @@ new (class extends Plugin {
       Object
       .entries(relations)
       .flatMap(([ layerId, { add, delete: del, update, relations = {}}]) => {
-        const source       = this.getLayerById(layerId).getEditor().getEditingSource();
+        const source       = this.getToolBoxById(layerId).getEditingSource();
         const has_features = source.readFeatures().length > 0; // check if the relation layer has some features
         // get original values
         return [

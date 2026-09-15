@@ -297,7 +297,7 @@ export class ToolBox extends Emitter {
       setFeatures:           (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
     });
 
-    this._editor = layer._editor = Object.assign(new Emitter, {
+    this._editor = Object.assign(new Emitter, {
       _layer,
       setters: {
         save:                       () => _layer.save(),
@@ -312,7 +312,7 @@ export class ToolBox extends Emitter {
       isStarted:           () => this.#started,
       getLockIds:          () => GUI.getPlugin('editing').state.lock_ids[_layer.getId()],
       getEditingSource:    this.getEditingSource.bind(this),
-      getSource:           () => _layer.getSource(),
+      getSource:           () => this._featuresstore,
       getLayer:            () => _layer,
       readFeatures:        () => this._features, //return original features from server (not modified)
       readEditingFeatures: this.readEditingFeatures.bind(this), //return features changed/added by editing tools (not original features from server)
@@ -321,6 +321,11 @@ export class ToolBox extends Emitter {
       stop:                this.#stopEditor.bind(this),
       clear:               this.#clearEditor.bind(this),
     });
+
+    if ('vector' === layer.getType()) {
+      layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
+    }
+    //this._editor.getLayer().getOLLayer().getSource().setFeatures(this.readEditingFeatures());
 
     this.on('start-editing', this.#onEditingStart.bind(this));
 

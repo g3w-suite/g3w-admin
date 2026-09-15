@@ -78,8 +78,8 @@ template: /*html*/`
 
   data() {
     return {
-      features:  this.layer.getEditor().readFeatures(),        // original features
-      efeatures: this.layer.getEditor().readEditingFeatures(), // edited features,
+      features:  GUI.getPlugin('editing').getToolBoxById(this.layer.layerId).getEditor().readFeatures(),        // original features
+      efeatures: GUI.getPlugin('editing').getToolBoxById(this.layer.layerId).getEditor().readEditingFeatures(), // edited features,
     };
   },
 
