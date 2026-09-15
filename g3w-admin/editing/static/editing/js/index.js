@@ -133,9 +133,6 @@ new (class extends Plugin {
    * @since g3w-client-plugin-editing@v3.8.0
    */
   async #init() {
-
-    this.setHookLoading({ loading: true });
-
     //Loop through editable layers and get config to create toolboxes
     for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
@@ -290,7 +287,6 @@ new (class extends Plugin {
       new (await import('./g3w-iframe.js')).IframeEditor(this);
     }
 
-    this.setHookLoading({ loading: false });
     this.setReady(true);
   }
 
