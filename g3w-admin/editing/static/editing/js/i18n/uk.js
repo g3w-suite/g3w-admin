@@ -8,7 +8,7 @@ export default {
     editing_multiple_relations: 'Редагування декількох відношень одночасно наразі не підтримується',
   },
   search: "Пошук",
-  editing_changes: "Editing Changes",
+  editing_changes: "Зміни редагування",
   editing_data: "Редагування шарів",
   editing_attributes: "Редагування атрибутів",
   relations: "Відношення",

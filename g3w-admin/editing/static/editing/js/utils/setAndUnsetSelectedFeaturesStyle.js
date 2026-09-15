@@ -1,4 +1,3 @@
-import { Workflow }                 from '../g3w-workflow.js';
 import { setFeaturesSelectedStyle } from '../utils/setFeaturesSelectedStyle.js';
 
 /**

@@ -41,8 +41,8 @@ export class MoveFeatureStep extends Step {
       this.addInteraction(
         new ol.interaction.Translate({
           features:     new ol.Collection(inputs.features),
-          hitTolerance: (isMobile && isMobile.any) ? 10 : 0 },
-        ), {
+          hitTolerance: isMobile?.any ? 10 : 0,
+        }), {
         'translatestart': e => {
           const feature   = e.features.getArray()[0];
           this.changeKey  = feature.once('change', () => isGeometryChange = true);
