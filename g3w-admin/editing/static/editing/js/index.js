@@ -292,48 +292,45 @@ new (class extends Plugin {
       menu.items.push({
         icon: 'fas fa-pencil-alt',
         label: _('Edit Layer'),
-        children: Object.entries(this.getEditableLayers()).filter(([_, layer]) => 'vector' === layer.getType())
-                    .map(([id, layer]) => ({
-                      label: layer.getName(),
-                      cbk: async () => {
-                        let filter;
-                        if (2 === menu.map_coords.length) {
-                          try {
-                            const project  = ApplicationState.project;
-
-                            const response = await GUI.getData('query:coordinates', {
-                              inputs: {
-                                coordinates:           menu.map_coords,
-                                feature_count:         project.state.feature_count || 5,
-                                query_point_tolerance: project.getQueryPointTolerance(),
-                                layerIds:              [layer.getId()], //get layerId of editibale layers
-                              },
-                              outputs: false //no content is show
-                            });
-                            if (response?.result && response?.data?.length) {
-
-                              if (response?.data[0]?.features?.length) {
-                                filter =  { fids: response?.data[0]?.features.map(f => f.getId()).join(',') }
-                              }
-                            }
-                          } catch(e) {
-                            console.warn('Error running spatial query: ', e);
-                          }
-                        }
-                        this.showPanel({ toolboxes: [id] });
-                        this.startEditing(id, { filter });
-                        //dispatch escape key event to close any open modals or panels
-                        document.dispatchEvent(new KeyboardEvent('keyup', {
-                          key: 'Escape',
-                          code: 'Escape',
-                          keyCode: 27,
-                          which: 27,
-                          bubbles: true, // Permette all'evento di risalire il DOM
-                          cancelable: true
-                        }));
-                      }
-                    })) ,
         position: 0,
+        children:
+          Object
+            .entries(this.getEditableLayers()).filter(([_, layer]) => 'vector' === layer.getType())
+            .map(([id, layer]) => ({
+              label: layer.getName(),
+              cbk: async () => {
+                let filter;
+                if (2 === menu.map_coords.length) {
+                  try {
+                    const response = await GUI.getData('query:coordinates', {
+                      inputs: {
+                        coordinates:           menu.map_coords,
+                        feature_count:         ApplicationState.project.state.feature_count || 5,
+                        query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
+                        layerIds:              [layer.getId()], //get layerId of editibale layers
+                      },
+                      outputs: false // no content is show
+                    });
+                    if (response?.result && response?.data?.length && response?.data[0]?.features?.length) {
+                      filter = { fids: response?.data[0]?.features.map(f => f.getId()).join(',') }
+                    }
+                  } catch(e) {
+                    console.warn('Error running spatial query: ', e);
+                  }
+                }
+                this.showPanel({ toolboxes: [id] });
+                this.startEditing(id, { filter });
+                //dispatch escape key event to close any open modals or panels
+                document.dispatchEvent(new KeyboardEvent('keyup', {
+                  key: 'Escape',
+                  code: 'Escape',
+                  keyCode: 27,
+                  which: 27,
+                  bubbles: true, // Permette all'evento di risalire il DOM
+                  cancelable: true
+                }));
+              }
+            })),
       });
     });
 
