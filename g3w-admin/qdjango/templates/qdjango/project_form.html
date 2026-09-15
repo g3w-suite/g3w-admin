@@ -10,66 +10,96 @@
 {% endblock %}
 
 {% block page_header %}
-<h1>
-{% if form.instance.title %}
-{% trans 'QGIS project' %}{{ form.instance.title }}
-{% else %}
-{% trans 'New QGIS project' %}
-    <small>{% trans 'Create a new QGIS project for current group' %}</small>
-{% endif %}
-</h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        <i class="fa fa-map"></i>
+        {% if form.instance.pk %}
+          {% trans 'Edit QGIS project' %}
+        {% else %}
+          {% trans 'New QGIS project' %}
+        {% endif %}
+      </h1>
+      <p>
+        {% if form.instance.pk %}
+          {{ form.instance.title|default:form.instance.title_ur|default:'' }}
+          {% if group %} &mdash; <em>{% trans 'in group' %} <strong>{{ group.name }}</strong></em>{% endif %}
+        {% else %}
+          {% blocktrans with name=group.name %}Upload a QGIS project for the cartographic group <strong>{{ name }}</strong>.{% endblocktrans %}
+        {% endif %}
+      </p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <a href="{% url 'project-list' group.slug %}" class="hero-back">
+        <i class="fa fa-arrow-left"></i> {% trans 'Back to projects' %}
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block main_content %}
 
-        {% if pre_update_messages %}
-            <div class="hidden pre-update-messages" data-widget-type="showMessageOnLoad">
-                {% for message in pre_update_messages %}
-                    {{ message }}
-                {% endfor %}
-            </div>
-        {% endif %}
+<div class="form-shell" id="project-form-shell">
 
-        {% if form.instance.pk %}
-            <div class="row">
-                <div class="col-md-12 col-xs-12">
-                    <div class="box">
-                        <div class="box-header">
-                            <h3 class="box-title">{% trans 'Shortcuts' %}</h3>
-                        </div>
-                        <div class="box-body">
-                            <div class="project-abstract-action">
-                                <a href="{% url 'group-project-map' group.slug 'qdjango' form.instance.pk %}" class="btn btn-app color-orange" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
-                                    <i class="ion ion-map"></i>
-                                    {% trans 'Show map' %}
-                                </a>
-                                <a href="#" data-toggle="tooltip" class="btn btn-app" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug form.instance.slug %}" >
-                                    <i class="ion ion-eye"></i>
-                                    {% trans 'Show detail' %}
-                                </a>
-                                <a href="{% url 'qdjango-project-layers-list' group.slug form.instance.slug %}" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" >
-                                    <i class="ion ion-navicon-round"></i>
-                                    {% trans 'Layers' %}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+    {% if pre_update_messages %}
+        <div class="hidden pre-update-messages" data-widget-type="showMessageOnLoad">
+            {% for message in pre_update_messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if form.instance.pk %}
+        <div class="form-summary">
+            <div class="form-summary-info">
+                <i class="fa fa-bolt"></i>
+                <div>
+                    <strong>{% trans 'Project shortcuts' %}</strong>
+                    <span>{% trans 'Quick access to map view, detail and layers list for this project.' %}</span>
+                </div>
+            </div>
+            <div class="form-summary-actions project-shortcut-actions">
+                <a href="{% url 'group-project-map' group.slug 'qdjango' form.instance.pk %}"
+                   class="qa-btn qa-btn-primary"
+                   data-toggle="tooltip" data-placement="top"
+                   title="{% trans 'Show map' %}" target="_blank">
+                    <i class="ion ion-map"></i>
+                    <span>{% trans 'Show map' %}</span>
+                </a>
+                <a href="#" class="qa-btn"
+                   data-toggle="tooltip" data-placement="top"
+                   title="{% trans 'Show detail' %}"
+                   data-widget-type="detailItem"
+                   data-detail-url="{% url 'qdjango-project-detail' group.slug form.instance.slug %}">
+                    <i class="ion ion-eye"></i>
+                    <span>{% trans 'Show detail' %}</span>
+                </a>
+                <a href="{% url 'qdjango-project-layers-list' group.slug form.instance.slug %}"
+                   class="qa-btn"
+                   data-toggle="tooltip" data-placement="top"
+                   title="{% trans 'Layers' %}">
+                    <i class="ion ion-navicon-round"></i>
+                    <span>{% trans 'Layers' %}</span>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="post" id="project-qdjango-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
+        {% if form.errors %}
+            <div class="form-alert form-alert-error">
+                <i class="fa fa-exclamation-triangle"></i>
+                <div>
+                    <strong>{% trans 'Some errors on form' %}</strong>
+                    <span>{% trans 'Check the highlighted fields and submit again.' %}</span>
                 </div>
             </div>
         {% endif %}
+        {% crispy form %}
+        {% g3wadmin_add_button_form %}
+    </form>
 
-        <form method="post" id="project-qdjango-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
-            {% if form.errors %}
-                <div class="row">
-                    <div class="col-md-12">
-                    <div class="alert alert-danger alert-dismissable">
-                        <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                            {% trans 'Some errors on form. Check it and send again.' %}
-                      </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% crispy form %}
-            {% g3wadmin_add_button_form %}
-        </form>
+</div>
 {% endblock %}

@@ -73,44 +73,69 @@
     // for load page
     $(document).ready(checking_user_properties);
 
-    /*initUploadFields(
-      document.getElementById("user-form")
-   );*/
 </script>
 {% endblock %}
 
 
 {% block page_header %}
-<h1>
-    {% trans 'System users' %}
-    <small>{% trans 'System users list and property' %}</small>
-</h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        <i class="fa fa-user"></i>
+        {% if form.instance.pk %}{% trans 'Edit user' %}{% else %}{% trans 'New user' %}{% endif %}
+      </h1>
+      <p>
+        {% if form.instance.pk %}
+          {{ form.instance.username }}{% if form.instance.email %} &mdash; <em>{{ form.instance.email }}</em>{% endif %}
+        {% else %}
+          {% trans 'Create a new system user, assign roles, groups and permissions.' %}
+        {% endif %}
+      </p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <a href="{% url 'user-list' %}" class="hero-back">
+        <i class="fa fa-arrow-left"></i> {% trans 'Back to users' %}
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block main_content %}
+
+<div class="form-shell" id="user-form-shell">
+
     {% if SETTINGS.ENABLE_TWO_FACTOR_AUTH and form.instance.pk %}
-    <div class="row">
-        <div class="col-md-12">
-        <div class="box box-info">
-        <div class="box-body"> 
+    <div class="form-summary">
+        <div class="form-summary-info">
+            <i class="fa fa-shield"></i>
+            <div>
+                <strong>{% trans 'Two factor authentication' %}</strong>
+                <span>{% trans 'Configure or review the second authentication factor.' %}</span>
+            </div>
+        </div>
+        <div class="form-summary-actions">
             <a href="{% url 'two_factor:setup' %}" class="btn btn-default btn-flat">
-                <i class="fa fa-shield"></i> {% trans "Manage two factor authentication" %}
+                <i class="fa fa-shield"></i> {% trans 'Manage 2FA' %}
             </a>
         </div>
     </div>
     {% endif %}
-    <form method="post" id="user-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
+
+    <form method="post" id="user-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
         {% if form.errors %}
-            <div class="row">
-                <div class="col-md-12">
-                <div class="alert alert-danger alert-dismissable">
-                    <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                        {% trans 'Some errors on form. Check it and send again.' %}
-                    </div>
+            <div class="form-alert form-alert-error">
+                <i class="fa fa-exclamation-triangle"></i>
+                <div>
+                    <strong>{% trans 'Some errors on form' %}</strong>
+                    <span>{% trans 'Check the highlighted fields and submit again.' %}</span>
                 </div>
             </div>
         {% endif %}
         {% crispy form %}
         {% g3wadmin_add_button_form %}
     </form>
+
+</div>
 {% endblock %}

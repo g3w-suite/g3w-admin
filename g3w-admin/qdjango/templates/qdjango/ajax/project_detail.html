@@ -43,6 +43,14 @@
                                 <h4>{% trans 'Qgis project Version:' %}</h4>
                                 <span>{{ object.qgis_version }}</span>
                             </li>
+                            {% if object.url_alias %}
+                            <li>
+                                <h4>{% trans 'URL alias:' %}</h4>
+                                <a href="{% url 'group-project-map-alias' object.url_alias %}" target="_blank">
+                                    <i class="fa fa-link"></i> /map/{{ object.url_alias }}
+                                </a>
+                            </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="row">
+<div class="row form-buttons">
     <div class="col-md-12">
         {% if save %}
         <button class="btn btn-lg btn-success" type="submit">
@@ -15,3 +15,34 @@
         {% endif %}
     </div>
 </div>
+<script>
+(function(){
+    function init() {
+        var bar = document.querySelector('.form-buttons');
+        var footer = document.querySelector('.main-footer');
+        if (!bar || !footer) return;
+        function adjust() {
+            var rect = footer.getBoundingClientRect();
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            var overlap = Math.max(0, vh - rect.top);
+            bar.style.bottom = overlap + 'px';
+        }
+        // Listen on window AND on AdminLTE content scrollers (if any).
+        window.addEventListener('scroll', adjust, { passive: true });
+        window.addEventListener('resize', adjust);
+        document.querySelectorAll('.content-wrapper, .wrapper').forEach(function(el){
+            el.addEventListener('scroll', adjust, { passive: true });
+        });
+        adjust();
+        // Re-adjust shortly after init to account for late layout shifts
+        // (web fonts, sidebar toggle animation, etc.).
+        setTimeout(adjust, 150);
+        setTimeout(adjust, 600);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>

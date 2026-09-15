@@ -812,43 +812,97 @@ _.extend(g3wadmin.widget, {
                 throw new Error('Attribute data-api-url not defined');
             }
 
-            // ajax call to get deatail data
+            // Icon map per service type
+            const SERVICE_ICONS = {
+                'WMS':  'fa-globe',
+                'WMTS': 'fa-th',
+                'WFS':  'fa-database',
+                'WCS':  'fa-image',
+                'TMS':  'fa-th-large'
+            };
+
+            // ajax call to get detail data
              $.ajax({
                  method: 'get',
                  url: params['api-url'],
                  success: function (res) {
-                    // build modal body content
 
-                     const $body = $('<div>');
+                    const $body = $('<div class="webservices-modal">');
 
-                     _.map(res['data'], function(dt, key) {
-                         $body.append($('<h3>').html(key));
+                    _.map(res['data'], function(dt, key) {
 
-                         switch(key) {
-                            case 'TMS':
-                                const $u = $('<ul>');
-                                $.each(dt, function() { $u.append($('<li><i>'+this['name']+'</i>: '+this['url']+'/{z}/{x}/{y}.png<br/>'+gettext('Access')+': free</li>')) });
-                                $body.append($u);
-                                break;
-                            default:
-                                const access = ('free' === dt['access'])
-                                    ? '<i class="fa fa-unlock-alt" style="color: green;"></i> ' + dt['access']
-                                    : '<i class="fa fa-lock" style="color: red;"></i> ' + dt['access'];
-                                const alias = (_.has(dt, 'alias'))
-                                    ? '<br>ALIAS URL:<a href="' + dt['alias'] + '" target="_blank">' + dt['alias']
-                                    : '';
-                                const URL = 'URL:<a href="' + dt['url'] + '" target="_blank">' + dt['url'] + '</a>' + alias + '<br>' + gettext('Access') + ': ' + access;
-                                $body.append($('<p>').html(URL));
-                                break;    
+                        const iconClass = SERVICE_ICONS[key] || 'fa-cogs';
+                        const $card = $('<div class="ws-card">');
 
-                         }
-                     });
+                        const $head = $('<div class="ws-head">').appendTo($card);
+                        $head.append('<span class="ws-icon"><i class="fa ' + iconClass + '"></i></span>');
+                        $head.append('<h4 class="ws-title">' + _.escape(key) + '</h4>');
+
+                        const $body2 = $('<div class="ws-body">').appendTo($card);
+
+                        if (key === 'TMS') {
+                            $.each(dt, function() {
+                                const tmsUrl = this['url'] + '/{z}/{x}/{y}.png';
+                                const $row = $('<div class="ws-row">');
+                                $row.append('<div class="ws-row-name"><i class="fa fa-map-o"></i> ' + _.escape(this['name']) + '</div>');
+                                $row.append(
+                                    '<div class="ws-row-urls">' +
+                                        '<div class="ws-url"><span class="ws-url-label">URL</span>' +
+                                            '<a href="' + this['url'] + '" target="_blank" title="' + tmsUrl + '">' +
+                                                _.escape(tmsUrl) +
+                                            '</a>' +
+                                        '</div>' +
+                                    '</div>'
+                                );
+                                $row.append(
+                                    '<div class="ws-access ws-access-free">' +
+                                        '<i class="fa fa-unlock-alt"></i> ' + gettext('Access') + ': free' +
+                                    '</div>'
+                                );
+                                $body2.append($row);
+                            });
+                        } else {
+                            const isFree = ('free' === dt['access']);
+                            const accessClass = isFree ? 'ws-access-free' : 'ws-access-locked';
+                            const accessIcon = isFree ? 'fa-unlock-alt' : 'fa-lock';
+
+                            const $row = $('<div class="ws-row">');
+
+                            const $urls = $('<div class="ws-row-urls">').appendTo($row);
+                            $urls.append(
+                                '<div class="ws-url"><span class="ws-url-label">URL</span>' +
+                                    '<a href="' + dt['url'] + '" target="_blank" title="' + _.escape(dt['url']) + '">' +
+                                        _.escape(dt['url']) +
+                                    '</a>' +
+                                '</div>'
+                            );
+                            if (_.has(dt, 'alias') && dt['alias']) {
+                                $urls.append(
+                                    '<div class="ws-url ws-url-alias"><span class="ws-url-label">ALIAS</span>' +
+                                        '<a href="' + dt['alias'] + '" target="_blank" title="' + _.escape(dt['alias']) + '">' +
+                                            _.escape(dt['alias']) +
+                                        '</a>' +
+                                    '</div>'
+                                );
+                            }
+
+                            $row.append(
+                                '<div class="ws-access ' + accessClass + '">' +
+                                    '<i class="fa ' + accessIcon + '"></i> ' + gettext('Access') + ': ' + _.escape(dt['access']) +
+                                '</div>'
+                            );
+
+                            $body2.append($row);
+                        }
+
+                        $body.append($card);
+                    });
 
                     // open modal to show detail data
                     const modal = ga.ui.buildDefaultModal({
                         modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('WEB Services') : params['modal-title'])),
                         modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size']),
-                        modalBody: $body.html(),
+                        modalBody: $body.prop('outerHTML'),
                         closeButtonText: gettext('Close'),
                         confirmButton: false
                     });
