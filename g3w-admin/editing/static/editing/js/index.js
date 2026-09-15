@@ -48,6 +48,8 @@ new (class extends Plugin {
     /**
      * Global plugin state
      *
+     * @listens mapcontrol:toggled
+     * 
      * @since g3w-client-plugin-editing@v3.8.0
      */
     this.state = {
@@ -123,7 +125,7 @@ new (class extends Plugin {
    * @param {Function} cbk Event handler.
    *
    * @returns {void}
-   *
+   * 
    * @since g3w-client-plugin-editing@v3.x
    */
   subscribe(evt, cbk) { this.on(evt, cbk); }
@@ -196,6 +198,11 @@ new (class extends Plugin {
    *
    * @returns {Promise<void>} Resolves when plugin initialization is complete.
    *
+   * @listens setOpen
+   * @listens addActionsForLayers
+   * @listens layer:context-menu
+   * @listens map:context-menu
+   * 
    * @since g3w-client-plugin-editing@v3.8.0
    */
   async #init() {
@@ -670,6 +677,10 @@ new (class extends Plugin {
    * toolbox, or merge changes into local storage while the application is offline.
    *
    * @since g3w-client-plugin-editing@v3.8.0
+   * 
+   * @fires commit:done
+   * @fires commit
+   * @fires commit:error
    */
   async commit({
     toolbox,
@@ -1382,6 +1393,11 @@ new (class extends Plugin {
    *
    * @returns {Promise<void>} Resolves after the editing form is opened.
    * Features locked by another user are reported to the user and are not opened.
+   * 
+   * @listens closeeditingpanel
+   * @fires Tool#settoolsoftool
+   * @fires Tool#active
+   * @fires Tool#deactive
    */
   async editFeature({ layer, feature } = {}) {
 

@@ -243,6 +243,8 @@ export class ToolBox extends Emitter {
    *
    * @param {object} _layer Layer instance being edited.
    * @param {object} _config Editing configuration for the layer.
+   *
+   * @listens start-editing
    */
   constructor(_layer, _config) {
     super();
@@ -2101,6 +2103,10 @@ export class ToolBox extends Emitter {
    * 
    * @returns {Promise<unknown>} Data from the feature-loading step once the
    * editing session is ready.
+   * 
+   * @listens ol.View#change:resolution
+   * @listens ol.Map#click
+   * @fires start-editing
    */
   async start(options = {}) {
     let features;
@@ -2283,6 +2289,8 @@ export class ToolBox extends Emitter {
    * layers when the current layer participates in relation-based editing.
    *
    * @returns {Promise<*>} Result of the stop operation.
+   * 
+   * @fires stop-editing
    */
   async stop() {
 
@@ -2796,6 +2804,8 @@ export class ToolBox extends Emitter {
    * @param {object} tool Tool instance to activate.
    * 
    * @returns {Promise<void>} Resolution of the activation lifecycle.
+   * 
+   * @listens Tool#settoolsoftool
    */
   async setActiveTool(tool) {
 
@@ -2919,6 +2929,8 @@ export class ToolBox extends Emitter {
    * @returns {Promise<string|number>} The transaction identifier used for the history entry.
    * 
    * @since g3w-client-plugin-editing@v3.8.0
+   * 
+   * @fires Tool#stop
    */
   __add(uniqueId, items) {
     //state object is an array of feature/features changed in a transaction
@@ -3521,6 +3533,8 @@ export class ToolBox extends Emitter {
    * @param {Object} [options={}] Session start options.
    * 
    * @returns {Promise<*>} Results from the session initialization process.
+   * 
+   * @listens ol.Map#moveend
    */
   async __startSession(options = {}) {
     try {
@@ -3581,6 +3595,8 @@ export class ToolBox extends Emitter {
 
   /**
    * Stop session
+   *
+   * @fires stop-editing
    */
   async __stopSession() {
     try {
@@ -4166,6 +4182,9 @@ export class ToolBox extends Emitter {
   /**
    * attach layer widgets event: get data from api when a field of a layer
    * is related to a wgis form widget (ex. relation reference, value map, etc..)
+   * 
+   * @listens start-editing
+   * @fires editing#autocomplete
    */
   #onEditingStart() {
 
