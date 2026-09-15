@@ -310,7 +310,6 @@ export class ToolBox extends Emitter {
     this._editor = Object.assign(new Emitter, {
       _layer,
       setters: {
-        save:                       () => _layer.save(),
         addFeature:                 f => this._collection.add(f),
         updateFeature:              f => this._featuresstore.updateFeature(f),
         deleteFeature:              f => this._featuresstore.deleteFeature(f),
