@@ -103,6 +103,36 @@ export class Tool extends Emitter {
   #userMessageSteps = {};
 
   /**
+   * Tools exposed by the current step through the tool-of-tools event.
+   *
+   * @type {string[]}
+   * 
+   * @since g3w-client-editing@v3.8.0
+   */
+  _toolsoftool = [];
+
+  /**
+   * Tools disabled while this tool is active.
+   *
+   * @type {string[]}
+   */
+  disabledtoolsoftools = [];
+
+  /**
+   * Whether the tool is currently executing a flow.
+   *
+   * @type {boolean}
+   */
+  active = false;
+
+  /**
+   * Message associated with the current tool operation.
+   *
+   * @type {string|null}
+   */
+  message = null;
+
+  /**
   * @param {Object} [options={}] Tool configuration.
   * @param {string} [options.id] Identifier used by the toolbox.
   * @param {string} [options.name] Display name or translation key.
@@ -160,32 +190,11 @@ export class Tool extends Emitter {
     this.enable = options?.enable ?? true;
 
     /**
-     * Tools disabled while this tool is active.
-     *
-     * @type {string[]}
-     */
-    this.disabledtoolsoftools = [];
-
-    /**
      * Whether the tool is currently enabled in the toolbox.
      *
      * @type {boolean}
      */
     this.enabled = !!options?.enabled;
-
-    /**
-     * Whether the tool is currently executing a flow.
-     *
-     * @type {boolean}
-     */
-    this.active = false;
-
-    /**
-     * Message associated with the current tool operation.
-     *
-     * @type {string|null}
-     */
-    this.message = null;
 
     /**
      * Prevents the tool from stopping the active edit session when enabled.
@@ -229,15 +238,6 @@ export class Tool extends Emitter {
      * @type {string|null}
      */
     this.backbuttonlabel = options?.backbuttonlabel || null; 
-
-    /**
-     * Tools exposed by the current step through the tool-of-tools event.
-     *
-     * @type {string[]}
-     * 
-     * @since g3w-client-editing@v3.8.0
-     */
-    this._toolsoftool = [];
 
     /**
      * @since g3w-client-editing@v3.8.0
