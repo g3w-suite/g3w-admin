@@ -1740,35 +1740,24 @@ export class ToolBox extends Emitter {
    * Computes the planar offset between a clicked coordinate and the reference
    * point used by the current geometry action.
    *
+   * This helper unwraps nested coordinate structures such as Polygon rings or
+   * multi-part geometries until it reaches a single pair of x/y values.
+   *
    * @param {Object} [params={}] Geometry delta payload.
    * @param {number} [params.x] Target x coordinate.
    * @param {number} [params.y] Target y coordinate.
    * @param {Array|number[]} [params.coordinates] Original coordinate tuple used as anchor.
-   * 
+   *
    * @returns {{ x: number, y: number }} Offset applied to the selected geometry.
    */
   #getDelta({ x, y, coordinates } = {}) {
-    const coords = this.#unwrapCoordinates(coordinates);
+    let curr = coordinates;
+    while (Array.isArray(curr?.[0])) {
+      curr = curr[0];
+    }
     return {
-      x: x - coords.x,
-      y: y - coords.y
-    };
-  }
-
-  /**
-   * Normalizes a coordinate array into a flat point object.
-   *
-   * This helper unwraps nested coordinate structures such as Polygon rings or
-   * multi-part geometries until it reaches a single pair of x/y values.
-   *
-   * @param {Array|number[]} coords Coordinate structure to unwrap.
-   * 
-   * @returns {{ x: number, y: number }} Plain coordinate pair.
-   */
-  #unwrapCoordinates(coords) {
-    return Array.isArray(coords[0]) ? this.#unwrapCoordinates(coords[0]) : {
-      x: coords[0],
-      y: coords[1]
+      x: x - curr?.[0],
+      y: y - curr?.[1]
     };
   }
 
@@ -3454,7 +3443,9 @@ export class ToolBox extends Emitter {
       console.warn(e);
       return Promise.reject(e);
     } finally {
-      if (!options.registerEvents) { return }
+      if (!options.registerEvents) {
+        return;
+      }
       this.state._getFeaturesOption = options;
       // register get features event (only in case filter bbox)
       if (('vector' === this.state._layerType) && this.state._getFeaturesOption.filter.bbox) {
