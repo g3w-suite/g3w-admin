@@ -2888,48 +2888,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Adds a new transaction state to the current history stack.
-   *
-   * Each history entry captures the list of changes produced by a single action,
-   * keeping a stable point for undo/redo operations and for commit generation.
-   *
-   * @param {string|number} uniqueId Unique transaction identifier.
-   * @param {Array} items Session items produced by the current action.
-   *
-   * @returns {Promise<string|number>} The transaction identifier used for the history entry.
-   * 
-   * @fires Tool#stop
-   */
-  #addHistoryState(uniqueId, items) {
-    //state object is an array of feature/features changed in a transaction
-    return new Promise((resolve) => {
-      // before insert an item into the history
-      // check if are at last state step (no redo was done)
-      // If we are in the middle of undo, delete all changes
-      // in the history from the current "state" so if it
-      // can create a new history
-      if (null === this.state.editing.session.current) {
-        this.#states = [{ id: uniqueId, items }];
-      } else {
-        //last state
-        if (this.#states.length > 0 && this.state.editing.session.current < this.#states.at(-1).id) {
-          this.#states = this.#states.filter(s => s.id <= this.state.editing.session.current);
-        }
-        this.#states.push({ id: uniqueId, items });
-      }
-
-      this.state.editing.session.current = uniqueId;
-      // set internal state
-      this.#updateUndoAvailability();
-      this.#updateCommitAvailability();
-      this.#updateRedoAvailability();
-      // return unique id key
-      // it can be used in save relation
-      resolve(uniqueId);
-    })
-  }
-
-  /**
    * Reverts the last applied transaction in the current history stack.
    *
    * The method resolves the current state, computes the set of items to restore,
@@ -3131,22 +3089,48 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Save temporary changes to the layer in history instance and feature store
-   * 
-   * @param options
+   * Moves pending session changes into the undo/redo history.
+   *
+   * If the history cursor is at its initial position, the pending changes
+   * start a new history branch. Otherwise, any states ahead of the cursor are
+   * discarded before the new state is appended.
+   *
+   * @param {Object} [options={}] Save options.
+   * @param {string|number} [options.id] Explicit history state identifier.
+   * @returns {Promise<Array<string|number>|null>} New state id, or `null` when there are no pending changes.
    */
   async #saveChanges(options = {}) {
-    // add temporary modify to history
-    if (this.state.editing.session.changes.length > 0) {
-      //  get array of uniqueIds. Case of modify vertex. Multi changes in one save
-      const uniqueId = options.id || Date.now();
-      await this.#addHistoryState(uniqueId, this.state.editing.session.changes);
-      // clear to temporary changes
-      this.state.editing.session.changes = [];
-      return [uniqueId];
+    // no changes
+    if (!this.state.editing.session.changes.length) {
+      return null;
     }
-    return null;
-    
+
+    const id    = options.id || Date.now();
+    const items = this.state.editing.session.changes;
+    const isNew = null === this.state.editing.session.current;
+
+    if (isNew) {
+      this.#states = [{ id, items }];
+    }
+
+    if (!isNew && this.#states.length > 0 && this.state.editing.session.current < this.#states.at(-1).id) {
+      this.#states = this.#states.filter(s => s.id <= this.state.editing.session.current);
+    }
+
+    if (!isNew) {
+      this.#states.push({ id, items });
+    }
+
+    this.state.editing.session.current = id;
+
+    this.#updateUndoAvailability();
+    this.#updateCommitAvailability();
+    this.#updateRedoAvailability();
+
+    // reset changes
+    this.state.editing.session.changes = [];
+
+    return [id];
   }
 
   /**
