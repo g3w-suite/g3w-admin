@@ -243,7 +243,7 @@ new (class extends Plugin {
       const comp = this.createSideBarComponent({}, {
         id:          'editing',
         collapsible: false,
-        sidebarOptions: { position: 'tools' },
+        sidebarOptions: { position: 'catalog' },
         title:       this.config.name,
         offline:     false,
         icon:        'pencil',
