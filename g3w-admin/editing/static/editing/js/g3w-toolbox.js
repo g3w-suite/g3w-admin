@@ -348,10 +348,7 @@ export class ToolBox extends Emitter {
 
     // Check if layer has "relation layers" that are editable
     const editable_relations = layer.getRelations().getArray()
-      .filter(relation => {
-        const l = getCatalogLayerById(getRelationId({ layerId: layer.getId(), relation }));
-        return l && l.isEditable();
-      });
+      .filter(relation => getCatalogLayerById(getRelationId({ layerId: layer.getId(), relation }))?.isEditable?.());
 
     this._session = Object.assign(new Emitter({ setters: {
       start:                        this.#startSession.bind(this),
