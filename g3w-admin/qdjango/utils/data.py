@@ -1647,7 +1647,7 @@ class QgisProject(XmlData):
         :param instance: Project instance
         """
 
-        self.clean()
+        #self.clean()
 
         with transaction.atomic():
 
