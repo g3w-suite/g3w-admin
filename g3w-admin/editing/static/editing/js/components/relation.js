@@ -354,14 +354,15 @@ export default ({
         <!-- PAGINATION BUTTONS -->
         <div style = "margin-left: auto;" >
           <select
+            v-if            = "pages > 1"
             v-model         = "search.page"
             style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
-            v-t-tooltip:top = "search.page + $t(' of ') + pages"
+            v-t-tooltip:top = "pages ? search.page: 0 + $t(' of ') + pages" 
             data-placement  = "top"
           >
             <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
           </select>
-          {{ $t(' of ') + pages }}
+          {{ pages ? search.page : 0 }}{{ $t(' of ') }}{{ pages }}
           <button 
             v-if           = "pages > 1" 
             title          = "Backward" 
