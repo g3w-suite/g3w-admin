@@ -21,7 +21,7 @@ export class PickFeaturesInteraction extends ol.interaction.Pointer {
 
     const featuresAtPixel = ({ pixel, map } = {}) => map.getFeaturesAtPixel(pixel, {
       layerFilter:  l => opts.layer === l,
-      hitTolerance: (isMobile && isMobile.any) ? 10 : 0,
+      hitTolerance: isMobile?.any ? 10 : 0,
     });
 
     super({

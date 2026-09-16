@@ -592,7 +592,7 @@ export default ({
           // edit attributes
           this.capabilities.includes('change_attr_feature') && {
             state: Vue.observable({
-              icon:   'editAttributes.png',
+              icon:   'mActionEditTable.svg',
               id:     `${id}_editattributes`,
               name:   'editing.tools.update_feature',
               enabled: true,
@@ -604,7 +604,7 @@ export default ({
           // @since 3.9.0 copy featureonly for table layer
           'table' === this._layerType && this.capabilities.includes('add_feature') && {
             state: Vue.observable({
-              icon:   'pasteFeaturesFromOtherLayers.png',
+              icon:   'mActionEditPaste.svg',
               id:     `${id}_copyfeature`,
               name:   'editing.tools.copy',
               enabled: true,
@@ -616,7 +616,7 @@ export default ({
           // delete feature
           this.capabilities.includes('delete_feature') && {
             state: Vue.observable({
-              icon:   'deleteTableRow.png',
+              icon:   'mActionDeleteTable.svg',
               id:     `${id}_deletefeature`,
               name:   'editing.tools.delete_feature',
               enabled: true,
