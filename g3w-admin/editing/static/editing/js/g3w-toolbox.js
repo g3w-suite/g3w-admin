@@ -307,24 +307,6 @@ export class ToolBox extends Emitter {
       setFeatures:           (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
     });
 
-    this._editor = Object.assign(new Emitter, {
-      setters: {
-        addFeature:                 f => this._collection.add(f),
-        updateFeature:              f => this._featuresstore.updateFeature(f),
-        deleteFeature:              f => this._featuresstore.deleteFeature(f),
-        setFeatures:               (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
-        getFeatures:               this.#requestFeatures.bind(this),
-      },
-      addFeature:          f => this._featuresstore.addFeature(f),
-      isStarted:           () => this.#started,
-      getEditingSource:    this.getEditingSource.bind(this),
-      getSource:           () => this._featuresstore,
-      commit:              this.#commitToEditor.bind(this),
-      start:               this.#startEditor.bind(this),
-      stop:                this.#stopEditor.bind(this),
-      clear:               this.#clearEditor.bind(this),
-    });
-
     // Set editing layer color and toolbox style
     if (!layer.getColor()) {
       layer.setColor(layer.isGeoLayer() ? [
@@ -381,7 +363,6 @@ export class ToolBox extends Emitter {
       getId:                        () => layer.getId(),
       getLastHistoryState:          this.getLastHistoryState.bind(this),
       isStarted:                    this.isSessionStarted.bind(this),
-      getEditor:                    this.getEditor.bind(this),
       push:                         this.#pushChange.bind(this),
       pushDelete:                   this.pushDelete.bind(this),
       save:                         this.#saveChanges.bind(this),
@@ -2792,15 +2773,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Returns the editor runtime used by the underlying layer.
-   *
-   * @returns {object} Layer editor instance.
-   */
-  getEditor() {
-    return this._editor;
-  }
-
-  /**
    * Resets the toolbox UI to the original default configuration.
    *
    * This method clears tool constraints and restores the default title,
@@ -3476,7 +3448,7 @@ export class ToolBox extends Emitter {
    */
   async #getFeatures(options = {}) {
     try { 
-      const features = await this._editor.getFeatures(options);
+      const features = await this.#requestFeatures(options);
       this.state.editing.session.getfeatures = true;
       return features;
     } catch(e) {
@@ -3933,10 +3905,13 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * start editing
+   * Start editing session for the current layer.
+   *
+   * @param {Object} options - Options for starting the editor.
+   * @returns {Array} Loaded features for the layer.
    */
   async #startEditor(options = {}) {
-    const features = await this._editor.getFeatures(options); // load layer features based on filter type
+    const features = await this.#requestFeatures(options); // load layer features based on filter type
     this.#started  = true; // if all ok set to started
     return features;       // features are already inside featuresstore
   }

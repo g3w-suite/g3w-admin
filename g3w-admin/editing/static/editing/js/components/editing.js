@@ -279,7 +279,7 @@ export default ({
             .forEach(id => {
               const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
               // set original features get from server without changes
-              toolbox.getEditor().getEditingSource().setFeatures((toolbox.getEditor().readFeatures() || []).map(f => f.clone()));
+              toolbox.getEditingSource().setFeatures((toolbox.readFeatures() || []).map(f => f.clone()));
               toolbox.clearHistory();   // clear history of a layer (no changes)
               toolbox.stopActiveTool(); // stop eventually active tool
             });
