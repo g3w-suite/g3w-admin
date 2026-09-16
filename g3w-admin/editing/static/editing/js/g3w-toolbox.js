@@ -2451,7 +2451,7 @@ export class ToolBox extends Emitter {
           reject(response);
           return;
         }
-      
+
         this.clearHistory();
 
         // After commit get new unique values
@@ -2955,9 +2955,13 @@ export class ToolBox extends Emitter {
         return true;
       }
     })
+    
     // set internal state
     this.#updateUndoAvailability();
-    this.#updateCommitAvailability();
+    
+    // update commit availability
+    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+    
     this.#updateRedoAvailability();
     return items;
   }
@@ -2987,36 +2991,15 @@ export class ToolBox extends Emitter {
       })
     }
     items = this.#checkSessionItems(this.state.id, items, 1);
+
     // set internal state
     this.#updateUndoAvailability();
-    this.#updateCommitAvailability();
+
+    // update commit availability
+    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+
     this.#updateRedoAvailability();
     return items;
-  }
-
-  /**
-   * Returns the history snapshot associated with a specific transaction id.
-   *
-   * @param {string|number} id Transaction identifier.
-   * 
-   * @returns {Object|undefined} Matching state entry or undefined when absent.
-   */
-  #getHistoryState(id) {
-    return this.#states.find(s => id === s.id);
-  }
-
-  /**
-   * @returns { boolean } true if we can commit
-   */
-  #updateCommitAvailability() {
-    const checkCommitItems = this.#buildCommitItems();
-    let canCommit          = false;
-    for (let layerId in checkCommitItems) {
-      const commitItem = checkCommitItems[layerId];
-      canCommit        = canCommit || commitItem.length > 0;
-    }
-    this.#constrains.commit = canCommit;
-    return this.#constrains.commit;
   }
 
   /**
@@ -3180,7 +3163,10 @@ export class ToolBox extends Emitter {
     this.state.editing.session.current = id;
 
     this.#updateUndoAvailability();
-    this.#updateCommitAvailability();
+
+    // update commit availability
+    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+
     this.#updateRedoAvailability();
 
     // reset changes
@@ -3321,7 +3307,8 @@ export class ToolBox extends Emitter {
   undo(items) {
     items = items || this.#undoHistory();
     this.#applyChanges(items.own, true);
-    this.#updateCommitAvailability();
+    // update commit availability
+    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
     return items.dependencies;
   }
 
@@ -3331,7 +3318,8 @@ export class ToolBox extends Emitter {
   redo(items) {
     items = items || this.#redoHistory();
     this.#applyChanges(items.own, true);
-    this.#updateCommitAvailability();
+    // update commit availability
+    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
     return items.dependencies;
   }
 
