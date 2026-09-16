@@ -351,7 +351,7 @@ export default ({
       if (ok) {
         const i    = this.features.findIndex(f => uid === f.getUid());
         const feat = this.features[i];
-        this.inputs.layer.getEditor().getEditingSource().removeFeature(feat);
+        GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getEditingSource().removeFeature(feat);
         this.context.session.pushDelete(this.inputs.layer.getId(), feat);
         this.rows.splice(i, 1);
       }
@@ -453,7 +453,7 @@ export default ({
       try {
         //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
         //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
-        this.features  = await this.context.session.getEditor().getFeatures({
+        this.features  = await this.context.session.getFeatures({
           filter: {
             pagination: {
               page:      this.search.page,
