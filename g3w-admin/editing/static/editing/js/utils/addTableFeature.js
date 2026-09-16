@@ -17,9 +17,9 @@ export async function addTableFeature(inputs, context) {
 
   feature.setTemporaryId();
 
-  GUI.getPlugin('editing').getToolBoxById(inputs.layer.getId()).getEditingSource().addFeature(feature);
+  GUI.getPlugin('editing').getToolBoxById(context.id).getEditingSource().addFeature(feature);
 
-  context.session.pushAdd(inputs.layer.getId(), feature, false);
+  GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(inputs.layer.getId(), feature, false);
 
   inputs.features.push(feature);
 

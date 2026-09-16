@@ -33,15 +33,6 @@ export class Tool extends Emitter {
   };
 
   /**
-   * Return the session associated with the current tool context.
-   *
-   * @returns {unknown} Current editing session.
-   */
-  get session() {
-    return this.getSession();
-  }
-
-  /**
    * Promise controls the currently running tool flow.
    *
    * @type {{resolve: Function, reject: Function}|null}
@@ -138,7 +129,7 @@ export class Tool extends Emitter {
   * @param {boolean} [options.runOnce=false] Whether the tool runs only once.
   * @param {string} [options.backbuttonlabel] Label for a child-tool back button.
   * @param {boolean} [options.enabled=false] Initial enabled state.
-  * @param {boolean} [options.disableEdit=false] Prevent stopping the edit session.
+  * @param {boolean} [options.disableEdit=false] Prevent stopping the edit .
   * @param {boolean|Function} [options.visible=true] Whether the tool is visible.
   * @param {string} [options.helpMessage] Initial help-message translation key.
   * @param {boolean} [options.registerEscKeyEvent=false] Bind Escape to reject the flow.
@@ -190,7 +181,7 @@ export class Tool extends Emitter {
     this.enabled = !!options?.enabled;
 
     /**
-     * Prevents the tool from stopping the active edit session when enabled.
+     * Prevents the tool from stopping the active edit when enabled.
      *
      * @type {boolean}
      */
@@ -745,13 +736,7 @@ export class Tool extends Emitter {
     return this.getInputs().layer;
   }
 
-  /**
-   * @returns {unknown} Session from the current context.
-   */
-  getSession() {
-    return this.getContext().session;
-  }
-
+  
   /**
    * Reject the active flow when Escape is released.
    * 

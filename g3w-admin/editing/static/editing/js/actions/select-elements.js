@@ -139,7 +139,6 @@ export class SelectElementsStep extends Step {
         const geometryType     = layer.getGeometryType();
         const layerId          = layer.getId();
         const source           = getEditingLayer(layer).getSource();
-        const { session }      = this.getContext();
         interactions.external  = new PickFeaturesInteraction({
           layers: GUI.getExternalLayers()
             // filter external layer only vector - Exclude the
@@ -178,7 +177,7 @@ export class SelectElementsStep extends Step {
             removeZValue({ feature }); // remove eventually Z Values
             feature.setTemporaryId();
             source.addFeature(feature);
-            session.pushAdd(layerId, feature, false);
+            GUI.getPlugin('editing').getToolBoxById(this.getContext().id).pushAdd(layerId, feature, false);
             inputs.features.push(feature);
             resolve(inputs);
           });

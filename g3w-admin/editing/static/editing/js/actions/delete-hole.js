@@ -47,7 +47,7 @@ export class DeleteHoleStep extends Step {
         (/^Multi(LineString|Polygon|Point|Line)/i.test(geom.getType()) ? coords[fh.get('polygonIndex')] : coords).splice(fh.get('holeIndex'), 1);
         geom.setCoordinates(coords);
         feature.setGeometry(geom);
-        context.session.pushUpdate(inputs.layer.getId(), feature, oldFeat);
+        GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(inputs.layer.getId(), feature, oldFeat);
       });
       resolve(inputs);
     }

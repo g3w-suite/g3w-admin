@@ -256,11 +256,11 @@ export class OpenFormStep extends Step {
                         task.getInputs().relationFeatures = { newFeatures, originalFeatures: task._originalFeatures };
                       }
                       await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task._originalFeatures });
-                      newFeatures.forEach((f, i) => task.getContext().session.pushUpdate(task.layerId, f, task._originalFeatures[i]));
+                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.layerId, f, task._originalFeatures[i]));
                       await _handleRelation1_1LayerFields({ layerId: task.layerId, features: newFeatures, fields, task });
                       GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
                       GUI.getPlugin('editing').emit(`savedfeature_${task.layerId}`, newFeatures); // called after saved using layerId
-                      task.getContext().session.save();
+                      GUI.getPlugin('editing').getToolBoxById(task.getContext().id).saveChanges();
                       return resolve();
                     }))
                 )
@@ -286,7 +286,7 @@ export class OpenFormStep extends Step {
                         service.force.update = false;
                       }
                       Object.entries(
-                        GUI.getPlugin('editing').getToolBoxById(t.getInputs().layer.getId()).getEditingSource().readFeatures()
+                        GUI.getPlugin('editing').getToolBoxById(t.getContext().id).getEditingSource().readFeatures()
                           .find(f => f.getUid() === feature.getUid()) //Find current form editing feature by unique id of feature uid
                           .getProperties() //get properties
                       )
@@ -367,7 +367,7 @@ export class OpenFormStep extends Step {
             
                 await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
 
-                newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
+                newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.layerId, f, this._originalFeatures[i]));
 
                 // check and handle if layer has relation 1:1
                 await _handleRelation1_1LayerFields({
@@ -382,7 +382,7 @@ export class OpenFormStep extends Step {
 
                 // sync parent tools when child is saved.
                 if (this._isContentChild) {
-                  Tool.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                  Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
                 }
               
                 GUI.setLoadingContent(false);
@@ -413,7 +413,7 @@ export class OpenFormStep extends Step {
                   [...Tool.Stack.items]
                     .reverse()
                     .filter(t => "function" === typeof t.getLastStep()._saveAll) // need to filter only tool that
-                    .map( t => t.getLastStep().getContext().session.undo())
+                    .map( t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo())
                 }
                 GUI.getPlugin('editing').emit('cancelform', inputs.features); // fire event cancel form to emit to subscribers
                 reject(inputs);
@@ -468,7 +468,6 @@ export class OpenFormStep extends Step {
       GUI.getPlugin('editing').emit('openform',
         {
           layerId: this.layerId,
-          session: context.session,
           feature: this._originalFeature,
           formService
         }
@@ -737,14 +736,14 @@ async function _handleRelation1_1LayerFields({
                 childFeature.set(childField, features[0].getId()); // set temporary
               }
 
-              //if new need to add to session
-              task.getContext().session.pushAdd(childLayerId, newChild, false);
+              //if new need to add 
+              GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushAdd(childLayerId, newChild, false);
 
             } else {
               //need to update source child feature
               source.updateFeature(newChild);
               //need to update
-              task.getContext().session.pushUpdate(childLayerId, newChild, childFeature);
+              GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(childLayerId, newChild, childFeature);
 
             }
           }

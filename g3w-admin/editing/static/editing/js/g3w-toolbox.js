@@ -11,7 +11,7 @@
  * - build the list of editing tools according to layer type, geometry and
  *   capabilities;
  * - load, track and expose editing features in the local feature store;
- * - manage session history for undo/redo and temporary pending changes;
+ * - manage history for undo/redo and temporary pending changes;
  * - coordinate the lifecycle of tool execution and stop/start editing events;
  * - serialize commit data for add, update, delete and relation operations.
  */
@@ -78,7 +78,6 @@ const toRawType  = value => Object.prototype.toString.call(value).slice(8, -1);
  * is shown in the UI, and exposes the local feature store used during editing.
  *
  * The class is responsible for:
- * - registering the layer in the global session registry;
  * - creating feature collections for the current layer;
  * - reacting to start/stop editing lifecycle events;
  * - tracking temporary and committed history states for undo/redo;
@@ -86,28 +85,19 @@ const toRawType  = value => Object.prototype.toString.call(value).slice(8, -1);
  *   server-side editing endpoint.
  */
 export class ToolBox extends Emitter {
-
-  /**
-   * Session registry keyed by layer id.
-   *
-   * Each active edit session is stored here so other parts of the application
-   * can resolve the current toolbox state for a given layer.
-   */
-  static _sessions = {};
-
   /**
    * High-level editing lifecycle:
    *
    * constructor() -> build layer metadata, feature store and tool list
    * start()       -> load features and enable editing interaction
-   * tool run      -> push temporary changes into session history
+   * tool run      -> push temporary changes into history
    * save()        -> serialize pending operations into a commit payload
    * stop()        -> release listeners, locks and derived resources
    */
 
   /**
    * Active abort controller for feature requests triggered by the current
-   * editing session.
+   * editing.
    *
    * @type {AbortController|null}
    */
@@ -144,7 +134,7 @@ export class ToolBox extends Emitter {
   constraints = { filter: null, show: null, tools: [] };
 
   /**
-   * Reactive flags describing whether the current session can perform commit,
+   * Reactive flags describing whether the current can perform commit,
    * undo and redo operations.
    *
    * @type {{ commit: boolean, undo: boolean, redo: boolean }}
@@ -152,7 +142,7 @@ export class ToolBox extends Emitter {
   #constrains  = { commit: false, undo: false, redo: false };
 
   /**
-   * Snapshot history for the current layer session.
+   * Snapshot history for the current layer.
    *
    * Each entry stores the change state associated with a transaction id and is
    * used by undo/redo flows to reconstruct previous versions of the feature set.
@@ -214,7 +204,7 @@ export class ToolBox extends Emitter {
   _features = [];
 
   /**
-   * Creates the editing toolbox and initializes the session state for a layer.
+   * Creates the editing toolbox and initializes the state for a layer.
    *
    * The constructor configures the editing metadata for the layer, builds the
    * associated feature store and instantiates
@@ -226,7 +216,7 @@ export class ToolBox extends Emitter {
    *
    * @listens start-editing
    */
-  constructor(_layer, _config) {
+  constructor(_layer, _config, index = 0) {
     super({});
 
     this.setters = [ 'featuresLockedByOtherUser' ];
@@ -310,7 +300,7 @@ export class ToolBox extends Emitter {
         "#3B3A73", "#9E5165", "#A51E22", "#261326", "#e4572e",
         "#29335c", "#f3a712", "#669bbc", "#eb6841", "#4f372d",
         "#cc2a36", "#00a0b0", "#00b159", "#f37735", "#ffc425",
-      ][Object.keys(ToolBox._sessions).length % 40] : '#fff');
+      ][index % 40] : '#fff');
     }
 
     //set vector layer source
@@ -342,33 +332,6 @@ export class ToolBox extends Emitter {
     const editable_relations = layer.getRelations().getArray()
       .filter(relation => getCatalogLayerById(getRelationId({ layerId: layer.getId(), relation }))?.isEditable?.());
 
-    this._session = Object.assign(new Emitter({ setters: {
-      start:                        this.#startSession.bind(this),
-      stop:                         this.#stopSession.bind(this),
-      getFeatures:                  this.#getFeatures.bind(this),
-      saveChangesOnServer:          this.saveChangesOnServer.bind(this),
-    }}), {
-      state:                        new Proxy({}, { get: (_, prop) => this.state.editing.session[prop] }),
-      getId:                        () => layer.getId(),
-      getLastHistoryState:          this.getLastHistoryState.bind(this),
-      isStarted:                    this.isSessionStarted.bind(this),
-      push:                         this.#pushChange.bind(this),
-      pushDelete:                   this.pushDelete.bind(this),
-      save:                         this.#saveChanges.bind(this),
-      pushAdd:                      this.pushAdd.bind(this),
-      pushUpdate:                   this.pushUpdate.bind(this),
-      rollback:                     this.rollback.bind(this),
-      undo:                         this.undo.bind(this),
-      redo:                         this.redo.bind(this),
-      getCommitItems:               this.getCommitItems.bind(this),
-      commit:                       this.save.bind(this),
-      clear:                        this.#clearSession.bind(this),
-      clearHistory:                 this.clearHistory.bind(this),
-    });
-
-    // register this session on session registry
-    ToolBox._sessions[layer.getId()] = this;
-
     /** @type { 'create' | 'update_attributes' | 'update_geometry' | delete' | undefined } undefined means all possible tools base on type */
     const capabilities = layer.state.editing.capabilities || [];
 
@@ -394,15 +357,13 @@ export class ToolBox extends Emitter {
       selected         : false,
       activetool       : null,
       editing          : {
-        session      : {
-          id:          new Proxy({}, { get: () => this.state.id }),
-          started:     false,
-          getfeatures: false,
-          /** current state of history (useful for undo /redo) */
-          current:     null,
-          /** temporary change not save on history */
-          changes:     [],
-        },
+        id:          new Proxy({}, { get: () => this.state.id }),
+        started:     false,
+        getfeatures: false,
+        /** current state of history (useful for undo /redo) */
+        current:     null,
+        /** temporary change not save on history */
+        changes:     [],
         history      : this.#constrains,
         on           : false,
         dependencies,
@@ -495,7 +456,7 @@ export class ToolBox extends Emitter {
                   relations.forEach(r => unlinkRelation({ layerId, relation, relations, index: 0, dialog: false }));
                 });
 
-                context.session.pushDelete(layerId, feature);
+                this.pushDelete(layerId, feature);
 
                 return inputs;
                 
@@ -810,7 +771,7 @@ export class ToolBox extends Emitter {
                   features = [];
                   //loop over father features to build a relation chiled feature
                   for (const f of inputs.features) {
-                    const feature = (await addTableFeature({ features: [], layer: rLayer }, { session: Tool.Stack.current.session })).features[0];
+                    const feature = (await addTableFeature({ features: [], layer: rLayer }, { id: Tool.Stack.current.getContext().id })).features[0];
                     fields.relationField.forEach((field, _i) => feature.set(fields.ownField[_i], f.get(field)));
                     features.push(feature);
                   }  
@@ -830,13 +791,13 @@ export class ToolBox extends Emitter {
                   ],
                 });
                 // get parent tool
-                const session = Tool.Stack.current.session;
+                const parerntLayerId = Tool.Stack.current.getContext().id;
                 try {
                   //set eventually unique values
                   await setLayerUniqueFieldValues(relationLayerId);
                   await tool.start({
                   context: {
-                    session,        
+                    id:             parerntLayerId,        
                     excludeFields:  fields.ownField, // array of fields to be excluded
                     isContentChild: false,           // force child to false
                   },
@@ -847,7 +808,7 @@ export class ToolBox extends Emitter {
                 });
                 } catch(e) {
                   console.warn(e);
-                  session.rollback();
+                  GUI.getPlugin('editing').getToolBoxById(parerntLayerId).rollback();
                 }
 
                 this.#stopTool(tool);
@@ -960,7 +921,6 @@ export class ToolBox extends Emitter {
                     const layerId          = originalLayer.getId();
                     //get attributes/properties from current layer in editing
                     const attributes       = (originalLayer.state.editing.fields || []).filter(a => !a.pk);
-                    const session          = context.session;
                     const editingLayer     = getEditingLayer(originalLayer);
                     const source           = editingLayer.getSource();
                     //set reactive
@@ -1083,7 +1043,7 @@ export class ToolBox extends Emitter {
                               removeZValue({ feature });
                               feature.setTemporaryId();
                               source.addFeature(feature);
-                              session.pushAdd(layerId, feature, false);
+                              GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(layerId, feature, false);
                               inputs.features.push(feature)
                               GUI.getPlugin('editing').emit('addfeature', feature)
                               resolve(inputs);
@@ -1203,7 +1163,6 @@ export class ToolBox extends Emitter {
                 }             = inputs;
                 const source  = getEditingLayer(layer).getSource();
                 const layerId = layer.getId();
-                const session = context.session;
                 const promise = new Promise((resolve, reject) => {
                   this.reject = reject;
                   this.addInteraction(
@@ -1233,10 +1192,10 @@ export class ToolBox extends Emitter {
                             .forEach(({ status, value:feature }) => {
 
                               /**
-                               * @todo improve client core to handle this situation on session.pushAdd not copy pk field not editable only
+                               * @todo improve client core to handle this situation on pushAdd not copy pk field not editable only
                                */
                               const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer, feature });
-                              const newFeature              = session.pushAdd(layerId, feature);
+                              const newFeature              = GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(layerId, feature);
                               // after pushAdd need to set not edit
                               if (Object.entries(noteditablefieldsvalues).length) {
                                 Object
@@ -1340,7 +1299,6 @@ export class ToolBox extends Emitter {
                   const originaLayer    = inputs.layer;
                   const editingLayer    = getEditingLayer(inputs.layer);
                   const layerId         = originaLayer.getId();
-                  const session         = context.session;
                   const {
                     features,
                     coordinate
@@ -1390,7 +1348,7 @@ export class ToolBox extends Emitter {
                             context,
                             feature
                           }).finally(() => {
-                            session.pushUpdate(layerId, feature, originalFeature);
+                            GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(layerId, feature, originalFeature);
                             resolve(inputs);
                           });
                           /**
@@ -1398,7 +1356,7 @@ export class ToolBox extends Emitter {
                            */
                           } else {
                             editingLayer.getSource().removeFeature(feature);
-                            session.pushDelete(layerId, feature);
+                            GUI.getPlugin('editing').getToolBoxById(context.id).pushDelete(layerId, feature);
                             resolve(inputs);
                           }
                           found = true;
@@ -1481,7 +1439,6 @@ export class ToolBox extends Emitter {
                           let feature = inputs.features.find(f => f.getUid() === splitted[i].uid);
                           const oriFeature = feature.clone();
                           const layerId = inputs.layer.getId();
-                          const session = context.session;
 
                           for (let j = 0; j < splitted[i].geometries.length; j++) {
                             const geom = splitted[i].geometries[j];
@@ -1492,7 +1449,7 @@ export class ToolBox extends Emitter {
                               } catch (e) {
                                 console.warn(e);
                               }
-                              session.pushUpdate(layerId, feature, oriFeature);
+                              GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(layerId, feature, oriFeature);
                             }
                             if (j > 0) {
                               const newFeature = cloneFeature(oriFeature, inputs.layer);
@@ -1510,11 +1467,11 @@ export class ToolBox extends Emitter {
                               const noteditablefieldsvalues = SELF.#getNonEditableValues({ layer: inputs.layer, feature });
 
                               if (Object.entries(noteditablefieldsvalues).length) {
-                                const createdFeature = session.pushAdd(layerId, feature);
+                                const createdFeature = GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(layerId, feature);
                                 Object.entries(noteditablefieldsvalues).forEach(([field, value]) => createdFeature.set(field, value));
                                 source.addFeature(createdFeature);
                               } else {
-                                session.pushAdd(layerId, feature);
+                                GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(layerId, feature);
                                 source.addFeature(feature);
                               }
                             }
@@ -1594,7 +1551,6 @@ export class ToolBox extends Emitter {
                   const editingLayer = getEditingLayer(layer);
                   const source       = editingLayer.getSource();
                   const layerId      = layer.getId();
-                  const session      = context.session;
               
                   if (features.length < 2) {
                     GUI.showUserMessage({
@@ -1616,11 +1572,11 @@ export class ToolBox extends Emitter {
                           } catch(e) {
                             console.warn(e);
                           }
-                          session.pushUpdate(layerId, newFeature, originalFeature);
+                          GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(layerId, newFeature, originalFeature);
                           features
                             .filter(_feature => _feature !== feature)
                             .forEach(deleteFeature => {
-                              session.pushDelete(layerId, deleteFeature);
+                              GUI.getPlugin('editing').getToolBoxById(context.id).pushDelete(layerId, deleteFeature);
                               source.removeFeature(deleteFeature);
                             });
                           inputs.features = [feature];
@@ -1738,17 +1694,17 @@ export class ToolBox extends Emitter {
   featuresLockedByOtherUser(f) {}
 
   /**
-   * Rebuilds the session dependency mapping for undo/redo operations.
+   * Rebuilds the dependency mapping for undo/redo operations.
    *
    * Each change can be an add/delete/update action and can be paired with a
    * previous state in the transaction history. This helper distinguishes between
    * changes belonging to the current layer and those belonging to related layers.
    *
-   * @param {string} historyId Current session layer id.
-   * @param {Array} items Session items to classify.
+   * @param {string} historyId Current layer id.
+   * @param {Array} items items to classify.
    * @param {number} action Undo (0) or redo (1) direction.
    * 
-   * @returns {{ own: Array, dependencies: Object }} Normalized session items.
+   * @returns {{ own: Array, dependencies: Object }} Normalized items.
    */
   #checkSessionItems(historyId, items, action) {
     const newItems = {
@@ -1816,7 +1772,7 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Stops child sessions that are chained through relation-based editing.
+   * Stops child that are chained through relation-based editing.
    *
    * When a parent layer is stopped, dependent relation layers must be stopped
    * in the same order to avoid leaving locks or session state behind.
@@ -1836,7 +1792,7 @@ export class ToolBox extends Emitter {
         const relationId = getRelationId({ layerId, relation });
         // In case of no editing is started (click on pencil of relation layer) need to stop (unlock) features
         if (!GUI.getPlugin('editing').state.stopChain.has(relationId) && !GUI.getPlugin('editing').getToolBoxById(relationId).inEditing()) {
-          ToolBox._sessions[relationId].stop();
+          GUI.getPlugin('editing').getToolBoxById(relationId).stopSession();
         }
       })
   }
@@ -2099,7 +2055,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this.getSession().start(this.state._getFeaturesOption);
+        features = await this.startSession(this.state._getFeaturesOption);
       }
 
       /** In case of not yest started session and is not in mobile */
@@ -2107,7 +2063,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this.getSession().start(this.state._getFeaturesOption);
+        features = await this.startSession(this.state._getFeaturesOption);
       }
 
       /**
@@ -2117,7 +2073,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this.getSession().getFeatures(this.state._getFeaturesOption);
+        features = await this.getFeatures(this.state._getFeaturesOption);
 
       }
 
@@ -2244,7 +2200,7 @@ export class ToolBox extends Emitter {
     }
 
     try {
-      await this.getSession().stop();
+      await this.stopSession();
       this.stopLoading();
       this.setEditing(false);
       this.state._getFeaturesOption = {};
@@ -2380,7 +2336,7 @@ export class ToolBox extends Emitter {
             // id - relation layer id, opts - Object contain relation properties
             commitRelations.forEach(relation => Object.entries(relation).forEach(([relationId, opts = {}]) => {
               // get the editing source of relation layer
-              const source = ToolBox._sessions[relationId]._featuresstore;
+              const source = GUI.getPlugin('editing').getToolBoxById(relationId)._featuresstore;
               // handle value to relation field saved on server
               (opts.ids || []).forEach(relationFeatureId => {
                 const relationFeature = source.getFeatureById(relationFeatureId);
@@ -2402,7 +2358,7 @@ export class ToolBox extends Emitter {
             // Loop on eventual relation updated or created
             // id - relation layer id, opts - Object contain relation properties
             commitRelations.forEach(relation => Object.entries(relation).forEach(([relationId, opts = {}]) => {
-              const source = ToolBox._sessions[relationId]._featuresstore;
+              const source = GUI.getPlugin('editing').getToolBoxById(relationId)._featuresstore;
               // handle value to relation field saved on server
               (opts.ids || []).forEach(relationFeatureId => {
                 const relationFeature = source.getFeatureById(relationFeatureId);
@@ -2414,7 +2370,7 @@ export class ToolBox extends Emitter {
 
           // Handle relations commit to server and update loacally with properties and new id
           Object.entries(response.response.relations || {}).forEach(([relationId, opts = { new: [], new_lockids: [], update: [] }]) => {
-            const source = ToolBox._sessions[relationId]._featuresstore;
+            const source = GUI.getPlugin('editing').getToolBoxById(relationId)._featuresstore;
             // new relations
             (opts.new || []).forEach(({ clientid, id, properties = {} } = {}) => {
               const feature = source.getFeatureById(clientid);
@@ -2448,7 +2404,7 @@ export class ToolBox extends Emitter {
         this.clearHistory();
 
         // After commit get new unique values
-        this.getSession().saveChangesOnServer(commit);
+        this.saveChangesOnServer(commit);
 
         resolve({ commit, response });
         
@@ -2888,14 +2844,6 @@ export class ToolBox extends Emitter {
     return this.state.activetool;
   }
 
-  /**
-   * Returns the session runtime object attached to this toolbox.
-   *
-   * @returns {object} Current editing session instance.
-   */
-  getSession() {
-    return this._session;
-  }
 
   /**
    * Resets the toolbox UI to the original default configuration.
@@ -2940,11 +2888,11 @@ export class ToolBox extends Emitter {
   #undoHistory() {
     let items;
     this.#states.find((state, idx) => {
-      if (state.id === this.state.editing.session.current) {
+      if (state.id === this.state.editing.current) {
         //get item of current state
         items = this.#checkSessionItems(this.state.id, this.#states[idx].items, 0);
         //set current the previous one
-        this.state.editing.session.current = 0 === idx ? null : this.#states[idx - 1].id;
+        this.state.editing.current = 0 === idx ? null : this.#states[idx - 1].id;
         return true;
       }
     })
@@ -2970,14 +2918,14 @@ export class ToolBox extends Emitter {
   #redoHistory() {
     let items;
     // if not set get first state
-    if (!this.state.editing.session.current) {
+    if (!this.state.editing.current) {
       items = this.#states[0].items;
       // set current to first
-      this.state.editing.session.current = this.#states[0].id;
+      this.state.editing.current = this.#states[0].id;
     } else {
       this.#states.find((state, idx) => {
-        if (state.id === this.state.editing.session.current) {
-          this.state.editing.session.current = this.#states[idx + 1].id;
+        if (state.id === this.state.editing.current) {
+          this.state.editing.current = this.#states[idx + 1].id;
           items = this.#states[idx+1].items;
           return true;
         }
@@ -3005,16 +2953,16 @@ export class ToolBox extends Emitter {
    */
   #updateUndoAvailability() {
     let currentStateIndex = null;
-    if (this.state.editing.session.current && this.#states.length) {
+    if (this.state.editing.current && this.#states.length) {
       this.#states.forEach((state, idx) => {
-        if (this.state.editing.session.current === state.id) {
+        if (this.state.editing.current === state.id) {
           currentStateIndex = idx;
           return false
         }
       });
     };
     const steps = (this.#states.length - 1) - currentStateIndex;
-    this.#constrains.undo = (null !== this.state.editing.session.current) && (steps < 10); // 10 = maximum "buffer history" lenght for undo/redo
+    this.#constrains.undo = (null !== this.state.editing.current) && (steps < 10); // 10 = maximum "buffer history" lenght for undo/redo
     return this.#constrains.undo;
   }
 
@@ -3025,8 +2973,8 @@ export class ToolBox extends Emitter {
    */
   #updateRedoAvailability() {
     this.#constrains.redo = (
-      (this.#states.at(-1) && this.#states.at(-1).id != this.state.editing.session.current))
-      || (null === this.state.editing.session.current && this.#states.length > 0);
+      (this.#states.at(-1) && this.#states.at(-1).id != this.state.editing.current))
+      || (null === this.state.editing.current && this.#states.length > 0);
     return this.#constrains.redo;
   }
 
@@ -3040,7 +2988,7 @@ export class ToolBox extends Emitter {
    */
   #buildCommitItems() {
     const commitItems = {};
-    const statesToCommit = this.#states.filter(s => s.id <= this.state.editing.session.current);
+    const statesToCommit = this.#states.filter(s => s.id <= this.state.editing.current);
     statesToCommit
       .forEach(state => {
         state.items.forEach(item => {
@@ -3096,7 +3044,7 @@ export class ToolBox extends Emitter {
    * @returns {boolean} True when the session is active.
    */
   isSessionStarted() {
-    return !!this.state.editing.session.started;
+    return !!this.state.editing.started;
   }
 
   /**
@@ -3106,7 +3054,7 @@ export class ToolBox extends Emitter {
    * @param { { layerId: string, feature: * } } OldFeat
    */
   #pushChange(newFeat, oldFeat) {
-    this.state.editing.session.changes.push(oldFeat ? [oldFeat, newFeat] : newFeat); // check is set old (edit)
+    this.state.editing.changes.push(oldFeat ? [oldFeat, newFeat] : newFeat); // check is set old (edit)
   }
 
   /**
@@ -3121,7 +3069,7 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Moves pending session changes into the undo/redo history.
+   * Moves pending changes into the undo/redo history.
    *
    * If the history cursor is at its initial position, the pending changes
    * start a new history branch. Otherwise, any states ahead of the cursor are
@@ -3131,29 +3079,29 @@ export class ToolBox extends Emitter {
    * @param {string|number} [options.id] Explicit history state identifier.
    * @returns {Promise<Array<string|number>|null>} New state id, or `null` when there are no pending changes.
    */
-  async #saveChanges(options = {}) {
+  async saveChanges(options = {}) {
     // no changes
-    if (!this.state.editing.session.changes.length) {
+    if (!this.state.editing.changes.length) {
       return null;
     }
 
     const id    = options.id || Date.now();
-    const items = this.state.editing.session.changes;
-    const isNew = null === this.state.editing.session.current;
+    const items = this.state.editing.changes;
+    const isNew = null === this.state.editing.current;
 
     if (isNew) {
       this.#states = [{ id, items }];
     }
 
-    if (!isNew && this.#states.length > 0 && this.state.editing.session.current < this.#states.at(-1).id) {
-      this.#states = this.#states.filter(s => s.id <= this.state.editing.session.current);
+    if (!isNew && this.#states.length > 0 && this.state.editing.current < this.#states.at(-1).id) {
+      this.#states = this.#states.filter(s => s.id <= this.state.editing.current);
     }
 
     if (!isNew) {
       this.#states.push({ id, items });
     }
 
-    this.state.editing.session.current = id;
+    this.state.editing.current = id;
 
     this.#updateUndoAvailability();
 
@@ -3163,7 +3111,7 @@ export class ToolBox extends Emitter {
     this.#updateRedoAvailability();
 
     // reset changes
-    this.state.editing.session.changes = [];
+    this.state.editing.changes = [];
 
     return [id];
   }
@@ -3192,7 +3140,7 @@ export class ToolBox extends Emitter {
     // remove not editable proprierties from feature
     if (removeNotEditableProperties) {
       (
-        ToolBox._sessions[layerId].getLayer().config.editing.fields
+        GUI.getPlugin('editing').getToolBoxById(layerId).getLayer().config.editing.fields
         .filter(f => !f.editable) // un-editable fields
         .map(f => f.name)
         || []
@@ -3216,13 +3164,13 @@ export class ToolBox extends Emitter {
   pushUpdate(layerId, newFeature, oldFeature) {
     // get index of temporary changes
     const is_new = newFeature.isNew();
-    const i      = is_new && this.state.editing.session.changes.findIndex(c => layerId === c.layerId && c.feature.getId() === newFeature.getId());
+    const i      = is_new && this.state.editing.changes.findIndex(c => layerId === c.layerId && c.feature.getId() === newFeature.getId());
 
     // in case of new feature
     if (is_new && i >=0) {
       const feature = newFeature.clone();
       feature.add();
-      this.state.editing.session.changes[i].feature = feature;
+      this.state.editing.changes[i].feature = feature;
       return;
     }
 
@@ -3271,7 +3219,7 @@ export class ToolBox extends Emitter {
     const id = this.state.layer.getId();
     changes  = { own:[], dependencies: {} };
 
-    this.state.editing.session.changes.forEach(c => {
+    this.state.editing.changes.forEach(c => {
       const change = Array.isArray(c) ? c[0] : c;
       if (id === change.layerId) {
         changes.own.push(change);
@@ -3284,13 +3232,13 @@ export class ToolBox extends Emitter {
     try {
       this.#applyChanges(changes.own);
       for (const id in changes.dependencies) {
-        ToolBox._sessions[id].rollback(changes.dependencies[id]);
+        GUI.getPlugin('editing').getToolBoxById(id).rollback(changes.dependencies[id]);
       }
       return changes.dependencies;
     } catch(e) {
       console.warn(e);
     } finally {
-      this.state.editing.session.changes = [];
+      this.state.editing.changes = [];
     }
   }
 
@@ -3417,7 +3365,7 @@ export class ToolBox extends Emitter {
     relations
       .filter(id => undefined === this.getLayer().getRelations().getArray().find(r => id === r.getChild())) // child relations
       .map(id => {
-        const fatherId = ToolBox._sessions[id].getLayer().getRelations().getArray()
+        const fatherId = GUI.getPlugin('editing').getToolBoxById(id).getLayer().getRelations().getArray()
           .find(r => id === r.getChild()).getFather() // parent relation layer
         // In case of missing changes child relaztion, need to create relation object
         // with empty changes to mantain relation structure in commit object
@@ -3446,8 +3394,8 @@ export class ToolBox extends Emitter {
    * transaction data from the previous session.
    */
   #clearSession() {
-    this.state.editing.session.started     = false;
-    this.state.editing.session.getfeatures = false;
+    this.state.editing.started     = false;
+    this.state.editing.getfeatures = false;
     this.clearHistory();
   }
 
@@ -3462,7 +3410,7 @@ export class ToolBox extends Emitter {
     if (ids) {
       this.#states.forEach((state, idx) => {
         if (ids.includes(state.id)) {
-          if (this.state.editing.session.current && state.id === this.state.editing.session.current) {
+          if (this.state.editing.current && state.id === this.state.editing.current) {
             this.#undoHistory();
           }
           this.#states.splice(idx, 1);
@@ -3471,7 +3419,7 @@ export class ToolBox extends Emitter {
     } else {
       // clear all
       this.#states                       = [];
-      this.state.editing.session.current = null;
+      this.state.editing.current         = null;
       this.#constrains.commit            = false;
       this.#constrains.redo              = false;
       this.#constrains.undo              = false;
@@ -3490,10 +3438,10 @@ export class ToolBox extends Emitter {
    * 
    * @listens ol.Map#moveend
    */
-  async #startSession(options = {}) {
+  async startSession(options = {}) {
     try {
       const features = await this.#requestFeatures(options); // load layer features based on filter type
-      this.state.editing.session.started = true;
+      this.state.editing.started = true;
       return features;
     } catch(e) {
       console.warn(e);
@@ -3519,7 +3467,7 @@ export class ToolBox extends Emitter {
             if (newBbox.every((v, i) => v === curBbox?.[i])) { return; }
             this.state._getFeaturesOption.filter.bbox = newBbox;
             this.state.loading = true;
-            await this.getSession().getFeatures(this.state._getFeaturesOption);
+            await this.getFeatures(this.state._getFeaturesOption);
             this.state.loading = false;
           }
         };
@@ -3562,9 +3510,9 @@ export class ToolBox extends Emitter {
    * 
    * @throws Rejects with the caught error when the unlock request fails.
    */
-  async #stopSession() {
+  async stopSession() {
     try {
-      if (this.state.editing.session.started || this.state.editing.session.getfeatures) {
+      if (this.state.editing.started || this.state.editing.getfeatures) {
         this.#controller?.abort(); //abort request if exist
         await XHR.post({ url: `${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/` });
 
@@ -3597,10 +3545,10 @@ export class ToolBox extends Emitter {
   /**
    * Get features from server
    */
-  async #getFeatures(options = {}) {
+  async getFeatures(options = {}) {
     try { 
       const features = await this.#requestFeatures(options);
-      this.state.editing.session.getfeatures = true;
+      this.state.editing.getfeatures = true;
       return features;
     } catch(e) {
       console.warn(e);
@@ -3839,7 +3787,7 @@ export class ToolBox extends Emitter {
    * so the user can continue the same interaction workflow.
    *
    * @param {Object} tool Tool instance to start.
-   * 
+   * save
    * @returns {Promise<void>} Resolves when the tool cycle completes.
    */
   async #startTool(tool) {
@@ -3853,10 +3801,10 @@ export class ToolBox extends Emitter {
     try {
       await tool.start({
         inputs:  { layer: this.getLayer(), features: [] },
-        context: { session: this.getSession() }
+        context: { id: this.state.id }
       });
       
-      await this.getSession().save();
+      await this.saveChanges();
       GUI.getPlugin('editing').saveChange(); // after save temp change check if editing service has a autosave
     } catch(e) {
       console.warn(e);
@@ -3894,7 +3842,7 @@ export class ToolBox extends Emitter {
       this.rollback();
     } finally {
       tool.active = false;
-      tool.emit('stop', { session: this.getSession() });
+      tool.emit('stop', { id: this.getId() });
     }
   }
 

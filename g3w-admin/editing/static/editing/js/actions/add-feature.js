@@ -94,7 +94,7 @@ export class AddFeatureStep extends Step {
               feature = new Feature({ feature: e.feature, });
               feature.setTemporaryId();
               source.addFeature(feature);
-              context.session.pushAdd(layerId, feature, false);
+              GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(layerId, feature, false);
             } else {
               feature = e.feature;
             }

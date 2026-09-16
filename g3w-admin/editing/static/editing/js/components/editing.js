@@ -272,7 +272,7 @@ export default ({
           console.info('[EDITING] committed dirty');
         }
       } catch (e) {
-        // revert changes (clear history and session)
+        // revert changes (clear history)
         try {
           [layerId]
             .concat(toolbox.getDependencies())

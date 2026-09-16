@@ -612,15 +612,15 @@ export class RotateFeatureStep extends Step {
     } catch(e) {
       console.warn(e);
     }
-    context.session.pushUpdate(inputs.layer.getId(), this._feature.clone(), this._originalFeature);
+    GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(inputs.layer.getId(), this._feature.clone(), this._originalFeature);
   }
 
   async stop(input, context) {
     if (this.isChange) {
      //In case of Point geometry, afetr change rotation and click on tool to stop, need to update feature 
      await this.updateFeature();
-     //need to save it on session
-     context.session.save();
+     //need to save it 
+     GUI.getPlugin('editing').getToolBoxById(context.id).saveChanges();
     }
     this.resolve(true);
     this.resolve  = null;

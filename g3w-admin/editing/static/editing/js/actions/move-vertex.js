@@ -64,7 +64,7 @@ export class ModifyGeometryVertexStep extends Step {
               //only in case of changes
               if (state.modified) {
                 //register temporary changes to save or rollback to current editing feature state
-                context.session.pushUpdate(layerId, newFeature, originalFeature);
+                GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(layerId, newFeature, originalFeature);
               }
             }
           }

@@ -18,7 +18,7 @@ const {
 /**
  * Editing plugin entry point.
  *
- * Owns the editing sessions for all editable catalog layers, coordinates
+ * Owns the editing for all editable catalog layers, coordinates
  * toolboxes and exposes the backwards-compatible plugin API consumed by
  * other G3W-Suite plugins.
  *
@@ -56,7 +56,7 @@ new (class extends Plugin {
       lock_ids: {},               // Feature ids locked by the current session.
       loaded_ids: {},             // Feature ids loaded by the current user.
       message:             null,  // Current plugin message.
-      relations:           [],    // Relation sessions involved in editing.
+      relations:           [],    // Relations involved in editing.
       layers_in_error:     false, // Whether one or more layer configs failed.
       formComponents:      {},    // Additional form components, keyed by layer id.
       constraints:         {      // Layer and feature filters applied to editing.
@@ -150,7 +150,6 @@ new (class extends Plugin {
    */
   getApi() {
     return {
-      getSession:                       this.getSession.bind(this),
       getFeature:                       this.getFeature.bind(this),
       subscribe:                        this.subscribe.bind(this),
       unsubscribe:                      this.subscribe.bind(this),
@@ -190,6 +189,7 @@ new (class extends Plugin {
    * @listens map:context-menu
    */
   async #init() {
+    let tlbIndex = 0;
     //Loop through editable layers and get config to create toolboxes
     for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
@@ -205,7 +205,7 @@ new (class extends Plugin {
     )) {
       if ('fulfilled' === status) {
         const ToolBox                                  = (await import('./g3w-toolbox.js')).ToolBox;
-        const toolBox                                  = new ToolBox(value.layer, value.config);
+        const toolBox                                  = new ToolBox(value.layer, value.config, tlbIndex++);
         this.state.toolboxes.push(toolBox);
         this.state.lock_ids[toolBox.getId()]           = [];
         this.state.loaded_ids[toolBox.getId()]         = [];
@@ -340,28 +340,6 @@ new (class extends Plugin {
     this.setReady(true);
   }
 
-  /**
-   * [API Method] Get the editing session for a layer.
-   *
-   * @param {Object} [options]
-   * @param {string} options.layerId Layer/toolbox identifier.
-   *
-   * @returns {*} The layer editing session.
-   */
-  getSession({ layerId } = {}) {
-    return this.getSessionById(layerId);
-  }
-
-  /**
-   * Get a layer editing session by its layer/toolbox identifier.
-   *
-   * @param {string} id Layer/toolbox identifier.
-   *
-   * @returns {*} The layer editing session.
-   */
-  getSessionById(id) {
-    return this.getToolBoxById(id).getSession();
-  }
 
   /**
    * [API Method] Return the feature currently displayed by the active editing tool.
@@ -386,11 +364,11 @@ new (class extends Plugin {
     const sessionItems = toolBox.getLastHistoryState().items;
     //update unique values fields after undo
     this.undoRedoLayerUniqueFieldValues({ layerId: id, sessionItems, action: 'undo' });
-    const relationSessionItems = toolBox.undo();
+    const relationItems = toolBox.undo();
     //update unique values of relations after undo
-    this.undoRedoRelationUniqueFieldValues({ relationSessionItems, action: 'undo' });
+    this.undoRedoRelationUniqueFieldValues({ relationItems, action: 'undo' });
     // undo relations
-    Object.entries(relationSessionItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).undo(items); });
+    Object.entries(relationItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).undo(items); });
   }
 
   /**
@@ -402,11 +380,11 @@ new (class extends Plugin {
     const sessionItems = toolBox.getLastHistoryState().items;
     // update unique values fields after redo
     this.undoRedoLayerUniqueFieldValues({ sessionItems, layerId: toolBox.getId(), action: 'redo' });
-    const relationSessionItems = toolBox.redo();
+    const relationItems = toolBox.redo();
     // update unique values of relations after redo
-    this.undoRedoRelationUniqueFieldValues({ relationSessionItems, action: 'redo' });
+    this.undoRedoRelationUniqueFieldValues({ relationItems, action: 'redo' });
     // redo relations
-    Object.entries(relationSessionItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).redo(items); });
+    Object.entries(relationItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).redo(items); });
   }
 
   /**
@@ -567,9 +545,9 @@ new (class extends Plugin {
   }
 
   /**
-   * Stop all editing sessions, committing pending changes first.
+   * Stop all editing, committing pending changes first.
    *
-   * @returns {Promise<void>} Resolves when all sessions have stopped.
+   * @returns {Promise<void>} Resolves when all toolboxes have stopped.
    */
   async stop() {
     const commitpromises = this.state.toolboxes
@@ -944,7 +922,7 @@ new (class extends Plugin {
   }
 
   /**
-   * Recursively update cached unique values for related layer sessions.
+   * Recursively update cached unique values for related layer.
    *
    * @param {Object} options
    * @param {Object} [options.relationSessionItems={}] Relation history entries.
@@ -977,9 +955,9 @@ new (class extends Plugin {
    * [API Method] Stop editing on a layer.
    *
    * @param {string} layerId Layer identifier.
-   * @param {Object} [options] Options forwarded to the toolbox session.
+   * @param {Object} [options] Options forwarded to the toolbox.
    *
-   * @returns {Promise<*>} Resolves when the layer session has stopped.
+   * @returns {Promise<*>} Resolves when the layer has stopped.
    */
   async stopEditing(layerId, options = {}) {
     return this.getToolBoxById(layerId).stop(options);
@@ -989,7 +967,7 @@ new (class extends Plugin {
    * [API Method] Start editing on a layer.
    *
    * @param {string} layerId Layer identifier.
-   * @param {Object} [options] Options forwarded to the toolbox session.
+   * @param {Object} [options] Options forwarded to the toolbox .
    * @param {boolean} [options.selected=true] Select the toolbox before editing.
    * @param {boolean} [options.disablemapcontrols=false] Disable map controls.
    * @param {boolean} [options.showselectlayers=true] Show layer selection.
@@ -1024,13 +1002,11 @@ new (class extends Plugin {
       return Promise.reject();
     }
     return new Promise(async (resolve, reject) => {
-      const layer   = this.getLayerById(layerId);
-      // get session
-      const session = this.getSessionById(layerId);
+      const layer     = this.getLayerById(layerId);
       // exclude an eventual attribute pk (primary key) not editable (mean autoincrement)
       const attributes = this.getEditingFields(layerId).filter(attr => !(attr.pk && !attr.editable));
-      // start session (get no features but set layer in editing)
-      session.start({
+      // start (get no features but set layer in editing)
+      GUI.getPlugin('editing').getToolBoxById(layerId).startSession({
         filter: {
           nofeatures:       true,                    // no feature
           nofeatures_field: attributes[0].name // get the first field in editing form
@@ -1052,7 +1028,7 @@ new (class extends Plugin {
 
       const stop = cb => {
         tool.stop();
-        session.stop();
+        GUI.getPlugin('editing').getToolBoxById(layerId).stopSession();
         return cb();
       };
 
@@ -1070,16 +1046,16 @@ new (class extends Plugin {
           //set new
           feature.setTemporaryId();
 
-          // add to session and source as new feature
-          session.pushAdd(layerId, feature, false);
+          // add to source as new feature
+          GUI.getPlugin('editing').getToolBoxById(layerId).pushAdd(layerId, feature, false);
           getEditingLayer(layer).getSource().addFeature(feature);
           //start tool
           await tool.start({
             inputs:  { layer, features: [feature] },
-            context: { session },
+            context: { id: layerId },
           });
 
-          session.save();
+          GUI.getPlugin('editing').getToolBoxById(layerId).saveChanges();
 
           try {
             await this.commit({ modal: false, toolbox: this.getToolBoxById(layerId) });
@@ -1474,11 +1450,11 @@ new (class extends Plugin {
 
       await t.start({
         inputs:  { layer: _layer, features: [feature] },
-        context: { session: toolBox.getSession() }
+        context: { id: toolBox.getId() }
       });
 
       //save temporary changes
-      await toolBox.getSession().save();
+      await toolBox.saveChanges();
 
       this.saveChange();
 

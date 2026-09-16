@@ -1,6 +1,8 @@
 import { evaluateExpressionFields } from '../utils/evaluateExpressionFields.js';
 import { getEditingLayer }          from '../utils/getEditingLayer.js';
 
+const GUI = g3w.app;
+
 /** @TODO add description */
 export async function addPartToMultigeometries(inputs, context) {
 
@@ -23,7 +25,7 @@ export async function addPartToMultigeometries(inputs, context) {
   try { await evaluateExpressionFields({ inputs, context, feature });}
   catch(e) { console.warn(e); }
 
-  context.session.pushUpdate(inputs.layer.getId(), feature, originalFeature);
+  GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(inputs.layer.getId(), feature, originalFeature);
 
   inputs.features = [feature];
   return inputs;

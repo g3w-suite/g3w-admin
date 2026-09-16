@@ -6,6 +6,8 @@ import { evaluateExpressionFields }                     from '../utils/evaluateE
 import { setAndUnsetSelectedFeaturesStyle }             from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { Step }                                         from '../g3w-step.js';
 
+const GUI = g3w.app;
+
 export class MoveFeatureStep extends Step {
 
   constructor(opts = {}) {
@@ -47,7 +49,7 @@ export class MoveFeatureStep extends Step {
             // evaluated geometry expression
             evaluateExpressionFields({ inputs, context, feature })
               .finally(() => {
-                context.session.pushUpdate(layerId, feature.clone(), originalFeature);
+                GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(layerId, feature.clone(), originalFeature);
                 resolve(inputs);
               });
           } else {

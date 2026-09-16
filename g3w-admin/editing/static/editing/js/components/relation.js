@@ -567,7 +567,7 @@ export default ({
             this._createToolOptions({
               features: this.relations
                 .filter(r => r.select)
-                .map(({ id }) => GUI.getPlugin('editing').getToolBoxById().getEditingSource().getFeatureById(id) )
+                .map(({ id }) => GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getEditingSource().getFeatureById(id) )
             })
           );
         } catch(e) {
@@ -779,7 +779,7 @@ export default ({
 
             //confirm to delete
             if (ok) {
-              Tool.Stack.current.session.pushDelete(this._relationLayerId, relationfeature);
+              GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).pushDelete(this._relationLayerId, relationfeature);
               // remove feature from relation features
               this.relations.splice(index, 1);
               // remove tool from relation tools
@@ -804,14 +804,14 @@ export default ({
               // In this case, we need to check if there are temporary changes not related to this current feature
               if (
                 relationfeature.isNew()
-                && undefined === Tool.Stack.items.find(w => w.getSession().state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
+                && undefined === Tool.Stack.items.find(i => i.state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
               ) {
                 Tool.Stack.items
                   .filter(w => w.getContext().service instanceof FormService)
                   .forEach(w => setTimeout(() => w.getContext().service.state.update = false));
               } else {
                 //set parent tool update to enable to save all buttons
-                Tool.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
               }
 
               d.resolve(ok);
@@ -844,9 +844,9 @@ export default ({
             } catch(e) {
               console.warn(e);
               //need to rollback changes done at moment
-              Tool.Stack.current.session.rollback();
+              GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).rollback();
               //reset eventually state of form parent service (save changes or not)
-              Tool.Stack.parents?.forEach(w => w?.getContext?.()?.service?.setUpdate?.( w?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
+              Tool.Stack.parents?.forEach(t => t?.getContext?.()?.service?.setUpdate?.( t?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
               d.reject(e);
             }
 
@@ -897,7 +897,7 @@ export default ({
             try {
               await tool.start(options);
 
-              Tool.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+              Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
               d.resolve(true);
               setTimeout(() => this.startTool(relationtool, index));
             } catch(e) {
@@ -962,7 +962,7 @@ export default ({
                 originalFeatures[i].set(field, value);
               }
               GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getEditingSource().updateFeature(newFeature);
-              options.context.session.pushUpdate(this._relationLayerId, newFeature, originalFeatures[i]);
+              GUI.getPlugin('editing').getToolBoxById(options.context.id).pushUpdate(this._relationLayerId, newFeature, originalFeatures[i]);
             })
           };
           fatherField.forEach((field, i) => setRelationFieldValue({ field, value: fatherValue[i] }));
@@ -1000,7 +1000,7 @@ export default ({
             )
           }
 
-          this.rollback(options.context.session.getId(), [this._relationLayerId]);
+          this.rollback(options.context.id, [this._relationLayerId]);
         }
 
         tool.stop();
@@ -1088,7 +1088,7 @@ export default ({
                 .forEach(([field, value]) => {
                   relation.set(ownField[relationField.findIndex(rF => field === rF)], value);
                 })
-              Tool.Stack.current.session.pushUpdate(this._relationLayerId , relation, originalRelation);
+              GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).pushUpdate(this._relationLayerId , relation, originalRelation);
               this.relations.push({
                 fields: getFieldsWithValues(this.getLayer(), relation, { relation: true }),
                 id:     relation.getId()
@@ -1100,7 +1100,7 @@ export default ({
           });
         } catch(e) {
           console.warn(e);
-          this.rollback(options.context.session.getId(), [this._relationLayerId]);
+          this.rollback(options.context.id, [this._relationLayerId]);
         }
 
         if (is_vector) {
@@ -1113,7 +1113,7 @@ export default ({
         }
 
         if (linked) {
-          Tool.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+          Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
         }
 
         tool.stop();
@@ -1170,11 +1170,12 @@ export default ({
           layerId:  this._relationLayerId,
           relation: this.relation
         });
+        console.log(this._relationLayerId)
         const parent = Object.entries(this.getParent().values);
         return  {
           parentFeature:   Tool.Stack.current.getFeatures().at(-1), // get parent feature
           context: {
-            session:       Tool.Stack.current.session,        // get parent tool
+            id:            this.layerId, //set parent layer id                         
             excludeFields: fields.ownField,                                 // array of fields to be excluded
             fatherValue:   parent.map(([_, value]) => value),               // values of parent fields in relation
             fatherField:   parent.map(([field]) => fields.ownField[fields.relationField.findIndex(rField => field === rField)]), //children fields
@@ -1187,7 +1188,7 @@ export default ({
       },
 
       /**
-       * Rollback child changes of current session
+       * Rollback child changes 
        * 
        * @param layerId
        * @param ids [array of child layer id]
@@ -1196,7 +1197,7 @@ export default ({
         const toolBox = GUI.getPlugin('editing').getToolBoxById(layerId);
         ids.forEach(id => {
           const changes = [];
-          toolBox.state.editing.session.changes = toolBox.state.editing.session.changes.filter(tc => {
+          toolBox.state.editing.changes = toolBox.state.editing.changes.filter(tc => {
             if (id === tc.layerId) {
               changes.push(tc);
               return false
@@ -1542,7 +1543,7 @@ export default ({
                       feature.setTemporaryId();
                       inputs.features = [feature];
                       getEditingLayer(inputs.layer).getSource().addFeature(feature);
-                      context.session.pushAdd(inputs.layer.getId(), feature, false);
+                      GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(inputs.layer.getId(), feature, false);
                       return inputs;
                     }
 

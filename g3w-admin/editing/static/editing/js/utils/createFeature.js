@@ -24,7 +24,7 @@ export function createFeature(layerId, options = {}) {
   const editingLayer = getEditingLayer(toolbox.getLayer());
 
   editingLayer.getSource().addFeature(feature);
-  toolbox.getSession().pushAdd(layerId, feature, false);
+  toolbox.pushAdd(layerId, feature, false);
 
   return feature;
 }

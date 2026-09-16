@@ -99,7 +99,7 @@ export class AddHoleStep extends Step {
     }
 
     if (newFeature) {
-      context.session.pushUpdate(inputs.layer.getId(), newFeature, originalFeature);
+      GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(inputs.layer.getId(), newFeature, originalFeature);
       inputs.features.push(newFeature);
       resolve(inputs);
     } else {

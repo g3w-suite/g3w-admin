@@ -59,7 +59,7 @@ export class Step extends Emitter {
     this._inputs = options.inputs || null;
 
     /**
-     * Shared context, such as the current editing session.
+     * Shared context, such as the current editing options.
      *
      * @type {Object|null}
      */

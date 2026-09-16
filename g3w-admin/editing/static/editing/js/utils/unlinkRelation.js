@@ -1,6 +1,5 @@
 import { Tool }                          from '../g3w-tool.js';
 import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRelation.js';
-import { getEditingLayerById }           from '../utils/getEditingLayerById.js';
 
 const GUI = g3w.app;
 const _   = g3w.gettext;
@@ -29,9 +28,9 @@ export async function unlinkRelation({
     const originalRelation = feature.clone();
     // loop on ownField (Array field child relation)
     getRelationFieldsFromRelation({ relation, layerId: id }).ownField.forEach(f => feature.set(f, null))
-    Tool.Stack.current.session.pushUpdate(id, feature, originalRelation);
+    GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).pushUpdate(id, feature, originalRelation);
     relations.splice(index, 1);
-    Tool.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+    Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
     return true;
   }
 }

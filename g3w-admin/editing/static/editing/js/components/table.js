@@ -351,8 +351,8 @@ export default ({
       if (ok) {
         const i    = this.features.findIndex(f => uid === f.getUid());
         const feat = this.features[i];
-        GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getEditingSource().removeFeature(feat);
-        this.context.session.pushDelete(this.inputs.layer.getId(), feat);
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).getEditingSource().removeFeature(feat);
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).pushDelete(this.inputs.layer.getId(), feat);
         this.rows.splice(i, 1);
       }
     },
@@ -414,7 +414,7 @@ export default ({
           });
       } catch(e) {
         //Force roolback
-        this.context.session.rollback();
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).rollback();
         console.warn(e);
       }
 
@@ -453,7 +453,7 @@ export default ({
       try {
         //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
         //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
-        this.features  = await this.context.session.getFeatures({
+        this.features  = await GUI.getPlugin('editing').getToolBoxById(this.context.id).getFeatures({
           filter: {
             pagination: {
               page:      this.search.page,
@@ -463,7 +463,7 @@ export default ({
               }
           }
         });
-        this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount(); // get total count of features from server
+        this.count    = GUI.getPlugin('editing').getToolBoxById(this.context.id).getCount(); // get total count of features from server
         //set headers
         this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
         //set up table rows from features
