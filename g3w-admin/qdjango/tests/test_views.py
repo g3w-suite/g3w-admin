@@ -27,7 +27,7 @@ class QdjangoViewsTest(QdjangoTestBase):
         self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
 
         assign_perm('view_project', get_anonymous_user(), self.project.instance)
-        response = client.get(reverse("qdjango-project-layers-list", args=[self.project_group.slug, self.project.instance.slug]))
+        response = client.get(reverse("qdjango-project-list", args=[self.project_group.slug]))
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.project.instance.pk, response.context['public_project_ids'])
