@@ -3499,7 +3499,8 @@ export class ToolBox extends Emitter {
    */
   async #startSession(options = {}) {
     try {
-      const features = await this.#startEditor(options);
+      const features = await this.#requestFeatures(options); // load layer features based on filter type
+      this.#started = true; // if all ok set to started
       this.state.editing.session.started = true;
       return features;
     } catch(e) {
@@ -3557,14 +3558,39 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Stop session
+   * Stops the underlying editing session, unlocking server-side features and
+   * resetting the local editing state.
    *
-   * @fires stop-editing
+   * No-op if no features have ever been requested (session never started).
+   * Regardless of success or failure, propagates the stop to dependent
+   * relation layers while online.
+   *
+   * @returns {Promise<void>} Resolves once the unlock request and local
+   * cleanup complete.
+   * 
+   * @throws Rejects with the caught error when the unlock request fails.
    */
   async #stopSession() {
     try {
       if (this.state.editing.session.started || this.state.editing.session.getfeatures) {
-        await this.#stopEditor();
+        this.#controller?.abort(); //abort request if exist
+        await XHR.post({ url: `${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/` });
+
+        this.#started     = false;
+        this.#filter.bbox = null;
+        this.#controller  = null;
+        this.#count       = 0;
+
+        this._features                                          = []; // clear features collection
+        GUI.getPlugin('editing').state.lock_ids[this.getId()]   = [];
+        GUI.getPlugin('editing').state.loaded_ids[this.getId()] = [];
+        this._featuresstore.clear();
+
+        // vector layer
+        if ('vector' === this.getLayer().getType()) {
+          this.getLayer().getOLLayer().setSource(new ol.source.Vector({ features: this._collection._store }));
+        }
+
         this.#clearSession();
       }      
     } catch(e) {
@@ -3882,29 +3908,6 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Starts the low-level editor and loads the initial feature set.
-   *
-   * @param {Object} [options={}] Options passed to the feature request.
-   * 
-   * @returns {Promise<Array>} Loaded features for the layer.
-   */
-  async #startEditor(options = {}) {
-    const features = await this.#requestFeatures(options); // load layer features based on filter type
-    this.#started  = true; // if all ok set to started
-    return features;       // features are already inside featuresstore
-  }
-
-  /**
-   * stop and unlock
-   */
-  async #stopEditor() {
-    this.#controller?.abort(); //abort request if exist
-    const { result } = await XHR.post({ url: `${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/` });
-    this.#clearEditor();
-    return result;
-  }
-
-  /**
    * Returns the number of server-side features associated with the current
    * layer context.
    *
@@ -3915,30 +3918,6 @@ export class ToolBox extends Emitter {
    */
   getCount() {
     return this.#count;
-  }
-
-  /**
-   * Resets the runtime state after a stop or a session reset.
-   *
-   * It clears the loaded feature set, aborts pending fetches, resets the lock
-   * registry and empties the local editing collection so the layer is ready for
-   * a new lifecycle.
-   */
-  #clearEditor() {
-    this.#started     = false;
-    this.#filter.bbox = null;
-    this.#controller  = null;
-    this.#count       = 0;
-
-    this._features                                          = []; // clear features collection
-    GUI.getPlugin('editing').state.lock_ids[this.getId()]   = [];
-    GUI.getPlugin('editing').state.loaded_ids[this.getId()] = [];
-    this._featuresstore.clear();
-
-    // vector layer
-    if ('vector' === this.getLayer().getType()) {
-      this.getLayer().getOLLayer().setSource(new ol.source.Vector({ features: this._collection._store }));
-    }
   }
 
   /**
