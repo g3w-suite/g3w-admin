@@ -1377,7 +1377,7 @@ new (class extends Plugin {
       const is_vector = 'vector' === _layer.getType();
 
       // get feature from an Editing layer source (with styles)
-      const features = is_vector ? getEditingLayer(_layer).getSource().getFeatures() : this.getToolBoxById(_layer.getId()).getEditor().readEditingFeatures();
+      const features = is_vector ? getEditingLayer(_layer).getSource().getFeatures() : this.getToolBoxById(_layer.getId()).readEditingFeatures();
       const feature  = features.find(f => fid == f.getId());
 
       // no feature is get from server (locked feature)

@@ -320,8 +320,6 @@ export class ToolBox extends Emitter {
       getLockIds:          () => GUI.getPlugin('editing').state.lock_ids[_layer.getId()],
       getEditingSource:    this.getEditingSource.bind(this),
       getSource:           () => this._featuresstore,
-      readFeatures:        () => this._features, //return original features from server (not modified)
-      readEditingFeatures: this.readEditingFeatures.bind(this), //return features changed/added by editing tools (not original features from server)
       commit:              this.#commitToEditor.bind(this),
       start:               this.#startEditor.bind(this),
       stop:                this.#stopEditor.bind(this),
@@ -4010,6 +4008,13 @@ export class ToolBox extends Emitter {
   /** @TODO add description */
   readEditingFeatures() {
     return this._collection.getArray();
+  }
+
+  /**
+   * @returns original features from server (not modified)
+   */
+  readFeatures() {
+    return this._features; 
   }
 
   /**

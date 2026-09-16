@@ -40,7 +40,7 @@ export function getRelationsInEditingByFeature({
         // get relation attributes by feature
         relations: GUI.getPlugin('editing')
           .getToolBoxById(relationLayerId)
-          .getEditor().readEditingFeatures()
+          .readEditingFeatures()
           .filter(feature => ownField.every((field, i) => feature.get(field) == values[i])) // get relations by feature
           .map(relation => ({
             fields: getFieldsWithValues(layer, relation, { relation: true }),
