@@ -12,11 +12,27 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
 from core.models import Group, G3WSpatialRefSys, MacroGroup
+from core.views import SearchAdminView
 from .base import CoreTestBase
 from copy import copy
 
 
 class CoreViewsTest(CoreTestBase):
+
+    def test_search_admin_view_with_empty_search_text(self):
+        """Empty search text still provides the expected template context."""
+
+        request = RequestFactory().get(reverse('search-admin'), {'stext': ''})
+        request.user = self.test_user1
+
+        view = SearchAdminView()
+        view.request = request
+
+        context = view.get_context_data()
+
+        self.assertEqual(context['search_text'], '')
+        self.assertEqual(context['results'], [])
+        self.assertEqual(context['n_tot_results'], 0)
 
     def test_delete_group_view(self):
         """
