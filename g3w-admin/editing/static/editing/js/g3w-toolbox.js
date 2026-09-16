@@ -308,7 +308,6 @@ export class ToolBox extends Emitter {
     });
 
     this._editor = Object.assign(new Emitter, {
-      _layer,
       setters: {
         addFeature:                 f => this._collection.add(f),
         updateFeature:              f => this._featuresstore.updateFeature(f),
@@ -348,7 +347,6 @@ export class ToolBox extends Emitter {
     if (is_vector) {
       layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
     }
-
 
     this.on('start-editing', this.#onEditingStart.bind(this));
 
