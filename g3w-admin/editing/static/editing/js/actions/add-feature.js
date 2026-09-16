@@ -4,14 +4,13 @@
 
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
+import { addZValue }                        from '../utils/addZValue.js';
 import { Step }                             from '../g3w-step.js';
 import { Feature }                          from '../g3w-feature.js';
 
 const GUI                      = g3w.app;
 const _                        = g3w.gettext;
 const { createMeasureTooltip } = g3w.utils;
-
-const { Geometry }             = g3wsdk.core.geoutils;
 
 export class AddFeatureStep extends Step {
 
@@ -100,8 +99,8 @@ export class AddFeatureStep extends Step {
               feature = e.feature;
             }
             // set Z values based on layer Geometry
-            if (Geometry.is3DGeometry(originalGeometryType)) {
-              feature = Geometry.addZValueToOLFeatureGeometry({ feature, geometryType: originalGeometryType });
+            if (/^(Multi(LineString|Polygon|Point|Line)|LineString|Polygon|Point|Line|MutliPoint)(Z|M|ZM|25D)$/.test(originalGeometryType)) {
+              feature = addZValue({ feature, geometryType: originalGeometryType });
             }
 
             inputs.features.push(feature);

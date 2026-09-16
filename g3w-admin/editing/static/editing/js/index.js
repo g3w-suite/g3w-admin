@@ -15,8 +15,6 @@ const {
   getResolutionFromScale,
 }                         = g3w.utils;
 
-const { Geometry }        = g3wsdk.core.geoutils;
-
 /**
  * Editing plugin entry point.
  *
@@ -1406,7 +1404,7 @@ new (class extends Plugin {
       const addPartTool = is_vector && !geom && toolBox.getTools().find(t => 'addPart' === t.getId());
 
       // check if layer is single geometry. Need to show and change behaviour
-      if (addPartTool && !Geometry.isMultiGeometry(_layer.getGeometryType())) {
+      if (addPartTool && !(/^Multi(LineString|Polygon|Point|Line)/i.test(_layer.getGeometryType()))) {
         addPartTool.visible = true;
       }
 
@@ -1418,7 +1416,7 @@ new (class extends Plugin {
           type:       ['add_feature', 'change_feature'],
           name:       "editing.addpart",
           icon:       "mActionAddPart.svg",
-          visible:    !Geometry.isMultiGeometry(_layer.getGeometryType()),
+          visible:    !(/^Multi(LineString|Polygon|Point|Line)/i.test(_layer.getGeometryType())),
           type:        'addparttomultigeometries',
           helpMessage: 'editing.addpart',
           runOnce:     true,
@@ -1463,7 +1461,7 @@ new (class extends Plugin {
 
         this.on('closeeditingpanel', () => {
           toolBox.getTools().splice(index, 0, addPartTool);
-          addPartTool.visible = Geometry.isMultiGeometry(_layer.getGeometryType());
+          addPartTool.visible = /^Multi(LineString|Polygon|Point|Line)/i.test(_layer.getGeometryType());
         })
       }
 

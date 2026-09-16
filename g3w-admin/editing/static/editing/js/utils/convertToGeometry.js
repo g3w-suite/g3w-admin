@@ -1,14 +1,8 @@
 import { isSameBaseGeometryType }    from '../utils/isSameBaseGeometryType.js';
+import { removeZValue }              from '../utils/removeZValue.js';
+import { addZValue }                 from '../utils/addZValue.js';
 
 const { convertSingleMultiGeometry } = g3w.utils;
-
-const {
-  is3DGeometry,
-  removeZValueToOLFeatureGeometry,
-  addZValueToOLFeatureGeometry,
-} = g3wsdk.core.geoutils.Geometry;
-
-const { isMultiGeometry }            = g3wsdk.core.geoutils.Geometry;
 
 /**
  * @param { Array }  features     to be converted (eg. Polygon)
@@ -19,19 +13,20 @@ const { isMultiGeometry }            = g3wsdk.core.geoutils.Geometry;
 export function convertToGeometry(features = [], geometryType) {
   return (features || []).flatMap(f => {
     const type = f.getGeometry() && f.getGeometry().getType();
+    const is3D = /^(Multi(LineString|Polygon|Point|Line)|LineString|Polygon|Point|Line|MutliPoint)(Z|M|ZM|25D)$/.test(geometryType);
 
     // ensure 3D coords
-    if (type && !is3DGeometry(geometryType)) {
-      removeZValueToOLFeatureGeometry({ feature: f });
-    } else if (type && is3DGeometry(geometryType)) {
-      addZValueToOLFeatureGeometry({ feature: f, geometryType });
+    if (type && !is3D) {
+      removeZValue({ feature: f });
+    } else if (type && is3D) {
+      addZValue({ feature: f, geometryType });
     }
 
     // same geometry
     if (geometryType === type) { return f }
 
     // convert single → multi
-    if (isSameBaseGeometryType(type, geometryType) && (isMultiGeometry(geometryType) || !isMultiGeometry(type))) {
+    if (isSameBaseGeometryType(type, geometryType) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type)))) {
       const cloned     = f.clone();
       cloned.__layerId = f.__layerId;
       cloned.setGeometry(convertSingleMultiGeometry(f.getGeometry(), geometryType));

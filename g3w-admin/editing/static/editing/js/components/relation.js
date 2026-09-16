@@ -36,11 +36,72 @@ const {
   PickCoordinatesInteraction,
 }                                = g3w.utils;
 
-const { Geometry }               = g3wsdk.core.geoutils;
-const { toRawType }              = g3wsdk.core.utils;
 const { FormService }            = g3wsdk.gui.vue.services;
 const { Mixins }                 = g3wsdk.gui.vue;
-const { PickFeatureInteraction } = g3wsdk.ol.interactions;
+
+const toRawType = value => Object.prototype.toString.call(value).slice(8, -1);
+
+/** @TODO merge `PickFeatureInteraction` into `PickFeaturesInteraction`? */
+class PickFeatureInteraction extends ol.interaction.Pointer {
+  constructor(opts = {}) {
+    super({
+      handleDownEvent(e) {
+        this.pickedFeature_ = this.featuresAtPixel_(e.pixel, e.map);
+        return this.pickedFeature_;
+      },
+      handleUpEvent(e) {
+        if (this.pickedFeature_) {
+          this.dispatchEvent({
+            type:       'picked',
+            feature:    this.pickedFeature_,
+            coordinate: e.coordinate,
+            layer:      this.pickedLayer_,
+          })
+        }
+        return true;
+      },
+      handleMoveEvent(e) {
+        e.map.getTargetElement().style.cursor = this.featuresAtPixel_(e.pixel, e.map) ? 'pointer': '';
+      },
+      ...opts
+    })
+
+    const { features }  = opts;
+    this.features_      = (Array.isArray(features) && features.length > 0) ? features : null;
+    this.layers_        = opts.layers || null;
+    this.pickedFeature_ = null;
+    this.pickedLayer_   = null;
+  }
+
+  layerFilter_(layer) {
+    const include     = (this.layers_ || []).includes(layer);
+    this.pickedLayer_ = include && layer;
+    return include;
+  }
+
+  featuresAtPixel_(pixel, map) {
+    let featureFound = null;
+    const intersectingFeature = map.forEachFeatureAtPixel(pixel, feature => {
+      if (this.features_) {
+        if (this.features_.includes(feature)) { return feature; }
+        else { return null; }
+      }
+      return feature;
+    }, {
+      layerFilter:  this.layerFilter_.bind(this),
+      hitTolerance: (isMobile && isMobile.any) ? 10 : 0
+    });
+    if (intersectingFeature) { featureFound = intersectingFeature; }
+    return featureFound;
+  }
+
+  shouldStopEvent() { return false; }
+
+  setMap(map) {
+    if (!map) { this.getMap().getTargetElement().style.cursor = ''}
+    super.setMap(map);
+  }
+}
 
 const color = 'rgb(255,89,0)';
 // Vector styles for selected relation
@@ -628,7 +689,7 @@ export default ({
             GUI.getPlugin('editing')
               .getToolBoxById(this._relationLayerId)
               .getTools()
-              .filter(t => Geometry.isPointGeometryType(this.getLayer().getGeometryType())
+              .filter(t => /^(Multi)?Point/i.test(this.getLayer().getGeometryType())
                   ? 'movefeature' === t.getId()                       // Point geometry
                   : ['movefeature', 'movevertex'].includes(t.getId()) // Line or Polygon
               )
@@ -1192,7 +1253,7 @@ export default ({
                 l.getGeometryType() === geometryType ||
                 (
                   isSameBaseGeometryType(l.getGeometryType(), geometryType) &&
-                  Geometry.isMultiGeometry(geometryType)
+                  /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType)
                 )
               ))
             )
@@ -1211,7 +1272,7 @@ export default ({
                 return false;
               }
               const type = features[0].getGeometry().getType();
-              return geometryType === type || (isSameBaseGeometryType(geometryType, type) && (Geometry.isMultiGeometry(geometryType) || !Geometry.isMultiGeometry(type)));
+              return geometryType === type || (isSameBaseGeometryType(geometryType, type) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))));
             })
             .map(l => ({
               id:       l.get('id'),
@@ -1228,7 +1289,7 @@ export default ({
               const features = externalLayer.getSource().getFeatures() || [];
               if (!features[0] || !features[0].getGeometry()) { return; }
               const type = features[0].getGeometry().getType();
-              if (geometryType === type || (isSameBaseGeometryType(geometryType, type) && (Geometry.isMultiGeometry(geometryType) || !Geometry.isMultiGeometry(type)))) {
+              if (geometryType === type || (isSameBaseGeometryType(geometryType, type) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))))) {
                 this.copyLayers.push({
                   id:       externalLayer.get('id'),
                   name:     externalLayer.get('name'),

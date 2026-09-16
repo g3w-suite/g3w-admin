@@ -16,59 +16,59 @@
  * - serialize commit data for add, update, delete and relation operations.
  */
 
-import { Collection }                                   from './g3w-collection.js';
-import { Tool }                                         from './g3w-tool.js';
-import { Step }                                         from './g3w-step.js';
-import { Feature }                                      from './g3w-feature.js';
-import { setLayerUniqueFieldValues }                    from './utils/setLayerUniqueFieldValues.js';
-import { getRelationsInEditing }                        from './utils/getRelationsInEditing.js';
-import { getRelationId }                                from './utils/getRelationId.js';
-import { setAndUnsetSelectedFeaturesStyle }             from './utils/setAndUnsetSelectedFeaturesStyle.js';
-import { chooseFeature }                                from './utils/chooseFeature.js';
-import { cloneFeature }                                 from './utils/cloneFeature.js';
-import { evaluateExpressionFields }                     from './utils/evaluateExpressionFields.js';
-import { chooseFeatureFromFeatures }                    from './utils/chooseFeatureFromFeatures.js';
-import { convertToGeometry }                            from './utils/convertToGeometry.js';
-import { addTableFeature }                              from './utils/addTableFeature.js';
-import { getRelationFieldsFromRelation }                from './utils/getRelationFieldsFromRelation.js';
-import { getLayersDependencyFeatures }                  from './utils/getLayersDependencyFeatures.js';
-import { getEditingLayerById }                          from './utils/getEditingLayerById.js';
-import { getRelationsInEditingByFeature }               from './utils/getRelationsInEditingByFeature.js';
-import { addPartToMultigeometries }                     from './utils/addPartToMultigeometries.js';
-import { unlinkRelation }                               from './utils/unlinkRelation.js';
-import { isSameBaseGeometryType }                       from './utils/isSameBaseGeometryType.js';
-import { isPkField }                                    from './utils/isPkField.js';
-import { getCatalogLayerById }                          from './utils/getCatalogLayerById.js';
-import { getCatalogLayers }                             from './utils/getCatalogLayers.js';
-import { getEditingLayer }                              from './utils/getEditingLayer.js';
+import { Collection }                               from './g3w-collection.js';
+import { Tool }                                     from './g3w-tool.js';
+import { Step }                                     from './g3w-step.js';
+import { Feature }                                  from './g3w-feature.js';
+import { setLayerUniqueFieldValues }                from './utils/setLayerUniqueFieldValues.js';
+import { getRelationsInEditing }                    from './utils/getRelationsInEditing.js';
+import { getRelationId }                            from './utils/getRelationId.js';
+import { setAndUnsetSelectedFeaturesStyle }         from './utils/setAndUnsetSelectedFeaturesStyle.js';
+import { chooseFeature }                            from './utils/chooseFeature.js';
+import { cloneFeature }                             from './utils/cloneFeature.js';
+import { evaluateExpressionFields }                 from './utils/evaluateExpressionFields.js';
+import { chooseFeatureFromFeatures }                from './utils/chooseFeatureFromFeatures.js';
+import { convertToGeometry }                        from './utils/convertToGeometry.js';
+import { addTableFeature }                          from './utils/addTableFeature.js';
+import { getRelationFieldsFromRelation }            from './utils/getRelationFieldsFromRelation.js';
+import { getLayersDependencyFeatures }              from './utils/getLayersDependencyFeatures.js';
+import { getEditingLayerById }                      from './utils/getEditingLayerById.js';
+import { getRelationsInEditingByFeature }           from './utils/getRelationsInEditingByFeature.js';
+import { addPartToMultigeometries }                 from './utils/addPartToMultigeometries.js';
+import { unlinkRelation }                           from './utils/unlinkRelation.js';
+import { isSameBaseGeometryType }                   from './utils/isSameBaseGeometryType.js';
+import { isPkField }                                from './utils/isPkField.js';
+import { getCatalogLayerById }                      from './utils/getCatalogLayerById.js';
+import { getCatalogLayers }                         from './utils/getCatalogLayers.js';
+import { getEditingLayer }                          from './utils/getEditingLayer.js';
+import { removeZValue }                             from './utils/removeZValue.js';
 
-import { OpenFormStep }                                 from './actions/open-form.js';
-import { SelectElementsStep }                           from './actions/select-elements.js';
-import { PickFeaturesInteraction, PickFeatureStep }     from './actions/pick-feature.js';
-import { AddFeatureStep }                               from './actions/add-feature.js';
-import { MoveFeatureStep }                              from './actions/move-feature.js';
-import { RotateFeatureStep }                            from './actions/rotate-feature.js';
-import { ModifyGeometryVertexStep }                     from './actions/move-vertex.js';
-import { AddHoleStep }                                  from './actions/add-hole.js';
-import { DeleteHoleStep }                               from './actions/delete-hole.js';
+import { OpenFormStep }                             from './actions/open-form.js';
+import { SelectElementsStep }                       from './actions/select-elements.js';
+import { PickFeaturesInteraction, PickFeatureStep } from './actions/pick-feature.js';
+import { AddFeatureStep }                           from './actions/add-feature.js';
+import { MoveFeatureStep }                          from './actions/move-feature.js';
+import { RotateFeatureStep }                        from './actions/rotate-feature.js';
+import { ModifyGeometryVertexStep }                 from './actions/move-vertex.js';
+import { AddHoleStep }                              from './actions/add-hole.js';
+import { DeleteHoleStep }                           from './actions/delete-hole.js';
 
-const { Emitter, Layer, Component }                      = g3w;
-const ApplicationState                                   = g3w.state;
-const GUI                                                = g3w.app;
-const _                                                  = g3w.gettext;
+const { Emitter, Layer, Component } = g3w;
+const ApplicationState              = g3w.state;
+const GUI                           = g3w.app;
+const _                             = g3w.gettext;
 const {
   XHR,
   debounce,
   getScaleFromResolution,
   getResolutionFromScale,
-}                                                        = g3w.utils;
+}                                   = g3w.utils;
 
-const { GEOMETRY_TYPES }                   = g3wsdk.constant;
-const { Geometry, dissolve, splitFeature } = g3wsdk.core.geoutils;
-const { removeZValueToOLFeatureGeometry }  = g3wsdk.core.geoutils.Geometry;
-const { toRawType, cloneDeep }             = g3wsdk.core.utils;
+const { dissolve, splitFeature }    = g3wsdk.core.geoutils;
+const { cloneDeep }                 = g3wsdk.core.utils;
 
 const is_defined = d => undefined !== d;
+const toRawType  = value => Object.prototype.toString.call(value).slice(8, -1);
 
 /**
  * Manages the editing workflow for a single layer.
@@ -281,11 +281,11 @@ export class ToolBox extends Emitter {
 
     const is_vector          = [undefined, 'vector'].includes(layer.getType());
     const geometryType       = is_vector && layer.getGeometryType();
-    const is_point           = is_vector && Geometry.isPointGeometryType(geometryType);
-    const is_line            = is_vector && Geometry.isLineGeometryType(geometryType);
-    const is_poly            = is_vector && Geometry.isPolygonGeometryType(geometryType);
+    const is_point           = is_vector && /^(Multi)?Point/i.test(geometryType);;
+    const is_line            = is_vector && /^(Multi)?Line(String)?/i.test(geometryType);
+    const is_poly            = is_vector && /^(Multi)?Polygon/i.test(geometryType);
     const is_table           = 'table' === layer.getType();
-    const isMultiGeometry    = geometryType && Geometry.isMultiGeometry(geometryType);
+    const isMultiGeometry    = geometryType && /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType);
     const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
 
     this._collection = new Collection('table' !== _layer.getType());
@@ -923,8 +923,8 @@ export class ToolBox extends Emitter {
                   && isSameBaseGeometryType(geometryType, type)
                   && (
                     (geometryType === type)
-                    || Geometry.isMultiGeometry(geometryType)
-                    || !Geometry.isMultiGeometry(type)
+                    || /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType)
+                    || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))
                   )
                 )
                 layers = [
@@ -1087,7 +1087,7 @@ export class ToolBox extends Emitter {
                                   if (isPkField(originalLayer, field)) { feature.set(field, null) }
                                 });
                               //remove eventually Z Values
-                              removeZValueToOLFeatureGeometry({ feature });
+                              removeZValue({ feature });
                               feature.setTemporaryId();
                               source.addFeature(feature);
                               session.pushAdd(layerId, feature, false);
@@ -1359,11 +1359,11 @@ export class ToolBox extends Emitter {
 
                   // ensure single geometry
                   switch (geometry.getType()) {
-                    case GEOMETRY_TYPES.MULTIPOLYGON:    geometries = geometry.getPolygons(); break;
-                    case GEOMETRY_TYPES.MULTILINE:       geometries = geometry.getLineStrings(); break;
-                    case GEOMETRY_TYPES.MULTILINESTRING: geometries = geometry.getLineStrings(); break;
-                    case GEOMETRY_TYPES.MULTIPOINT:      geometries = geometry.getPoints(); break;
-                    default:                             console.warn('invalid geometry type', geometry.getType()); break;
+                    case "MultiPolygon":    geometries = geometry.getPolygons(); break;
+                    case "MultiLine":       geometries = geometry.getLineStrings(); break;
+                    case "MultiLineString": geometries = geometry.getLineStrings(); break;
+                    case "MultiPoint":      geometries = geometry.getPoints(); break;
+                    default:                console.warn('invalid geometry type', geometry.getType()); break;
                   }
 
                   const source          = new ol.source.Vector({features: geometries.map(geometry => new ol.Feature(geometry))});

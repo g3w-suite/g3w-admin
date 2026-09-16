@@ -8,6 +8,7 @@ import { chooseFeatureFromFeatures }                    from '../utils/chooseFea
 import { isSameBaseGeometryType }                       from '../utils/isSameBaseGeometryType.js';
 import { PickFeaturesInteraction }                      from '../actions/pick-feature.js';
 import { getEditingLayer }                              from '../utils/getEditingLayer.js';
+import { removeZValue }                                 from '../utils/removeZValue.js';
 import { Step }                                         from '../g3w-step.js';
 import { Feature }                                      from '../g3w-feature.js';
 
@@ -15,8 +16,6 @@ const ApplicationState                                  = g3w.state;
 const GUI                                               = g3w.app;
 const _                                                 = g3w.gettext;
 const { convertSingleMultiGeometry }                    = g3w.utils;
-
-const { removeZValueToOLFeatureGeometry }               = g3wsdk.core.geoutils.Geometry;
 
 export class SelectElementsStep extends Step {
 
@@ -176,7 +175,7 @@ export class SelectElementsStep extends Step {
 
           // evaluate Geometry Expression
           evaluateExpressionFields({ inputs, context, feature }).finally(() => {
-            removeZValueToOLFeatureGeometry({ feature }); // remove eventually Z Values
+            removeZValue({ feature }); // remove eventually Z Values
             feature.setTemporaryId();
             source.addFeature(feature);
             session.pushAdd(layerId, feature, false);

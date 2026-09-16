@@ -1,4 +1,3 @@
-const { Geometry } = g3wsdk.core.geoutils;
 /**
  * @param { Object } opts
  * @param opts.feature
@@ -28,9 +27,9 @@ export function setVertexStyle({
 
       }),
       geometry: f => new ol.geom.MultiPoint(
-        (Geometry.isPolygonGeometryType(geometryType) && Geometry.isMultiGeometry(geometryType))
+        (/^(Multi)?Polygon/i.test(geometryType) && /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType))
           ? f.getGeometry().getCoordinates()[0][0]    // in the case of multipolygon geometry
-          : Geometry.isLineGeometryType(geometryType)
+          : /^(Multi)?Line(String)?/i.test(geometryType)
             ? f.getGeometry().getCoordinates()[0]
             : [f.getGeometry().getCoordinates()]
       )

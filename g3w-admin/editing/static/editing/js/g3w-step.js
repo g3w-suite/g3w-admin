@@ -4,10 +4,8 @@
 
 import { getEditingLayer } from './utils/getEditingLayer.js';
 
-const { Emitter }             = g3w;
-const GUI                     = g3w.app;
-
-const { isPointGeometryType } = g3wsdk.core.geoutils.Geometry;
+const { Emitter } = g3w;
+const GUI         = g3w.app;
 
 export class Step extends Emitter {
 
@@ -425,7 +423,7 @@ export class Step extends Emitter {
     if (this._tools && 0 === this._tool._toolsoftool.length) {
       this._tool._toolsoftool.push(...(
         this._tools
-          .filter(tool => ('measure' !== tool || ('vector' === inputs.layer.getType() && !isPointGeometryType(inputs.layer.getGeometryType()))))
+          .filter(tool => ('measure' !== tool || ('vector' === inputs.layer.getType() && !(/^(Multi)?Point/i.test(inputs.layer.getGeometryType())))))
           .map(tool => toolsOfTools[tool])
       ));
     }

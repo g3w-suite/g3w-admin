@@ -1,9 +1,9 @@
-import { Step }                  from '../g3w-step.js';
-import { getEditingLayer }       from '../utils/getEditingLayer.js';
+import { Step }            from '../g3w-step.js';
+import { getEditingLayer } from '../utils/getEditingLayer.js';
+import { addZValue }       from '../utils/addZValue.js';
 
-const GUI          = g3w.app;
-const { Geometry } = g3wsdk.core.geometry;
-const { within }   = g3wsdk.core.geoutils;
+const GUI        = g3w.app;
+const { within } = g3wsdk.core.geoutils;
 
 /**
  * Create an Hole in a Polygon or MultiPolygon geometry
@@ -45,11 +45,20 @@ export class AddHoleStep extends Step {
   #onDrawEnd(evt, inputs, context, resolve, reject) {
     document.removeEventListener('keydown', this._removeLastPoint);
 
-    const GEOM_TYPE = Geometry.getOLGeometry(inputs.layer.getGeometryType());
+    let geom = inputs.layer.getGeometryType();
+
+    // get open layers geometry
+    if      (geom.startsWith('Line'))         { geom = 'LineString'; }
+    else if (geom.startsWith('MultiLine'))    { geom = 'MultiLineString'; }
+    else if (geom.startsWith('Point'))        { geom = 'Point'; }
+    else if (geom.startsWith('MultiPoint'))   { geom = 'MultiPoint'; }
+    else if (geom.startsWith('Polygon'))      { geom = 'Polygon'; }
+    else if (geom.startsWith('MultiPolygon')) { geom = 'MultiPolygon'; }
+    else                                      { console.warn('invalid geometry type: ', geom); }
 
     // ensure polygon has z-value
-    if (Geometry.is3DGeometry(GEOM_TYPE)) {
-      evt.feature.setGeometry(Geometry.addZValueToOLFeatureGeometry(evt.feature.getGeometry()))
+    if (/^(Multi(LineString|Polygon|Point|Line)|LineString|Polygon|Point|Line|MutliPoint)(Z|M|ZM|25D)$/.test(geom)) {
+      evt.feature.setGeometry(addZValue(evt.feature.getGeometry()))
     }
 
     const hole   = evt.feature;
@@ -58,7 +67,7 @@ export class AddHoleStep extends Step {
     // In case of MultiPolygon
     let newFeature, originalFeature;
 
-    const IS_MULTI = Geometry.isMultiGeometry(GEOM_TYPE);
+    const IS_MULTI = /^Multi(LineString|Polygon|Point|Line)/i.test(geom);
 
     // case: MultiPolygon
     if (IS_MULTI) {

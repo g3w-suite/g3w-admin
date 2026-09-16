@@ -14,9 +14,11 @@ import { getCatalogLayerById }              from '../utils/getCatalogLayerById.j
 
 import { Tool }                             from '../g3w-tool.js';
 import { Step }                             from '../g3w-step.js';
+import { Feature }                          from '../g3w-feature.js';
 
-const GUI                                   = g3w.app;
-const { FormService }                       = g3wsdk.gui.vue.services;
+const GUI                        = g3w.app;
+const { FormService }            = g3wsdk.gui.vue.services;
+const { createFilterFormInputs } = g3wsdk.core.utils;
 
 export class OpenFormStep extends Step {
 
@@ -699,7 +701,7 @@ async function _handleRelation1_1LayerFields({
           //Check if we need to create a new child feature
           if (isNewChildFeature) {
             //create feature for child layer
-            childFeature = new g3wsdk.core.layer.features.Feature();
+            childFeature = new Feature();
             childFeature.setTemporaryId();
             // set name attribute to `null`
             (getCatalogLayerById(childLayerId).state.editing.fields || []).forEach(field => childFeature.set(field.name, null));
@@ -935,7 +937,7 @@ async function _getRelation1_1ChildFeature({
         inputs: {
           layer,
           formatter: 0,
-          filter:    g3wsdk.core.utils.createFilterFormInputs({
+          filter:    createFilterFormInputs({
             layer,
             inputs:  [{ attribute: childField, value: fatherFormRelationField.value, }]
           }),
