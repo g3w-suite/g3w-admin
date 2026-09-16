@@ -128,13 +128,6 @@ export class ToolBox extends Emitter {
   #current_style;
 
   /**
-   * Whether the toolbox has already started and is currently active.
-   *
-   * @type {boolean}
-   */
-  #started = false;
-
-  /**
    * Deferred promise resolver used when the toolbox must wait for a scale
    * constraint before continuing the start routine.
    *
@@ -3500,7 +3493,6 @@ export class ToolBox extends Emitter {
   async #startSession(options = {}) {
     try {
       const features = await this.#requestFeatures(options); // load layer features based on filter type
-      this.#started = true; // if all ok set to started
       this.state.editing.session.started = true;
       return features;
     } catch(e) {
@@ -3576,7 +3568,6 @@ export class ToolBox extends Emitter {
         this.#controller?.abort(); //abort request if exist
         await XHR.post({ url: `${ApplicationState.project.state.vectorurl}unlock/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/` });
 
-        this.#started     = false;
         this.#filter.bbox = null;
         this.#controller  = null;
         this.#count       = 0;
