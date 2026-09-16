@@ -317,7 +317,6 @@ export class ToolBox extends Emitter {
       },
       addFeature:          f => this._featuresstore.addFeature(f),
       isStarted:           () => this.#started,
-      getLockIds:          () => GUI.getPlugin('editing').state.lock_ids[_layer.getId()],
       getEditingSource:    this.getEditingSource.bind(this),
       getSource:           () => this._featuresstore,
       commit:              this.#commitToEditor.bind(this),
@@ -3251,7 +3250,8 @@ export class ToolBox extends Emitter {
       if (key !== id) {
         isRelation            = true; //set true because these changes belong to features relation items
         //check lock ids of relation layer
-        const lockids =  ToolBox._sessions[key]?._editor?.getLockIds?.() || [];
+        const lockids =  GUI.getPlugin('editing')?.state?.lock_ids?.[key] || [];
+        
         //create a relation object
         commitObj.relations[key] = {
           lockids,
@@ -3324,7 +3324,7 @@ export class ToolBox extends Emitter {
         // with empty changes to mantain relation structure in commit object
         if (!commitObj.relations[fatherId]) {
           commitObj.relations[fatherId] = { 
-            lockids:   ToolBox._sessions[fatherId]._editor.getLockIds?.() || [],
+            lockids:   GUI.getPlugin('editing')?.state?.lock_ids?.[fatherId] || [],
             add:       [],
             update:    [],
             delete:    [],
