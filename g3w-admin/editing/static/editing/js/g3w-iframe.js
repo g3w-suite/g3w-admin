@@ -430,7 +430,7 @@ export class IframeEditor extends Emitter {
                   geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.feature)
                 },
               } 
-            });
+            }, '*');
           }
         });
         GUI.getMap().addInteraction(draw);
@@ -449,7 +449,7 @@ export class IframeEditor extends Emitter {
               geojson: (new ol.format.GeoJSON()).writeFeatureObject(e.features.item(0))
             },
           } 
-        })
+        }, '*');
       });
 
       // snap
