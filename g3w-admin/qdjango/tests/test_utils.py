@@ -786,6 +786,24 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
 
         qgis_file.close()
 
+    def test_save_raises_when_layer_errors_are_present(self):
+        """Test that save() does not persist projects when construction already recorded layer errors"""
+
+        qgis_filename = 'test_wrong_geodata_org_type_path.qgs'
+        qgis_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+
+        project = QgisProject(qgis_file)
+        project.group = self.project_group
+        project_count = Project.objects.count()
+
+        with self.assertRaises(QgisProjectException):
+            project.save()
+
+        self.assertEqual(Project.objects.count(), project_count)
+
+        qgis_file.close()
+
 
 class TestTemplateTags(QdjangoTestBase):
     """Test qdjango template tags"""
@@ -1002,4 +1020,3 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         self.assertTrue('referencing_fields' in dfields['area']['input']['options']['default_expression'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['referencing_fields'], ['length'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['apply_on_update'], False)
-

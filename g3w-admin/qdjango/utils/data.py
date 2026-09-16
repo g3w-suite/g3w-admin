@@ -1647,6 +1647,8 @@ class QgisProject(XmlData):
         :param instance: Project instance
         """
 
+        self.clean()
+
         with transaction.atomic():
 
             if not instance and not self.instance:
@@ -2350,4 +2352,3 @@ class QgisProjectSettingsWMS(XmlData):
             })
 
         return self._composerTemplatesData
-
