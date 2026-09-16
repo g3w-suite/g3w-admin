@@ -498,15 +498,15 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
             setPermissionUserObject(user, self, permissions='view_project', mode=mode)
 
-            layerAction = (
-                'addPermissionsToViewers'
-                if mode == 'add'
-                else 'removePermissionsToViewers'
-            )
+        layerAction = (
+            'addPermissionsToViewers'
+            if mode == 'add'
+            else 'removePermissionsToViewers'
+        )
 
-            layers = self.layer_set.all()
-            for layer in layers:
-                getattr(layer, layerAction)(users_id)
+        layers = self.layer_set.all()
+        for layer in layers:
+            getattr(layer, layerAction)(users_id)
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
         for group_id in groups_id:
@@ -528,16 +528,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                     mode=mode,
                 )
 
-            layerAction = (
-                'add_permissions_to_editor_user_groups'
-                if mode == 'add'
-                else 'remove_permissions_to_editor_user_groups'
-            )
+        layerAction = (
+            'add_permissions_to_editor_user_groups'
+            if mode == 'add'
+            else 'remove_permissions_to_editor_user_groups'
+        )
 
-            layers = self.layer_set.all()
+        layers = self.layer_set.all()
 
-            for layer in layers:
-                getattr(layer, layerAction)(groups_id)
+        for layer in layers:
+            getattr(layer, layerAction)(groups_id)
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
         for group_id in groups_id:
@@ -549,16 +549,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 mode=mode,
             )
 
-            layerAction = (
-                'add_permissions_to_viewer_user_groups'
-                if mode == 'add'
-                else 'remove_permissions_to_viewer_user_groups'
-            )
+        layerAction = (
+            'add_permissions_to_viewer_user_groups'
+            if mode == 'add'
+            else 'remove_permissions_to_viewer_user_groups'
+        )
 
-            layers = self.layer_set.all()
+        layers = self.layer_set.all()
 
-            for layer in layers:
-                getattr(layer, layerAction)(groups_id)
+        for layer in layers:
+            getattr(layer, layerAction)(groups_id)
 
     def tree(self):
         def readLeaf(layer, layers):

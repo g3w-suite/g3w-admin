@@ -2373,6 +2373,7 @@ class TestVisibilityScaleLayerConstraintFilters(QdjangoTestBase):
         })
 
         self.assertEqual(response.status_code, 200)
+        print(response.content)
         self.assertEqual(response.content, expected_1_feature)
 
         c.logout()

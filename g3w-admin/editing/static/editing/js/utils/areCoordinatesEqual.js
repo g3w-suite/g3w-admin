@@ -12,7 +12,7 @@ export function areCoordinatesEqual({
 }) {
  //get geometry from feature
  const geometry = feature.getGeometry();
- const type     = geometry.getType();
+ const type     = geometry?.getType?.();
  const coords   = (c1, c2) => g3wsdk.core.geoutils.areCoordinatesEqual(c1, c2); // whether element have same coordinates
 
  switch (type) {

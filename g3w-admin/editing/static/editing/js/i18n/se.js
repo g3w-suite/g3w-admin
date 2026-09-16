@@ -4,7 +4,7 @@ export default {
     some_layers: "Ett fel uppstod. Vissa nivåer kan inte redigeras."
   },
   search: "Sökning",
-  editing_changes: "Editing Changes",
+  editing_changes: "Redigeringsändringar",
   editing_data: "Nivåerna redigeras",
   editing_attributes: "Attributen redigeras",
   relations: "Relationer",
@@ -27,7 +27,7 @@ export default {
   },
   tools: {
     copy: "Kopiera egenskaper",
-    pastefeaturesfromotherlayers: "Paste features from other layer",
+    pastefeaturesfromotherlayers: "Klistra in objekt från ett annat lager",
     addpart: "Lägg till del",
     deletepart: "Ta bort del",
     merge: "Slå samman egenskaper",
@@ -35,18 +35,20 @@ export default {
     add_feature: "Lägg till egenskap",
     delete_feature: "Ta bort egenskap",
     move_feature: "Flytta egenskap",
-    rotate_feature: "Rotate feature",
+    rotate_feature: "Rotera objekt",
     update_vertex: "Uppdatera punktens egenskap",
     update_feature: "Uppdatera egenskap",
     update_multi_features: "Ändra attributen för de valda funktionerna",
-    update_multi_features_relations: "Update attributes of all selected relations",
-    update_multi_features_relations_from_parents : "Add/Edit relations records from one or mode parent features",
-    copyfeaturefromexternallayer: "Create Feature from added layer"
+    update_multi_features_relations: "Uppdatera attribut för alla valda relationer",
+    update_multi_features_relations_from_parents : "Lägg till/redigera relationsposter från ett eller flera överordnade objekt",
+    copyfeaturefromexternallayer: "Skapa objekt från tillagt lager",
+    addhole: "Lägg till hål",
+    deletehole: "Ta bort hålet",
   },
   toolsoftool: {
-    measure: "Show measure",
-    snap: "Snap layer",
-    snapall: "Snap to all layers"
+    measure: "Visa mätning",
+    snap: "Fäst mot lager",
+    snapall: "Fäst mot alla lager"
   },
   steps: {
     help: {
@@ -120,23 +122,23 @@ export default {
       delete: "Borttagen",
       update: "Redigerad"
     },
-    loading_table_data: "Building Data Table. Please wait ...",
-    copy_and_paste_from_other_layer_mandatory_fields: "It is necessary to fill in any mandatory fields on the features pasted before saving",
-    no_feature_selected: "No feature selected",
-    select_min_2_features: 'Select at least 2 features'
+    loading_table_data: "Bygger datatabell. Vänta ...",
+    copy_and_paste_from_other_layer_mandatory_fields: "Alla obligatoriska fält i de inklistrade objekten måste fyllas i innan ändringarna sparas",
+    no_feature_selected: "Inget objekt har valts",
+    select_min_2_features: 'Välj minst 2 objekt'
   },
   relation: {
     table: {
       info: `<div>Välj relation för länkning till egenskap som ska redigeras.</div>`
     },
-    draw_new_feature:"Draw new feature",
+    draw_new_feature:"Rita nytt objekt",
     draw_or_copy:"or",
-    copy_feature_from_other_layer:"Copy feature from other layer"
+    copy_feature_from_other_layer:"Kopiera objekt från annat lager"
   },
   form: {
     relations: {
       tooltips: {
-        back_to_father:"Back to edit father",
+        back_to_father:"Tillbaka till redigering av överordnat objekt",
         add_relation: "Skapa och länka ny relation",
         link_relation: "Foga relationen till denna egenskap",
         open_relation_tools: "Visa relationsverktyg",
@@ -153,11 +155,11 @@ export default {
   modal: {
     tools: {
       copyfeaturefromotherlayer: {
-        title: "Select layer",
-        edit_attributes: "Edit attributes of pasted features in multiple mode"
+        title: "Välj lager",
+        edit_attributes: "Redigera attribut för inklistrade objekt i flerläge"
       },
       copyfeaturefromprojectlayer: {
-        title: "Select a feature"
+        title: "Välj ett objekt"
       }
     }
   }

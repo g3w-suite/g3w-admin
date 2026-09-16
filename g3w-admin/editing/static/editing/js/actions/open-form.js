@@ -355,62 +355,60 @@ export class OpenFormStep extends Step {
               class: "btn-success",
               // save features
               cbk: async (fields = []) => {
+                const service    = Workflow.Stack.current.getContext().service;
+                const hasUpdates = !!service?.state?.fields?.some(f => f.update);    // check for updates in form fields or if the feature is new
+                const isNew      = !!this._originalFeatures?.some(f => f.isNew?.()); // check for new features in form (i.e., features that are not yet saved to the server)
+                const newFeatures = [];
+
                 fields = this._multi ? fields.filter(f => null !== f.value) : fields;
-                // skip when no fields
-                if (0 === fields.length) {
+
+                // skip when no fields or when nothing changed (on an existing non-relation feature).
+                if (0 === fields.length || (!isNew && !hasUpdates)) {
                   resolve(inputs);
                   return;
                 }
-
-                const newFeatures = [];
 
                 // @since 3.5.15
                 GUI.setLoadingContent(true);
                 GUI.disableContent(true);
 
-                // chek if some changes are present before save otherwise check in relation eventually
-                if (Workflow.Stack.current.getContext().service.state.fields.find(f => f.update)) {
-                  
-                  await Workflow.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
+                await service.saveDefaultExpressionFieldsNotDependencies();
 
-                  this._features.forEach(f => {
-                    _setFieldsWithValues(inputs.layer, f, fields);
-                    newFeatures.push(f.clone());
-                  });
+                this._features.forEach(f => {
+                  _setFieldsWithValues(inputs.layer, f, fields);
+                  newFeatures.push(f.clone());
+                });
 
-                  if (this._isContentChild) {
-                    inputs.relationFeatures = {
-                      newFeatures,
-                      originalFeatures: this._originalFeatures
-                    };
-                  }
-
-                  await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
-
-                  newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
-
-                  // check and handle if layer has relation 1:1
-                  await _handleRelation1_1LayerFields({
-                    layerId:  this.layerId,
-                    features: newFeatures,
-                    fields,
-                    task:     this,
-                  });
-
-                  GUI.setModal(false);
-
-                  GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                  GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
-
-                  // In case of save of child, it means that child is updated so also parent
-                  if (this._isContentChild) {
-                    Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
-                  }
+                if (this._isContentChild) {
+                  inputs.relationFeatures = {
+                    newFeatures,
+                    originalFeatures: this._originalFeatures
+                  };
                 }
 
+                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
+
+                newFeatures.forEach((f, i) => context.session.pushUpdate(this.layerId, f, this._originalFeatures[i]));
+
+                // check and handle if layer has relation 1:1
+                await _handleRelation1_1LayerFields({
+                  layerId:  this.layerId,
+                  features: newFeatures,
+                  fields,
+                  task:     this,
+                });
+
+                GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
+                GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
+
+                // sync parent workflows when child is saved.
+                if (this._isContentChild) {
+                  Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                }
+              
                 GUI.setLoadingContent(false);
                 GUI.disableContent(false);
-                
+
                 //@TODO add field unique new value id not set
                 resolve(inputs);
               }

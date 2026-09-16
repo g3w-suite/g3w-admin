@@ -27,7 +27,7 @@ export default {
   },
   tools: {
     copy: "Features kopieren",
-    pastefeaturesfromotherlayers: "Paste features from other layer",
+    pastefeaturesfromotherlayers: "Features aus einem anderen Layer einfügen",
     addpart: "Teil zu Multipart hinzufügen",
     deletepart: "Teil aus Multipart löschen",
     merge: "Feature auflösen",
@@ -39,13 +39,15 @@ export default {
     update_vertex: "Feature vertex aktualisieren",
     update_feature: "Feature-Attribut aktualisieren",
     update_multi_features: "Attribute ausgewählter Features aktualisieren",
-    update_multi_features_relations: "Update attributes of all selected relations",
+    update_multi_features_relations: "Attribute aller ausgewählten Relationen aktualisieren",
     update_multi_features_relations_from_parents : "Hinzufügen/Bearbeiten Sie Beziehungsdatensätze von einem oder mehreren übergeordneten features",
-    copyfeaturefromexternallayer: "Create Feature from added layer"
+    copyfeaturefromexternallayer: "Feature aus hinzugefügtem Layer erstellen",
+    addhole: "Loch hinzufügen",
+    deletehole: "Loch entfernen",
   },
   toolsoftool: {
     measure: "Messung anzeigen",
-    snap: "Snap Layer",
+    snap: "Layer fangen",
     snapall: "Snap auf alle Layer"
   },
   steps: {
@@ -123,7 +125,7 @@ export default {
     loading_table_data: "Datentabelle wird erstellt. Bitte warten ...",
     copy_and_paste_from_other_layer_mandatory_fields: "Vor dem Speichern müssen alle Pflichtfelder des eingegebenen features ausgefüllt werden",
     no_feature_selected: "Keine feature ausgewählt",
-    select_min_2_features: 'Select at least 2 features'
+    select_min_2_features: 'Mindestens 2 Features auswählen'
   },
   relation: {
     table: {
@@ -153,8 +155,8 @@ export default {
   modal: {
     tools: {
       copyfeaturefromotherlayer: {
-        title: "Select layer",
-        edit_attributes: "Edit attributes of pasted features in multiple mode"
+        title: "Layer auswählen",
+        edit_attributes: "Attribute eingefügter Features im Mehrfachmodus bearbeiten"
       },
       copyfeaturefromprojectlayer: {
         title: "Select one feature"

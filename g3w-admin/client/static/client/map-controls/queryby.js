@@ -67,6 +67,7 @@ export class QueryBy extends MapControl {
       ...opts,
       name:        'queryby',
       tipLabel:    'Query area',
+      clickmap:    true, //@since 4.2.0
       enabled:     true,
       cursorClass: null, //store cursorClass of a current sub control enabled (querybbox, etc..)
     });
