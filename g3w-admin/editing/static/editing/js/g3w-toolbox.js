@@ -79,7 +79,7 @@ const is_defined = d => undefined !== d;
  *
  * The class is responsible for:
  * - registering the layer in the global session registry;
- * - creating feature collections and editor references for the current layer;
+ * - creating feature collections for the current layer;
  * - reacting to start/stop editing lifecycle events;
  * - tracking temporary and committed history states for undo/redo;
  * - converting pending local changes into the commit payload expected by the
@@ -91,7 +91,7 @@ export class ToolBox extends Emitter {
    * Session registry keyed by layer id.
    *
    * Each active edit session is stored here so other parts of the application
-   * can resolve the current toolbox and editor state for a given layer.
+   * can resolve the current toolbox state for a given layer.
    */
   static _sessions = {};
 
@@ -102,7 +102,6 @@ export class ToolBox extends Emitter {
    * start()       -> load features and enable editing interaction
    * tool run      -> push temporary changes into session history
    * save()        -> serialize pending operations into a commit payload
-   * commitToEditor() -> reconcile server response and local state
    * stop()        -> release listeners, locks and derived resources
    */
 
@@ -225,7 +224,7 @@ export class ToolBox extends Emitter {
    * Creates the editing toolbox and initializes the session state for a layer.
    *
    * The constructor configures the editing metadata for the layer, builds the
-   * associated feature store, registers the editor instance, and instantiates
+   * associated feature store and instantiates
    * the tool list that will be shown based on geometry, capabilities and
    * relation configuration.
    *
@@ -2413,7 +2412,7 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Returns the current color used to represent the layer in the editor UI.
+   * Returns the current color used to represent the layer in UI.
    *
    * @returns {string} Layer color.
    */
@@ -3441,7 +3440,7 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Get features from server (by editor)
+   * Get features from server
    */
   async #getFeatures(options = {}) {
     try { 
@@ -3904,7 +3903,7 @@ export class ToolBox extends Emitter {
   /**
    * Start editing session for the current layer.
    *
-   * @param {Object} options - Options for starting the editor.
+   * @param {Object} options - Options for starting request features.
    * @returns {Array} Loaded features for the layer.
    */
   async #startEditor(options = {}) {
@@ -3914,7 +3913,7 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * stop editor (unlock)
+   * stop and unlock
    */
   async #stopEditor() {
     this.#controller?.abort(); //abort request if exist
@@ -3937,7 +3936,7 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Resets the editor runtime state after a stop or a session reset.
+   * Resets the runtime state after a stop or a session reset.
    *
    * It clears the loaded feature set, aborts pending fetches, resets the lock
    * registry and empties the local editing collection so the layer is ready for
