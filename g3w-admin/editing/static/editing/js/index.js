@@ -189,7 +189,6 @@ new (class extends Plugin {
    * @listens map:context-menu
    */
   async #init() {
-    let tlbIndex = 0;
     //Loop through editable layers and get config to create toolboxes
     for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
@@ -205,7 +204,7 @@ new (class extends Plugin {
     )) {
       if ('fulfilled' === status) {
         const ToolBox                                  = (await import('./g3w-toolbox.js')).ToolBox;
-        const toolBox                                  = new ToolBox(value.layer, value.config, tlbIndex++);
+        const toolBox                                  = new ToolBox(value.layer, value.config);
         this.state.toolboxes.push(toolBox);
         this.state.lock_ids[toolBox.getId()]           = [];
         this.state.loaded_ids[toolBox.getId()]         = [];

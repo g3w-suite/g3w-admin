@@ -85,6 +85,12 @@ const toRawType  = value => Object.prototype.toString.call(value).slice(8, -1);
  *   server-side editing endpoint.
  */
 export class ToolBox extends Emitter {
+
+  /**
+   * @type { number } internal counter
+   */
+  static #uid = 0;
+
   /**
    * High-level editing lifecycle:
    *
@@ -216,7 +222,7 @@ export class ToolBox extends Emitter {
    *
    * @listens start-editing
    */
-  constructor(_layer, _config, index = 0) {
+  constructor(_layer, _config) {
     super({});
 
     this.setters = [ 'featuresLockedByOtherUser' ];
@@ -300,7 +306,7 @@ export class ToolBox extends Emitter {
         "#3B3A73", "#9E5165", "#A51E22", "#261326", "#e4572e",
         "#29335c", "#f3a712", "#669bbc", "#eb6841", "#4f372d",
         "#cc2a36", "#00a0b0", "#00b159", "#f37735", "#ffc425",
-      ][index % 40] : '#fff');
+      ][ToolBox.#uid++ % 40] : '#fff');
     }
 
     //set vector layer source
