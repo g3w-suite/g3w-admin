@@ -1020,7 +1020,7 @@ class QgisProjectLayer(XmlData):
             except Exception as e:
                 errors.extend(getattr(e, 'errors', None) or [str(e)])
         if errors:
-            raise QgisProjectLayerException('; '.join(errors), errors=errors)
+            raise QgisProjectLayerException('; '.join(map(str, errors)), errors=[str(error) for error in errors])
 
     def save(self):
         """
