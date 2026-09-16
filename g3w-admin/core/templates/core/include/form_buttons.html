@@ -17,10 +17,10 @@
 </div>
 <script>
 (function(){
+    if (window.__g3wFormButtonsInit) return;
+    window.__g3wFormButtonsInit = true;
     function init() {
         var bar = document.querySelector('.form-buttons');
-        var footer = document.querySelector('.main-footer');
-        if (!bar || !footer) return;
         function adjust() {
             var rect = footer.getBoundingClientRect();
             var vh = window.innerHeight || document.documentElement.clientHeight;
