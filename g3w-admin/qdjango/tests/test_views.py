@@ -24,7 +24,7 @@ class QdjangoViewsTest(QdjangoTestBase):
 
     def test_qdjango_project_list_exposes_public_project_ids(self):
         client = Client()
-        self.assertTrue(client.login(username=self.test_user1.username, ******)
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
 
         assign_perm('view_project', get_anonymous_user(), self.project.instance)
         response = client.get(reverse("qdjango-project-layers-list", args=[self.project_group.slug, self.project.instance.slug]))

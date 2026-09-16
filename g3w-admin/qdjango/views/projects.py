@@ -88,7 +88,6 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         # Get project bookmarked per user
         context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user, project__in=self.get_queryset()).values_list('project_id', flat=True)
         context['public_project_ids'] = get_public_project_ids(context['object_list'])
-
         return context
 
 
