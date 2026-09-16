@@ -320,7 +320,6 @@ export class ToolBox extends Emitter {
       getLockIds:          () => GUI.getPlugin('editing').state.lock_ids[_layer.getId()],
       getEditingSource:    this.getEditingSource.bind(this),
       getSource:           () => this._featuresstore,
-      getLayer:            () => _layer,
       readFeatures:        () => this._features, //return original features from server (not modified)
       readEditingFeatures: this.readEditingFeatures.bind(this), //return features changed/added by editing tools (not original features from server)
       commit:              this.#commitToEditor.bind(this),
@@ -3099,7 +3098,7 @@ export class ToolBox extends Emitter {
     // remove not editable proprierties from feature
     if (removeNotEditableProperties) {
       (
-        ToolBox._sessions[layerId]._editor.getLayer().config.editing.fields
+        ToolBox._sessions[layerId].getLayer().config.editing.fields
         .filter(f => !f.editable) // un-editable fields
         .map(f => f.name)
         || []
@@ -3319,9 +3318,9 @@ export class ToolBox extends Emitter {
     // Remove deep relations from the current layer (commitObj) that are not relative to that layer
     const relations = Object.keys(commitObj.relations || {});
     relations
-      .filter(id => undefined === this._editor.getLayer().getRelations().getArray().find(r => id === r.getChild())) // child relations
+      .filter(id => undefined === this.getLayer().getRelations().getArray().find(r => id === r.getChild())) // child relations
       .map(id => {
-        const fatherId = ToolBox._sessions[id]._editor.getLayer().getRelations().getArray()
+        const fatherId = ToolBox._sessions[id].getLayer().getRelations().getArray()
           .find(r => id === r.getChild()).getFather() // parent relation layer
         // In case of missing changes child relaztion, need to create relation object
         // with empty changes to mantain relation structure in commit object
@@ -3555,7 +3554,7 @@ export class ToolBox extends Emitter {
           url,
           data: JSON.stringify({
             in_bbox:     options.filter.bbox.join(','),
-            filtertoken: this._editor.getLayer().getToken(),
+            filtertoken: this.getLayer().getToken(),
           }),
           contentType: 'application/json',
            signal,
@@ -3594,7 +3593,7 @@ export class ToolBox extends Emitter {
       const { data, count }       = response.vector;
       const { featurelocks = [] } = response;
       const featIds               = featurelocks.map(lk => lk.featureid); //feature ids locked by user that can edit
-      const dataProjection        = 'NoGeometry' === response.vector.geometrytype ? null : this._editor.getLayer().getCrs();
+      const dataProjection        = 'NoGeometry' === response.vector.geometrytype ? null : this.getLayer().getCrs();
       //current page count is the number of features requested from server (in case of pagination) or the total number of features (count)
       let current_page_count      =  count;
       if (options.filter?.pagination?.page_size) {
@@ -3779,7 +3778,7 @@ export class ToolBox extends Emitter {
       relations = Object
         .keys(commit.relations)
         .map(relationId => {
-          const relation = this._editor.getLayer().getRelations().getRelationByFatherChildren(layerId, relationId);
+          const relation = this.getLayer().getRelations().getRelationByFatherChildren(layerId, relationId);
           return {
             [relationId]: {
               ids: [                                                  // ids of "added" or "updated" relations
@@ -3986,8 +3985,8 @@ export class ToolBox extends Emitter {
     this._featuresstore.clear();
 
     // vector layer
-    if ('vector' === this._editor.getLayer().getType()) {
-      this._editor.getLayer().getOLLayer().setSource(new ol.source.Vector({ features: this._collection._store }));
+    if ('vector' === this.getLayer().getType()) {
+      this.getLayer().getOLLayer().setSource(new ol.source.Vector({ features: this._collection._store }));
     }
   }
 

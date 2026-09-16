@@ -49,7 +49,7 @@ export async function getLayersDependencyFeatures(layerId, opts = {}) {
       opts.operator = undefined !== opts.operator ? opts.operator : 'eq'; 
 
       const { ownField, relationField } = getRelationFieldsFromRelation({ layerId: id, relation });
-      const features                    = GUI.getPlugin('editing').getLayerById(id).getEditor().readEditingFeatures();
+      const features                    = GUI.getPlugin('editing').getToolBoxById(id).readEditingFeatures();
       const featureValues               = relationField.map(field => opts.feature.get(field));
 
       // try to get feature from source without a server request
@@ -73,9 +73,9 @@ export async function getLayersDependencyFeatures(layerId, opts = {}) {
 
       toolbox.stopLoading();
 
-      return { [id] : GUI.getPlugin('editing').getLayerById(id).getEditor().readEditingFeatures().filter(f => ownField.every((field, i) => featureValues[i] == f.get(field)))};
+      return { [id] : GUI.getPlugin('editing').getToolBoxById(id).readEditingFeatures().filter(f => ownField.every((field, i) => featureValues[i] == f.get(field)))};
     }));
-  } catch (e) {
+  } catch(e) {
     console.warn(e);
   }
 

@@ -1,5 +1,6 @@
 import { Feature }         from '../g3w-feature.js';
 import { getEditingLayer } from '../utils/getEditingLayer.js';
+const GUI = g3w.app;
 
 /** @TODO add description */
 export async function addTableFeature(inputs, context) {
@@ -16,7 +17,7 @@ export async function addTableFeature(inputs, context) {
 
   feature.setTemporaryId();
 
-  getEditingLayer(inputs.layer).getEditor().getEditingSource().addFeature(feature);
+  GUI.getPlugin('editing').getToolBoxById(inputs.layer.getId()).getEditingSource().addFeature(feature);
 
   context.session.pushAdd(inputs.layer.getId(), feature, false);
 
