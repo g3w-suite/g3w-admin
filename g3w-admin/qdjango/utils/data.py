@@ -1647,6 +1647,8 @@ class QgisProject(XmlData):
         :param instance: Project instance
         """
 
+        # Validate project before saving
+        # At the moment, the validation is commented out and not enforced before saving.
         #self.clean()
 
         with transaction.atomic():

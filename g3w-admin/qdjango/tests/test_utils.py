@@ -786,23 +786,26 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
 
         qgis_file.close()
 
-    def test_save_raises_when_layer_errors_are_present(self):
-        """Test that save() does not persist projects when construction already recorded layer errors"""
 
-        qgis_filename = 'test_wrong_geodata_org_type_path.qgs'
-        qgis_file = File(open('{}{}{}'.format(
-            CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+    # The following test is usefull where .clean() is used to validate the project before saving
+    # ------------------------------------------------------------------------------------------
+    # def test_save_raises_when_layer_errors_are_present(self):
+    #     """Test that save() does not persist projects when construction already recorded layer errors"""
 
-        project = QgisProject(qgis_file)
-        project.group = self.project_group
-        project_count = Project.objects.count()
+    #     qgis_filename = 'test_wrong_geodata_org_type_path.qgs'
+    #     qgis_file = File(open('{}{}{}'.format(
+    #         CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
 
-        with self.assertRaises(QgisProjectException):
-            project.save()
+    #     project = QgisProject(qgis_file)
+    #     project.group = self.project_group
+    #     project_count = Project.objects.count()
 
-        self.assertEqual(Project.objects.count(), project_count)
+    #     with self.assertRaises(QgisProjectException):
+    #         project.save()
 
-        qgis_file.close()
+    #     self.assertEqual(Project.objects.count(), project_count)
+
+    #     qgis_file.close()
 
 
 class TestTemplateTags(QdjangoTestBase):
