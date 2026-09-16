@@ -1735,8 +1735,12 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * 
-   * @param {@since 4.0.0} f 
+   * Hook invoked when the server reports features locked by another user.
+   *
+   * The event setter is intentionally kept on the toolbox so callers can
+   * subscribe without coupling themselves to the feature request internals.
+   *
+   * @param {Array} f Features affected by the lock response.
    */
   featuresLockedByOtherUser(f) {}
 
@@ -2272,25 +2276,30 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Persists all pending session changes to the backend.
+   * Persists pending session changes to the backend and reconciles local state.
    *
-   * The commit payload is assembled from the history snapshot and includes
-   * additions, modifications, deletions and relation updates for the current
-   * layer and any dependent relation layers.
+   * With `ids`, only the selected history entries are converted and returned
+   * locally. Otherwise the method builds the complete commit payload, sends it
+   * to the editing endpoint, applies server-generated ids and properties to
+   * local features, updates relation features and refreshes lock state.
+   *
+   * The supplied commit object may be mutated: `lockids` and the configured
+   * editing style are added before the request is sent.
    *
    * @param {Object} [opts={}] Commit options.
-   * @param {Array|null} [opts.ids=null] Optional list of IDs to restrict the save.
-   * @param {Array} [opts.items] Explicit change items to include.
-   * @param {boolean} [opts.relations=true] Whether relation changes must be committed.
+   * @param {Array<string|number>|null} [opts.ids=null] History ids to convert without sending them.
+   * @param {Object} [opts.items] Explicit commit payload, otherwise built from session history.
+   * @param {boolean} [opts.relations=true] Whether relation changes are included in the payload.
+   *
+   * @returns {Promise<Object>} For `ids`, the selected commit items; otherwise `{ commit, response }`.
    * 
-   * @returns {Promise<*>} Server response for the save transaction.
+   * @throws Rejects with the server response when the commit fails, or with the caught error.
    */
   save({
     ids         = null,
     items,
     relations   = true,
   } = {}) {
-
     return new Promise(async (resolve, reject) => {
       let commit; // committed items
 
@@ -2308,7 +2317,134 @@ export class ToolBox extends Emitter {
         commit.relations = {};
       }
       try {
-        const response = await this.#commitToEditor(commit);
+        const layerId = this.getId();
+        let commitRelations = [];
+
+        // check if there are commit relations binded to new feature
+        if (commit.add.length) {
+          commitRelations = Object.keys(commit.relations).map(relationId => {
+            const relation = this.getLayer().getRelations().getRelationByFatherChildren(layerId, relationId);
+            return { [relationId]: {
+              ids: [                                                  // ids of "added" or "updated" relations
+                ...commit.relations[relationId].add.map(r => r.id),   // added
+                ...commit.relations[relationId].update.map(r => r.id) // updated
+              ],
+              fatherField: relation.getFatherField(), // father Fields <Array>
+              childField: relation.getChildField()    // child Fields <Array>
+            }};
+          });
+        }
+ 
+        // commit items
+        let response;
+
+        // Send commit items to the editing endpoint.
+        try {
+          commit.lockids = GUI.getPlugin('editing').state.lock_ids[layerId];
+          response = await XHR.post({
+            url: `${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`,
+            // add style parameter to commit url in case of layer has a specific editing style
+            data: JSON.stringify(Object.assign(commit, { style: this.state.layer.config?.editing?.layer_style || undefined })),
+            contentType: 'application/json',
+          });
+        } catch(e) {
+          console.warn(e);
+          response = Promise.reject();
+        }
+
+        // sync selection filter features
+        if (response?.result) {
+          try {
+            const layer = getCatalogLayerById(layerId);
+            // if layer has geometry
+            if (layer.isGeoLayer()) {
+              commit.update.forEach(({ id, geometry } = {}) => {
+                if (layer.isSelected(id)) {
+                  GUI.defaultsLayers.selectionLayer.getSource().getFeatureById(`${layerId}_${id}`)
+                    .setGeometry((new ol.format.GeoJSON()).readGeometry(geometry));
+                }
+              });
+            }
+            commit.delete.forEach(id => layer.isSelected(id) && layer.fidsOut(id));
+          } catch(e) {
+            console.warn(e);
+          }
+        }
+
+        // Loop on new features saved on server
+        // clientid - temporary id of new feature
+        // id - id saved on server (autogenerate, next value) to subtituite to clientid feature id
+        // properties - properties of feature returned by server
+        if (response?.result) {
+          response.response.new.forEach(({ clientid, id, properties } = {}) => {
+            // get feature from current layer in editing
+            const feature = this._featuresstore.getFeatureById(clientid);
+            // set new id
+            feature.setId(id);
+            // set properties
+            feature.setProperties(properties);
+            // loop on eventual relation updated or created
+            // id - relation layer id, opts - Object contain relation properties
+            commitRelations.forEach(relation => Object.entries(relation).forEach(([relationId, opts = {}]) => {
+              // get the editing source of relation layer
+              const source = ToolBox._sessions[relationId]._featuresstore;
+              // handle value to relation field saved on server
+              (opts.ids || []).forEach(relationFeatureId => {
+                const relationFeature = source.getFeatureById(relationFeatureId);
+                // loop relation ids and set father feature `value` and `name`
+                relationFeature && opts.fatherField.forEach((fatherField, index) => relationFeature.set(opts.childField[index], feature.get(fatherField)));
+              });
+            }));
+          });
+
+          // take in account update properties returned by server (Useful in case of media input changes)
+          (response.response.update || []).forEach(({ id, properties } = {}) => {
+            // get feature from current layer in editing
+            const feature = this._featuresstore.getFeatureById(id);
+            if (feature) {
+              feature.setProperties(properties); // set properties
+            } else {
+              console.warn(`Feature with id ${id} not found in editing source to update properties after commit`);
+            }
+            // Loop on eventual relation updated or created
+            // id - relation layer id, opts - Object contain relation properties
+            commitRelations.forEach(relation => Object.entries(relation).forEach(([relationId, opts = {}]) => {
+              const source = ToolBox._sessions[relationId]._featuresstore;
+              // handle value to relation field saved on server
+              (opts.ids || []).forEach(relationFeatureId => {
+                const relationFeature = source.getFeatureById(relationFeatureId);
+                // loop relation ids and set father feature `value` and `name`
+                relationFeature && opts.fatherField.forEach((fatherField, index) => relationFeature.set(opts.childField[index], feature.get(fatherField)));
+              });
+            }));
+          });
+
+          // Handle relations commit to server and update loacally with properties and new id
+          Object.entries(response.response.relations || {}).forEach(([relationId, opts = { new: [], new_lockids: [], update: [] }]) => {
+            const source = ToolBox._sessions[relationId]._featuresstore;
+            // new relations
+            (opts.new || []).forEach(({ clientid, id, properties = {} } = {}) => {
+              const feature = source.getFeatureById(clientid);
+              if (feature) {
+                feature.setId(id);
+                feature.setProperties(properties);
+                feature.clearState();
+              }
+            });
+            // update relations
+            (opts.update || []).forEach(({ id, properties = {} } = {}) => source.getFeatureById(id)?.setProperties(properties));
+            GUI.getPlugin('editing').state.lock_ids[relationId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[relationId].concat(...opts.new_lockids))];
+            GUI.getPlugin('editing').state.lock_ids[relationId].forEach(({ featureid }) => GUI.getPlugin('editing').state.loaded_ids[relationId].push(featureid));
+          });
+
+          const features = this._featuresstore.readFeatures();
+          features.forEach(f => f.clearState());               // reset state of the editing features (update, new etc..)
+          this._featuresstore.setFeatures([...features]);      // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
+
+          // store lock ids
+          GUI.getPlugin('editing').state.lock_ids[layerId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[layerId].concat(...response.response.new_lockids))];
+          GUI.getPlugin('editing').state.lock_ids[layerId].forEach(({ featureid }) => GUI.getPlugin('editing').state.loaded_ids[layerId].push(featureid));
+        }
   
         // skip when response is null or undefined and response.result is false
         if (!(response && response.result)) {
@@ -2884,7 +3020,12 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * canUdo method
+   * Updates whether the current history cursor can move backward.
+   *
+   * Undo is limited to the ten most recent history steps retained by the
+   * editing session.
+   *
+   * @returns {boolean} Whether an undo operation is currently available.
    */
   #updateUndoAvailability() {
     let currentStateIndex = null;
@@ -2902,7 +3043,9 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * canRedo method
+   * Updates whether the current history cursor can move forward.
+   *
+   * @returns {boolean} Whether a redo operation is currently available.
    */
   #updateRedoAvailability() {
     this.#constrains.redo = (
@@ -3047,11 +3190,18 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Add temporary feature
+   * Adds a feature to the pending session changes.
+   *
+   * By default, non-editable properties are removed before the feature is
+   * recorded. This preserves the historical behavior expected by the commit
+   * serializer; callers that must retain those values can disable the option.
+   *
+   * @param {string} layerId Layer receiving the feature.
+   * @param {Object} feature Feature to add.
+   * @param {boolean} [removeNotEditableProperties=true] Whether to strip fields
+   *   that are not editable on the target layer.
    * 
-   * @param layerId 
-   * @param feature 
-   * @param removeNotEditableProperties
+   * @returns {Object} Cloned feature marked as new.
    */
   pushAdd(layerId, feature, removeNotEditableProperties=true) {
     /**
@@ -3654,8 +3804,13 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Hook to get informed that are saved on server
-   * Get unique id for each commited layer/relation
+   * Refreshes unique-field caches after a successful server commit.
+   *
+   * The commit response can contain nested relation commits, so every
+   * affected layer is refreshed before the next editing operation.
+   *
+   * @param {Object} commit Commit payload sent to the server.
+   * @returns {Promise<void>} Resolves after all cache refreshes settle.
    */
   async saveChangesOnServer(commit) {
     const promises = [ setLayerUniqueFieldValues(this.getId()) ];
@@ -3672,7 +3827,16 @@ export class ToolBox extends Emitter {
     await Promise.allSettled(promises);
   }
 
-  /** @TODO add description */
+  /**
+   * Starts the currently selected editing tool and saves its temporary changes.
+   *
+   * Vector tools that are not marked `runOnce` are restarted after completion
+   * so the user can continue the same interaction workflow.
+   *
+   * @param {Object} tool Tool instance to start.
+   * 
+   * @returns {Promise<void>} Resolves when the tool cycle completes.
+   */
   async #startTool(tool) {
     tool.active       = true;
     const hideSidebar = !!GUI.isMapHidden();
@@ -3709,7 +3873,14 @@ export class ToolBox extends Emitter {
   }
 
 
-  /** @TODO add description */
+  /**
+   * Stops an editing tool and emits its stop event.
+   *
+   * @param {Object} tool Tool instance to stop.
+   * @param {boolean} [force=false] Whether the tool must stop immediately.
+   * 
+   * @returns {Promise<void>} Resolves after cleanup and stop notification.
+   */
   async #stopTool(tool, force = false) {
     try {
       await tool.stop(force); // stop tool binded to tool
@@ -3723,188 +3894,11 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Synchronizes the client-side feature store after the server confirms a
-   * commit.
+   * Starts the low-level editor and loads the initial feature set.
    *
-   * This is the main post-save reconciliation step: incoming database IDs,
-   * generated properties and relation updates are applied back to the client
-   * features so the local state matches the authoritative server state.
-   *
-   * @param {Object} commit Server response payload for the committed items.
+   * @param {Object} [options={}] Options passed to the feature request.
    * 
-   * @returns {Promise<Object>} Normalized server response.
-   */
-  async #commitToEditor(commit) {
-
-    const layerId = this.getId();
-    let relations = [];
-
-    // check if there are commit relations binded to new feature
-    if (commit.add.length) {
-      relations = Object
-        .keys(commit.relations)
-        .map(relationId => {
-          const relation = this.getLayer().getRelations().getRelationByFatherChildren(layerId, relationId);
-          return {
-            [relationId]: {
-              ids: [                                                  // ids of "added" or "updated" relations
-                ...commit.relations[relationId].add.map(r => r.id),   // added
-                ...commit.relations[relationId].update.map(r => r.id) // updated
-              ],
-              fatherField: relation.getFatherField(), // father Fields <Array>
-              childField:  relation.getChildField()    // child Fields <Array>
-            }
-          };
-        });
-    }
-
-    // commit items
-    let response;
-
-    try {
-      commit.lockids = GUI.getPlugin('editing').state.lock_ids[layerId];
-      response = await XHR.post({
-        url:         `${ApplicationState.project.state.vectorurl}commit/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.getId()}/`,
-        // add style parameter to commit url in case of layer has a specific editing style
-        data:        JSON.stringify(Object.assign(commit, { style: this.state.layer.config?.editing?.layer_style || undefined })),
-        contentType: 'application/json',
-      });
-    } catch(e) {
-      console.warn(e);
-      response = Promise.reject();
-    }
-
-    // sync selection filter features
-    if (response?.result) {
-      try {
-        const layer = getCatalogLayerById(layerId);
-        //if layer has geometry
-        if (layer.isGeoLayer()) {
-          commit.update.forEach(({ id, geometry } = {}) => {
-            if (layer.isSelected(id)) {
-              GUI.defaultsLayers.selectionLayer
-                .getSource()
-                .getFeatureById(`${layerId}_${id}`)
-                .setGeometry((new ol.format.GeoJSON()).readGeometry(geometry));
-            }
-          });
-        }
-        commit.delete.forEach(id => {
-          if (layer.isSelected(id)) {
-            layer.fidsOut(id);
-          }
-        })
-      } catch(e) {
-        console.warn(e);
-      }
-    }
-
-    // skip when no response and response.result is false
-    if (!(response && response.result)) {
-      return response;
-    }
-
-    //Loop on new features saved on server
-    // clientid - temporary id of new feature
-    // id - id saved on server (autogenerate, next value) to subtituite to clientid feature id
-    // properties - properties of feature returned by server
-    response.response.new.forEach(({ clientid, id, properties } = {}) => {
-      //get feature from current layer in editing
-      const feature  = this._featuresstore.getFeatureById(clientid);
-      // set new id
-      feature.setId(id);
-      //set properties
-      feature.setProperties(properties);
-      //Loop on eventual relation updated or created
-      relations.forEach(r => {         // handle relations (if provided)
-        Object
-          .entries(r)
-          .forEach(([ id, opts = {}]) => { // id - relation layer id, opts - Object contain relation properties
-            //get the editing source of relation layer
-            const source = ToolBox._sessions[id]._featuresstore;
-            // handle value to relation field saved on server
-            (opts.ids || []).forEach(id => {
-              const rFeature = source.getFeatureById(id);
-              if (rFeature) {
-                opts.fatherField.forEach((ff, i) => {// loop relation ids
-                  rFeature.set(opts.childField[i], feature.get(ff))  // set father feature `value` and `name`
-                })
-              }
-            })
-          });
-      });
-
-    });
-
-    // take in account update properties returned by server (Useful in case of media input changes)
-    (response.response.update || []).forEach(({ id, properties } = {}) => {
-      //get feature from current layer in editing
-      const feature  = this._featuresstore.getFeatureById(id);
-      if (feature) {
-        //set properties
-        feature.setProperties(properties);
-      } else {
-        console.warn(`Feature with id ${id} not found in editing source to update properties after commit`);
-      }
-      
-      //Loop on eventual relation updated or created
-      relations.forEach(r => {         // handle relations (if provided)
-        Object
-          .entries(r)
-          .forEach(([ id, opts = {}]) => { // id - relation layer id, opts - Object contain relation properties
-            //get the editing source of relation layer
-            const source = ToolBox._sessions[id]._featuresstore;
-            // handle value to relation field saved on server
-            (opts.ids || []).forEach(id => {
-              const rFeature = source.getFeatureById(id);
-              if (rFeature) {
-                opts.fatherField.forEach((ff, i) => {// loop relation ids
-                  rFeature.set(opts.childField[i], feature.get(ff))  // set father feature `value` and `name`
-                })
-              }
-            })
-          });
-      });
-
-    });
-
-    //Handle relations commit to server and update loacally with properties and new id
-    Object.entries(response.response.relations || {}).forEach(([ id, opts = { new : [], new_lockids: [], update: []}] ) => {
-      const source = ToolBox._sessions[id]._featuresstore;
-      //new relations
-      (opts?.new || []).forEach(({ clientid, id, properties = {} } = {}) => {
-        const feat = source.getFeatureById(clientid);
-        if (feat) {
-          feat.setId(id);
-          feat.setProperties(properties);
-          feat.clearState();
-        }
-      });
-      //update relations
-      (opts?.update || []).forEach(({ id, properties = {} } = {}) => source.getFeatureById(id)?.setProperties(properties));
-    
-      GUI.getPlugin('editing').state.lock_ids[id] = [...new Set(GUI.getPlugin('editing').state.lock_ids[id].concat(...opts.new_lockids))]
-      GUI.getPlugin('editing').state.lock_ids[id].forEach(({ featureid }) => GUI.getPlugin('editing').state.loaded_ids[id].push(featureid));
-    })
-
-    const features = this._featuresstore.readFeatures();
-
-    features.forEach(f => f.clearState()); // reset state of the editing features (update, new etc..)
-
-    this._featuresstore.setFeatures([...features]); // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
-
-    // add lock ids
-    GUI.getPlugin('editing').state.lock_ids[layerId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[layerId].concat(...response.response.new_lockids))]
-    GUI.getPlugin('editing').state.lock_ids[layerId].forEach(({ featureid }) => GUI.getPlugin('editing').state.loaded_ids[layerId].push(featureid));
-
-    return response;
-  }
-
-  /**
-   * Start editing session for the current layer.
-   *
-   * @param {Object} options - Options for starting request features.
-   * @returns {Array} Loaded features for the layer.
+   * @returns {Promise<Array>} Loaded features for the layer.
    */
   async #startEditor(options = {}) {
     const features = await this.#requestFeatures(options); // load layer features based on filter type
@@ -3966,17 +3960,29 @@ export class ToolBox extends Emitter {
     return this.#constrains.commit;
   }
 
-  /** @TODO add description */
+  /**
+   * Returns the underlying collection used by the editing feature store.
+   *
+   * @returns {Object} OpenLayers-compatible feature collection.
+   */
   getFeaturesCollection() {
     return this._collection._store;
   }
 
-  /** @TODO add description */
+  /**
+   * Returns the reactive editing feature store.
+   *
+   * @returns {Object} Editing feature store API.
+   */
   getEditingSource() {
     return this._featuresstore;
   }
 
-  /** @TODO add description */
+  /**
+   * Reads the features currently present in the editing collection.
+   *
+   * @returns {Array} Current editing features, including pending changes.
+   */
   readEditingFeatures() {
     return this._collection.getArray();
   }
