@@ -286,7 +286,7 @@ export class OpenFormStep extends Step {
                         service.force.update = false;
                       }
                       Object.entries(
-                        t.getInputs().layer.getEditor().getEditingSource().readFeatures()
+                        GUI.getPlugin('editing').getToolBoxById(t.getInputs().layer.getId()).getEditingSource().readFeatures()
                           .find(f => f.getUid() === feature.getUid()) //Find current form editing feature by unique id of feature uid
                           .getProperties() //get properties
                       )
@@ -683,7 +683,7 @@ async function _handleRelation1_1LayerFields({
           reject();
           return;
         }
-        const source = GUI.getPlugin('editing').getLayerById(childLayerId).getEditor().getEditingSource();
+        const source = GUI.getPlugin('editing').getToolBoxById(childLayerId).getEditingSource();
         let childFeature; // original child feature
         let newChild; //eventually child feature cloned with changes
 
@@ -896,17 +896,17 @@ async function _getRelation1_1ChildFeature({
 
   // lock feature false
   let locked  = false;
-  let feature = GUI.getPlugin('editing').getLayerById(childLayerId)
-    .getEditor().getEditingSource()
+  let feature = GUI.getPlugin('editing').getToolBoxById(childLayerId)
+    .getEditingSource()
     .readFeatures()
     .find(f => fatherFormRelationField.value === f.get(childField))
 
     //get feature from server and lock
   if (undefined === feature) {
 
-    const childEditor = GUI.getPlugin('editing').getLayerById(childLayerId).getEditor();
+    const childToolbox = GUI.getPlugin('editing').getToolBoxById(childLayerId);
 
-    const unByKey     = childEditor.oncebefore('featuresLockedByOtherUser', features => feature = features[0])
+    const unByKey     = childToolbox.oncebefore('featuresLockedByOtherUser', features => feature = features[0])
 
     await getLayersDependencyFeatures(fatherLayerId, {
       feature:   new ol.Feature({ [fatherFormRelationField.name]: fatherFormRelationField.value }),
@@ -914,13 +914,12 @@ async function _getRelation1_1ChildFeature({
     });
 
     //remove listener
-    childEditor.un('featuresLockedByOtherUser', unByKey);
+    childToolbox.un('featuresLockedByOtherUser', unByKey);
 
     //in case of no locked check feature on a source
     if (undefined === feature) {
 
-      feature = GUI.getPlugin('editing').getLayerById(childLayerId)
-        .getEditor().getEditingSource()
+      feature = childToolbox.getEditingSource()
         .readFeatures()
         .find(f => fatherFormRelationField.value === f.get(childField))
     }
