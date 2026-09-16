@@ -81,8 +81,8 @@
         <div class="projects-cards-grid">
         {% for object in object_list %}
             {% get_obj_perms user for object as "userObj_perms" %}
-            <div class="project-card{% if not object|is_public_project %} is-private{% endif %}" id="qdjangoproject_{{ object.pk }}">
-                {% if not object|is_public_project %}
+            <div class="project-card{% if not object.pk in public_project_ids %} is-private{% endif %}" id="qdjangoproject_{{ object.pk }}">
+                {% if not object.pk in public_project_ids %}
                 <span class="pc-lock"
                       data-toggle="tooltip" data-placement="top"
                       title="{% trans 'Project not accessible to anonymous users' %}">

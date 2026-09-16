@@ -44,7 +44,7 @@ from qdjango.models import (
     ProjectBookmark,
     ScaleVisibilityLayerConstraint
 )
-from qdjango.utils.models import get_widgets4layer, comparedbdatasource
+from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_public_project_ids
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
 
@@ -87,6 +87,7 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         
         # Get project bookmarked per user
         context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user, project__in=self.get_queryset()).values_list('project_id', flat=True)
+        context['public_project_ids'] = get_public_project_ids(context['object_list'])
 
         return context
 

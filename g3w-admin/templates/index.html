@@ -84,11 +84,11 @@
     {% for prj in projects_bookmarked %}
       {% get_obj_perms user for prj.project as "userObj_perms" %}
       <div class="col-md-3 col-sm-6 col-xs-12" id="prj-book-{{ prj.project.pk }}" style="margin-bottom:16px;">
-        <div class="prj-card{% if not prj.project|is_public_project %} is-private{% endif %}">
+        <div class="prj-card{% if not prj.project.pk in public_project_ids %} is-private{% endif %}">
           <div class="prj-thumb"
                style="background-image:url('{% if prj.project.thumbnail %}{{ MEDIA_URL }}{{ prj.project.thumbnail }}{% else %}{{ SETTINGS.PLACEHOLD_SERVICE }}600x300?text=MAP{% endif %}');">
             <div class="prj-thumb-overlay"></div>
-            {% if not prj.project|is_public_project %}
+            {% if not prj.project.pk in public_project_ids %}
             <span class="prj-lock"
                   data-toggle="tooltip" data-placement="top"
                   title="{% trans 'Project not accessible to anonymous users' %}">
