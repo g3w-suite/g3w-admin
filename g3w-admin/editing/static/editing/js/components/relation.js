@@ -1170,7 +1170,6 @@ export default ({
           layerId:  this._relationLayerId,
           relation: this.relation
         });
-        console.log(this._relationLayerId)
         const parent = Object.entries(this.getParent().values);
         return  {
           parentFeature:   Tool.Stack.current.getFeatures().at(-1), // get parent feature

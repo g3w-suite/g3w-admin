@@ -4,6 +4,7 @@ const GUI = g3w.app;
 
 /** @TODO add description */
 export async function addTableFeature(inputs, context) {
+  console.log(context.id);
   let feature;
 
   if (inputs.features.length) {
@@ -17,8 +18,10 @@ export async function addTableFeature(inputs, context) {
 
   feature.setTemporaryId();
 
-  GUI.getPlugin('editing').getToolBoxById(context.id).getEditingSource().addFeature(feature);
-
+  //add feature to current editing layer
+  GUI.getPlugin('editing').getToolBoxById(inputs.layer.getId()).getEditingSource().addFeature(feature);
+ 
+  //push changes on eventually parent toolbox
   GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(inputs.layer.getId(), feature, false);
 
   inputs.features.push(feature);
