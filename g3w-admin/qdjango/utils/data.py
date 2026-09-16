@@ -1611,24 +1611,34 @@ class QgisProject(XmlData):
 
     def clean(self):
         # already labeled "Layer ... could not be loaded" when collected in _getDataLayers()
-        errors = list(self.layer_errors)
+        layer_errors = list(self.layer_errors)
+        project_errors = []
 
         for validator in self.validators:
             try:
                 validator.clean()
             except Exception as e:
                 sub_errors = getattr(e, 'errors', None) or [str(e)]
-                errors.extend(_('Project: %s') % m for m in sub_errors)
+                project_errors.extend(sub_errors)
 
         for layer in self.layers:
             try:
                 layer.clean()
             except Exception as e:
                 sub_errors = getattr(e, 'errors', None) or [str(e)]
-                errors.extend(_('Layer "%s": %s') % (layer.name, m) for m in sub_errors)
+                layer_errors.extend(_('Layer "%s": %s') % (layer.name, m) for m in sub_errors)
+
+        project_errors = [_('Project: %s') % m for m in project_errors]
+
+        # group by scope (all layer errors, then all project errors) instead of interleaving them
+        errors = layer_errors + project_errors
 
         if errors:
-            raise QgisProjectException('; '.join(errors), errors=errors)
+            exc = QgisProjectException('; '.join(errors), errors=errors)
+            # kept separate (not just counts) so callers can render a grouped, scope-labeled report
+            exc.layer_error_messages = layer_errors
+            exc.project_error_messages = project_errors
+            raise exc
 
     def save(self, instance=None, **kwargs):
         """
