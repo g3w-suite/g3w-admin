@@ -1478,7 +1478,7 @@ new (class extends Plugin {
       });
 
       //save temporary changes
-      await toolBox._session.save();
+      await toolBox.getSession().save();
 
       this.saveChange();
 

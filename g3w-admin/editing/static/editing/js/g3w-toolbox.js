@@ -2106,7 +2106,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.start(this.state._getFeaturesOption);
+        features = await this.getSession().start(this.state._getFeaturesOption);
       }
 
       /** In case of not yest started session and is not in mobile */
@@ -2114,7 +2114,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.start(this.state._getFeaturesOption);
+        features = await this.getSession().start(this.state._getFeaturesOption);
       }
 
       /**
@@ -2124,7 +2124,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this._session.getFeatures(this.state._getFeaturesOption);
+        features = await this.getSession().getFeatures(this.state._getFeaturesOption);
 
       }
 
@@ -2251,7 +2251,7 @@ export class ToolBox extends Emitter {
     }
 
     try {
-      await this._session.stop();
+      await this.getSession().stop();
       this.stopLoading();
       this.setEditing(false);
       this.state._getFeaturesOption = {};
@@ -2455,7 +2455,7 @@ export class ToolBox extends Emitter {
         this.clearHistory();
 
         // After commit get new unique values
-        this._session.saveChangesOnServer(commit);
+        this.getSession().saveChangesOnServer(commit);
 
         resolve({ commit, response });
         
@@ -3527,7 +3527,7 @@ export class ToolBox extends Emitter {
             if (newBbox.every((v, i) => v === curBbox?.[i])) { return; }
             this.state._getFeaturesOption.filter.bbox = newBbox;
             this.state.loading = true;
-            await this._session.getFeatures(this.state._getFeaturesOption);
+            await this.getSession().getFeatures(this.state._getFeaturesOption);
             this.state.loading = false;
           }
         };
@@ -3862,10 +3862,10 @@ export class ToolBox extends Emitter {
     try {
       await tool.start({
         inputs:  { layer: this.getLayer(), features: [] },
-        context: { session: this._session }
+        context: { session: this.getSession() }
       });
       
-      await this._session.save();
+      await this.getSession().save();
       GUI.getPlugin('editing').saveChange(); // after save temp change check if editing service has a autosave
     } catch(e) {
       console.warn(e);
@@ -3903,7 +3903,7 @@ export class ToolBox extends Emitter {
       this.rollback();
     } finally {
       tool.active = false;
-      tool.emit('stop', { session: this._session });
+      tool.emit('stop', { session: this.getSession() });
     }
   }
 
