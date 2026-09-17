@@ -12,7 +12,7 @@ from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
-from django_bleach.forms import BleachField
+from django_nh3.forms import Nh3Field
 from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import (
     crispyBoxACL,
@@ -32,7 +32,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     """Group form."""
 
     propagate = True
-    description = BleachField(required=False)
+    description = Nh3Field(required=False)
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
@@ -192,13 +192,14 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         For not new group or existing not empty item, check if NEW srid is different from projects SRID
         """
 
-        projects = Project.objects.filter(group=self.instance)
-        if self.instance.pk and len(projects) > 0:
-            srid = self.cleaned_data['srid'].auth_srid
-            layer_srid = projects[0].qgis_project.crs().postgisSrid()
-            if srid != layer_srid:
-                raise ValidationError(
-                    _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"))
+        if self.instance.pk:
+            projects = Project.objects.filter(group=self.instance)
+            if projects.exists():
+                srid = self.cleaned_data['srid'].auth_srid
+                layer_srid = projects[0].qgis_project.crs().postgisSrid()
+                if srid != layer_srid:
+                    raise ValidationError(
+                        _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"))
 
         return self.cleaned_data['srid']
 
@@ -216,12 +217,12 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
 class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
-    home_description = BleachField(required=False)
-    about_description = BleachField(required=False)
-    groups_map_description = BleachField(required=False)
-    login_description = BleachField(required=False)
-    credits = BleachField(required=False)
-    registration_intro = BleachField(required=False)
+    home_description = Nh3Field(required=False)
+    about_description = Nh3Field(required=False)
+    groups_map_description = Nh3Field(required=False)
+    login_description = Nh3Field(required=False)
+    credits = Nh3Field(required=False)
+    registration_intro = Nh3Field(required=False)
 
 
     def __init__(self, *args, **kwargs):
@@ -383,7 +384,7 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                     queryset=User.objects.filter(groups__name__in=[G3W_EDITOR1])
                                     .order_by('last_name'), required=False)
 
-    description = BleachField(required=False)
+    description = Nh3Field(required=False)
 
     def __init__(self, *args, **kwargs):
 
