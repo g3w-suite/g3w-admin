@@ -341,9 +341,6 @@ export class ToolBox extends Emitter {
       ...this.#layer.getFathers()
     ].filter(id => getCatalogLayerById(id).isEditable());
 
-    // TODO: avoid overriding constructor parameter
-    layer = this.#layer;
-
     this.state = {
       started:      false,
       modified:     false,
@@ -401,11 +398,11 @@ export class ToolBox extends Emitter {
           type: ['add_feature'],
           name: 'editing.add_feature',
           icon: `mActionCapture${iconGeometry}.svg`,
-          layer,
+          layer: this.getEditingLayer(),
           type: 'addfeature',
           steps: [
-            new AddFeatureStep({ layer, tools: ['snap', 'measure'] }),
-            new OpenFormStep({ layer }),
+            new AddFeatureStep({ layer: this.getEditingLayer(), tools: ['snap', 'measure'] }),
+            new OpenFormStep({ layer: this.getEditingLayer() }),
           ],
         }),
         // Edit Attributes Feature
@@ -414,7 +411,7 @@ export class ToolBox extends Emitter {
           type: ['change_attr_feature'],
           name: 'editing.update_feature',
           icon: 'mActionEditTable.svg',
-          layer,
+          layer: this.getEditingLayer(),
           helpMessage: 'editing.update_feature',
           type: 'editfeatureattributes',
           steps: [
@@ -429,7 +426,7 @@ export class ToolBox extends Emitter {
           type: ['delete_feature'],
           name: 'editing.delete_feature',
           icon: `delete${iconGeometry}.png`,
-          layer,
+          layer: this.getEditingLayer(),
           type: 'deletefeature',
           steps: [
             new PickFeatureStep(),
@@ -528,7 +525,7 @@ export class ToolBox extends Emitter {
           name: "editing.addhole",
           icon: "mActionAddRing.svg",
           type: 'change_feature',
-          layer,
+          layer: this.getEditingLayer(),
           steps: [
             new AddHoleStep({}),
           ],
@@ -537,7 +534,7 @@ export class ToolBox extends Emitter {
           id: 'deletehole',
           name: "editing.deletehole",
           icon: "mActionDeleteRing.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type: 'change_feature',
           steps: [
             new DeleteHoleStep(),
@@ -549,11 +546,11 @@ export class ToolBox extends Emitter {
           type: ['change_feature'],
           name: "editing.update_vertex",
           icon: "mActionVertexTool.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type: 'modifygeometryvertex',
           helpMessage: 'editing.update_vertex',
           steps: [
-            new PickFeatureStep({ layer }),
+            new PickFeatureStep({ layer: this.getEditingLayer() }),
             new Step({ run: chooseFeature }),
             new ModifyGeometryVertexStep({ tools: ['snap', 'measure'] }),
           ],
@@ -564,7 +561,7 @@ export class ToolBox extends Emitter {
           type: ['change_attr_feature'],
           name: "editing.update_multi_features",
           icon: "mActionMultiEdit.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type: 'editmultiattributes',
           helpMessage: 'editing.update_multi_features',
           registerEscKeyEvent: true,
@@ -595,7 +592,7 @@ export class ToolBox extends Emitter {
           type: ['change_attr_feature'],
           name: "editing.update_multi_features_relations_from_parents",
           icon: "relation.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type:                'editmultiattributesrelationfeatures',
           helpMessage: 'editing.update_multi_features_relations_from_parents',
           registerEscKeyEvent: true,
@@ -841,7 +838,7 @@ export class ToolBox extends Emitter {
           type: ['change_feature'],
           name: 'editing.move_feature',
           icon: `mActionMoveFeature${iconGeometry}.svg`,
-          layer,
+          layer: this.getEditingLayer(),
           type: 'movefeature',
           helpMessage: 'editing.move_feature',
           steps: [
@@ -857,7 +854,7 @@ export class ToolBox extends Emitter {
           name:         'editing.rotate_feature',
           icon:         'mActionRotateFeature.svg',
           disableEdit:   is_point,
-          layer,
+          layer: this.getEditingLayer(),
           type: 'rotatefeature',
           helpMessage: 'editing.rotate_feature',
           steps: [
@@ -876,8 +873,8 @@ export class ToolBox extends Emitter {
             icon: "mActionEditPaste.svg",
             enable: (function() {
               const catalogService      = GUI.getService('catalog');
-              const layerId             = layer.getId();
-              const geometryType        = layer.getGeometryType();
+              const layerId             = SELF.#layer.getId();
+              const geometryType        = SELF.#layer.getGeometryType();
               const data = {
                 bool: true,
                 tool: undefined
@@ -920,12 +917,12 @@ export class ToolBox extends Emitter {
               }
             }()),
 
-            layer,
+            layer: this.getEditingLayer(),
             type: 'copyfeaturesfromotherlayer',
             runOnce: true,
             steps: [
               new Step({
-                layer,
+                layer: this.getEditingLayer(),
                 steps: {
                   chooselayer:    { description: `editing.select_layer`, done: false, },
                   selectgeometry: { description: `editing.selectPoint`, done: false,  }
@@ -1076,7 +1073,7 @@ export class ToolBox extends Emitter {
                   });
                 },
               }),
-              new OpenFormStep({ layer, help: 'editing.copy' }),
+              new OpenFormStep({ layer: this.getEditingLayer(), help: 'editing.copy' }),
             ],
             helpMessage: "editing.pastefeaturesfromotherlayers",
             registerEscKeyEvent: true,
@@ -1088,12 +1085,12 @@ export class ToolBox extends Emitter {
           type: ['add_feature'],
           name: "editing.copy_features",
           icon: `mActionMoveFeatureCopy${iconGeometry}.svg`,
-          layer,
+          layer: this.getEditingLayer(),
           type: 'copyfeatures',
           runOnce: true,
           steps: [
             new SelectElementsStep({
-              layer,
+              layer: this.getEditingLayer(),
               help: 'editing.copy',
               type: ApplicationState.ismobile ? 'single' : 'multiple',
               steps: {
@@ -1104,8 +1101,8 @@ export class ToolBox extends Emitter {
               },
             }, true),
             // get vertex
-            layer.getGeometryType().includes('Point') ? undefined : new Step({
-              layer,
+            this.getEditingLayer().getGeometryType().includes('Point') ? undefined : new Step({
+              layer: this.getEditingLayer(),
               help: 'editing.steps.help.select',
               steps: {
                 from: {
@@ -1163,7 +1160,7 @@ export class ToolBox extends Emitter {
             }),
             // move elements
             new Step({
-              layer,
+              layer: this.getEditingLayer(),
               help: "editing.steps.help.select_vertex_to_paste",
               steps: {
                 to: {
@@ -1257,7 +1254,7 @@ export class ToolBox extends Emitter {
           name: "editing.addpart",
           icon: "mActionAddPart.svg",
           visible: isMultiGeometry,
-          layer,
+          layer: this.getEditingLayer(),
           type:        'addparttomultigeometries',
           helpMessage: 'editing.addpart',
           runOnce:     true,
@@ -1275,7 +1272,7 @@ export class ToolBox extends Emitter {
               help: 'editing.select_element',
             }),
             new AddFeatureStep({
-              layer,
+              layer: this.getEditingLayer(),
               help: 'editing.select_element',
               add:  false,
               steps: {
@@ -1288,7 +1285,7 @@ export class ToolBox extends Emitter {
             }),
             // add part to multi geometries
             new Step({
-              layer,
+              layer: this.getEditingLayer(),
               help: 'editing.select_element',
               run:   addPartToMultigeometries
             }),
@@ -1302,14 +1299,14 @@ export class ToolBox extends Emitter {
           name: "editing.deletepart",
           icon: "mActionDeletePart.svg",
           visible: isMultiGeometry,
-          layer,
+          layer: this.getEditingLayer(),
           type: 'deletepartfrommultigeometries',
           steps: [
             new PickFeatureStep(),
             new Step({ run: chooseFeature }),
             // delete part from multi geometries
             new Step({
-              layer,
+              layer: this.getEditingLayer(),
               run(inputs, context) {
                 return new Promise((resolve, reject) => {
                   const originaLayer    = inputs.layer;
@@ -1402,12 +1399,12 @@ export class ToolBox extends Emitter {
           type:        ['change_feature'],
           name:        "editing.split",
           icon:        "mActionSplitFeatures.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type: 'splitfeature',
           runOnce: true,
           steps: [
             new SelectElementsStep({
-              layer,
+              layer: this.getEditingLayer(),
               help: 'editing.split_feature',
               type: ApplicationState.ismobile ? 'single' : 'multiple',
               steps: {
@@ -1419,7 +1416,7 @@ export class ToolBox extends Emitter {
             }, true),
             // split feature
             new Step({
-              layer,
+              layer: this.getEditingLayer(),
               help: '',
               steps: {
                 draw_line: {
@@ -1533,12 +1530,12 @@ export class ToolBox extends Emitter {
           type: ['change_feature'],
           name: "editing.dissolve_features",
           icon: "mActionMergeFeatures.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type: 'mergefeatures',
           runOnce: true,
           steps: [
             new SelectElementsStep({
-              layer,
+              layer: this.getEditingLayer(),
               type: 'bbox',
               help: 'editing.dissolve_features',
               steps: {
@@ -1550,7 +1547,7 @@ export class ToolBox extends Emitter {
             }, true),
             // merge features
             new Step({
-              layer,
+              layer: this.getEditingLayer(),
               help: 'editing.dissolve_features',
               steps: {
                 choose: {
@@ -1621,7 +1618,7 @@ export class ToolBox extends Emitter {
           type: ['add_feature'],
           name: "editing.add_feature",
           icon: "mActionCreateTable.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type: 'addtablefeature',
           runOnce: true,
           steps: [
@@ -1635,7 +1632,7 @@ export class ToolBox extends Emitter {
           type: ['delete_feature', 'change_attr_feature'],
           name: "editing.update_feature",
           icon: "mActionEditTable.svg",
-          layer,
+          layer: this.getEditingLayer(),
           type:            'edittable',
           backbuttonlabel: 'plugins.editing.save_and_back_table',
           runOnce:          true,
@@ -2865,7 +2862,7 @@ export class ToolBox extends Emitter {
    * baseline.
    */
   resetDefault() {
-    this.state.title            = ` ${this.#layer.getTitle()}` || "Edit Layer";
+    this.state.title            = ` ${this.getEditingLayer().getTitle()}` || "Edit Layer";
     this.state.toolboxheader    = true;
     this.state.startstopediting = true;
     this.constraints.filter     = null;
