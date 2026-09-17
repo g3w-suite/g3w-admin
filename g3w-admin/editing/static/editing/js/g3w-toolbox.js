@@ -226,11 +226,16 @@ export class ToolBox extends Emitter {
 
     this.setters = [ 'featuresLockedByOtherUser' ];
 
+    // set vector layer color 
+    if (_config.vector.style) {
+      _layer.setColor(_config.vector.style.color);
+    }
+
     // add editing configurations
     _layer.state.editing = {
       started:      false,
       modified:     false,
-      ready:        false,
+      ready:        true,
       fields:       _config.vector.fields || [],
       format:       _config.vector.format,
       constraints:  _config.constraints ?? {},
@@ -245,13 +250,6 @@ export class ToolBox extends Emitter {
         editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${_layer.getId()}/`,
       }
     };
-
-    // set vector layer color 
-    if (_config.vector.style) {
-      _layer.setColor(_config.vector.style.color);
-    }
-
-    _layer.state.editing.ready = true;
 
     const SELF = this;
 
@@ -1653,9 +1651,6 @@ export class ToolBox extends Emitter {
         toolsoftool: [...this.state.toolsoftool]
       },
     })
-
-    // BACKOMP v3.x
-    this.originalState     = this.state.originalState;
 
     /**
      * constraint messages to show
