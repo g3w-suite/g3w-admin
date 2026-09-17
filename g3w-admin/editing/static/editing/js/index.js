@@ -59,10 +59,6 @@ new (class extends Plugin {
       relations:           [],    // Relations involved in editing.
       layers_in_error:     false, // Whether one or more layer configs failed.
       formComponents:      {},    // Additional form components, keyed by layer id.
-      constraints:         {      // Layer and feature filters applied to editing.
-        toolboxes: {},
-        showToolboxesExcluded: true
-      },
       featuresOnClose:     {},    // Changed feature ids to expose when editing closes.
       uniqueFieldsValues:  {},    // Unique field values, keyed by layer and field.
       saveConfig:          {      // Commit behavior and callbacks configured by integrations.
@@ -162,7 +158,6 @@ new (class extends Plugin {
       getEditingLayerById:              this.getLayerById.bind(this),
       addNewFeature:                    createFeature,
       commitChanges:                    this.commit.bind(this),
-      setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
       getMapService:                    () => GUI,
       updateLayerFeature:               () => {},
       deleteLayerFeature:               () => {},
@@ -504,32 +499,6 @@ new (class extends Plugin {
    */
   getToolBoxById(id) {
     return this.state.toolboxes.find(tb => id === tb.getId());
-  }
-
-  /**
-   * Apply layer and visibility constraints to editing toolboxes.
-   *
-   * When `showToolboxesExcluded` is false, only the toolbox identifiers
-   * included in `toolboxes` remain visible in the editing panel.
-   *
-   * @param {Object} constraints Editing constraints.
-   * @param {Object} [constraints.toolboxes={}] Constraints keyed by layer id.
-   * @param {boolean} [constraints.showToolboxesExcluded=true] Whether omitted toolboxes remain visible.
-   */
-  setApplicationEditingConstraints(constraints = { showToolboxesExcluded: true, toolboxes : {} }) {
-    this.state.constraints = {
-      ...this.state.constraints,
-      ...constraints
-    };
-
-    const { toolboxes, showToolboxesExcluded } = constraints;
-    const toolboxIds = Object.keys(toolboxes);
-
-    if (false === showToolboxesExcluded) {
-      this.state.toolboxes.forEach(tb => tb.setShow(toolboxIds.includes(tb.getId())));
-    }
-
-    toolboxIds.forEach(id => this.getToolBoxById(id)?.setEditingConstraints?.(toolboxes[id]));
   }
 
   /**

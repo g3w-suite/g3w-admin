@@ -152,22 +152,6 @@ export class ToolBox extends Emitter {
   #startAsync = null;
 
   /**
-   * External filter metadata used to scope feature requests and re-enable tools
-   * based on the current editing context.
-   *
-   * @type {{ filter: any, show: any, tools: Array }}
-   */
-  constraints = { filter: null, show: null, tools: [] };
-
-  /**
-   * Reactive flags describing whether the current can perform commit,
-   * undo and redo operations.
-   *
-   * @type {{ commit: boolean, undo: boolean, redo: boolean }}
-   */
-  #constrains  = { commit: false, undo: false, redo: false };
-
-  /**
    * Snapshot history for the current layer.
    *
    * Each entry stores the change state associated with a transaction id and is
@@ -349,7 +333,7 @@ export class ToolBox extends Emitter {
       this.#layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
     }
 
-    this.on('start-editing', this.#onEditingStart.bind(this));
+    this.on('start-editing', this.onEditingStart.bind(this));
 
     /**
      * set 1:1 relation fields editable
@@ -415,7 +399,7 @@ export class ToolBox extends Emitter {
       current:          null,
       /** temporary change not save on history */
       changes:          [],
-      history:          this.#constrains,
+      history:          { commit: false, undo: false, redo: false },
       on:               false,
       dependencies,
       relations:        Object.values(this.#layer.isFather() && dependencies.length ? this.#layer.getRelations().getRelations() : {}),
@@ -2002,12 +1986,10 @@ export class ToolBox extends Emitter {
       this.#current_style = this.state.layer.getCurrentStyle().name;
 
       const plugin = GUI.getPlugin('editing');
-      const id     = this.getId();
       
       plugin.state.showselectlayers = options.showselectlayers ?? true;
       plugin.state.toolboxselected  = (options.selected ?? true) ? this : plugin.state.toolboxselected;
 
-      const constraints = plugin.state.constraints.toolboxes[id];
 
       // set title
       if (undefined !== options.title) {
@@ -2024,8 +2006,6 @@ export class ToolBox extends Emitter {
       this.state.toolboxheader    = options.toolboxheader ?? true;
       this.state.startstopediting = options.startstopediting ?? true;
   
-      options.filter = constraints?.filter || this.constraints.filter || options.filter;
-
       // register lock features to show a message
       const unKeyLock = this.onceafter('featuresLockedByOtherUser', () => {
         GUI.showUserMessage({
@@ -2940,7 +2920,7 @@ export class ToolBox extends Emitter {
     this.#updateUndoAvailability();
     
     // update commit availability
-    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+    this.state.history.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
     
     this.#updateRedoAvailability();
     return items;
@@ -2976,7 +2956,7 @@ export class ToolBox extends Emitter {
     this.#updateUndoAvailability();
 
     // update commit availability
-    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+    this.state.history.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
 
     this.#updateRedoAvailability();
     return items;
@@ -3001,8 +2981,8 @@ export class ToolBox extends Emitter {
       });
     };
     const steps = (this.#states.length - 1) - currentStateIndex;
-    this.#constrains.undo = (null !== this.state.current) && (steps < 10); // 10 = maximum "buffer history" lenght for undo/redo
-    return this.#constrains.undo;
+    this.state.history.undo = (null !== this.state.current) && (steps < 10); // 10 = maximum "buffer history" lenght for undo/redo
+    return this.state.history.undo;
   }
 
   /**
@@ -3011,10 +2991,10 @@ export class ToolBox extends Emitter {
    * @returns {boolean} Whether a redo operation is currently available.
    */
   #updateRedoAvailability() {
-    this.#constrains.redo = (
+    this.state.history.redo = (
       (this.#states.at(-1) && this.#states.at(-1).id != this.state.current))
       || (null === this.state.current && this.#states.length > 0);
-    return this.#constrains.redo;
+    return this.state.history.redo;
   }
 
   /**
@@ -3145,7 +3125,7 @@ export class ToolBox extends Emitter {
     this.#updateUndoAvailability();
 
     // update commit availability
-    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+    this.state.history.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
 
     this.#updateRedoAvailability();
 
@@ -3288,7 +3268,7 @@ export class ToolBox extends Emitter {
     items = items || this.#undoHistory();
     this.#applyChanges(items.own, true);
     // update commit availability
-    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+    this.state.history.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
     return items.dependencies;
   }
 
@@ -3299,7 +3279,7 @@ export class ToolBox extends Emitter {
     items = items || this.#redoHistory();
     this.#applyChanges(items.own, true);
     // update commit availability
-    this.#constrains.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
+    this.state.history.commit = Object.values(this.#buildCommitItems()).some(item => item.length > 0);
     return items.dependencies;
   }
 
@@ -3459,9 +3439,9 @@ export class ToolBox extends Emitter {
       // clear all
       this.#states                       = [];
       this.state.current         = null;
-      this.#constrains.commit            = false;
-      this.#constrains.redo              = false;
-      this.#constrains.undo              = false;
+      this.state.history.commit            = false;
+      this.state.history.redo              = false;
+      this.state.history.undo              = false;
     }
   }
 
@@ -3902,7 +3882,7 @@ export class ToolBox extends Emitter {
    * @returns { boolean } whether temp changes are waiting to save on server
    */
   hasPendingCommits() {
-    return this.#constrains.commit;
+    return this.state.history.commit;
   }
 
   /**
@@ -4004,7 +3984,7 @@ export class ToolBox extends Emitter {
    * @listens start-editing
    * @fires editing#autocomplete
    */
-  #onEditingStart() {
+  onEditingStart() {
 
     const layer = this.getLayer();
 
