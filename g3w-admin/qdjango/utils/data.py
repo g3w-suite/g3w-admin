@@ -593,8 +593,6 @@ class QgisProjectLayer(XmlData):
 
         new_datasource = serverDatasource if serverDatasource is not None else datasource
 
-        pre_err_msg = ""
-
         if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return new_datasource
 
@@ -605,8 +603,7 @@ class QgisProjectLayer(XmlData):
         if not self.qgs_layer.isValid():
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
                 self.layerId, self.qgisProject.qgisProjectFile.name))
-            msg = _("Current datasource is {}").format(new_datasource)
-            raise Exception(f'{pre_err_msg}: {msg}')
+            raise Exception(_("Current datasource is {}").format(new_datasource))
 
         return new_datasource
 
@@ -1026,8 +1023,14 @@ class QgisProjectLayer(XmlData):
         return json.dumps(toret)
 
     def clean(self):
+        errors = []
         for validator in self.validators:
-            validator.clean()
+            try:
+                validator.clean()
+            except Exception as e:
+                errors.extend(getattr(e, 'errors', None) or [str(e)])
+        if errors:
+            raise QgisProjectLayerException('; '.join(map(str, errors)), errors=[str(error) for error in errors])
 
     def save(self):
         """
@@ -1162,6 +1165,8 @@ class QgisProject(XmlData):
     def __init__(self, qgis_file, **kwargs):
         self.qgisProjectFile = qgis_file
         self.validators = []
+        # error messages for layers that failed to build, collected instead of aborting
+        self.layer_errors = []
         self.instance = None
 
         # istance of a model Project
@@ -1373,7 +1378,17 @@ class QgisProject(XmlData):
 
         for layerid, layer in self.qgs_project.mapLayers().items():
             if self.qgs_project.layerIsEmbedded(layerid) == '' and layer.name() not in restricted_layers:
-                layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
+                try:
+                    layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
+                except Exception as e:
+                    # keep building the other layers, report this one later via clean();
+                    # drop the generic "[Layer error on field(id)]--" wrapper noise and
+                    # replace it with a clear layer-scoped label using the real layer name
+                    reason = str(e).rsplit(']-- ', 1)[-1].strip(': ').strip()
+                    self.layer_errors.append(
+                        _('Layer "%(name)s" could not be loaded: %(reason)s') % {
+                            'name': layer.name(), 'reason': reason
+                        })
 
         # For layers with join 1to1 reload fields(columns)
         for layerid in self.relation_1to1_layers:
@@ -1610,11 +1625,35 @@ class QgisProject(XmlData):
         load_qdjango_project_file.send(self)
 
     def clean(self):
+        # already labeled "Layer ... could not be loaded" when collected in _getDataLayers()
+        layer_errors = list(self.layer_errors)
+        project_errors = []
+
         for validator in self.validators:
-            validator.clean()
+            try:
+                validator.clean()
+            except Exception as e:
+                sub_errors = getattr(e, 'errors', None) or [str(e)]
+                project_errors.extend(sub_errors)
 
         for layer in self.layers:
-            layer.clean()
+            try:
+                layer.clean()
+            except Exception as e:
+                sub_errors = getattr(e, 'errors', None) or [str(e)]
+                layer_errors.extend(_('Layer "%s": %s') % (layer.name, m) for m in sub_errors)
+
+        project_errors = [_('Project: %s') % m for m in project_errors]
+
+        # group by scope (all layer errors, then all project errors) instead of interleaving them
+        errors = layer_errors + project_errors
+
+        if errors:
+            exc = QgisProjectException('; '.join(errors), errors=errors)
+            # kept separate (not just counts) so callers can render a grouped, scope-labeled report
+            exc.layer_error_messages = layer_errors
+            exc.project_error_messages = project_errors
+            raise exc
 
     def save(self, instance=None, **kwargs):
         """
@@ -1622,6 +1661,10 @@ class QgisProject(XmlData):
         Update QGIS project file with new datasources for ogr/gdal and sqlite types.
         :param instance: Project instance
         """
+
+        # Validate project before saving
+        # At the moment, the validation is commented out and not enforced before saving.
+        #self.clean()
 
         with transaction.atomic():
 
@@ -2335,4 +2378,3 @@ class QgisProjectSettingsWMS(XmlData):
             })
 
         return self._composerTemplatesData
-
