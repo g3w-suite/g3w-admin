@@ -519,10 +519,12 @@ new (class extends Plugin {
 
     const { toolboxes, showToolboxesExcluded } = constraints;
     const toolboxIds = Object.keys(toolboxes);
+
     if (false === showToolboxesExcluded) {
-      this.state.toolboxes.forEach(({ state: { show, id} }) => show = toolboxIds.includes(id));
+      this.state.toolboxes.forEach(tb => tb.setShow(toolboxIds.includes(tb.getId())));
     }
-    toolboxIds.forEach(id => this.getToolBoxById(id).setEditingConstraints(toolboxes[id]));
+
+    toolboxIds.forEach(id => this.getToolBoxById(id)?.setEditingConstraints?.(toolboxes[id]));
   }
 
   /**

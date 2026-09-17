@@ -317,7 +317,7 @@ export default ({
       if (this.state.selected && !this.canEdit) {
         GUI.getMap().getView().animate(
           { duration: 200, center: GUI.getCenter() },
-          { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+          { duration: 200, resolution: getResolutionFromScale(this.state.constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
         );
       }
     },

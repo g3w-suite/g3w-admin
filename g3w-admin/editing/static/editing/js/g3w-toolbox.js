@@ -237,6 +237,41 @@ export class ToolBox extends Emitter {
   #collection;
 
   /**
+   * Registered event un-setters run when the toolbox stops editing.
+   *
+   * @type {Array<Function>}
+   */
+  #unsetters = [];
+
+  /**
+   * Options used for the last/next feature-fetch request.
+   *
+   * @type {Object}
+   */
+  #getFeaturesOption = {};
+
+  /**
+   * Cached layer type ('vector' | 'table' | ...) for the editing layer.
+   *
+   * @type {string}
+   */
+  #layerType;
+
+  /**
+   * Explicit tool subset enabled by `setEnablesDisablesTools`, if any.
+   *
+   * @type {Array|undefined}
+   */
+  #enabledTools;
+
+  /**
+   * Explicit tool id subset disabled by `setEnablesDisablesTools`, if any.
+   *
+   * @type {Array|undefined}
+   */
+  #disabledTools;
+
+  /**
    * Creates the editing toolbox and initializes the state for a layer.
    *
    * The constructor configures the editing metadata for the layer, builds the
@@ -281,6 +316,8 @@ export class ToolBox extends Emitter {
       // state of catalog/project layer state need to be in sync with editing vector layer state
       this.#layer = new Layer(this.#catalogLayer.state, { TYPE: 'vector' });
     }
+
+    this.#layerType = this.#layer.getType() || 'vector';
 
     const is_vector          = [undefined, 'vector'].includes(this.#layer.getType());
     const geometryType       = is_vector && this.#layer.getGeometryType();
@@ -384,13 +421,6 @@ export class ToolBox extends Emitter {
       relations:        Object.values(this.#layer.isFather() && dependencies.length ? this.#layer.getRelations().getRelations() : {}),
       father:           this.#layer.isFather(),
       canEdit:          true,
-      /** store events un-setters */
-      _unsetters:         [],
-      _getFeaturesOption: {},
-      _layerType:       this.#layer.getType() || 'vector',
-      _enabledtools: undefined,
-      _disabledtools: undefined,
-      _constraints: constraints,
       tools: [
         // Add Feature
         (is_vector) && capabilities.includes('add_feature') && new Tool({
@@ -1879,7 +1909,7 @@ export class ToolBox extends Emitter {
       if (filter.nofeatures) {
         filter.nofeatures_field = filter.nofeatures_field || (this.state.fields || [])[0].name;
       }
-      this.state._getFeaturesOption = {
+      this.#getFeaturesOption = {
         filter,
         editing: true,
         registerEvents: false
@@ -1889,10 +1919,10 @@ export class ToolBox extends Emitter {
         this.constraintFeatureFilter = filter;
       }
     } else {
-      this.state._getFeaturesOption = {
+      this.#getFeaturesOption = {
         registerEvents: true,
         editing:        true,
-        filter: 'table' === this.state._layerType ? undefined : { bbox: GUI.getMapBBOX() }
+        filter: 'table' === this.#layerType ? undefined : { bbox: GUI.getMapBBOX() }
       };
     }
   }
@@ -1917,7 +1947,7 @@ export class ToolBox extends Emitter {
 
     const map = GUI.getMap();
 
-    this.state.canEdit = getScaleFromResolution(map.getView().getResolution()) <= this.state._constraints.scale;
+    this.state.canEdit = getScaleFromResolution(map.getView().getResolution()) <= this.state.constraints.scale;
 
     // check if start method is called
     const showZoomCursor = this.state.selected && (this.#start || this.#startAsync) && !this.state.canEdit;
@@ -1942,7 +1972,7 @@ export class ToolBox extends Emitter {
     }
     
     // async show message because another toolbox can be unselected before
-    GUI.setModal(showZoomCursor, `${_('plugins.editing.zoom_to_enable')}${this.state._constraints.scale}`.toUpperCase());
+    GUI.setModal(showZoomCursor, `${_('plugins.editing.zoom_to_enable')}${this.state.constraints.scale}`.toUpperCase());
   }
 
   /**
@@ -2006,18 +2036,18 @@ export class ToolBox extends Emitter {
       });
   
       // add featuresLockedByOtherUser setter
-      this.state._unsetters.push(() => this.un('featuresLockedByOtherUser', unKeyLock));
+      this.#unsetters.push(() => this.un('featuresLockedByOtherUser', unKeyLock));
 
       // check if can we edit based on scale contraint (vector layer)
-      if (this.state._constraints.scale) {
+      if (this.state.constraints.scale) {
         const { promise, resolve: res, reject: rej } = Promise.withResolvers();
         this.state.canEdit = false;
         // reset user message scale (on stop)
-        this.state._unsetters.push(() => this.#handleScaleConstraint());
+        this.#unsetters.push(() => this.#handleScaleConstraint());
         // set as resolve handler to resolve waiting get features from server
         this.#startAsync = res;
         // listen selected attribute
-        this.state._unsetters.push(Vue.watch(() => this.state.selected, () => this.#handleScaleConstraint(), { immediate: true }));
+        this.#unsetters.push(Vue.watch(() => this.state.selected, () => this.#handleScaleConstraint(), { immediate: true }));
         // await scale set for get features
         this.#events.push(GUI.getMap().getView().on('change:resolution', debounce(() => this.#handleScaleConstraint()), 600));
         // click to fit zoom scale constraint
@@ -2026,7 +2056,7 @@ export class ToolBox extends Emitter {
             if (this.state.selected && !this.state.canEdit) {
               GUI.getMap().getView().animate(
                 { duration: 200, center: e.coordinate },
-                { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+                { duration: 200, resolution: getResolutionFromScale(this.state.constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
               );
             }
           })
@@ -2039,7 +2069,7 @@ export class ToolBox extends Emitter {
       }
 
       // reset eventually message
-      if (!this.state._constraints.scale) {
+      if (!this.state.constraints.scale) {
         GUI.setModal(false);
       }
 
@@ -2053,7 +2083,7 @@ export class ToolBox extends Emitter {
       const isMobileHiddenMap = (
         ApplicationState.ismobile             // mobile device
         && GUI.isMapHidden()                  // map not visible (content 100%)
-        && 'vector' === this.state._layerType // vector layer
+        && 'vector' === this.#layerType        // vector layer
       );
 
       this.startLoading();
@@ -2064,7 +2094,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this.startSession(this.state._getFeaturesOption);
+        features = await this.startSession(this.#getFeaturesOption);
       }
 
       /** In case of not yest started session and is not in mobile */
@@ -2072,7 +2102,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this.startSession(this.state._getFeaturesOption);
+        features = await this.startSession(this.#getFeaturesOption);
       }
 
       /**
@@ -2082,7 +2112,7 @@ export class ToolBox extends Emitter {
 
         this.emit('start-editing');
         await setLayerUniqueFieldValues(this.getId());
-        features = await this.getFeatures(this.state._getFeaturesOption);
+        features = await this.getFeatures(this.#getFeaturesOption);
 
       }
 
@@ -2100,7 +2130,7 @@ export class ToolBox extends Emitter {
       this.state.layer.getOLLayer?.()?.setVisible(true);
 
       //add OL layer to map only is vector layer (eg. image layers whose catalog layer may be hidden)
-      if ('vector' === this.state._layerType && this.state.layer.getOLLayer?.()) { 
+      if ('vector' === this.#layerType && this.state.layer.getOLLayer?.()) {
         GUI.getMap().addLayer(this.state.layer.getOLLayer());
       }
      
@@ -2161,8 +2191,8 @@ export class ToolBox extends Emitter {
       this.disableCanEditEvent();
     }
 
-    this.state._unsetters.forEach(fnc => fnc());
-    this.state._unsetters = [];
+    this.#unsetters.forEach(fnc => fnc());
+    this.#unsetters = [];
 
     this.#events.forEach(k => ol.Observable.unByKey(k));
     this.#events.splice(0);
@@ -2212,7 +2242,7 @@ export class ToolBox extends Emitter {
       await this.stopSession();
       this.stopLoading();
       this.setEditing(false);
-      this.state._getFeaturesOption = {};
+      this.#getFeaturesOption = {};
       this.stopActiveTool();
       this.clearToolboxMessages();
       this.emit('stop-editing');
@@ -2221,7 +2251,7 @@ export class ToolBox extends Emitter {
       //clear chain
       GUI.getPlugin('editing').state.stopChain.clear();
       //remove layer from map
-      if ('vector' === this.state._layerType && this.state.layer.getOLLayer?.()) {
+      if ('vector' === this.#layerType && this.state.layer.getOLLayer?.()) {
         GUI.getMap().removeLayer(this.state.layer.getOLLayer());
       }
       
@@ -2432,7 +2462,7 @@ export class ToolBox extends Emitter {
    * @returns {Object} Constraint metadata used during editing checks.
    */
   getEditingConstraints() {
-    return this.state._constraints;
+    return this.state.constraints;
   }
 
   /**
@@ -2733,10 +2763,10 @@ export class ToolBox extends Emitter {
             if (active) {
               this.setActiveTool(tool);
             }
-            if (undefined === this.state._enabledtools) {
-              this.state._enabledtools = [];
+            if (undefined === this.#enabledTools) {
+              this.#enabledTools = [];
             }
-            this.state._enabledtools.push(tool);
+            this.#enabledTools.push(tool);
         }
         });
       //disabled and visible
@@ -2744,10 +2774,10 @@ export class ToolBox extends Emitter {
         .forEach(({ id, options }) => {
           const tool = this.getToolById(id);
           if (tool) {
-            if (undefined === this.state._disabledtools) {
-              this.state._disabledtools = [];
+            if (undefined === this.#disabledTools) {
+              this.#disabledTools = [];
             }
-            this.state._disabledtools.push(id);
+            this.#disabledTools.push(id);
             //add it toi visible tools
             toolsId.push(id);
           }
@@ -2767,8 +2797,8 @@ export class ToolBox extends Emitter {
    * @param {boolean} [bool=false] Whether all tools should be enabled.
    */
   enableTools(bool = false) {
-    const tools         = this.state._enabledtools || this.state.tools;
-    const disabledtools = this.state._disabledtools || [];
+    const tools         = this.#enabledTools || this.state.tools;
+    const disabledtools = this.#disabledTools || [];
     tools
       .forEach(tool => {
         const enabled = undefined === tool.enable ? bool : tool.enable;
@@ -2869,8 +2899,8 @@ export class ToolBox extends Emitter {
     this.constraints.show       = null;
     this.constraints.tools      = [];
 
-    if (this.state._enabledtools) {
-      this.state._enabledtools = undefined;
+    if (this.#enabledTools) {
+      this.#enabledTools = undefined;
       this.enableTools();
       this.state.tools.forEach(tool => {
         tool.visible              = true;
@@ -2879,7 +2909,7 @@ export class ToolBox extends Emitter {
         tool.disabledtoolsoftools = []; //reset disabled tools eventually set by other
       });
     }
-    this.state._disabledtools = null;
+    this.#disabledTools = null;
     // set show based on visibile property of config editing object setting
     this.state.show           = this.state.visible;
     // need to set selected false
@@ -3459,9 +3489,9 @@ export class ToolBox extends Emitter {
       if (!options.registerEvents) {
         return;
       }
-      this.state._getFeaturesOption = options;
+      this.#getFeaturesOption = options;
       // register get features event (only in case filter bbox)
-      if (('vector' === this.state._layerType) && this.state._getFeaturesOption.filter.bbox) {
+      if (('vector' === this.#layerType) && this.#getFeaturesOption.filter.bbox) {
         const fnc = async () => {
           if (
             //added ApplicationState.online
@@ -3471,12 +3501,12 @@ export class ToolBox extends Emitter {
             && 0 === GUI.getContentLength()
           ) {
             const newBbox = GUI.getMapBBOX();
-            const curBbox = this.state._getFeaturesOption.filter.bbox;
+            const curBbox = this.#getFeaturesOption.filter.bbox;
             // skip request if bbox hasn't changed
             if (newBbox.every((v, i) => v === curBbox?.[i])) { return; }
-            this.state._getFeaturesOption.filter.bbox = newBbox;
+            this.#getFeaturesOption.filter.bbox = newBbox;
             this.state.loading = true;
-            await this.getFeatures(this.state._getFeaturesOption);
+            await this.getFeatures(this.#getFeaturesOption);
             this.state.loading = false;
           }
         };
@@ -3484,7 +3514,7 @@ export class ToolBox extends Emitter {
         this.#getFeaturesEvent.fnc   = debounce(fnc, 300);
       
         this.#events.push(GUI.getMap().on('moveend', this.#getFeaturesEvent.fnc));
-        this.state._unsetters.push(
+        this.#unsetters.push(
           Vue.watch(
             () => this.state.selected,
             async selected => {
