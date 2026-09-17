@@ -358,35 +358,35 @@ export class ToolBox extends Emitter {
     ].filter(id => getCatalogLayerById(id).isEditable())
 
     this.state = {
-      layer            : this.#editingLayer,
-      id               : this.#editingLayer.getId(),
-      changingtools    : false, // whether to show tools during change phase
-      show             : this.#editingLayer.state.editing.visible,  // whether to show the toolbox if we need to filtered
-      color            : this.#editingLayer.getColor()       || 'blue',
-      title            : ` ${this.#editingLayer.getTitle()}` || "Edit Layer",
-      customTitle      : false,
-      loading          : false,
-      enabled          : false,
-      toolboxheader    : true,
-      startstopediting : true,
-      message          : null,
-      toolsoftool      : [],
-      selected         : false,
-      activetool       : null,
-      started          : false,
-      getfeatures      : false,
+      layer:            this.#editingLayer,
+      id:               this.#editingLayer.getId(),
+      changingtools:    false, // whether to show tools during change phase
+      show:             this.#editingLayer.state.editing.visible,  // whether to show the toolbox if we need to filtered
+      color:            this.#editingLayer.getColor()       || 'blue',
+      title:            ` ${this.#editingLayer.getTitle()}` || "Edit Layer",
+      customTitle:      false,
+      loading:          false,
+      enabled:          false,
+      toolboxheader:    true,
+      startstopediting: true,
+      message:          null,
+      toolsoftool:      [],
+      selected:         false,
+      activetool:       null,
+      started:          false,
+      getfeatures:      false,
       /** current state of history (useful for undo /redo) */
-      current          : null,
+      current:          null,
       /** temporary change not save on history */
-      changes          : [],
-      history          : this.#constrains,
-      on               : false,
+      changes:          [],
+      history:          this.#constrains,
+      on:               false,
       dependencies,
-      relations        : Object.values(layer.isFather() && dependencies.length ? layer.getRelations().getRelations() : {}),
-      father           : layer.isFather(),
-      canEdit          : true,
+      relations:        Object.values(layer.isFather() && dependencies.length ? layer.getRelations().getRelations() : {}),
+      father:           layer.isFather(),
+      canEdit:          true,
       /** store events un-setters */
-      _unsetters: [],
+      _unsetters:         [],
       _getFeaturesOption: {},
       _layerType: layer.getType() || 'vector',
       _enabledtools: undefined,
@@ -1682,16 +1682,6 @@ export class ToolBox extends Emitter {
       },
     })
 
-    /**
-     * constraint messages to show
-     */
-    this.messages = {
-      //set message of scale constraint
-      constraint: {
-        scale: `${_('plugins.editing.zoom_to_enable')}${this.state._constraints.scale}`.toUpperCase()
-      }
-    }
-
   }
 
   /**
@@ -1944,7 +1934,7 @@ export class ToolBox extends Emitter {
     }
     
     // async show message because another toolbox can be unselected before
-    GUI.setModal(showZoomCursor, this.messages.constraint.scale);
+    GUI.setModal(showZoomCursor, `${_('plugins.editing.zoom_to_enable')}${this.state._constraints.scale}`.toUpperCase());
   }
 
   /**
