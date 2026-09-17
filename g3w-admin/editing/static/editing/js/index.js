@@ -163,7 +163,7 @@ new (class extends Plugin {
       deleteLayerFeature:               () => {},
       addLayerFeature:                  this.addLayerFeature.bind(this),
       hidePanel:                        this.hideEditingPanel.bind(this),
-      resetDefault:                     this.resetAPIDefault.bind(this),
+      resetDefault:                     this.resetDefault.bind(this),
       startEditing:                     this.startEditing.bind(this),
       stopEditing:                      this.stopEditing.bind(this),
       showPanel:                        this.showPanel.bind(this),
@@ -427,6 +427,8 @@ new (class extends Plugin {
    * @returns {void}
    */
   resetDefault() {
+    //reset deafult to all toolboxes
+    this.getToolBoxes().forEach(tb => tb.resetDefault());
     this.state.saveConfig = {
       mode:     "default", // default, autosave
       modal:    false,
@@ -437,17 +439,6 @@ new (class extends Plugin {
       }
     };
     GUI.disableClickMapControls(false);
-  }
-
-  /**
-   * [API Method] Reset toolbox and plugin state modified by another plugin.
-   */
-  resetAPIDefault({
-    plugin    = true,
-    toolboxes = true,
-  } = {}) {
-    if (toolboxes) { this.getToolBoxes().forEach(tb => tb.resetDefault()) }
-    if (plugin) { this.resetDefault() }
   }
 
   /**

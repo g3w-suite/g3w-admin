@@ -60,7 +60,7 @@ export class IframeEditor extends Emitter {
     // BACKOMP v3.x
     plugin.getEditableLayersId = plugin.getEditableLayersId || (() => Object.keys(plugin.getEditableLayers()));
     plugin.hidePanel           = plugin.hidePanel           || plugin.hideEditingPanel;
-    plugin.resetDefault        = plugin.resetDefault        || plugin.resetAPIDefault;
+    plugin.resetDefault        = plugin.resetDefault        || (() => {});
     plugin.subscribe           = plugin.subscribe           || plugin.on;
     plugin.unsubscribe         = plugin.unsubscribe         || plugin.off;
 
