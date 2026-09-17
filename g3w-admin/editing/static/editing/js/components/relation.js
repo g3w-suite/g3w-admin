@@ -440,7 +440,7 @@ export default ({
       fieldrequired() {
         return getRelationFieldsFromRelation({ layerId: this._relationLayerId, relation: this.relation })
           .ownField // own Fields is a relation Fields array of Relation Layer
-          .some(field => ((getEditingLayerById(this._relationLayerId).state.editing.fields || []).find(f => field === f.name) || { validate: { required: false } }).validate.required);
+          .some(field => ((GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).state.fields || []).find(f => field === f.name) || { validate: { required: false } }).validate.required);
       },
 
       /**
@@ -1142,7 +1142,7 @@ export default ({
          */
         return {
           // get editable fields from parent layer editing fields
-          editable: ownField.filter(f => ((parentLayer.state.editing.fields || []).find(_f => f === _f.name) || { editable: false }).editable),
+          editable: ownField.filter(f => ((this.parentTool.state.fields || []).find(_f => f === _f.name) || { editable: false }).editable),
           // check if father field is a pk and is not editable
           pk,
           // Check if the parent field is editable.
@@ -1234,7 +1234,7 @@ export default ({
       this.isVectorRelation = 'vector' === relationLayer.getType();
 
       // add relation capabilities
-      this.rcapabilities = relationLayer.state.editing?.capabilities || [];
+      this.rcapabilities = GUI.getPlugin('editing').getToolBoxById(relationLayer.getId()).state.capabilities || [];
 
       // vector relation → get all layers with the same geometry
       if (this.isVectorRelation) {
@@ -1537,7 +1537,7 @@ export default ({
                     if (_feature) {
                       const feature = new Feature({
                         feature:    _feature,
-                        properties: (inputs.layer.state.editing.fields || []).filter(attr => !attr.pk).map(attr => attr.name)
+                        properties: (GUI.getPlugin('editing').getToolBoxById(inputs.layer.getId()).state.fields || []).filter(attr => !attr.pk).map(attr => attr.name)
                       });
                       feature.setTemporaryId();
                       inputs.features = [feature];
@@ -1580,9 +1580,10 @@ export default ({
       // set editing style on relation layer
       try {
         const layer         = getEditingLayerById(this.relation.child);
+        const layerStyle    = GUI.getPlugin('editing').getToolBoxById(this.relation.child).state.layer_style;
         this._current_style = layer.getCurrentStyle().name;
-        if (layer.config.editing.layer_style && this._current_style !== layer.config.editing.layer_style) {
-          await layer.changeStyle(layer.config.editing.layer_style);
+        if (layerStyle && this._current_style !== layerStyle) {
+          await layer.changeStyle(layerStyle);
         }
       } catch(e) {
         console.warn(e);
@@ -1607,8 +1608,9 @@ export default ({
     async deactivated() {
       // reset editing style on relation layer
       try {
-        const layer = getEditingLayerById(this.relation.child);
-        if (layer.config.editing.layer_style && this._current_style && this._current_style !== layer.config.editing.layer_style) {
+        const layer      = getEditingLayerById(this.relation.child);
+        const layerStyle = GUI.getPlugin('editing').getToolBoxById(this.relation.child).state.layer_style;
+        if (layerStyle && this._current_style && this._current_style !== layerStyle) {
           await layer.changeStyle(this._current_style);
         }
       } catch(e) {

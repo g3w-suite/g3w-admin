@@ -72,7 +72,7 @@ export function chooseFeatureFromFeatures({
       }))({
         features:   Array.isArray(features) ? features : [],
         feature,
-        attributes: (inputs.layer.state.editing.fields || []).map(({ name, label }) => ({ name, label })),
+        attributes: (GUI.getPlugin('editing').getToolBoxById(inputs.layer.getId()).state.fields || []).map(({ name, label }) => ({ name, label })),
       })).$mount().$el,
     });
   })

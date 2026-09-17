@@ -689,7 +689,7 @@ async function _handleRelation1_1LayerFields({
         //check if child feature is already added to
         childFeature = childToolbox.readEditingFeatures().find(f => f.get(childField) === value)
 
-        const fieldsUpdated = undefined !== (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
+        const fieldsUpdated = undefined !== (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
           .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())
           .find(({ name }) => fields.find(f => name == f.name).update)
 
@@ -703,7 +703,7 @@ async function _handleRelation1_1LayerFields({
             childFeature = new Feature();
             childFeature.setTemporaryId();
             // set name attribute to `null`
-            (getCatalogLayerById(childLayerId).state.editing.fields || []).forEach(field => childFeature.set(field.name, null));
+            (GUI.getPlugin('editing').getToolBoxById(childLayerId).state.fields || []).forEach(field => childFeature.set(field.name, null));
             //set father field value
             childFeature.set(childField, fields.find(f => fatherField === f.name).value);
             //add feature to a child source
@@ -722,7 +722,7 @@ async function _handleRelation1_1LayerFields({
           if (childFeature) {
             // Loop editable only field of father layerId when
             // a child relation (1:1) is bind to the current feature
-            const editiableRelatedFieldChild = (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
+            const editiableRelatedFieldChild = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
               .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId() && f.editable);
 
             editiableRelatedFieldChild
@@ -797,7 +797,7 @@ async function _listenRelation1_1FieldChange({
     }
 
     //store original editable property of fields relation to child layer relation
-    const editableRelatedFatherChild = (GUI.getPlugin('editing').getLayerById(relation.getFather()).state.editing.fields || [])
+    const editableRelatedFatherChild = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
       .filter(f => f.vectorjoin_id && relation.getId() === f.vectorjoin_id)
       .reduce((accumulator, field) => {
         const formField             = fields.find(f => field.name === f.name)

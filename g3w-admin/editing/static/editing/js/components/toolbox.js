@@ -285,7 +285,7 @@ export default ({
      * @returns { Promise }
      */
     isLayerReady() {
-      return this.state.layer.state.editing.ready;
+      return this.state.ready;
     },
 
     toolboxCursor() {
@@ -328,7 +328,7 @@ export default ({
      */
     async toggleEditing() {
       this.toggled.layer = !(this.state.on || this.toggled.layer);
-      if (this.toggled.layer && this.state.layer.state.editing.ready && !this.state.loading) {
+      if (this.toggled.layer && this.state.ready && !this.state.loading) {
         this.$emit(this.state.on ? 'stoptoolbox' : 'starttoolbox', this.state.id);
       }
       if (!this.toggled.layer) {

@@ -220,7 +220,7 @@ new (class extends Plugin {
     await GUI.isReady();
 
     // add sidebar item (left menu)
-    if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
+    if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getToolBoxes().some(({ state }) => state.visible)) {
       this.config.name          = this.config.name || "plugins.editing.editing_data";
 
       const comp = this.createSideBarComponent({}, {
@@ -244,9 +244,9 @@ new (class extends Plugin {
             id:    'editing',
             class: "fas fa-pencil-alt",
             hint:  'Editing',
-            state:  Vue.observable({ disabled: layer.state.editing.inediting }), //disable when in editing
+            state:  Vue.observable({ disabled: this.getToolBoxById(id).state.inediting }), //disable when in editing
             init() {
-              this.unwatch = Vue.watch(() => layer.state.editing.inediting, bool => this.state.disabled = bool );
+              this.unwatch = Vue.watch(() => GUI.getPlugin('editing').getToolBoxById(id).state.inediting, bool => this.state.disabled = bool );
             },
             clear() {
               this.unwatch && this.unwatch(); // remove action when destroy
@@ -408,7 +408,7 @@ new (class extends Plugin {
    * The metadata is read from the layer editing configuration.
    */
   getEditingFields(layerId, editable = false) {
-    return (this.getLayerById(layerId)?.state.editing.fields ?? []).filter(f => editable ? f.editable : true);
+    return (this.getToolBoxById(layerId)?.state.fields ?? []).filter(f => editable ? f.editable : true);
   }
 
   /**
@@ -1131,7 +1131,7 @@ new (class extends Plugin {
    */
   async showEditingPanel(opts = {}) {
     //need to filter visible
-    if (this.getLayers().filter(l => l.config.editing.visible).length > 0) {
+    if (this.getToolBoxes().filter(({ state }) => state.visible).length > 0) {
       this.state.panel = new Panel({
         ...opts,
         id:            "editing-panel",
@@ -1254,7 +1254,7 @@ new (class extends Plugin {
         return;
       }
 
-      const lockIds  = response.featurelocks.map(lk => lk.featureid);
+      const lockIds  = (response.featurelocks || []).map(lk => lk.featureid);
 
       let features = [];
 

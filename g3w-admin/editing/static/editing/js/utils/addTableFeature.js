@@ -11,7 +11,7 @@ export async function addTableFeature(inputs, context) {
     feature = inputs.features.at(-1);
   } else {
     feature = new Feature({
-      feature: new ol.Feature((inputs.layer.state.editing.fields || []).reduce((props, f) => { props[f.name] = null; return props }, {}))
+      feature: new ol.Feature((g3w.app.getPlugin('editing').getToolBoxById(inputs.layer.getId()).state.fields || []).reduce((props, f) => { props[f.name] = null; return props }, {}))
     });
     feature.setNew();
   }

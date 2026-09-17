@@ -58,7 +58,8 @@ export class AddFeatureStep extends Step {
 
       setAndUnsetSelectedFeaturesStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
 
-      const originalGeometryType = inputs.layer.state.editing.geometrytype;
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(layerId);
+      const originalGeometryType = toolbox.state.geometrytype;
       let geom                   = originalGeometryType;
 
       // get open layers geometry
@@ -73,7 +74,7 @@ export class AddFeatureStep extends Step {
       this.geometryType = geom;
 
       const source     = getEditingLayer(inputs.layer).getSource();
-      const attributes = (inputs.layer.state.editing.fields || []);
+      const attributes = (toolbox.state.fields || []);
 
       this.drawInteraction = this.addInteraction(
         new ol.interaction.Draw({

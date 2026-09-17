@@ -280,7 +280,7 @@ export default ({
     },
 
     showTool(type) {
-      return this.inputs.layer.state.editing.capabilities.includes(type);
+      return GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).state.capabilities.includes(type);
     },
 
     isMediaField(name) {
@@ -465,7 +465,7 @@ export default ({
         });
         this.count    = GUI.getPlugin('editing').getToolBoxById(this.context.id).getCount(); // get total count of features from server
         //set headers
-        this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
+        this.headers  = (GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).state.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
         //set up table rows from features
         this.rows = this.features.length > 0
           // ordered properties

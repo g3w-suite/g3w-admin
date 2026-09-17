@@ -146,7 +146,7 @@ export async function evaluateExpressionFields({
 
                     // see: https://github.com/g3w-suite/g3w-client/pull/856
                     if (parentData) {
-                      ApplicationState.project.getLayerById(qgs_layer_id).config.editing.fields.find(f => f.name === field.name ).input.options.values = values;
+                      g3w.app.getPlugin('editing').getToolBoxById(qgs_layer_id).state.fields.find(f => f.name === field.name).input.options.values = values;
                     }
                   }
                 } catch(e) {

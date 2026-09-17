@@ -156,7 +156,7 @@ export class SelectElementsStep extends Step {
             reject();
             return;
           }
-          const attributes = (layer.state.editing.fields || []);
+          const attributes = (GUI.getPlugin('editing').getToolBoxById(layer.getId()).state.fields || []);
           const geometry   = e.features[0].getGeometry();
           if (geometryType !== geometry.getType()) {
             e.feature.setGeometry(convertSingleMultiGeometry(geometry, geometryType));

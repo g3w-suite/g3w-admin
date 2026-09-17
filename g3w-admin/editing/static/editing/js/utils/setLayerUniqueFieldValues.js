@@ -15,9 +15,10 @@ const { XHR } = g3w.utils;
 export async function setLayerUniqueFieldValues(layerId) {
   await new Promise(async (resolve, reject) => {
     const layer = GUI.getPlugin('editing').getLayerById(layerId);
+    const fields = GUI.getPlugin('editing').getToolBoxById(layerId).state.fields || [];
     //filter field that is unique and not yet set unique values
-    const fields = Object.values((layer.state.editing.fields || []).filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique)));
-    if (0 === fields.length) {
+    const uniqueFields = Object.values(fields.filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique)));
+    if (0 === uniqueFields.length) {
       resolve();
       return;
     }
@@ -27,7 +28,7 @@ export async function setLayerUniqueFieldValues(layerId) {
         url:    layer.getUrl('widget').unique,
         params: {
           //filter field that is unique and not yet set unique values
-          fields: Object.values((layer.state.editing.fields || []).filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique))).map(f => f.name).join()
+          fields: uniqueFields.map(f => f.name).join()
         }
       });
 

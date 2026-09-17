@@ -112,7 +112,7 @@ export default ({
       selectedlayers:        [],
       editinglayers:         Object.entries(GUI.getPlugin('editing')
                               .getEditableLayers())
-                              .filter(([_,l]) => l.config.editing.visible) //exclude layers that are set visible to false
+                              .filter(([id]) => GUI.getPlugin('editing').getToolBoxById(id).state.visible) //exclude layers that are set visible to false
                               .map(([id, layer]) => ({ id, name: layer.getName(), title: layer.getTitle() })),
       activetool:            null,
     };
@@ -469,7 +469,7 @@ export default ({
 
     // open editing panel state
     this.state.open = false;
-    getCatalogLayers({ EDITABLE: true }).forEach(l => l.state.editing.inediting = true);
+    getCatalogLayers({ EDITABLE: true }).forEach(l => GUI.getPlugin('editing').getToolBoxById(l.getId()).state.inediting = true);
 
     GUI.on('opencontent',  this._enableEditingButtons);
     GUI.on('closeform',    this._enableEditingButtons);
@@ -493,7 +493,7 @@ export default ({
 
     // reset editing panel state
     this.state.open = false;
-    getCatalogLayers({ EDITABLE: true }).forEach(l => l.state.editing.inediting = false);
+    getCatalogLayers({ EDITABLE: true }).forEach(l => GUI.getPlugin('editing').getToolBoxById(l.getId()).state.inediting = false);
 
     GUI.off('opencontent',  this._enableEditingButtons);
     GUI.off('closeform',    this._enableEditingButtons);

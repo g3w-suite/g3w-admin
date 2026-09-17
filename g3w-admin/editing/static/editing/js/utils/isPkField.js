@@ -4,5 +4,5 @@
  * @returns {boolean} whether field is a Primary Key
  */
 export function isPkField(layer, field) {
-  return ((layer.state.editing.fields || []).find(f => field === f.name) || {}).pk;
+  return ((g3w.app.getPlugin('editing').getToolBoxById(layer.getId()).state.fields || []).find(f => field === f.name) || {}).pk;
 }
