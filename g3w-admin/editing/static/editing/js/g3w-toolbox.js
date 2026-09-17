@@ -65,7 +65,6 @@ const {
 }                                   = g3w.utils;
 
 const { dissolve, splitFeature }    = g3wsdk.core.geoutils;
-const { cloneDeep }                 = g3wsdk.core.utils;
 
 const is_defined = d => undefined !== d;
 const toRawType  = value => Object.prototype.toString.call(value).slice(8, -1);
@@ -194,13 +193,6 @@ export class ToolBox extends Emitter {
    * @type {{ bbox: Array|null }}
    */
   #filter = { bbox: null };
-
-  /**
-   * Backward-compatible editing source facade returned by getEditingSource().
-   *
-   * @type {Object|null}
-   */
-  #editingSource = null;
 
   /**
    * Total number of rows/features available for the current load request.
@@ -3870,39 +3862,12 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Legacy editing source API.
-   *
-   * @returns {Object} reactive editing feature store API.
-   */
-  getEditingSource() {
-    if (!this.#editingSource) {
-      const source = Object.assign(new Emitter, {
-        setters: {
-          addFeatures:   (feats = []) => feats.forEach(f => source.addFeature(f)),
-          removeFeature: f => this._collection.remove(f),
-          updateFeature: f => this._collection.update(f),
-        },
-        clear:                 this.clear.bind(this),
-        addFeature:            this.addFeature.bind(this),
-        clone:                 () => cloneDeep(this.#editingSource),
-        getFeatureById:        this.getFeatureById.bind(this),
-        readFeatures:          this.readEditingFeatures.bind(this),
-        getLength:             this.getLength.bind(this),
-        getFeaturesCollection: this.getFeaturesCollection.bind(this),
-        setFeatures:           this.setFeatures.bind(this),
-      });
-      this.#editingSource = source;
-    }
-    return this.#editingSource;
-  }
-
-  /**
    * Adds multiple features to the editing collection.
    *
    * @param {Array} feats Features to add.
    */
   addFeatures(feats = []) {
-    return this.getEditingSource().addFeatures(feats);
+    feats.forEach(f => this.addFeature(f));
   }
 
   /**
@@ -3911,7 +3876,7 @@ export class ToolBox extends Emitter {
    * @param {Object} feature Feature to remove.
    */
   removeFeature(feature) {
-    return this.getEditingSource().removeFeature(feature);
+    this._collection.remove(feature);
   }
 
   /**
@@ -3920,7 +3885,7 @@ export class ToolBox extends Emitter {
    * @param {Object} feature Feature to update.
    */
   updateFeature(feature) {
-    return this.getEditingSource().updateFeature(feature);
+    this._collection.update(feature);
   }
 
   /**
@@ -3946,7 +3911,7 @@ export class ToolBox extends Emitter {
    */
   setFeatures(features = []) {
     this._collection.clear();
-    this.getEditingSource().addFeatures(features);
+    this.addFeatures(features);
   }
 
   /**
@@ -3957,15 +3922,6 @@ export class ToolBox extends Emitter {
    */
   getFeatureById(id) {
     return this._collection.getArray().find(f => id == f.getId());
-  }
-
-  /**
-   * Returns the number of features in the editing collection.
-   *
-   * @returns {number} Editing feature count.
-   */
-  getLength() {
-    return this._collection.getArray().length;
   }
 
   /**

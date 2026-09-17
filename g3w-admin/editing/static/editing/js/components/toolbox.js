@@ -470,18 +470,15 @@ export default ({
           .filter(l => 'vector' === l.getType()) // skip not in editing, raster, alphanumerical..
           .filter(l => all || tool.options.layerId === l.getId())
           .forEach(l => {
-            const source  = GUI.getPlugin('editing').getToolBoxById(l.getId()).getEditingSource();
+            const toolbox    = GUI.getPlugin('editing').getToolBoxById(l.getId());
+            const collection = toolbox.getFeaturesCollection();
             //add snap features
-            this.addSnapFeatures(source.readFeatures());
+            this.addSnapFeatures(toolbox.readEditingFeatures());
             this.snapEvents.push({
-              source,
-              // OL event key
-              olKey:           source.getFeaturesCollection().on('add', evt => this.addSnapFeatures([evt.element])),
-              // G3WObject event keys
-              settersAndKeys: {
-                'addFeature':  source.onbefore('addFeature',  this.addSnapFeatures),
-                'clear':       source.onbefore('clear', () => source.readFeatures().forEach(f => snapFeatures.remove(f)))
-              },
+              olKeys: [
+                collection.on('add',    evt => this.addSnapFeatures([evt.element])),
+                collection.on('remove', evt => snapFeatures.remove(evt.element)),
+              ],
             });
 
           });
@@ -507,12 +504,7 @@ export default ({
           // stops event listeners
           this
             .snapEvents
-            .forEach(d => {
-              Object
-                .keys(d.settersAndKeys)
-                .forEach(e => d.source.un(e, d.settersAndKeys[e]));
-              ol.Observable.unByKey(d.olKey)
-            });
+            .forEach(d => d.olKeys.forEach(key => ol.Observable.unByKey(key)));
 
           this.snapUnwatches.forEach(uw => uw());
 
