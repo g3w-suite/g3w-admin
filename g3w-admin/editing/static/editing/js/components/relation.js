@@ -1196,7 +1196,7 @@ export default ({
         const toolBox = GUI.getPlugin('editing').getToolBoxById(layerId);
         ids.forEach(id => {
           const changes = [];
-          toolBox.state.editing.changes = toolBox.state.editing.changes.filter(tc => {
+          toolBox.state.changes = toolBox.state.changes.filter(tc => {
             if (id === tc.layerId) {
               changes.push(tc);
               return false

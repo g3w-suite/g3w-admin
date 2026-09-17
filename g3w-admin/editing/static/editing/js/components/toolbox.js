@@ -28,7 +28,7 @@ export default ({
     :class      = "{
       'mobile':          isMobile(),
       'toolboxselected': state.selected,
-      'toolboxactive':   state.editing.on && canEdit,
+      'toolboxactive':   state.on && canEdit,
       'geolayer':        state.layer.isGeoLayer(),
     }"
   >
@@ -66,8 +66,8 @@ export default ({
           :class                  = "{
             'pull-right':       !isMobile(),
             'enabled':          isLayerReady,
-            'g3w-icon-toggled': state.editing.on,
-            [g3wtemplate.font[(state.editing.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
+            'g3w-icon-toggled': state.on,
+            [g3wtemplate.font[(state.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
           }"
         ></i>
       </span>
@@ -77,7 +77,7 @@ export default ({
     <bar-loader :loading = "loading" />
 
     <div
-      v-if       = "!state.changingtools && (state.editing.on || toggled.layer)"
+      v-if       = "!state.changingtools && (state.on || toggled.layer)"
       :class     = "{ 'panel-body':true, disabled: (loading || !isLayerReady || !canEdit) }"
       :style     = "{ cursor: toolboxCursor, padding: '15px' }"
       @click     = "fitZoomToScale"
@@ -243,14 +243,14 @@ export default ({
 
     /** @TODO add description */
     editDisabled() {
-      return this.state.loading && !this.state.startstopediting || (this.state.editing.on && !!this.state.activetool?.disableEdit);
+      return this.state.loading && !this.state.startstopediting || (this.state.on && !!this.state.activetool?.disableEdit);
     },
 
     /**
      * @returns { boolean } whether current has related layer(s) (aka. layer relations / joins)
      */
     hasRelations() {
-      return this.state.editing.dependencies.length > 0;
+      return this.state.dependencies.length > 0;
     },
 
     /**
@@ -264,14 +264,14 @@ export default ({
      * @returns { boolean }
      */
     canEdit() {
-      return this.state.editing.canEdit;
+      return this.state.canEdit;
     },
 
     /**
      * @returns { boolean }
      */
     father() {
-      return this.state.editing.father && this.hasRelations;
+      return this.state.father && this.hasRelations;
     },
 
     /**
@@ -285,7 +285,7 @@ export default ({
      * @returns { Promise }
      */
     isLayerReady() {
-      return this.state.layer.state.editing.ready;
+      return this.state.layer.state.ready;
     },
 
     toolboxCursor() {
@@ -327,9 +327,9 @@ export default ({
      * @fires starttoolbox
      */
     async toggleEditing() {
-      this.toggled.layer = !(this.state.editing.on || this.toggled.layer);
-      if (this.toggled.layer && this.state.layer.state.editing.ready && !this.state.loading) {
-        this.$emit(this.state.editing.on ? 'stoptoolbox' : 'starttoolbox', this.state.id);
+      this.toggled.layer = !(this.state.on || this.toggled.layer);
+      if (this.toggled.layer && this.state.layer.state.ready && !this.state.loading) {
+        this.$emit(this.state.on ? 'stoptoolbox' : 'starttoolbox', this.state.id);
       }
       if (!this.toggled.layer) {
         this.$emit('stoptoolbox', this.state.id);
@@ -353,7 +353,7 @@ export default ({
     /** @TODO add description */
     toggleFilterByRelation() {
       this.toggled.relation = !this.toggled.relation;
-      this.$emit('update-filter-layers', this.toggled.relation ? [this.state.id, ...this.state.editing.dependencies] : []);
+      this.$emit('update-filter-layers', this.toggled.relation ? [this.state.id, ...this.state.dependencies] : []);
     },
 
     /** @TODO add description */

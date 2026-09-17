@@ -191,7 +191,7 @@ export default ({
       const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
 
       try {
-        if (toolbox.state.editing.history.commit) {
+        if (toolbox.state.history.commit) {
           await GUI.getPlugin('editing').commit();
         }
       } catch(e) {
@@ -205,7 +205,7 @@ export default ({
         console.warn(e);
       }
       // re-enable query map control
-      const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.editing.on) && GUI.getMapControl('query');
+      const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.on) && GUI.getMapControl('query');
       if (control && !control.isToggled()) {
         control.toggle();
       }
@@ -356,7 +356,7 @@ export default ({
      * Listen changes of each layers
      */
     changes() {
-      return this.state.toolboxes.filter(t => t.state.editing.history.commit).length > 0;
+      return this.state.toolboxes.filter(t => t.state.history.commit).length > 0;
     },
 
     canCommit() {
@@ -365,7 +365,7 @@ export default ({
         'default' === this.state.saveConfig.mode
         && this.state.toolboxselected
         && !this.state.toolboxselected.state.activetool
-        && this.state.toolboxselected.state.editing.history.commit
+        && this.state.toolboxselected.state.history.commit
         && this.editingButtonsEnabled
       );
     },
@@ -374,7 +374,7 @@ export default ({
       const canUndo = (
         this.state.toolboxselected
         && !this.state.toolboxselected.state.activetool
-        && this.state.toolboxselected.state.editing.history.undo
+        && this.state.toolboxselected.state.history.undo
         && this.editingButtonsEnabled
       );
 
@@ -387,7 +387,7 @@ export default ({
       const canRedo = (
         this.state.toolboxselected
         && !this.state.toolboxselected.state.activetool
-        && this.state.toolboxselected.state.editing.history.redo
+        && this.state.toolboxselected.state.history.redo
         && this.editingButtonsEnabled
       );
 
@@ -426,7 +426,7 @@ export default ({
 
       this.editinglayers.forEach(({ id }) => {
         const toolbox     = GUI.getPlugin('editing').getToolBoxById(id);
-        const is_commit   = has_layers && toolbox.state.editing.history.commit;
+        const is_commit   = has_layers && toolbox.state.history.commit;
         const is_selected = layers.includes(id);
 
         toolbox.setShow(has_layers ? is_selected : true);
