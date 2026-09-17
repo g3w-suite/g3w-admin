@@ -2875,10 +2875,7 @@ export class ToolBox extends Emitter {
     this.state.title            = ` ${this.getEditingLayer().getTitle()}` || "Edit Layer";
     this.state.toolboxheader    = true;
     this.state.startstopediting = true;
-    this.constraints.filter     = null;
-    this.constraints.show       = null;
-    this.constraints.tools      = [];
-
+    
     if (this.#enabledTools) {
       this.#enabledTools = undefined;
       this.enableTools();
