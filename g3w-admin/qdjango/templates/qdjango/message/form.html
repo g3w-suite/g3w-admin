@@ -6,31 +6,52 @@
 
 
 {% block page_header %}
-    <h1>
-        {% if object.slug %}
-            {% trans 'Project message' %}
-            <small>{{ object.slug }}</small>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        <i class="fa fa-comments-o"></i>
+        {% if object.pk %}
+          {% trans 'Edit project message' %}
         {% else %}
-        {% trans 'New' %} {% trans 'Message' %}
+          {% trans 'New project message' %}
         {% endif %}
-
-    </h1>
+      </h1>
+      <p>
+        {% if object.pk %}
+          {{ object.title }}
+          {% if project %} &mdash; <em>{% trans 'project' %} <strong>{{ project.title }}</strong></em>{% endif %}
+        {% else %}
+          {% blocktrans with name=project.title %}Compose a notification message for the project <strong>{{ name }}</strong>.{% endblocktrans %}
+        {% endif %}
+      </p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <a href="{% url 'qdjango-project-messages-list' group.slug project.slug %}" class="hero-back">
+        <i class="fa fa-arrow-left"></i> {% trans 'Back to messages' %}
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block main_content %}
 
-<form method="post" id="project-message-form">
-    {% if form.errors %}
-        <div class="row">
-            <div class="col-md-12">
-            <div class="alert alert-danger alert-dismissable">
-                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                    {% trans 'Some errors on form. Check it and send again.' %}
-              </div>
+<div class="form-shell" id="project-message-form-shell">
+
+    <form method="post" id="project-message-form">
+        {% if form.errors %}
+            <div class="form-alert form-alert-error">
+                <i class="fa fa-exclamation-triangle"></i>
+                <div>
+                    <strong>{% trans 'Some errors on form' %}</strong>
+                    <span>{% trans 'Check the highlighted fields and submit again.' %}</span>
+                </div>
             </div>
-        </div>
-    {% endif %}
-    {% crispy form %}
-    {% g3wadmin_add_button_form %}
-</form>
+        {% endif %}
+        {% crispy form %}
+        {% g3wadmin_add_button_form %}
+    </form>
+
+</div>
 {% endblock %}

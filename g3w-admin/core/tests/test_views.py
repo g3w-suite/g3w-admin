@@ -12,11 +12,63 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
 from core.models import Group, G3WSpatialRefSys, MacroGroup
+from core.views import DashboardView, SearchAdminView
+from guardian.shortcuts import assign_perm, get_anonymous_user
+from qdjango.models import ProjectBookmark
+from qdjango.utils.data import QgisProject
+from django.core.files import File
 from .base import CoreTestBase
 from copy import copy
+import os
+
+
+CURRENT_PATH = os.getcwd()
+TEST_BASE_PATH = '/qdjango/tests/data/'
+QGS_FILE = 'gruppo-1_un-progetto_qgis310.qgs'
 
 
 class CoreViewsTest(CoreTestBase):
+
+    def test_dashboard_view_exposes_public_project_ids(self):
+        group = Group.objects.create(
+            name='dashboard-group',
+            title='Dashboard group',
+            header_logo_img='',
+            srid=G3WSpatialRefSys.objects.get(auth_srid=4326)
+        )
+        with File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r')) as qgis_project_file:
+            project = QgisProject(qgis_project_file)
+            project.title = 'Dashboard project'
+            project.group = group
+            project.save()
+
+        ProjectBookmark.objects.create(user=self.test_user1, project=project.instance)
+        assign_perm('view_project', get_anonymous_user(), project.instance)
+
+        request = RequestFactory().get(reverse('home'))
+        request.user = self.test_user1
+
+        view = DashboardView()
+        view.request = request
+
+        context = view.get_context_data()
+
+        self.assertIn(project.instance.pk, context['public_project_ids'])
+
+    def test_search_admin_view_with_empty_search_text(self):
+        """Empty search text still provides the expected template context."""
+
+        request = RequestFactory().get(reverse('search-admin'), {'stext': ''})
+        request.user = self.test_user1
+
+        view = SearchAdminView()
+        view.request = request
+
+        context = view.get_context_data()
+
+        self.assertEqual(context['search_text'], '')
+        self.assertEqual(context['results'], [])
+        self.assertEqual(context['n_tot_results'], 0)
 
     def test_delete_group_view(self):
         """

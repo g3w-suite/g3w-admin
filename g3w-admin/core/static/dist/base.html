@@ -1,0 +1,289 @@
+{% load static %}
+{% load sitetree %}
+{% load i18n %}
+{% get_current_language as lang %}
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ admin_page_title }}</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}
+    <link rel="icon" href="{{ SETTINGS.G3WSUITE_FAVICON }}">
+    {% else %}
+    <link rel="icon" href='/img/favicon.ico'>
+    {% endif %}
+    <!-- Pace -->
+    <script src="bower_components/pace/pace.min.js" data-pace-options='{ "eventLag": false }'></script>
+    {% if SETTINGS.DEBUG %}
+    <link rel="stylesheet" href="css/vendor.min.css">
+
+    {% else %}
+    <link rel="stylesheet" href="dist/css/vendor.min.css"%}">
+    {% endif %}
+
+    <link rel="stylesheet" href="adminlte/css/AdminLTE.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Django-file-form -->
+    <link rel="stylesheet" href="file_form/file_form.css">
+
+
+    {% block custom_css_links_page %}
+    {% endblock %}
+    {% if SETTINGS.DEBUG %}
+    <link rel="stylesheet" href="css/g3wadmin.min.css">
+    {% else %}
+    <link rel="stylesheet" href="dist/css/g3wadmin.min.css"%}">
+    {% endif %}
+    <link rel="stylesheet" type="text/css" href='bower_components/cookieconsent/build/cookieconsent.min.css' />
+    {% for css in css_modules %}
+    <link rel="stylesheet" type="text/css" href=css />
+    {% endfor %}
+
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+    {% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
+    <link rel="stylesheet" type="text/css" href="{{ css }}" />
+    {% endfor %}
+    {% endif %}
+
+
+    {% if analytics_js_code %}
+        {{ analytics_js_code|safe }}
+    {% endif %}
+  </head>
+  <!--
+  BODY TAG OPTIONS:
+  =================
+  Apply one or more of the following classes to get the
+  desired effect
+  |---------------------------------------------------------|
+  | SKINS         | skin-blue                               |
+  |               | skin-black                              |
+  |               | skin-purple                             |
+  |               | skin-yellow                             |
+  |               | skin-red                                |
+  |               | skin-green                              |
+  |---------------------------------------------------------|
+  |LAYOUT OPTIONS | fixed                                   |
+  |               | layout-boxed                            |
+  |               | layout-top-nav                          |
+  |               | sidebar-collapse                        |
+  |               | sidebar-mini                            |
+  |---------------------------------------------------------|
+  -->
+  <body class="hold-transition {{ adminlte_skin }} {{ adminlte_layout_option }} {{ sidebar_status }}">
+  {% block body_content %}
+    <div class="wrapper">
+
+      <!-- Main Header -->
+      <header class="main-header">
+
+        <!-- Logo -->
+        <a href="#" class="logo">
+          {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+              <!-- mini logo for sidebar mini 50x50 pixels -->
+              <span class="logo-mini"><img src="{{ SETTINGS.G3WSUITE_RID_LOGO }}"></span>
+              <!-- logo for regular state and mobile devices -->
+              <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
+              <span class="logo-lg"><img src="{{ SETTINGS.G3WSUITE_MAIN_LOGO }}"></span>
+          {% else %}
+              <!-- mini logo for sidebar mini 50x50 pixels -->
+              <span class="logo-mini"><img src=SETTINGS.G3WSUITE_RID_LOGO></span>
+              <!-- logo for regular state and mobile devices -->
+              <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
+              <span class="logo-lg"><img src=SETTINGS.G3WSUITE_MAIN_LOGO></span>
+          {% endif %}
+        </a>
+
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Sidebar toggle button-->
+          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+          </a>
+          <!-- Navbar Right Menu -->
+
+          {% include 'include/navbar_right_menu.html' %}
+        </nav>
+      </header>
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+        {% sitetree_menu from "core" include "trunk" template "sitetree/sidebar.html" %}
+        {% sitetree_menu from "acl" include "trunk" template "sitetree/sidebar.html" %}
+        {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
+        {% sitetree_menu from module include "trunk" template "sitetree/sidebar.html" %}
+        {% endfor %}
+        {% for module in SETTINGS.G3WADMIN_PROJECT_APPS %}
+        {% sitetree_menu from module include "trunk" template "sitetree/sidebar.html" %}
+        {% endfor %}
+        {% sitetree_menu from "client" include "trunk" template "sitetree/sidebar.html" %}
+        </section>
+        <!-- /.sidebar -->
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          {% block breadcrumb %}
+          <ol class="breadcrumb">
+            <li><i class="fa fa-dashboard"></i> <a href="{% url 'home'>{% trans 'Dashboard' %}</a></li>
+            {% sitetree_breadcrumbs from "core" template "sitetree/breadcrumbs_bootstrap3.html" %}
+            {% sitetree_breadcrumbs from "acl" template "sitetree/breadcrumbs_bootstrap3.html" %}
+            {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
+            {% sitetree_breadcrumbs from module template "sitetree/breadcrumbs_bootstrap3.html" %}
+            {% endfor %}
+          </ol>
+          {% endblock %}
+
+          {% block page_header %}
+          <h1>
+            Page Header
+            <small>Optional description</small>
+          </h1>
+          {% endblock %}
+        </section>
+
+        <!-- Main content --> 
+        <section class="content">
+
+        {% if messages %}
+          <div id="page_user_messages" class="row">
+            <div class="col-md-12">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags|lower }}{% else %}default{% endif %} alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-check"></i> Ok!</h4>
+                    {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+          {% block main_content %}
+          {% endblock %}
+
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+
+      <!-- Main Footer -->
+      <footer class="main-footer">
+        {% if powerd_by %}
+        <!-- To the right -->
+        <div class="pull-right hidden-xs">
+        {% block footer-right %}
+          {% blocktrans trimmed with version=VERSION %}
+            <strong>G3W-SUITE Version {{ version }}</strong>:
+            administration GIS application.
+          {% endblocktrans %}
+        {% endblock %}
+        </div>
+        <!-- Default to the left -->
+        {% blocktrans trimmed with year=today.year %}
+          <strong>Copyright &copy; 2015 - {{ year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        {% endblocktrans %}
+        {% endif %}
+      </footer>
+      {% include 'include/sidebar_right.html' %}
+    </div><!-- ./wrapper -->
+  {% endblock %}
+
+    <!-- REQUIRED JS SCRIPTS -->
+    <script>
+      SETTINGS = {
+        CURRENT_LANGUAGE_CODE:     '{{ lang }}',
+        FRONTEND:                  {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %},
+        SITE_PREFIX_URL:           {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %},
+        STATIC_BASE_URL:           '{% static "" %}',
+        G3WADMIN_LOCAL_MORE_APPS:  ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+        FILE_FORM_UPLOAD_TEMP_URL: '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/',
+        PRIVACY_MSG:               "{% if SETTINGS.PRIVACY_MSG %} {{ SETTINGS.PRIVACY_MSG|safe }} {% else %}{% trans 'This website uses cookies to ensure you get the best experience on our website' %}.{% endif,
+      };
+      // DEPRECATED: since v3.10.x
+      const CURRENT_LANGUAGE_CODE = SETTINGS.CURRENT_LANGUAGE_CODE;
+      const FRONTEND              = SETTINGS.FRONTEND;
+      const SITE_PREFIX_URL       = SETTINGS.SITE_PREFIX_URL;
+      const STATIC_BASE_URL       = SETTINGS.STATIC_BASE_URL;
+    </script>
+    {% if SETTINGS.DEBUG %}
+    <script src="js/vendor.min.js"></script>
+    {% else %}
+    <script src="dist/js/vendor.min.js"></script>
+    {% endif %}
+    <!-- Bootstrap-datepicker-locals -->
+    {% for l in SETTINGS.LANGUAGES %}
+      {% if l.0 == 'se' %}
+        <script src="bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js"></script>
+      {% elif not l.0 == 'en' %}
+        <script src="bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js"></script>
+      {% endif %}
+    {% endfor %}
+    <!-- AdminLTE App -->
+    <script src="adminlte/js/app.min.js"></script>
+    <!-- Django-file-form -->
+    <script src="file_form/file_form.js"></script>
+    <!--<script src="file_form/file_form.debug.js"></script>-->
+    <!-- g3wadmin javascript catalog -->
+    <script src="{% url 'javascript-catalog'></script>
+
+    <!-- g3w-admin -->
+    {% if SETTINGS.DEBUG %}
+    <script src="js/g3wadmin.min.js"></script>
+    {% else %}
+    <script src="dist/js/g3wadmin.min.js"></script>
+    {% endif %}
+
+    {% comment  %}
+    Extentend ga space with genera settings
+    {% endcomment %}
+
+    <script>
+        _.extend(g3wadmin,{
+            'settings': {
+                'G3WADMIN_LOCAL_MORE_APPS': ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+                'FILE_FORM_UPLOAD_TEMP_URL': '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/'
+            }
+        });
+    </script>
+
+    {% for js_module in js_modules %}
+    {%  if js_module %}
+    <script src=js_module></script>
+    {% endif %}
+    {% endfor %}
+
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+    {% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
+    <script src="{{ js }}"></script>
+    {% endfor %}
+    {% endif %}
+
+    <!-- coockieconset -->
+    <script type="text/javascript" src='bower_components/cookieconsent/build/cookieconsent.min.js'></script>
+    {% include 'core/include/cookieconsent.html' %}
+
+    {% block custom_js_links_page %}
+    {% endblock %}
+
+  </body>
+
+</html>

@@ -178,13 +178,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
-          {% block page_header %}
-          <h1>
-            Page Header
-            <small>Optional description</small>
-          </h1>
-          {% endblock %}
-
           {% block breadcrumb %}
           <ol class="breadcrumb">
             <li><i class="fa fa-dashboard"></i> <a href="{% url 'home' %}">{% trans 'Dashboard' %}</a></li>
@@ -194,6 +187,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
             {% sitetree_breadcrumbs from module template "sitetree/breadcrumbs_bootstrap3.html" %}
             {% endfor %}
           </ol>
+          {% endblock %}
+
+          {% block page_header %}
+          <h1>
+            Page Header
+            <small>Optional description</small>
+          </h1>
           {% endblock %}
         </section>
 
