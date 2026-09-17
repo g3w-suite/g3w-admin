@@ -339,7 +339,10 @@ export class ToolBox extends Emitter {
     const dependencies = [
       ...this.#layer.getChildren(),
       ...this.#layer.getFathers()
-    ].filter(id => getCatalogLayerById(id).isEditable())
+    ].filter(id => getCatalogLayerById(id).isEditable());
+
+    // TODO: avoid overriding constructor parameter
+    layer = this.#layer;
 
     this.state = {
       started:      false,
@@ -381,13 +384,13 @@ export class ToolBox extends Emitter {
       history:          this.#constrains,
       on:               false,
       dependencies,
-      relations:        Object.values(layer.isFather() && dependencies.length ? layer.getRelations().getRelations() : {}),
-      father:           layer.isFather(),
+      relations:        Object.values(this.#layer.isFather() && dependencies.length ? this.#layer.getRelations().getRelations() : {}),
+      father:           this.#layer.isFather(),
       canEdit:          true,
       /** store events un-setters */
       _unsetters:         [],
       _getFeaturesOption: {},
-      _layerType: layer.getType() || 'vector',
+      _layerType:       this.#layer.getType() || 'vector',
       _enabledtools: undefined,
       _disabledtools: undefined,
       _constraints: constraints,
