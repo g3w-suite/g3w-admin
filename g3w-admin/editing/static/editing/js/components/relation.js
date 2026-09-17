@@ -1326,7 +1326,7 @@ export default ({
       /**
        * editing a constraint type
        */
-      this.capabilities = this.getLayer().config?.editing?.capabilities ?? [];
+      this.capabilities = GUI.getPlugin('editing').getToolBoxById(this.getLayer().getId())?.state?.capabilities ?? [];
 
 
       /**
