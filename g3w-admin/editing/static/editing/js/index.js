@@ -772,6 +772,8 @@ new (class extends Plugin {
             message:   messages.success.message || "plugins.editing.saved",
             duration:  2000,
             autoclose: undefined === messages.success.autoclose || messages.success.autoclose,
+            // if autoclose is true, the message should not be closable
+            closable:  !(undefined === messages.success.autoclose || messages.success.autoclose),
           });
         }
 
