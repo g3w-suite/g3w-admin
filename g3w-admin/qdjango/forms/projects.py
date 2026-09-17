@@ -6,8 +6,8 @@ from django import forms
 from django.core.files.base import ContentFile
 from django.urls import reverse
 from django.forms import ValidationError, widgets
-from django.utils.translation import gettext_lazy as _
-from django.utils.html import mark_safe
+from django.utils.translation import gettext_lazy as _, ngettext
+from django.utils.html import mark_safe, format_html, format_html_join
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from guardian.shortcuts import get_objects_for_user
 from modeltranslation.forms import TranslationModelForm
@@ -29,6 +29,30 @@ import json
 import re
 import zipfile
 import os
+
+
+def _format_qgis_project_errors_html(layer_messages, project_messages):
+    """Render QGIS project upload errors as one safe HTML block, grouped by scope"""
+
+    total = len(layer_messages) + len(project_messages)
+    html = format_html(
+        '<p><strong>{}</strong></p>',
+        ngettext('%(count)d error found:', '%(count)d errors found:', total) % {'count': total}
+    )
+
+    for label_singular, label_plural, messages in (
+        ('%(count)d layer error', '%(count)d layer errors', layer_messages),
+        ('%(count)d project error', '%(count)d project errors', project_messages),
+    ):
+        if not messages:
+            continue
+        html += format_html(
+            '<p>{}:</p><ul>{}</ul>',
+            ngettext(label_singular, label_plural, len(messages)) % {'count': len(messages)},
+            format_html_join('', '<li>{}</li>', ((m,) for m in messages))
+        )
+
+    return mark_safe(html)
 
 
 class QdjangoProjectFormMixin(object):
@@ -95,6 +119,18 @@ class QdjangoProjectFormMixin(object):
                 os.remove(qgis_file.path)
 
         except Exception as e:
+            # show every collected error at once instead of only the first one
+            errors = getattr(e, 'errors', None)
+            if errors and len(errors) > 1:
+                layer_messages = getattr(e, 'layer_error_messages', None)
+                project_messages = getattr(e, 'project_error_messages', None)
+                if layer_messages is not None and project_messages is not None:
+                    raise ValidationError(_format_qgis_project_errors_html(layer_messages, project_messages))
+
+                summary = ngettext(
+                    '%(count)d error found:', '%(count)d errors found:', len(errors)
+                ) % {'count': len(errors)}
+                raise ValidationError([summary, *errors])
             raise ValidationError(str(e))
         return qgis_file
 
