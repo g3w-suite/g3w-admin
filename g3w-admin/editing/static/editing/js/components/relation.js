@@ -567,7 +567,7 @@ export default ({
             this._createToolOptions({
               features: this.relations
                 .filter(r => r.select)
-                .map(({ id }) => GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getEditingSource().getFeatureById(id) )
+                .map(({ id }) => GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getFeatureById(id) )
             })
           );
         } catch(e) {
@@ -627,7 +627,7 @@ export default ({
       getFeature(featureId, property) {
         return getFeatureTableFieldValue({
           layerId: this._relationLayerId,
-          feature: GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getEditingSource().getFeatureById(featureId),
+          feature: GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getFeatureById(featureId),
           property,
         });
       },
@@ -729,7 +729,7 @@ export default ({
           const is_vector       = 'vector' === this._layerType;
           const relation        = this.relations[index];
           const toolId          = relationtool.state.id.split(`${relation.id}_`)[1];
-          const relationfeature = GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getEditingSource().getFeatureById(relation.id);
+          const relationfeature = GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getFeatureById(relation.id);
           const selectStyle     = is_vector && SELECTED_STYLES[this.getLayer().getGeometryType()]; // get selected vector style
           const options         = this._createToolOptions({ features: [relationfeature] });
 
@@ -799,7 +799,7 @@ export default ({
               }
 
               //remove feature from source
-              GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getEditingSource().removeFeature(relationfeature);
+              GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).removeFeature(relationfeature);
               // Check if relation feature delete is new.
               // In this case, we need to check if there are temporary changes not related to this current feature
               if (
@@ -961,7 +961,7 @@ export default ({
               if (options.parentFeature.isNew()) {
                 originalFeatures[i].set(field, value);
               }
-              GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getEditingSource().updateFeature(newFeature);
+              GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).updateFeature(newFeature);
               GUI.getPlugin('editing').getToolBoxById(options.context.id).pushUpdate(this._relationLayerId, newFeature, originalFeatures[i]);
             })
           };

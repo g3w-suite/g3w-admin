@@ -285,7 +285,7 @@ export default ({
      * @returns { Promise }
      */
     isLayerReady() {
-      return this.state.layer.state.ready;
+      return this.state.layer.state.editing.ready;
     },
 
     toolboxCursor() {
@@ -328,7 +328,7 @@ export default ({
      */
     async toggleEditing() {
       this.toggled.layer = !(this.state.on || this.toggled.layer);
-      if (this.toggled.layer && this.state.layer.state.ready && !this.state.loading) {
+      if (this.toggled.layer && this.state.layer.state.editing.ready && !this.state.loading) {
         this.$emit(this.state.on ? 'stoptoolbox' : 'starttoolbox', this.state.id);
       }
       if (!this.toggled.layer) {
@@ -388,7 +388,7 @@ export default ({
         .filter(l => tool.options.layerId !== l.getId())
         .forEach(l => {
           // SNAP TO ALL: check if the current editing layer is not equal to `layerId`
-          const editing = GUI.getPlugin('editing').getToolBoxById(l.getId()).getState().editing;
+          const editing = GUI.getPlugin('editing').getToolBoxById(l.getId()).getState();
           this.snapUnwatches.push(this.$watch(() => editing.on, this.setShowSnapAll));
           this.snapToolboxes.push(editing);
         })

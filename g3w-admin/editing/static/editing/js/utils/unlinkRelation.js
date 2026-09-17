@@ -24,7 +24,7 @@ export async function unlinkRelation({
 
   if (!dialog || ok) {
     const id               = layerId === relation.child ? relation.father : relation.child; // relation layer id
-    const feature          = GUI.getPlugin('editing').getToolBoxById(id).getEditingSource().getFeatureById(relations[index].id);
+    const feature          = GUI.getPlugin('editing').getToolBoxById(id).getFeatureById(relations[index].id);
     const originalRelation = feature.clone();
     // loop on ownField (Array field child relation)
     getRelationFieldsFromRelation({ relation, layerId: id }).ownField.forEach(f => feature.set(f, null))

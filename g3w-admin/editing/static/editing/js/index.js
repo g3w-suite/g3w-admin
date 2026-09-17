@@ -1484,13 +1484,13 @@ new (class extends Plugin {
       Object
       .entries(relations)
       .flatMap(([ layerId, { add, delete: del, update, relations = {}}]) => {
-        const source       = this.getToolBoxById(layerId).getEditingSource();
-        const has_features = source.readFeatures().length > 0; // check if the relation layer has some features
+        const toolbox      = this.getToolBoxById(layerId);
+        const has_features = toolbox.readEditingFeatures().length > 0; // check if the relation layer has some features
         // get original values
         return [
           // add
           ...(has_features && add || []).map(async ({ id }) => {
-            source.removeFeature(source.getFeatureById(id));
+            toolbox.removeFeature(toolbox.getFeatureById(id));
           }),
           // update
           ...(has_features && update || []).map(async ({ id }) => {
@@ -1500,7 +1500,7 @@ new (class extends Plugin {
                 params: { fids: id },
               });
               const f        = (response.result && response.vector.data.features || []).at(0);
-              const feature  = source.getFeatureById(id);
+              const feature  = toolbox.getFeatureById(id);
               feature.setProperties(f.properties);
               feature.setGeometry(f.geometry);
             } catch(e) {
@@ -1518,7 +1518,7 @@ new (class extends Plugin {
               const feature = new ol.Feature({ geometry: f.geometry })
               feature.setProperties(f.properties);
               feature.setId(id);
-              source.addFeature(new Feature({ feature })); // add it again to source because relation layer is locked
+              toolbox.addFeature(new Feature({ feature })); // add it again to source because relation layer is locked
             } catch(e) {
               console.warn(e);
             }

@@ -196,6 +196,13 @@ export class ToolBox extends Emitter {
   #filter = { bbox: null };
 
   /**
+   * Backward-compatible editing source facade returned by getEditingSource().
+   *
+   * @type {Object|null}
+   */
+  #editingSource = null;
+
+  /**
    * Total number of rows/features available for the current load request.
    *
    * @type {number}
@@ -278,22 +285,6 @@ export class ToolBox extends Emitter {
     const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
 
     this._collection = new Collection('table' !== _layer.getType());
-
-    this._featuresstore = Object.assign(new Emitter, {
-      setters: {
-        addFeatures: (feats = []) => feats.forEach(f => this._featuresstore.addFeature(f)),
-        removeFeature: f => this._collection.remove(f),
-        updateFeature: f => this._collection.update(f),
-      },
-      clear:                 () => this._collection.clear(),
-      addFeature:            f => this._collection.add(f),
-      clone:                 () => cloneDeep(this._featuresstore),
-      getFeatureById:        id => this._collection.getArray().find(f => id == f.getId()),
-      readFeatures:          () => this._collection.getArray(),
-      getLength:             () => this._collection.getArray().length,
-      getFeaturesCollection: this.getFeaturesCollection.bind(this),
-      setFeatures:           (f = []) => { this._collection.clear(); this._featuresstore.addFeatures(f); },
-    });
 
     // Set editing layer color and toolbox style
     if (!layer.getColor()) {
@@ -2330,7 +2321,7 @@ export class ToolBox extends Emitter {
         if (response?.result) {
           response.response.new.forEach(({ clientid, id, properties } = {}) => {
             // get feature from current layer in editing
-            const feature = this._featuresstore.getFeatureById(clientid);
+            const feature = this.getFeatureById(clientid);
             // set new id
             feature.setId(id);
             // set properties
@@ -2339,10 +2330,10 @@ export class ToolBox extends Emitter {
             // id - relation layer id, opts - Object contain relation properties
             commitRelations.forEach(relation => Object.entries(relation).forEach(([relationId, opts = {}]) => {
               // get the editing source of relation layer
-              const source = GUI.getPlugin('editing').getToolBoxById(relationId)._featuresstore;
+              const toolbox = GUI.getPlugin('editing').getToolBoxById(relationId);
               // handle value to relation field saved on server
               (opts.ids || []).forEach(relationFeatureId => {
-                const relationFeature = source.getFeatureById(relationFeatureId);
+                const relationFeature = toolbox.getFeatureById(relationFeatureId);
                 // loop relation ids and set father feature `value` and `name`
                 relationFeature && opts.fatherField.forEach((fatherField, index) => relationFeature.set(opts.childField[index], feature.get(fatherField)));
               });
@@ -2352,7 +2343,7 @@ export class ToolBox extends Emitter {
           // take in account update properties returned by server (Useful in case of media input changes)
           (response.response.update || []).forEach(({ id, properties } = {}) => {
             // get feature from current layer in editing
-            const feature = this._featuresstore.getFeatureById(id);
+            const feature = this.getFeatureById(id);
             if (feature) {
               feature.setProperties(properties); // set properties
             } else {
@@ -2361,10 +2352,10 @@ export class ToolBox extends Emitter {
             // Loop on eventual relation updated or created
             // id - relation layer id, opts - Object contain relation properties
             commitRelations.forEach(relation => Object.entries(relation).forEach(([relationId, opts = {}]) => {
-              const source = GUI.getPlugin('editing').getToolBoxById(relationId)._featuresstore;
+              const toolbox = GUI.getPlugin('editing').getToolBoxById(relationId);
               // handle value to relation field saved on server
               (opts.ids || []).forEach(relationFeatureId => {
-                const relationFeature = source.getFeatureById(relationFeatureId);
+                const relationFeature = toolbox.getFeatureById(relationFeatureId);
                 // loop relation ids and set father feature `value` and `name`
                 relationFeature && opts.fatherField.forEach((fatherField, index) => relationFeature.set(opts.childField[index], feature.get(fatherField)));
               });
@@ -2373,10 +2364,10 @@ export class ToolBox extends Emitter {
 
           // Handle relations commit to server and update loacally with properties and new id
           Object.entries(response.response.relations || {}).forEach(([relationId, opts = { new: [], new_lockids: [], update: [] }]) => {
-            const source = GUI.getPlugin('editing').getToolBoxById(relationId)._featuresstore;
+            const toolbox = GUI.getPlugin('editing').getToolBoxById(relationId);
             // new relations
             (opts.new || []).forEach(({ clientid, id, properties = {} } = {}) => {
-              const feature = source.getFeatureById(clientid);
+              const feature = toolbox.getFeatureById(clientid);
               if (feature) {
                 feature.setId(id);
                 feature.setProperties(properties);
@@ -2384,14 +2375,14 @@ export class ToolBox extends Emitter {
               }
             });
             // update relations
-            (opts.update || []).forEach(({ id, properties = {} } = {}) => source.getFeatureById(id)?.setProperties(properties));
+            (opts.update || []).forEach(({ id, properties = {} } = {}) => toolbox.getFeatureById(id)?.setProperties(properties));
             GUI.getPlugin('editing').state.lock_ids[relationId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[relationId].concat(...opts.new_lockids))];
             GUI.getPlugin('editing').state.lock_ids[relationId].forEach(({ featureid }) => GUI.getPlugin('editing').state.loaded_ids[relationId].push(featureid));
           });
 
-          const features = this._featuresstore.readFeatures();
+          const features = this.readEditingFeatures();
           features.forEach(f => f.clearState());               // reset state of the editing features (update, new etc..)
-          this._featuresstore.setFeatures([...features]);      // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
+          this.setFeatures([...features]);      // substitute layer features with actual editing features ("cloned" to prevent layer actions duplicates, eg. addFeatures)
 
           // store lock ids
           GUI.getPlugin('editing').state.lock_ids[layerId] = [...new Set(GUI.getPlugin('editing').state.lock_ids[layerId].concat(...response.response.new_lockids))];
@@ -2875,7 +2866,7 @@ export class ToolBox extends Emitter {
     }
     this.state._disabledtools = null;
     // set show based on visibile property of config editing object setting
-    this.state.show           = this.state.layer.state.visible;
+    this.state.show           = this.state.layer.state.editing.visible;
     // need to set selected false
     this.state.selected = false;
   }
@@ -3204,7 +3195,7 @@ export class ToolBox extends Emitter {
         item.feature[Actions[item.feature.getAction()].opposite]();
       }
       // get method from object. Need to clone it otherwise it replace.
-      this._featuresstore[Actions[item.feature.getAction()].fnc](item.feature.clone());
+      this[Actions[item.feature.getAction()].fnc](item.feature.clone());
     });
   }
 
@@ -3526,7 +3517,7 @@ export class ToolBox extends Emitter {
         this._features                                          = []; // clear features collection
         GUI.getPlugin('editing').state.lock_ids[this.getId()]   = [];
         GUI.getPlugin('editing').state.loaded_ids[this.getId()] = [];
-        this._featuresstore.clear();
+        this.clear();
 
         // vector layer
         if ('vector' === this.getLayer().getType()) {
@@ -3727,7 +3718,7 @@ export class ToolBox extends Emitter {
       if (is_vector) {
         this._features.push(...features); // add features to original features 
         // add features from server to editing features store (cloned from original)
-        this._featuresstore.addFeatures((features || []).map(f => f.clone()));
+        this.addFeatures((features || []).map(f => f.clone()));
       }
 
       //Case table layer
@@ -3735,7 +3726,7 @@ export class ToolBox extends Emitter {
         return features
           .map(f => {
             //check if feature already exists in editing features store
-            const ff = this._featuresstore.getFeatureById(f.getId());
+            const ff = this.getFeatureById(f.getId());
             if (ff) {
               return ff; // feature already exists in editing features
             }
@@ -3743,7 +3734,7 @@ export class ToolBox extends Emitter {
             this._features.push(f);
             const efeature = f.clone();
             // add features from server to editing features store (cloned from original)
-            this._featuresstore.addFeatures([efeature]);
+            this.addFeatures([efeature]);
             return efeature;
           });
       }
@@ -3879,12 +3870,102 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Returns the reactive editing feature store.
+   * Legacy editing source API.
    *
-   * @returns {Object} Editing feature store API.
+   * @returns {Object} reactive editing feature store API.
    */
   getEditingSource() {
-    return this._featuresstore;
+    if (!this.#editingSource) {
+      const source = Object.assign(new Emitter, {
+        setters: {
+          addFeatures:   (feats = []) => feats.forEach(f => source.addFeature(f)),
+          removeFeature: f => this._collection.remove(f),
+          updateFeature: f => this._collection.update(f),
+        },
+        clear:                 this.clear.bind(this),
+        addFeature:            this.addFeature.bind(this),
+        clone:                 () => cloneDeep(this.#editingSource),
+        getFeatureById:        this.getFeatureById.bind(this),
+        readFeatures:          this.readEditingFeatures.bind(this),
+        getLength:             this.getLength.bind(this),
+        getFeaturesCollection: this.getFeaturesCollection.bind(this),
+        setFeatures:           this.setFeatures.bind(this),
+      });
+      this.#editingSource = source;
+    }
+    return this.#editingSource;
+  }
+
+  /**
+   * Adds multiple features to the editing collection.
+   *
+   * @param {Array} feats Features to add.
+   */
+  addFeatures(feats = []) {
+    return this.getEditingSource().addFeatures(feats);
+  }
+
+  /**
+   * Removes a feature from the editing collection.
+   *
+   * @param {Object} feature Feature to remove.
+   */
+  removeFeature(feature) {
+    return this.getEditingSource().removeFeature(feature);
+  }
+
+  /**
+   * Updates a feature in the editing collection.
+   *
+   * @param {Object} feature Feature to update.
+   */
+  updateFeature(feature) {
+    return this.getEditingSource().updateFeature(feature);
+  }
+
+  /**
+   * Adds a feature to the editing collection.
+   *
+   * @param {Object} feature Feature to add.
+   */
+  addFeature(feature) {
+    this._collection.add(feature);
+  }
+
+  /**
+   * Clears the editing collection.
+   */
+  clear() {
+    this._collection.clear();
+  }
+
+  /**
+   * Replaces the current editing collection with a new feature list.
+   *
+   * @param {Array} features New editing features.
+   */
+  setFeatures(features = []) {
+    this._collection.clear();
+    this.getEditingSource().addFeatures(features);
+  }
+
+  /**
+   * Returns an editing feature by id.
+   *
+   * @param {string|number} id Feature id.
+   * @returns {Object|undefined} Matching feature.
+   */
+  getFeatureById(id) {
+    return this._collection.getArray().find(f => id == f.getId());
+  }
+
+  /**
+   * Returns the number of features in the editing collection.
+   *
+   * @returns {number} Editing feature count.
+   */
+  getLength() {
+    return this._collection.getArray().length;
   }
 
   /**

@@ -351,7 +351,7 @@ export default ({
       if (ok) {
         const i    = this.features.findIndex(f => uid === f.getUid());
         const feat = this.features[i];
-        GUI.getPlugin('editing').getToolBoxById(this.context.id).getEditingSource().removeFeature(feat);
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).removeFeature(feat);
         GUI.getPlugin('editing').getToolBoxById(this.context.id).pushDelete(this.inputs.layer.getId(), feat);
         this.rows.splice(i, 1);
       }
