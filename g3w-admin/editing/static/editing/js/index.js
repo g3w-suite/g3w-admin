@@ -149,6 +149,11 @@ new (class extends Plugin {
    * @returns {Object} Methods exposed to other plugins.
    */
   getApi() {
+    GUI.showUserMessage({
+      type:      'warning',
+      message:   'GUI.getPlugin("editing").getApi() is deprecated since 4.x; please update your plugins/code as soon as possible!',
+      autoclose: false,
+    });
     return {
       getFeature:                       this.getFeature.bind(this),
       subscribe:                        this.subscribe.bind(this),
