@@ -209,7 +209,7 @@ new (class extends Plugin {
         this.state.lock_ids[toolBox.getId()]           = [];
         this.state.loaded_ids[toolBox.getId()]         = [];
         this.state.uniqueFieldsValues[toolBox.getId()] = {};
-        this.state.features[toolBox.getId()]           = toolBox._collection;
+        this.state.features[toolBox.getId()]           = toolBox.getCollection();
       } else {
         this.state.layers_in_error = true;
         console.warn(reason);

@@ -101,6 +101,27 @@ export class ToolBox extends Emitter {
    */
 
   /**
+   * Original layer handled by this toolbox instance.
+   *
+   * @type {object}
+   */
+  #layer;
+
+  /**
+   * Layer instance used for the active editing session.
+   *
+   * @type {object}
+   */
+  #editingLayer;
+
+  /**
+   * Editing configuration used to initialize the toolbox.
+   *
+   * @type {object}
+   */
+  #config;
+
+  /**
    * Active abort controller for feature requests triggered by the current
    * editing.
    *
@@ -206,7 +227,14 @@ export class ToolBox extends Emitter {
    *
    * @type {Array}
    */
-  _features = [];
+  #features = [];
+
+  /**
+   * Feature collection backing the editing layer store.
+   *
+   * @type {Collection}
+   */
+  #collection;
 
   /**
    * Creates the editing toolbox and initializes the state for a layer.
@@ -221,64 +249,66 @@ export class ToolBox extends Emitter {
    *
    * @listens start-editing
    */
-  constructor(_layer, _config) {
+  constructor(layer, config) {
     super({});
 
     this.setters = [ 'featuresLockedByOtherUser' ];
 
+    this.#layer        = layer;
+    this.#editingLayer = layer;
+    this.#config       = config;
+
     // set vector layer color 
-    if (_config.vector.style) {
-      _layer.setColor(_config.vector.style.color);
+    if (this.#config.vector.style) {
+      this.#layer.setColor(this.#config.vector.style.color);
     }
 
     // add editing configurations
-    _layer.state.editing = {
+    this.#layer.state.editing = {
       started:      false,
       modified:     false,
       ready:        true,
-      fields:       _config.vector.fields || [],
-      format:       _config.vector.format,
-      constraints:  _config.constraints ?? {},
-      capabilities: _config.capabilities || ['add_feature', 'change_feature', 'change_attr_feature', 'delete_feature' ], // default editing capabilities
+      fields:       this.#config.vector.fields || [],
+      format:       this.#config.vector.format,
+      constraints:  this.#config.constraints ?? {},
+      capabilities: this.#config.capabilities || ['add_feature', 'change_feature', 'change_attr_feature', 'delete_feature' ], // default editing capabilities
       form:         { perc: null },                              // set editing form `perc` to null at beginning
-      style:        _config.vector.style,                        // get vector layer style
-      geometrytype: _config.vector.geometrytype,                 // whether is a vector layer,
-      visible:      _config.vector.editing?.visible     ?? true, // whether a layer should be editable directly (true) or through relation layer (false)
-      layer_style:  _config.vector.editing?.layer_style ?? null, // whether has a layer style to for editing form
+      style:        this.#config.vector.style,                   // get vector layer style
+      geometrytype: this.#config.vector.geometrytype,            // whether is a vector layer,
+      visible:      this.#config.vector.editing?.visible     ?? true, // whether a layer should be editable directly (true) or through relation layer (false)
+      layer_style:  this.#config.vector.editing?.layer_style ?? null, // whether has a layer style to for editing form
       inediting:    false,                                       // add in editng attribute when open editting panel,
       urls: {                                                    // set editing url
-        editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${_layer.getId()}/`,
+        editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.#layer.getId()}/`,
       }
     };
 
     const SELF = this;
 
     // set editing layer
-    let layer = _layer;
-
-    if ('table' === _layer.getType()) {
-      layer = new Layer(_layer.state, { TYPE: 'table' });
+    if ('table' === this.#layer.getType()) {
+      this.#editingLayer = new Layer(this.#layer.state, { TYPE: 'table' });
     }
 
-    if ('image' === _layer.getType()) {
+    if ('image' === this.#layer.getType()) {
       // state of catalog/project layer state need to be in sync with editing vector layer state
-      layer = new Layer(_layer.state, { TYPE: 'vector' });
+      this.#editingLayer = new Layer(this.#layer.state, { TYPE: 'vector' });
     }
 
-    const is_vector          = [undefined, 'vector'].includes(layer.getType());
-    const geometryType       = is_vector && layer.getGeometryType();
+    const is_vector          = [undefined, 'vector'].includes(this.#editingLayer.getType());
+    const geometryType       = is_vector && this.#editingLayer.getGeometryType();
     const is_point           = is_vector && /^(Multi)?Point/i.test(geometryType);;
     const is_line            = is_vector && /^(Multi)?Line(String)?/i.test(geometryType);
     const is_poly            = is_vector && /^(Multi)?Polygon/i.test(geometryType);
-    const is_table           = 'table' === layer.getType();
+    const is_table           = 'table' === this.#editingLayer.getType();
     const isMultiGeometry    = geometryType && /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType);
     const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
 
-    this._collection = new Collection('table' !== _layer.getType());
+    this.#collection = new Collection('table' !== this.#layer.getType());
 
     // Set editing layer color and toolbox style
-    if (!layer.getColor()) {
-      layer.setColor(layer.isGeoLayer() ? [
+    if (!this.#editingLayer.getColor()) {
+      this.#editingLayer.setColor(this.#editingLayer.isGeoLayer() ? [
         "#C43C39", "#d95f02", "#91522D", "#7F9801", "#0B2637",
         "#8D5A99", "#85B66F", "#8D2307", "#2B83BA", "#7D8B8F",
         "#E8718D", "#1E434C", "#9B4F07", '#1b9e77', "#FF9E17",
@@ -292,7 +322,7 @@ export class ToolBox extends Emitter {
 
     //set vector layer source
     if (is_vector) {
-      layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
+      this.#editingLayer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
     }
 
     this.on('start-editing', this.#onEditingStart.bind(this));
@@ -304,10 +334,10 @@ export class ToolBox extends Emitter {
      *
      * belongs to relation where child layer is editable
      */
-    getCatalogLayerById(layer.getId())
+    getCatalogLayerById(this.#editingLayer.getId())
       .getRelations()
       .getArray()
-      .filter(relation => 'ONE' === relation.getType() && layer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
+      .filter(relation => 'ONE' === relation.getType() && this.#editingLayer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
       .forEach(relation => {
         const isChildEditable = getCatalogLayerById(relation.getChild()).isEditable();        // check if child layerId is editable (in editing)
         (getCatalogLayerById(relation.getFather()).state.editing.fields || [])
@@ -316,24 +346,24 @@ export class ToolBox extends Emitter {
       });
 
     // Check if layer has "relation layers" that are editable
-    const editable_relations = layer.getRelations().getArray()
-      .filter(relation => getCatalogLayerById(getRelationId({ layerId: layer.getId(), relation }))?.isEditable?.());
+    const editable_relations = this.#editingLayer.getRelations().getArray()
+      .filter(relation => getCatalogLayerById(getRelationId({ layerId: this.#editingLayer.getId(), relation }))?.isEditable?.());
 
     /** @type { 'create' | 'update_attributes' | 'update_geometry' | delete' | undefined } undefined means all possible tools base on type */
-    const capabilities = layer.state.editing.capabilities || [];
+    const capabilities = this.#editingLayer.state.editing.capabilities || [];
 
     const dependencies = [
-      ...layer.getChildren(),
-      ...layer.getFathers()
+      ...this.#editingLayer.getChildren(),
+      ...this.#editingLayer.getFathers()
     ].filter(id => getCatalogLayerById(id).isEditable())
 
     this.state = {
-      layer,
-      id               : layer.getId(),
+      layer            : this.#editingLayer,
+      id               : this.#editingLayer.getId(),
       changingtools    : false, // whether to show tools during change phase
-      show             : layer.state.editing.visible,  // whether to show the toolbox if we need to filtered
-      color            : layer.getColor()       || 'blue',
-      title            : ` ${layer.getTitle()}` || "Edit Layer",
+      show             : this.#editingLayer.state.editing.visible,  // whether to show the toolbox if we need to filtered
+      color            : this.#editingLayer.getColor()       || 'blue',
+      title            : ` ${this.#editingLayer.getTitle()}` || "Edit Layer",
       customTitle      : false,
       loading          : false,
       enabled          : false,
@@ -3501,14 +3531,14 @@ export class ToolBox extends Emitter {
         this.#controller  = null;
         this.#count       = 0;
 
-        this._features                                          = []; // clear features collection
+        this.#features                                          = []; // clear features collection
         GUI.getPlugin('editing').state.lock_ids[this.getId()]   = [];
         GUI.getPlugin('editing').state.loaded_ids[this.getId()] = [];
         this.clear();
 
         // vector layer
         if ('vector' === this.getLayer().getType()) {
-          this.getLayer().getOLLayer().setSource(new ol.source.Vector({ features: this._collection._store }));
+          this.getLayer().getOLLayer().setSource(new ol.source.Vector({ features: this.#collection._store }));
         }
 
         this.#clearSession();
@@ -3703,7 +3733,7 @@ export class ToolBox extends Emitter {
 
       //Case vector layer
       if (is_vector) {
-        this._features.push(...features); // add features to original features 
+        this.#features.push(...features); // add features to original features 
         // add features from server to editing features store (cloned from original)
         this.addFeatures((features || []).map(f => f.clone()));
       }
@@ -3718,7 +3748,7 @@ export class ToolBox extends Emitter {
               return ff; // feature already exists in editing features
             }
             // add features to original features 
-            this._features.push(f);
+            this.#features.push(f);
             const efeature = f.clone();
             // add features from server to editing features store (cloned from original)
             this.addFeatures([efeature]);
@@ -3852,8 +3882,12 @@ export class ToolBox extends Emitter {
    *
    * @returns {Object} OpenLayers-compatible feature collection.
    */
+  getCollection() {
+    return this.#collection;
+  }
+
   getFeaturesCollection() {
-    return this._collection._store;
+    return this.#collection._store;
   }
 
   /**
@@ -3871,7 +3905,7 @@ export class ToolBox extends Emitter {
    * @param {Object} feature Feature to remove.
    */
   removeFeature(feature) {
-    this._collection.remove(feature);
+    this.#collection.remove(feature);
   }
 
   /**
@@ -3880,7 +3914,7 @@ export class ToolBox extends Emitter {
    * @param {Object} feature Feature to update.
    */
   updateFeature(feature) {
-    this._collection.update(feature);
+    this.#collection.update(feature);
   }
 
   /**
@@ -3889,14 +3923,14 @@ export class ToolBox extends Emitter {
    * @param {Object} feature Feature to add.
    */
   addFeature(feature) {
-    this._collection.add(feature);
+    this.#collection.add(feature);
   }
 
   /**
    * Clears the editing collection.
    */
   clear() {
-    this._collection.clear();
+    this.#collection.clear();
   }
 
   /**
@@ -3905,7 +3939,7 @@ export class ToolBox extends Emitter {
    * @param {Array} features New editing features.
    */
   setFeatures(features = []) {
-    this._collection.clear();
+    this.#collection.clear();
     this.addFeatures(features);
   }
 
@@ -3916,7 +3950,7 @@ export class ToolBox extends Emitter {
    * @returns {Object|undefined} Matching feature.
    */
   getFeatureById(id) {
-    return this._collection.getArray().find(f => id == f.getId());
+    return this.#collection.getArray().find(f => id == f.getId());
   }
 
   /**
@@ -3925,14 +3959,14 @@ export class ToolBox extends Emitter {
    * @returns {Array} Current editing features, including pending changes.
    */
   readEditingFeatures() {
-    return this._collection.getArray();
+    return this.#collection.getArray();
   }
 
   /**
    * @returns original features from server (not modified)
    */
   readFeatures() {
-    return this._features; 
+    return this.#features;
   }
 
   /**
