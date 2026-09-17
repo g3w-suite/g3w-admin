@@ -105,14 +105,14 @@ export class ToolBox extends Emitter {
    *
    * @type {object}
    */
-  #layer;
+  #catalogLayer;
 
   /**
    * Layer instance used for the active editing session.
    *
    * @type {object}
    */
-  #editingLayer;
+  #layer;
 
   /**
    * Editing configuration used to initialize the toolbox.
@@ -254,17 +254,17 @@ export class ToolBox extends Emitter {
 
     this.setters = [ 'featuresLockedByOtherUser' ];
 
+    this.#catalogLayer = layer;
     this.#layer        = layer;
-    this.#editingLayer = layer;
     this.#config       = config;
 
     // set vector layer color 
     if (this.#config.vector.style) {
-      this.#layer.setColor(this.#config.vector.style.color);
+      this.#catalogLayer.setColor(this.#config.vector.style.color);
     }
 
     // add editing configurations
-    this.#layer.state.editing = {
+    this.#catalogLayer.state.editing = {
       started:      false,
       modified:     false,
       ready:        true,
@@ -279,36 +279,36 @@ export class ToolBox extends Emitter {
       layer_style:  this.#config.vector.editing?.layer_style ?? null, // whether has a layer style to for editing form
       inediting:    false,                                       // add in editng attribute when open editting panel,
       urls: {                                                    // set editing url
-        editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.#layer.getId()}/`,
+        editing: `${window.initConfig.vectorurl}editing/${ApplicationState.project.getType()}/${ApplicationState.project.getId()}/${this.#catalogLayer.getId()}/`,
       }
     };
 
     const SELF = this;
 
     // set editing layer
-    if ('table' === this.#layer.getType()) {
-      this.#editingLayer = new Layer(this.#layer.state, { TYPE: 'table' });
+    if ('table' === this.#catalogLayer.getType()) {
+      this.#layer = new Layer(this.#catalogLayer.state, { TYPE: 'table' });
     }
 
-    if ('image' === this.#layer.getType()) {
+    if ('image' === this.#catalogLayer.getType()) {
       // state of catalog/project layer state need to be in sync with editing vector layer state
-      this.#editingLayer = new Layer(this.#layer.state, { TYPE: 'vector' });
+      this.#layer = new Layer(this.#catalogLayer.state, { TYPE: 'vector' });
     }
 
-    const is_vector          = [undefined, 'vector'].includes(this.#editingLayer.getType());
-    const geometryType       = is_vector && this.#editingLayer.getGeometryType();
+    const is_vector          = [undefined, 'vector'].includes(this.#layer.getType());
+    const geometryType       = is_vector && this.#layer.getGeometryType();
     const is_point           = is_vector && /^(Multi)?Point/i.test(geometryType);;
     const is_line            = is_vector && /^(Multi)?Line(String)?/i.test(geometryType);
     const is_poly            = is_vector && /^(Multi)?Polygon/i.test(geometryType);
-    const is_table           = 'table' === this.#editingLayer.getType();
+    const is_table           = 'table' === this.#layer.getType();
     const isMultiGeometry    = geometryType && /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType);
     const iconGeometry       = is_vector && (is_point ? 'Point' : is_line ? 'Line' : 'Polygon');
 
-    this.#collection = new Collection('table' !== this.#layer.getType());
+    this.#collection = new Collection('table' !== this.#catalogLayer.getType());
 
     // Set editing layer color and toolbox style
-    if (!this.#editingLayer.getColor()) {
-      this.#editingLayer.setColor(this.#editingLayer.isGeoLayer() ? [
+    if (!this.#layer.getColor()) {
+      this.#layer.setColor(this.#layer.isGeoLayer() ? [
         "#C43C39", "#d95f02", "#91522D", "#7F9801", "#0B2637",
         "#8D5A99", "#85B66F", "#8D2307", "#2B83BA", "#7D8B8F",
         "#E8718D", "#1E434C", "#9B4F07", '#1b9e77', "#FF9E17",
@@ -322,7 +322,7 @@ export class ToolBox extends Emitter {
 
     //set vector layer source
     if (is_vector) {
-      this.#editingLayer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
+      this.#layer.getOLLayer().setSource(new ol.source.Vector({ features: this.getFeaturesCollection() }));
     }
 
     this.on('start-editing', this.#onEditingStart.bind(this));
@@ -334,10 +334,10 @@ export class ToolBox extends Emitter {
      *
      * belongs to relation where child layer is editable
      */
-    getCatalogLayerById(this.#editingLayer.getId())
+    getCatalogLayerById(this.#layer.getId())
       .getRelations()
       .getArray()
-      .filter(relation => 'ONE' === relation.getType() && this.#editingLayer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
+      .filter(relation => 'ONE' === relation.getType() && this.#layer.getId() === relation.getFather()) // 'ONE' == join 1:1 + father layerId is a father of relation
       .forEach(relation => {
         const isChildEditable = getCatalogLayerById(relation.getChild()).isEditable();        // check if child layerId is editable (in editing)
         (getCatalogLayerById(relation.getFather()).state.editing.fields || [])
@@ -346,24 +346,24 @@ export class ToolBox extends Emitter {
       });
 
     // Check if layer has "relation layers" that are editable
-    const editable_relations = this.#editingLayer.getRelations().getArray()
-      .filter(relation => getCatalogLayerById(getRelationId({ layerId: this.#editingLayer.getId(), relation }))?.isEditable?.());
+    const editable_relations = this.#layer.getRelations().getArray()
+      .filter(relation => getCatalogLayerById(getRelationId({ layerId: this.#layer.getId(), relation }))?.isEditable?.());
 
     /** @type { 'create' | 'update_attributes' | 'update_geometry' | delete' | undefined } undefined means all possible tools base on type */
-    const capabilities = this.#editingLayer.state.editing.capabilities || [];
+    const capabilities = this.#layer.state.editing.capabilities || [];
 
     const dependencies = [
-      ...this.#editingLayer.getChildren(),
-      ...this.#editingLayer.getFathers()
+      ...this.#layer.getChildren(),
+      ...this.#layer.getFathers()
     ].filter(id => getCatalogLayerById(id).isEditable())
 
     this.state = {
-      layer:            this.#editingLayer,
-      id:               this.#editingLayer.getId(),
+      layer:            this.#layer,
+      id:               this.#layer.getId(),
       changingtools:    false, // whether to show tools during change phase
-      show:             this.#editingLayer.state.editing.visible,  // whether to show the toolbox if we need to filtered
-      color:            this.#editingLayer.getColor()       || 'blue',
-      title:            ` ${this.#editingLayer.getTitle()}` || "Edit Layer",
+      show:             this.#layer.state.editing.visible,  // whether to show the toolbox if we need to filtered
+      color:            this.#layer.getColor()       || 'blue',
+      title:            ` ${this.#layer.getTitle()}` || "Edit Layer",
       customTitle:      false,
       loading:          false,
       enabled:          false,
@@ -392,7 +392,7 @@ export class ToolBox extends Emitter {
       _enabledtools: undefined,
       _disabledtools: undefined,
       _constraints: layer.state.editing.constraints || {},
-      _tools: [
+      tools: [
         // Add Feature
         (is_vector) && capabilities.includes('add_feature') && new Tool({
           id:   'addfeature',
@@ -1673,15 +1673,6 @@ export class ToolBox extends Emitter {
       ].filter(Boolean),
     };
 
-    Object.assign(this.state, {
-      tools: this.state._tools,
-      /** original value of state in case of custom changes */
-      originalState: {
-        title:       this.state.title,
-        toolsoftool: [...this.state.toolsoftool]
-      },
-    })
-
   }
 
   /**
@@ -1817,12 +1808,30 @@ export class ToolBox extends Emitter {
   }
 
   /**
-   * Returns the current catalog layer instance managed by this toolbox.
+   * Returns the current editing layer instance managed by this toolbox.
    *
-   * @returns {object} Layer metadata and runtime instance.
+   * @returns {object} Editing layer metadata and runtime instance.
    */
   getLayer() {
     return this.state.layer;
+  }
+
+  /**
+   * Returns the catalog layer instance managed by this toolbox.
+   *
+   * @returns {object} Catalog layer metadata and runtime instance.
+   */
+  getCatalogLayer() {
+    return this.#catalogLayer;
+  }
+
+  /**
+   * Returns the editing layer instance managed by this toolbox.
+   *
+   * @returns {object} Editing layer metadata and runtime instance.
+   */
+  getEditingLayer() {
+    return this.#layer;
   }
 
   /**
@@ -2603,7 +2612,7 @@ export class ToolBox extends Emitter {
    * @returns {Array} Tool instances.
    */
   getTools() {
-    return this.state._tools;
+    return this.state.tools;
   }
 
   /**
@@ -2614,7 +2623,7 @@ export class ToolBox extends Emitter {
    * @returns {object|undefined} Matching tool instance.
    */
   getToolById(toolId) {
-    return this.state._tools.find(tool => toolId === tool.getId());
+    return this.state.tools.find(tool => toolId === tool.getId());
   }
 
   /**
@@ -2623,7 +2632,7 @@ export class ToolBox extends Emitter {
    * @param {string} toolId Tool identifier to enable.
    */
   setEnableTool(toolId) {
-    this.state._tools.find(tool => toolId === tool.getId()).state.enabled = true;
+    this.state.tools.find(tool => toolId === tool.getId()).state.enabled = true;
   }
 
   /**
@@ -2639,7 +2648,7 @@ export class ToolBox extends Emitter {
     const { editing_constraints = false } = options;
 
     this.setEnablesDisablesTools({
-      enabled: this.state._tools
+      enabled: this.state.tools
       .filter(
         tool => editing_constraints
           ? tool.type.includes('add_feature')
@@ -2671,7 +2680,7 @@ export class ToolBox extends Emitter {
       'movefeature',
       'movevertex'
     ];
-    const update_tools = this.state._tools
+    const update_tools = this.state.tools
       .filter(tool => {
         // exclude
         if (excludetools.includes(tool.getId()) ) {
@@ -2705,7 +2714,7 @@ export class ToolBox extends Emitter {
         disabled : disableTools = []
       } = tools;
 
-      const toolsId = enableTools.length ? [] : this.state._tools.map(tool => tool.getId());
+      const toolsId = enableTools.length ? [] : this.state.tools.map(tool => tool.getId());
 
       enableTools
         .forEach(({ id, options = {} }) => {
@@ -2745,7 +2754,7 @@ export class ToolBox extends Emitter {
           }
         });
       //set not visible all remain
-      this.state._tools.forEach(tool => !toolsId.includes(tool.getId()) && (tool.visible = false));
+      this.state.tools.forEach(tool => !toolsId.includes(tool.getId()) && (tool.visible = false));
       this.state.changingtools = false;
     }
   };
@@ -2759,7 +2768,7 @@ export class ToolBox extends Emitter {
    * @param {boolean} [bool=false] Whether all tools should be enabled.
    */
   enableTools(bool = false) {
-    const tools         = this.state._enabledtools || this.state._tools;
+    const tools         = this.state._enabledtools || this.state.tools;
     const disabledtools = this.state._disabledtools || [];
     tools
       .forEach(tool => {
@@ -2854,7 +2863,7 @@ export class ToolBox extends Emitter {
    * baseline.
    */
   resetDefault() {
-    this.state.title            = this.state.originalState.title;
+    this.state.title            = ` ${this.#layer.getTitle()}` || "Edit Layer";
     this.state.toolboxheader    = true;
     this.state.startstopediting = true;
     this.constraints.filter     = null;
@@ -2864,7 +2873,7 @@ export class ToolBox extends Emitter {
     if (this.state._enabledtools) {
       this.state._enabledtools = undefined;
       this.enableTools();
-      this.state._tools.forEach(tool => {
+      this.state.tools.forEach(tool => {
         tool.visible              = true;
         tool.enabled              = false;
         tool.helpMessage          = tool.getHelpMessage();
