@@ -1031,7 +1031,7 @@ if (GUI.getComponent('print')) {
 }
 
 // G3W-PRINT
-const comp = GUI.addComponent(Object.assign(new Component({
+const comp = GUI.addComponent(new Component({
   id:                'print',
   visible:           window.initConfig.user.is_staff || (ApplicationState.project.getPrint() || []).length > 0, /** @since 3.10.0 Check if the project has print layout*/
   icon:              "fas fa-print",
@@ -1039,7 +1039,7 @@ const comp = GUI.addComponent(Object.assign(new Component({
   title:             'print',
   internalComponent: new (Vue.extend({})),
   collapsible:       false,
-})), { position: 'search' });
+}), { position: 'search' });
 
 comp.onbefore('setOpen', bool => toggleUserMessage(bool));
 

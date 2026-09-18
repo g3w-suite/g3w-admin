@@ -226,7 +226,7 @@ button.close                { padding: 0; cursor: pointer; background: transpare
 .g3w-map-controls-left-bottom,
 #map_footer,
 #aria-live,
-.ol-overlaycontainer-stopevent > *:not(.ol-control-br) { transition: width .3s ease-in-out, margin .3s ease-in-out; margin-left: var(--ml); }
+.ol-overlaycontainer-stopevent > *:not(.ol-control-br) { transition: width .3s ease-in-out, margin .3s ease-in-out; margin-left: var(--ml, 0px); }
 
 .cookie-banner       { position:fixed; overflow:hidden; box-sizing:border-box; z-index:9999; width:100%; display:flex; justify-content:space-between; background:#424851; color:#fff; padding:1.250em; bottom:0; left:0; right:0; gap: 1em;}
 .cookie-button       { cursor:pointer; align-self:center; white-space:nowrap; background:#97D058; padding:0.625em 3.125em; color:#fff; border-radius:0; border:0; font-size:1em }
@@ -614,7 +614,7 @@ ul.sidebar-menu > li a:hover                                       { color: hsl(
  * 5. Viewport
  **************************************************************************************/
 
-#aria-live                                                                  { position:absolute; top: 100px; border-radius: 3px; left: 0; z-index: 1; font-size: 25px; pointer-events: none; }
+#aria-live                                                                  { position:absolute; top: 50px; border-radius: 3px; left: 0; z-index: 1; font-size: 25px; pointer-events: none; }
 #aria-live > div                                                            { display: flex; flex-direction: column; align-items: center; width: 40px; height: 50px; justify-content: space-around; margin-bottom: 5px; background-color: #FFF; border-radius: 3px; }
 
 #map                                                                        { anchor-name: --g3w-map; position: relative; width: 100%; height: 100%; }

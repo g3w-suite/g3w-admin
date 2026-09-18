@@ -94,11 +94,14 @@ GUI.setupControl.overview = async function() {
                   Object.entries({
                     DPI:         DOTS_PER_INCH,
                     TRANSPARENT: true,
+                    // Keep sublayer drawing order consistent with map canvas.
                     LAYERS:      layers.map(l => {
                                     const source_layer = l.source?.layers ?? l.source?.layer;
+                                    // Use original external source layer name when available and CRS matches current project.
                                     if (source_layer && l?.source?.url && l.source.external && l.source.crs.epsg === CONFIG.crs.epsg) {
                                       return source_layer;
                                     }
+                                    // Otherwise use internal layer id/name based on project WMS configuration.
                                     return config.wms_use_layer_ids ? l.id : l.name;  
                                   }).reverse() ?? '',
                     VERSION:     '1.3.0',
