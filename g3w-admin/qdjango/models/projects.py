@@ -884,6 +884,12 @@ class Layer(G3WACLModelMixins, models.Model):
         null=True,
     )
 
+    wmtscapabilities = models.JSONField(
+        _('Dict wmts options'),
+        blank=True,
+        null=True,
+    )
+
     # geometryType
     geometrytype = models.CharField(
         _('Geometry type'),
