@@ -1,10 +1,8 @@
 /**
  * @file Relation form editor
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { Workflow }                         from '../g3w-workflow.js';
+import { Tool }                             from '../g3w-tool.js';
 import { Step }                             from '../g3w-step.js';
 import { Feature }                          from '../g3w-feature.js';
 import { cloneFeature }                     from '../utils/cloneFeature.js';
@@ -38,11 +36,72 @@ const {
   PickCoordinatesInteraction,
 }                                = g3w.utils;
 
-const { Geometry }               = g3wsdk.core.geoutils;
-const { toRawType }              = g3wsdk.core.utils;
 const { FormService }            = g3wsdk.gui.vue.services;
 const { Mixins }                 = g3wsdk.gui.vue;
-const { PickFeatureInteraction } = g3wsdk.ol.interactions;
+
+const toRawType = value => Object.prototype.toString.call(value).slice(8, -1);
+
+/** @TODO merge `PickFeatureInteraction` into `PickFeaturesInteraction`? */
+class PickFeatureInteraction extends ol.interaction.Pointer {
+  constructor(opts = {}) {
+    super({
+      handleDownEvent(e) {
+        this.pickedFeature_ = this.featuresAtPixel_(e.pixel, e.map);
+        return this.pickedFeature_;
+      },
+      handleUpEvent(e) {
+        if (this.pickedFeature_) {
+          this.dispatchEvent({
+            type:       'picked',
+            feature:    this.pickedFeature_,
+            coordinate: e.coordinate,
+            layer:      this.pickedLayer_,
+          })
+        }
+        return true;
+      },
+      handleMoveEvent(e) {
+        e.map.getTargetElement().style.cursor = this.featuresAtPixel_(e.pixel, e.map) ? 'pointer': '';
+      },
+      ...opts
+    })
+
+    const { features }  = opts;
+    this.features_      = (Array.isArray(features) && features.length > 0) ? features : null;
+    this.layers_        = opts.layers || null;
+    this.pickedFeature_ = null;
+    this.pickedLayer_   = null;
+  }
+
+  layerFilter_(layer) {
+    const include     = (this.layers_ || []).includes(layer);
+    this.pickedLayer_ = include && layer;
+    return include;
+  }
+
+  featuresAtPixel_(pixel, map) {
+    let featureFound = null;
+    const intersectingFeature = map.forEachFeatureAtPixel(pixel, feature => {
+      if (this.features_) {
+        if (this.features_.includes(feature)) { return feature; }
+        else { return null; }
+      }
+      return feature;
+    }, {
+      layerFilter:  this.layerFilter_.bind(this),
+      hitTolerance: (isMobile && isMobile.any) ? 10 : 0
+    });
+    if (intersectingFeature) { featureFound = intersectingFeature; }
+    return featureFound;
+  }
+
+  shouldStopEvent() { return false; }
+
+  setMap(map) {
+    if (!map) { this.getMap().getTargetElement().style.cursor = ''}
+    super.setMap(map);
+  }
+}
 
 const color = 'rgb(255,89,0)';
 // Vector styles for selected relation
@@ -88,7 +147,7 @@ export default ({
         <!-- EDIT MULTI ATTRIBUTES -->
         <span
           v-if               = "relationsLength > 0 && capabilities.includes('change_attr_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.tools.update_multi_features_relations'"
+          v-t-tooltip:bottom = "'plugins.editing.update_multi_features_relations'"
           class              = "g3w-icon"
         >
           <span @click.stop = "editMulti()" v-disabled = "relations.every(r => !r.select)">
@@ -100,7 +159,7 @@ export default ({
         <span
           v-if               = "capabilities.includes('change_attr_feature')"
           class              = "g3w-icon add-link"
-          v-t-tooltip:bottom = "'plugins.editing.form.relations.tooltips.link_relation'"
+          v-t-tooltip:bottom = "'plugins.editing.link_relation'"
           @click.stop        = "show_add_link ? linkRelation() : null"
           :class             = "[{ 'disabled': !show_add_link }, g3wtemplate.font['link']]"
         ></span>
@@ -108,7 +167,7 @@ export default ({
         <!-- ADD FEATURE -->
         <span
           v-if               = "rcapabilities.includes('add_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.form.relations.tooltips.add_relation'"
+          v-t-tooltip:bottom = "'plugins.editing.add_relation'"
           @click.stop        = "show_add_link ? addRelation2() : null"
           class              = "g3w-icon add-link pull-right"
           :class             = "[{ 'disabled' : !show_add_link }, g3wtemplate.font['plus']]"
@@ -135,7 +194,7 @@ export default ({
       <div>
         <div
           style = "margin-bottom: 5px;font-weight: bold;"
-          v-t   = "'plugins.editing.relation.draw_new_feature'"
+          v-t   = "'plugins.editing.draw_new_feature'"
         ></div>
         <button
           class       = "btn skin-button"
@@ -153,7 +212,7 @@ export default ({
 
         <div
           style = "align-self: center"
-          v-t   = "'plugins.editing.relation.draw_or_copy'"
+          v-t   = "'plugins.editing.draw_or_copy'"
         ></div>
 
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
@@ -162,7 +221,7 @@ export default ({
 
           <div
             style = "margin-bottom: 5px;font-weight: bold;"
-            v-t   = "'plugins.editing.relation.copy_feature_from_other_layer'"
+            v-t   = "'plugins.editing.copy_feature_from_other_layer'"
           ></div>
 
           <select
@@ -256,7 +315,7 @@ export default ({
                 class             = "g3w-icon"
                 :class            = "g3wtemplate.font['unlink']"
                 @click.stop       = "unlinkRelation(index)"
-                v-t-tooltip:right = "'plugins.editing.form.relations.tooltips.unlink_relation'"
+                v-t-tooltip:right = "'plugins.editing.unlink_relation'"
                 style             = "color: var(--skin-color); cursor: pointer; font-size:12px; border-radius:5px;padding: 13px;"
               ></div>
             </td>
@@ -295,14 +354,15 @@ export default ({
         <!-- PAGINATION BUTTONS -->
         <div style = "margin-left: auto;" >
           <select
+            v-if            = "pages > 1"
             v-model         = "search.page"
             style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
-            v-t-tooltip:top = "search.page + $t(' of ') + pages"
+            v-t-tooltip:top = "pages ? search.page: 0 + $t(' of ') + pages" 
             data-placement  = "top"
           >
             <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
           </select>
-          {{ $t(' of ') + pages }}
+          {{ pages ? search.page : 0 }}{{ $t(' of ') }}{{ pages }}
           <button 
             v-if           = "pages > 1" 
             title          = "Backward" 
@@ -380,7 +440,7 @@ export default ({
       fieldrequired() {
         return getRelationFieldsFromRelation({ layerId: this._relationLayerId, relation: this.relation })
           .ownField // own Fields is a relation Fields array of Relation Layer
-          .some(field => ((getEditingLayerById(this._relationLayerId).state.editing.fields || []).find(f => field === f.name) || { validate: { required: false } }).validate.required);
+          .some(field => ((GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).state.fields || []).find(f => field === f.name) || { validate: { required: false } }).validate.required);
       },
 
       /**
@@ -423,7 +483,7 @@ export default ({
 
       isRowHidden(index) {
         if (this.search.search) {
-          return this.relations[index].fields.every(f => -1 === `${f.value}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
+          return this.relations[index].fields.every(f => !`${f.value}`.toLowerCase().includes(this.search.search.toLowerCase()));
         }
         const page      = Number(this.search.page);
         const page_size = Number(this.search.page_size);
@@ -453,12 +513,12 @@ export default ({
         let external    = copyLayer.external;
         let layer       = external ? GUI.getLayerById(this.copylayerid) : getCatalogLayerById(this.copylayerid);
         const is_vector = external || layer.isGeoLayer();
-        this.runWorkflow({
-          workflow: is_vector
-            ? this._add_link_workflow.selectandcopy({
+        this.runTool({
+          tool: is_vector
+            ? this._add_link_tool.selectandcopy({
                 copyLayer: layer,
                 isVector:  true,
-                help:      'editing.steps.help.copy',
+                help:      'editing.copy',
                 external,
               })
             : undefined,
@@ -471,8 +531,8 @@ export default ({
       },
 
       addRelation() {
-        this.runWorkflow({
-          workflow: this._add_link_workflow.add(),
+        this.runTool({
+          tool: this._add_link_tool.add(),
           isVector: 'vector' === this._layerType,
         });
         this.show_tools = false;
@@ -482,8 +542,8 @@ export default ({
         if (this.isVectorRelation) {
           this.show_tools = !this.show_tools;
         } else {
-          this.runWorkflow({
-            workflow: this._add_link_workflow.add(),
+          this.runTool({
+            tool: this._add_link_tool.add(),
             isVector: 'vector' === this._layerType,
           });
         }
@@ -498,23 +558,23 @@ export default ({
        * Edit attributes of all relations
        */
       async editMulti() {
-        const workflow = new Workflow({
+        const tool = new Tool({
           type: 'editmultiattributes',
           steps: [ new OpenFormStep({ multi: true }) ],
         });
         try {
-          await workflow.start(
-            this._createWorkflowOptions({
+          await tool.start(
+            this._createToolOptions({
               features: this.relations
                 .filter(r => r.select)
-                .map(({ id }) => this.getLayer().getEditor().getEditingSource().getFeatureById(id) )
+                .map(({ id }) => GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getFeatureById(id) )
             })
           );
         } catch(e) {
           console.warn(e);
         }
 
-        workflow.stop();
+        tool.stop();
 
       },
 
@@ -567,7 +627,7 @@ export default ({
       getFeature(featureId, property) {
         return getFeatureTableFieldValue({
           layerId: this._relationLayerId,
-          feature: this.getLayer().getEditor().getEditingSource().getFeatureById(featureId),
+          feature: GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getFeatureById(featureId),
           property,
         });
       },
@@ -594,19 +654,19 @@ export default ({
             state: Vue.observable({
               icon:   'mActionEditTable.svg',
               id:     `${id}_editattributes`,
-              name:   'editing.tools.update_feature',
+              name:   'editing.update_feature',
               enabled: true,
               active:  false,
             }),
             type: 'editfeatureattributes',
           },
 
-          // @since 3.9.0 copy featureonly for table layer
+          // copy featureonly for table layer
           'table' === this._layerType && this.capabilities.includes('add_feature') && {
             state: Vue.observable({
               icon:   'mActionEditPaste.svg',
               id:     `${id}_copyfeature`,
-              name:   'editing.tools.copy',
+              name:   'editing.copy_features',
               enabled: true,
               active:  false,
             }),
@@ -618,7 +678,7 @@ export default ({
             state: Vue.observable({
               icon:   'mActionDeleteTable.svg',
               id:     `${id}_deletefeature`,
-              name:   'editing.tools.delete_feature',
+              name:   'editing.delete_feature',
               enabled: true,
               active:  false,
             }),
@@ -630,13 +690,13 @@ export default ({
             GUI.getPlugin('editing')
               .getToolBoxById(this._relationLayerId)
               .getTools()
-              .filter(t => Geometry.isPointGeometryType(this.getLayer().getGeometryType())
+              .filter(t => /^(Multi)?Point/i.test(this.getLayer().getGeometryType())
                   ? 'movefeature' === t.getId()                       // Point geometry
                   : ['movefeature', 'movevertex'].includes(t.getId()) // Line or Polygon
               )
               .map(tool => ({
                 state: Vue.observable({ ...tool, id: `${id}_${tool.id}` }),
-                type: tool.getOperator().type,
+                type: tool.type,
               }))
           )
 
@@ -669,25 +729,25 @@ export default ({
           const is_vector       = 'vector' === this._layerType;
           const relation        = this.relations[index];
           const toolId          = relationtool.state.id.split(`${relation.id}_`)[1];
-          const relationfeature = this.getLayer().getEditor().getEditingSource().getFeatureById(relation.id);
+          const relationfeature = GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).getFeatureById(relation.id);
           const selectStyle     = is_vector && SELECTED_STYLES[this.getLayer().getGeometryType()]; // get selected vector style
-          const options         = this._createWorkflowOptions({ features: [relationfeature] });
+          const options         = this._createToolOptions({ features: [relationfeature] });
 
-          //@since 3.9.0 COPY FEATURE FROM ATTRIBUTE TABLE LAYER
+          // COPY FEATURE FROM ATTRIBUTE TABLE LAYER
           if ('copyfeature' === toolId) {
             await (
               new Promise(async (resolve, reject) => {
                 //replace current feature with clone
                 options.inputs.features = [cloneFeature(relationfeature, this.getLayer())];
-                const workflow = new Workflow({
+                const tool = new Tool({
                   type: 'addtablefeature',
                   steps: [
-                    new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+                    new Step({ help: 'editing.new_feature', run: addTableFeature }),
                     new OpenFormStep(),
                   ],
                 });
                 try {
-                  const outputs = await workflow.start(options);
+                  const outputs = await tool.start(options);
                   const feature = outputs.features[outputs.features.length - 1];
                   this.relations.push({ id: feature.getId(), fields: getFieldsWithValues(this.getLayer(), feature, { relation: true }) });
                   resolve(feature);
@@ -702,7 +762,7 @@ export default ({
                   reject(e);
 
                 } finally {
-                  workflow.stop();
+                  tool.stop();
                   relationtool.state.active = false;
 
                 }
@@ -715,11 +775,11 @@ export default ({
 
             setAndUnsetSelectedFeaturesStyle({ promise, inputs: { features: [ relationfeature ], layer: this.getLayer() }, style: selectStyle })
 
-            const ok = await GUI.confirm(_("plugins.editing.messages.delete_feature"));
+            const ok = await GUI.confirm(_("plugins.editing.confirm_delete_feature"));
 
             //confirm to delete
             if (ok) {
-              Workflow.Stack.current.session.pushDelete(this._relationLayerId, relationfeature);
+              GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).pushDelete(this._relationLayerId, relationfeature);
               // remove feature from relation features
               this.relations.splice(index, 1);
               // remove tool from relation tools
@@ -739,19 +799,19 @@ export default ({
               }
 
               //remove feature from source
-              this.getLayer().getEditor().getEditingSource().removeFeature(relationfeature);
+              GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).removeFeature(relationfeature);
               // Check if relation feature delete is new.
               // In this case, we need to check if there are temporary changes not related to this current feature
               if (
                 relationfeature.isNew()
-                && undefined === Workflow.Stack.items.find(w => w.getSession().state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
+                && undefined === Tool.Stack.items.find(i => i.state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
               ) {
-                Workflow.Stack.items
+                Tool.Stack.items
                   .filter(w => w.getContext().service instanceof FormService)
                   .forEach(w => setTimeout(() => w.getContext().service.state.update = false));
               } else {
-                //set parent workflow update to enable to save all buttons
-                Workflow.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                //set parent tool update to enable to save all buttons
+                Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
               }
 
               d.resolve(ok);
@@ -766,11 +826,10 @@ export default ({
 
           // EDIT ATTRIBUTE FEATURE RELATION
           if ('editattributes' === toolId) {
-            /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
-            const workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep({ selectStyle }) ] });
+            const tool = new Tool({ type: 'edittablefeature', steps: [ new OpenFormStep({ selectStyle }) ] });
 
             try {
-              await workflow.start(options);
+              await tool.start(options);
 
               //get relation layer fields
               getFieldsWithValues(this.getLayer(), relationfeature, { relation: true })
@@ -785,13 +844,13 @@ export default ({
             } catch(e) {
               console.warn(e);
               //need to rollback changes done at moment
-              Workflow.Stack.current.session.rollback();
+              GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).rollback();
               //reset eventually state of form parent service (save changes or not)
-              Workflow.Stack.parents?.forEach(w => w?.getContext?.()?.service?.setUpdate?.( w?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
+              Tool.Stack.parents?.forEach(t => t?.getContext?.()?.service?.setUpdate?.( t?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
               d.reject(e);
             }
 
-            workflow.stop();
+            tool.stop();
           }
 
           // zoom to relation vector feature
@@ -805,7 +864,7 @@ export default ({
             // disable modal and buttons (saveAll and back)
             GUI.setModal(false);
             this.toggleDOM(false);
-            const workflow = new Workflow({
+            const tool = new Tool({
               type: relationtool.type,
               steps: [ new {
                 'movevertex':  ModifyGeometryVertexStep,
@@ -821,24 +880,24 @@ export default ({
                   //need to enable saveAll and back
                   this.toggleDOM(true);
                   GUI.setModal(true);
-                  workflow.unbindEscKeyUp();
-                  workflow.stop();
+                  tool.unbindEscKeyUp();
+                  tool.stop();
                   unwatch();
                   d.reject(false);
                 }
               }
             )
             // bind listen esc key
-            workflow.bindEscKeyUp(() => {
+            tool.bindEscKeyUp(() => {
               GUI.setModal(true);
               unwatch();
               d.reject(false);
             });
 
             try {
-              await workflow.start(options);
+              await tool.start(options);
 
-              Workflow.Stack.parents.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+              Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
               d.resolve(true);
               setTimeout(() => this.startTool(relationtool, index));
             } catch(e) {
@@ -846,8 +905,8 @@ export default ({
               d.reject(e);
             }
 
-            workflow.unbindEscKeyUp();
-            workflow.stop();
+            tool.unbindEscKeyUp();
+            tool.stop();
             unwatch();
           }
 
@@ -870,14 +929,14 @@ export default ({
       /**
        * Common method to add a relation
        */
-      async runWorkflow({ workflow, isVector = false } = {} ) {
+      async runTool({ tool, isVector = false } = {} ) {
 
         if (isVector) {
           GUI.setModal(false);
           GUI.hideContent(true);
         }
 
-        const options = this._createWorkflowOptions();
+        const options = this._createToolOptions();
 
         //Get fields and values from parent feature
         //@TODO fatherField is Array of child fields related with parent layer. Need to rename it
@@ -889,9 +948,9 @@ export default ({
         });
 
         try {
-          const outputs = await workflow.start(options);
+          const outputs = await tool.start(options);
 
-          if (isVector) { workflow.bindEscKeyUp(); }
+          if (isVector) { tool.bindEscKeyUp(); }
           
           const { newFeatures, originalFeatures } = outputs.relationFeatures;
 
@@ -902,8 +961,8 @@ export default ({
               if (options.parentFeature.isNew()) {
                 originalFeatures[i].set(field, value);
               }
-              this.getLayer().getEditor().getEditingSource().updateFeature(newFeature);
-              options.context.session.pushUpdate(this._relationLayerId, newFeature, originalFeatures[i]);
+              GUI.getPlugin('editing').getToolBoxById(this._relationLayerId).updateFeature(newFeature);
+              GUI.getPlugin('editing').getToolBoxById(options.context.id).pushUpdate(this._relationLayerId, newFeature, originalFeatures[i]);
             })
           };
           fatherField.forEach((field, i) => setRelationFieldValue({ field, value: fatherValue[i] }));
@@ -936,18 +995,18 @@ export default ({
           // in case of save all pressed on openformtask
           if (inputs?.relationFeatures) {
             this.relations.push(
-              //@since 4.1.0 replace temporary id with real id from server
+              // replace temporary id with real id from server
               ...(inputs.relationFeatures.newFeatures || []).map(f => ({ id: this._new_relations_ids.find(({_, clientid }) => clientid === f.getId())?.id, fields: getFieldsWithValues(this.getLayer(), f, { relation: true }) }))
             )
           }
 
-          this.rollback(options.context.session.getId(), [this._relationLayerId]);
+          this.rollback(options.context.id, [this._relationLayerId]);
         }
 
-        workflow.stop();
+        tool.stop();
 
         if (isVector) {
-          workflow.unbindEscKeyUp();
+          tool.unbindEscKeyUp();
           GUI.hideContent(false);
           GUI.setModal(true);
         }
@@ -961,10 +1020,10 @@ export default ({
         this.disabled   = true;
 
         const is_vector = 'vector' === this._layerType;
-        const workflow  = this._add_link_workflow.link( is_vector ? {
+        const tool  = this._add_link_tool.link( is_vector ? {
           selectStyle: SELECTED_STYLES[this.getLayer().getGeometryType()]
         } : {});
-        const options  = this._createWorkflowOptions();
+        const options  = this._createToolOptions();
         const { ownField, relationField } = getRelationFieldsFromRelation({
           layerId:  this._relationLayerId,
           relation: this.relation
@@ -982,7 +1041,7 @@ export default ({
           GUI.setModal(false);
         }
 
-        const feature = Workflow.Stack.current.getFeatures().at(-1);
+        const feature = Tool.Stack.current.getFeatures().at(-1);
 
         const getRelationFeatures = () => getLayersDependencyFeatures(this.layerId, {
           relations:  [this.relation],
@@ -1002,10 +1061,10 @@ export default ({
             await getRelationFeatures();
           };
 
-          workflow.bindEscKeyUp();
+          tool.bindEscKeyUp();
 
           response = {
-            promise:     workflow.start(options),
+            promise:     tool.start(options),
             showContent: true
           };
 
@@ -1018,10 +1077,10 @@ export default ({
         let linked = false;
 
         try {
-          const outputs = await (response.promise || workflow.start(options));
+          const outputs = await (response.promise || tool.start(options));
           // loop on features selected
           (outputs.features || []).forEach(relation => {
-            if (undefined === this.relations.find(rel => rel.id === relation.getId())) {
+            if (undefined === this.relations.find(rel => relation.getId() === rel.id)) {
               linked = linked || true;
               const originalRelation = relation.clone();
               Object
@@ -1029,7 +1088,7 @@ export default ({
                 .forEach(([field, value]) => {
                   relation.set(ownField[relationField.findIndex(rF => field === rF)], value);
                 })
-              Workflow.Stack.current.session.pushUpdate(this._relationLayerId , relation, originalRelation);
+              GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).pushUpdate(this._relationLayerId , relation, originalRelation);
               this.relations.push({
                 fields: getFieldsWithValues(this.getLayer(), relation, { relation: true }),
                 id:     relation.getId()
@@ -1041,7 +1100,7 @@ export default ({
           });
         } catch(e) {
           console.warn(e);
-          this.rollback(options.context.session.getId(), [this._relationLayerId]);
+          this.rollback(options.context.id, [this._relationLayerId]);
         }
 
         if (is_vector) {
@@ -1050,14 +1109,14 @@ export default ({
 
         if (response.showContent) {
           GUI.closeUserMessage();
-          workflow.unbindEscKeyUp();
+          tool.unbindEscKeyUp();
         }
 
         if (linked) {
-          Workflow.Stack.items.forEach(w => w?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+          Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
         }
 
-        workflow.stop();
+        tool.stop();
 
         this.disabled = false;
       },
@@ -1073,7 +1132,7 @@ export default ({
       },
 
       getParent() {
-        const parentLayer  = this.parentWorkflow.getLayer();
+        const parentLayer  = this.parentTool.getLayer();
         const { ownField } = getRelationFieldsFromRelation({ layerId: this.layerId, relation: this.relation });
 
         const pk = ownField.find(f => isPkField(parentLayer, f))
@@ -1083,7 +1142,7 @@ export default ({
          */
         return {
           // get editable fields from parent layer editing fields
-          editable: ownField.filter(f => ((parentLayer.state.editing.fields || []).find(_f => _f.name === f) || { editable: false }).editable),
+          editable: ownField.filter(f => ((this.parentTool.state.fields || []).find(_f => f === _f.name) || { editable: false }).editable),
           // check if father field is a pk and is not editable
           pk,
           // Check if the parent field is editable.
@@ -1091,14 +1150,14 @@ export default ({
           // to fill the field with the relation layer feature when commit
           values: ownField.reduce((father, field) => {
             //get feature
-            const feature = this.parentWorkflow.getFeatures().at(-1);
+            const feature = this.parentTool.getFeatures().at(-1);
             //get fields of form because contains values that have temporary changes not yet saved
             // in case of form fields
-            const fields  = this.parentWorkflow.getInputs().fields;
+            const fields  = this.parentTool.getInputs().fields;
             return Object.assign(father, {
               [field]: (pk === field && feature.isNew()) //check if isPk and parent feature isNew
                 ? feature.getId()
-                //check if fields are set (parent workflow is a form)
+                //check if fields are set (parent tool is a form)
                 // or for example, for feature property field value
                 : fields ? fields.find(f => field === f.name).value: feature.get(field)
             });
@@ -1106,16 +1165,16 @@ export default ({
         };
       },
 
-      _createWorkflowOptions(opts = {}) {
+      _createToolOptions(opts = {}) {
         const fields = getRelationFieldsFromRelation({
           layerId:  this._relationLayerId,
           relation: this.relation
         });
         const parent = Object.entries(this.getParent().values);
         return  {
-          parentFeature:   Workflow.Stack.current.getFeatures().at(-1), // get parent feature
+          parentFeature:   Tool.Stack.current.getFeatures().at(-1), // get parent feature
           context: {
-            session:       Workflow.Stack.current.session,        // get parent workflow
+            id:            this.layerId, //set parent layer id                         
             excludeFields: fields.ownField,                                 // array of fields to be excluded
             fatherValue:   parent.map(([_, value]) => value),               // values of parent fields in relation
             fatherField:   parent.map(([field]) => fields.ownField[fields.relationField.findIndex(rField => field === rField)]), //children fields
@@ -1128,7 +1187,7 @@ export default ({
       },
 
       /**
-       * Rollback child changes of current session
+       * Rollback child changes 
        * 
        * @param layerId
        * @param ids [array of child layer id]
@@ -1137,7 +1196,7 @@ export default ({
         const toolBox = GUI.getPlugin('editing').getToolBoxById(layerId);
         ids.forEach(id => {
           const changes = [];
-          toolBox.state.editing.session.changes = toolBox.state.editing.session.changes.filter(tc => {
+          toolBox.state.changes = toolBox.state.changes.filter(tc => {
             if (id === tc.layerId) {
               changes.push(tc);
               return false
@@ -1156,7 +1215,6 @@ export default ({
     },
 
     created() {
-      /** @since 4.0.4 */
       this._current_style = null;
 
       const relationLayer = getEditingLayerById(this.relation.child);
@@ -1165,20 +1223,18 @@ export default ({
        * Array of new relations features objects saved on server id
        * {clientid, id} where client id is a temporary id of relation
        * feature, id is saved id on server.
-       *
-       * @since g3w-client-plugin-editing@v3.7.2
        */
       this._new_relations_ids =  [];
 
       this.onCommit           = this.onCommit.bind(this);
 
-      /** @since 3.7.2 Listen commit when is click on save all button disk icon*/
+      // Listen commit when is click on save all button disk icon
       GUI.getPlugin('editing').on('commit', this.onCommit);
 
       this.isVectorRelation = 'vector' === relationLayer.getType();
 
-      /** @since 4.0.2 add relation capabilities */ 
-      this.rcapabilities = relationLayer.state.editing?.capabilities || [];
+      // add relation capabilities
+      this.rcapabilities = GUI.getPlugin('editing').getToolBoxById(relationLayer.getId()).state.capabilities || [];
 
       // vector relation → get all layers with the same geometry
       if (this.isVectorRelation) {
@@ -1198,7 +1254,7 @@ export default ({
                 l.getGeometryType() === geometryType ||
                 (
                   isSameBaseGeometryType(l.getGeometryType(), geometryType) &&
-                  Geometry.isMultiGeometry(geometryType)
+                  /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType)
                 )
               ))
             )
@@ -1217,7 +1273,7 @@ export default ({
                 return false;
               }
               const type = features[0].getGeometry().getType();
-              return geometryType === type || (isSameBaseGeometryType(geometryType, type) && (Geometry.isMultiGeometry(geometryType) || !Geometry.isMultiGeometry(type)));
+              return geometryType === type || (isSameBaseGeometryType(geometryType, type) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))));
             })
             .map(l => ({
               id:       l.get('id'),
@@ -1234,7 +1290,7 @@ export default ({
               const features = externalLayer.getSource().getFeatures() || [];
               if (!features[0] || !features[0].getGeometry()) { return; }
               const type = features[0].getGeometry().getType();
-              if (geometryType === type || (isSameBaseGeometryType(geometryType, type) && (Geometry.isMultiGeometry(geometryType) || !Geometry.isMultiGeometry(type)))) {
+              if (geometryType === type || (isSameBaseGeometryType(geometryType, type) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))))) {
                 this.copyLayers.push({
                   id:       externalLayer.get('id'),
                   name:     externalLayer.get('name'),
@@ -1252,8 +1308,6 @@ export default ({
 
       /**
        * Current relation feature (in editing)
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
        */
       this.currentRelationFeatureId = null;
 
@@ -1267,12 +1321,12 @@ export default ({
        */ 
       this._layerType    = this.getLayer().getType();
 
-      this.parentWorkflow = Workflow.Stack.current;
+      this.parentTool     = Tool.Stack.current;
 
       /**
        * editing a constraint type
        */
-      this.capabilities = this.getLayer().config?.editing?.capabilities ?? [];
+      this.capabilities = GUI.getPlugin('editing').getToolBoxById(this.getLayer().getId())?.state?.capabilities ?? [];
 
 
       /**
@@ -1282,18 +1336,17 @@ export default ({
 
       const self = this;
 
-      this._add_link_workflow = ({
+      this._add_link_tool = ({
         table: {
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0 */
           link(opts = {}) {
-            return new Workflow({
+            return new Tool({
               ...opts,
               type:            'edittable',
-              backbuttonlabel: 'plugins.editing.form.buttons.save_and_back_table',
+              backbuttonlabel: 'plugins.editing.save_and_back_table',
               steps:           [
                 new Step({
-                  help: "editing.steps.help.edit_table",
+                  help: "editing.edit_table",
                   run(inputs, context) {
                     return new Promise(async (resolve, reject) => {
                       GUI.setContent({
@@ -1322,13 +1375,12 @@ export default ({
             });
           },
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
           add(opts = {}) {
-            return new Workflow({
+            return new Tool({
               ...opts,
               type:  'addtablefeature',
               steps: [
-                new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+                new Step({ help: 'editing.new_feature', run: addTableFeature }),
                 new OpenFormStep(),
               ],
             });
@@ -1337,14 +1389,13 @@ export default ({
         },
         vector: {
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/linkrelationworkflow.js@v3.7.1 */
           link(opts = {}) {
-            return new Workflow({
+            return new Tool({
               type:  'linkrelation',
               steps: [
                 new Step({
                   ...opts,
-                  help: "editing.steps.help.select_feature_to_relation",
+                  help: "editing.select_feature_to_relation",
                   run(inputs, context) {
                     return new Promise(async (resolve, reject) => {
                       //create a promise for setAndUnsetSelectedFeaturesStyle;
@@ -1387,13 +1438,12 @@ export default ({
             });
           },
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addfeatureworkflow.js@v3.7.1 */
           add: (opts = {}) => {
             const addStep = new AddFeatureStep({
               ...opts,
               steps: {
                 draw: {
-                  description: `editing.steps.help.draw_new_feature`,
+                  description: `editing.draw_new_feature`,
                   done:        false,
                 }
               },
@@ -1405,7 +1455,7 @@ export default ({
               GUI.closeUserMessage();
             })
 
-            return new Workflow({
+            return new Tool({
               ...opts,
               type:  'addfeature',
               steps: [
@@ -1416,18 +1466,17 @@ export default ({
             })
           },
 
-          /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/selectandcopyfeaturesfromotherlayerworkflow.js@v3.7.1 */
           selectandcopy(opts = {}) {
-            return new Workflow({
+            return new Tool({
               type:  'selectandcopyfeaturesfromotherlayer',
               steps: [
                 // pick project layer features
                 new Step({
                   ...opts,
-                  help:  "editing.steps.help.pick_feature",
+                  help:  "editing.pick_feature",
                   steps: {
                     select: {
-                      description: `editing.workflow.steps.selectPoint`,
+                      description: `editing.selectPoint`,
                       done:        false,
                     }
                   },
@@ -1488,18 +1537,18 @@ export default ({
                     if (_feature) {
                       const feature = new Feature({
                         feature:    _feature,
-                        properties: (inputs.layer.state.editing.fields || []).filter(attr => !attr.pk).map(attr => attr.name)
+                        properties: (GUI.getPlugin('editing').getToolBoxById(inputs.layer.getId()).state.fields || []).filter(attr => !attr.pk).map(attr => attr.name)
                       });
                       feature.setTemporaryId();
                       inputs.features = [feature];
                       getEditingLayer(inputs.layer).getSource().addFeature(feature);
-                      context.session.pushAdd(inputs.layer.getId(), feature, false);
+                      GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(inputs.layer.getId(), feature, false);
                       return inputs;
                     }
 
                     GUI.showUserMessage({
                       type:      'warning',
-                      message:   'plugins.editing.messages.no_feature_selected',
+                      message:   'plugins.editing.no_feature_selected',
                       closable:  false,
                       autoclose: true
                     });
@@ -1531,9 +1580,10 @@ export default ({
       // set editing style on relation layer
       try {
         const layer         = getEditingLayerById(this.relation.child);
+        const layerStyle    = GUI.getPlugin('editing').getToolBoxById(this.relation.child).state.layer_style;
         this._current_style = layer.getCurrentStyle().name;
-        if (layer.config.editing.layer_style && this._current_style !== layer.config.editing.layer_style) {
-          await layer.changeStyle(layer.config.editing.layer_style);
+        if (layerStyle && this._current_style !== layerStyle) {
+          await layer.changeStyle(layerStyle);
         }
       } catch(e) {
         console.warn(e);
@@ -1558,8 +1608,9 @@ export default ({
     async deactivated() {
       // reset editing style on relation layer
       try {
-        const layer = getEditingLayerById(this.relation.child);
-        if (layer.config.editing.layer_style && this._current_style && this._current_style !== layer.config.editing.layer_style) {
+        const layer      = getEditingLayerById(this.relation.child);
+        const layerStyle = GUI.getPlugin('editing').getToolBoxById(this.relation.child).state.layer_style;
+        if (layerStyle && this._current_style && this._current_style !== layerStyle) {
           await layer.changeStyle(this._current_style);
         }
       } catch(e) {
