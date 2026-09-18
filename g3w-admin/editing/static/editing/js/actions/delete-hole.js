@@ -2,6 +2,8 @@ import { Step }                             from '../g3w-step.js';
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 
+const GUI = g3w.app;
+
 export class DeleteHoleStep extends Step {
 
   /** @type { ol.interaction.Pointer } */
