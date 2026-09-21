@@ -473,7 +473,7 @@ export default ({
       const q = document.querySelectorAll.bind(document);
       if (this.open) {
         setTimeout(() => {
-          if (1 === this.select_layers.length === 1) {
+          if (this.select_layers.length === 1) {
             q('.select2-results__options li[aria-selected="true"]').forEach(el => el.classList.add('g3w-disabled'));
           } else {
             q('.select2-results__options li').forEach(el => el.classList.remove('g3w-disabled'));
