@@ -134,7 +134,7 @@ export default ({
     </section>`,
 
   name: "SidebarItem",
-  
+
   data() {
     const { 
       layers = [],
@@ -194,6 +194,23 @@ export default ({
   },
 
   methods: {
+
+    init() {
+      this.status       = 0;
+      this.interval     = null;
+      this.start_date   = this.select_layers.length > 1 ? moment.min(this.select_layers.map(l => l.start_date)) : this.layers[this.current_layers[0]].start_date;
+      this.end_date     = this.select_layers.length > 1 ? moment.max(this.select_layers.map(l => l.end_date))   : this.layers[this.current_layers[0]].end_date; 
+      this.max_date     = this.select_layers.length > 1 ? this.end_date : this.max_date; // set max date as end_date
+      this.min_date     = this.start_date;
+      this.current_date = this.start_date;
+      this.range.value  = 0;
+      this.range.min    = 0;
+      this.resetRangeInputData();
+      if (this.current_date) {
+        this.getTimeLayer();
+      }
+      this.showCharts   = false;
+    },
     /**
      * Reset range on change start date or end date time
      */
@@ -245,10 +262,12 @@ export default ({
     _resetTimeLayer(layers, hideInfo=false) {
       let len   = layers.length;
       return new Promise((resolve, reject) => {
-        layers.forEach(l => {
-          if (!l.timed) {
-            return resolve();
-          }
+        if (layers.find(l => !l.timed)) {
+          return resolve();
+        }
+        layers
+        .filter(l => !l.timed)
+        .forEach(l => {
           const layer = GUI.getMapLayerByLayerId(l.id);
           if (hideInfo) {
             layer.once('loadend', () => {
@@ -272,7 +291,6 @@ export default ({
     async getTimeLayer() {
       await this.$nextTick();
       const project  = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
-      const map      = GUI.getMap();
       try {
         await (
           new Promise((resolve, reject) => {
@@ -540,20 +558,7 @@ export default ({
   },
   async mounted() {
     await this.$nextTick();
-    this.status       = 0;
-    this.interval     = null;
-    this.start_date   = this.select_layers.length > 1 ? moment.min(this.select_layers.map(l => l.start_date)) : this.layers[this.current_layers[0]].start_date;
-    this.end_date     = this.select_layers.length > 1 ? moment.max(this.select_layers.map(l => l.end_date))   : this.layers[this.current_layers[0]].end_date; 
-    this.max_date     = this.select_layers.length > 1 ? this.end_date : this.max_date; // set max date as end_date
-    this.min_date     = this.start_date;
-    this.current_date = this.start_date;
-    this.range.value  = 0;
-    this.range.min    = 0;
-    this.resetRangeInputData();
-    if (this.current_date) {
-      this.getTimeLayer();
-    }
-    this.showCharts   = false;
+    this.init();
   },
 
   beforeDestroy() {
