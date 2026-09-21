@@ -83,9 +83,7 @@
             })
             GUI.showPanel(panel);
             //listen destroyed event of the internal panel
-            panel.internalPanel.$on('hook:destroyed', () => {
-              sidebar.setOpen(false);
-            });
+            panel.internalPanel.$on('hook:destroyed', () => sidebar.setOpen(false));
           }
         });
 
