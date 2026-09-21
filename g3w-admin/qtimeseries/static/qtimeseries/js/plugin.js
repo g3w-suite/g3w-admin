@@ -63,13 +63,10 @@
           });
         });
 
-
-      const show = this.config.layers.length > 0;
-
       // setup plugin interface
       GUI.isReady().then(async () => {
         //skip when plugin is not enabled (not related to current project) or no layers to show
-        if(!enabled || !show) {
+        if(!enabled || 0 === this.config.layers.length) {
           return;
         }
 
@@ -77,18 +74,20 @@
 
         const sidebar = this.createSideBarComponent({}, this.config.sidebar);
 
-        sidebar.onbefore('setOpen', async () => {
-   
-          GUI.showPanel(new Panel({
-            id:            "qtimeseries-panel",
-            title:         "plugins.qtimeseries.title",
-            internalPanel: new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({
-              propsData: {
-                service: this
-              }
+        sidebar.onbefore('setOpen', async (open) => {
+          if (open) {
+            const panel = new Panel({
+              id:            "qtimeseries-panel",
+              title:         "plugins.qtimeseries.title",
+              internalPanel: new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({}),
             })
-          }));
-          
+            GUI.showPanel(panel);
+            //listen destroyed event of the internal panel
+            panel.internalPanel.$on('hook:destroyed', () => {
+              alert('Panel destroyed');
+              sidebar.setOpen(false);
+            });
+          }
         });
 
         this.setReady(true);

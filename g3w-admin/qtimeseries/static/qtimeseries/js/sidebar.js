@@ -134,14 +134,17 @@ export default ({
     </section>`,
 
   name: "SidebarItem",
-
-  props: ['service'],
-
+  
   data() {
-    const { layers = [] } = this.$props.service.config;
+    const { 
+      layers = [],
+      sidebar,
+      steps = [] 
+    } = GUI.getPlugin('qtimeseries').config;
+
     return {
       layers,
-      open:             this.$props.service.open,
+      open:             sidebar.open,
       step:             layers[0].options.step,
       /** @TODO */
       start_date:       layers[0].start_date,
@@ -151,10 +154,10 @@ export default ({
       format:           'YYYY-MM-DD HH:mm:ss',
       min_date:         layers[0].start_date,
       max_date:         layers[0].end_date,
-      step_units:       this.$props.service.config.steps,
+      step_units:       steps,
       step_unit:        layers[0].options.stepunit,
       change_step_unit: false,
-      step_label:       this.$props.service.config.steps.find(u => u.moment === layers[0].options.stepunit).label,
+      step_label:       steps.find(u => u.moment === layers[0].options.stepunit).label,
       range:            { value: 0, min: 0, max: 0 },
       changed_layer:    false,
       current_layers:   layers.map((_, index) => index.toString()),
@@ -498,7 +501,7 @@ export default ({
       async handler(step_unit) {
         this.change_step_unit        = true;
         this.select_layers.forEach(l => l.options.stepunit = step_unit);
-        this.step_label = this.$props.service.config.steps.find(c => c.moment === step_unit).label;
+        this.step_label = GUI.getPlugin('qtimeseries').config.steps.find(c => c.moment === step_unit).label;
         this.init();
         await this.$nextTick();
         this.change_step_unit = false; // set false to enforce changing translation of label
@@ -554,7 +557,7 @@ export default ({
   },
 
   beforeDestroy() {
-    const layers = this.$props.service.config.layers.filter(l => l.timed);
+    const layers = GUI.getPlugin('qtimeseries').config.layers.filter(l => l.timed);
     if (layers) {
       this._resetTimeLayer(layers, true);
     }
