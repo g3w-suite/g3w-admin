@@ -12,10 +12,25 @@ __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
 from qgis.core import (
     QgsExpression, 
-    QgsMapLayer
+    QgsMapLayer,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform
 )
 from collections import OrderedDict
 import re
+
+
+def _qgsrectangle2list(extent) -> list:
+    """
+    Given a QgsRectangle instance return a list [xmin, ymin, xmax, ymax].
+    """
+
+    return [
+        extent.xMinimum(),
+        extent.yMinimum(),
+        extent.xMaximum(),
+        extent.yMaximum(),
+    ]
 
 
 def explode_expression(expression):
@@ -70,3 +85,29 @@ def get_aliases(qgs_layer):
     sm.setCurrentStyle(current_style)
 
     return aliases
+
+def wmts_extents(layer) -> str:
+    """
+    Get the extents of a WMTS layer in both the cache CRS and the grid CRS.
+
+    :param layer: The WMTS layer object.
+    :return: A tuple containing the cache extent and the grid extent.
+    :rtype: tuple
+    """
+    
+
+    srs = layer.project.group.srid.auth_name + ':' + str(layer.project.group.srid.auth_srid)
+    crs_4326 = QgsCoordinateReferenceSystem('EPSG:4326')
+    crs_prj = QgsCoordinateReferenceSystem(srs)
+    crs_layer = QgsCoordinateReferenceSystem(layer.qgis_layer.crs())
+    ct_layer = QgsCoordinateTransform(crs_layer, crs_4326, layer.project.qgis_project)
+    ct_4326_to_prj = QgsCoordinateTransform(crs_4326, crs_prj, layer.project.qgis_project)
+
+    extent = ct_layer.transformBoundingBox(layer.qgis_layer.extent())
+    cache_extent = _qgsrectangle2list(ct_4326_to_prj.transformBoundingBox(extent))
+    if srs not in ['EPSG:900913', 'EPSG:4326', 'EPSG:3857']:
+        grid_extent = cache_extent
+    else:
+        grid_extent = _qgsrectangle2list(ct_4326_to_prj.transformBoundingBox(crs_prj.bounds()))
+
+    return cache_extent, grid_extent

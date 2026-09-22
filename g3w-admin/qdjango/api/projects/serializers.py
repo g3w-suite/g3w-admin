@@ -17,6 +17,7 @@ from qdjango.models import (
 )
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
+from qdjango.utils.qgis import wmts_extents
 from qdjango.signals import load_qdjango_widget_layer
 from guardian.utils import get_anonymous_user
 from qdjango.apps import get_qgs_project
@@ -36,7 +37,7 @@ from core.utils.structure import RELATIONS_ONE_TO_MANY
 from core.utils.qgisapi import (
     get_qgis_layer,
     count_qgis_features,
-    get_qgis_featurecount,
+    get_qgis_featurecount, 
 )
 from core.utils.general import clean_for_json
 from core.utils.geo import get_crs_bbox
@@ -766,7 +767,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
     def get_ows(self, instance):
         """
-        Get wfscapabilities to add wos services for layer
+        Get wfscapabilities, wmtscapabilities to add ows services for layer
         :param instance: Qdjango Layer model instance
         :return: array
         """
@@ -774,8 +775,27 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret = ['WMS']
         if instance.wfscapabilities:
             ret.append('WFS')
+        if instance.wmtscapabilities:
+                ret.append('WMTS')
 
         # TODO: add WCS if is set
+
+        return ret
+
+    def get_wmtscapabilities(self, instance):
+        wc = instance.wmtscapabilities
+
+        ret = {}
+        #Add grids
+        ret['grids'] = []
+        wmts_grids = self.instance.project.wmts_grids
+        for grid in wmts_grids:
+            # add the grid extent
+            cache_extent, grid_extent = wmts_extents(instance)
+            grid['extent'] = grid_extent
+            ret['grids'].append(grid)
+            
+
 
         return ret
 
@@ -976,6 +996,10 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # add ows
         ret['ows'] = self.get_ows(instance)
+
+        # Add wmts capabilities
+        ret['wmtscapabilities'] = self.get_wmtscapabilities(instance)
+        
 
         # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
         if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:

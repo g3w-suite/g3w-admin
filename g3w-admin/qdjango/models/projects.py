@@ -422,6 +422,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     )
     geocoding_providers = models.TextField(_('Geocoding providers'), blank=True, null=True)
 
+    wmts_grids = models.JSONField(
+        _('WMTS grids'), 
+        blank=True, 
+        null=True
+    )
+
     class Meta:
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')

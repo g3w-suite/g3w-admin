@@ -1130,6 +1130,7 @@ class QgisProject(XmlData):
         'wmsuselayerids',
         'wfsLayers',
         'wfstLayers',
+        'wmtsGrids', # Used for WMTS grids in the project at level of QgisProjectLayer. Must call before loading WMTS layers
         'wmtsLayers', # Used for WMTS layers in the project at level fo QgisProjectLayer
         'layersTree',
         'layers',
@@ -1621,6 +1622,30 @@ class QgisProject(XmlData):
         else:
             return False
 
+    def _getDataWmtsGrids(self):
+        """
+        Return WMTS grids defined in the project.
+        :return: a list of WMTS grids
+        :rtype: list
+        """
+
+        wmts_grids, _ = self.qgs_project.readListEntry("WMTSGrids", "Config")
+        grids = []
+        for grid in wmts_grids:
+            parts = grid.split(',')
+            if len(parts) != 5:
+                continue
+            crs, top, left, min_scale, levels = parts
+            grids.append({
+                'crs': crs,
+                'top': float(top),
+                'left': float(left),
+                'min_scale': float(min_scale),
+                'levels': int(levels),
+            })
+
+        return grids
+
     def _getDataWmtsLayers(self):
         """
         Return WMTS layers by format.
@@ -1632,8 +1657,12 @@ class QgisProject(XmlData):
 
         png_layers, _ = self.qgs_project.readListEntry("WMTSPngLayers", "Layer")
         jpeg_layers, _ = self.qgs_project.readListEntry("WMTSJpegLayers", "Layer")
+        wmts_grids, _ = self.qgs_project.readListEntry("WMTSGrids", "Grid")
 
         wmts_layers = {}
+        # Only if wmts_grids are defined
+        if not self.wmtsGrids:
+            return wmts_layers
         for layer_id in set(png_layers) | set(jpeg_layers):
             wmts_layers[layer_id] = {}
             if layer_id in png_layers:
@@ -1711,7 +1740,8 @@ class QgisProject(XmlData):
                     'relations': self.layerRelations,
                     'layouts': self.layouts,
                     'title_ur': kwargs.get('title_ur'),
-                    'context_base_legend': self.contextbaselegend
+                    'context_base_legend': self.contextbaselegend,
+                    'wmts_grids': self.wmtsGrids
                 }
 
                 for p in (
@@ -1749,6 +1779,7 @@ class QgisProject(XmlData):
                 self.instance.layouts = self.layouts
                 self.instance.context_base_legend = self.contextbaselegend
                 self.instance.wms_use_layer_ids = self.wmsuselayerids
+                self.instance.wmts_grids = self.wmtsGrids
                 self.instance.is_dirty = False
 
                 self.instance.save()
