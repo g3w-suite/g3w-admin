@@ -787,7 +787,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret = {}
         wmts_grids = self.instance.project.wmts_grids
-        if not wmts_grids:
+        if not wmts_grids or not self.instance.wmtscapabilities:
             return ret
         
         #Add grids
