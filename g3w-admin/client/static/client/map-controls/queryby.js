@@ -41,6 +41,13 @@ const POLYGON_TYPES = [
 const CONTROLS = {};
 
 /**
+ * Keep child controls out of the map DOM while preserving their interactions.
+ * 
+ * @TODO avoid using inner `new MapControl` instead
+ */
+const FAKE_TARGET = document.createElement('div');
+
+/**
  * Spatial query options
  */
 const QUERY = Vue.observable({
@@ -359,6 +366,7 @@ export class QueryBy extends MapControl {
      */
     const control = CONTROLS[type] = new MapControl({
       name:             type,
+      target:           FAKE_TARGET,
       offline:          false,
       visible:          false,
       geometryTypes:    ['querybypolygon','querybydrawpolygon','querybyfreehand'].includes(type) ? POLYGON_TYPES : [],
@@ -518,7 +526,7 @@ export class QueryBy extends MapControl {
    */
   onSelectLayer(layer) {
 
-    const btn = document.querySelector('.usermessage-content .clear-selected-layer');
+    const btn = document.querySelector('.usermessage-tool .clear-selected-layer');
     if (btn) {
       btn.classList.toggle('hidden', !layer);
     }
