@@ -786,16 +786,24 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         wc = instance.wmtscapabilities
 
         ret = {}
-        #Add grids
-        ret['grids'] = []
         wmts_grids = self.instance.project.wmts_grids
+        if not wmts_grids:
+            return ret
+        
+        #Add grids
+        ret['grids'] = []       
         for grid in wmts_grids:
             # add the grid extent
             cache_extent, grid_extent = wmts_extents(instance)
             grid['extent'] = grid_extent
             ret['grids'].append(grid)
-            
 
+        # Add formats        
+        ret['formats'] = []
+        if self.instance.wmtscapabilities['png']:
+            ret['formats'].append('image/png')
+        if self.instance.wmtscapabilities['jpeg']:
+            ret['formats'].append('image/jpeg')
 
         return ret
 
