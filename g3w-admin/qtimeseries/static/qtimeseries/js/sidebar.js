@@ -261,25 +261,20 @@ export default ({
 
     _resetTimeLayer(layers, hideInfo=false) {
       let len   = layers.length;
-      return new Promise((resolve, reject) => {
-        if (layers.find(l => !l.timed)) {
-          return resolve();
-        }
-        layers
-        .filter(l => !l.timed)
-        .forEach(l => {
+      return new Promise(resolve => {
+        for (let l of layers.filter(l => l.timed)) {
           const layer = GUI.getMapLayerByLayerId(l.id);
-          if (hideInfo) {
-            layer.once('loadend', () => {
-              GUI.showMapInfo();
-              if (0 === --len) {
-                resolve();
-              }
-            });
-          }
+          layer.once('loadend', () => {
+            if (0 === --len) {
+              resolve();
+            }
+          });
           GUI.updateMapLayer(layer, { force: true, TIME: undefined });
-        })
-        
+        }
+        if (hideInfo) {
+          GUI.showMapInfo();
+        }
+        resolve();
       })
     },
 
