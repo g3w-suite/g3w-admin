@@ -1649,9 +1649,9 @@ class QgisProject(XmlData):
     def _getDataWmtsLayers(self):
         """
         Return WMTS layers by format.
-        For every layer id enabled as WMTS PNG and/or JPEG, add the corresponding
-        'WMTSPngLayers'/'WMTSJpegLayers' entry.
-        :return: {'<layer_id>': {'WMTSPngLayers': True, 'WMTSJpegLayers': True}, ...}
+        For every layer id enabled as WMTS PNG and/or JPEG, set the corresponding
+        'png'/'jpeg' flags.
+        :return: {'<layer_id>': {'png': True, 'jpeg': True}, ...}
         :rtype: dict
         """
 
