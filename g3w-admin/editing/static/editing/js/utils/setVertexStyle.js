@@ -26,16 +26,7 @@ export function setVertexStyle({
         )
 
       }),
-      geometry: f => {
-        const coordinates = f.getGeometry().getCoordinates();
-        return new ol.geom.MultiPoint(
-          geometryType === 'MultiPolygon'
-            ? coordinates.flatMap(coords => coords[0])
-            : geometryType.includes('LineString')
-              ? coordinates.flat()
-              : [coordinates]
-        );
-      }
+      geometry: f => new ol.geom.MultiPoint(f.getGeometry().getCoordinates().flat(/^Multi/i.test(geometryType) ? 2 : 1)),
     }),
     new ol.style.Style({ stroke: new ol.style.Stroke({ color: lineColor, width: strokeWidth })})
   ]);
