@@ -1,11 +1,9 @@
 /**
  * @file Editing table (form editor)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { Step }                      from '../g3w-step.js';
-import { Workflow }                  from '../g3w-workflow.js';
+import { Tool }                      from '../g3w-tool.js';
 import { OpenFormStep }              from '../actions/open-form.js';
 import { cloneFeature }              from '../utils/cloneFeature.js';
 import { getRelationsInEditing }     from '../utils/getRelationsInEditing.js';
@@ -70,10 +68,10 @@ export default ({
         :id     = "feature.__g3w_uid"
         :index  = "index"
       >
-        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "feature.__g3w_locked ? 'plugins.editing.messages.featureslockbyotheruser' : ''">
+        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "feature.__g3w_locked ? 'plugins.editing.featureslockbyotheruser' : ''">
           <div style = "display:flex;justify-content: space-between;">
             <!-- EDIT FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.edit'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.edit_feature'">
               <i
                 v-if             = "showTool('change_attr_feature')"
                 :class           = "g3wtemplate.font['pencil']"
@@ -85,7 +83,7 @@ export default ({
             </span>
 
             <!-- COPY FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.copy'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.create_a_copy'">
               <i
                 v-if             = "showTool('add_feature')"
                 :class           = "g3wtemplate.font['copy-paste']"
@@ -97,7 +95,7 @@ export default ({
             </span>
 
             <!-- DELETE FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.table.delete'">
+            <span class = "tool" v-t-tooltip:right = "'plugins.editing.delete_feature'">
               <i
                 v-if             = "showTool('delete_feature')"
                 :class           = "g3wtemplate.font['trash-o']"
@@ -191,7 +189,7 @@ export default ({
       <!-- SAVE CHANGES -->
       <button
         v-if        = "!isrelation"
-        v-t-plugin  = "'editing.form.buttons.save_and_back'"
+        v-t-plugin  = "'editing.save_and_back'"
         class       = "btn btn-success" 
         style       = "margin-right: 10px; font-weight: bold;"
         @click.stop = "save">
@@ -199,7 +197,7 @@ export default ({
 
       <!-- DISCARD CHANGES -->
       <button
-        v-t-plugin  = "'editing.form.buttons.cancel'"
+        v-t-plugin  = "'editing.ignore_changes'"
         class       = "btn btn-danger"
         style       = "font-weight: bold;"
         @click.stop = "cancel">
@@ -236,7 +234,7 @@ export default ({
       rows:     [],
       title:     `${inputs.layer.getName()}` || 'Link relation',
       layerId:   inputs.layer.getId(),
-      workflow:  null,
+      tool:  null,
       linked:    [],
       ordering:  [0, 'asc'],
       PAGELENGTHS,
@@ -282,7 +280,7 @@ export default ({
     },
 
     showTool(type) {
-      return undefined !== this.inputs.layer.state.editing.capabilities.find(c => type === c);
+      return GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).state.capabilities.includes(type);
     },
 
     isMediaField(name) {
@@ -310,7 +308,6 @@ export default ({
       this.getData();
     },
 
-  
     save() {
       this.state.isrelation
         // link features (by indexes)
@@ -326,7 +323,7 @@ export default ({
       if (this.isrelation && !this.linked.length) {
         this.promise.reject();
       } else {
-        const ok = await GUI.confirm(_('plugins.editing.messages.link_relations'));
+        const ok = await GUI.confirm(_('plugins.editing.link_relations'));
         if (ok) {
           this.promise.resolve(this.isrelation ? { features: this.linked.map(i => this.features[i]) } : undefined);
         } else {
@@ -344,18 +341,18 @@ export default ({
         relations: this.inputs.layer.getRelations().getArray()
       }).length;
       const ok = await GUI.confirm(/* html */`
-        <h4>${_('plugins.editing.messages.delete_feature')}</h4>
+        <h4>${_('plugins.editing.confirm_delete_feature')}</h4>
         <div style = "font-size:1.2em;">${
           has_child_relation
-            ? _('plugins.editing.messages.delete_feature_relations')
+            ? _('plugins.editing.delete_feature_relations')
             : ''
         }</div>
       `);
       if (ok) {
-        const i    = this.features.findIndex(f => f.getUid() === uid);
+        const i    = this.features.findIndex(f => uid === f.getUid());
         const feat = this.features[i];
-        this.inputs.layer.getEditor().getEditingSource().removeFeature(feat);
-        this.context.session.pushDelete(this.inputs.layer.getId(), feat);
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).removeFeature(feat);
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).pushDelete(this.inputs.layer.getId(), feat);
         this.rows.splice(i, 1);
       }
     },
@@ -369,11 +366,10 @@ export default ({
         getEditingLayer(this.inputs.layer)
       );
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
-      this.workflow = new Workflow({
+      this.tool = new Tool({
         type: 'addtablefeature',
         steps: [
-          new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+          new Step({ help: 'editing.new_feature', run: addTableFeature }),
           new OpenFormStep(),
         ],
       });
@@ -381,7 +377,7 @@ export default ({
       this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
+        const outputs = await this.tool.start({ context: this.context, inputs: this.inputs });
         const feature = outputs.features.at(-1);
         const newFeat = {};
         Object.entries(this.rows[0]).forEach(([ key, _ ]) => {
@@ -393,7 +389,7 @@ export default ({
         console.warn(e);
       }
 
-      this.workflow.stop();
+      this.tool.stop();
     },
 
     /**
@@ -402,14 +398,13 @@ export default ({
     async editFeature(uid) {
       const index   = this.features.findIndex(f => uid === f.getUid());
       const feature = this.features[index];
-  
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
-      this.workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
+
+      this.tool = new Tool({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
     
       this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
+        const outputs = await this.tool.start({ context: this.context, inputs: this.inputs });
         
         const feature = outputs.features.at(-1);
         Object
@@ -419,11 +414,11 @@ export default ({
           });
       } catch(e) {
         //Force roolback
-        this.context.session.rollback();
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).rollback();
         console.warn(e);
       }
 
-      this.workflow.stop();
+      this.tool.stop();
     },
 
     /**
@@ -448,8 +443,8 @@ export default ({
 
     /**
      * Get data features from server based on current pagination table information (page, page_size, ordering and search text)
+     * 
      * @returns {Promise<void>}
-     * @since 4.0.0
      */
     async getData() {
 
@@ -458,7 +453,7 @@ export default ({
       try {
         //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
         //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
-        this.features  = await this.context.session.getEditor().getFeatures({
+        this.features  = await GUI.getPlugin('editing').getToolBoxById(this.context.id).getFeatures({
           filter: {
             pagination: {
               page:      this.search.page,
@@ -468,9 +463,9 @@ export default ({
               }
           }
         });
-        this.count    = GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).getCount(); // get total count of features from server
+        this.count    = GUI.getPlugin('editing').getToolBoxById(this.context.id).getCount(); // get total count of features from server
         //set headers
-        this.headers  = (this.inputs.layer.state.editing.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
+        this.headers  = (GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).state.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
         //set up table rows from features
         this.rows = this.features.length > 0
           // ordered properties
@@ -481,8 +476,8 @@ export default ({
           )
             .map(f => this.headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
               [header]: getFeatureTableFieldValue({ layerId: this.inputs.layer.getId(), feature: f, property: header }),
-              '__g3w_uid':    f.getUid(), // private attribute unique value
-              '__g3w_locked': f.state.locked, //@since v4.0.0 private attribute locked value
+              '__g3w_uid':    f.getUid(),     // private attribute unique value
+              '__g3w_locked': f.state.locked, // private attribute locked value
             }), {}))
           // features already bind to parent feature
           : this.features;

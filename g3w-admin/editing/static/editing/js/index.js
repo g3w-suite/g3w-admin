@@ -15,16 +15,22 @@ const {
   getResolutionFromScale,
 }                         = g3w.utils;
 
-const { Server: serverErrorParser } = g3wsdk.core.errors.parsers;
-const { Geometry }                  = g3wsdk.core.geoutils;
-
+/**
+ * Editing plugin entry point.
+ *
+ * Owns the editing for all editable catalog layers, coordinates
+ * toolboxes and exposes the backwards-compatible plugin API consumed by
+ * other G3W-Suite plugins.
+ *
+ * The plugin is initialized only when the catalog contains at least one
+ * editable layer. Server configuration is loaded lazily during `#init()`.
+ */
 new (class extends Plugin {
 
   constructor() {
 
     super({
       name: 'editing',
-      layersStore: { queryable: false, catalog: false },
       fontClasses: [
         { name: 'measure',   className: "fas fa-ruler-combined" },
         { name: 'magnete',   className: "fas fa-magnet" },
@@ -33,55 +39,50 @@ new (class extends Plugin {
       i18n: `${initConfig.staticurl}editing/js/i18n/`,
     });
 
-    /**BACKOMP v3.x */
+    /** BACKOMP v3.x */
     this.service = this;
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * 
      * Global plugin state
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
+     *
+     * @listens mapcontrol:toggled
      */
     this.state = {
-      open:                false, // check if panel is open or not
-      toolboxes:           [],    // editable layers (vector)
-      toolboxselected:     null,
-      showselectlayers:    true,  // whether to show selected layers on editing panel
-      features: {},              // edited features (local)
-      lock_ids: {},              // locked features
-      loaded_ids: {},            // Ids of features loaded by current user
-      message:             null,
-      relations:           [],
-      layers_in_error:     false,
-      formComponents:      {},    // plugin components
-      constraints:         {      // editing contraints (layer, filter, ..) to get features
-        toolboxes: {},
-        showToolboxesExcluded: true
-      },
-      featuresOnClose:     {},    // layers fatures to result when close editing (KEY LAYERID, VALUES ARRAY OF FEATURE FID CHANGES OR ADDED)
-      uniqueFieldsValues:  {},    // store unique fields values for each layer
-      saveConfig:          {      // store configuration of how save/commit changes to server
-        mode: "default",          // default, autosave
-        modal: false,
-        messages: undefined,      // object to set custom message
+      open:                false, // Whether the editing panel is open.
+      toolboxes:           [],    // Toolboxes for editable layers.
+      toolboxselected:     null,  // Currently selected toolbox.
+      showselectlayers:    true,  // Whether layer selection is shown in the panel.
+      features: {},               // Local edited features, keyed by layer id.
+      lock_ids: {},               // Feature ids locked by the current session.
+      loaded_ids: {},             // Feature ids loaded by the current user.
+      message:             null,  // Current plugin message.
+      relations:           [],    // Relations involved in editing.
+      layers_in_error:     false, // Whether one or more layer configs failed.
+      formComponents:      {},    // Additional form components, keyed by layer id.
+      featuresOnClose:     {},    // Changed feature ids to expose when editing closes.
+      uniqueFieldsValues:  {},    // Unique field values, keyed by layer and field.
+      saveConfig:          {      // Commit behavior and callbacks configured by integrations.
+        mode: "default",          // "default" or "autosave".
+        modal: false,             // Whether commit confirmation is shown.
+        messages: undefined,      // Custom success and error messages.
         cb: {
-          done:  () => {},       // function executed after commit change done
-          error: () => {}        // function executed after commit changes error
+          done:  () => {},        // Called after a successful commit.
+          error: () => {},        // Called after a failed commit.
         }
       },
-      show_errors:    false,
-      editFeatureKey: undefined,
-      panel:          null, // editing panel
-      currentLayout:  ApplicationState.layout.__current,
+      show_errors:    false,      // Whether the layer configuration warning was shown.
+      panel:          null,       // Current editing panel instance.
+      currentLayout:  ApplicationState.layout.__current, // Layout before editing opened.
       unwatchLayout:  Vue.watch(
         () => ApplicationState.layout.__current,
         layoutName => this.state.currentLayout = layoutName !== this.getName() ? layoutName : this.state.currentLayout
       ),
+      /** @TODO Why the onMapControlToggled function is stored within the state? Is it used by any external plugin? */
+      // Stops the active map tool when a map control is toggled.
       onMapControlToggled: ({ target }) => {
         target.isToggled() && target.isClickMap() && this.state?.toolboxselected?.getActiveTool?.() && this.state.toolboxselected.stopActiveTool();
       },
-      stopChain: new Set(), //@since 4.0.7 store stop layerId chain to avoid circular relation dependencies
+      stopChain: new Set(), // Layer ids already stopped during relation traversal.
       // BACKOMP v3.x
       subscribers: this.___events,
     };
@@ -96,158 +97,265 @@ new (class extends Plugin {
 
   }
 
-  /**  */
+  /**
+   * Return the plugin service instance used by the plugin registry.
+   *
+   * @returns {Object} The editing plugin service.
+   */
   getService() {
     return this;
   }
 
-  /**BACKOMP v3.x */
-  subscribe(evt, cbk) {this.on(evt, cbk);}
+  /**
+   * BACKOMP v3.x
+   *
+   * Subscribe to an editing plugin event.
+   *
+   * @param {string} evt Event name.
+   * @param {Function} cbk Event handler.
+   *
+   * @returns {void}
+   */
+  subscribe(evt, cbk) { this.on(evt, cbk); }
+
+  /**
+   * Remove an editing plugin event subscription.
+   *
+   * @param {string} evt Event name.
+   * @param {Function} cbk Event handler to remove.
+   *
+   * @returns {void}
+   */
   unsubscribe(evt, cbk) { this.off(evt, cbk); }
+
+  /**
+   * Emit an editing plugin event.
+   *
+   * @param {*} e Event payload accepted by the inherited emitter.
+   *
+   * @returns {void}
+   */
   fireEvent(e) { this.emit(e); }
 
-  /**BACKOMP v3.x */
+  /**
+   * BACKOMP v3.x
+   *
+   * Return the methods exposed to integrations using the legacy plugin API.
+   *
+   * @returns {Object} Methods exposed to other plugins.
+   */
   getApi() {
-    /** ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1 */
+    GUI.showUserMessage({
+      type:      'warning',
+      message:   'GUI.getPlugin("editing").getApi() is deprecated since 4.x; please update your plugins/code as soon as possible!',
+      autoclose: false,
+    });
     return {
-      getSession:                       this.getSession.bind(this),
       getFeature:                       this.getFeature.bind(this),
       subscribe:                        this.subscribe.bind(this),
       unsubscribe:                      this.subscribe.bind(this),
       getToolBoxById:                   this.getToolBoxById.bind(this),
-      getEditingLayerById:              this.getLayerById.bind(this), //@since 4.1.0
+      getEditingLayerById:              this.getLayerById.bind(this),
       addNewFeature:                    createFeature,
       commitChanges:                    this.commit.bind(this),
-      setApplicationEditingConstraints: this.setApplicationEditingConstraints.bind(this),
       getMapService:                    () => GUI,
       updateLayerFeature:               () => {},
       deleteLayerFeature:               () => {},
       addLayerFeature:                  this.addLayerFeature.bind(this),
       hidePanel:                        this.hideEditingPanel.bind(this),
-      resetDefault:                     this.resetAPIDefault.bind(this),
+      resetDefault:                     this.resetDefault.bind(this),
       startEditing:                     this.startEditing.bind(this),
       stopEditing:                      this.stopEditing.bind(this),
       showPanel:                        this.showPanel.bind(this),
       setSaveConfig:                    this.setSaveConfig.bind(this),
       addFormComponents:                this.addFormComponents.bind(this),
-    
+
     }
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Load editable layer configurations and initialize their toolboxes.
+   *
+   * The method also registers layer and map context-menu actions, optionally
+   * creates the iframe editor, and marks the plugin ready after the GUI is
+   * available. Configuration failures are recorded in `layers_in_error` so
+   * the remaining editable layers can still be used.
+   *
+   * @returns {Promise<void>} Resolves when plugin initialization is complete.
+   *
+   * @listens setOpen
+   * @listens addActionsForLayers
+   * @listens layer:context-menu
+   * @listens map:context-menu
    */
   async #init() {
-
-    this.setHookLoading({ loading: true });
-
-    // get editable layers config from server (sorted by "index" to keep TOC order)
-    const LAYERS = await Promise.allSettled(
+    //Loop through editable layers and get config to create toolboxes
+    for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
         .filter(layer => layer.isEditable())
         .map(async layer => {
           let config = await XHR.get({ url: layer.getUrl('config') });
-          //@since 4.0.1 set fields based on layer editing style
+          // set fields based on layer editing style
           if (config?.vector?.editing?.layer_style) {
             config = await XHR.get({ url: layer.getUrl('config'), params: { style: config.vector.editing.layer_style } });
           }
           return ({ layer, config });
         })
-    );
+    )) {
+      if ('fulfilled' === status) {
+        const ToolBox                                  = (await import('./g3w-toolbox.js')).ToolBox;
+        const toolBox                                  = new ToolBox(value.layer, value.config);
+        this.state.toolboxes.push(toolBox);
+        this.state.lock_ids[toolBox.getId()]           = [];
+        this.state.loaded_ids[toolBox.getId()]         = [];
+        this.state.uniqueFieldsValues[toolBox.getId()] = {};
+        this.state.features[toolBox.getId()]           = toolBox.getCollection();
+      } else {
+        this.state.layers_in_error = true;
+        console.warn(reason);
+      }
+    };
 
-    if (LAYERS.length) {
-      const { ToolBox } = (await import('./g3w-toolbox.js'));
-      LAYERS.forEach(({ status, value, reason }) => {
-          if ('fulfilled' === status) {
-          const toolBox                                  = new ToolBox(value.layer, value.config);
-          this.state.toolboxes.push(toolBox);
-          this.state.lock_ids[toolBox.getId()]           = [];
-          this.state.loaded_ids[toolBox.getId()]         = [];
-          this.state.uniqueFieldsValues[toolBox.getId()] = {};
-          this.state.features[toolBox.getId()]           = toolBox._collection;
-        } else {
-          this.state.layers_in_error = true;
-          console.warn(reason);
-        }
-      });
-    }
-
-    // after add layers to layerstore
-    ApplicationState.layers['editing'].addLayers(this.getLayers());
-  
+    //wait util application GUI is ready to add sidebar item (left menu) and iframe editor
     await GUI.isReady();
 
-    // add sidebar item (left menu) 
-    if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getLayers().some(l => l.config.editing.visible)) {
-      this.state.editFeatureKey = GUI.onafter('editFeature', this.#onEditFeature.bind(this)),
+    // add sidebar item (left menu)
+    if (this.registerPlugin(this.config.gid) && false !== this.config.visible && this.getToolBoxes().some(({ state }) => state.visible)) {
       this.config.name          = this.config.name || "plugins.editing.editing_data";
-      this.addToolGroup({ position: 0, title: 'EDITING' });
-      this.addTools({
-        action:  this.showEditingPanel,
-        offline: false,
-        icon:    'pencil'
-      }, { position: 0, title: 'EDITING' });
+
+      const comp = this.createSideBarComponent({}, {
+        id:          'editing',
+        collapsible: false,
+        sidebarOptions: { position: 'themes' },
+        title:       this.config.name,
+        offline:     false,
+        icon:        'pencil',
+        iconColor:   'yellow',
+      });
+
+      comp.onbefore('setOpen', bool => bool && this.showEditingPanel());
     }
+
+    GUI.onafter('addActionsForLayers', (actions, layers) => {
+      for (const id in actions) {
+        const layer = this.getLayerById(id);
+        if (layer) {
+          actions[id].push({
+            id:    'editing',
+            class: "fas fa-pencil-alt",
+            hint:  'Editing',
+            state:  Vue.observable({ disabled: this.getToolBoxById(id).state.inediting }), //disable when in editing
+            init() {
+              this.unwatch = Vue.watch(() => GUI.getPlugin('editing').getToolBoxById(id).state.inediting, bool => this.state.disabled = bool );
+            },
+            clear() {
+              this.unwatch && this.unwatch(); // remove action when destroy
+            },
+            cbk: (layer, feature) => GUI.getPlugin('editing').editFeature({ layer, feature }),
+          });
+        }
+      }
+
+    })
+
+    /** Add the layer editing action to the layer context menu. */
+    GUI.on('layer:context-menu', menu => {
+      menu.items.push({
+        icon: 'fas fa-pencil-alt',
+        label: _('Edit Layer'),
+        cbk: () => {
+          this.showPanel({ toolboxes: [menu.layer.id] });
+          this.startEditing(menu.layer.id);
+          //dispatch escape key event to close any open modals or panels
+          document.dispatchEvent(new KeyboardEvent('keyup', {
+            key: 'Escape',
+            code: 'Escape',
+            keyCode: 27,
+            which: 27,
+            bubbles: true, // Permette all'evento di risalire il DOM
+            cancelable: true
+          }));
+        },
+        position: 10,
+      });
+    });
+
+    /** Add layer editing actions to the map context menu. */
+    GUI.on('map:context-menu', async menu => {
+      // skip if editing panel is open
+      if (this.state.panel) {
+        return
+      }
+      menu.items.push({
+        icon: 'fas fa-pencil-alt',
+        label: _('Edit Layer'),
+        position: 0,
+        children:
+          Object
+            .entries(this.getEditableLayers()).filter(([_, layer]) => 'vector' === layer.getType())
+            .map(([id, layer]) => ({
+              label: layer.getName(),
+              cbk: async () => {
+                let filter;
+                if (2 === menu.map_coords.length) {
+                  try {
+                    const response = await GUI.getData('query:coordinates', {
+                      inputs: {
+                        coordinates:           menu.map_coords,
+                        feature_count:         ApplicationState.project.state.feature_count || 5,
+                        query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
+                        layerIds:              [layer.getId()], //get layerId of editibale layers
+                      },
+                      outputs: false // no content is show
+                    });
+                    if (response?.result && response?.data?.length && response?.data[0]?.features?.length) {
+                      filter = { fids: response?.data[0]?.features.map(f => f.getId()).join(',') }
+                    }
+                  } catch(e) {
+                    console.warn('Error running spatial query: ', e);
+                  }
+                }
+                this.showPanel({ toolboxes: [id] });
+                this.startEditing(id, { filter });
+                //dispatch escape key event to close any open modals or panels
+                document.dispatchEvent(new KeyboardEvent('keyup', {
+                  key: 'Escape',
+                  code: 'Escape',
+                  keyCode: 27,
+                  which: 27,
+                  bubbles: true, // Permette all'evento di risalire il DOM
+                  cancelable: true
+                }));
+              }
+            })),
+      });
+    });
+
 
     if (ApplicationState.iframe) {
       new (await import('./g3w-iframe.js')).IframeEditor(this);
     }
 
-    this.setHookLoading({ loading: false });
     this.setReady(true);
   }
 
- /**
-  * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.8
-  * 
-  * Get session
-  *
-  * @param layerId
-  *
-  * @returns {*}
-  * 
-  * @since g3w-client-plugin-editing@v3.8.0
-  */
-  getSession({ layerId } = {}) {
-    return this.getSessionById(layerId);
-  }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * Get layer session by id (layer id is the same of session)
+   * [API Method] Return the feature currently displayed by the active editing tool.
    *
-   * @param id
+   * @param {Object} [options]
+   * @param {string} options.layerId Layer/toolbox identifier.
    *
-   * @returns {*}
-   *
-   * @since g3w-client-plugin-editing@v3.7.0
-   */
-  getSessionById(id) {
-    return this.getToolBoxById(id).getSession();
-  }
-
-  /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.8
-   *
-   * @param layerId
-   *
-   * @returns Feature in editing
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {*} The feature currently being edited.
    */
   getFeature({ layerId } = {}) {
     return this.getToolBoxById(layerId).getActiveTool().getLayer().features[0];
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * Undo method
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Undo the last change in the selected toolbox and its relations.
+   *
+   * @returns {void}
    */
   undo() {
     const id           = this.state.toolboxselected.getId();
@@ -255,17 +363,15 @@ new (class extends Plugin {
     const sessionItems = toolBox.getLastHistoryState().items;
     //update unique values fields after undo
     this.undoRedoLayerUniqueFieldValues({ layerId: id, sessionItems, action: 'undo' });
-    const relationSessionItems = toolBox.undo();
+    const relationItems = toolBox.undo();
     //update unique values of relations after undo
-    this.undoRedoRelationUniqueFieldValues({ relationSessionItems, action: 'undo' });
+    this.undoRedoRelationUniqueFieldValues({ relationItems, action: 'undo' });
     // undo relations
-    Object.entries(relationSessionItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).undo(items); });
+    Object.entries(relationItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).undo(items); });
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {void}
    */
   redo() {
     const id           = this.state.toolboxselected.getId();
@@ -273,53 +379,56 @@ new (class extends Plugin {
     const sessionItems = toolBox.getLastHistoryState().items;
     // update unique values fields after redo
     this.undoRedoLayerUniqueFieldValues({ sessionItems, layerId: toolBox.getId(), action: 'redo' });
-    const relationSessionItems = toolBox.redo();
+    const relationItems = toolBox.redo();
     // update unique values of relations after redo
-    this.undoRedoRelationUniqueFieldValues({ relationSessionItems, action: 'redo' });
+    this.undoRedoRelationUniqueFieldValues({ relationItems, action: 'redo' });
     // redo relations
-    Object.entries(relationSessionItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).redo(items); });
+    Object.entries(relationItems).forEach(([toolboxId, items]) => { this.getToolBoxById(toolboxId).redo(items); });
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @param id
+   * Get the editing layer wrapper for a toolbox.
    *
-   * @returns {*}
+   * @param {string} id Layer/toolbox identifier.
    * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {*} Editing layer wrapper.
+   * The wrapper exposes the layer editing source and editor.
    */
   getEditingLayer(id) {
     return getEditingLayer(this.getToolBoxById(id).getLayer());
   }
 
   /**
-   * @since 4.1.0
+   * Get the fields configured for a layer editing form.
+   *
+   * @param {string} layerId Layer identifier.
+   * @param {boolean} [editable=false] Return only editable fields.
+   * 
+   * @returns {Array<Object>} Editing field definitions.
+   * The metadata is read from the layer editing configuration.
    */
   getEditingFields(layerId, editable = false) {
-    const layer = this.getLayerById(layerId);
-    return (layer.state.editing.fields || []).filter(f => editable ? f.editable : true);
+    return (this.getToolBoxById(layerId)?.state.fields ?? []).filter(f => editable ? f.editable : true);
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @param toolbox
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Register a toolbox in the plugin state.
+   *
+   * @param {Object} toolbox Toolbox to register.
    */
   addToolBox(toolbox) {
     this.state.toolboxes.push(toolbox);
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * Reset default values
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Reset commit configuration and re-enable map controls.
+   * Restores the default save mode, callbacks, messages, and modal behavior.
+   *
+   * @returns {void}
    */
   resetDefault() {
+    //reset deafult to all toolboxes
+    this.getToolBoxes().forEach(tb => tb.resetDefault());
     this.state.saveConfig = {
       mode:     "default", // default, autosave
       modal:    false,
@@ -333,118 +442,85 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
+   * Return the catalog layers managed by the editing plugin.
    *
-   * Reset default toolbox state modified by other plugin
-   *
-   * @since g3w-client-plugin-editing@v3.7.2
-   */
-  resetAPIDefault({
-    plugin    = true,
-    toolboxes = true,
-  } = {}) {
-    if (toolboxes) { this.getToolBoxes().forEach(tb => tb.resetDefault()) }
-    if (plugin) { this.resetDefault() }
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @returns { Array }
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Array<Object>} Editable catalog layers.
    */
   getLayers() {
     return this.state.toolboxes.map(tb => tb.getLayer());
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @param { string } id
+   * Return an editing layer by its identifier.
    *
-   * @returns {*} editing layer by id
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @param {string} id Layer identifier.
+   *
+   * @returns {*} Editing layer, or undefined when it is not registered.
    */
   getLayerById(id) {
     return this.getToolBoxById(id)?.getLayer();
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @param { string } id
+   * Check whether at least one layer has an active editing session.
    *
-   * @returns {*}
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {boolean} True when a layer is being edited.
+   */
+  hasLayersInEditing() {
+    return this.state.toolboxes.some(tb => tb.inEditing());
+  }
+
+  /**
+   * Check whether a layer has an active editing session.
+   *
+   * @param {string} id Layer identifier.
+   *
+   * @returns {boolean|undefined} Editing state, or undefined for an unknown layer.
+   */
+  isLayerInEditing(id) {
+    return this.getToolBoxById(id)?.inEditing();
+  }
+
+  /**
+   * Find a toolbox by layer identifier.
+   *
+   * @param {string} id Layer/toolbox identifier.
+   *
+   * @returns {*} Toolbox, or undefined when it is not registered.
    */
   getToolBoxById(id) {
     return this.state.toolboxes.find(tb => id === tb.getId());
   }
 
   /**
-   * Used by the following plugins: "sispi-worksite"
-   * 
-   * Method to apply filter editing contsraint to toolbox editing
-   * Apply filter editing contsraint to toolbox editing
+   * Return all registered editing toolboxes.
    *
-   * @param constraints
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  setApplicationEditingConstraints(constraints = { showToolboxesExcluded: true, toolboxes : {} }) {
-    this.state.constraints = {
-      ...this.state.constraints,
-      ...constraints
-    };
-
-    const { toolboxes, showToolboxesExcluded } = constraints;
-    const toolboxIds = Object.keys(toolboxes);
-    if (false === showToolboxesExcluded) {
-      this.state.toolboxes.forEach(({ state: { show, id} }) => show = toolboxIds.includes(id));
-    }
-    toolboxIds.forEach(id => this.getToolBoxById(id).setEditingConstraints(toolboxes[id]))
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @returns { Array }
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Array<Object>} Registered toolboxes.
    */
   getToolBoxes() {
     return this.state.toolboxes;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @returns {*|{}}
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Return editable layers keyed by layer identifier.
+   *
+   * @returns {Object<string, Object>} Editable layers by id.
    */
   getEditableLayers() {
-    return this.state.toolboxes.reduce((o,tb) => Object.assign(o, { [tb.getId()]: tb.getLayer() }), {}) ;
+    return this.state.toolboxes.reduce((o,tb) => Object.assign(o, { [tb.getId()]: tb.getLayer() }), {});
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * Stop editing
+   * Stop all editing, committing pending changes first.
    *
-   * @returns { Promise<unknown> }
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Promise<void>} Resolves when all toolboxes have stopped.
    */
   async stop() {
     const commitpromises = this.state.toolboxes
       .filter(t => t.hasPendingCommits())
-      .map( toolbox => this.commit({ toolbox, modal : true }))
+      .map( toolbox => this.commit({ toolbox, modal : true }));
     try {
-      await Promise.allSettled(commitpromises);    
+      await Promise.allSettled(commitpromises);
     } catch(e) {
       console.warn(e);
     }
@@ -452,7 +528,7 @@ new (class extends Plugin {
     this.state.toolboxes.forEach(t => t.stop());
 
     this.state.toolboxselected     = null;
-    this.state.message             =  null;
+    this.state.message             = null;
 
     //reset unique values
     Object.keys(this.state.uniqueFieldsValues).forEach(id => this.state.uniqueFieldsValues[id] = {});
@@ -461,11 +537,9 @@ new (class extends Plugin {
   }
 
  /**
-  * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-  * 
-  * Function called very single change saved temporary
-  * 
-  * @since g3w-client-plugin-editing@v3.8.0
+  * Commit a temporary change when autosave mode is enabled.
+  *
+  * @returns {Promise<*>|undefined} The commit promise in autosave mode.
   */
   async saveChange() {
     if ('autosave' === this.state.saveConfig.mode) {
@@ -474,19 +548,22 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * Commit and save changes on server persistently
+   * Commit pending changes to the server or local offline storage.
    *
-   * @param { Object } commit
-   * @param commit.toolbox
-   * @param commit.commitItems
-   * @param commit.messages
-   * @param commit.done
-   * @param { boolean } commit.modal
-   * @param { boolean } commit.close
+   * @param {Object} [commit]
+   * @param {Object} [commit.toolbox] Toolbox to save. Defaults to the selected toolbox.
+   * @param {Object} [commit.commitItems] Explicit change set to save.
+   * @param {boolean} [commit.modal=true] Whether to show the confirmation dialog.
+   * @param {boolean} [commit.close=false] Whether the commit is part of closing editing.
+   *
+   * @returns {Promise<*>} Resolves with the saved toolbox or rejects after an error.
+   *
+   * The operation can display a confirmation dialog, save online through the
+   * toolbox, or merge changes into local storage while the application is offline.
    * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @fires commit:done
+   * @fires commit
+   * @fires commit:error
    */
   async commit({
     toolbox,
@@ -494,19 +571,19 @@ new (class extends Plugin {
     modal = true,
     close = false,
   } = {}) {
-    const messages      = Object.assign({ success: { message: "plugins.editing.messages.saved", autoclose: true }, error: {} }, (this.state.saveConfig.messages || {}));
+    const messages      = Object.assign({ success: { message: "plugins.editing.saved", autoclose: true }, error: {} }, (this.state.saveConfig.messages || {}));
     toolbox             = toolbox || this.state.toolboxselected;
     let layer           = toolbox.getLayer();
     const items         = commitItems;
     commitItems         = commitItems || toolbox.getCommitItems();
     const online        = ApplicationState.online;
     const has_changes   = [
-      ...(commitItems.add || []),
+      ...(commitItems.add    || []),
       ...(commitItems.delete || []),
       ...(commitItems.update || []),
       ...Object.keys(commitItems.relations || {})
     ].length;
-    let workflow, dialog, serverError;
+    let tool, dialog, serverError;
 
     // skip when there is nothing to save
     if (!has_changes) {
@@ -517,9 +594,8 @@ new (class extends Plugin {
     try {
 
       // show commit modal window
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 */
       if (modal) {
-        workflow = new (await import('./g3w-workflow.js')).Workflow({
+        tool = new (await import('./g3w-tool.js')).Tool({
           type: 'commitfeatures',
           steps: [
             // confirm step
@@ -528,7 +604,7 @@ new (class extends Plugin {
                 const promise = new Promise(async (resolve, reject) => {
                   const dialog = GUI.dialog({
                     message: inputs.message,
-                    title:   `${_("plugins.editing.messages.commit_feature")}: "${inputs.layer.getName()}"`,
+                    title:   `${_("plugins.editing.commit_feature")}: "${inputs.layer.getName()}"`,
                     buttons: {
                       SAVE:   { className: "btn-success", callback() { resolve(inputs); }, label: _("save"),   },
                       CANCEL: { className: "btn-danger",  callback() { reject({cancel : true });        }, label: _(inputs.close ? "exitnosave" : "annul") },
@@ -551,7 +627,7 @@ new (class extends Plugin {
         });
         //need to get to confirm or cancel choose from modal
         try {
-          await workflow.start({
+          await tool.start({
             inputs: {
               close,
               layer,
@@ -562,8 +638,8 @@ new (class extends Plugin {
                 }})).$mount().$el,
             }
           })
-          
-          await workflow.stop();
+
+          await tool.stop();
         } catch(e) {
           console.warn(e);
           // In the case of pressed cancel button to commit features modal
@@ -577,7 +653,7 @@ new (class extends Plugin {
         //in case of online application
         if (online) {
           dialog = GUI.dialog({
-            message: /* html */`<h4 class="text-center"><i style="margin-right: 5px;" class="${GUI.getFontClass('spinner')}"></i>${_('plugins.editing.messages.saving')}</h4>`,
+            message: /* html */`<h4 class="text-center"><i style="margin-right: 5px;" class="${GUI.getFontClass('spinner')}"></i>${_('plugins.editing.saving')}</h4>`,
             closeButton: false
           });
         }
@@ -588,7 +664,6 @@ new (class extends Plugin {
       const changes = !online && JSON.parse(window.localStorage.getItem('EDITING_CHANGES') || null);
 
       // handle offline changes
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 */
       Object.keys(changes || {})
         .forEach(layerId => {
           const currLayerId = Object.keys(data)[0];
@@ -628,7 +703,7 @@ new (class extends Plugin {
             data = changes;
           }
           if (!current && !has_relations) {
-            data[layerId] = changes[layerId]
+            data[layerId] = changes[layerId];
           }
         });
 
@@ -636,8 +711,8 @@ new (class extends Plugin {
 
         GUI.showUserMessage({
           type:      'success',
-          message:   "plugins.editing.messages.saved_local",
-          autoclose: true
+          message:   "plugins.editing.saved_local",
+          autoclose: true,
         });
         // clear history because it saved on browser
         toolbox.clearHistory();
@@ -650,7 +725,7 @@ new (class extends Plugin {
         //check if is online and there are some commit items
         const online2 = online && commit;
 
-        const result = online2 && response.result;
+        const result  = online2 && response.result;
 
         if (result && messages && messages.success) {
           // hide saving dialog
@@ -661,9 +736,11 @@ new (class extends Plugin {
           //Show save user message
           GUI.showUserMessage({
             type:     'success',
-            message:   messages.success.message || "plugins.editing.messages.saved",
+            message:   messages.success.message || "plugins.editing.saved",
             duration:  2000,
-            autoclose: undefined === messages.success.autoclose ? true : messages.success.autoclose,
+            autoclose: undefined === messages.success.autoclose || messages.success.autoclose,
+            // if autoclose is true, the message should not be closable
+            closable:  !(undefined === messages.success.autoclose || messages.success.autoclose),
           });
         }
 
@@ -674,7 +751,6 @@ new (class extends Plugin {
 
         if (online) {
           this.state.saveConfig.cb.done(toolbox);
-          /** @since 4.1.0 */
           this.emit('commit:done', toolbox);
         }
 
@@ -689,7 +765,7 @@ new (class extends Plugin {
           ].forEach(fid => this.state.featuresOnClose[layerId].add(fid));
         }
 
-        // @since 3.7.2 - click on save all disk icon (editing form relation)
+        // click on save all disk icon (editing form relation)
         if (result) { this.emit('commit', response.response) }
 
         // the result is false. It was done a commit, but an error occurs
@@ -715,13 +791,35 @@ new (class extends Plugin {
       //@TODO check if it is usefull
       if (modal) {
         try { await this.#rollback(commitItems.relations); }
-        catch (e) { console.warn(e); }
+        catch(e) { console.warn(e); }
       }
+
+      const serverErrorParser = (opts = {}) => {
+        const _traverse = (err, message = 'Error in server saving') => {
+          try {
+            const entries   = Object.entries(err);
+            const entry     = entries.find(([key, _]) => 'fields' === key);
+            const [, value] = (entry || entries[0]);
+            if (!entry && !Array.isArray(value) && 'object' === typeof value) { return _traverse(value, message) }
+            if (entry && 'string' === typeof value)                           { message = `[${ entries.find(([key]) => 'fields' !== key)[0] }] ${value}`; }
+            if (entry && 'string' !== typeof value)                           { message = Object.entries(value).reduce((text, [field, error]) => `${text}${field} ${ Array.isArray(error) ? error[0] : error }\n`, ''); }
+            if (entry)                                                        { return message.replace(/\:|\./g, ''); }
+          } catch(e) { console.warn(e); }
+        }
+        return ({
+          parse({ type = 'responseJSON' } = {}) {
+            if ('responseJSON' === type && opts?.error?.responseJSON?.error?.message) { return opts.error.responseJSON.error.message; }
+            if ('responseJSON' === type && opts?.error?.errors)                       { return _traverse(opts.error.errors); }
+            if ('String' === type && 'string' === typeof opts.error)                  { return opts.error; }
+            if ('String' === type)                                                    { return _traverse(opts.error); }
+            return _('Error in server saving');
+        }})
+      };
 
       // parse server error
       if (serverError || modal) {
         const message = online
-          ? (messages.error.message || (new serverErrorParser({ error: e.errors || e || {}})).parse({ type: 'String' }))
+          ? (messages.error.message || serverErrorParser({ error: e.errors || e || {}})?.parse?.({ type: 'String' }))
           : e;
 
         GUI.showUserMessage({
@@ -732,7 +830,6 @@ new (class extends Plugin {
         });
 
         this.state.saveConfig.cb.error(toolbox, message);
-        /** @since 4.1.0 */
         this.emit('commit:error', toolbox, message);
       }
 
@@ -741,20 +838,20 @@ new (class extends Plugin {
     return toolbox;
   }
 
- /**
-  * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-  * 
-  * @param { Object } opts
-  * @param { string } opts.layerId
-  * @param { Array }  opts.sessionItems
-  * @param opts.action
-  * 
-  * @since g3w-client-plugin-editing@v3.8.0
-  */
+  /**
+   * Update cached unique field values after undoing or redoing layer changes.
+   *
+   * @param {Object} options
+   * @param {string} options.layerId Layer identifier.
+   * @param {Array<Object|Array>} [options.sessionItems=[]] History entries.
+   * @param {'undo'|'redo'} options.action Operation being applied.
+   *
+   * @returns {void}
+   */
   undoRedoLayerUniqueFieldValues({
     layerId,
-    sessionItems = [],
     action,
+    sessionItems = [],
   }) {
 
     // if not set
@@ -793,13 +890,13 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @param { Object } opts
-   * @param opts.relationSessionItems
-   * @param opts.action
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Recursively update cached unique values for related layer.
+   *
+   * @param {Object} options
+   * @param {Object} [options.relationSessionItems={}] Relation history entries.
+   * @param {'undo'|'redo'} options.action Operation being applied.
+   *
+   * @returns {void}
    */
   undoRedoRelationUniqueFieldValues({
     relationSessionItems = {},
@@ -823,36 +920,28 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
+   * [API Method] Stop editing on a layer.
    *
-   * Stop editing on layerId
+   * @param {string} layerId Layer identifier.
+   * @param {Object} [options] Options forwarded to the toolbox.
    *
-   * @param layerId
-   * @param options
-   *
-   * @returns { Promise<unknown> }
-   *
-   * @since g3w-client-plugin-editing@v3.7.2
+   * @returns {Promise<*>} Resolves when the layer has stopped.
    */
   async stopEditing(layerId, options = {}) {
     return this.getToolBoxById(layerId).stop(options);
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
+   * [API Method] Start editing on a layer.
    *
-   * Start editing API
+   * @param {string} layerId Layer identifier.
+   * @param {Object} [options] Options forwarded to the toolbox .
+   * @param {boolean} [options.selected=true] Select the toolbox before editing.
+   * @param {boolean} [options.disablemapcontrols=false] Disable map controls.
+   * @param {boolean} [options.showselectlayers=true] Show layer selection.
+   * @param {string} [options.title] Panel title.
    *
-   * @param layerId
-   * @param { Object } options
-   * @param { boolean } [options.selected=true]
-   * @param { boolean } [options.disablemapcontrols=false]
-   * @param { boolean } [options.showselectlayers=true]
-   * @param { string }  [options.title]
-   * 
-   * @returns { Promise<unknown> } info about start editing has features loaded
-   *
-   * @since g3w-client-plugin-editing@v3.7.2
+   * @returns {Promise<Object>} Toolbox and loaded data when data is returned.
    */
   async startEditing(layerId, options = {}) {
     const toolbox = this.getToolBoxById(layerId);
@@ -863,15 +952,14 @@ new (class extends Plugin {
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
+   * [API Method] Add a feature to a layer and commit it.
    *
-   * Add Feature
+   * @param {Object} opts
+   * @param {string} opts.layerId Layer identifier.
+   * @param {Object} opts.feature Feature to add.
    *
-   * @param { Object } opts
-   * @param opts.layerId
-   * @param opts.feature
-   *
-   * @since g3w-client-plugin-editing@v3.7.2
+   * @returns {Promise<void>} Resolves after the feature is committed.
+   * Rejects when the layer, form, or commit operation fails.
    */
   addLayerFeature({
     layerId,
@@ -882,13 +970,11 @@ new (class extends Plugin {
       return Promise.reject();
     }
     return new Promise(async (resolve, reject) => {
-      const layer = this.getLayerById(layerId);
-      // get session
-      const session = this.getSessionById(layerId);
+      const layer     = this.getLayerById(layerId);
       // exclude an eventual attribute pk (primary key) not editable (mean autoincrement)
       const attributes = this.getEditingFields(layerId).filter(attr => !(attr.pk && !attr.editable));
-      // start session (get no features but set layer in editing)
-      session.start({
+      // start (get no features but set layer in editing)
+      GUI.getPlugin('editing').getToolBoxById(layerId).startSession({
         filter: {
           nofeatures:       true,                    // no feature
           nofeatures_field: attributes[0].name // get the first field in editing form
@@ -896,9 +982,8 @@ new (class extends Plugin {
         editing: true,
       })
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/easyaddfeatureworkflow.js@v3.7.1 */
-      // create workflow
-      const workflow = new (await import('./g3w-workflow.js')).Workflow({
+      // create tool
+      const tool = new (await import('./g3w-tool.js')).Tool({
         type: 'addfeature',
         steps: [
           new (await import('./actions/open-form.js')).OpenFormStep({
@@ -910,8 +995,8 @@ new (class extends Plugin {
       });
 
       const stop = cb => {
-        workflow.stop();
-        session.stop();
+        tool.stop();
+        GUI.getPlugin('editing').getToolBoxById(layerId).stopSession();
         return cb();
       };
 
@@ -929,16 +1014,16 @@ new (class extends Plugin {
           //set new
           feature.setTemporaryId();
 
-          // add to session and source as new feature
-          session.pushAdd(layerId, feature, false);
+          // add to source as new feature
+          GUI.getPlugin('editing').getToolBoxById(layerId).pushAdd(layerId, feature, false);
           getEditingLayer(layer).getSource().addFeature(feature);
-          //start workflow
-          await workflow.start({
+          //start tool
+          await tool.start({
             inputs:  { layer, features: [feature] },
-            context: { session },
+            context: { id: layerId },
           });
 
-          session.save();
+          GUI.getPlugin('editing').getToolBoxById(layerId).saveChanges();
 
           try {
             await this.commit({ modal: false, toolbox: this.getToolBoxById(layerId) });
@@ -959,38 +1044,40 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
-   * @param { Object } save
-   * @param save.mode     - default or autosave
-   * @param save.cb       - object contain done/error two functions
-   * @param save.modal    - Boolean true or false to show to ask
-   * @param save.messages - object success or error
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Configure how changes are committed.
+   *
+   * @param {Object} [save]
+   * @param {string} [save.mode=default] Commit mode: `default` or `autosave`.
+   * @param {Object} [save.cb] `done` and `error` callbacks.
+   * @param {boolean} [save.modal=false] Whether to show commit confirmation.
+   * @param {Object} [save.messages] Custom success and error messages.
+   *
+   * @returns {void}
    */
   setSaveConfig({ mode = 'default', cb = {}, modal = false, messages } = {}) {
-    Object.assign(this.state.saveConfig, { mode, modal, messages, cb: { ...this.state.saveConfig.cb, ...cb }});
+    Object.assign(this.state.saveConfig, { mode, modal, messages, cb: { ...this.state.saveConfig.cb, ...cb } });
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8 
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Add custom components to a layer editing form.
+   *
+   * @param {Object} options
+   * @param {string} options.layerId Layer identifier.
+   * @param {Array<Object>} [options.components=[]] Components to register.
+   *
+   * @returns {void}
    */
   addFormComponents({ layerId, components = [] } = {}) {
     this.state.formComponents[layerId] = (this.state.formComponents[layerId] || []).concat(components);
   }
 
   /**
-   * [API Method] ORIGINAL SOURCE: g3w-client-plugin-editing/api/index.js@v3.7.1
+   * [API Method] Show the editing panel.
    *
-   * Show editing panel
+   * @param {Object} [options] Panel options.
+   * @param {Array<string>} [options.toolboxes] Toolbox ids to display.
    *
-   * @param options
-   * @param options.toolboxes
-   *
-   * @since g3w-client-plugin-editing@v3.7.2
+   * @returns {Promise<*>} The displayed panel.
    */
   async showPanel(options = {}) {
     if (Array.isArray(options.toolboxes)) {
@@ -1000,14 +1087,18 @@ new (class extends Plugin {
   }
 
   /**
-   * Show editing panel toolbars
-   * 
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3w-editing-components/editing.js.js@v3.6
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/g3w-editing-components/panel.js.js@v3.6
+   * Create and display the editing panel.
+   *
+   * @param {Object} [opts] Panel and component options.
+   * @param {string} [opts.title] Panel title or translation key.
+   * @param {string} [opts.resourcesUrl] URL for editing resources.
+   * @param {boolean} [opts.showcommitbar=true] Whether to display the commit bar.
+   *
+   * @returns {Promise<*>} The displayed panel, or the existing panel state.
    */
   async showEditingPanel(opts = {}) {
     //need to filter visible
-    if (this.getLayers().filter(l => l.config.editing.visible).length > 0) {
+    if (this.getToolBoxes().filter(({ state }) => state.visible).length > 0) {
       this.state.panel = new Panel({
         ...opts,
         id:            "editing-panel",
@@ -1022,49 +1113,64 @@ new (class extends Plugin {
       GUI.showPanel(this.state.panel);
 
       if (!this.state.show_errors && this.state.layers_in_error) {
-        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.errors.some_layers', closable: true });
+        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.some_layers', closable: true });
         this.state.show_errors = true;
       }
     } else {
-      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.errors.no_layers' })
+      GUI.showUserMessage({ type: 'alert', message: 'plugins.editing.no_layers' });
     }
     return this.state.panel;
   }
 
+  /**
+   * Close the editing panel when it is open.
+   *
+   * @returns {void}
+   */
   hideEditingPanel() {
-    if (null !== this.state.panel) {
-      GUI.closePanel();
-      this.state.panel = null;
-    }
+    if (null === this.state.panel) { return; }
+    GUI.closePanel();
+    this.state.panel = null;
   }
 
   /**
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Set the application layout to the editing plugin layout.
+   *
+   * @returns {void}
    */
   setCurrentLayout() {
     ApplicationState.layout.__current = this.getName() ?? 'app';
   }
 
   /**
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Restore the layout that was active before editing.
+   *
+   * @returns {void}
    */
   resetCurrentLayout() {
     ApplicationState.layout.__current = this.state.currentLayout ?? 'app';
   }
 
   /**
-   * @since g3w-client-plugin-editing@v3.8.1
+   * Return the toolbox with an active editing tool.
+   *
+   * @returns {*} Active toolbox, or undefined when no tool is active.
    */
   getActiveTool() {
     return this.getToolBoxes().filter(t => t.getActiveTool())[0];
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/layers/layer.js.js@v4.0.0
-   * 
-   * Retrieve features from server (editing mode)
-   * 
-   * @since g3w-client-plugin-editing@v4.1.0
+   * Retrieve editable features from the server.
+   *
+   * @param {Object} layer Catalog layer to query.
+   * @param {Object} [options] Editing options and filters. Supported filters
+   * include `bbox`, `fid`, `fids`, `field`, and `nofeatures`.
+   * @param {Object} [params] Additional request parameters.
+   *
+   * @returns {Promise<Object|undefined>} Matching count, locks, and parsed
+   * features; undefined when the server response is invalid. Rejects when the
+   * request fails.
    */
   async fetchVectorData(layer, options = {}, params = {}) {
     try {
@@ -1080,8 +1186,8 @@ new (class extends Plugin {
         });
       } else if (undefined !== options.filter.bbox) { // bbox filter
         response = await XHR.post({
-          url:  layer.getUrl('editing'),
-          data: JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getToken() }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, in_bbox: options.filter.bbox.join(','), filtertoken: layer.getToken() }),
           contentType: 'application/json',
         })
       } else if (undefined !== options.filter.fid) { // fid filter
@@ -1098,14 +1204,14 @@ new (class extends Plugin {
         })
       } else if (undefined !== options.filter.fids) {
         response = await XHR.post({
-          url:    layer.getUrl('editing'),
-          data:   JSON.stringify({ ...params, ...options.filter, }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, ...options.filter, }),
           contentType: 'application/json',
         })
       } else if (undefined !== options.filter.nofeatures) {
         response = await XHR.post({
-          url:  layer.getUrl('editing'),
-          data: JSON.stringify({ ...params, field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__` }),
+          url:         layer.getUrl('editing'),
+          data:        JSON.stringify({ ...params, field: `${options.filter.nofeatures_field || 'id'}|eq|__G3W__NO_FEATURES__` }),
           contentType: 'application/json',
         })
       }
@@ -1115,7 +1221,7 @@ new (class extends Plugin {
         return;
       }
 
-      const lockIds  = response.featurelocks.map(lk => lk.featureid);
+      const lockIds  = (response.featurelocks || []).map(lk => lk.featureid);
 
       let features = [];
 
@@ -1136,7 +1242,7 @@ new (class extends Plugin {
             return feature;
           });
         }
-      } catch (e) {
+      } catch(e) {
         console.warn(e);
         features = [];
       }
@@ -1147,7 +1253,7 @@ new (class extends Plugin {
         featurelocks: response.featurelocks,
         features:     features.filter(f => lockIds.includes(`${f.getId()}`)).map(feature => new Feature({ feature })),
       };
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
     }
 
@@ -1155,11 +1261,24 @@ new (class extends Plugin {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin/toolboxes/toolboxesfactory.js@v3.7.1
+   * Open the selected query result in the editing form.
    *
-   * Register query result action: edit selected feature from query results
+   * The map is adjusted to the layer editing scale when configured. Locked
+   * features are rejected with a user-facing warning.
+   *
+   * @param {Object} options Query result context.
+   * @param {Object} options.layer Catalog layer containing the feature.
+   * @param {Object} options.feature Query result feature.
+   *
+   * @returns {Promise<void>} Resolves after the editing form is opened.
+   * Features locked by another user are reported to the user and are not opened.
+   * 
+   * @listens closeeditingpanel
+   * @fires Tool#settoolsoftool
+   * @fires Tool#active
+   * @fires Tool#deactive
    */
-  async #onEditFeature({ layer, feature } = {}) {
+  async editFeature({ layer, feature } = {}) {
 
     const fid = feature.attributes[G3W_FID] || feature.id;
 
@@ -1177,9 +1296,8 @@ new (class extends Plugin {
     toolBox.setSelected(true);
 
     const { scale } = toolBox.getEditingConstraints(); // get scale constraint from setting layer
-
-    let w;
-
+    // store open form tool to stop it when user close editing panel
+    let t;
     // start toolbox (filtered by feature id)
     try {
       // check map scale after zoom to feature
@@ -1201,14 +1319,14 @@ new (class extends Plugin {
       const is_vector = 'vector' === _layer.getType();
 
       // get feature from an Editing layer source (with styles)
-      const features = is_vector ? getEditingLayer(_layer).getSource().getFeatures() : getEditingLayer(_layer).getEditor().readEditingFeatures();
+      const features = is_vector ? getEditingLayer(_layer).getSource().getFeatures() : this.getToolBoxById(_layer.getId()).readEditingFeatures();
       const feature  = features.find(f => fid == f.getId());
 
-      // no feature is get from server (locked feature) 
-      if (!feature) { 
+      // no feature is get from server (locked feature)
+      if (!feature) {
         this.stop();
         this.hideEditingPanel();
-        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.messages.featureslockbyotheruser' });
+        GUI.showUserMessage({ type: 'warning', message: 'plugins.editing.featureslockbyotheruser' });
         return;
       }
 
@@ -1227,32 +1345,38 @@ new (class extends Plugin {
       toolBox.setSelected(true);
 
       this.state.toolboxselected = toolBox;
-
       const addPartTool = is_vector && !geom && toolBox.getTools().find(t => 'addPart' === t.getId());
 
       // check if layer is single geometry. Need to show and change behaviour
-      if (addPartTool && !Geometry.isMultiGeometry(_layer.getGeometryType())) {
+      if (addPartTool && !(/^Multi(LineString|Polygon|Point|Line)/i.test(_layer.getGeometryType()))) {
         addPartTool.visible = true;
       }
 
       // add geometry when vector layer feature has no geometry
       if (addPartTool) {
-        //get workflow
-        const op = addPartTool.getOperator();
-        const w = new (await import('./g3w-workflow.js')).Workflow({
-          type: 'drawgeometry',
-          helpMessage: 'editing.workflow.steps.draw_geometry',
-          runOnce: true, // need to run once time
+        const index = toolBox.getTools().findIndex(t => 'addPart' === t.getId());
+        const customAddPartTool = (new (await import('./g3w-tool.js')).Tool(({
+          id:         'addPart',
+          type:       ['add_feature', 'change_feature'],
+          name:       "editing.addpart",
+          icon:       "mActionAddPart.svg",
+          visible:    !(/^Multi(LineString|Polygon|Point|Line)/i.test(_layer.getGeometryType())),
+          type:        'addparttomultigeometries',
+          helpMessage: 'editing.addpart',
+          runOnce:     true,
+          type:        'drawgeometry',
+          helpMessage: 'editing.draw_geometry',
+          runOnce:     true, // need to run once time
           steps: [
             new (await import('./actions/add-feature.js')).AddFeatureStep({
               add: false,
               steps: {
                 addfeature: {
-                  description: 'editing.workflow.steps.draw_geometry',
+                  description: 'editing.draw_geometry',
                 }
               },
-              onRun: ({inputs, context}) => {
-                w.emit('settoolsoftool', [
+              onRun: ({ inputs, context }) => {
+                customAddPartTool.emit('settoolsoftool', [
                   {
                     type: 'snap',
                     options: {
@@ -1268,63 +1392,72 @@ new (class extends Plugin {
                     }
                   }
                 ]);
-                w.emit('active', ['snap']);
+                customAddPartTool.emit('active', ['snap']);
               },
-              onStop: () => w.emit('deactive', ['snap', 'measure'])
+              onStop: () => customAddPartTool.emit('deactive', ['snap', 'measure'])
             }),
             // add part to multi geometries
             new (await import('./g3w-step.js')).Step({ run: addPartToMultigeometries })
           ],
           registerEscKeyEvent: true
-        })
-
-        addPartTool.setOperator(w);
+        })));
+        toolBox.getTools().splice(index, 0, customAddPartTool);
 
         this.on('closeeditingpanel', () => {
-          addPartTool.setOperator(op);
-          addPartTool.visible = Geometry.isMultiGeometry(_layer.getGeometryType());
+          toolBox.getTools().splice(index, 0, addPartTool);
+          addPartTool.visible = /^Multi(LineString|Polygon|Point|Line)/i.test(_layer.getGeometryType());
         })
       }
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editnopickmapfeatureattributesworkflow.js@v3.7.1 */
-      w = (new (await import('./g3w-workflow.js')).Workflow({
+      t = (new (await import('./g3w-tool.js')).Tool({
         type:        'editnopickmapfeatureattributes',
         runOnce:     true,
-        helpMessage: 'editing.tools.update_feature',
+        helpMessage: 'editing.update_feature',
         steps:       [ new (await import('./actions/open-form.js')).OpenFormStep() ]
       }));
 
-
-      await w.start({
+      await t.start({
         inputs:  { layer: _layer, features: [feature] },
-        context: { session: toolBox.getSession() }
+        context: { id: toolBox.getId() }
       });
 
       //save temporary changes
-      await toolBox._session.save();
+      await toolBox.saveChanges();
 
       this.saveChange();
 
-    } catch (e) {
+    } catch(e) {
       console.warn(e);
       toolBox.rollback();
     } finally {
-      w?.stop?.(); // workflow can be undefined when feature is locked by another user 
+      t?.stop?.(); // tool can be undefined when feature is locked by another user
     }
   }
 
+  /**
+   * Restore relation-layer sources after a failed commit.
+   *
+   * Added features are removed, updated features are reloaded, and deleted
+   * features are fetched and inserted again. Relation data is processed
+   * recursively to match the dependency tree.
+   *
+   * @param {Object} [relations={}] Relation commit data keyed by layer id.
+   *
+   * @returns {Promise<PromiseSettledResult<*>[]>} Rollback operation results.
+   *
+   */
   async #rollback(relations = {}) {
     return Promise.allSettled(
       Object
       .entries(relations)
       .flatMap(([ layerId, { add, delete: del, update, relations = {}}]) => {
-        const source       = this.getLayerById(layerId).getEditor().getEditingSource();
-        const has_features = source.readFeatures().length > 0; // check if the relation layer has some features
+        const toolbox      = this.getToolBoxById(layerId);
+        const has_features = toolbox.readEditingFeatures().length > 0; // check if the relation layer has some features
         // get original values
         return [
           // add
           ...(has_features && add || []).map(async ({ id }) => {
-            source.removeFeature(source.getFeatureById(id));
+            toolbox.removeFeature(toolbox.getFeatureById(id));
           }),
           // update
           ...(has_features && update || []).map(async ({ id }) => {
@@ -1334,7 +1467,7 @@ new (class extends Plugin {
                 params: { fids: id },
               });
               const f        = (response.result && response.vector.data.features || []).at(0);
-              const feature  = source.getFeatureById(id);
+              const feature  = toolbox.getFeatureById(id);
               feature.setProperties(f.properties);
               feature.setGeometry(f.geometry);
             } catch(e) {
@@ -1352,7 +1485,7 @@ new (class extends Plugin {
               const feature = new ol.Feature({ geometry: f.geometry })
               feature.setProperties(f.properties);
               feature.setId(id);
-              source.addFeature(new Feature({ feature })); // add it again to source because relation layer is locked
+              toolbox.addFeature(new Feature({ feature })); // add it again to source because relation layer is locked
             } catch(e) {
               console.warn(e);
             }
@@ -1365,4 +1498,3 @@ new (class extends Plugin {
   }
 
 });
-

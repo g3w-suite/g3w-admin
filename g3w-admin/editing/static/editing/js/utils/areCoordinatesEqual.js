@@ -1,6 +1,4 @@
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @param feature
  * @param coordinates
  *
@@ -13,7 +11,7 @@ export function areCoordinatesEqual({
  //get geometry from feature
  const geometry = feature.getGeometry();
  const type     = geometry?.getType?.();
- const coords   = (c1, c2) => g3wsdk.core.geoutils.areCoordinatesEqual(c1, c2); // whether element have same coordinates
+ const coords   = (c1 = [], c2 = []) => (c1[0] === c2[0] && c1[1] === c2[1]); // whether element have same coordinates
 
  switch (type) {
    case 'Polygon':

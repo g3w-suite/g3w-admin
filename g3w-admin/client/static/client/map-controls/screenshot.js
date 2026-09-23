@@ -386,7 +386,7 @@ const vueComp = ({
       // Need to be visible.
       // If it was not visible, the CORS issue was raised.
       // Need to reload and remove layer
-      return ![...Object.values(ApplicationState.layers).flatMap(s => s.getLayers()), ...GUI.getExternalLayers()].some(this.isCrossOrigin);
+      return ![...ApplicationState.project.getLayers(), ...GUI.getExternalLayers()].some(this.isCrossOrigin);
     },
 
     can_submit() {
@@ -686,7 +686,7 @@ const vueComp = ({
           this.layers  = true;
 
           const has_theme = this.maps.some(m => undefined !== m.preset_theme);
-          const layers    = ApplicationState.project.getLayersStore().getLayers({ PRINTABLE: { scale: this.scale }, SERVERTYPE: 'QGIS' }).reverse(); // reverse order is important
+          const layers    = ApplicationState.project.getLayers({ PRINTABLE: { scale: this.scale }, SERVERTYPE: 'QGIS' }).reverse(); // reverse order is important
           const LAYERS    = (layers || []).map(l => l.isRaster() ? (l.state.wms_use_layer_ids ? l.getId() : l.getName()) : undefined).join();
           const response  = await (
             fetch(
@@ -702,10 +702,10 @@ const vueComp = ({
                   DPI:            this.dpi,
                   STYLES:         layers.map(l => l.getStyle()).join(','),
                   OPACITIES:      layers.map(l => parseInt((l.getOpacity() / 100) * 255)).join(','), //@since 4.0.1 send OPACITIES parameter
-                  ...(has_theme ? {} : { LAYERS }), // in the case of a map that has preset_theme, no LAYERS need tyo pass as parameter.
+                  ...(has_theme ? {} : { LAYERS }), // in the case of a map that has preset_theme, no LAYERS need to pass as parameter.
                   FORMAT:         ({ png: 'png', pdf: 'application/pdf', geopdf: 'application/pdf' })[this.format] || this.format,
                   ...('geopdf' === this.format ? { FORMAT_OPTIONS: 'WRITE_GEO_PDF:TRUE'} : {}), //@since 3.10.0
-                  CRS:            ApplicationState.project.getLayersStore().getProjection().getCode(),
+                  CRS:            ApplicationState.project.getProjection().getCode(),
                   filtertoken:    ApplicationState.tokens.filtertoken,
                   ...this.maps.map(m => ({
                     name:         m.name,
@@ -1031,7 +1031,7 @@ if (GUI.getComponent('print')) {
 }
 
 // G3W-PRINT
-GUI.addComponent(Object.assign(new Component({
+const comp = GUI.addComponent(new Component({
   id:                'print',
   visible:           window.initConfig.user.is_staff || (ApplicationState.project.getPrint() || []).length > 0, /** @since 3.10.0 Check if the project has print layout*/
   icon:              "fas fa-print",
@@ -1039,10 +1039,9 @@ GUI.addComponent(Object.assign(new Component({
   title:             'print',
   internalComponent: new (Vue.extend({})),
   collapsible:       false,
-}), {
-  _setOpen: bool => { toggleUserMessage(bool); },
 }), { position: 'search' });
 
+comp.onbefore('setOpen', bool => toggleUserMessage(bool));
 
 document.head.insertAdjacentHTML(
   'beforeend',
