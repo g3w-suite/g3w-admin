@@ -15,7 +15,6 @@ export function setVertexStyle({
   strokeWidth = 3,
   radius      = 4,
 } = {}) {
-  const geometryType = feature.getGeometry().getType();
   feature.setStyle(() => [
     new ol.style.Style({
       image: new ol.style.Circle({
@@ -26,7 +25,14 @@ export function setVertexStyle({
         )
 
       }),
-      geometry: f => new ol.geom.MultiPoint(f.getGeometry().getCoordinates().flat(/^Multi/i.test(geometryType) ? 2 : 1)),
+      geometry: f => new ol.geom.MultiPoint([f.getGeometry().getCoordinates()].flat({
+        Point:           0,
+        MultiPoint:      1,
+        LineString:      1,
+        Polygon:         2,
+        MultiLineString: 2,
+        MultiPolygon:    3,
+      }[f.getGeometry().getType()])),
     }),
     new ol.style.Style({ stroke: new ol.style.Stroke({ color: lineColor, width: strokeWidth })})
   ]);
