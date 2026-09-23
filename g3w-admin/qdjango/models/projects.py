@@ -1016,6 +1016,15 @@ class Layer(G3WACLModelMixins, models.Model):
         blank=True,
     )
 
+    # admin-selected format to render this layer as WMTS, must also be available in wmtscapabilities
+    wmts_format = models.CharField(
+        _('Render layer as WMTS'),
+        max_length=10,
+        choices=(('png', 'PNG'), ('jpeg', 'JPEG')),
+        null=True,
+        blank=True,
+    )
+
     # For temporal properties
     temporal_properties = models.TextField(
         _('Temporal properties'),

@@ -1100,6 +1100,11 @@ class QgisProjectLayer(XmlData):
             self.instance.edit_options = self.editOptions
             self.instance.wfscapabilities = self.wfsCapabilities
             self.instance.wmtscapabilities = self.wmtsCapabilities
+
+            # clear a previously chosen WMTS format no longer available after reimport
+            if self.instance.wmts_format and not (self.wmtsCapabilities or {}).get(self.instance.wmts_format):
+                self.instance.wmts_format = None
+
             self.instance.exclude_attribute_wms = excludeAttributesWMS
             self.instance.exclude_attribute_wfs = excludeAttributesWFS
             self.instance.geometrytype = self.geometrytype

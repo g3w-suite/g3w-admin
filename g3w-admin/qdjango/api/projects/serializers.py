@@ -775,7 +775,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret = ['WMS']
         if instance.wfscapabilities:
             ret.append('WFS')
-        if instance.wmtscapabilities:
+        if instance.wmtscapabilities and instance.wmts_format:
                 ret.append('WMTS')
 
         # TODO: add WCS if is set
@@ -787,9 +787,13 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret = {}
         wmts_grids = self.instance.project.wmts_grids
-        if not wmts_grids or not self.instance.wmtscapabilities:
+        if not wmts_grids or not instance.wmtscapabilities or not instance.wmts_format:
             return ret
-        
+
+        # only the admin-selected format, and only if still advertised as available
+        if not instance.wmtscapabilities.get(instance.wmts_format):
+            return ret
+
         #Add grids
         ret['grids'] = []       
         for grid in wmts_grids:
@@ -799,11 +803,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             ret['grids'].append(grid)
 
         # Add formats        
-        ret['formats'] = []
-        if self.instance.wmtscapabilities['png']:
-            ret['formats'].append('image/png')
-        if self.instance.wmtscapabilities['jpeg']:
-            ret['formats'].append('image/jpeg')
+        ret['formats'] = [f'image/{instance.wmts_format}']
 
         return ret
 

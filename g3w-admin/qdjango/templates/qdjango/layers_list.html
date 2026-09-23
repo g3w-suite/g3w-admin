@@ -129,6 +129,7 @@
                             {% if "change_project" in userPrj_perms %}
                             <th style="width:100px">{% trans 'Preview fields (max.)' %}</th>
                             <th style="width:100px">{% trans 'Download capabilities' %}</th>
+                            <th style="width:100px">WMTS</th>
                             <th style="width:40px">{% trans 'Visibility capabilities' %}</th>
                             {% endif %}
                         </tr>
@@ -310,6 +311,20 @@
                                 </ul>
                                 </div>
 
+                            </td>
+
+                            <td>
+                                {% if object.wmtscapabilities.png or object.wmtscapabilities.jpeg %}
+                                <select class="form-control" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" onchange="ga.widget.setLayerData($(event.target), { ['wmts_format']: this.value });">
+                                    <option value="">{% trans 'Not active' %}</option>
+                                    {% if object.wmtscapabilities.png %}
+                                    <option value="png" {% if object.wmts_format == 'png' %}selected{% endif %}>image/png</option>
+                                    {% endif %}
+                                    {% if object.wmtscapabilities.jpeg %}
+                                    <option value="jpeg" {% if object.wmts_format == 'jpeg' %}selected{% endif %}>image/jpeg</option>
+                                    {% endif %}
+                                </select>
+                                {% endif %}
                             </td>
 
                             {% if "change_project" in userPrj_perms %}
