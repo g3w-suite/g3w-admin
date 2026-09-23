@@ -1,13 +1,10 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
+import { addZValue }                        from '../utils/addZValue.js';
 import { Step }                             from '../g3w-step.js';
 import { Feature }                          from '../g3w-feature.js';
 
@@ -15,12 +12,6 @@ const GUI                      = g3w.app;
 const _                        = g3w.gettext;
 const { createMeasureTooltip } = g3w.utils;
 
-const { Geometry }             = g3wsdk.core.geoutils;
-
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addfeaturestep.js@v3.7.1
- */
 export class AddFeatureStep extends Step {
 
   drawInteraction;
@@ -33,14 +24,12 @@ export class AddFeatureStep extends Step {
 
   /**
    * Handle tasks that stops after `run(inputs, context)` promise (or if ESC key is pressed)
-   *
-   * @since g3w-client-plugin-editing@v3.8.0
    */
   _stopPromise;
 
 
   constructor(opts = {}) {
-    opts.help = "editing.steps.help.draw_new_feature";
+    opts.help = "editing.draw_new_feature";
 
     super(opts);
 
@@ -67,10 +56,10 @@ export class AddFeatureStep extends Step {
       // Skip when a layer type is vector
       if ('vector' !== inputs.layer.getType()) { return  }
 
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       setAndUnsetSelectedFeaturesStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
 
-      const originalGeometryType = inputs.layer.state.editing.geometrytype;
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(layerId);
+      const originalGeometryType = toolbox.state.geometrytype;
       let geom                   = originalGeometryType;
 
       // get open layers geometry
@@ -85,7 +74,7 @@ export class AddFeatureStep extends Step {
       this.geometryType = geom;
 
       const source     = getEditingLayer(inputs.layer).getSource();
-      const attributes = (inputs.layer.state.editing.fields || []);
+      const attributes = (toolbox.state.fields || []);
 
       this.drawInteraction = this.addInteraction(
         new ol.interaction.Draw({
@@ -106,13 +95,13 @@ export class AddFeatureStep extends Step {
               feature = new Feature({ feature: e.feature, });
               feature.setTemporaryId();
               source.addFeature(feature);
-              context.session.pushAdd(layerId, feature, false);
+              GUI.getPlugin('editing').getToolBoxById(context.id).pushAdd(layerId, feature, false);
             } else {
               feature = e.feature;
             }
             // set Z values based on layer Geometry
-            if (Geometry.is3DGeometry(originalGeometryType)) {
-              feature = Geometry.addZValueToOLFeatureGeometry({ feature, geometryType: originalGeometryType });
+            if (/^(Multi(LineString|Polygon|Point|Line)|LineString|Polygon|Point|Line|MutliPoint)(Z|M|ZM|25D)$/.test(originalGeometryType)) {
+              feature = addZValue({ feature, geometryType: originalGeometryType });
             }
 
             inputs.features.push(feature);

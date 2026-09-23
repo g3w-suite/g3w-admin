@@ -2,7 +2,7 @@ import { Step }                             from '../g3w-step.js';
 import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 
-const { Geometry } = g3wsdk.core.geometry;
+const GUI = g3w.app;
 
 export class DeleteHoleStep extends Step {
 
@@ -46,10 +46,10 @@ export class DeleteHoleStep extends Step {
         const oldFeat = feature.clone();
         const geom    = feature.getGeometry();
         const coords  = geom.getCoordinates();
-        (Geometry.isMultiGeometry(geom.getType()) ? coords[fh.get('polygonIndex')] : coords).splice(fh.get('holeIndex'), 1);
+        (/^Multi(LineString|Polygon|Point|Line)/i.test(geom.getType()) ? coords[fh.get('polygonIndex')] : coords).splice(fh.get('holeIndex'), 1);
         geom.setCoordinates(coords);
         feature.setGeometry(geom);
-        context.session.pushUpdate(inputs.layer.getId(), feature, oldFeat);
+        GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(inputs.layer.getId(), feature, oldFeat);
       });
       resolve(inputs);
     }
@@ -64,7 +64,7 @@ export class DeleteHoleStep extends Step {
     const GEOM_TYPE = inputs.layer.getGeometryType();
     const geometry  = feature.getGeometry();
     const id        = feature.getId();
-    const polygons  = Geometry.isMultiGeometry(GEOM_TYPE) ? geometry.getPolygons() : [geometry];
+    const polygons  = /^Multi(LineString|Polygon|Point|Line)/i.test(GEOM_TYPE) ? geometry.getPolygons() : [geometry];
     polygons.forEach((polygon, polygonIndex) => {
       for (let i = 1; i < polygon.getLinearRingCount(); i++) {
         this.#layer.getSource().addFeature(new ol.Feature({

@@ -1,9 +1,5 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/index.j@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
@@ -12,6 +8,7 @@ import { chooseFeatureFromFeatures }                    from '../utils/chooseFea
 import { isSameBaseGeometryType }                       from '../utils/isSameBaseGeometryType.js';
 import { PickFeaturesInteraction }                      from '../actions/pick-feature.js';
 import { getEditingLayer }                              from '../utils/getEditingLayer.js';
+import { removeZValue }                                 from '../utils/removeZValue.js';
 import { Step }                                         from '../g3w-step.js';
 import { Feature }                                      from '../g3w-feature.js';
 
@@ -20,16 +17,10 @@ const GUI                                               = g3w.app;
 const _                                                 = g3w.gettext;
 const { convertSingleMultiGeometry }                    = g3w.utils;
 
-const { removeZValueToOLFeatureGeometry }               = g3wsdk.core.geoutils.Geometry;
-
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/selectelementstask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/selectelementsstep.js@v3.7.1
- */
 export class SelectElementsStep extends Step {
 
   constructor(opts = {}, chain) {
-    opts.help = opts.help ?? "editing.steps.help.select_elements";
+    opts.help = opts.help ?? "editing.select_elements";
 
     super(opts);
 
@@ -39,7 +30,7 @@ export class SelectElementsStep extends Step {
     this._vectorLayer;
 
     if (chain) {
-      this.on('run', () => { this.emit('next-step', _("plugins.editing.steps.help.select_elements")) });
+      this.on('run', () => { this.emit('next-step', _("plugins.editing.select_elements")) });
     }
   }
 
@@ -148,7 +139,6 @@ export class SelectElementsStep extends Step {
         const geometryType     = layer.getGeometryType();
         const layerId          = layer.getId();
         const source           = getEditingLayer(layer).getSource();
-        const { session }      = this.getContext();
         interactions.external  = new PickFeaturesInteraction({
           layers: GUI.getExternalLayers()
             // filter external layer only vector - Exclude the
@@ -166,7 +156,7 @@ export class SelectElementsStep extends Step {
             reject();
             return;
           }
-          const attributes = (layer.state.editing.fields || []);
+          const attributes = (GUI.getPlugin('editing').getToolBoxById(layer.getId()).state.fields || []);
           const geometry   = e.features[0].getGeometry();
           if (geometryType !== geometry.getType()) {
             e.feature.setGeometry(convertSingleMultiGeometry(geometry, geometryType));
@@ -184,10 +174,10 @@ export class SelectElementsStep extends Step {
 
           // evaluate Geometry Expression
           evaluateExpressionFields({ inputs, context, feature }).finally(() => {
-            removeZValueToOLFeatureGeometry({ feature }); // remove eventually Z Values
+            removeZValue({ feature }); // remove eventually Z Values
             feature.setTemporaryId();
             source.addFeature(feature);
-            session.pushAdd(layerId, feature, false);
+            GUI.getPlugin('editing').getToolBoxById(this.getContext().id).pushAdd(layerId, feature, false);
             inputs.features.push(feature);
             resolve(inputs);
           });
@@ -217,9 +207,6 @@ export class SelectElementsStep extends Step {
 
 }
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/utils/addRemoveToMultipleSelectFeatures.js@v4.0.0
- */
 function _addRemoveToMultipleSelectFeatures(features, inputs, selected, task) {
   (features || []).forEach(f => {
     const selIndex = selected.indexOf(f);

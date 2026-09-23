@@ -1,12 +1,11 @@
-const { Geometry } = g3wsdk.core.geoutils;
 /**
- * @since 3.9.1
- * @param feature
- * @param lineColor,
- * @param vertexColor
- * @param strokeWidth
- * @param radius
- * @param fillVertex
+ * @param { Object } opts
+ * @param opts.feature
+ * @param opts.vertexColor
+ * @param opts.lineColor
+ * @param opts.fillVertex
+ * @param opts.strokeWidth
+ * @param opts.radius
  */
 export function setVertexStyle({
   feature,
@@ -28,11 +27,9 @@ export function setVertexStyle({
 
       }),
       geometry: f => new ol.geom.MultiPoint(
-        ( // in the case of multipolygon geometry
-          Geometry.isPolygonGeometryType(geometryType)
-          && Geometry.isMultiGeometry(geometryType)
-        ) ? f.getGeometry().getCoordinates()[0][0]
-          : Geometry.isLineGeometryType(geometryType)
+        (/^(Multi)?Polygon/i.test(geometryType) && /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType))
+          ? f.getGeometry().getCoordinates()[0][0]    // in the case of multipolygon geometry
+          : /^(Multi)?Line(String)?/i.test(geometryType)
             ? f.getGeometry().getCoordinates()[0]
             : [f.getGeometry().getCoordinates()]
       )
