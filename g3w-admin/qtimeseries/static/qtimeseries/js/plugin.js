@@ -11,16 +11,10 @@
 
     constructor() {
 
-      super({ name: 'qtimeseries' });
-
-      // i18n
-      const VM = new Vue();
-      const i18n = async lang => {
-        this._sidebar?.setLoading(true);
-        this.setLocale({ [lang]: (await import(BASE_URL + '/i18n/' + lang + '.js')).default });
-        this._sidebar?.setLoading(false);
-      };
-      VM.$watch(() => ApplicationState.language, i18n);
+      super({ 
+        name: 'qtimeseries',
+        i18n: `${BASE_URL}/i18n/`,
+      });
 
       const enabled = this.registerPlugin(this.config.gid);
 
@@ -69,8 +63,6 @@
         if(!enabled || 0 === this.config.layers.length) {
           return;
         }
-
-        await i18n(ApplicationState.language);
 
         const sidebar = this.createSideBarComponent({}, this.config.sidebar);
 
