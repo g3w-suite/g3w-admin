@@ -26,13 +26,13 @@ export function setVertexStyle({
         )
 
       }),
-      geometry: f => new ol.geom.MultiPoint(
+      geometry: f => { console.log(f.getGeometry().getCoordinates()); return new ol.geom.MultiPoint(
         (/^(Multi)?Polygon/i.test(geometryType) && /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType))
-          ? f.getGeometry().getCoordinates()[0][0]    // in the case of multipolygon geometry
+          ? f.getGeometry().getCoordinates().flatMap(coods => coods[0])    // in the case of multipolygon geometry
           : /^(Multi)?Line(String)?/i.test(geometryType)
-            ? f.getGeometry().getCoordinates()[0]
+            ? f.getGeometry().getCoordinates().flat()
             : [f.getGeometry().getCoordinates()]
-      )
+      )}
     }),
     new ol.style.Style({ stroke: new ol.style.Stroke({ color: lineColor, width: strokeWidth })})
   ]);
