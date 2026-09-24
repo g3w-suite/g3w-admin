@@ -44,14 +44,14 @@ export class SelectElementsStep extends Step {
   run(inputs, context) {
     const layer      = inputs.layer;
     const type       = this._options?.type ?? 'bbox'; // 'single' 'bbox' 'multiple';
-    const buttonnext = 'multiple' === type && !!this._steps.select.buttonnext;
+    const buttonnext = 'multiple' === type && !!this.getSteps().select.buttonnext;
 
     return new Promise((resolve, reject) => {
 
       if (buttonnext) {
         //check if it has already done handler function;
-        const { done } = this._steps.select.buttonnext;
-        this._steps.select.buttonnext.done = () => {
+        const { done } = this.getSteps().select.buttonnext;
+        this.getSteps().select.buttonnext.done = () => {
           if (done && done instanceof Function) { done(); }
           resolve(inputs);
         }
@@ -78,7 +78,7 @@ export class SelectElementsStep extends Step {
             } else {
               this.#originalStyle = setFeaturesSelectedStyle({ features: inputs.features });
 
-              if (this._steps) { this.setUserMessageStepDone('select') }
+              if (this.getSteps()) { this.setUserMessageStepDone('select') }
 
               resolve(inputs);
             }
@@ -101,7 +101,7 @@ export class SelectElementsStep extends Step {
             if (features.length > 0) {
               inputs.features     = features;
               this.#originalStyle = setFeaturesSelectedStyle({ features });
-              if (this._steps) { this.setUserMessageStepDone('select') }
+              if (this.getSteps()) { this.setUserMessageStepDone('select') }
               setTimeout(() => resolve(inputs), 500);
             } else { reject(); }
           }
@@ -125,7 +125,7 @@ export class SelectElementsStep extends Step {
               inputs.features     = features;
               this.#originalStyle = setFeaturesSelectedStyle({ features });
 
-              if (this._steps) { this.setUserMessageStepDone('select'); }
+              if (this.getSteps()) { this.setUserMessageStepDone('select'); }
 
               resolve(inputs);
             } else {

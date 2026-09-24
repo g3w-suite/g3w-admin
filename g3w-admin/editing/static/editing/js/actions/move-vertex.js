@@ -17,8 +17,6 @@ export class ModifyGeometryVertexStep extends Step {
 
   #tooltip;
 
-  #interaction;
-
   constructor(opts = {}) {
     opts.snap =  opts?.snap ?? true;
     opts.help = "editing.edit_feature_vertex";
@@ -88,7 +86,7 @@ export class ModifyGeometryVertexStep extends Step {
         }
       })
 
-      this.#interaction = this.addInteraction(
+      this.addInteraction(
         new ol.interaction.Modify({
           features:        new ol.Collection([feature]),
           deleteCondition: this._options.deleteCondition || ol.events.condition.altKeyOnly,

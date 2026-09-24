@@ -14,27 +14,24 @@ const { createMeasureTooltip } = g3w.utils;
 
 export class AddFeatureStep extends Step {
 
-  drawInteraction;
+  #interaction;
 
-  tooltip;
+  #tooltip;
 
-  keyTooltip;
+  #keyTooltip;
 
-  drawingFeature;
+  #feature;
 
-  /**
-   * Handle tasks that stops after `run(inputs, context)` promise (or if ESC key is pressed)
-   */
-  _stopPromise;
+  #add;
 
+  #geometryType;
 
   constructor(opts = {}) {
     opts.help = "editing.draw_new_feature";
 
     super(opts);
 
-    this._add  = opts.add ?? true;
-    this._snap = false !== opts.snap;
+    this.#add  = opts.add ?? true;
 
     /**
      *
@@ -43,7 +40,7 @@ export class AddFeatureStep extends Step {
      * @private
      * callback of pressing DEL (Delete) to remove last point drawn
      */
-    this._delKeyRemoveLastPoint  = e => 46 === e.keyCode && this.removeLastPoint();
+    this._delKeyRemoveLastPoint  = e => 46 === e.keyCode && this.#removeLastPoint();
 
   }
 
@@ -71,26 +68,26 @@ export class AddFeatureStep extends Step {
       else if (geom.startsWith('MultiPolygon')) { geom = 'MultiPolygon'; }
       else                                      { console.warn('invalid geometry type: ', geom); }
 
-      this.geometryType = geom;
+      this.#geometryType = geom;
 
       const source     = getEditingLayer(inputs.layer).getSource();
       const attributes = (toolbox.state.fields || []);
 
-      this.drawInteraction = this.addInteraction(
+      this.#interaction = this.addInteraction(
         new ol.interaction.Draw({
-          type:              this.geometryType,
+          type:              this.#geometryType,
           source:            new ol.source.Vector(),
           condition:         this._options.condition || (() => true),
           freehandCondition: ol.events.condition.never,
           finishCondition:   this._options.finishCondition || (() => true),
         }), {
           'drawstart': ({ feature }) => {
-            this.drawingFeature = feature;
+            this.#feature = feature;
             document.addEventListener('keydown', this._delKeyRemoveLastPoint);
           },
           'drawend': e => {
             let feature;
-            if (this._add) {
+            if (this.#add) {
               attributes.forEach(attr => e.feature.set(attr.name, null));
               feature = new Feature({ feature: e.feature, });
               feature.setTemporaryId();
@@ -111,7 +108,7 @@ export class AddFeatureStep extends Step {
           },
         });
 
-      this.drawInteraction.setActive(true);
+      this.#interaction.setActive(true);
     })
 
   }
@@ -122,27 +119,27 @@ export class AddFeatureStep extends Step {
   measureTooltip(enable) {
 
     //case enable and already start draw feature
-    if (enable && this.drawingFeature) {
-      this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.drawingFeature });
+    if (enable && this.#feature) {
+      this.#tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.#feature });
     } 
 
     //enable but not yet start to draw feature
-    if (enable && !this.drawingFeature) {
-      this.keyTooltip = this.drawInteraction.once('drawstart', () => {
-        this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.drawingFeature });
+    if (enable && !this.#feature) {
+      this.#keyTooltip = this.#interaction.once('drawstart', () => {
+        this.#tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.#feature });
       })
     }
 
     //disable and listen draw start to creare tooltip
-    if (!enable && this.keyTooltip) {
-      ol.Observable.unByKey(this.keyTooltip);
-      this.keyTooltip = null;
+    if (!enable && this.#keyTooltip) {
+      ol.Observable.unByKey(this.#keyTooltip);
+      this.#keyTooltip = null;
     }
 
     //disable and alraedy create tooltip
-    if (!enable && this.tooltip) {
-      this.tooltip?.remove?.();
-      this.tooltip = null;
+    if (!enable && this.#tooltip) {
+      this.#tooltip?.remove?.();
+      this.#tooltip = null;
     }
 
   }
@@ -150,22 +147,22 @@ export class AddFeatureStep extends Step {
   /**
    * Removed last point/vertex draw
    */
-  removeLastPoint() {
+  #removeLastPoint() {
     try {
-      if (this.drawInteraction) { this.drawInteraction.removeLastPoint(); }
+      this.#interaction?.removeLastPoint?.();
     } catch(e) {
       console.warn(e);
     }
   }
 
   stop() {
-    this.removeInteraction(this.drawInteraction);
+    this.removeInteraction(this.#interaction);
     this.measureTooltip(false);
     this.resolve(true);
 
-    this.drawInteraction = null;
-    this.drawingFeature  = null;
-    this.resolve         = null;
+    this.#interaction = null;
+    this.#feature     = null;
+    this.resolve      = null;
 
     document.removeEventListener('keydown', this._delKeyRemoveLastPoint);
 

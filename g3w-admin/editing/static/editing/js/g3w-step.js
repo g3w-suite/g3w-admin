@@ -299,20 +299,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * Disable sidebar
-   *
-   * @param {boolean} [bool=true] Whether the sidebar should be disabled.
-   * 
-   * @returns {void}
-   */
-  disableSidebar(bool = true) {
-    if (this._isContentChild) {
-      return;
-    }
-    GUI.disableSideBar(bool);
-  }
-
-  /**
    * Invoke the registered callback when Escape is released.
    *
    * @param {Object} evt Keyup event with callback data.

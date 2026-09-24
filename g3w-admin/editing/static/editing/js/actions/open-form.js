@@ -22,64 +22,70 @@ const { createFilterFormInputs } = g3wsdk.core.utils;
 
 export class OpenFormStep extends Step {
 
+  /**
+   * Show saveAll button
+   */
+  #saveAll;
+
+  /**
+   * In case of commit error from saveAll methods, need to set it to true to undo changes
+   */
+  #saveAllError = false;
+
+  /**
+   * Whether it can handle multi edit features
+   */
+  #multi;
+
+  #unwatchs = [];
+
+  /**
+   * whether form is coming from parent table component
+   */
+  #isContentChild = false;
+
+  /**
+   * @FIXME set a default value + add description
+   */
+  layerId;
+
+  /**
+   * @FIXME set a default value + add description
+   */
+  _features;
+
+  /**
+   * @FIXME set a default value + add description
+   */
+  _originalFeatures;
+
   constructor(opts = {}) {
 
     opts.help = "editing.insert_attributes_feature";
 
     super(opts);
 
-    /**
-     * Show saveAll button
-     */
-    this._saveAll = false === opts.saveAll ? opts.saveAll : async () => {};
-
-    /**
-     * In case of commit error from saveAll methods, need to set it to true to undo changes
-     */
-    this._saveAllError = false;
-
-    /**
-     * Whether it can handle multi edit features
-     */
-    this._multi = opts.multi || false;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this.layerId;
-
-    /**
-     * whether form is coming from parent table component
-     */
-    this._isContentChild = false;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this._features;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this._originalFeatures;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this.promise;
-
-    /**
-     * @TODO add description
-     */
-    this._unwatchs = [];
-
+    this.#saveAll = false === opts.saveAll ? opts.saveAll : async () => {};
+    this.#multi   = opts.multi || false;
   }
 
   /**
    * @param bool
    */
   updateMulti(bool = false) {
-    this._multi = bool;
+    this.#multi = bool;
+  }
+
+  hasSaveAll() {
+    return !!this.#saveAll;
+  }
+
+  hasMulti() {
+    return !!this.#multi;
+  }
+
+  isChild() {
+    return !!this.#isContentChild;
   }
 
   /**
@@ -91,9 +97,9 @@ export class OpenFormStep extends Step {
   async run(inputs, context) {
     GUI.setModal(true);
     // set isContentChild attribute to force it (case edit relation features from multi-parent features)
-    this._isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
+    this.#isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
     this.layerId           = inputs.layer.getId();
-    this._features         = this._multi ? inputs.features : [inputs.features[inputs.features.length - 1]];
+    this._features         = this.hasMulti() ? inputs.features : [inputs.features[inputs.features.length - 1]];
     this._originalFeatures = this._features.map(f => f.clone());
 
     const promise = new Promise((resolve) => {
@@ -109,7 +115,7 @@ export class OpenFormStep extends Step {
 
       GUI.disableClickMapControls(true);
 
-      if (!this._multi && Array.isArray(inputs.features[inputs.features.length - 1])) {
+      if (!this.hasMulti() && Array.isArray(inputs.features[inputs.features.length - 1])) {
         resolve();
         return;
       }
@@ -119,7 +125,7 @@ export class OpenFormStep extends Step {
       const layerName = inputs.layer.getName();
 
       // create a child relation feature set a father relation field value
-      if (this._isContentChild) {
+      if (this.hasChild()) {
         context.fatherValue = context.fatherValue || []; // are array
         (context.fatherField || []).forEach((field, i) => {
           this._features[0].set(field, context.fatherValue[i]);
@@ -131,16 +137,16 @@ export class OpenFormStep extends Step {
         inputs,
         context,
         feature: this._features[0],
-        isChild: this._isContentChild,
-        multi:   this._multi,
+        isChild: this.hasChild(),
+        multi:   this.hasMulti(),
       });
 
       // set fields. Useful getParentFormData
       Tool.Stack.current.setInput({ key: 'fields', value: fields });
 
       // whether disable relations editing (ref: "editmultiattributes")
-      const feature = !this._multi && inputs?.features?.[inputs.features.length - 1];
-      const layerId = !this._multi && inputs.layer.getId();
+      const feature = !this.hasMulti() && inputs?.features?.[inputs.features.length - 1];
+      const layerId = !this.hasMulti() && inputs.layer.getId();
 
       // skip relations that don't have a form structure
       if (feature && !feature.isNew() && inputs.layer.getLayerEditingFormStructure()) {
@@ -166,13 +172,13 @@ export class OpenFormStep extends Step {
         isnew:           this._originalFeatures.length > 1 ? false : this._originalFeatures[0].isNew(), // specify if is a new feature
         parentData:      getParentFormData(),
         fields,
-        context_inputs:  this._multi ? false: { context, inputs },
+        context_inputs:  this.hasMulti() ? false: { context, inputs },
         formStructure:   inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
         modal:           true,
-        push:            this._options.push || this._isContentChild,         // force push content on top without clear previous content
-        showgoback:      this._options?.showgoback ?? !this._isContentChild, // force show back button
+        push:            this._options.push || this.hasChild(),         // force push content on top without clear previous content
+        showgoback:      this._options?.showgoback ?? !this.hasChild(), // force show back button
         /** @TODO make it straightforward: `headerComponent` vs `buttons` ? */
-        headerComponent: this._saveAll && {
+        headerComponent: this.#saveAll && {
           template: /* html */ `
             <section class = "editing-save-all-form" style = "display: flex;">
               <div
@@ -230,10 +236,7 @@ export class OpenFormStep extends Step {
               },
             },
             methods: {
-              /**
-               * Set this._saveAllError 
-               */
-              setError: (bool = false) => this._saveAllError = bool,
+              setError: (bool = false) => this.#saveAllError = bool,
               async saveAll() {
                 //Set loading content
                 GUI.setLoadingContent(true);
@@ -243,16 +246,16 @@ export class OpenFormStep extends Step {
                 await Promise.allSettled(
                   [...Tool.Stack.items]
                     .reverse()
-                    .filter(t => "function" === typeof t.getLastStep()._saveAll) // need to filter only tool that
+                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll()) // need to filter only tool that
                     .map( t => new Promise(async (resolve) => {
                       const task   = t.getLastStep();
                       //get features fields of form service that has value not null to set of all features
-                      const fields = t.getContext().service.state.fields.filter(f => task._multi ? null !== f.value : true);
+                      const fields = t.getContext().service.state.fields.filter(f => task.hasMulti() ? null !== f.value : true);
                       await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
                       task._features.forEach(f => _setFieldsWithValues(task.getInputs().layer, f, fields));
                       const newFeatures = task._features.map(f => f.clone());
                       //Is a relation form
-                      if (task._isContentChild) {
+                      if (task.hasChild()) {
                         task.getInputs().relationFeatures = { newFeatures, originalFeatures: task._originalFeatures };
                       }
                       await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task._originalFeatures });
@@ -273,7 +276,7 @@ export class OpenFormStep extends Step {
                     this.setError(false);
                     [...Tool.Stack.items]
                     .reverse()
-                    .filter(t => "function" === typeof t.getLastStep()._saveAll)
+                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
                     .forEach(t => {
                       const service = t.getContext().service; //form service
                       //need to set update form false because already saved on server
@@ -328,7 +331,7 @@ export class OpenFormStep extends Step {
           buttons:         [
             {
               id:    'save',
-              title:  this._isContentChild
+              title:  this.hasChild()
                 ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" // get custom back label from parent
                 : "plugins.editing.insert_edit",
               type:  "save",
@@ -340,7 +343,7 @@ export class OpenFormStep extends Step {
                 const isNew      = !!this._originalFeatures?.some(f => f.isNew?.()); // check for new features in form (i.e., features that are not yet saved to the server)
                 const newFeatures = [];
 
-                fields = this._multi ? fields.filter(f => null !== f.value) : fields;
+                fields = this.hasMulti() ? fields.filter(f => null !== f.value) : fields;
 
                 // skip when no fields or when nothing changed (on an existing non-relation feature).
                 if (0 === fields.length || (!isNew && !hasUpdates)) {
@@ -358,7 +361,7 @@ export class OpenFormStep extends Step {
                   newFeatures.push(f.clone());
                 });
               
-                if (this._isContentChild) {
+                if (this.hasChild()) {
                   inputs.relationFeatures = {
                     newFeatures,
                     originalFeatures: this._originalFeatures
@@ -381,7 +384,7 @@ export class OpenFormStep extends Step {
                 GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
 
                 // sync parent tools when child is saved.
-                if (this._isContentChild) {
+                if (this.hasChild()) {
                   Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
                 }
               
@@ -409,10 +412,10 @@ export class OpenFormStep extends Step {
                 }
               },
               cbk: () => {
-                if (this._saveAllError) {
+                if (this.#saveAllError) {
                   [...Tool.Stack.items]
                     .reverse()
-                    .filter(t => "function" === typeof t.getLastStep()._saveAll) // need to filter only tool that
+                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll()) // need to filter only tool that
                     .map( t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo())
                 }
                 GUI.getPlugin('editing').emit('cancelform', inputs.features); // fire event cancel form to emit to subscribers
@@ -427,7 +430,7 @@ export class OpenFormStep extends Step {
       formService.handleRelation = async e => {
         // Skip when multi editing features
         // It is not possible to manage relationss when we edit multi-features
-        if (this._multi) {
+        if (this.hasMulti()) {
           GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
           return;
         }
@@ -447,8 +450,8 @@ export class OpenFormStep extends Step {
         // relation components (exlcude ONE relation + layer is the father get relation layers that set in editing on g3w-admin)
         ...getRelationsInEditingByFeature({
           layerId,
-          relations: this._multi ? [] : inputs.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === layerId),
-          feature:   this._multi ? false : inputs.features[inputs.features.length - 1],
+          relations: this.hasMulti() ? [] : inputs.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === layerId),
+          feature:   this.hasMulti() ? false : inputs.features[inputs.features.length - 1],
         }).map(({ relation, relations }) => ({
           title:     "plugins.editing.edit_relation",
           name:      relation.name,
@@ -477,9 +480,11 @@ export class OpenFormStep extends Step {
       Tool.Stack?.current?.setContextService?.(formService);
 
       //listen eventually field relation 1:1 changes value
-      _listenRelation1_1FieldChange({ layerId: this.layerId, fields, formService }).then(d => this._unwatchs = d);
+      _listenRelation1_1FieldChange({ layerId: this.layerId, fields, formService }).then(d => this.#unwatchs = d);
 
-      this.disableSidebar(true);
+      if (!this.hasChild()) {
+        GUI.disableSideBar(true);
+      }
     });
   
   }
@@ -488,10 +493,12 @@ export class OpenFormStep extends Step {
    *
    */
   stop() {
-    this.disableSidebar(false);
+    if (!this.hasChild()) {
+      GUI.disableSideBar(false);
+    }
 
     //Check if form coming from the parent table component
-    const is_parent_table = false === this._isContentChild || // no child tool
+    const is_parent_table = false === this.hasChild() || // no child tool
       (
         // case edit feature of a table (edit layer alphanumeric)
         2 === Tool.Stack.length && //open features table
@@ -508,12 +515,12 @@ export class OpenFormStep extends Step {
     const contextService = is_parent_table && Tool.Stack.current.getContext().service;
 
     // force update parent form update
-    if (contextService && contextService.setUpdate && false === this._isContentChild) {
+    if (contextService && contextService.setUpdate && false === this.hasChild()) {
       contextService.setUpdate(false, { force: false });
     }
 
     // add GUI.getContentLength() in case of edit multi relationfeatures tool
-    GUI.closeForm({ pop: this.push || this._isContentChild && GUI.getContentLength() > 1 });
+    GUI.closeForm({ pop: this.push || this.hasChild() && GUI.getContentLength() > 1 });
 
     GUI.getPlugin('editing').resetCurrentLayout();
 
@@ -521,9 +528,9 @@ export class OpenFormStep extends Step {
     GUI.getPlugin('editing').emit(`closeform_${this.layerId}`);
 
     this.layerId = null;
-    this._unwatchs.forEach(unwatch => unwatch());
-    this._unwatchs = [];
-    this._saveAllError = false;
+    this.#unwatchs.forEach(unwatch => unwatch());
+    this.#unwatchs = [];
+    this.#saveAllError = false;
   }
 
 }

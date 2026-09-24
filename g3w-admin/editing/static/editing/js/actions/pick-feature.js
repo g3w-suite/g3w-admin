@@ -56,7 +56,7 @@ export class PickFeatureStep extends Step {
               inputs.features   = e.features;
               inputs.coordinate = e.coordinate;
             }
-            if (this._steps) { this.setUserMessageStepDone('select'); }
+            if (this.getSteps()) { this.setUserMessageStepDone('select'); }
             resolve(inputs);
           },
         });
