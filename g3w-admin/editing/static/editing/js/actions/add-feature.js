@@ -2,7 +2,6 @@
  * @file
  */
 
-import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 import { addZValue }                        from '../utils/addZValue.js';
 import { Step }                             from '../g3w-step.js';
@@ -46,14 +45,14 @@ export class AddFeatureStep extends Step {
 
   run(inputs, context) {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       
       const layerId = inputs.layer.getId();
 
       // Skip when a layer type is vector
       if ('vector' !== inputs.layer.getType()) { return  }
 
-      setFeaturesSelectedStyle({ promise: new Promise(r => this.resolve = r), inputs });
+      this.highlightInputs({ promise: new Promise(r => this.resolve = r) });
 
       const toolbox = GUI.getPlugin('editing').getToolBoxById(layerId);
       const originalGeometryType = toolbox.state.geometrytype;

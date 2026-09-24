@@ -3,7 +3,6 @@
  */
 
 import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
-import { setFeaturesSelectedStyle }                     from '../utils/setFeaturesSelectedStyle.js';
 import { Step }                                         from '../g3w-step.js';
 
 const GUI = g3w.app;
@@ -18,13 +17,13 @@ export class MoveFeatureStep extends Step {
   }
 
   run(inputs, context) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const layerId        = inputs.layer.getId();
       let originalFeature  = null;
       this.#changeKey      = null;
       let isGeometryChange = false; // changed if geometry is changed
 
-      setFeaturesSelectedStyle({ promise: new Promise(r => this.resolve = r), inputs });
+      this.highlightInputs({ promise: new Promise(r => this.resolve = r) });
 
       this.addInteraction(
         new ol.interaction.Translate({

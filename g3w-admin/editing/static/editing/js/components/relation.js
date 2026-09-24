@@ -6,7 +6,6 @@ import { Tool }                             from '../g3w-tool.js';
 import { Step }                             from '../g3w-step.js';
 import { Feature }                          from '../g3w-feature.js';
 import { cloneFeature }                     from '../utils/cloneFeature.js';
-import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getRelationFieldsFromRelation }    from '../utils/getRelationFieldsFromRelation.js';
 import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
 import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
@@ -772,11 +771,30 @@ export default ({
           // DELETE FEATURE RELATION
           if ('deletefeature' === toolId) {
 
-            setFeaturesSelectedStyle({
-              promise,
-              inputs: { features: [ relationfeature ], layer: this.getLayer() },
-              style: selectStyle
-            })
+            if ((!promise || 'vector' === this.getLayer()?.getType?.()) && !!relationfeature?.getGeometry?.()) {
+              setTimeout(async () => {
+                const ostyle = relationfeature.getStyle();
+                const gtype  = relationfeature.getGeometry().getType();
+                let style    = selectStyle;
+                if (!style && ['LineString', 'MultiLineString'].includes(gtype)) {
+                  style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }) });
+                }
+                if (!style && ['Point', 'MultiPoint'].includes(gtype)) {
+                  style = new ol.style.Style({ image: new ol.style.Circle({ radius: 6, fill: new ol.style.Fill({ color: 'rgb(255,255,0)' }) }), zIndex: Infinity });
+                }
+                if (!style && ['Polygon', 'MultiPolygon'].includes(gtype)) {
+                  style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }), fill: new ol.style.Fill({ color: 'rgba(255,255,0,0.25)' }) });
+                }
+                relationfeature.setStyle(style);
+                try {
+                  await promise;
+                } catch(e) {
+                  console.warn(e);
+                } finally {
+                  relationfeature.setStyle(ostyle);
+                }
+              });
+            }
 
             const ok = await GUI.confirm(_("plugins.editing.confirm_delete_feature"));
 
@@ -1401,7 +1419,7 @@ export default ({
                   help: "editing.select_feature_to_relation",
                   run(inputs, context) {
                     return new Promise(async (resolve, reject) => {
-                      //create a promise for setFeaturesSelectedStyle;
+                      //create a promise for the temporary selected style;
                       const promise = new Promise(r => this.resolve = r);
                       GUI.setModal(false);
                       const editingLayer = getEditingLayer(inputs.layer);
@@ -1411,10 +1429,7 @@ export default ({
                         }
                         const features = editingLayer.getSource().getFeatures().filter(f => Object.entries(context.excludeFeatures || {}).reduce((bool, [field, value]) => bool && value != f.get(field), true))
                         
-                        setFeaturesSelectedStyle({
-                          promise,
-                          inputs: { layer: inputs.layer, features }
-                        });
+                        this.highlightInputs({ promise, features });
 
                         this.addInteraction(
                           new PickFeatureInteraction({ layers: [editingLayer], features }), {
@@ -1432,7 +1447,7 @@ export default ({
                   },
                   stop() {
                     GUI.setModal(true);
-                    this.resolve(true); // resolves to setFeaturesSelectedStyle
+                    this.resolve(true); // resolves the temporary selected style
                     this.resolve = null;
                     return true;
                   },

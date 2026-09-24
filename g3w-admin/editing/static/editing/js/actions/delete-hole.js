@@ -1,5 +1,4 @@
 import { Step }                             from '../g3w-step.js';
-import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 
 const GUI = g3w.app;
@@ -40,7 +39,7 @@ export class DeleteHoleStep extends Step {
     if (this.#holes.length) {
       inputs.features   = this.#holes;
       inputs.coordinate = e.coordinate;
-      setFeaturesSelectedStyle({ promise: Promise.resolve(), inputs });
+      this.highlightInputs({ promise: Promise.resolve() });
       inputs.features.forEach(fh => {
         const feature = getEditingLayer(inputs.layer).getSource().getFeatureById(fh.get('featureId'));
         const oldFeat = feature.clone();

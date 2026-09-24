@@ -23,7 +23,6 @@ import { Feature }                                  from './g3w-feature.js';
 import { setLayerUniqueFieldValues }                from './utils/setLayerUniqueFieldValues.js';
 import { getRelationsInEditing }                    from './utils/getRelationsInEditing.js';
 import { getRelationId }                            from './utils/getRelationId.js';
-import { setFeaturesSelectedStyle }                  from './utils/setFeaturesSelectedStyle.js';
 import { chooseFeature }                            from './utils/chooseFeature.js';
 import { cloneFeature }                             from './utils/cloneFeature.js';
 import { evaluateExpressionFields }                 from './utils/evaluateExpressionFields.js';
@@ -519,7 +518,7 @@ export class ToolBox extends Emitter {
                 });
 
                 if (inputs.features) {
-                  setFeaturesSelectedStyle({ promise, inputs });
+                  this.highlightInputs({ promise });
                 }
 
                   return promise;
@@ -1158,7 +1157,7 @@ export class ToolBox extends Emitter {
                     new ol.interaction.Snap({ edge: false, features: new ol.Collection(inputs.features) })
                   );
                 })
-                setFeaturesSelectedStyle({ promise, inputs })
+                this.highlightInputs({ promise })
                 return promise;
               },
               stop() {
@@ -1243,7 +1242,7 @@ export class ToolBox extends Emitter {
                   );
                 });
 
-                setFeaturesSelectedStyle({ promise, inputs });
+                this.highlightInputs({ promise });
                 return promise;
 
               },
@@ -1317,7 +1316,7 @@ export class ToolBox extends Emitter {
             new Step({
               layer: this.getEditingLayer(),
               run(inputs, context) {
-                return new Promise((resolve, reject) => {
+                return new Promise(resolve => {
                   const originaLayer    = inputs.layer;
                   const editingLayer    = getEditingLayer(inputs.layer);
                   const layerId         = originaLayer.getId();
@@ -1519,7 +1518,7 @@ export class ToolBox extends Emitter {
                   );
                 })
 
-                setFeaturesSelectedStyle({ promise, inputs });
+                this.highlightInputs({ promise });
 
                 return promise;
                 

@@ -2,7 +2,6 @@
  * @file
  */
 
-import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 import { Step }                             from '../g3w-step.js';
 
@@ -62,7 +61,7 @@ export class PickFeatureStep extends Step {
         });
     })
     
-    setFeaturesSelectedStyle({ promise, inputs });
+    this.highlightInputs({ promise });
     return promise;
   }
 

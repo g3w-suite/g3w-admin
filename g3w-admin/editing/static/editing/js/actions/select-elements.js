@@ -3,7 +3,6 @@
  */
 
 import { evaluateExpressionFields }   from '../utils/evaluateExpressionFields.js';
-import { setFeaturesSelectedStyle }   from '../utils/setFeaturesSelectedStyle.js';
 import { chooseFeatureFromFeatures }  from '../utils/chooseFeatureFromFeatures.js';
 import { PickFeaturesInteraction }    from '../actions/pick-feature.js';
 import { getEditingLayer }            from '../utils/getEditingLayer.js';
@@ -76,7 +75,7 @@ export class SelectElementsStep extends Step {
             if (buttonnext) {
               this.#select([feature], inputs);
             } else {
-              this.#originalStyle = setFeaturesSelectedStyle({ features: inputs.features });
+              this.#originalStyle = this.highlightInputs({ features: inputs.features });
 
               if (this.getSteps()) { this.setUserMessageStepDone('select') }
 
@@ -100,7 +99,7 @@ export class SelectElementsStep extends Step {
           } else {
             if (features.length > 0) {
               inputs.features     = features;
-              this.#originalStyle = setFeaturesSelectedStyle({ features });
+              this.#originalStyle = this.highlightInputs({ features });
               if (this.getSteps()) { this.setUserMessageStepDone('select') }
               setTimeout(() => resolve(inputs), 500);
             } else { reject(); }
@@ -123,7 +122,7 @@ export class SelectElementsStep extends Step {
           } else {
             if (features.length > 0) {
               inputs.features     = features;
-              this.#originalStyle = setFeaturesSelectedStyle({ features });
+              this.#originalStyle = this.highlightInputs({ features });
 
               if (this.getSteps()) { this.setUserMessageStepDone('select'); }
 
@@ -224,7 +223,7 @@ export class SelectElementsStep extends Step {
     (features || []).forEach(f => {
       const selIndex = this.#features.indexOf(f);
       if (selIndex < 0) {
-        this.#originalStyle = setFeaturesSelectedStyle({ features: [f] });
+        this.#originalStyle = this.highlightInputs({ features: [f] });
         this.#features.push(f);
       } else {
         this.#features.splice(selIndex, 1);

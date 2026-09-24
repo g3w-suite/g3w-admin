@@ -2,7 +2,7 @@
  * @file
  */
 
-import { getEditingLayer } from './utils/getEditingLayer.js';
+import { getEditingLayer }             from './utils/getEditingLayer.js';
 
 const { Emitter } = g3w;
 const GUI         = g3w.app;
@@ -236,6 +236,58 @@ export class Step extends Emitter {
    */
   getMap() {
     return GUI.getMap();
+  }
+
+  /**
+   * Apply the selected style to features involved in the current step.
+   *
+  * @param {Object} [options] Selection options.
+   *
+   * @returns {ol.style.Style|void} The original style for synchronous calls.
+   */
+  highlightInputs(options = {}) {
+    const features = options.features || this.getInputs()?.features || [];
+
+    if (0 === features.length || (options.promise && 'vector' !== this.getInputs()?.layer?.getType?.()) || features.flat().some(f => !f?.getGeometry?.())) {
+      return;
+    }
+
+    const applyStyle = () => {
+      const feats  = features.flat();
+      const ostyle = feats[0].getStyle();
+      const gtype = feats[0].getGeometry().getType();
+
+      let style;
+
+      if (['LineString', 'MultiLineString'].includes(gtype)) {
+        style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }) });
+      }
+      if (['Point', 'MultiPoint'].includes(gtype)) {
+        style = new ol.style.Style({ image: new ol.style.Circle({ radius: 6, fill: new ol.style.Fill({ color: 'rgb(255,255,0)' }) }), zIndex: Infinity });
+      }
+      if (['Polygon', 'MultiPolygon'].includes(gtype)) {
+        style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }), fill: new ol.style.Fill({ color: 'rgba(255,255,0,0.25)' }) });
+      }
+
+      feats.forEach(f => f.setStyle(style));
+
+      return ostyle;
+    };
+
+    if (!options.promise) {
+      return applyStyle();
+    }
+
+    setTimeout(async () => {
+      const originalStyle = applyStyle();
+      try {
+        await options.promise;
+      } catch(e) {
+        console.warn(e);
+      } finally {
+        features.flat().forEach(f => f.setStyle(originalStyle));
+      }
+    });
   }
 
   /**

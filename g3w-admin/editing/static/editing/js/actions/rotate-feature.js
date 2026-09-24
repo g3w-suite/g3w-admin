@@ -3,7 +3,6 @@
  */
 
 import { evaluateExpressionFields }         from '../utils/evaluateExpressionFields.js';
-import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { Step }                             from '../g3w-step.js';
 
 const GUI = g3w.app;
@@ -577,9 +576,9 @@ export class RotateFeatureStep extends Step {
   }
 
   run(inputs) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const promise        = new Promise(r => this.resolve = r);
-      setFeaturesSelectedStyle({ promise, inputs });
+      this.highlightInputs({ promise });
       this.addInteraction(
         new RotateInteraction({ features: inputs.features }), {
         'rotatestart': e => {
