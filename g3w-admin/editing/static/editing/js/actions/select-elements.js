@@ -156,13 +156,13 @@ export class SelectElementsStep extends Step {
             reject();
             return;
           }
+          const isMulti    = type => /^Multi(LineString|Polygon|Point|Line)(Z|M|ZM|25D)?$/.test(type);
           const attributes = (GUI.getPlugin('editing').getToolBoxById(layer.getId()).state.fields || []);
-let geometry   = e.features[0].getGeometry();
+          let geometry     = e.features[0].getGeometry();
+          const from_type  = geometry.getType();
+          const from_multi = isMulti(from_type);
+          const to_multi   = isMulti(geometryType);
           if (geometryType !== geometry.getType()) {
-            const from_type  = geometry.getType();
-            const isMulti    = type => /^Multi(LineString|Polygon|Point|Line)(Z|M|ZM|25D)?$/.test(type);
-            const from_multi = isMulti(from_type);
-            const to_multi   = isMulti(geometryType);
             if (from_multi && !to_multi) {
               switch (geometry.getType()) {
                 case 'MultiPolygon':    geometry = geometry.getPolygons(); break;
