@@ -519,11 +519,7 @@ export class ToolBox extends Emitter {
                 });
 
                 if (inputs.features) {
-                  setFeaturesSelectedStyle({
-                    promise,
-                    inputs,
-                    style:   this.selectStyle,
-                  });
+                  setFeaturesSelectedStyle({ promise, inputs });
                 }
 
                   return promise;
@@ -1162,7 +1158,7 @@ export class ToolBox extends Emitter {
                     new ol.interaction.Snap({ edge: false, features: new ol.Collection(inputs.features) })
                   );
                 })
-                setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle })
+                setFeaturesSelectedStyle({ promise, inputs })
                 return promise;
               },
               stop() {
@@ -1247,7 +1243,7 @@ export class ToolBox extends Emitter {
                   );
                 });
 
-                setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
+                setFeaturesSelectedStyle({ promise, inputs });
                 return promise;
 
               },
@@ -1523,7 +1519,7 @@ export class ToolBox extends Emitter {
                   );
                 })
 
-                setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
+                setFeaturesSelectedStyle({ promise, inputs });
 
                 return promise;
                 

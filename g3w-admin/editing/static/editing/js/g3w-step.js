@@ -152,26 +152,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * Hook for subclasses to report an unrecoverable implementation state.
-   *
-   * @returns {void}
-   */
-  panic() {
-    console.log('Panic to implement ..');
-  }
-
-  /**
-   * Set the root task associated with this step.
-   *
-   * @param {*} task Root task or parent operation.
-   * 
-   * @returns {void}
-   */
-  setRoot(task) {
-    this.state.root = task;
-  }
-
-  /**
    * @returns {Object} Progress entries shown for this step.
    */
   getUserMessageSteps() {
@@ -228,46 +208,6 @@ export class Step extends Emitter {
    */
   removeInteraction(interaction) {
     setTimeout(() => GUI.removeInteraction(interaction)); // timeout needed to work around an Openlayers issue
-  }
-
-  /**
-   * Return the editing type configured for the step.
-   *
-   * @returns {null} Not implemented by the base step.
-   */
-  getEditingType() {
-    return null;
-  }
-
-  /**
-   * Listen for map pointer movement and update the cursor.
-   *
-   * @returns {void}
-   * 
-   * @listens pointermove
-   */
-  registerPointerMoveCursor() {
-    GUI.getMap().on("pointermove", this._pointerMoveCursor)
-  }
-
-  /**
-   * Stop listening for map pointer movement.
-   *
-   * @returns {void}
-   */
-  unregisterPointerMoveCursor() {
-    GUI.getMap().un("pointermove", this._pointerMoveCursor)
-  }
-
-  /**
-   * Update the cursor according to the feature under the pointer.
-   *
-   * @param {Object} evt Map pointer-move event.
-   * 
-   * @returns {void}
-   */
-  _pointerMoveCursor(evt) {
-    this.getTargetElement().style.cursor = (this.forEachFeatureAtPixel(evt.pixel, () => true) ? 'pointer' : '');
   }
 
   /**
@@ -509,24 +449,6 @@ export class Step extends Emitter {
    */
   getTask() {
     return this;
-  }
-
-  /**
-   * Store the outputs produced by the step task.
-   *
-   * @param {Object} outputs Step outputs.
-   * 
-   * @returns {void}
-   */
-  setOutputs(outputs) {
-    this._outputs = outputs;
-  }
-
-  /**
-   * @returns {Object|null} Step outputs.
-   */
-  getOutputs() {
-    return this._outputs;
   }
 
   /**

@@ -53,7 +53,7 @@ export class AddFeatureStep extends Step {
       // Skip when a layer type is vector
       if ('vector' !== inputs.layer.getType()) { return  }
 
-      setFeaturesSelectedStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
+      setFeaturesSelectedStyle({ promise: new Promise(r => this.resolve = r), inputs });
 
       const toolbox = GUI.getPlugin('editing').getToolBoxById(layerId);
       const originalGeometryType = toolbox.state.geometrytype;

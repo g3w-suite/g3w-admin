@@ -579,7 +579,7 @@ export class RotateFeatureStep extends Step {
   run(inputs) {
     return new Promise((resolve) => {
       const promise        = new Promise(r => this.resolve = r);
-      setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
+      setFeaturesSelectedStyle({ promise, inputs });
       this.addInteraction(
         new RotateInteraction({ features: inputs.features }), {
         'rotatestart': e => {

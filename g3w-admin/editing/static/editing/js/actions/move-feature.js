@@ -24,7 +24,7 @@ export class MoveFeatureStep extends Step {
       this.#changeKey      = null;
       let isGeometryChange = false; // changed if geometry is changed
 
-      setFeaturesSelectedStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
+      setFeaturesSelectedStyle({ promise: new Promise(r => this.resolve = r), inputs });
 
       this.addInteraction(
         new ol.interaction.Translate({

@@ -62,7 +62,7 @@ export class PickFeatureStep extends Step {
         });
     })
     
-    setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
+    setFeaturesSelectedStyle({ promise, inputs });
     return promise;
   }
 

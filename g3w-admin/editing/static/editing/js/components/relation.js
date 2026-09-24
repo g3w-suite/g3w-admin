@@ -772,7 +772,11 @@ export default ({
           // DELETE FEATURE RELATION
           if ('deletefeature' === toolId) {
 
-            setFeaturesSelectedStyle({ promise, inputs: { features: [ relationfeature ], layer: this.getLayer() }, style: selectStyle })
+            setFeaturesSelectedStyle({
+              promise,
+              inputs: { features: [ relationfeature ], layer: this.getLayer() },
+              style: selectStyle
+            })
 
             const ok = await GUI.confirm(_("plugins.editing.confirm_delete_feature"));
 
@@ -1406,10 +1410,10 @@ export default ({
                           await context.beforeRun();
                         }
                         const features = editingLayer.getSource().getFeatures().filter(f => Object.entries(context.excludeFeatures || {}).reduce((bool, [field, value]) => bool && value != f.get(field), true))
+                        
                         setFeaturesSelectedStyle({
                           promise,
-                          inputs:  { layer: inputs.layer, features },
-                          style:   this.selectStyle,
+                          inputs: { layer: inputs.layer, features }
                         });
 
                         this.addInteraction(

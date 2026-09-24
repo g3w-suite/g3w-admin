@@ -107,7 +107,7 @@ export class OpenFormStep extends Step {
     })
 
     //set selected features
-    setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
+    setFeaturesSelectedStyle({ promise, inputs });
 
     return new Promise(async (resolve, reject) => {
 
