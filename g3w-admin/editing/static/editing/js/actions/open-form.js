@@ -68,7 +68,7 @@ export class OpenFormStep extends Step {
    *
    * @type {Array<() => void>}
    */
-  #unwatchs = [];
+  #unwatches = [];
 
   /**
    * Whether the form was opened as a child of another editing form.
@@ -82,21 +82,21 @@ export class OpenFormStep extends Step {
    *
    * @type {string|number|null|undefined}
    */
-  layerId;
+  #layerId;
 
   /**
    * Features currently edited by the form.
    *
    * @type {Feature[]|undefined}
    */
-  _features;
+  #features;
 
   /**
    * Clones of the features as they were when the form was opened.
    *
    * @type {Feature[]|undefined}
    */
-  _originalFeatures;
+  #originalFeatures;
 
   /**
    * @param {Object} [opts={}] Step options.
@@ -145,6 +145,27 @@ export class OpenFormStep extends Step {
   }
 
   /**
+   * @returns {string|number|null|undefined} ID of the current layer.
+   */
+  getLayerId() {
+    return this.#layerId;
+  }
+
+  /**
+   * @returns {Feature[]|undefined} Features currently edited by the form.
+   */
+  getFeatures() {
+    return this.#features;
+  }
+
+  /**
+   * @returns {Feature[]|undefined} Feature snapshots captured when the form opened.
+   */
+  getOriginalFeatures() {
+    return this.#originalFeatures;
+  }
+
+  /**
    * Opens the form, loads dependent relation features and wires save/cancel
    * handlers to the editing plugin.
    *
@@ -156,12 +177,12 @@ export class OpenFormStep extends Step {
     GUI.setModal(true);
     // Nested forms can be forced by the caller, otherwise infer nesting from the tool stack.
     this.#isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
-    this.layerId           = inputs.layer.getId();
-    this._features         = this.hasMulti() ? inputs.features : [inputs.features[inputs.features.length - 1]];
-    this._originalFeatures = this._features.map(f => f.clone());
+    this.#layerId          = inputs.layer.getId();
+    this.#features         = this.hasMulti() ? inputs.features : [inputs.features[inputs.features.length - 1]];
+    this.#originalFeatures = this.getFeatures().map(f => f.clone());
 
     const promise = new Promise((resolve) => {
-      GUI.getPlugin('editing').once(`closeform_${this.layerId}`, () => resolve());
+      GUI.getPlugin('editing').once(`closeform_${this.getLayerId()}`, () => resolve());
     })
 
     // Resolve the highlight promise when the form is closed.
@@ -186,15 +207,15 @@ export class OpenFormStep extends Step {
       if (this.hasChild()) {
         context.fatherValue = context.fatherValue || []; // Relation values are positional arrays.
         (context.fatherField || []).forEach((field, i) => {
-          this._features[0].set(field, context.fatherValue[i]);
-          this._originalFeatures[0].set(field, context.fatherValue[i]);
+          this.getFeatures()[0].set(field, context.fatherValue[i]);
+          this.getOriginalFeatures()[0].set(field, context.fatherValue[i]);
         });
       }
 
       const formLayerId = inputs.layer.getId();
       const fields      = getFieldsWithValues(
         inputs.layer,
-        this._features[0],
+        this.getFeatures()[0],
         {
           exclude:           context.excludeFields,
           get_default_value: context?.get_default_value ?? false,
@@ -207,7 +228,7 @@ export class OpenFormStep extends Step {
         .filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique))
         .map(field => ({
           field,
-          _value: this._features[0].get(field.name),
+          _value: this.getFeatures()[0].get(field.name),
         }));
 
       unique_values.forEach(({ _value, field }) => {
@@ -286,14 +307,14 @@ export class OpenFormStep extends Step {
       const SELF = this;
 
       const formService = GUI.showForm({
-        feature:         this._originalFeatures[0],
+        feature:         this.getOriginalFeatures()[0],
         title:           "plugins.editing.editing_attributes",
         name:            layerName,
         crumb:           { title: layerName },
         id:              `form_${layerName}`,
         dataid:          layerName,
         layer:           inputs.layer,
-        isnew:           this._originalFeatures.length > 1 ? false : this._originalFeatures[0].isNew(), // Multi-edit forms never represent a single new feature.
+        isnew:           this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
         parentData:      getParentFormData(),
         fields:          formFields,
         context_inputs:  this.hasMulti() ? false: { context, inputs },
@@ -376,17 +397,17 @@ export class OpenFormStep extends Step {
                       // In multi-edit mode, null values mean "leave this field unchanged".
                       const fields = t.getContext().service.state.fields.filter(f => task.hasMulti() ? null !== f.value : true);
                       await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
-                      task._features.forEach(f => SELF.#setFieldsWithValues(f, fields));
-                      const newFeatures = task._features.map(f => f.clone());
+                      task.getFeatures().forEach(f => SELF.#setFieldsWithValues(f, fields));
+                      const newFeatures = task.getFeatures().map(f => f.clone());
                       // Preserve the parent/child payload for relation forms.
                       if (task.hasChild()) {
-                        task.getInputs().relationFeatures = { newFeatures, originalFeatures: task._originalFeatures };
+                        task.getInputs().relationFeatures = { newFeatures, originalFeatures: task.getOriginalFeatures() };
                       }
-                      await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task._originalFeatures });
-                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.layerId, f, task._originalFeatures[i]));
-                      await SELF.#handleRelation1_1LayerFields({ layerId: task.layerId, features: newFeatures, fields, task });
+                      await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task.getOriginalFeatures() });
+                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.getLayerId(), f, task.getOriginalFeatures()[i]));
+                      await SELF.#handleRelation1_1LayerFields({ layerId: task.getLayerId(), features: newFeatures, fields, task });
                       GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                      GUI.getPlugin('editing').emit(`savedfeature_${task.layerId}`, newFeatures); // called after saved using layerId
+                      GUI.getPlugin('editing').emit(`savedfeature_${task.getLayerId()}`, newFeatures); // called after saved using layerId
                       GUI.getPlugin('editing').getToolBoxById(task.getContext().id).saveChanges();
                       return resolve();
                     }))
@@ -461,7 +482,7 @@ export class OpenFormStep extends Step {
               cbk: async (fields = []) => {
                 const service    = Tool.Stack.current.getContext().service;
                 const hasUpdates = !!service?.state?.fields?.some(f => f.update);    // Detect changed fields.
-                const isNew      = !!this._originalFeatures?.some(f => f.isNew?.()); // New features must be saved even without field updates.
+                const isNew      = !!this.getOriginalFeatures()?.some(f => f.isNew?.()); // New features must be saved even without field updates.
                 const newFeatures = [];
 
                 fields = this.hasMulti() ? fields.filter(f => null !== f.value) : fields;
@@ -477,7 +498,7 @@ export class OpenFormStep extends Step {
 
                 await service.saveDefaultExpressionFieldsNotDependencies();
 
-                this._features.forEach(f => {
+                this.getFeatures().forEach(f => {
                   this.#setFieldsWithValues(f, fields);
                   newFeatures.push(f.clone());
                 });
@@ -485,24 +506,24 @@ export class OpenFormStep extends Step {
                 if (this.hasChild()) {
                   inputs.relationFeatures = {
                     newFeatures,
-                    originalFeatures: this._originalFeatures
+                    originalFeatures: this.getOriginalFeatures()
                   };
                 }
             
-                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
+                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this.getOriginalFeatures() });
 
-                newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.layerId, f, this._originalFeatures[i]));
+                newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.getLayerId(), f, this.getOriginalFeatures()[i]));
 
                 // Update any editable child feature represented by a 1:1 join field.
                 await this.#handleRelation1_1LayerFields({
-                  layerId:  this.layerId,
+                  layerId:  this.getLayerId(),
                   features: newFeatures,
                   fields,
                   task:     this,
                 });
 
                 GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
+                GUI.getPlugin('editing').emit(`savedfeature_${this.getLayerId()}`, newFeatures); // called after saved using layerId
 
                 // Mark parent forms as changed when a child form is saved.
                 if (this.hasChild()) {
@@ -587,8 +608,8 @@ export class OpenFormStep extends Step {
       // Notify consumers that the form is ready.
       GUI.getPlugin('editing').emit('openform',
         {
-          layerId: this.layerId,
-          feature: this._originalFeature,
+          layerId: this.getLayerId(),
+          feature: this.getOriginalFeatures()[0],
           formService
         }
       );
@@ -600,7 +621,7 @@ export class OpenFormStep extends Step {
       (async () => {
         const unwatches = []; // Functions that remove the registered Vue watchers.
 
-        const ONE = getCatalogLayerById(this.layerId)
+        const ONE = getCatalogLayerById(this.getLayerId())
           .getRelations()
           .getArray()
           .filter(r => 'ONE' === r.getType());
@@ -698,7 +719,7 @@ export class OpenFormStep extends Step {
         }
 
         return unwatches;
-      })().then(d => this.#unwatchs = d);
+      })().then(d => this.#unwatches = d);
 
       if (!this.hasChild()) {
         GUI.disableSideBar(true);
@@ -718,24 +739,15 @@ export class OpenFormStep extends Step {
     }
 
     // Keep the map controls and modal state for top-level forms and table editing.
-    const is_parent_table = false === this.hasChild() || // no child tool
-      (
-        // Editing a feature from the alphanumeric table uses a nested stack.
-        2 === Tool.Stack.length && // The first stack item is the feature table.
-        Tool.Stack.parent.isType('edittable')
-      );
-    // Some actions resolve before creating a form service, for example when
-    // copying multiple features from another layer.
-    if (is_parent_table) {
+    // Some actions resolve before creating a form service, for example when copying multiple features from another layer.
+    if (!this.hasChild() || (2 === Tool.Stack.length && Tool.Stack.parent.isType('edittable'))) {
       GUI.disableClickMapControls(false);
       GUI.setModal(false);
     }
 
-    const contextService = is_parent_table && Tool.Stack.current.getContext().service;
-
     // Clear the parent form's update state when this is a top-level form.
-    if (contextService && contextService.setUpdate && false === this.hasChild()) {
-      contextService.setUpdate(false, { force: false });
+    if (!this.hasChild()) {
+      Tool.Stack.current?.getContext?.()?.service?.setUpdate?.(false, { force: false });
     }
 
     // Nested relation forms may leave other content open in the modal.
@@ -744,11 +756,11 @@ export class OpenFormStep extends Step {
     GUI.getPlugin('editing').resetCurrentLayout();
 
     GUI.getPlugin('editing').emit('closeform');
-    GUI.getPlugin('editing').emit(`closeform_${this.layerId}`);
+    GUI.getPlugin('editing').emit(`closeform_${this.getLayerId()}`);
 
-    this.layerId = null;
-    this.#unwatchs.forEach(unwatch => unwatch());
-    this.#unwatchs = [];
+    this.#layerId = null;
+    this.#unwatches.forEach(unwatch => unwatch());
+    this.#unwatches = [];
     this.#saveAllError = false;
   }
 
