@@ -381,13 +381,10 @@ export class IframeEditor extends Emitter {
             }),
           })
         ).json();
+        
+        //unlock the layer after commit
+        await fetch(`${VECTOR_URL}unlock/${GID}/${qgs_layer_id}/`);
     }
-
-    // unlock layer
-    if (['update', 'delete'].includes(method)) {
-      await fetch(`${VECTOR_URL}unlock/${GID}/${qgs_layer_id}/`);
-    }
-
     // Draw/modify geometry
     if ('draw' === method) {
       GUI.disableClickMapControls(true);
