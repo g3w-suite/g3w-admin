@@ -1,4 +1,3 @@
-import { Tool }                     from '../g3w-tool.js';
 import { setFeaturesSelectedStyle } from '../utils/setFeaturesSelectedStyle.js';
 
 /**
