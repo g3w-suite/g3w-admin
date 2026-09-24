@@ -457,12 +457,12 @@ export class IframeEditor extends Emitter {
 
     // save features (to layer)
     if ('save' === method) {
-      if (layer) {
+      if (layer && layer.getOLLayer().getSource().getFeatures().length > 0) {
         geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getOLLayer().getSource().getFeatures()[0]);
         layer.getOLLayer().getSource().clear();
-        this.#interactions.forEach(i => GUI.getMap().removeInteraction(i));
-        this.#interactions = [];
       }
+      this.#interactions.forEach(i => GUI.getMap().removeInteraction(i));
+      this.#interactions = [];
       GUI.disableClickMapControls(false);
     }
 
