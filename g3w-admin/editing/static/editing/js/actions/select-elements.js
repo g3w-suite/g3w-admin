@@ -19,15 +19,18 @@ const { convertSingleMultiGeometry }                    = g3w.utils;
 
 export class SelectElementsStep extends Step {
 
+  #originalStyle;
+
+  #interactions = [];
+
+  #features = [];
+
+  #layer;
+
   constructor(opts = {}, chain) {
     opts.help = opts.help ?? "editing.select_elements";
 
     super(opts);
-
-    this._selectInteractions    = [];
-    this.multipleselectfeatures = [];
-    this._originalStyle;
-    this._vectorLayer;
 
     if (chain) {
       this.on('run', () => { this.emit('next-step', _("plugins.editing.select_elements")) });
@@ -73,9 +76,9 @@ export class SelectElementsStep extends Step {
           if (feature) {
             inputs.features = [feature];
             if (buttonnext) {
-              _addRemoveToMultipleSelectFeatures([feature], inputs, this.multipleselectfeatures, this);
+              this.#select([feature], inputs);
             } else {
-              this._originalStyle = setFeaturesSelectedStyle(inputs.features);
+              this.#originalStyle = setFeaturesSelectedStyle(inputs.features);
 
               if (this._steps) { this.setUserMessageStepDone('select') }
 
@@ -87,19 +90,19 @@ export class SelectElementsStep extends Step {
 
       // add multiple select interactions
       if (['multiple', 'bbox'].includes(type) && ApplicationState.ismobile) {
-        this._vectorLayer = new ol.layer.Vector({ source: new ol.source.Vector({}) });
-        this.getMap().addLayer(this._vectorLayer);
+        this.#layer = new ol.layer.Vector({ source: new ol.source.Vector({}) });
+        this.getMap().addLayer(this.#layer);
 
-        interactions.multi = new ol.interaction.Draw({ type: 'Circle', source: this._vectorLayer.getSource(), geometryFunction: ol.interaction.Draw.createBox() });
+        interactions.multi = new ol.interaction.Draw({ type: 'Circle', source: this.#layer.getSource(), geometryFunction: ol.interaction.Draw.createBox() });
 
         interactions.multi.on('drawend', e => {
           const features = getEditingLayer(layer).getSource().getFeaturesInExtent(e.feature.getGeometry().getExtent());
           if (buttonnext) {
-            _addRemoveToMultipleSelectFeatures(features, inputs, this.multipleselectfeatures, this);
+            this.#select(features, inputs);
           } else {
             if (features.length > 0) {
               inputs.features     = features;
-              this._originalStyle = setFeaturesSelectedStyle(features);
+              this.#originalStyle = setFeaturesSelectedStyle(features);
               if (this._steps) { this.setUserMessageStepDone('select') }
               setTimeout(() => resolve(inputs), 500);
             } else { reject(); }
@@ -118,11 +121,11 @@ export class SelectElementsStep extends Step {
           getEditingLayer(layer).getSource().forEachFeatureIntersectingExtent(extent, f => { features.push(f) });
 
           if (buttonnext) {
-            _addRemoveToMultipleSelectFeatures(features, inputs, this.multipleselectfeatures, this);
+            this.#select(features, inputs);
           } else {
             if (features.length > 0) {
               inputs.features     = features;
-              this._originalStyle = setFeaturesSelectedStyle(features);
+              this.#originalStyle = setFeaturesSelectedStyle(features);
 
               if (this._steps) { this.setUserMessageStepDone('select'); }
 
@@ -185,47 +188,47 @@ export class SelectElementsStep extends Step {
       }
 
       Object.values(interactions).forEach(i => this.addInteraction(i));
-      this._selectInteractions.push(...Object.values(interactions));
+      this.#interactions.push(...Object.values(interactions));
     });
   }
 
   stop() {
     Object.values(this.getSteps() || {}).forEach(s => s.reset && s.reset() );
-    this._selectInteractions.forEach(i => this.removeInteraction(i));
+    this.#interactions.forEach(i => this.removeInteraction(i));
 
-    if (this._vectorLayer) {
-      this.getMap().removeLayer(this._vectorLayer);
+    if (this.#layer) {
+      this.getMap().removeLayer(this.#layer);
     }
     // reset selected
-    this.getInputs().features.forEach(f => f.setStyle(this._originalStyle));
+    this.getInputs().features.forEach(f => f.setStyle(this.#originalStyle));
 
-    this._originalStyle         = null;
-    this._vectorLayer           = null;
-    this._selectInteractions    = [];
-    this.multipleselectfeatures = [];
+    this.#originalStyle = null;
+    this.#layer         = null;
+    this.#interactions  = [];
+    this.#features      = [];
   }
 
-}
+  #select(features, inputs) {
+    (features || []).forEach(f => {
+      const selIndex = this.#features.indexOf(f);
+      if (selIndex < 0) {
+        this.#originalStyle = setFeaturesSelectedStyle([f]);
+        this.#features.push(f);
+      } else {
+        this.#features.splice(selIndex, 1);
+        f.setStyle(this.#originalStyle);
+      }
+      inputs.features = this.#features;
+    });
 
-function _addRemoveToMultipleSelectFeatures(features, inputs, selected, task) {
-  (features || []).forEach(f => {
-    const selIndex = selected.indexOf(f);
-    if (selIndex < 0) {
-      task._originalStyle = setFeaturesSelectedStyle([f]);
-      selected.push(f);
-    } else {
-      selected.splice(selIndex, 1);
-      f.setStyle(task._originalStyle);
+    const steps      = this.getSteps();
+    const buttonnext = steps.select.buttonnext;
+
+    buttonnext.disabled = buttonnext.condition ? buttonnext.condition({ features: this.#features }) : 0 === this.#features.length;
+
+    if (undefined !== steps.select.dynamic) {
+      steps.select.dynamic = this.#features.length;
     }
-    inputs.features = selected;
-  });
-
-  const steps      = task.getSteps();
-  const buttonnext = steps.select.buttonnext;
-
-  buttonnext.disabled = buttonnext.condition ? buttonnext.condition({ features: selected }) : 0 === selected.length;
-
-  if (undefined !== steps.select.dynamic) {
-    steps.select.dynamic = selected.length;
   }
+
 }

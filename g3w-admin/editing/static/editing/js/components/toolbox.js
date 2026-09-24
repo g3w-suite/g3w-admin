@@ -2,7 +2,6 @@
  * @file Editing toolbox (left menu)
  */
 
-import { setVertexStyle }      from '../utils/setVertexStyle.js';
 import { getCatalogLayerById } from '../utils/getCatalogLayerById.js';
 
 const ApplicationState           = g3w.state;
@@ -420,21 +419,29 @@ export default ({
     addSnapFeatures(features = []) {
       //get current uid and style of selected features
       this.uidsstyles = this.state.activetool.getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
-      features
-        .forEach(f => {       
-          setVertexStyle({
-            feature: f,
-            ...(this.uidsstyles.find(({ uid }) => uid === f._uid) //in case of current selected feature add just vertex
-              ? {} 
-              : {
-                vertexColor: 'black',
-                fillVertex:  true,
-                lineColor:   'black',
-              }
-            )
-          });
-          snapFeatures.push(f);
-        });
+      features.forEach(f => {
+        const isSelected = this.uidsstyles.find(({ uid }) => uid === f._uid);
+        // set vertex style
+        f.setStyle(() => [
+          new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 4,
+              fill: !isSelected  ? new ol.style.Fill({ color: 'black' })           : undefined,
+              stroke: isSelected ? new ol.style.Stroke({ color: 'red', width: 3 }) : undefined,
+            }),
+            geometry: feature => new ol.geom.MultiPoint([feature.getGeometry().getCoordinates()].flat({
+              Point:           0,
+              MultiPoint:      1,
+              LineString:      1,
+              Polygon:         2,
+              MultiLineString: 2,
+              MultiPolygon:    3,
+            }[feature.getGeometry().getType()])),
+          }),
+          new ol.style.Style({ stroke: new ol.style.Stroke({ color: isSelected ? 'yellow' : 'black', width: 3 })})
+        ]);
+        snapFeatures.push(f);
+      });
     },
 
     /** @TODO add description */
