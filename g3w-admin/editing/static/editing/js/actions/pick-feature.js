@@ -2,7 +2,7 @@
  * @file
  */
 
-import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
+import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 import { Step }                             from '../g3w-step.js';
 
@@ -62,7 +62,7 @@ export class PickFeatureStep extends Step {
         });
     })
     
-    setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+    setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
     return promise;
   }
 

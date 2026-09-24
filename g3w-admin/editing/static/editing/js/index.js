@@ -612,7 +612,7 @@ new (class extends Plugin {
                     }
                   });
                   if (inputs.features) {
-                    (await import('./utils/setAndUnsetSelectedFeaturesStyle.js')).setAndUnsetSelectedFeaturesStyle({
+                    (await import('./utils/setFeaturesSelectedStyle.js')).setFeaturesSelectedStyle({
                       promise,
                       inputs,
                       style: this.selectStyle,

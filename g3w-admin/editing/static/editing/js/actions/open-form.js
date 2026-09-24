@@ -3,7 +3,7 @@
  */
 
 import { getParentFormData }                from '../utils/getParentFormData.js';
-import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
+import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
 import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
 import { setLayerUniqueFieldValues }        from '../utils/setLayerUniqueFieldValues.js';
@@ -101,7 +101,7 @@ export class OpenFormStep extends Step {
     })
 
     //set selected features
-    setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+    setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
 
     return new Promise(async (resolve, reject) => {
 

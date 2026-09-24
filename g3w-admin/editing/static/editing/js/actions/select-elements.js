@@ -76,7 +76,7 @@ export class SelectElementsStep extends Step {
             if (buttonnext) {
               this.#select([feature], inputs);
             } else {
-              this.#originalStyle = setFeaturesSelectedStyle(inputs.features);
+              this.#originalStyle = setFeaturesSelectedStyle({ features: inputs.features });
 
               if (this._steps) { this.setUserMessageStepDone('select') }
 
@@ -100,7 +100,7 @@ export class SelectElementsStep extends Step {
           } else {
             if (features.length > 0) {
               inputs.features     = features;
-              this.#originalStyle = setFeaturesSelectedStyle(features);
+              this.#originalStyle = setFeaturesSelectedStyle({ features });
               if (this._steps) { this.setUserMessageStepDone('select') }
               setTimeout(() => resolve(inputs), 500);
             } else { reject(); }
@@ -123,7 +123,7 @@ export class SelectElementsStep extends Step {
           } else {
             if (features.length > 0) {
               inputs.features     = features;
-              this.#originalStyle = setFeaturesSelectedStyle(features);
+              this.#originalStyle = setFeaturesSelectedStyle({ features });
 
               if (this._steps) { this.setUserMessageStepDone('select'); }
 
@@ -224,7 +224,7 @@ export class SelectElementsStep extends Step {
     (features || []).forEach(f => {
       const selIndex = this.#features.indexOf(f);
       if (selIndex < 0) {
-        this.#originalStyle = setFeaturesSelectedStyle([f]);
+        this.#originalStyle = setFeaturesSelectedStyle({ features: [f] });
         this.#features.push(f);
       } else {
         this.#features.splice(selIndex, 1);

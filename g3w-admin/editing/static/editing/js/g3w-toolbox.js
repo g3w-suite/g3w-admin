@@ -23,7 +23,7 @@ import { Feature }                                  from './g3w-feature.js';
 import { setLayerUniqueFieldValues }                from './utils/setLayerUniqueFieldValues.js';
 import { getRelationsInEditing }                    from './utils/getRelationsInEditing.js';
 import { getRelationId }                            from './utils/getRelationId.js';
-import { setAndUnsetSelectedFeaturesStyle }         from './utils/setAndUnsetSelectedFeaturesStyle.js';
+import { setFeaturesSelectedStyle }                  from './utils/setFeaturesSelectedStyle.js';
 import { chooseFeature }                            from './utils/chooseFeature.js';
 import { cloneFeature }                             from './utils/cloneFeature.js';
 import { evaluateExpressionFields }                 from './utils/evaluateExpressionFields.js';
@@ -519,7 +519,7 @@ export class ToolBox extends Emitter {
                 });
 
                 if (inputs.features) {
-                  setAndUnsetSelectedFeaturesStyle({
+                  setFeaturesSelectedStyle({
                     promise,
                     inputs,
                     style:   this.selectStyle,
@@ -1162,7 +1162,7 @@ export class ToolBox extends Emitter {
                     new ol.interaction.Snap({ edge: false, features: new ol.Collection(inputs.features) })
                   );
                 })
-                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle })
+                setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle })
                 return promise;
               },
               stop() {
@@ -1247,7 +1247,7 @@ export class ToolBox extends Emitter {
                   );
                 });
 
-                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+                setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
                 return promise;
 
               },
@@ -1523,7 +1523,7 @@ export class ToolBox extends Emitter {
                   );
                 })
 
-                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+                setFeaturesSelectedStyle({ promise, inputs, style: this.selectStyle });
 
                 return promise;
                 

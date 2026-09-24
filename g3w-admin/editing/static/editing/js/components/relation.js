@@ -6,7 +6,7 @@ import { Tool }                             from '../g3w-tool.js';
 import { Step }                             from '../g3w-step.js';
 import { Feature }                          from '../g3w-feature.js';
 import { cloneFeature }                     from '../utils/cloneFeature.js';
-import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
+import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getRelationFieldsFromRelation }    from '../utils/getRelationFieldsFromRelation.js';
 import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
 import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
@@ -772,7 +772,7 @@ export default ({
           // DELETE FEATURE RELATION
           if ('deletefeature' === toolId) {
 
-            setAndUnsetSelectedFeaturesStyle({ promise, inputs: { features: [ relationfeature ], layer: this.getLayer() }, style: selectStyle })
+            setFeaturesSelectedStyle({ promise, inputs: { features: [ relationfeature ], layer: this.getLayer() }, style: selectStyle })
 
             const ok = await GUI.confirm(_("plugins.editing.confirm_delete_feature"));
 
@@ -1397,7 +1397,7 @@ export default ({
                   help: "editing.select_feature_to_relation",
                   run(inputs, context) {
                     return new Promise(async (resolve, reject) => {
-                      //create a promise for setAndUnsetSelectedFeaturesStyle;
+                      //create a promise for setFeaturesSelectedStyle;
                       const promise = new Promise(r => this.resolve = r);
                       GUI.setModal(false);
                       const editingLayer = getEditingLayer(inputs.layer);
@@ -1406,7 +1406,7 @@ export default ({
                           await context.beforeRun();
                         }
                         const features = editingLayer.getSource().getFeatures().filter(f => Object.entries(context.excludeFeatures || {}).reduce((bool, [field, value]) => bool && value != f.get(field), true))
-                        setAndUnsetSelectedFeaturesStyle({
+                        setFeaturesSelectedStyle({
                           promise,
                           inputs:  { layer: inputs.layer, features },
                           style:   this.selectStyle,
@@ -1428,7 +1428,7 @@ export default ({
                   },
                   stop() {
                     GUI.setModal(true);
-                    this.resolve(true); // resolves to setAndUnsetSelectedFeaturesStyle
+                    this.resolve(true); // resolves to setFeaturesSelectedStyle
                     this.resolve = null;
                     return true;
                   },

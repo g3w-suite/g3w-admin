@@ -2,7 +2,7 @@
  * @file
  */
 
-import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
+import { setFeaturesSelectedStyle }            from '../utils/setFeaturesSelectedStyle.js';
 import { getEditingLayer }                  from '../utils/getEditingLayer.js';
 import { addZValue }                        from '../utils/addZValue.js';
 import { Step }                             from '../g3w-step.js';
@@ -56,7 +56,7 @@ export class AddFeatureStep extends Step {
       // Skip when a layer type is vector
       if ('vector' !== inputs.layer.getType()) { return  }
 
-      setAndUnsetSelectedFeaturesStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
+      setFeaturesSelectedStyle({ promise: new Promise(r => this.resolve = r), inputs, style: this.selectStyle });
 
       const toolbox = GUI.getPlugin('editing').getToolBoxById(layerId);
       const originalGeometryType = toolbox.state.geometrytype;
