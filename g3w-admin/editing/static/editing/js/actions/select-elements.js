@@ -2,20 +2,19 @@
  * @file
  */
 
-import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
-import { setFeaturesSelectedStyle }                     from '../utils/setFeaturesSelectedStyle.js';
-import { chooseFeatureFromFeatures }                    from '../utils/chooseFeatureFromFeatures.js';
-import { isSameBaseGeometryType }                       from '../utils/isSameBaseGeometryType.js';
-import { PickFeaturesInteraction }                      from '../actions/pick-feature.js';
-import { getEditingLayer }                              from '../utils/getEditingLayer.js';
-import { removeZValue }                                 from '../utils/removeZValue.js';
-import { Step }                                         from '../g3w-step.js';
-import { Feature }                                      from '../g3w-feature.js';
+import { evaluateExpressionFields }   from '../utils/evaluateExpressionFields.js';
+import { setFeaturesSelectedStyle }   from '../utils/setFeaturesSelectedStyle.js';
+import { chooseFeatureFromFeatures }  from '../utils/chooseFeatureFromFeatures.js';
+import { isSameBaseGeometryType }     from '../utils/isSameBaseGeometryType.js';
+import { PickFeaturesInteraction }    from '../actions/pick-feature.js';
+import { getEditingLayer }            from '../utils/getEditingLayer.js';
+import { removeZValue }               from '../utils/removeZValue.js';
+import { Step }                       from '../g3w-step.js';
+import { Feature }                    from '../g3w-feature.js';
 
-const ApplicationState                                  = g3w.state;
-const GUI                                               = g3w.app;
-const _                                                 = g3w.gettext;
-const { convertSingleMultiGeometry }                    = g3w.utils;
+const ApplicationState = g3w.state;
+const GUI              = g3w.app;
+const _                = g3w.gettext;
 
 export class SelectElementsStep extends Step {
 
@@ -162,7 +161,22 @@ export class SelectElementsStep extends Step {
           const attributes = (GUI.getPlugin('editing').getToolBoxById(layer.getId()).state.fields || []);
           const geometry   = e.features[0].getGeometry();
           if (geometryType !== geometry.getType()) {
-            e.feature.setGeometry(convertSingleMultiGeometry(geometry, geometryType));
+            const from_type  = geometry.getType();
+            const isMulti    = type => /^Multi(LineString|Polygon|Point|Line)(Z|M|ZM|25D)?$/.test(type);
+            const from_multi = isMulti(from_type);
+            const to_multi   = isMulti(geometryType);
+            if (from_multi && !to_multi) {
+              switch (geometry.getType()) {
+                case 'MultiPolygon':    geometry = geometry.getPolygons(); break;
+                case 'MultiLine':       geometry = geometry.getLineStrings(); break;
+                case 'MultiLineString': geometry = geometry.getLineStrings(); break;
+                case 'MultiPoint':      geometry = geometry.getPoints(); break;
+                default:                console.warn('invalid geometry type', geometry.getType()); geometry = [];
+              }
+            } else if (!from_multi && to_multi) {
+              geometry = new ol.geom[`Multi${from_type}`]([geometry.getCoordinates()]);
+            }
+            e.feature.setGeometry(geometry);
           }
           const feature = new Feature({
             feature:    e.feature,
