@@ -256,21 +256,19 @@ export class Step extends Emitter {
       const feats  = features.flat();
       const ostyle = feats[0].getStyle();
       const gtype = feats[0].getGeometry().getType();
-
-      let style;
-
-      if (['LineString', 'MultiLineString'].includes(gtype)) {
-        style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }) });
-      }
-      if (['Point', 'MultiPoint'].includes(gtype)) {
-        style = new ol.style.Style({ image: new ol.style.Circle({ radius: 6, fill: new ol.style.Fill({ color: 'rgb(255,255,0)' }) }), zIndex: Infinity });
-      }
-      if (['Polygon', 'MultiPolygon'].includes(gtype)) {
-        style = new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 }), fill: new ol.style.Fill({ color: 'rgba(255,255,0,0.25)' }) });
-      }
-
+      const style = new ol.style.Style({
+        ...(['LineString', 'MultiLineString', 'Polygon', 'MultiPolygon'].includes(gtype) && {
+          stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 })
+        }),
+        ...(['Polygon', 'MultiPolygon'].includes(gtype) && {
+          fill: new ol.style.Fill({ color: 'rgba(255,255,0,0.25)' })
+        }),
+        ...(['Point', 'MultiPoint'].includes(gtype) && {
+          image: new ol.style.Circle({ radius: 6, fill: new ol.style.Fill({ color: 'rgb(255,255,0)' }) }),
+          zIndex: Infinity
+        })
+      });
       feats.forEach(f => f.setStyle(style));
-
       return ostyle;
     };
 
