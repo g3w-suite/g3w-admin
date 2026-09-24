@@ -481,7 +481,7 @@ export class ToolBox extends Emitter {
                   relations.forEach(r => unlinkRelation({ layerId, relation, relations, index: 0, dialog: false }));
                 });
 
-                this.pushDelete(layerId, feature);
+                GUI.getPlugin('editing').getToolBoxById(layerId).pushDelete(layerId, feature);
 
                 return inputs;
                 
