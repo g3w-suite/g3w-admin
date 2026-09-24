@@ -11,7 +11,6 @@ export function convertToGeometry(features = [], to_type) {
   const is3D = /^(Multi(LineString|Polygon|Point|Line)|LineString|Polygon|Point|Line|MultiPoint)(Z|M|ZM|25D)$/.test(to_type);
 
   return (features || []).flatMap(f => {
-    let geometry    = f?.getGeometry?.();
     const from_type = f?.getGeometry?.()?.getType?.();
 
     // ensure 3D coords
@@ -36,22 +35,17 @@ export function convertToGeometry(features = [], to_type) {
     // convert single → multi
     if (feat && from_type.startsWith('Multi') && !to_type.startsWith('Multi')) {
       switch (from_type) {
-        case 'MultiPolygon':    geometry = geometry.getPolygons(); break;
-        case 'MultiLine':       geometry = geometry.getLineStrings(); break;
-        case 'MultiLineString': geometry = geometry.getLineStrings(); break;
-        case 'MultiPoint':      geometry = geometry.getPoints(); break;
-        default:                console.warn('invalid geometry type', from_type); geometry = [];
+        case 'MultiPolygon':    feat.setGeometry(f.getGeometry().getPolygons()); break;
+        case 'MultiLine':       feat.setGeometry(f.getGeometry().getLineStrings()); break;
+        case 'MultiLineString': feat.setGeometry(f.getGeometry().getLineStrings()); break;
+        case 'MultiPoint':      feat.setGeometry(f.getGeometry().getPoints()); break;
+        default:                console.warn('invalid geometry type', from_type); feat.setGeometry([]);
       }
     } else if (feat && !from_type.startsWith('Multi') && to_type.startsWith('Multi')) {
-      geometry = new ol.geom[`Multi${from_type}`]([geometry.getCoordinates()]);
-    }
-
-    if (feat) {
-      feat.setGeometry(geometry);
-      return feat;
+      feat.setGeometry(new ol.geom[`Multi${from_type}`]([f.getGeometry().getCoordinates()]));
     }
 
     // skip → invalid conversion (eg. Point → Polygon)
-    return [];
+    return feat || [];
   });
 }
