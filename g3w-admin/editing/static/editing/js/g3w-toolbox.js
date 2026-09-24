@@ -36,7 +36,6 @@ import { getEditingLayerById }                      from './utils/getEditingLaye
 import { getRelationsInEditingByFeature }           from './utils/getRelationsInEditingByFeature.js';
 import { addPartToMultigeometries }                 from './utils/addPartToMultigeometries.js';
 import { unlinkRelation }                           from './utils/unlinkRelation.js';
-import { isSameBaseGeometryType }                   from './utils/isSameBaseGeometryType.js';
 import { isPkField }                                from './utils/isPkField.js';
 import { getCatalogLayerById }                      from './utils/getCatalogLayerById.js';
 import { getCatalogLayers }                         from './utils/getCatalogLayers.js';
@@ -901,13 +900,13 @@ export class ToolBox extends Emitter {
               const updatelayers = () => {
                 const checkGeometry = type => (
                   type
-                  && isSameBaseGeometryType(geometryType, type)
+                  && geometryType.replace('Multi', '') === type.replace('Multi', '')
                   && (
                     (geometryType === type)
                     || /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType)
                     || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))
                   )
-                )
+                );
                 layers = [
                   //project layers
                   ...getCatalogLayers({ GEOLAYER: true, BASELAYER: false })

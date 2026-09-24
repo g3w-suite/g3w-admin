@@ -5,7 +5,6 @@
 import { evaluateExpressionFields }   from '../utils/evaluateExpressionFields.js';
 import { setFeaturesSelectedStyle }   from '../utils/setFeaturesSelectedStyle.js';
 import { chooseFeatureFromFeatures }  from '../utils/chooseFeatureFromFeatures.js';
-import { isSameBaseGeometryType }     from '../utils/isSameBaseGeometryType.js';
 import { PickFeaturesInteraction }    from '../actions/pick-feature.js';
 import { getEditingLayer }            from '../utils/getEditingLayer.js';
 import { removeZValue }               from '../utils/removeZValue.js';
@@ -143,12 +142,11 @@ export class SelectElementsStep extends Step {
         const source           = getEditingLayer(layer).getSource();
         interactions.external  = new PickFeaturesInteraction({
           layers: GUI.getExternalLayers()
-            // filter external layer only vector - Exclude the
-            // same base geometry
+            // filter external layer only vector - Exclude the same base geometry
             .filter(l => {
               const features = 'VECTOR' == l.getType() && l.getSource().getFeatures();
               if (features.length > 0) {
-                return isSameBaseGeometryType(features[0].getGeometry().getType(), geometryType)
+                return features[0].getGeometry().getType().replace('Multi', '') === geometryType.replace('Multi', '')
               }
               return true;
             })

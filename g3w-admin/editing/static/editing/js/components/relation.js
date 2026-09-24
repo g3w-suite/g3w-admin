@@ -14,7 +14,6 @@ import { convertToGeometry }                from '../utils/convertToGeometry.js'
 import { addTableFeature }                  from '../utils/addTableFeature.js';
 import { getFeatureTableFieldValue }        from '../utils/getFeatureTableFieldValue.js';
 import { chooseFeatureFromFeatures }        from '../utils/chooseFeatureFromFeatures.js';
-import { isSameBaseGeometryType }           from '../utils/isSameBaseGeometryType.js';
 import { unlinkRelation }                   from '../utils/unlinkRelation.js';
 import { getFieldsWithValues }              from '../utils/getFieldsWithValues.js';
 import { isPkField }                        from '../utils/isPkField.js';
@@ -1253,7 +1252,7 @@ export default ({
               ) && (
                 l.getGeometryType() === geometryType ||
                 (
-                  isSameBaseGeometryType(l.getGeometryType(), geometryType) &&
+                  l.getGeometryType().replace('Multi', '') === geometryType.replace('Multi', '') &&
                   /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType)
                 )
               ))
@@ -1273,7 +1272,7 @@ export default ({
                 return false;
               }
               const type = features[0].getGeometry().getType();
-              return geometryType === type || (isSameBaseGeometryType(geometryType, type) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))));
+              return geometryType === type || (geometryType.replace('Multi', '') === type.replace('Multi', '') && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))));
             })
             .map(l => ({
               id:       l.get('id'),
@@ -1290,7 +1289,7 @@ export default ({
               const features = externalLayer.getSource().getFeatures() || [];
               if (!features[0] || !features[0].getGeometry()) { return; }
               const type = features[0].getGeometry().getType();
-              if (geometryType === type || (isSameBaseGeometryType(geometryType, type) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))))) {
+              if (geometryType === type || (geometryType.replace('Multi', '') === type.replace('Multi', '') && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))))) {
                 this.copyLayers.push({
                   id:       externalLayer.get('id'),
                   name:     externalLayer.get('name'),
