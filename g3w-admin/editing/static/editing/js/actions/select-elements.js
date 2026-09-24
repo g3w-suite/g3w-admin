@@ -157,7 +157,7 @@ export class SelectElementsStep extends Step {
             return;
           }
           const attributes = (GUI.getPlugin('editing').getToolBoxById(layer.getId()).state.fields || []);
-          const geometry   = e.features[0].getGeometry();
+let geometry   = e.features[0].getGeometry();
           if (geometryType !== geometry.getType()) {
             const from_type  = geometry.getType();
             const isMulti    = type => /^Multi(LineString|Polygon|Point|Line)(Z|M|ZM|25D)?$/.test(type);

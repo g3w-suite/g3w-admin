@@ -30,7 +30,7 @@ export function convertToGeometry(features = [], geometryType) {
     if (type.replace('Multi','') === geometryType.replace('Multi','') && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type)))) {
       const cloned     = f.clone();
       cloned.__layerId = f.__layerId;
-      const geometry   = f.getGeometry();
+let geometry   = f.getGeometry();
 
       const from_type  = geometry.getType();
 
