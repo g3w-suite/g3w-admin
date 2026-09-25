@@ -381,13 +381,10 @@ export class IframeEditor extends Emitter {
             }),
           })
         ).json();
+        
+        //unlock the layer after commit
+        await fetch(`${VECTOR_URL}unlock/${GID}/${qgs_layer_id}/`);
     }
-
-    // unlock layer
-    if (['update', 'delete'].includes(method)) {
-      await fetch(`${VECTOR_URL}unlock/${GID}/${qgs_layer_id}/`);
-    }
-
     // Draw/modify geometry
     if ('draw' === method) {
       GUI.disableClickMapControls(true);
@@ -460,12 +457,12 @@ export class IframeEditor extends Emitter {
 
     // save features (to layer)
     if ('save' === method) {
-      if (layer) {
+      if (layer && layer.getOLLayer().getSource().getFeatures().length > 0) {
         geojson = (new ol.format.GeoJSON()).writeFeatureObject(layer.getOLLayer().getSource().getFeatures()[0]);
         layer.getOLLayer().getSource().clear();
-        this.#interactions.forEach(i => GUI.getMap().removeInteraction(i));
-        this.#interactions = [];
       }
+      this.#interactions.forEach(i => GUI.getMap().removeInteraction(i));
+      this.#interactions = [];
       GUI.disableClickMapControls(false);
     }
 
