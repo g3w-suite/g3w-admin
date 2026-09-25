@@ -1,8 +1,5 @@
-import { isSameBaseGeometryType }    from '../utils/isSameBaseGeometryType.js';
-import { removeZValue }              from '../utils/removeZValue.js';
-import { addZValue }                 from '../utils/addZValue.js';
-
-const { convertSingleMultiGeometry } = g3w.utils;
+import { removeZValue } from '../utils/removeZValue.js';
+import { addZValue }    from '../utils/addZValue.js';
 
 /**
  * @param { Array }  features     to be converted (eg. Polygon)
@@ -10,30 +7,45 @@ const { convertSingleMultiGeometry } = g3w.utils;
  *
  * @returns { Array } converted features
  */
-export function convertToGeometry(features = [], geometryType) {
+export function convertToGeometry(features = [], to_type) {
+  const is3D = /^(Multi(LineString|Polygon|Point|Line)|LineString|Polygon|Point|Line|MultiPoint)(Z|M|ZM|25D)$/.test(to_type);
+
   return (features || []).flatMap(f => {
-    const type = f.getGeometry() && f.getGeometry().getType();
-    const is3D = /^(Multi(LineString|Polygon|Point|Line)|LineString|Polygon|Point|Line|MutliPoint)(Z|M|ZM|25D)$/.test(geometryType);
+    const from_type = f?.getGeometry?.()?.getType?.();
 
     // ensure 3D coords
-    if (type && !is3D) {
+    if (from_type && !is3D) {
       removeZValue({ feature: f });
-    } else if (type && is3D) {
-      addZValue({ feature: f, geometryType });
+    } else if (from_type && is3D) {
+      addZValue({ feature: f, geometryType: to_type });
     }
 
     // same geometry
-    if (geometryType === type) { return f }
-
-    // convert single → multi
-    if (isSameBaseGeometryType(type, geometryType) && (/^Multi(LineString|Polygon|Point|Line)/i.test(geometryType) || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type)))) {
-      const cloned     = f.clone();
-      cloned.__layerId = f.__layerId;
-      cloned.setGeometry(convertSingleMultiGeometry(f.getGeometry(), geometryType));
-      return cloned;
+    if (to_type === from_type) {
+      return f
     }
 
     // skip → invalid conversion (eg. Point → Polygon)
-    return [];
+    if (from_type.replace('Multi','') !== to_type.replace('Multi','')) {
+      return [];
+    }
+
+    const feat = (to_type.startsWith('Multi') || !from_type.startsWith('Multi')) && Object.assign(f.clone(), { __layerId: f.__layerId });
+    
+    // convert single → multi
+    if (feat && from_type.startsWith('Multi') && !to_type.startsWith('Multi')) {
+      switch (from_type) {
+        case 'MultiPolygon':    feat.setGeometry(f.getGeometry().getPolygons()); break;
+        case 'MultiLine':       feat.setGeometry(f.getGeometry().getLineStrings()); break;
+        case 'MultiLineString': feat.setGeometry(f.getGeometry().getLineStrings()); break;
+        case 'MultiPoint':      feat.setGeometry(f.getGeometry().getPoints()); break;
+        default:                console.warn('invalid geometry type', from_type); feat.setGeometry([]);
+      }
+    } else if (feat && !from_type.startsWith('Multi') && to_type.startsWith('Multi')) {
+      feat.setGeometry(new ol.geom[`Multi${from_type}`]([f.getGeometry().getCoordinates()]));
+    }
+
+    // skip → invalid conversion (eg. Point → Polygon)
+    return feat || [];
   });
 }
