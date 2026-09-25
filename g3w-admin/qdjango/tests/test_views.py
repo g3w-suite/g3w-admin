@@ -89,6 +89,31 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         client.logout()
 
+    def test_QdjangoLayerDataView_wmts_format(self):
+        """ Test wmts_format is only accepted when advertised as available in wmtscapabilities """
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        layer = self.project.instance.layer_set.all()[0]
+        layer.wmtscapabilities = {'png': True, 'jpeg': False}
+        layer.save()
+
+        url = reverse('qdjango-project-layers-data-editing',
+                      args=[self.project_group.slug, self.project.instance.slug, layer.pk])
+
+        # png is available: accepted
+        response = client.post(url, data={'wmts_format': 'png'})
+        layer.refresh_from_db()
+        self.assertEqual(layer.wmts_format, 'png')
+
+        # jpeg is not available: rejected, reset to None
+        response = client.post(url, data={'wmts_format': 'jpeg'})
+        layer.refresh_from_db()
+        self.assertIsNone(layer.wmts_format)
+
+        client.logout()
+
     def test_qdjango_layer_widgets(self):
         """
         Test project layer widget list view

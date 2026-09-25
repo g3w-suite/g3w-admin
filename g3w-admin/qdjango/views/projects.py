@@ -692,6 +692,15 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
 
         if 'external' in request.POST:
             layer.external = int(request.POST['external'])
+
+        if 'wmts_format' in request.POST:
+            value = request.POST['wmts_format']
+            # only accept a format the project actually advertises as available (avoid trusting client input)
+            if value in ('png', 'jpeg') and layer.wmtscapabilities and layer.wmtscapabilities.get(value):
+                layer.wmts_format = value
+            else:
+                layer.wmts_format = None
+
         layer.save()
 
         # Invalidate project cache

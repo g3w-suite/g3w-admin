@@ -171,6 +171,7 @@ class QgisProjectLayer(XmlData):
         'scaleBasedVisibility',
         'srid',
         'wfsCapabilities',
+        'wmtsCapabilities',
         'editOptions',
         'datasource',
         'origname',
@@ -565,13 +566,26 @@ class QgisProjectLayer(XmlData):
         :rtype: int
         """
 
-        # TODO: ask to elpaso
         wfsCapabilities = 0
         for wfslayer in self.qgisProject.wfsLayers:
             if self.layerId in wfslayer:
                 wfsCapabilities = settings.QUERYABLE
 
         return None if wfsCapabilities == 0 else wfsCapabilities
+
+    def _getDataWmtsCapabilities(self):
+            """
+            Set WMTS capability for layer.
+            :return: dict of WMTS layer capabilities.
+            :rtype: dict
+            """
+    
+            wmtsCapabilities = None
+            for wmtslayer in self.qgisProject.wmtsLayers:
+                if self.layerId in wmtslayer:
+                    wmtsCapabilities = self.qgisProject.wmtsLayers[wmtslayer]
+    
+            return wmtsCapabilities
 
     def _getDataDatasource(self):
         """
@@ -1055,6 +1069,7 @@ class QgisProjectLayer(XmlData):
                 'order': self.order,
                 'edit_options': self.editOptions,
                 'wfscapabilities': self.wfsCapabilities,
+                'wmtscapabilities': self.wmtsCapabilities,
                 'exclude_attribute_wms': excludeAttributesWMS,
                 'exclude_attribute_wfs': excludeAttributesWFS,
                 'geometrytype': self.geometrytype,
@@ -1084,6 +1099,12 @@ class QgisProjectLayer(XmlData):
             self.instance.order = self.order
             self.instance.edit_options = self.editOptions
             self.instance.wfscapabilities = self.wfsCapabilities
+            self.instance.wmtscapabilities = self.wmtsCapabilities
+
+            # clear a previously chosen WMTS format no longer available after reimport
+            if self.instance.wmts_format and not (self.wmtsCapabilities or {}).get(self.instance.wmts_format):
+                self.instance.wmts_format = None
+
             self.instance.exclude_attribute_wms = excludeAttributesWMS
             self.instance.exclude_attribute_wfs = excludeAttributesWFS
             self.instance.geometrytype = self.geometrytype
@@ -1114,11 +1135,13 @@ class QgisProject(XmlData):
         'wmsuselayerids',
         'wfsLayers',
         'wfstLayers',
+        'wmtsGrids', # Used for WMTS grids in the project at level of QgisProjectLayer. Must call before loading WMTS layers
+        'wmtsLayers', # Used for WMTS layers in the project at level fo QgisProjectLayer
         'layersTree',
         'layers',
         'layerRelations',
         'layouts',
-        'contextbaselegend'
+        'contextbaselegend',
     ]
 
     _defaultValidators = [
@@ -1604,6 +1627,57 @@ class QgisProject(XmlData):
         else:
             return False
 
+    def _getDataWmtsGrids(self):
+        """
+        Return WMTS grids defined in the project.
+        :return: a list of WMTS grids
+        :rtype: list
+        """
+
+        wmts_grids, _ = self.qgs_project.readListEntry("WMTSGrids", "Config")
+        grids = []
+        for grid in wmts_grids:
+            parts = grid.split(',')
+            if len(parts) != 5:
+                continue
+            crs, top, left, min_scale, levels = parts
+            grids.append({
+                'crs': crs,
+                'top': float(top),
+                'left': float(left),
+                'min_scale': float(min_scale),
+                'levels': int(levels),
+            })
+
+        return grids
+
+    def _getDataWmtsLayers(self):
+        """
+        Return WMTS layers by format.
+        For every layer id enabled as WMTS PNG and/or JPEG, set the corresponding
+        'png'/'jpeg' flags.
+        :return: {'<layer_id>': {'png': True, 'jpeg': True}, ...}
+        :rtype: dict
+        """
+
+        png_layers, _ = self.qgs_project.readListEntry("WMTSPngLayers", "Layer")
+        jpeg_layers, _ = self.qgs_project.readListEntry("WMTSJpegLayers", "Layer")
+        wmts_grids, _ = self.qgs_project.readListEntry("WMTSGrids", "Grid")
+
+        wmts_layers = {}
+        # Only if wmts_grids are defined
+        if not self.wmtsGrids:
+            return wmts_layers
+        for layer_id in set(png_layers) | set(jpeg_layers):
+            wmts_layers[layer_id] = {}
+            if layer_id in png_layers:
+                wmts_layers[layer_id]['png'] = True
+            if layer_id in jpeg_layers:
+                wmts_layers[layer_id]['jpeg'] = True
+
+        return wmts_layers
+
+
     def setDataThirdParts(self):
         """ Load data from project using third part module functions/signal-receiver"""
 
@@ -1671,7 +1745,8 @@ class QgisProject(XmlData):
                     'relations': self.layerRelations,
                     'layouts': self.layouts,
                     'title_ur': kwargs.get('title_ur'),
-                    'context_base_legend': self.contextbaselegend
+                    'context_base_legend': self.contextbaselegend,
+                    'wmts_grids': self.wmtsGrids
                 }
 
                 for p in (
@@ -1709,6 +1784,7 @@ class QgisProject(XmlData):
                 self.instance.layouts = self.layouts
                 self.instance.context_base_legend = self.contextbaselegend
                 self.instance.wms_use_layer_ids = self.wmsuselayerids
+                self.instance.wmts_grids = self.wmtsGrids
                 self.instance.is_dirty = False
 
                 self.instance.save()
