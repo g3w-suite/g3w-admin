@@ -283,7 +283,7 @@ class FormComponent extends Component {
     }];
 
     this.getService().addComponents(components);
-    this.getService().component = (components[0].component);
+    this.getService().state.component = (components[0].component);
   }
 
   addFormComponents(c = []) { this.getService().addComponents(c); }
