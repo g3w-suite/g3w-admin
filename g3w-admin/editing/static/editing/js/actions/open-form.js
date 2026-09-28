@@ -653,8 +653,40 @@ export class OpenFormStep extends Step {
                   :fields = "state.fields"
                   :is     = "component"
                 />
+                <template v-if = "'g3w-form-body' === state.component">
+                  <form class = "form-horizontal g3w-form">
+                    <div class = "box-primary">
+                      <div class = "box-body">
+                        <template v-if = "state.formstructure">
+                          <tabs
+                            :layerid          = "state.layerid"
+                            :feature          = "state.feature"
+                            :handleRelation   = "handleRelation"
+                            :contenttype      = "'editing'"
+                            :addToValidate    = "addToValidate"
+                            :changeInput      = "changeInput"
+                            :removeToValidate = "removeToValidate"
+                            :tabs             = "state.formstructure"
+                            :fields           = "state.fields"
+                          />
+                        </template>
+                        <template v-else>
+                          <g3w-form-inputs
+                            :state            = "state"
+                            :addToValidate    = "addToValidate"
+                            :removeToValidate = "removeToValidate"
+                            :changeInput      = "changeInput"
+                            @changeinput      = "changeInput"
+                            @addinput         = "addToValidate"
+                            @removeinput      = "removeToValidate"
+                          />
+                        </template>
+                      </div>
+                    </div>
+                  </form>
+                </template>
                 <keep-alive>
-                  <component
+                  <component v-if = "'g3w-default-form-body' !== state.component"
                     :handleRelation   = "handleRelation"
                     @addtovalidate    = "addToValidate"
                     @removetovalidate = "removeToValidate"
@@ -713,6 +745,7 @@ export class OpenFormStep extends Step {
             }
           },
           transitions: { 'addremovetransition': 'showhide' },
+          components: { G3wFormInputs },
           computed: {
             enableSave()                               { return this.state.valid && this.state.update; }
           },
@@ -840,70 +873,16 @@ export class OpenFormStep extends Step {
         this.#form.formstructure = this.#form.layer.getLayerEditingFormStructure();
       }
 
-      // Build the default form body component.
-      const components = [{
+      this.#form.addComponents([{
         id:              this.#form.id,
         title:           this.#form.title,
         name:            this.#form.name,
         root:            true,
-        component: {
-          template: /* html */ `
-            <div>
-              <form class="form-horizontal g3w-form">
-                <div class="box-primary">
-                  <div class="box-body">
-                    <template v-if="hasFormStructure">
-                      <tabs
-                        :layerid          = "state.layerid"
-                        :feature          = "state.feature"
-                        :handleRelation   = "handleRelation"
-                        :contenttype      = "'editing'"
-                        :addToValidate    = "addToValidate"
-                        :changeInput      = "changeInput"
-                        :removeToValidate = "removeToValidate"
-                        :tabs             = "state.formstructure"
-                        :fields           = "state.fields"
-                      />
-                    </template>
-                    <template v-else>
-                      <g3w-form-inputs
-                        :state            = "state"
-                        :addToValidate    = "addToValidate"
-                        :removeToValidate = "removeToValidate"
-                        :changeInput      = "changeInput"
-                        @changeinput      = "changeInput"
-                        @addinput         = "addToValidate"
-                        @removeinput      = "removeToValidate"
-                      />
-                    </template>
-                  </div>
-                </div>
-              </form>
-            </div>
-          `,
-          name: 'form-body',
-          props: {
-            state:          { type: Object,   required: true, },
-            handleRelation: { type: Function, required: true, }
-          },
-          data() {
-            return { show: true }
-          },
-          components: { G3wFormInputs },
-          methods: {
-            addToValidate(input)    { this.$emit('addtovalidate', input); },
-            removeToValidate(input) { this.$emit('removetovalidate', input); },
-            changeInput(input)      { this.$emit('changeinput', input); }
-          },
-          computed: {
-            hasFormStructure() { return !!this.state.formstructure; }
-          }
-        },
+        component:       'g3w-form-body',
         headerComponent: this.#form.headerComponent
-      }];
+      }]);
 
-      this.#form.addComponents(components);
-      this.#form.component = components[0].component;
+      this.#form.component = 'g3w-form-body';
 
       GUI.setContent({
         perc:       this.#form.perc,
@@ -914,20 +893,6 @@ export class OpenFormStep extends Step {
         showgoback: !!this.#form.showgoback,
         closable:   false
       });
-
-      // Replace the default relation click with the relation form component.
-      this.#form.handleRelation = async e => {
-        // Relations cannot be edited while multiple features are selected.
-        if (this.hasMulti()) {
-          GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
-          return;
-        }
-        GUI.setLoadingContent(true);
-        // Refresh unique values before opening the relation form.
-        await setLayerUniqueFieldValues(inputs.layer.getRelationById(e.relation.name).getChild());
-        this.#form.setCurrentComponentById(e.relation.name);
-        GUI.setLoadingContent(false);
-      }
 
       const COMP = (await import('../components/relation.js')).default;
 
@@ -1683,7 +1648,17 @@ export class OpenFormStep extends Step {
   /**
    * Hook for plugins that synchronize this form with a related feature.
    */
-  #handleRelation() {}
+  async #handleRelation({ relation } = {}) {
+    if (this.hasMulti()) {
+      GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
+      return;
+    }
+
+    GUI.setLoadingContent(true);
+    await setLayerUniqueFieldValues(this.#form.layer.getRelationById(relation.name).getChild());
+    this.#form.setCurrentComponentById(relation.name);
+    GUI.setLoadingContent(false);
+  }
 
   /**
    * Evaluates default expressions without field dependencies before submission.
