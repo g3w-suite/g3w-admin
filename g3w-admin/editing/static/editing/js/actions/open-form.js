@@ -17,7 +17,7 @@ import { Feature }                          from '../g3w-feature.js';
 
 const GUI                        = g3w.app;
 const ApplicationState           = g3w.app.state;
-const { Emitter, Component }     = g3w;
+const { Component }              = g3w;
 const { XHR }                    = g3w.utils;
 const { G3wFormInputs }          = g3wsdk.gui.vue.Inputs;
 
@@ -101,7 +101,6 @@ export class OpenFormStep extends Step {
   #originalFeatures;
 
   #bus;
-  #service;
   #component;
   #filter_expression_fields_dependencies;
   #default_expression_fields_dependencies;
@@ -184,7 +183,6 @@ export class OpenFormStep extends Step {
    */
   async run(inputs, context) {
     this.#bus = new Vue();
-    this.#service = null;
     this.#component = null;
     this.#filter_expression_fields_dependencies = {};
     this.#default_expression_fields_dependencies = {};
@@ -410,7 +408,7 @@ export class OpenFormStep extends Step {
                     .map( t => new Promise(async (resolve) => {
                       const task   = t.getLastStep();
                       // In multi-edit mode, null values mean "leave this field unchanged".
-                      const fields = t.getContext().service.state.fields.filter(f => task.hasMulti() ? null !== f.value : true);
+                      const fields = t.getContext().service.fields.filter(f => task.hasMulti() ? null !== f.value : true);
                       await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
                       task.getFeatures().forEach(f => SELF.#setFieldsWithValues(f, fields));
                       const newFeatures = task.getFeatures().map(f => f.clone());
@@ -580,64 +578,41 @@ export class OpenFormStep extends Step {
             }
           ]
       };
-      // Fields grouped by the inputs that their filter/default expressions reference.
-
-      /**
-       * Reevaluates filter expressions depending on the changed input.
-       *
-       * @param {Object} input changed form input
-       *
-       * @returns {Promise<PromiseSettledResult<Array>[]>|undefined} evaluation results
-       */
-      this.#service = Object.assign(new Emitter(), {
-
-        isCoreFormService: true,
-
-        layer:           formOpts.layer,
-        /** Keep form edits isolated from the feature supplied by the caller. */
-        feature:         formOpts.feature.clone(),
-        title:           formOpts.title ?? 'Form',
-        formId:          formOpts.formId,
-        name:            formOpts.name,
-        buttons:         formOpts.buttons ?? {},
-        context_inputs:  formOpts.context_inputs,
-        parentData:      formOpts.parentData,
-        headerComponent: formOpts.headerComponent,
-
-        /**
-         * State flags that override normal update and validation calculations.
-         * A child form service can use these flags to communicate with its parent.
-         *
-         * @type {{ valid: boolean, update: boolean }}
-         */
+      // new instance every time
+      this.#component = new Component({
+        ...formOpts,
+        id:                 formOpts.id || 'form',
+        perc:               formOpts.layer?.config?.editing?.form?.perc ?? formOpts.perc,
+        isCoreFormService:  true,
+        layer:              formOpts.layer,
+        feature:            formOpts.feature.clone(),
+        title:              formOpts.title ?? 'Form',
+        formId:             formOpts.formId,
+        name:               formOpts.name,
+        buttons:            formOpts.buttons ?? {},
+        context_inputs:     formOpts.context_inputs,
+        parentData:         formOpts.parentData,
+        headerComponent:    formOpts.headerComponent,
         force: {
           update: formOpts.feature.isNew(),
-          valid:  false // NOT USED FOR THE MOMENT
+          valid:  false
         },
-
-        /** Initial state used by validation, rendering and change tracking. */
-        state: {
-          layerid:              formOpts.layer.getId(),
-          loading:              false,
-          components:           [],
-          disabledcomponents:   [],
-          component:            null,
-          headers:              [],
-          currentheaderid:      null,
-          buttons:              formOpts.buttons ?? {},
-          disabled:             false,
-          isnew:                formOpts.isNew,
-          valid:                true, // Overall form validation state; valid until a check fails.
-          update:               formOpts.feature.isNew(), // New features are considered changed immediately.
-          // Fields that must be rechecked when an input changes.
-          tovalidate:           {},
-          feature:              formOpts.feature, // Use the cloned feature throughout the form.
-          componentstovalidate: {},
-          footer:               formOpts.footer ?? {},
-          ready:                false,
-          fields:               formOpts.fields ?? []
-        },
-
+        layerid:              formOpts.layer.getId(),
+        loading:              false,
+        components:           [],
+        disabledcomponents:   [],
+        component:            null,
+        headers:              [],
+        currentheaderid:      null,
+        disabled:             false,
+        isnew:                formOpts.isNew,
+        valid:                true,
+        update:               formOpts.feature.isNew(),
+        tovalidate:           {},
+        componentstovalidate: {},
+        footer:               formOpts.footer ?? {},
+        ready:                false,
+        fields:               formOpts.fields ?? [],
         setReady:                             SELF.#setReady.bind(SELF),
         changeInput:                          SELF.#changeInput.bind(SELF),
         setUpdate:                            SELF.#setUpdate.bind(SELF),
@@ -661,16 +636,6 @@ export class OpenFormStep extends Step {
         getInputs:                            SELF.#getInputs.bind(SELF),
         handleRelation:                       SELF.#handleRelation.bind(SELF),
         saveDefaultExpressionFieldsNotDependencies: SELF.#saveDefaultExpressionFieldsNotDependencies.bind(SELF),
-
-      });
-
-
-      // new instance every time
-      this.#component = new Component({
-        ...formOpts,
-        service: this.#service,
-        id:                 formOpts.id || 'form',
-        perc:               formOpts.layer?.config?.editing?.form?.perc ?? formOpts.perc,
         vueComponentObject: formOpts.vueComponentObject || {
           template: /* html */ `
             <div class="g3wform_content" style="position: relative">
@@ -754,8 +719,8 @@ export class OpenFormStep extends Step {
           name: 'g3w-form',
           data() {
             return {
-              state:           this.$options.service.state,
-              originalbuttons: this.$options.service.state.buttons.map(button => ({ ...button })),
+              state:           this.$options.service,
+              originalbuttons: this.$options.service.buttons.map(button => ({ ...button })),
               switchcomponent: false,
               showFooter:      true,
               body:            { components: { before: [], after: [] }
@@ -767,21 +732,21 @@ export class OpenFormStep extends Step {
             enableSave()                               { return this.state.valid && this.state.update; }
           },
           methods: {
-            isRootComponent(component)                 { return this.$options.service.isRootComponent(component); },
-            backToRoot()                               { this.$options.service.setRootComponent(); },
-            handleRelation(relationId)                 { this.$options.service.handleRelation(relationId); },
-            disableComponent({ id, disabled = false }) { this.$options.service.disableComponent({ id, disabled }); },
-            switchComponent(id)                        { this.switchcomponent = true; this.$options.service.setCurrentComponentById(id); },
-            clickHeader(id)                            { if (id !== this.state.currentheaderid && this.state.headers.length > 1) { this.switchComponent(id); } },
-            exec(cbk)                                  { cbk instanceof Function ? cbk(this.state.fields) : (function() { return this.state.fields })(); },
+            isRootComponent(component)                 { return SELF.#isRootComponent(component); },
+            backToRoot()                               { SELF.#setRootComponent(); },
+            handleRelation(relationId)                 { SELF.#component.handleRelation(relationId); },
+            disableComponent({ id, disabled = false }) { SELF.#disableComponent({ id, disabled }); },
+            switchComponent(id)                        { this.switchcomponent = true; SELF.#setCurrentComponentById(id); },
+            clickHeader(id)                            { if (id !== SELF.#component.state.currentheaderid && SELF.#component.state.headers.length > 1) { this.switchComponent(id); } },
+            exec(cbk)                                  { cbk instanceof Function ? cbk(SELF.#component.state.fields) : SELF.#component.state.fields; },
             btnEnabled(button)                         { return (button.enabled ?? true) && ('save' !== button.type || ('save' === button.type && this.enableSave)); },
-            changeInput(input)                         { return this.$options.service.changeInput(input); },
-            addToValidate(input)                       { this.$options.service.addToValidate(input); },
-            removeToValidate(input)                    { this.$options.service.removeToValidate(input); },
+            changeInput(input)                         { return SELF.#changeInput(input); },
+            addToValidate(input)                       { SELF.#addToValidate(input); },
+            removeToValidate(input)                    { SELF.#removeToValidate(input); },
           },
           watch: {
             'state.component'(component) {
-              this.showFooter = this.isRootComponent(component);
+              this.showFooter = SELF.#isRootComponent(component);
             },
             'state.update': {
               immediate: true,
@@ -801,11 +766,11 @@ export class OpenFormStep extends Step {
             if (this.switchcomponent) { setTimeout(() => this.switchcomponent = false, 0) }
           },
           created() {
-            this.$options.service.getEventBus().$on('addtovalidate', this.addToValidate);
+            SELF.#bus.$on('addtovalidate', this.addToValidate);
           },
           mounted() {
-            this.$options.service.isValid();
-            this.$options.service.setReady(true);
+            SELF.#isValid();
+            SELF.#setReady(true);
           },
           beforeDestroy() {
             SELF.#bus.$off('addtovalidate');
@@ -813,7 +778,7 @@ export class OpenFormStep extends Step {
         },
       });
 
-      this.#service.state.fields.forEach(field => {
+      this.#component.state.fields.forEach(field => {
         const { options = {} } = field.input;
 
         // Register filter dependencies and load initial values for expression-enabled fields.
@@ -837,9 +802,9 @@ export class OpenFormStep extends Step {
           });
 
           SELF.#getFilterExpression({
-            parentData:   this.#service.parentData,
-            qgs_layer_id: this.#service.layer.getId(),
-            feature:      this.#service.feature,
+            parentData:   this.#component.parentData,
+            qgs_layer_id: this.#component.layer.getId(),
+            feature:      this.#component.feature,
             field,
           });
         }
@@ -854,7 +819,7 @@ export class OpenFormStep extends Step {
           } = default_expression;
 
           // Existing features register defaults only when they explicitly apply on update.
-          if (apply_on_update || this.#service.state.isnew) {
+          if (apply_on_update || this.#component.state.isnew) {
             if (apply_on_update) {
               SELF.#default_expression_fields_on_update.push(field);
 
@@ -869,12 +834,12 @@ export class OpenFormStep extends Step {
               });
             }
 
-            if (this.#service.state.isnew) {
+            if (this.#component.state.isnew) {
               SELF.#getDefaultExpression({
                 field,
-                feature:      this.#service.feature,
-                qgs_layer_id: this.#service.layer.getId(),
-                parentData:   this.#service.parentData,
+                feature:      this.#component.feature,
+                qgs_layer_id: this.#component.layer.getId(),
+                parentData:   this.#component.parentData,
               });
             }
           }
@@ -886,8 +851,8 @@ export class OpenFormStep extends Step {
         .keys(SELF.#filter_expression_fields_dependencies)
         .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
 
-      if (this.#service.layer && formOpts.formStructure) {
-        this.#service.state.formstructure = this.#service.layer.getLayerEditingFormStructure();
+      if (this.#component.layer && formOpts.formStructure) {
+        this.#component.state.formstructure = this.#component.layer.getLayerEditingFormStructure();
       }
 
       // Use the default body component unless custom form components were provided.
@@ -952,8 +917,8 @@ export class OpenFormStep extends Step {
         headerComponent: formOpts.headerComponent
       }];
 
-      this.#service.addComponents(components);
-      this.#service.state.component = components[0].component;
+      this.#component.addComponents(components);
+      this.#component.state.component = components[0].component;
       GUI.setContent({
         perc:       formOpts.perc,
         title:      this.#component?.layer?.getName?.(),
@@ -964,7 +929,7 @@ export class OpenFormStep extends Step {
         closable:   false
       });
       // Replace the default relation click with the relation form component.
-      this.#service.handleRelation = async e => {
+      this.#component.handleRelation = async e => {
         // Relations cannot be edited while multiple features are selected.
         if (this.hasMulti()) {
           GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
@@ -973,13 +938,13 @@ export class OpenFormStep extends Step {
         GUI.setLoadingContent(true);
         // Refresh unique values before opening the relation form.
         await setLayerUniqueFieldValues(inputs.layer.getRelationById(e.relation.name).getChild());
-        this.#service.setCurrentComponentById(e.relation.name);
+        this.#component.setCurrentComponentById(e.relation.name);
         GUI.setLoadingContent(false);
       }
 
       const COMP = (await import('../components/relation.js')).default;
 
-      this.#service.addComponents([
+      this.#component.addComponents([
         // Add layer-specific custom components.
         ...(GUI.getPlugin('editing').state.formComponents[layerId] || []),
         // Add editable child relations; 1:1 relations are handled by field watchers.
@@ -1007,12 +972,12 @@ export class OpenFormStep extends Step {
         {
           layerId: this.getLayerId(),
           feature: this.getOriginalFeatures()[0],
-          formService: this.#service
+          formService: this.#component
         }
       );
 
       // Attach the service when this step is running without a tool wrapper.
-      Tool.Stack?.current?.setContextService?.(this.#service);
+      Tool.Stack?.current?.setContextService?.(this.#component);
 
       // Watch changes to fields backed by 1:1 relations.
       (async () => {
@@ -1083,7 +1048,7 @@ export class OpenFormStep extends Step {
                   const field    = form_fields.find(f => fn === f.name);
                   field.editable = locked ? false : editable_fields[fn];                                       // Restore editability for each joined child field.
                   field.value    = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null; // Missing or new children expose empty joined values.
-                  this.#service.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
+                  this.#component.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
                 });
 
                 // Restore the field state after the lookup completes.
@@ -1529,26 +1494,24 @@ export class OpenFormStep extends Step {
     }
   }
 
-    #evaluateFilterExpressionFields(input = {}) {
-    const service = this.#service;
+  #evaluateFilterExpressionFields(input = {}) {
     const dependency_fields = this.#filter_expression_fields_dependencies[input.name];
     if (!dependency_fields) { return; }
 
     return Promise.allSettled(
       dependency_fields.map(dependency_field =>
         this.#getFilterExpression({
-          parentData:   service.parentData,
-          qgs_layer_id: service.layer.getId(),
-          field:        service.state.fields.find(f => dependency_field === f.name),
-          feature:      service.feature,
+          parentData:   this.#component.parentData,
+          qgs_layer_id: this.#component.layer.getId(),
+          field:        this.#component.state.fields.find(f => dependency_field === f.name),
+          feature:      this.#component.feature,
         })
       )
     );
   }
 
   #setReady(bool = false) {
-    const service = this.#service;
-    service.state.ready = bool;
+    this.#component.state.ready = bool;
   }
 
   /**
@@ -1557,46 +1520,43 @@ export class OpenFormStep extends Step {
    * @param {Object} input changed form input
    */
   async #changeInput(input) {
-    const service = this.#service;
     try {
-      service.feature.set(input.name, input.value);
+      this.#component.feature.set(input.name, input.value);
       await this.#evaluateFilterExpressionFields(input);
       const dependent_fields = this.#default_expression_fields_dependencies[input.name];
       if (dependent_fields) {
         await Promise.allSettled(dependent_fields.map(dependency_field =>
           this.#getDefaultExpression({
-            parentData:   service.parentData,
-            qgs_layer_id: service.layer.getId(),
-            field:        service.state.fields.find(f => dependency_field === f.name),
-            feature:      service.feature,
+            parentData:   this.#component.parentData,
+            qgs_layer_id: this.#component.layer.getId(),
+            field:        this.#component.state.fields.find(f => dependency_field === f.name),
+            feature:      this.#component.feature,
           })
         ));
       }
       this.#isValid(input);
-      service.state.update = (
-        service.force.update
+      this.#component.state.update = (
+        this.#component.force.update
         || (
-          !service.state.update
+          !this.#component.state.update
             ? input.update
-            : !!service.state.fields.find(f => f.update)
+            : !!this.#component.state.fields.find(f => f.update)
         )
       );
     } catch(e) {
       console.warn(e);
     }
-    service.emit('changeInput', input);
+    this.#component.emit('changeInput', input);
   }
 
   /**
    * Sets the dirty state and, when clearing it, resets field baselines.
    */
   #setUpdate(bool = false, options = {}) {
-    const service = this.#service;
-    const { force = false } = options;
-    service.force.update = force;
-    service.state.update = service.force.update || bool;
-    if (false === service.state.update) {
-      service.state.fields.forEach(field => field._value = field.value);
+    this.#component.force.update = options.force ?? false;
+    this.#component.state.update = this.#component.force.update || bool;
+    if (false === this.#component.state.update) {
+      this.#component.state.fields.forEach(field => field._value = field.value);
     }
   }
 
@@ -1604,16 +1564,14 @@ export class OpenFormStep extends Step {
    * Updates the form-level loading state.
    */
   #setLoading(bool = false) {
-    const service = this.#service;
-    service.state.loading = bool;
+    this.#component.state.loading = bool;
   }
 
   /**
    * Stores a child component validation result and recomputes form validity.
    */
   #setValidComponent({ id, valid }) {
-    const service = this.#service;
-    service.state.componentstovalidate[id] = valid;
+    this.#component.state.componentstovalidate[id] = valid;
     this.#isValid();
   }
 
@@ -1621,11 +1579,10 @@ export class OpenFormStep extends Step {
    * Recomputes overall validity from input and child-component validation states.
    */
   #isValid(input) {
-    const service = this.#service;
     if (input) {
       if (input.validate.mutually && !input.validate.required && !input.validate.empty) {
         input.validate._valid         = input.validate.valid;
-        input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && service.state.tovalidate[inputname].validate.empty, true);
+        input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && this.#component.state.tovalidate[inputname].validate.empty, true);
         input.validate.valid          = input.validate.mutually_valid && input.validate.valid;
       }
       if (input.validate.mutually && !input.validate.required && input.validate.empty) {
@@ -1636,15 +1593,15 @@ export class OpenFormStep extends Step {
         const filled = [];
         for (let i = input.validate.mutually.length; i--;) {
           const input_name = input.validate.mutually[i];
-          if (!service.state.tovalidate[input_name].validate.empty) { filled.push(input_name) }
+          if (!this.#component.state.tovalidate[input_name].validate.empty) { filled.push(input_name) }
         }
         if (filled.length < 2) {
           filled.forEach(input_name => {
-            service.state.tovalidate[input_name].validate.mutually_valid = true;
-            service.state.tovalidate[input_name].validate.valid          = true;
+            this.#component.state.tovalidate[input_name].validate.mutually_valid = true;
+            this.#component.state.tovalidate[input_name].validate.valid          = true;
             setTimeout(() => {
-              service.state.tovalidate[input_name].validate.valid = service.state.tovalidate[input_name].validate._valid;
-              service.state.valid = service.state.valid && service.state.tovalidate[input_name].validate.valid;
+              this.#component.state.tovalidate[input_name].validate.valid = this.#component.state.tovalidate[input_name].validate._valid;
+              this.#component.state.valid = this.#component.state.valid && this.#component.state.tovalidate[input_name].validate.valid;
             });
           });
         }
@@ -1653,17 +1610,17 @@ export class OpenFormStep extends Step {
         const input_name = input.validate.min_field || input.validate.max_field;
         input.validate.valid = (
           input.validate.min_field
-            ? service.state.tovalidate[input.validate.min_field].validate.empty || 1 * input.value > 1 * service.state.tovalidate[input.validate.min_field].value
-            : service.state.tovalidate[input.validate.max_field].validate.empty || 1 * input.value < 1 * service.state.tovalidate[input.validate.max_field].value
+            ? this.#component.state.tovalidate[input.validate.min_field].validate.empty || 1 * input.value > 1 * this.#component.state.tovalidate[input.validate.min_field].value
+            : this.#component.state.tovalidate[input.validate.max_field].validate.empty || 1 * input.value < 1 * this.#component.state.tovalidate[input.validate.max_field].value
         );
         if (input.validate.valid) {
-          service.state.tovalidate[input_name].validate.valid = true;
+          this.#component.state.tovalidate[input_name].validate.valid = true;
         }
       }
     }
-    service.state.valid = (
-      Object.values(service.state.tovalidate).reduce((previous, field) => previous && field.validate.valid, true)
-      && Object.values(service.state.componentstovalidate).reduce((previous, valid) => previous && valid, true)
+    this.#component.state.valid = (
+      Object.values(this.#component.state.tovalidate).reduce((previous, field) => previous && field.validate.valid, true)
+      && Object.values(this.#component.state.componentstovalidate).reduce((previous, valid) => previous && valid, true)
     );
   }
 
@@ -1677,33 +1634,30 @@ export class OpenFormStep extends Step {
   }
 
   #addComponent(component) {
-    const service = this.#service;
     if (!component) { return }
     const { id, title, name, icon, valid, headerComponent, header = true } = component;
     if (undefined !== valid) {
-      service.state.componentstovalidate[id] = valid;
-      service.state.valid = service.state.valid && valid;
+      this.#component.state.componentstovalidate[id] = valid;
+      this.#component.state.valid = this.#component.state.valid && valid;
       this.#bus.$emit('add-component-validate', { id, valid });
     }
     if (header) {
-      service.state.headers.push({ title, name, id, icon, component: headerComponent });
-      service.state.currentheaderid = service.state.currentheaderid || id;
+      this.#component.state.headers.push({ title, name, id, icon, component: headerComponent });
+      this.#component.state.currentheaderid = this.#component.state.currentheaderid || id;
     }
-    service.state.components.push(component);
+    this.#component.state.components.push(component);
   }
 
   #disableComponent({ id, disabled } = {}) {
-    const service = this.#service;
-    if (disabled) { service.state.disabledcomponents.push(id) }
-    else { service.state.disabledcomponents = service.state.disabledcomponents.filter(disableId => id !== disableId) }
+    if (disabled) { this.#component.state.disabledcomponents.push(id) }
+    else { this.#component.state.disabledcomponents = this.#component.state.disabledcomponents.filter(disableId => id !== disableId) }
   }
 
   #setCurrentComponentById(id) {
-    const service = this.#service;
-    if (!service.state.disabledcomponents.includes(id)) {
-      service.state.currentheaderid = id;
-      service.state.component = service.state.components.find(component => id === component.id).component;
-      return service.state.component;
+    if (!this.#component.state.disabledcomponents.includes(id)) {
+      this.#component.state.currentheaderid = id;
+      this.#component.state.component = this.#component.state.components.find(component => id === component.id).component;
+      return this.#component.state.component;
     }
   }
 
@@ -1711,38 +1665,33 @@ export class OpenFormStep extends Step {
    * setRootComponent (is form)
    */
   #setRootComponent() {
-    const service = this.#service;
-    service.state.component = service.state.components.find(component => component.root).component;
+    this.#component.state.component = this.#component.state.components.find(component => component.root).component;
   }
 
   #isRootComponent(component) {
-    const service = this.#service;
-    return component === service.state.components.find(item => item.root).component;
+    return component === this.#component.state.components.find(item => item.root).component;
   }
 
   #getComponentById(id) {
-    const service = this.#service;
-    return service.state.components.find(component => id === component.id);
+    return this.#component.state.components.find(component => id === component.id);
   }
 
   #addToValidate(input) {
-    const service = this.#service;
-    service.state.tovalidate[input.name] = input;
-    if (service.state.ready) { this.#isValid(input) }
+    this.#component.state.tovalidate[input.name] = input;
+    if (this.#component.state.ready) { this.#isValid(input) }
   }
 
   #removeToValidate(input) {
-    const service = this.#service;
-    delete service.state.tovalidate[input.name];
+    delete this.#component.state.tovalidate[input.name];
     this.#isValid();
   }
 
-  #getState() { return this.#service.state; }
-  #getFields() { return this.#service.state.fields; }
+  #getState() { return this.#component.state; }
+  #getFields() { return this.#component.state.fields; }
   #getEventBus() { return this.#bus; }
-  #getContext() { return this.#service.context_inputs.context; }
+  #getContext() { return this.#component.context_inputs.context; }
   #getSession() { return this.#getContext().session; }
-  #getInputs() { return this.#service.context_inputs.inputs; }
+  #getInputs() { return this.#component.context_inputs.inputs; }
 
   /**
    * Hook for plugins that synchronize this form with a related feature.
@@ -1755,9 +1704,8 @@ export class OpenFormStep extends Step {
    * @since 3.8.0
    */
   async #saveDefaultExpressionFieldsNotDependencies() {
-    const service = this.#service;
     try {
-      if (0 === this.#default_expression_fields_on_update.length || !service.state.fields.some(field => field.update && !field.vectorjoin_id)) {
+      if (0 === this.#default_expression_fields_on_update.length || !this.#component.state.fields.some(field => field.update && !field.vectorjoin_id)) {
         return;
       }
       const fields_with_dependencies = new Set(Object.values(this.#default_expression_fields_dependencies).flat());
@@ -1766,9 +1714,9 @@ export class OpenFormStep extends Step {
         try {
           await this.#getDefaultExpression({
             field,
-            feature:      service.feature,
-            qgs_layer_id: service.layer.getId(),
-            parentData:   service.parentData
+            feature:      this.#component.feature,
+            qgs_layer_id: this.#component.layer.getId(),
+            parentData:   this.#component.parentData
           });
         } catch(e) {
           console.warn(e);
