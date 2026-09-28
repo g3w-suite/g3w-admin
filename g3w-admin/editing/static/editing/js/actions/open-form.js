@@ -70,7 +70,7 @@ class FormComponent extends Component {
       ...opts,
       id:                 opts.id || 'form',
       perc:               opts.layer?.config?.editing?.form?.perc ?? opts.perc,
-      service:            new (opts.service || FormService)(opts),
+      service:            new FormService(opts),
       vueComponentObject: opts.vueComponentObject || {
         template: /* html */ `
           <div class="g3wform_content" style="position: relative">
@@ -1165,7 +1165,7 @@ export class OpenFormStep extends Step {
 
       const SELF = this;
 
-      const formService = this.#showForm({
+      const formOpts = {
         feature:         this.getOriginalFeatures()[0],
         title:           "plugins.editing.editing_attributes",
         name:            layerName,
@@ -1423,7 +1423,20 @@ export class OpenFormStep extends Step {
               }
             }
           ]
+      };
+
+      // new instance every time
+      const formComponent = new FormComponent(formOpts);
+      GUI.setContent({
+        perc:       formOpts.perc,
+        title:      formComponent?.layer?.getName?.(),
+        content:    formComponent,
+        split:      undefined !== formOpts.split ? formOpts.split : 'h',
+        push:       !!formOpts.push, //only one (if other deletes previous component)
+        showgoback: !!formOpts.showgoback,
+        closable:   false
       });
+      const formService = formComponent.getService();
 
       // Replace the default relation click with the relation form component.
       formService.handleRelation = async e => {
@@ -1829,23 +1842,6 @@ export class OpenFormStep extends Step {
     const attributes = createAttrs(fields);
     feature.setProperties(attributes);
     return attributes;
-  }
-
-  #showForm(opts = {}) {
-    // new instance every time
-    const formComponent = opts.formComponent ? new opts.formComponent(opts) : new FormComponent(opts);
-    GUI.setContent({
-      perc:       opts.perc,
-      //@since 4.1.0 used instead crumb
-      title:      formComponent?.layer?.getName?.(),
-      content:    formComponent,
-      split:      undefined !== opts.split ? opts.split : 'h',
-      push:       !!opts.push, //only one (if other deletes previous component)
-      showgoback: !!opts.showgoback,
-      closable:   false
-    });
-    // return service
-    return formComponent.getService();
   }
 
 }
