@@ -100,6 +100,13 @@ export class OpenFormStep extends Step {
    */
   #originalFeatures;
 
+  #bus;
+  #service;
+  #component;
+  #filter_expression_fields_dependencies;
+  #default_expression_fields_dependencies;
+  #default_expression_fields_on_update;
+
   /**
    * @param {Object} [opts={}] Step options.
    * @param {false|Function} [opts.saveAll] Enables the save-all header unless explicitly set to false.
@@ -176,6 +183,12 @@ export class OpenFormStep extends Step {
    * @returns {Promise<*>} Resolves when the form is saved or closed, and rejects when the form is cancelled.
    */
   async run(inputs, context) {
+    this.#bus = new Vue();
+    this.#service = null;
+    this.#component = null;
+    this.#filter_expression_fields_dependencies = {};
+    this.#default_expression_fields_dependencies = {};
+    this.#default_expression_fields_on_update = [];
     GUI.setModal(true);
     // Nested forms can be forced by the caller, otherwise infer nesting from the tool stack.
     this.#isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
@@ -567,14 +580,7 @@ export class OpenFormStep extends Step {
             }
           ]
       };
-
-      const bus = new Vue();
-
       // Fields grouped by the inputs that their filter/default expressions reference.
-      const filter_expression_fields_dependencies  = {};
-      const default_expression_fields_dependencies = {};
-      // @since 3.8.0
-      const default_expression_fields_on_update    = [];
 
       /**
        * Reevaluates filter expressions depending on the changed input.
@@ -583,23 +589,7 @@ export class OpenFormStep extends Step {
        *
        * @returns {Promise<PromiseSettledResult<Array>[]>|undefined} evaluation results
        */
-      function evaluateFilterExpressionFields(input = {}) {
-        if (filter_expression_fields_dependencies[input.name]) {
-          // A filter may depend on fields from this form or columns from another layer.
-          return Promise.allSettled(
-            filter_expression_fields_dependencies[input.name].map(dependency_field =>
-              SELF.#getFilterExpression({
-                parentData:   service.parentData,
-                qgs_layer_id: service.layer.getId(),
-                field:        service.state.fields.find(f => dependency_field === f.name),
-                feature:      service.feature,
-              })
-            )
-          );
-        }
-      }
-
-      const service = Object.assign(new Emitter(), {
+      this.#service = Object.assign(new Emitter(), {
 
         isCoreFormService: true,
 
@@ -648,271 +638,37 @@ export class OpenFormStep extends Step {
           fields:               formOpts.fields ?? []
         },
 
-        setReady(bool = false) {
-          this.state.ready = bool;
-        },
-
-        /**
-         * Applies an input change, reevaluates dependent expressions and updates form state.
-         *
-         * @param {Object} input changed form input
-         */
-        async changeInput(input) {
-          try {
-            // Keep expression evaluation in sync with the feature sent to the server.
-            this.feature.set(input.name, input.value);
-            await evaluateFilterExpressionFields(input);
-            // Reevaluate default expressions depending on the changed input.
-            const dependent_fields = default_expression_fields_dependencies[input.name];
-            if (dependent_fields) {
-              await Promise.allSettled(dependent_fields.map(dependency_field =>
-                SELF.#getDefaultExpression({
-                  parentData:   this.parentData,
-                  qgs_layer_id: this.layer.getId(),
-                  field:        this.state.fields.find(f => dependency_field === f.name),
-                  feature:      this.feature,
-                })
-              ));
-            }
-            this.isValid(input);
-            // Updates the form dirty state after an input change.
-            this.state.update = (
-                this.force.update
-                || (
-                  !this.state.update
-                    ? input.update
-                    : !!this.state.fields.find(f => f.update)
-                )
-              );
-          } catch(e) {
-            console.warn(e);
-          }
-          // Notify listeners after all dependent state has been updated.
-          this.emit('changeInput', input);
-        },
-
-        /**
-         * Sets the dirty state and, when clearing it, resets field baselines.
-         */
-        setUpdate(bool = false, options = {}) {
-          const { force = false } = options;
-          this.force.update = force;
-          this.state.update = this.force.update || bool;
-          if (false === this.state.update) {
-            // The current values become the new baseline for change detection.
-            this.state.fields.forEach(f => f._value = f.value )
-          }
-        },
-
-        /**
-         * Updates the form-level loading state.
-         */
-        setLoading(bool = false) {
-          this.state.loading = bool;
-        },
-
-        /**
-         * Stores a child component validation result and recomputes form validity.
-         */
-        setValidComponent({ id, valid }) {
-          this.state.componentstovalidate[id] = valid;
-          this.isValid();
-        },
-
-        /**
-         * Recomputes overall validity from input and child-component validation states.
-         */
-        isValid(input) {
-          if (input) {
-            // Mutually exclusive fields are valid only while their group constraint holds.
-            if (input.validate.mutually && !input.validate.required && !input.validate.empty) {
-              input.validate._valid         = input.validate.valid;
-              input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && this.state.tovalidate[inputname].validate.empty, true);
-              input.validate.valid          = input.validate.mutually_valid && input.validate.valid;
-            }
-            if (input.validate.mutually && !input.validate.required && input.validate.empty) {
-              input.value                   = null;
-              input.validate.mutually_valid = true;
-              input.validate.valid          = true;
-              input.validate._valid         = true;
-              // Restore group validity when fewer than two mutually exclusive fields are filled.
-              let filled = [];
-              for (let i = input.validate.mutually.length; i--;) {
-                const input_name = input.validate.mutually[i];
-
-                if (!this.state.tovalidate[input_name].validate.empty) { filled.push(input_name)  }
-
-              }
-              if (filled.length < 2) {
-                filled.forEach((input_name) => {
-                  this.state.tovalidate[input_name].validate.mutually_valid = true;
-                  this.state.tovalidate[input_name].validate.valid          = true;
-                  setTimeout(() => {
-                    this.state.tovalidate[input_name].validate.valid = this.state.tovalidate[input_name].validate._valid;
-                    this.state.valid = this.state.valid && this.state.tovalidate[input_name].validate.valid;
-                  })
-                })
-              }
-            }
-            // Validate numeric relationships with the configured minimum or maximum field.
-            if (!input.validate.mutually && !input.validate.empty && (input.validate.min_field || input.validate.max_field)) {
-              const input_name = input.validate.min_field || input.validate.max_field;
-              input.validate.valid = (
-                input.validate.min_field
-                  ? this.state.tovalidate[input.validate.min_field].validate.empty || 1 * input.value > 1 * this.state.tovalidate[input.validate.min_field].value
-                  : this.state.tovalidate[input.validate.max_field].validate.empty || 1 * input.value < 1 * this.state.tovalidate[input.validate.max_field].value
-              );
-
-              if (input.validate.valid) {
-                this.state.tovalidate[input_name].validate.valid = true;
-              }
-            }
-          }
-          this.state.valid = (
-            Object.values(this.state.tovalidate).reduce((previous, input) => previous && input.validate.valid, true)
-            && Object.values(this.state.componentstovalidate).reduce((previous, valid) => previous && valid, true)
-          );
-        },
-
-        /**
-         * Adds multiple child components to the form.
-         */
-        addComponents(components = []) {
-          for (const component of components) {
-            this.addComponent(component);
-          }
-        },
-
-        addComponent(component) {
-          if (!component) { return }
-          const { id, title, name, icon, valid, headerComponent, header = true } = component;
-          if (undefined !== valid) {
-            this.state.componentstovalidate[id] = valid;
-            this.state.valid = this.state.valid && valid;
-            bus.$emit('add-component-validate', { id, valid });
-          }
-          // Header entries drive tabs or other navigation controls.
-          if (header) {
-            this.state.headers.push({title, name, id, icon, component:headerComponent});
-            this.state.currentheaderid = this.state.currentheaderid || id;
-          }
-
-          this.state.components.push(component);
-        },
-
-        disableComponent({ id, disabled } = {}) {
-          if (disabled) { this.state.disabledcomponents.push(id) }
-          else { this.state.disabledcomponents = this.state.disabledcomponents.filter(disableId => id !== disableId) }
-        },
-
-        setCurrentComponentById(id) {
-          if (!this.state.disabledcomponents.includes(id)) {
-            this.state.currentheaderid = id;
-            this.state.component = this.state.components.find(c => id === c.id).component;
-            return this.state.component;
-          }
-        },
-
-        /**
-          * setRootComponent (is form)
-          */
-        setRootComponent() {
-          this.state.component = this.state.components.find(c => c.root).component;
-        },
-
-        isRootComponent(component) {
-          return component === this.state.components.find(c => c.root).component;
-        },
-
-        getComponentById(id) {
-          return this.state.components.find(c => id === c.id);
-        },
-
-        addToValidate(input) {
-          this.state.tovalidate[input.name] = input;
-          // Defer validation until the form is mounted; then validate immediately.
-          if (this.state.ready) { this.isValid(input) }
-        },
-
-        removeToValidate(input) {
-          delete this.state.tovalidate[input.name];
-          this.isValid();
-        },
-
-        getState() {
-          return this.state;
-        },
-
-        getFields() {
-          return this.state.fields;
-        },
-
-        getEventBus() {
-          return bus;
-        },
-
-        getContext() {
-          return this.context_inputs.context;
-        },
-
-        getSession() {
-          return this.getContext().session;
-        },
-
-        getInputs() {
-          return this.context_inputs.inputs;
-        },
-
-        /**
-          * Hook for plugins that synchronize this form with a related feature.
-          */
-        handleRelation({relationId, feature}) {
-          //OVERWRITE BY  PLUGIN EDITING PLUGIN
-        },
-
-        /**
-          * Evaluates default expressions without field dependencies before submission.
-          *
-          * @since 3.8.0
-          */
-        async saveDefaultExpressionFieldsNotDependencies() {
-          try {
-            // Nothing needs evaluation when no update-bound expression or changed field exists.
-            if (0 === default_expression_fields_on_update.length || !this.state.fields.some(f => f.update && !f.vectorjoin_id)) {
-              return;
-            }
-            const fields_with_dependencies    = new Set(Object.values(default_expression_fields_dependencies).flat());
-            const fields_without_dependencies = default_expression_fields_on_update.filter(({ name }) => !fields_with_dependencies.has(name))
-            // Wait for every expression so field values are ready before submission continues.
-            await Promise.allSettled(
-              fields_without_dependencies.map(field => new Promise(async (resolve, reject) => {
-                  try {
-                    await SELF.#getDefaultExpression({
-                      field,
-                      feature:      this.feature,
-                      qgs_layer_id: this.layer.getId(),
-                      parentData:   this.parentData
-                    });
-                    resolve();
-                  } catch(e) {
-                    console.warn(e);
-                    reject();
-                  }
-                })
-              )
-            )
-          } catch(e) {
-            console.warn(e);
-          }
-        },
+        setReady:                             SELF.#setReady.bind(SELF),
+        changeInput:                          SELF.#changeInput.bind(SELF),
+        setUpdate:                            SELF.#setUpdate.bind(SELF),
+        setLoading:                           SELF.#setLoading.bind(SELF),
+        setValidComponent:                    SELF.#setValidComponent.bind(SELF),
+        isValid:                              SELF.#isValid.bind(SELF),
+        addComponents:                        SELF.#addComponents.bind(SELF),
+        addComponent:                         SELF.#addComponent.bind(SELF),
+        disableComponent:                     SELF.#disableComponent.bind(SELF),
+        setCurrentComponentById:              SELF.#setCurrentComponentById.bind(SELF),
+        setRootComponent:                     SELF.#setRootComponent.bind(SELF),
+        isRootComponent:                      SELF.#isRootComponent.bind(SELF),
+        getComponentById:                     SELF.#getComponentById.bind(SELF),
+        addToValidate:                        SELF.#addToValidate.bind(SELF),
+        removeToValidate:                     SELF.#removeToValidate.bind(SELF),
+        getState:                             SELF.#getState.bind(SELF),
+        getFields:                            SELF.#getFields.bind(SELF),
+        getEventBus:                          SELF.#getEventBus.bind(SELF),
+        getContext:                           SELF.#getContext.bind(SELF),
+        getSession:                           SELF.#getSession.bind(SELF),
+        getInputs:                            SELF.#getInputs.bind(SELF),
+        handleRelation:                       SELF.#handleRelation.bind(SELF),
+        saveDefaultExpressionFieldsNotDependencies: SELF.#saveDefaultExpressionFieldsNotDependencies.bind(SELF),
 
       });
 
 
       // new instance every time
-      const formComponent = new Component({
+      this.#component = new Component({
         ...formOpts,
-        service,
+        service: this.#service,
         id:                 formOpts.id || 'form',
         perc:               formOpts.layer?.config?.editing?.form?.perc ?? formOpts.perc,
         vueComponentObject: formOpts.vueComponentObject || {
@@ -1052,12 +808,12 @@ export class OpenFormStep extends Step {
             this.$options.service.setReady(true);
           },
           beforeDestroy() {
-            bus.$off('addtovalidate');
+            SELF.#bus.$off('addtovalidate');
           }
         },
       });
 
-      formComponent.getService().state.fields.forEach(field => {
+      this.#service.state.fields.forEach(field => {
         const { options = {} } = field.input;
 
         // Register filter dependencies and load initial values for expression-enabled fields.
@@ -1074,16 +830,16 @@ export class OpenFormStep extends Step {
           ]);
 
           dependency_fields.forEach(name => {
-            if (undefined === filter_expression_fields_dependencies[name]) {
-              filter_expression_fields_dependencies[name] = [];
+            if (undefined === SELF.#filter_expression_fields_dependencies[name]) {
+              SELF.#filter_expression_fields_dependencies[name] = [];
             }
-            filter_expression_fields_dependencies[name].push(field.name);
+            SELF.#filter_expression_fields_dependencies[name].push(field.name);
           });
 
           SELF.#getFilterExpression({
-            parentData:   service.parentData,
-            qgs_layer_id: service.layer.getId(),
-            feature:      service.feature,
+            parentData:   this.#service.parentData,
+            qgs_layer_id: this.#service.layer.getId(),
+            feature:      this.#service.feature,
             field,
           });
         }
@@ -1098,27 +854,27 @@ export class OpenFormStep extends Step {
           } = default_expression;
 
           // Existing features register defaults only when they explicitly apply on update.
-          if (apply_on_update || service.state.isnew) {
+          if (apply_on_update || this.#service.state.isnew) {
             if (apply_on_update) {
-              default_expression_fields_on_update.push(field);
+              SELF.#default_expression_fields_on_update.push(field);
 
               new Set([
                 ...referenced_columns,
                 ...referencing_fields
               ]).forEach(name => {
-                if (undefined === default_expression_fields_dependencies[name]) {
-                  default_expression_fields_dependencies[name] = [];
+                if (undefined === SELF.#default_expression_fields_dependencies[name]) {
+                  SELF.#default_expression_fields_dependencies[name] = [];
                 }
-                default_expression_fields_dependencies[name].push(field.name);
+                SELF.#default_expression_fields_dependencies[name].push(field.name);
               });
             }
 
-            if (service.state.isnew) {
+            if (this.#service.state.isnew) {
               SELF.#getDefaultExpression({
                 field,
-                feature:      service.feature,
-                qgs_layer_id: service.layer.getId(),
-                parentData:   service.parentData,
+                feature:      this.#service.feature,
+                qgs_layer_id: this.#service.layer.getId(),
+                parentData:   this.#service.parentData,
               });
             }
           }
@@ -1127,11 +883,11 @@ export class OpenFormStep extends Step {
 
       // Evaluate filters once so dependent input options are populated initially.
       Object
-        .keys(filter_expression_fields_dependencies)
-        .forEach(name => evaluateFilterExpressionFields({ name }) );
+        .keys(SELF.#filter_expression_fields_dependencies)
+        .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
 
-      if (formComponent.getService().layer && formOpts.formStructure) {
-        formComponent.getService().state.formstructure = formComponent.getService().layer.getLayerEditingFormStructure();
+      if (this.#service.layer && formOpts.formStructure) {
+        this.#service.state.formstructure = this.#service.layer.getLayerEditingFormStructure();
       }
 
       // Use the default body component unless custom form components were provided.
@@ -1196,21 +952,19 @@ export class OpenFormStep extends Step {
         headerComponent: formOpts.headerComponent
       }];
 
-      formComponent.getService().addComponents(components);
-      formComponent.getService().state.component = (components[0].component);
+      this.#service.addComponents(components);
+      this.#service.state.component = components[0].component;
       GUI.setContent({
         perc:       formOpts.perc,
-        title:      formComponent?.layer?.getName?.(),
-        content:    formComponent,
+        title:      this.#component?.layer?.getName?.(),
+        content:    this.#component,
         split:      undefined !== formOpts.split ? formOpts.split : 'h',
         push:       !!formOpts.push, //only one (if other deletes previous component)
         showgoback: !!formOpts.showgoback,
         closable:   false
       });
-      const formService = formComponent.getService();
-
       // Replace the default relation click with the relation form component.
-      formService.handleRelation = async e => {
+      this.#service.handleRelation = async e => {
         // Relations cannot be edited while multiple features are selected.
         if (this.hasMulti()) {
           GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
@@ -1219,13 +973,13 @@ export class OpenFormStep extends Step {
         GUI.setLoadingContent(true);
         // Refresh unique values before opening the relation form.
         await setLayerUniqueFieldValues(inputs.layer.getRelationById(e.relation.name).getChild());
-        formService.setCurrentComponentById(e.relation.name);
+        this.#service.setCurrentComponentById(e.relation.name);
         GUI.setLoadingContent(false);
       }
 
       const COMP = (await import('../components/relation.js')).default;
 
-      formService.addComponents([
+      this.#service.addComponents([
         // Add layer-specific custom components.
         ...(GUI.getPlugin('editing').state.formComponents[layerId] || []),
         // Add editable child relations; 1:1 relations are handled by field watchers.
@@ -1253,12 +1007,12 @@ export class OpenFormStep extends Step {
         {
           layerId: this.getLayerId(),
           feature: this.getOriginalFeatures()[0],
-          formService
+          formService: this.#service
         }
       );
 
       // Attach the service when this step is running without a tool wrapper.
-      Tool.Stack?.current?.setContextService?.(formService);
+      Tool.Stack?.current?.setContextService?.(this.#service);
 
       // Watch changes to fields backed by 1:1 relations.
       (async () => {
@@ -1329,7 +1083,7 @@ export class OpenFormStep extends Step {
                   const field    = form_fields.find(f => fn === f.name);
                   field.editable = locked ? false : editable_fields[fn];                                       // Restore editability for each joined child field.
                   field.value    = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null; // Missing or new children expose empty joined values.
-                  formService.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
+                  this.#service.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
                 });
 
                 // Restore the field state after the lookup completes.
@@ -1772,6 +1526,256 @@ export class OpenFormStep extends Step {
       return Promise.reject(e);
     } finally {
       loading.state = 'ready';
+    }
+  }
+
+    #evaluateFilterExpressionFields(input = {}) {
+    const service = this.#service;
+    const dependency_fields = this.#filter_expression_fields_dependencies[input.name];
+    if (!dependency_fields) { return; }
+
+    return Promise.allSettled(
+      dependency_fields.map(dependency_field =>
+        this.#getFilterExpression({
+          parentData:   service.parentData,
+          qgs_layer_id: service.layer.getId(),
+          field:        service.state.fields.find(f => dependency_field === f.name),
+          feature:      service.feature,
+        })
+      )
+    );
+  }
+
+  #setReady(bool = false) {
+    const service = this.#service;
+    service.state.ready = bool;
+  }
+
+  /**
+   * Applies an input change, reevaluates dependent expressions and updates form state.
+   *
+   * @param {Object} input changed form input
+   */
+  async #changeInput(input) {
+    const service = this.#service;
+    try {
+      service.feature.set(input.name, input.value);
+      await this.#evaluateFilterExpressionFields(input);
+      const dependent_fields = this.#default_expression_fields_dependencies[input.name];
+      if (dependent_fields) {
+        await Promise.allSettled(dependent_fields.map(dependency_field =>
+          this.#getDefaultExpression({
+            parentData:   service.parentData,
+            qgs_layer_id: service.layer.getId(),
+            field:        service.state.fields.find(f => dependency_field === f.name),
+            feature:      service.feature,
+          })
+        ));
+      }
+      this.#isValid(input);
+      service.state.update = (
+        service.force.update
+        || (
+          !service.state.update
+            ? input.update
+            : !!service.state.fields.find(f => f.update)
+        )
+      );
+    } catch(e) {
+      console.warn(e);
+    }
+    service.emit('changeInput', input);
+  }
+
+  /**
+   * Sets the dirty state and, when clearing it, resets field baselines.
+   */
+  #setUpdate(bool = false, options = {}) {
+    const service = this.#service;
+    const { force = false } = options;
+    service.force.update = force;
+    service.state.update = service.force.update || bool;
+    if (false === service.state.update) {
+      service.state.fields.forEach(field => field._value = field.value);
+    }
+  }
+
+  /**
+   * Updates the form-level loading state.
+   */
+  #setLoading(bool = false) {
+    const service = this.#service;
+    service.state.loading = bool;
+  }
+
+  /**
+   * Stores a child component validation result and recomputes form validity.
+   */
+  #setValidComponent({ id, valid }) {
+    const service = this.#service;
+    service.state.componentstovalidate[id] = valid;
+    this.#isValid();
+  }
+
+  /**
+   * Recomputes overall validity from input and child-component validation states.
+   */
+  #isValid(input) {
+    const service = this.#service;
+    if (input) {
+      if (input.validate.mutually && !input.validate.required && !input.validate.empty) {
+        input.validate._valid         = input.validate.valid;
+        input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && service.state.tovalidate[inputname].validate.empty, true);
+        input.validate.valid          = input.validate.mutually_valid && input.validate.valid;
+      }
+      if (input.validate.mutually && !input.validate.required && input.validate.empty) {
+        input.value                   = null;
+        input.validate.mutually_valid = true;
+        input.validate.valid          = true;
+        input.validate._valid         = true;
+        const filled = [];
+        for (let i = input.validate.mutually.length; i--;) {
+          const input_name = input.validate.mutually[i];
+          if (!service.state.tovalidate[input_name].validate.empty) { filled.push(input_name) }
+        }
+        if (filled.length < 2) {
+          filled.forEach(input_name => {
+            service.state.tovalidate[input_name].validate.mutually_valid = true;
+            service.state.tovalidate[input_name].validate.valid          = true;
+            setTimeout(() => {
+              service.state.tovalidate[input_name].validate.valid = service.state.tovalidate[input_name].validate._valid;
+              service.state.valid = service.state.valid && service.state.tovalidate[input_name].validate.valid;
+            });
+          });
+        }
+      }
+      if (!input.validate.mutually && !input.validate.empty && (input.validate.min_field || input.validate.max_field)) {
+        const input_name = input.validate.min_field || input.validate.max_field;
+        input.validate.valid = (
+          input.validate.min_field
+            ? service.state.tovalidate[input.validate.min_field].validate.empty || 1 * input.value > 1 * service.state.tovalidate[input.validate.min_field].value
+            : service.state.tovalidate[input.validate.max_field].validate.empty || 1 * input.value < 1 * service.state.tovalidate[input.validate.max_field].value
+        );
+        if (input.validate.valid) {
+          service.state.tovalidate[input_name].validate.valid = true;
+        }
+      }
+    }
+    service.state.valid = (
+      Object.values(service.state.tovalidate).reduce((previous, field) => previous && field.validate.valid, true)
+      && Object.values(service.state.componentstovalidate).reduce((previous, valid) => previous && valid, true)
+    );
+  }
+
+  /**
+   * Adds multiple child components to the form.
+   */
+  #addComponents(components = []) {
+    for (const component of components) {
+      this.#addComponent(component);
+    }
+  }
+
+  #addComponent(component) {
+    const service = this.#service;
+    if (!component) { return }
+    const { id, title, name, icon, valid, headerComponent, header = true } = component;
+    if (undefined !== valid) {
+      service.state.componentstovalidate[id] = valid;
+      service.state.valid = service.state.valid && valid;
+      this.#bus.$emit('add-component-validate', { id, valid });
+    }
+    if (header) {
+      service.state.headers.push({ title, name, id, icon, component: headerComponent });
+      service.state.currentheaderid = service.state.currentheaderid || id;
+    }
+    service.state.components.push(component);
+  }
+
+  #disableComponent({ id, disabled } = {}) {
+    const service = this.#service;
+    if (disabled) { service.state.disabledcomponents.push(id) }
+    else { service.state.disabledcomponents = service.state.disabledcomponents.filter(disableId => id !== disableId) }
+  }
+
+  #setCurrentComponentById(id) {
+    const service = this.#service;
+    if (!service.state.disabledcomponents.includes(id)) {
+      service.state.currentheaderid = id;
+      service.state.component = service.state.components.find(component => id === component.id).component;
+      return service.state.component;
+    }
+  }
+
+  /**
+   * setRootComponent (is form)
+   */
+  #setRootComponent() {
+    const service = this.#service;
+    service.state.component = service.state.components.find(component => component.root).component;
+  }
+
+  #isRootComponent(component) {
+    const service = this.#service;
+    return component === service.state.components.find(item => item.root).component;
+  }
+
+  #getComponentById(id) {
+    const service = this.#service;
+    return service.state.components.find(component => id === component.id);
+  }
+
+  #addToValidate(input) {
+    const service = this.#service;
+    service.state.tovalidate[input.name] = input;
+    if (service.state.ready) { this.#isValid(input) }
+  }
+
+  #removeToValidate(input) {
+    const service = this.#service;
+    delete service.state.tovalidate[input.name];
+    this.#isValid();
+  }
+
+  #getState() { return this.#service.state; }
+  #getFields() { return this.#service.state.fields; }
+  #getEventBus() { return this.#bus; }
+  #getContext() { return this.#service.context_inputs.context; }
+  #getSession() { return this.#getContext().session; }
+  #getInputs() { return this.#service.context_inputs.inputs; }
+
+  /**
+   * Hook for plugins that synchronize this form with a related feature.
+   */
+  #handleRelation() {}
+
+  /**
+   * Evaluates default expressions without field dependencies before submission.
+   *
+   * @since 3.8.0
+   */
+  async #saveDefaultExpressionFieldsNotDependencies() {
+    const service = this.#service;
+    try {
+      if (0 === this.#default_expression_fields_on_update.length || !service.state.fields.some(field => field.update && !field.vectorjoin_id)) {
+        return;
+      }
+      const fields_with_dependencies = new Set(Object.values(this.#default_expression_fields_dependencies).flat());
+      const fields_without_dependencies = this.#default_expression_fields_on_update.filter(({ name }) => !fields_with_dependencies.has(name));
+      await Promise.allSettled(fields_without_dependencies.map(async field => {
+        try {
+          await this.#getDefaultExpression({
+            field,
+            feature:      service.feature,
+            qgs_layer_id: service.layer.getId(),
+            parentData:   service.parentData
+          });
+        } catch(e) {
+          console.warn(e);
+        }
+      }));
+    } catch(e) {
+      console.warn(e);
     }
   }
 
