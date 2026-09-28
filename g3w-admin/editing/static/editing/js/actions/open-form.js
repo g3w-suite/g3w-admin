@@ -101,7 +101,7 @@ export class OpenFormStep extends Step {
   #originalFeatures;
 
   #bus;
-  #component;
+  #form;
   #filter_expression_fields_dependencies;
   #default_expression_fields_dependencies;
   #default_expression_fields_on_update;
@@ -183,7 +183,7 @@ export class OpenFormStep extends Step {
    */
   async run(inputs, context) {
     this.#bus = new Vue();
-    this.#component = null;
+    this.#form = null;
     this.#filter_expression_fields_dependencies = {};
     this.#default_expression_fields_dependencies = {};
     this.#default_expression_fields_on_update = [];
@@ -319,8 +319,8 @@ export class OpenFormStep extends Step {
 
       const SELF = this;
 
-      const formOpts = {
-        feature:         this.getOriginalFeatures()[0],
+      this.#form = new Component({
+        feature:         this.getOriginalFeatures()[0].clone(),
         title:           "plugins.editing.editing_attributes",
         name:            layerName,
         crumb:           { title: layerName },
@@ -576,28 +576,15 @@ export class OpenFormStep extends Step {
                 reject(inputs);
               }
             }
-          ]
-      };
-      // new instance every time
-      this.#component = new Component({
-        ...formOpts,
-        id:                 formOpts.id || 'form',
-        perc:               formOpts.layer?.config?.editing?.form?.perc ?? formOpts.perc,
+          ],
+        perc:               inputs.layer?.config?.editing?.form?.perc,
         isCoreFormService:  true,
-        layer:              formOpts.layer,
-        feature:            formOpts.feature.clone(),
-        title:              formOpts.title ?? 'Form',
-        formId:             formOpts.formId,
-        name:               formOpts.name,
-        buttons:            formOpts.buttons ?? {},
-        context_inputs:     formOpts.context_inputs,
-        parentData:         formOpts.parentData,
-        headerComponent:    formOpts.headerComponent,
+        formId:             undefined,
         force: {
-          update: formOpts.feature.isNew(),
+          update: this.getOriginalFeatures()[0].isNew(),
           valid:  false
         },
-        layerid:              formOpts.layer.getId(),
+        layerid:              inputs.layer.getId(),
         loading:              false,
         components:           [],
         disabledcomponents:   [],
@@ -605,14 +592,12 @@ export class OpenFormStep extends Step {
         headers:              [],
         currentheaderid:      null,
         disabled:             false,
-        isnew:                formOpts.isNew,
         valid:                true,
-        update:               formOpts.feature.isNew(),
+        update:               this.getOriginalFeatures()[0].isNew(),
         tovalidate:           {},
         componentstovalidate: {},
-        footer:               formOpts.footer ?? {},
+        footer:               {},
         ready:                false,
-        fields:               formOpts.fields ?? [],
         setReady:                             SELF.#setReady.bind(SELF),
         changeInput:                          SELF.#changeInput.bind(SELF),
         setUpdate:                            SELF.#setUpdate.bind(SELF),
@@ -636,7 +621,7 @@ export class OpenFormStep extends Step {
         getInputs:                            SELF.#getInputs.bind(SELF),
         handleRelation:                       SELF.#handleRelation.bind(SELF),
         saveDefaultExpressionFieldsNotDependencies: SELF.#saveDefaultExpressionFieldsNotDependencies.bind(SELF),
-        vueComponentObject: formOpts.vueComponentObject || {
+        vueComponentObject: {
           template: /* html */ `
             <div class="g3wform_content" style="position: relative">
               <bar-loader :loading="state.loading" />
@@ -734,11 +719,11 @@ export class OpenFormStep extends Step {
           methods: {
             isRootComponent(component)                 { return SELF.#isRootComponent(component); },
             backToRoot()                               { SELF.#setRootComponent(); },
-            handleRelation(relationId)                 { SELF.#component.handleRelation(relationId); },
+            handleRelation(relationId)                 { SELF.#form.handleRelation(relationId); },
             disableComponent({ id, disabled = false }) { SELF.#disableComponent({ id, disabled }); },
             switchComponent(id)                        { this.switchcomponent = true; SELF.#setCurrentComponentById(id); },
-            clickHeader(id)                            { if (id !== SELF.#component.state.currentheaderid && SELF.#component.state.headers.length > 1) { this.switchComponent(id); } },
-            exec(cbk)                                  { cbk instanceof Function ? cbk(SELF.#component.state.fields) : SELF.#component.state.fields; },
+            clickHeader(id)                            { if (id !== SELF.#form.currentheaderid && SELF.#form.headers.length > 1) { this.switchComponent(id); } },
+            exec(cbk)                                  { cbk instanceof Function ? cbk(SELF.#form.fields) : SELF.#form.fields; },
             btnEnabled(button)                         { return (button.enabled ?? true) && ('save' !== button.type || ('save' === button.type && this.enableSave)); },
             changeInput(input)                         { return SELF.#changeInput(input); },
             addToValidate(input)                       { SELF.#addToValidate(input); },
@@ -778,7 +763,7 @@ export class OpenFormStep extends Step {
         },
       });
 
-      this.#component.state.fields.forEach(field => {
+      this.#form.fields.forEach(field => {
         const { options = {} } = field.input;
 
         // Register filter dependencies and load initial values for expression-enabled fields.
@@ -802,9 +787,9 @@ export class OpenFormStep extends Step {
           });
 
           SELF.#getFilterExpression({
-            parentData:   this.#component.parentData,
-            qgs_layer_id: this.#component.layer.getId(),
-            feature:      this.#component.feature,
+            parentData:   this.#form.parentData,
+            qgs_layer_id: this.#form.layer.getId(),
+            feature:      this.#form.feature,
             field,
           });
         }
@@ -819,7 +804,7 @@ export class OpenFormStep extends Step {
           } = default_expression;
 
           // Existing features register defaults only when they explicitly apply on update.
-          if (apply_on_update || this.#component.state.isnew) {
+          if (apply_on_update || this.#form.isnew) {
             if (apply_on_update) {
               SELF.#default_expression_fields_on_update.push(field);
 
@@ -834,12 +819,12 @@ export class OpenFormStep extends Step {
               });
             }
 
-            if (this.#component.state.isnew) {
+            if (this.#form.isnew) {
               SELF.#getDefaultExpression({
                 field,
-                feature:      this.#component.feature,
-                qgs_layer_id: this.#component.layer.getId(),
-                parentData:   this.#component.parentData,
+                feature:      this.#form.feature,
+                qgs_layer_id: this.#form.layer.getId(),
+                parentData:   this.#form.parentData,
               });
             }
           }
@@ -851,15 +836,15 @@ export class OpenFormStep extends Step {
         .keys(SELF.#filter_expression_fields_dependencies)
         .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
 
-      if (this.#component.layer && formOpts.formStructure) {
-        this.#component.state.formstructure = this.#component.layer.getLayerEditingFormStructure();
+      if (this.#form.layer && this.#form.formStructure) {
+        this.#form.formstructure = this.#form.layer.getLayerEditingFormStructure();
       }
 
-      // Use the default body component unless custom form components were provided.
-      const components = formOpts.components || [{
-        id:              formOpts.id,
-        title:           formOpts.title,
-        name:            formOpts.name,
+      // Build the default form body component.
+      const components = [{
+        id:              this.#form.id,
+        title:           this.#form.title,
+        name:            this.#form.name,
         root:            true,
         component: {
           template: /* html */ `
@@ -914,22 +899,24 @@ export class OpenFormStep extends Step {
             hasFormStructure() { return !!this.state.formstructure; }
           }
         },
-        headerComponent: formOpts.headerComponent
+        headerComponent: this.#form.headerComponent
       }];
 
-      this.#component.addComponents(components);
-      this.#component.state.component = components[0].component;
+      this.#form.addComponents(components);
+      this.#form.component = components[0].component;
+
       GUI.setContent({
-        perc:       formOpts.perc,
-        title:      this.#component?.layer?.getName?.(),
-        content:    this.#component,
-        split:      undefined !== formOpts.split ? formOpts.split : 'h',
-        push:       !!formOpts.push, //only one (if other deletes previous component)
-        showgoback: !!formOpts.showgoback,
+        perc:       this.#form.perc,
+        title:      this.#form?.layer?.getName?.(),
+        content:    this.#form,
+        split:      this.#form.split ?? 'h',
+        push:       !!this.#form.push, //only one (if other deletes previous component)
+        showgoback: !!this.#form.showgoback,
         closable:   false
       });
+
       // Replace the default relation click with the relation form component.
-      this.#component.handleRelation = async e => {
+      this.#form.handleRelation = async e => {
         // Relations cannot be edited while multiple features are selected.
         if (this.hasMulti()) {
           GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
@@ -938,13 +925,13 @@ export class OpenFormStep extends Step {
         GUI.setLoadingContent(true);
         // Refresh unique values before opening the relation form.
         await setLayerUniqueFieldValues(inputs.layer.getRelationById(e.relation.name).getChild());
-        this.#component.setCurrentComponentById(e.relation.name);
+        this.#form.setCurrentComponentById(e.relation.name);
         GUI.setLoadingContent(false);
       }
 
       const COMP = (await import('../components/relation.js')).default;
 
-      this.#component.addComponents([
+      this.#form.addComponents([
         // Add layer-specific custom components.
         ...(GUI.getPlugin('editing').state.formComponents[layerId] || []),
         // Add editable child relations; 1:1 relations are handled by field watchers.
@@ -972,12 +959,12 @@ export class OpenFormStep extends Step {
         {
           layerId: this.getLayerId(),
           feature: this.getOriginalFeatures()[0],
-          formService: this.#component
+          formService: this.#form
         }
       );
 
       // Attach the service when this step is running without a tool wrapper.
-      Tool.Stack?.current?.setContextService?.(this.#component);
+      Tool.Stack?.current?.setContextService?.(this.#form);
 
       // Watch changes to fields backed by 1:1 relations.
       (async () => {
@@ -1048,7 +1035,7 @@ export class OpenFormStep extends Step {
                   const field    = form_fields.find(f => fn === f.name);
                   field.editable = locked ? false : editable_fields[fn];                                       // Restore editability for each joined child field.
                   field.value    = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null; // Missing or new children expose empty joined values.
-                  this.#component.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
+                  this.#form.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
                 });
 
                 // Restore the field state after the lookup completes.
@@ -1501,17 +1488,17 @@ export class OpenFormStep extends Step {
     return Promise.allSettled(
       dependency_fields.map(dependency_field =>
         this.#getFilterExpression({
-          parentData:   this.#component.parentData,
-          qgs_layer_id: this.#component.layer.getId(),
-          field:        this.#component.state.fields.find(f => dependency_field === f.name),
-          feature:      this.#component.feature,
+          parentData:   this.#form.parentData,
+          qgs_layer_id: this.#form.layer.getId(),
+          field:        this.#form.fields.find(f => dependency_field === f.name),
+          feature:      this.#form.feature,
         })
       )
     );
   }
 
   #setReady(bool = false) {
-    this.#component.state.ready = bool;
+    this.#form.ready = bool;
   }
 
   /**
@@ -1521,42 +1508,42 @@ export class OpenFormStep extends Step {
    */
   async #changeInput(input) {
     try {
-      this.#component.feature.set(input.name, input.value);
+      this.#form.feature.set(input.name, input.value);
       await this.#evaluateFilterExpressionFields(input);
       const dependent_fields = this.#default_expression_fields_dependencies[input.name];
       if (dependent_fields) {
         await Promise.allSettled(dependent_fields.map(dependency_field =>
           this.#getDefaultExpression({
-            parentData:   this.#component.parentData,
-            qgs_layer_id: this.#component.layer.getId(),
-            field:        this.#component.state.fields.find(f => dependency_field === f.name),
-            feature:      this.#component.feature,
+            parentData:   this.#form.parentData,
+            qgs_layer_id: this.#form.layer.getId(),
+            field:        this.#form.fields.find(f => dependency_field === f.name),
+            feature:      this.#form.feature,
           })
         ));
       }
       this.#isValid(input);
-      this.#component.state.update = (
-        this.#component.force.update
+      this.#form.update = (
+        this.#form.force.update
         || (
-          !this.#component.state.update
+          !this.#form.update
             ? input.update
-            : !!this.#component.state.fields.find(f => f.update)
+            : !!this.#form.fields.find(f => f.update)
         )
       );
     } catch(e) {
       console.warn(e);
     }
-    this.#component.emit('changeInput', input);
+    this.#form.emit('changeInput', input);
   }
 
   /**
    * Sets the dirty state and, when clearing it, resets field baselines.
    */
   #setUpdate(bool = false, options = {}) {
-    this.#component.force.update = options.force ?? false;
-    this.#component.state.update = this.#component.force.update || bool;
-    if (false === this.#component.state.update) {
-      this.#component.state.fields.forEach(field => field._value = field.value);
+    this.#form.force.update = options.force ?? false;
+    this.#form.update = this.#form.force.update || bool;
+    if (false === this.#form.update) {
+      this.#form.fields.forEach(field => field._value = field.value);
     }
   }
 
@@ -1564,14 +1551,14 @@ export class OpenFormStep extends Step {
    * Updates the form-level loading state.
    */
   #setLoading(bool = false) {
-    this.#component.state.loading = bool;
+    this.#form.loading = bool;
   }
 
   /**
    * Stores a child component validation result and recomputes form validity.
    */
   #setValidComponent({ id, valid }) {
-    this.#component.state.componentstovalidate[id] = valid;
+    this.#form.componentstovalidate[id] = valid;
     this.#isValid();
   }
 
@@ -1582,7 +1569,7 @@ export class OpenFormStep extends Step {
     if (input) {
       if (input.validate.mutually && !input.validate.required && !input.validate.empty) {
         input.validate._valid         = input.validate.valid;
-        input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && this.#component.state.tovalidate[inputname].validate.empty, true);
+        input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && this.#form.tovalidate[inputname].validate.empty, true);
         input.validate.valid          = input.validate.mutually_valid && input.validate.valid;
       }
       if (input.validate.mutually && !input.validate.required && input.validate.empty) {
@@ -1593,15 +1580,15 @@ export class OpenFormStep extends Step {
         const filled = [];
         for (let i = input.validate.mutually.length; i--;) {
           const input_name = input.validate.mutually[i];
-          if (!this.#component.state.tovalidate[input_name].validate.empty) { filled.push(input_name) }
+          if (!this.#form.tovalidate[input_name].validate.empty) { filled.push(input_name) }
         }
         if (filled.length < 2) {
           filled.forEach(input_name => {
-            this.#component.state.tovalidate[input_name].validate.mutually_valid = true;
-            this.#component.state.tovalidate[input_name].validate.valid          = true;
+            this.#form.tovalidate[input_name].validate.mutually_valid = true;
+            this.#form.tovalidate[input_name].validate.valid          = true;
             setTimeout(() => {
-              this.#component.state.tovalidate[input_name].validate.valid = this.#component.state.tovalidate[input_name].validate._valid;
-              this.#component.state.valid = this.#component.state.valid && this.#component.state.tovalidate[input_name].validate.valid;
+              this.#form.tovalidate[input_name].validate.valid = this.#form.tovalidate[input_name].validate._valid;
+              this.#form.valid = this.#form.valid && this.#form.tovalidate[input_name].validate.valid;
             });
           });
         }
@@ -1610,17 +1597,17 @@ export class OpenFormStep extends Step {
         const input_name = input.validate.min_field || input.validate.max_field;
         input.validate.valid = (
           input.validate.min_field
-            ? this.#component.state.tovalidate[input.validate.min_field].validate.empty || 1 * input.value > 1 * this.#component.state.tovalidate[input.validate.min_field].value
-            : this.#component.state.tovalidate[input.validate.max_field].validate.empty || 1 * input.value < 1 * this.#component.state.tovalidate[input.validate.max_field].value
+            ? this.#form.tovalidate[input.validate.min_field].validate.empty || 1 * input.value > 1 * this.#form.tovalidate[input.validate.min_field].value
+            : this.#form.tovalidate[input.validate.max_field].validate.empty || 1 * input.value < 1 * this.#form.tovalidate[input.validate.max_field].value
         );
         if (input.validate.valid) {
-          this.#component.state.tovalidate[input_name].validate.valid = true;
+          this.#form.tovalidate[input_name].validate.valid = true;
         }
       }
     }
-    this.#component.state.valid = (
-      Object.values(this.#component.state.tovalidate).reduce((previous, field) => previous && field.validate.valid, true)
-      && Object.values(this.#component.state.componentstovalidate).reduce((previous, valid) => previous && valid, true)
+    this.#form.valid = (
+      Object.values(this.#form.tovalidate).reduce((previous, field) => previous && field.validate.valid, true)
+      && Object.values(this.#form.componentstovalidate).reduce((previous, valid) => previous && valid, true)
     );
   }
 
@@ -1637,27 +1624,27 @@ export class OpenFormStep extends Step {
     if (!component) { return }
     const { id, title, name, icon, valid, headerComponent, header = true } = component;
     if (undefined !== valid) {
-      this.#component.state.componentstovalidate[id] = valid;
-      this.#component.state.valid = this.#component.state.valid && valid;
+      this.#form.componentstovalidate[id] = valid;
+      this.#form.valid = this.#form.valid && valid;
       this.#bus.$emit('add-component-validate', { id, valid });
     }
     if (header) {
-      this.#component.state.headers.push({ title, name, id, icon, component: headerComponent });
-      this.#component.state.currentheaderid = this.#component.state.currentheaderid || id;
+      this.#form.headers.push({ title, name, id, icon, component: headerComponent });
+      this.#form.currentheaderid = this.#form.currentheaderid || id;
     }
-    this.#component.state.components.push(component);
+    this.#form.components.push(component);
   }
 
   #disableComponent({ id, disabled } = {}) {
-    if (disabled) { this.#component.state.disabledcomponents.push(id) }
-    else { this.#component.state.disabledcomponents = this.#component.state.disabledcomponents.filter(disableId => id !== disableId) }
+    if (disabled) { this.#form.disabledcomponents.push(id) }
+    else { this.#form.disabledcomponents = this.#form.disabledcomponents.filter(disableId => id !== disableId) }
   }
 
   #setCurrentComponentById(id) {
-    if (!this.#component.state.disabledcomponents.includes(id)) {
-      this.#component.state.currentheaderid = id;
-      this.#component.state.component = this.#component.state.components.find(component => id === component.id).component;
-      return this.#component.state.component;
+    if (!this.#form.disabledcomponents.includes(id)) {
+      this.#form.currentheaderid = id;
+      this.#form.component = this.#form.components.find(component => id === component.id).component;
+      return this.#form.component;
     }
   }
 
@@ -1665,33 +1652,33 @@ export class OpenFormStep extends Step {
    * setRootComponent (is form)
    */
   #setRootComponent() {
-    this.#component.state.component = this.#component.state.components.find(component => component.root).component;
+    this.#form.component = this.#form.components.find(component => component.root).component;
   }
 
   #isRootComponent(component) {
-    return component === this.#component.state.components.find(item => item.root).component;
+    return component === this.#form.components.find(item => item.root).component;
   }
 
   #getComponentById(id) {
-    return this.#component.state.components.find(component => id === component.id);
+    return this.#form.components.find(component => id === component.id);
   }
 
   #addToValidate(input) {
-    this.#component.state.tovalidate[input.name] = input;
-    if (this.#component.state.ready) { this.#isValid(input) }
+    this.#form.tovalidate[input.name] = input;
+    if (this.#form.ready) { this.#isValid(input) }
   }
 
   #removeToValidate(input) {
-    delete this.#component.state.tovalidate[input.name];
+    delete this.#form.tovalidate[input.name];
     this.#isValid();
   }
 
-  #getState() { return this.#component.state; }
-  #getFields() { return this.#component.state.fields; }
+  #getState() { return this.#form; }
+  #getFields() { return this.#form.fields; }
   #getEventBus() { return this.#bus; }
-  #getContext() { return this.#component.context_inputs.context; }
+  #getContext() { return this.#form.context_inputs.context; }
   #getSession() { return this.#getContext().session; }
-  #getInputs() { return this.#component.context_inputs.inputs; }
+  #getInputs() { return this.#form.context_inputs.inputs; }
 
   /**
    * Hook for plugins that synchronize this form with a related feature.
@@ -1705,7 +1692,7 @@ export class OpenFormStep extends Step {
    */
   async #saveDefaultExpressionFieldsNotDependencies() {
     try {
-      if (0 === this.#default_expression_fields_on_update.length || !this.#component.state.fields.some(field => field.update && !field.vectorjoin_id)) {
+      if (0 === this.#default_expression_fields_on_update.length || !this.#form.fields.some(field => field.update && !field.vectorjoin_id)) {
         return;
       }
       const fields_with_dependencies = new Set(Object.values(this.#default_expression_fields_dependencies).flat());
@@ -1714,9 +1701,9 @@ export class OpenFormStep extends Step {
         try {
           await this.#getDefaultExpression({
             field,
-            feature:      this.#component.feature,
-            qgs_layer_id: this.#component.layer.getId(),
-            parentData:   this.#component.parentData
+            feature:      this.#form.feature,
+            qgs_layer_id: this.#form.layer.getId(),
+            parentData:   this.#form.parentData
           });
         } catch(e) {
           console.warn(e);
