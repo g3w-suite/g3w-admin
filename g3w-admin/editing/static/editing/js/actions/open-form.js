@@ -19,7 +19,6 @@ const GUI                        = g3w.app;
 const ApplicationState           = g3w.app.state;
 const { Emitter, Component }     = g3w;
 const { XHR }                    = g3w.utils;
-const { createFilterFormInputs } = g3wsdk.core.utils;
 const { G3wFormInputs }          = g3wsdk.gui.vue.Inputs;
 
 /**
@@ -38,6 +37,29 @@ const sortAlphabeticallyArray = (arr) => arr.sort((a, b) => a.localeCompare(b, u
  * @returns {number[]} The sorted input array.
  */
 const sortNumericArray        = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
+
+/**
+ * @param layer single layer or an array of layers
+ * @param inputs
+ * 
+ * @returns {*}
+ */
+function createFilterFormInputs({
+  layer,
+  inputs = [],
+}) {
+  const filter = inputs.map((input, i) => Array.isArray(input.attribute)
+    // multi key relation fields
+    ? input.attribute.map((attr, j) => [].concat(input.value[j]).map(v => `${attr}|${(input.operator || 'eq').toLowerCase()}|${encodeURIComponent(v)}`).join(`|null,`)).join('|AND,')
+    // input logic operator 
+    : `${i > 0 ? `|${inputs[i-1].logicop},` : ''}${'in' === input.operator 
+      ? `${input.attribute}|${input.operator}|(${[].concat(input.value).map(v => encodeURIComponent(v)).join(',')})` 
+      : [].concat(input.value).map(v => `${input.attribute}|${(input.operator || 'eq').toLowerCase()}|${encodeURIComponent(v)}`).join(`|${undefined !== input.logicop ? input.logicop : 'OR'},`)}`
+  ).join('') || undefined;
+
+  // check if is a single layer of an array of layers
+  return Array.isArray(layer) ? layer.map(() => filter) : filter;
+}
 
 /**
  * Form component used by the editing-related plugins.
