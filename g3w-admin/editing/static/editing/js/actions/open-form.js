@@ -98,7 +98,8 @@ class FormComponent extends Component {
             <!-- FORM BODY -->
             <div class="g3wform_body" ref="g3wform_body">
               <component
-                v-for   = "component in body.components.before"
+                v-for   = "(component, index) in body.components.before"
+                :key    = "'before_' + index"
                 :fields = "state.fields"
                 :is     = "component"
               />
@@ -113,7 +114,8 @@ class FormComponent extends Component {
                 />
               </keep-alive>
               <component
-                v-for   = "component in body.components.after"
+                v-for   = "(component, index) in body.components.after"
+                :key    = "'after_' + index"
                 :fields = "state.fields"
                 :is     = "component"
               />
