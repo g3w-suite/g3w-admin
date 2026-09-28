@@ -34,7 +34,6 @@ const {
   PickCoordinatesInteraction,
 }                                = g3w.utils;
 
-const { FormService }            = g3wsdk.gui.vue.services;
 const { Mixins }                 = g3wsdk.gui.vue;
 
 const toRawType = value => Object.prototype.toString.call(value).slice(8, -1);
@@ -828,7 +827,7 @@ export default ({
                 && undefined === Tool.Stack.items.find(i => i.state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
               ) {
                 Tool.Stack.items
-                  .filter(w => w.getContext().service instanceof FormService)
+                  .filter(w => w.getContext().service?.isCoreFormService)
                   .forEach(w => setTimeout(() => w.getContext().service.state.update = false));
               } else {
                 //set parent tool update to enable to save all buttons
