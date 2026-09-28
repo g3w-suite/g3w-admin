@@ -7,47 +7,47 @@
 
 
 {% block page_header %}
-    <h1>
-        {% trans 'Projects' %}
-        <small>Projects list of group</small>
-      </h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>{{ group.name }}</h1>
+      <p>{% trans 'Projects available in this cartographic group.' %}</p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <a href="{% url 'group-list' %}" class="hero-back">
+        <i class="fa fa-arrow-left"></i> {% trans 'Back to groups' %}
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block custom_js_links_page %}
 {% if user.is_superuser or user|has_group:G3W_EDITOR1 or user|has_group:G3W_EDITOR2 %}
 <script>
+    function bindProjectCardsSortable() {
+        var $grid = $('.projects-cards-grid');
+        if (!$grid.length || $grid.data('sortable-bound')) return;
+        $grid.data('sortable-bound', true);
 
-    $( document ).ajaxComplete(function() {
-        if (this.URL) {
-            var $sort = $('table.projects-list').find('tbody').sortable({
-                placeholder: "sort-highlight-project",
-                update: function(e, ui){
-                    new_order = $(e.target).sortable("toArray");
+        $grid.sortable({
+            placeholder: "sort-highlight-project-card",
+            handle: ".pc-drag-handle",
+            forcePlaceholderSize: true,
+            tolerance: 'pointer',
+            update: function(e, ui) {
+                var new_order = $(e.target).sortable("toArray");
+                var gid = ui.item.attr('id').substring(15);
+                var url = _.template("/qdjango/jx/project/<%= gid %>/setorder/")({gid: gid});
+                var data = { new_order: new_order };
+                ga.utils.addCsfrtokenData(data);
+                $.post(url, data, function(res){});
+            }
+        }).disableSelection();
+    }
 
-                    // get current id of group moved
-                    var gid = ui.item.attr('id').substring(15)
-                    var url = _.template("/qdjango/jx/project/<%= gid %>/setorder/")({gid: gid});
-                    var data = {
-                        new_order: new_order
-                    }
-                    ga.utils.addCsfrtokenData(data);
-
-                    $.post(url, data, function(res){});
-
-                },
-                start: function(e, ui){
-                    $(ui.item).css('border', '1px solid grey');
-                },
-                stop: function(e, ui){
-                    $(ui.item).css('border', 'none');
-                }
-            });
-
-            $('table.projects-list').find('tbody').find('tr').hover(function() {
-                $(this).css('cursor','move');
-            });
-        }
-
+    $(document).ajaxComplete(function() {
+        if (this.URL) bindProjectCardsSortable();
     });
 </script>
 {% endif %}
@@ -56,58 +56,35 @@
 
 {% block main_content %}
 {% get_obj_perms user for group as "userObj_perms" %}
-<div class="row">
-    <div class="col-md-12 col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">Group</h3>
-            </div>
-            <div class="box-body">
-                <div class="attachment-block clearfix">
-                    <img class="attachment-img" src="{{ MEDIA_URL }}{{ group.header_logo_img }}">
-                    <div class="attachment-pushed">
-                        <div class="attachment-heading"><h4>{{ group.name }}</h4></div>
-                        <div class="attachment-text">{{ group.description|safe }}</div>
-                    </div>
-                </div>
-                <div class="group-abstract-action">
-                    {% if "view_group" in userObj_perms %}
-                    <a href="#" data-toggle="tooltip" class="btn btn-app" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' group.slug %}">
-                        <i class="ion ion-eye"></i>
-                        {% trans 'Show detail' %}
-                    </a>
-                    {% endif %}
-                    {% if "change_group" in userObj_perms %}
-                    {% if group.is_active == 1 %}
-                    <a href="{% url 'group-update' group.slug %}" class="btn-app btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
-                        <i class="ion ion-edit"></i>
-                        {% trans 'Edit' %}
-                    </a>
-                    {% endif %}
-                    {% endif %}
-                    {% comment %}
-                    {% if "delete_group" in userObj_perms %}
-                    {% if group.is_active == 1 %}
-                    <a href="#" data-toggle="tooltip" class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete/Deactivate' %}"  data-widget-type="activeDeactiveItem" data-active-deactive-action="deactivate" data-active-deactive-url="{% url 'group-deactive' group.slug %}" data-item-selector="#group_{{ group.slug }}">
-                        <i class="ion ion-trash-b"></i>
-                        {% trans 'Delete/Deactivate' %}
-                    </a>
-                    {% else %}
-                    <a href="#" data-toggle="tooltip" class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' group.slug %}" data-item-selector="#group_{{ group.slug }}">
-                        <i class="ion ion-trash-b"></i>
-                        {% trans 'Delete' %}
-                    </a>
-                    {% endif %}
-                    {% endif %}
-                    {% endcomment %}
-                </div>
-            </div>
-        </div>
+
+<div class="group-info-card">
+    {% if group.header_logo_img %}
+    <div class="gi-logo" style="background-image:url('{{ MEDIA_URL }}{{ group.header_logo_img }}');"></div>
+    {% endif %}
+    <div class="gi-body">
+        <h3 class="gi-title">{{ group.title|default:group.name }}</h3>
+        <div class="gi-desc">{{ group.description|safe }}</div>
+    </div>
+    <div class="gi-actions">
+        {% if "view_group" in userObj_perms %}
+        <a href="#" class="qa-btn" data-toggle="tooltip" data-placement="top"
+           title="{% trans 'Show detail' %}"
+           data-widget-type="detailItem"
+           data-detail-url="{% url 'group-detail' group.slug %}">
+            <i class="ion ion-eye"></i> {% trans 'Detail' %}
+        </a>
+        {% endif %}
+        {% if "change_group" in userObj_perms and group.is_active == 1 %}
+        <a href="{% url 'group-update' group.slug %}" class="qa-btn"
+           data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}">
+            <i class="ion ion-edit"></i> {% trans 'Edit group' %}
+        </a>
+        {% endif %}
     </div>
 </div>
 
 <div class="row">
-{% with SETTINGS.G3WADMIN_PROJECT_APPS|length as n_apps  %}
+{% with SETTINGS.G3WADMIN_PROJECT_APPS|length as n_apps %}
 {% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}
     {% with app|add:'-project-list' as listurl %}
     <div class="{% if n_apps > 1 %}col-md-6{% else %}col-md-12{% endif %} col-xs-12" id="{{ app }}_projects_list" data-widget-type="htmlItem" data-html-url="{% url listurl group.slug %}" data-target-selector="#{{ app }}_projects_list">

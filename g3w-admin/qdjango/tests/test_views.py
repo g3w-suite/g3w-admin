@@ -11,7 +11,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from qdjango.models import Project, LayerAcl
 from qdjango.views import QdjangoProjectUpdateView
 from core.models import ProjectMapUrlAlias
@@ -21,6 +21,19 @@ from copy import copy
 
 
 class QdjangoViewsTest(QdjangoTestBase):
+
+    def test_qdjango_project_list_exposes_public_project_ids(self):
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        assign_perm('view_project', get_anonymous_user(), self.project.instance)
+        response = client.get(reverse("qdjango-project-list", args=[self.project_group.slug]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.project.instance.pk, response.context['public_project_ids'])
+        self.assertIn('project-card', response.content.decode())
+
+        client.logout()
 
     def test_qdjango_layers(self):
         """
@@ -338,5 +351,3 @@ class QdjangoViewsTest(QdjangoTestBase):
         self.assertEqual(form.initial['viewer_users'], [self.test_viewer1.pk, self.test_viewer1_2.pk])
         self.assertEqual(form.initial['editor_user_groups'], [])
         self.assertEqual(form.initial['viewer_user_groups'], [])
-
-
