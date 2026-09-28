@@ -10,6 +10,7 @@ from django.db.models import Q
 from osgeo import gdal
 
 from core.utils.data import isXML
+from core.utils.qgisapi import qvariant_type_name
 from qdjango.models import Layer, Project
 
 from .exceptions import (
@@ -26,7 +27,10 @@ from qgis.core import (
     QgsFields
 )
 
-from qgis.PyQt.QtCore import QVariant, Qt
+from qgis.PyQt.QtCore import QVariant, QMetaType, Qt
+# NOTE: use typing_extensions.deprecated (PEP 702 backport) because
+# warnings.deprecated is only available from Python 3.13+.
+from typing_extensions import deprecated
 import string
 import random
 import os
@@ -116,9 +120,13 @@ def feature_validator(feature, layer):
             if value != data_provider.defaultValueClause(field_index) and \
                 value != data_provider.defaultValue(field_index):
 
-                if not QVariant(value).convert(field.type()):
+                # NOTE: in Qt6 (QGIS 4.2) QVariant.convert() expects a QMetaType
+                # instance, while in Qt5 (QGIS 3.44) it accepted an int enum.
+                # Wrapping field.type() in QMetaType(int(...)) is compatible with
+                # both Qt5 and Qt6.
+                if not QVariant(value).convert(QMetaType(int(field.type()))):
                     _set_error(field.name(), _(
-                        'Field value \'%s\' cannot be converted to %s') % (value, QVariant.typeToName(field.type())))
+                        'Field value \'%s\' cannot be converted to %s') % (value, qvariant_type_name(field.type())))
 
             unique = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintUnique) != QgsFieldConstraints.ConstraintOriginNotSet and
@@ -139,10 +147,10 @@ def feature_validator(feature, layer):
                         field.name().replace('"', '\\"'), value.replace("'", "\\'")))
                 elif field.type() == QVariant.Date:
                     request.setFilterExpression('to_date("%s") = \'%s\'' % (
-                        field.name().replace('"', '\\"'), value.toString(Qt.ISODate)))
+                        field.name().replace('"', '\\"'), value.toString(Qt.DateFormat.ISODate)))
                 elif field.type() == QVariant.DateTime:
                     request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string_ms}\''.format(
-                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate), date_time_string_ms=value.toString(Qt.ISODateWithMs)))
+                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.DateFormat.ISODate), date_time_string_ms=value.toString(Qt.DateFormat.ISODateWithMs)))
                 elif field.type() == QVariant.Bool:  # This does not make any sense, but still
                     request.setFilterExpression('"%s" = %s' % (
                         field.name().replace('"', '\\"'), 'true' if value else 'false'))
@@ -401,6 +409,12 @@ class DatasourceExists(QgisProjectLayerValidator):
                     raise QgisProjectLayerException(err)
 
 
+@deprecated(
+    "ColumnName validator is no longer used: it is not registered in "
+    "QgisProjectLayer._defaultValidators (see qdjango/utils/data.py, where "
+    "the reference is commented out) and has no other consumers in the "
+    "codebase. Kept in case it needs to be re-enabled in the future."
+)
 class ColumnName(QgisProjectLayerValidator):
     """
     Check column data name: no whitespace, no special chars.

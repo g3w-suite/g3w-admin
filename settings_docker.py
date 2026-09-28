@@ -3,7 +3,6 @@ G3WADMIN_PROJECT_APPS = []
 
 G3WADMIN_LOCAL_MORE_APPS = [
     'editing',
-    'caching',
     'filemanager',
     'qplotly',
     'qtimeseries',
