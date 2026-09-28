@@ -3,7 +3,6 @@
  */
 
 import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
-import { setVertexStyle }                               from '../utils/setVertexStyle.js';
 import { getEditingLayer }                              from '../utils/getEditingLayer.js';
 import { Step }                                         from '../g3w-step.js';
 
@@ -12,11 +11,11 @@ const { createMeasureTooltip } = g3w.utils;
 
 export class ModifyGeometryVertexStep extends Step {
 
-  _originalStyle = null;
+  #originalStyle = null;
 
-  _feature       = null;
+  #feature = null;
 
-  tooltip;
+  #tooltip;
 
   constructor(opts = {}) {
     opts.snap =  opts?.snap ?? true;
@@ -28,16 +27,32 @@ export class ModifyGeometryVertexStep extends Step {
     let newFeature;
     return new Promise((resolve, reject) => {
       const layerId         = inputs.layer.getId();
-      const feature         = this._feature = inputs.features[0];
+      const feature         = this.#feature = inputs.features[0];
       const originalFeature = feature.clone();
-      this._originalStyle = getEditingLayer(inputs.layer).getStyle();
-      //set state to enable/disable save button changes
+      this.#originalStyle   = getEditingLayer(inputs.layer).getStyle();
+      // set state to enable/disable save button changes
       const state         = { modified: false, };
 
-      //set vertex style to editing feature
-      setVertexStyle({ feature });
+      // set vertex style to editing feature
+      feature.setStyle(() => [
+        new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 4,
+            stroke: new ol.style.Stroke({ color: 'red', width: 3 })
+          }),
+          geometry: f => new ol.geom.MultiPoint([f.getGeometry().getCoordinates()].flat({
+            Point:           0,
+            MultiPoint:      1,
+            LineString:      1,
+            Polygon:         2,
+            MultiLineString: 2,
+            MultiPolygon:    3,
+          }[f.getGeometry().getType()])),
+        }),
+        new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'yellow', width: 3 })})
+      ]);
 
-      //Show user message to save or not vertex changes
+      // Show user message to save or not vertex changes
       GUI.showUserMessage({
         type:     'tool',
         title:    'plugins.editing.update_vertex',
@@ -61,9 +76,9 @@ export class ModifyGeometryVertexStep extends Step {
               reject()  { reject(); },
             },
             beforeDestroy() {
-              //only in case of changes
+              // only in case of changes
               if (state.modified) {
-                //register temporary changes to save or rollback to current editing feature state
+                // register temporary changes to save or rollback to current editing feature state
                 GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(layerId, newFeature, originalFeature);
               }
             }
@@ -71,7 +86,7 @@ export class ModifyGeometryVertexStep extends Step {
         }
       })
 
-      this._modifyInteraction = this.addInteraction(
+      this.addInteraction(
         new ol.interaction.Modify({
           features:        new ol.Collection([feature]),
           deleteCondition: this._options.deleteCondition || ol.events.condition.altKeyOnly,
@@ -102,16 +117,16 @@ export class ModifyGeometryVertexStep extends Step {
    */
   measureTooltip(enable) {
     if (enable) {
-      this.tooltip = createMeasureTooltip({ map: this.getMap(), feature: this._feature });
+      this.#tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.#feature });
     } else {
-      this.tooltip?.remove?.();
-      this.tooltip = null;
+      this.#tooltip?.remove?.();
+      this.#tooltip = null;
     }
   }
 
   stop() {
     GUI.closeUserMessage();
-    this._feature.setStyle(this._originalStyle);
+    this.#feature.setStyle(this.#originalStyle);
     return true;
   }
 

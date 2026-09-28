@@ -1,9 +1,8 @@
 /**
- * @file
+ * @file Opens and manages the attribute form used by the editing workflow.
  */
 
 import { getParentFormData }                from '../utils/getParentFormData.js';
-import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
 import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
 import { setLayerUniqueFieldValues }        from '../utils/setLayerUniqueFieldValues.js';
@@ -20,88 +19,174 @@ const GUI                        = g3w.app;
 const { FormService }            = g3wsdk.gui.vue.services;
 const { createFilterFormInputs } = g3wsdk.core.utils;
 
+/**
+ * Sorts string values alphabetically, ignoring letter case.
+ *
+ * @param {string[]} arr Values to sort. The array is sorted in place.
+ * @returns {string[]} The sorted input array.
+ */
+const sortAlphabeticallyArray = (arr) => arr.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+/**
+ * Sorts numeric values in ascending or descending order.
+ *
+ * @param {number[]} arr Values to sort. The array is sorted in place.
+ * @param {boolean} [ascending=true] Whether to sort from smallest to largest.
+ * @returns {number[]} The sorted input array.
+ */
+const sortNumericArray        = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
+
+/**
+ * Step responsible for opening an editing form, synchronising its fields and
+ * propagating changes to the editing toolbox.
+ */
 export class OpenFormStep extends Step {
 
+  /**
+   * Callback marker used to enable the save-all form header.
+   *
+   * @type {false|(() => Promise<void>)|undefined}
+   */
+  #saveAll;
+
+  /**
+   * Whether a failed save-all commit requires undoing staged changes.
+   *
+   * @type {boolean}
+   */
+  #saveAllError = false;
+
+  /**
+   * Whether this step edits several features at once.
+   *
+   * @type {boolean}
+   */
+  #multi;
+
+  /**
+   * Watchers registered for relation 1:1 fields.
+   *
+   * @type {Array<() => void>}
+   */
+  #unwatches = [];
+
+  /**
+   * Whether the form was opened as a child of another editing form.
+   *
+   * @type {boolean}
+   */
+  #isContentChild = false;
+
+  /**
+   * ID of the layer currently edited.
+   *
+   * @type {string|number|null|undefined}
+   */
+  #layerId;
+
+  /**
+   * Features currently edited by the form.
+   *
+   * @type {Feature[]|undefined}
+   */
+  #features;
+
+  /**
+   * Clones of the features as they were when the form was opened.
+   *
+   * @type {Feature[]|undefined}
+   */
+  #originalFeatures;
+
+  /**
+   * @param {Object} [opts={}] Step options.
+   * @param {false|Function} [opts.saveAll] Enables the save-all header unless explicitly set to false.
+   * @param {boolean} [opts.multi=false] Enables multi-feature editing.
+   */
   constructor(opts = {}) {
 
     opts.help = "editing.insert_attributes_feature";
 
     super(opts);
 
-    /**
-     * Show saveAll button
-     */
-    this._saveAll = false === opts.saveAll ? opts.saveAll : async () => {};
-
-    /**
-     * In case of commit error from saveAll methods, need to set it to true to undo changes
-     */
-    this._saveAllError = false;
-
-    /**
-     * Whether it can handle multi edit features
-     */
-    this._multi = opts.multi || false;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this.layerId;
-
-    /**
-     * whether form is coming from parent table component
-     */
-    this._isContentChild = false;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this._features;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this._originalFeatures;
-
-    /**
-     * @FIXME set a default value + add description
-     */
-    this.promise;
-
-    /**
-     * @TODO add description
-     */
-    this._unwatchs = [];
-
+    this.#saveAll = false === opts.saveAll ? opts.saveAll : async () => {};
+    this.#multi   = opts.multi || false;
   }
 
   /**
-   * @param bool
+   * Enables or disables multi-feature editing.
+   *
+   * @param {boolean} [bool=false] Whether multiple features can be edited.
+   * @returns {void}
    */
   updateMulti(bool = false) {
-    this._multi = bool;
+    this.#multi = bool;
   }
 
   /**
-   * @param inputs
-   * @param context
+   * @returns {boolean} Whether the save-all action is available.
+   */
+  hasSaveAll() {
+    return !!this.#saveAll;
+  }
+
+  /**
+   * @returns {boolean} Whether this step edits multiple features.
+   */
+  hasMulti() {
+    return !!this.#multi;
+  }
+
+  /**
+   * @returns {boolean} Whether the form is nested in another editing form.
+   */
+  hasChild() {
+    return !!this.#isContentChild;
+  }
+
+  /**
+   * @returns {string|number|null|undefined} ID of the current layer.
+   */
+  getLayerId() {
+    return this.#layerId;
+  }
+
+  /**
+   * @returns {Feature[]|undefined} Features currently edited by the form.
+   */
+  getFeatures() {
+    return this.#features;
+  }
+
+  /**
+   * @returns {Feature[]|undefined} Feature snapshots captured when the form opened.
+   */
+  getOriginalFeatures() {
+    return this.#originalFeatures;
+  }
+
+  /**
+   * Opens the form, loads dependent relation features and wires save/cancel
+   * handlers to the editing plugin.
    *
-   * @returns {*}
+   * @param {Object} inputs Form inputs supplied by the tool stack.
+   * @param {Object} [context={}] Parent-tool context and field overrides.
+   * @returns {Promise<*>} Resolves when the form is saved or closed, and rejects when the form is cancelled.
    */
   async run(inputs, context) {
     GUI.setModal(true);
-    // set isContentChild attribute to force it (case edit relation features from multi-parent features)
-    this._isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
-    this.layerId           = inputs.layer.getId();
-    this._features         = this._multi ? inputs.features : [inputs.features[inputs.features.length - 1]];
-    this._originalFeatures = this._features.map(f => f.clone());
+    // Nested forms can be forced by the caller, otherwise infer nesting from the tool stack.
+    this.#isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
+    this.#layerId          = inputs.layer.getId();
+    this.#features         = this.hasMulti() ? inputs.features : [inputs.features[inputs.features.length - 1]];
+    this.#originalFeatures = this.getFeatures().map(f => f.clone());
 
     const promise = new Promise((resolve) => {
-      GUI.getPlugin('editing').once(`closeform_${this.layerId}`, () => resolve());
+      GUI.getPlugin('editing').once(`closeform_${this.getLayerId()}`, () => resolve());
     })
 
-    //set selected features
-    setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+    // Resolve the highlight promise when the form is closed.
+    this.highlightInputs({ promise });
 
     return new Promise(async (resolve, reject) => {
 
@@ -109,7 +194,7 @@ export class OpenFormStep extends Step {
 
       GUI.disableClickMapControls(true);
 
-      if (!this._multi && Array.isArray(inputs.features[inputs.features.length - 1])) {
+      if (!this.hasMulti() && Array.isArray(inputs.features[inputs.features.length - 1])) {
         resolve();
         return;
       }
@@ -118,61 +203,127 @@ export class OpenFormStep extends Step {
 
       const layerName = inputs.layer.getName();
 
-      // create a child relation feature set a father relation field value
-      if (this._isContentChild) {
-        context.fatherValue = context.fatherValue || []; // are array
+      // Seed child features with the foreign-key values supplied by the parent form.
+      if (this.hasChild()) {
+        context.fatherValue = context.fatherValue || []; // Relation values are positional arrays.
         (context.fatherField || []).forEach((field, i) => {
-          this._features[0].set(field, context.fatherValue[i]);
-          this._originalFeatures[0].set(field, context.fatherValue[i]);
+          this.getFeatures()[0].set(field, context.fatherValue[i]);
+          this.getOriginalFeatures()[0].set(field, context.fatherValue[i]);
         });
       }
 
-      const fields = _getFormFields({
-        inputs,
-        context,
-        feature: this._features[0],
-        isChild: this._isContentChild,
-        multi:   this._multi,
+      const formLayerId = inputs.layer.getId();
+      const fields      = getFieldsWithValues(
+        inputs.layer,
+        this.getFeatures()[0],
+        {
+          exclude:           context.excludeFields,
+          get_default_value: context?.get_default_value ?? false,
+        }
+      );
+
+      // Unique fields need both their available values and their exclusion list.
+      const unique_values = fields
+        // Exclude non-editable primary keys from unique-value handling.
+        .filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique))
+        .map(field => ({
+          field,
+          _value: this.getFeatures()[0].get(field.name),
+        }));
+
+      unique_values.forEach(({ _value, field }) => {
+        // Read the values already used by the editing layer.
+        const current_values = GUI.getPlugin('editing').state.uniqueFieldsValues[formLayerId][field.name] || new Set([]);
+        // Null is handled separately because it is not sortable with field values.
+        const values = Array.from(current_values).filter(v => null !== v);
+        // Preserve the field-specific numeric or lexical ordering.
+        field.input.options.values = (['integer', 'float', 'bigint'].includes(field.type) ? sortNumericArray : sortAlphabeticallyArray)(values);
+        if (current_values.has(null)) {
+          field.input.options.values.unshift(null);
+        }
+
+        // Validation stores non-null exclusions as strings.
+        current_values.forEach(v => field.validate.exclude_values.add(![null, undefined].includes(v) ? `${v}` : v));
+
+        // The current value is valid for the feature being edited.
+        field.validate.exclude_values.delete(`${_value}`);
       });
 
-      // set fields. Useful getParentFormData
-      Tool.Stack.current.setInput({ key: 'fields', value: fields });
+      if (0 !== unique_values.length) {
+        // Update the layer cache after a successful save.
+        const savedfeatureFnc = () => {
+          unique_values.forEach(({ _value, field }) => {
+            // An unchanged value does not affect the cache.
+            if (_value === field.value) { return; }
+            // Update the layer-level set of used values.
+            if (GUI.getPlugin('editing').state.uniqueFieldsValues[formLayerId][field.name]) {
+              // change layer unique field values
+              const values = GUI.getPlugin('editing').state.uniqueFieldsValues[formLayerId][field.name];
+              // Replace the previous value with the new one.
+              values.delete(_value);
+              values.add(field.value);
+            }
+          });
+        };
 
-      // whether disable relations editing (ref: "editmultiattributes")
-      const feature = !this._multi && inputs?.features?.[inputs.features.length - 1];
-      const layerId = !this._multi && inputs.layer.getId();
+        // Remove the save listener when the form closes without saving.
+        const editing = GUI.getPlugin('editing');
 
-      // skip relations that don't have a form structure
+        editing.once(`savedfeature_${formLayerId}`, savedfeatureFnc);
+        editing.once(`closeform_${formLayerId}`, () => editing.off(`savedfeature_${formLayerId}`, savedfeatureFnc));
+      }
+
+      const form_fields = this.hasMulti()
+        ? fields.map(field => {
+            const f             = JSON.parse(JSON.stringify(field));
+            f.value             = null;
+            f._value            = null; // Keep the original and current values aligned.
+            f.forceNull         = true;
+            f.validate.required = false; // All selected features already satisfy required fields.
+            return f;
+          }).filter(f => !f.pk)
+        : fields;
+
+      // Expose the computed fields to parent-form helpers.
+      Tool.Stack.current.setInput({ key: 'fields', value: form_fields });
+
+      // Relations are unavailable while editing multiple features.
+      const feature = !this.hasMulti() && inputs?.features?.[inputs.features.length - 1];
+      const layerId = !this.hasMulti() && inputs.layer.getId();
+
+      // Load editable child relations only for an existing feature with a form structure.
       if (feature && !feature.isNew() && inputs.layer.getLayerEditingFormStructure()) {
         await getLayersDependencyFeatures(inputs.layer.getId(), {
           relations: inputs.layer.getRelations().getArray().filter(r =>
-            inputs.layer.getId() === r.getFather() && // get only child relation features of current editing layer
-            getEditingLayerById(r.getChild()) &&      // child layer is in editing
-            'ONE' !== r.getType()                     // exclude ONE relation (Join 1:1)
+            inputs.layer.getId() === r.getFather() && // Only children of the current layer.
+            getEditingLayerById(r.getChild()) &&      // The child layer must be editable.
+            'ONE' !== r.getType()                     // 1:1 joins are handled separately.
           ),
           feature,
           filterType: 'fid',
         });
       }
 
+      const SELF = this;
+
       const formService = GUI.showForm({
-        feature:         this._originalFeatures[0],
+        feature:         this.getOriginalFeatures()[0],
         title:           "plugins.editing.editing_attributes",
         name:            layerName,
         crumb:           { title: layerName },
         id:              `form_${layerName}`,
         dataid:          layerName,
         layer:           inputs.layer,
-        isnew:           this._originalFeatures.length > 1 ? false : this._originalFeatures[0].isNew(), // specify if is a new feature
+        isnew:           this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
         parentData:      getParentFormData(),
-        fields,
-        context_inputs:  this._multi ? false: { context, inputs },
+        fields:          form_fields,
+        context_inputs:  this.hasMulti() ? false: { context, inputs },
         formStructure:   inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
         modal:           true,
-        push:            this._options.push || this._isContentChild,         // force push content on top without clear previous content
-        showgoback:      this._options?.showgoback ?? !this._isContentChild, // force show back button
+        push:            this._options.push || this.hasChild(),         // Keep nested forms above the parent content.
+        showgoback:      this._options?.showgoback ?? !this.hasChild(), // Child forms use the parent navigation.
         /** @TODO make it straightforward: `headerComponent` vs `buttons` ? */
-        headerComponent: this._saveAll && {
+        headerComponent: this.#saveAll && {
           template: /* html */ `
             <section class = "editing-save-all-form" style = "display: flex;">
               <div
@@ -211,7 +362,7 @@ export class OpenFormStep extends Step {
               </div> 
             </section>`,
             name: 'Saveall',
-            /** @TODO figure out who populate these props (ie. core client code?) */
+            /** Values are supplied by the form service. */
             props: { update: { type: Boolean }, valid: { type: Boolean } },
             data() {
               return {
@@ -224,18 +375,15 @@ export class OpenFormStep extends Step {
               };
             },
             computed: {
-              /** @returns {boolean} whether disable save all button (eg. when parent or current form is not valid/ updated) */
+              /** @returns {boolean} Whether save-all should be disabled. */
               disabled() {
                 return !this.enabled || !(this.valid && this.update);
               },
             },
             methods: {
-              /**
-               * Set this._saveAllError 
-               */
-              setError: (bool = false) => this._saveAllError = bool,
+              setError: (bool = false) => this.#saveAllError = bool,
               async saveAll() {
-                //Set loading content
+                // Prevent edits while all staged forms are being saved and committed.
                 GUI.setLoadingContent(true);
                 //Disable form
                 GUI.disableContent(true);
@@ -243,23 +391,23 @@ export class OpenFormStep extends Step {
                 await Promise.allSettled(
                   [...Tool.Stack.items]
                     .reverse()
-                    .filter(t => "function" === typeof t.getLastStep()._saveAll) // need to filter only tool that
+                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll()) // Keep only tools that own a save-all step.
                     .map( t => new Promise(async (resolve) => {
                       const task   = t.getLastStep();
-                      //get features fields of form service that has value not null to set of all features
-                      const fields = t.getContext().service.state.fields.filter(f => task._multi ? null !== f.value : true);
+                      // In multi-edit mode, null values mean "leave this field unchanged".
+                      const fields = t.getContext().service.state.fields.filter(f => task.hasMulti() ? null !== f.value : true);
                       await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
-                      task._features.forEach(f => _setFieldsWithValues(task.getInputs().layer, f, fields));
-                      const newFeatures = task._features.map(f => f.clone());
-                      //Is a relation form
-                      if (task._isContentChild) {
-                        task.getInputs().relationFeatures = { newFeatures, originalFeatures: task._originalFeatures };
+                      task.getFeatures().forEach(f => SELF.#setFieldsWithValues(f, fields));
+                      const newFeatures = task.getFeatures().map(f => f.clone());
+                      // Preserve the parent/child payload for relation forms.
+                      if (task.hasChild()) {
+                        task.getInputs().relationFeatures = { newFeatures, originalFeatures: task.getOriginalFeatures() };
                       }
-                      await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task._originalFeatures });
-                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.layerId, f, task._originalFeatures[i]));
-                      await _handleRelation1_1LayerFields({ layerId: task.layerId, features: newFeatures, fields, task });
+                      await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task.getOriginalFeatures() });
+                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.getLayerId(), f, task.getOriginalFeatures()[i]));
+                      await SELF.#handleRelation1_1LayerFields({ layerId: task.getLayerId(), features: newFeatures, fields, task });
                       GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                      GUI.getPlugin('editing').emit(`savedfeature_${task.layerId}`, newFeatures); // called after saved using layerId
+                      GUI.getPlugin('editing').emit(`savedfeature_${task.getLayerId()}`, newFeatures); // called after saved using layerId
                       GUI.getPlugin('editing').getToolBoxById(task.getContext().id).saveChanges();
                       return resolve();
                     }))
@@ -269,56 +417,53 @@ export class OpenFormStep extends Step {
                 }
                 try {
                   await GUI.getPlugin('editing').commit({ modal: false });
-                  //set Error to false
+                  // The commit succeeded: staged forms no longer need rollback.
                     this.setError(false);
                     [...Tool.Stack.items]
                     .reverse()
-                    .filter(t => "function" === typeof t.getLastStep()._saveAll)
+                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
                     .forEach(t => {
-                      const service = t.getContext().service; //form service
-                      //need to set update form false because already saved on server
+                      const service = t.getContext().service;
+                      // The server now contains the form values.
                       service.setUpdate(false, { force: false });
                       const feature = service.feature;
-                      // Check if the feature is new.
-                      // In this case, after commit, need to set new to false, and force update to false.
+                      // A newly committed feature is no longer marked as new locally.
                       if (feature.isNew()) {
                         feature.state.new    = false;
                         service.force.update = false;
                       }
                       Object.entries(
                         GUI.getPlugin('editing').getToolBoxById(t.getContext().id).readEditingFeatures()
-                          .find(f => f.getUid() === feature.getUid()) //Find current form editing feature by unique id of feature uid
-                          .getProperties() //get properties
+                          .find(f => f.getUid() === feature.getUid()) // Find the committed editing copy.
+                          .getProperties() // Synchronise the form fields with it.
                       )
                         .forEach(([k, v]) => {
                           const field = service.getFields().find(f => k === f.name);
-                          //if field exists (geometry field is discarded)
+                          // Geometry and other non-form properties are ignored.
                           if (field) {
                             field.value = field._value = v;
                           }
                         })
                     })
                 } catch(e) {
-                  //setError to true
+                  // Keep the undo path available when commit fails.
                   this.setError(true);
                   console.warn(e);
                 }
-                //set loading content false
+                // Restore the form after the save-all operation completes.
                 GUI.setLoadingContent(false);
                 //enable form
                 GUI.disableContent(false);
               },
-              /**
-               * Close editing form
-               */
+              /** Stops the active tool and clears the nested tool stack. */
               async closeForm() {
-                //get current active tool
+                // Stop the active tool before clearing its stack.
                 const tool = GUI.getPlugin('editing').state.toolboxselected.getActiveTool();
                 //stop active tool and wait
                 await tool.stop();
                 //clear all tool stacks
                 Tool.Stack.items.splice(0);
-                //check if the tool needs to run on time. If not, start again
+                // Restart tools that are not one-shot actions.
                 if (!tool.runOnce) {
                   tool.start();
                 }
@@ -328,21 +473,21 @@ export class OpenFormStep extends Step {
           buttons:         [
             {
               id:    'save',
-              title:  this._isContentChild
+              title:  this.hasChild()
                 ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" // get custom back label from parent
                 : "plugins.editing.insert_edit",
               type:  "save",
               class: "btn-success",
-              // save features
+              // Apply the form values to the staged features.
               cbk: async (fields = []) => {
                 const service    = Tool.Stack.current.getContext().service;
-                const hasUpdates = !!service?.state?.fields?.some(f => f.update);    // check for updates in form fields or if the feature is new
-                const isNew      = !!this._originalFeatures?.some(f => f.isNew?.()); // check for new features in form (i.e., features that are not yet saved to the server)
+                const hasUpdates = !!service?.state?.fields?.some(f => f.update);    // Detect changed fields.
+                const isNew      = !!this.getOriginalFeatures()?.some(f => f.isNew?.()); // New features must be saved even without field updates.
                 const newFeatures = [];
 
-                fields = this._multi ? fields.filter(f => null !== f.value) : fields;
+                fields = this.hasMulti() ? fields.filter(f => null !== f.value) : fields;
 
-                // skip when no fields or when nothing changed (on an existing non-relation feature).
+                // Avoid emitting a save for an unchanged existing feature.
                 if (0 === fields.length || (!isNew && !hasUpdates)) {
                   resolve(inputs);
                   return;
@@ -353,42 +498,41 @@ export class OpenFormStep extends Step {
 
                 await service.saveDefaultExpressionFieldsNotDependencies();
 
-                this._features.forEach(f => {
-                  _setFieldsWithValues(inputs.layer, f, fields);
+                this.getFeatures().forEach(f => {
+                  this.#setFieldsWithValues(f, fields);
                   newFeatures.push(f.clone());
                 });
               
-                if (this._isContentChild) {
+                if (this.hasChild()) {
                   inputs.relationFeatures = {
                     newFeatures,
-                    originalFeatures: this._originalFeatures
+                    originalFeatures: this.getOriginalFeatures()
                   };
                 }
             
-                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this._originalFeatures });
+                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this.getOriginalFeatures() });
 
-                newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.layerId, f, this._originalFeatures[i]));
+                newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.getLayerId(), f, this.getOriginalFeatures()[i]));
 
-                // check and handle if layer has relation 1:1
-                await _handleRelation1_1LayerFields({
-                  layerId:  this.layerId,
+                // Update any editable child feature represented by a 1:1 join field.
+                await this.#handleRelation1_1LayerFields({
+                  layerId:  this.getLayerId(),
                   features: newFeatures,
                   fields,
                   task:     this,
                 });
 
                 GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                GUI.getPlugin('editing').emit(`savedfeature_${this.layerId}`, newFeatures); // called after saved using layerId
+                GUI.getPlugin('editing').emit(`savedfeature_${this.getLayerId()}`, newFeatures); // called after saved using layerId
 
-                // sync parent tools when child is saved.
-                if (this._isContentChild) {
+                // Mark parent forms as changed when a child form is saved.
+                if (this.hasChild()) {
                   Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
                 }
               
                 GUI.setLoadingContent(false);
                 GUI.disableContent(false);
 
-                //@TODO add field unique new value id not set
                 resolve(inputs);
               }
             },
@@ -397,7 +541,7 @@ export class OpenFormStep extends Step {
               title: "plugins.editing.ignore_changes",
               type:  "cancel",
               class: "btn-danger",
-              /// buttons in case of change
+              // Show a dedicated close action when the form has no unsaved changes.
               eventButtons: {
                 update: {
                   false : {
@@ -409,31 +553,28 @@ export class OpenFormStep extends Step {
                 }
               },
               cbk: () => {
-                if (this._saveAllError) {
+                if (this.#saveAllError) {
                   [...Tool.Stack.items]
                     .reverse()
-                    .filter(t => "function" === typeof t.getLastStep()._saveAll) // need to filter only tool that
+                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll()) // Keep only tools that own a save-all step.
                     .map( t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo())
                 }
-                GUI.getPlugin('editing').emit('cancelform', inputs.features); // fire event cancel form to emit to subscribers
+                GUI.getPlugin('editing').emit('cancelform', inputs.features); // Notify listeners before rejecting the form promise.
                 reject(inputs);
               }
             }
           ]
       });
 
-      // Overwrite click on relation.
-      // Open FormRelation.vue component
+      // Replace the default relation click with the relation form component.
       formService.handleRelation = async e => {
-        // Skip when multi editing features
-        // It is not possible to manage relationss when we edit multi-features
-        if (this._multi) {
+        // Relations cannot be edited while multiple features are selected.
+        if (this.hasMulti()) {
           GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
           return;
         }
         GUI.setLoadingContent(true);
-        //set unique values for relation layer based on unique fields
-        //@TODO need a find a way to call once and not every time we open a relation
+        // Refresh unique values before opening the relation form.
         await setLayerUniqueFieldValues(inputs.layer.getRelationById(e.relation.name).getChild());
         formService.setCurrentComponentById(e.relation.name);
         GUI.setLoadingContent(false);
@@ -442,18 +583,18 @@ export class OpenFormStep extends Step {
       const COMP = (await import('../components/relation.js')).default;
 
       formService.addComponents([
-        // custom form components
+        // Add layer-specific custom components.
         ...(GUI.getPlugin('editing').state.formComponents[layerId] || []),
-        // relation components (exlcude ONE relation + layer is the father get relation layers that set in editing on g3w-admin)
+        // Add editable child relations; 1:1 relations are handled by field watchers.
         ...getRelationsInEditingByFeature({
           layerId,
-          relations: this._multi ? [] : inputs.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === layerId),
-          feature:   this._multi ? false : inputs.features[inputs.features.length - 1],
+          relations: this.hasMulti() ? [] : inputs.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === layerId),
+          feature:   this.hasMulti() ? false : inputs.features[inputs.features.length - 1],
         }).map(({ relation, relations }) => ({
           title:     "plugins.editing.edit_relation",
           name:      relation.name,
           id:        relation.id,
-          header:    false,            // hide a header form
+            header:    false,            // Relation forms provide their own content header.
           component: Vue.extend({
             mixins: [ COMP ],
             name: `relation_${Date.now()}`,
@@ -464,514 +605,371 @@ export class OpenFormStep extends Step {
         }))
       ]);
 
-      // fire openform event
+      // Notify consumers that the form is ready.
       GUI.getPlugin('editing').emit('openform',
         {
-          layerId: this.layerId,
-          feature: this._originalFeature,
+          layerId: this.getLayerId(),
+          feature: this.getOriginalFeatures()[0],
           formService
         }
       );
 
-      // set context service to form Service in case of a single task (i.e., no tool)
+      // Attach the service when this step is running without a tool wrapper.
       Tool.Stack?.current?.setContextService?.(formService);
 
-      //listen eventually field relation 1:1 changes value
-      _listenRelation1_1FieldChange({ layerId: this.layerId, fields, formService }).then(d => this._unwatchs = d);
+      // Watch changes to fields backed by 1:1 relations.
+      (async () => {
+        const unwatches = []; // Functions that remove the registered Vue watchers.
 
-      this.disableSidebar(true);
+        // Inspect every 1:1 relation declared by the current layer.
+        for (const relation of getCatalogLayerById(this.getLayerId()).getRelations().getArray().filter(r => 'ONE' === r.getType())) {
+
+          const child_id        = relation.getChild();
+          const father_field    = relation.getFatherField();
+          const locked_features = {}; // Cache lookup results by parent-field value.
+
+          // Do not require the field itself to be editable: default expressions and
+          // other editing tools can still change its value.
+          const father_form = form_fields.find(f => father_field.includes(f.name));
+
+          // Skip relations without a form field or an editable child layer.
+          if (!(father_form && GUI.getPlugin('editing').getLayerById(child_id))) {
+            return unwatches;
+          }
+
+          // Preserve the original editability of joined child fields.
+          const editable_fields = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
+            .filter(f => f.vectorjoin_id && relation.getId() === f.vectorjoin_id)
+            .reduce((accumulator, field) => {
+              const formField             = form_fields.find(f => field.name === f.name);
+              accumulator[formField.name] = formField.editable;
+              return accumulator;
+            }, {});
+
+          father_form.input.options.loading.state = 'loading';
+          locked_features[father_form.value]      = await this.#getRelation1_1ChildFeature({ relation, father_form }); // Resolve and cache the current child feature.
+          father_form.input.options.loading.state = null;
+
+          // A server-side feature is locked and its joined fields cannot be edited.
+          if (locked_features[father_form.value].locked) {
+            Object.keys(editable_fields).forEach(fn => form_fields.find(f => fn === f.name).editable = false);
+          }
+
+          // Resolve future parent-key changes lazily through a Vue watcher.
+          unwatches.push(
+            Vue.$watch(
+              () => father_form.value,
+              async value => {
+
+                // Empty keys do not identify a child feature.
+                if (!value) {
+                  father_form.input.options.loading.state = null;
+                  father_form.editable                    = true;
+                  return;
+                }
+
+                father_form.editable                    = false;     // Prevent changes during lookup.
+                father_form.input.options.loading.state = 'loading'; // Show the field loader.
+                
+                // Resolve the child only once for each parent-key value.
+                if (undefined === locked_features[father_form.value]) {
+                  try {
+                    locked_features[father_form.value] = await this.#getRelation1_1ChildFeature({ relation, father_form });
+                  } catch(e) {
+                    console.warn(e);
+                  }
+                }
+
+                const { feature, locked } = locked_features[father_form.value];
+
+                Object.keys(editable_fields).forEach(fn => {
+                  const field    = form_fields.find(f => fn === f.name);
+                  field.editable = locked ? false : editable_fields[fn];                                       // Restore editability for each joined child field.
+                  field.value    = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null; // Missing or new children expose empty joined values.
+                  formService.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
+                });
+
+                // Restore the field state after the lookup completes.
+                father_form.input.options.loading.state = null;
+                father_form.editable                    = true;
+              }
+            )
+          );
+        }
+
+        return unwatches;
+      })().then(d => this.#unwatches = d);
+
+      if (!this.hasChild()) {
+        GUI.disableSideBar(true);
+      }
     });
   
   }
 
   /**
+   * Restores the UI state and removes watchers when the form is closed.
    *
+   * @returns {void}
    */
   stop() {
-    this.disableSidebar(false);
+    if (!this.hasChild()) {
+      GUI.disableSideBar(false);
+    }
 
-    //Check if form coming from the parent table component
-    const is_parent_table = false === this._isContentChild || // no child tool
-      (
-        // case edit feature of a table (edit layer alphanumeric)
-        2 === Tool.Stack.length && //open features table
-        Tool.Stack.parent.isType('edittable')
-      );
-    // when the last feature of features is Array
-    // and is resolved without setting form service
-    // Ex. copy multiple features from another layer
-    if (is_parent_table) {
+    // Keep the map controls and modal state for top-level forms and table editing.
+    // Some actions resolve before creating a form service, for example when copying multiple features from another layer.
+    if (!this.hasChild() || (2 === Tool.Stack.length && Tool.Stack.parent.isType('edittable'))) {
       GUI.disableClickMapControls(false);
       GUI.setModal(false);
     }
 
-    const contextService = is_parent_table && Tool.Stack.current.getContext().service;
-
-    // force update parent form update
-    if (contextService && contextService.setUpdate && false === this._isContentChild) {
-      contextService.setUpdate(false, { force: false });
+    // Clear the parent form's update state when this is a top-level form.
+    if (!this.hasChild()) {
+      Tool.Stack.current?.getContext?.()?.service?.setUpdate?.(false, { force: false });
     }
 
-    // add GUI.getContentLength() in case of edit multi relationfeatures tool
-    GUI.closeForm({ pop: this.push || this._isContentChild && GUI.getContentLength() > 1 });
+    // Nested relation forms may leave other content open in the modal.
+    GUI.closeForm({ pop: this.push || this.hasChild() && GUI.getContentLength() > 1 });
 
     GUI.getPlugin('editing').resetCurrentLayout();
 
     GUI.getPlugin('editing').emit('closeform');
-    GUI.getPlugin('editing').emit(`closeform_${this.layerId}`);
+    GUI.getPlugin('editing').emit(`closeform_${this.getLayerId()}`);
 
-    this.layerId = null;
-    this._unwatchs.forEach(unwatch => unwatch());
-    this._unwatchs = [];
-    this._saveAllError = false;
+    this.#layerId = null;
+    this.#unwatches.forEach(unwatch => unwatch());
+    this.#unwatches = [];
+    this.#saveAllError = false;
   }
 
-}
+  /**
+   * Propagates editable 1:1 join fields to the related child layer.
+   *
+   * A missing child is staged as a new feature; an existing child is cloned,
+   * updated and staged through the current toolbox.
+   *
+   * @param {Object} options Relation update options.
+   * @param {string|number} options.layerId Root layer ID.
+   * @param {Object[]} [options.features=[]] Updated or newly created root features.
+   * @param {Object[]} [options.fields=[]] Root form fields.
+   * @param {Object} options.task Current form step, used to access its toolbox.
+   * @returns {Promise<void>} Resolves after all 1:1 relations are processed.
+   */
+  async #handleRelation1_1LayerFields({
+    layerId,
+    features = [],
+    fields   = [],
+    task
+  } = {}) {
 
-/** Sort an array of strings (alphabetical order) */
-const sortAlphabeticallyArray = (arr) => arr.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    // There is no relation work to perform without a staged root feature.
+    if (0 === features.length) { return; }
 
-/* Sort an array of numbers (natural order) */
-const sortNumericArray        = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
-
-/**
- * Get form fields
- *
- * @param form.inputs.layer
- * @param form.inputs.features
- * @param form.context.excludeFields
- * @param form.context.get_default_value
- * @param form.isChild                   - whether is child form (ie. belongs to relation)
- * @param form.multi                     - in case of multi editing set all fields to null
- */
-function _getFormFields({
-  inputs,
-  context,
-  feature, //current feature
-  multi, // true -> multi features (e.g edit multi features attributes form)
-} = {}) {
-
-  const layerId = inputs.layer.getId(); // current form layerId// unique values by feature field
-  const fields  = getFieldsWithValues(  // editing fields with values (in case of update)
-    inputs.layer,
-    feature,
-    {
-      exclude:           context.excludeFields, // add exclude fields
-      get_default_value: context?.get_default_value ?? false,
-    }
-  );
-
-  //Loop through fields
-  const unique_values = fields
-    //check if field is a unique field. Exclude pk not edittable
-    .filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique))
-    .map(field => ({
-      field,                            // feature field
-       _value: feature.get(field.name), // feature current field value
-      }))
-
-  //Loop through unique fields
-  unique_values.forEach(({ _value, field }) => {
-    //get current stored unique values for field
-    const current_values = GUI.getPlugin('editing').state.uniqueFieldsValues[layerId][field.name] || new Set([]);
-    //filter null value otherwise sort function gets an error
-    const values = Array.from(current_values).filter(v => null !== v );
-    //NEED TO ADD ALWAYS CURRENT VALUE
-    field.input.options.values = (['integer', 'float', 'bigint'].includes(field.type) ? sortNumericArray: sortAlphabeticallyArray)(values);
-    if (current_values.has(null)) {
-      field.input.options.values.unshift(null);
-    }
-
-    // convert "current" values to string (when not null or undefined)
-    current_values.forEach(v => field.validate.exclude_values.add(![null, undefined].includes(v)? `${v}` : v ) );
-
-    // remove current value from exclude_values
-    field.validate.exclude_values.delete(`${_value}`);
-  });
-
-  // skip when no fields are unique in multi features change form attribute
-  if (0 === unique_values.length) {
-    return _handleMulti(fields, multi);
-  }
-
-  // Listen to event method after close/save form
-  const savedfeatureFnc = () => {
-    unique_values.forEach(({ _value, field }) => {
-      // initial value is the same that current field vale (no changed)
-      if (_value === field.value) { return }
-      //  layer form
-      if (GUI.getPlugin('editing').state.uniqueFieldsValues[layerId][field.name]) {
-        // change layer unique field values
-        const values = GUI.getPlugin('editing').state.uniqueFieldsValues[layerId][field.name];
-        //If changed, delete it from _value
-        values.delete(_value);
-        //aff new one to value list unique field
-        values.add(field.value);
-      }
-    });
-  };
-
-  //event when insert/edit form button is pressed
-  const editing = GUI.getPlugin('editing');
-
-  editing.once(`savedfeature_${layerId}`, savedfeatureFnc);
-  // unsubscribe event event when close form layer
-  editing.once(`closeform_${layerId}`, () => editing.off(`savedfeature_${layerId}`, savedfeatureFnc));
-
-  return _handleMulti(fields, multi);
-}
-
-function _handleMulti(fields, multi) {
-  if (multi) {
-    fields = fields.map(field => {
-      const f             = JSON.parse(JSON.stringify(field));
-      f.value             = null;
-      f._value            = null; // Fix update form field: Set the same value of value
-      f.forceNull         = true;
-      f.validate.required = false; //set false because all features have already required field filled
-      return f;
-    }).filter(f => !f.pk)
-  }
-
-  return fields;
-}
-
-/**
- * Handle layer relation 1:1 features related to feature
- *
- * @param opts.layerId Root layerId
- * @param opts.features Array of update/new features belong to Root layer
- * @param opts.fields Array of form fields father
- */
-async function _handleRelation1_1LayerFields({
-  layerId,
-  features = [],
-  fields   = [],
-  task
-} = {}) {
-
-  // skip when no features
-  if (0 === features.length) { return; }
-
-  // Get layer relation 1:1
-  const promises = getCatalogLayerById(layerId)
-    .getRelations()
-    .getArray()
-    .filter(r => 'ONE' === r.getType())
-    .map(relation => {
-      return new Promise(async (resolve, reject) => {
-        // skip when layer is not a father layer (1:1 relation)
-        if (layerId !== relation.getFather()) {
-          resolve();
-          return;
-        }
-        const fatherField = relation.getFatherField()[0];
-        const value       = features[0].get(fatherField);
-
-        //no set father field value. No set
-        if (null === value) {
-          resolve();
-          return
-        }
-
-        // check if child relation layer is editable (in editing)
-        const childLayerId = relation.getChild();
-        const childField   = relation.getChildField()[0];
-        //In case of not editable child layer, exit
-        if (!GUI.getPlugin('editing').getLayerById(childLayerId)) {
-          reject();
-          return;
-        }
-        const childToolbox = GUI.getPlugin('editing').getToolBoxById(childLayerId);
-        let childFeature; // original child feature
-        let newChild; //eventually child feature cloned with changes
-
-        //check if child feature is already added to
-        childFeature = childToolbox.readEditingFeatures().find(f => f.get(childField) === value)
-
-        const fieldsUpdated = undefined !== (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
-          .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())
-          .find(({ name }) => fields.find(f => name == f.name).update)
-
-        const isNewChildFeature = undefined === childFeature;
-
-        //check if fields related to child are changed
-        if (fieldsUpdated) {
-          //Check if we need to create a new child feature
-          if (isNewChildFeature) {
-            //create feature for child layer
-            childFeature = new Feature();
-            childFeature.setTemporaryId();
-            // set name attribute to `null`
-            (GUI.getPlugin('editing').getToolBoxById(childLayerId).state.fields || []).forEach(field => childFeature.set(field.name, null));
-            //set father field value
-            childFeature.set(childField, fields.find(f => fatherField === f.name).value);
-            //add feature to a child source
-            source.addFeature(childFeature);
-            //new feature and child feature are the same
-            newChild = childFeature;
-          } else {
-            //is update
-            if (childFeature) {
-              //clone child Feature so all changes apply by father is set to clone new feature
-              newChild = childFeature.clone();
-            }
-          }
-
-          //check if there is a childFeature to save
-          if (childFeature) {
-            // Loop editable only field of father layerId when
-            // a child relation (1:1) is bind to the current feature
-            const editiableRelatedFieldChild = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
-              .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId() && f.editable);
-
-            editiableRelatedFieldChild
-              .forEach(field => newChild.set(field.name.replace(relation.getPrefix(), ''), features[0].get(field.name)));
-
-            // add relation new relation
-            if (isNewChildFeature) {
-
-              // check if father field is a Pk (Primary key) if feature is new
-              if (isPkField(GUI.getPlugin('editing').getLayerById(layerId), fatherField)) {
-                childFeature.set(childField, features[0].getId()); // set temporary
-              }
-
-              //if new need to add 
-              GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushAdd(childLayerId, newChild, false);
-
-            } else {
-              //need to update source child feature
-              source.updateFeature(newChild);
-              //need to update
-              GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(childLayerId, newChild, childFeature);
-
-            }
-          }
-        }
-
-        resolve();
-
-      })
-    });
-
-  await Promise.allSettled(promises);
-}
-
-/**
- * Listen changes on 1:1 relation fields (get child values from child layer)
- *
- * @param opts.layerId Current editing layer id
- * @param opts.fields Array of form fields of current editing layer
- * @param opts.formService form service
- *
- * @returns Array of watch function event to remove listen
- */
-async function _listenRelation1_1FieldChange({
-  layerId,
-  fields = [],
-  formService,
-} = {}) {
-  const unwatches = []; // unwatches field value (event change)
-
-  const ONE = getCatalogLayerById(layerId)
-    .getRelations()
-    .getArray()
-    .filter(r => 'ONE' === r.getType())
-
-  // get all relations 1:1 of current layer
-  for (const relation of ONE) {
-
-    const childLayerId         = relation.getChild(); // get relation child layer id
-    const fatherField          = relation.getFatherField();
-    const relationLockFeatures = {}; //store value
-
-    // NB:
-    // need to check if editable when opening form task
-    // Not set this condition because maybe i ca be used this method
-    // on a move task or other when current fatherFormRelationField, related to 1:1 relation
-    // it can be changed by default expression or in another way not only with form
-    const fatherFormRelationField = fields.find(f => fatherField.includes(f.name)); // get father layer field (for each relation)
-    // skip when not relation field and not layer child is in editing
-    if (!(fatherFormRelationField && GUI.getPlugin('editing').getLayerById(childLayerId))) {
-      return unwatches;
-    }
-
-    //store original editable property of fields relation to child layer relation
-    const editableRelatedFatherChild = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
-      .filter(f => f.vectorjoin_id && relation.getId() === f.vectorjoin_id)
-      .reduce((accumulator, field) => {
-        const formField             = fields.find(f => field.name === f.name)
-        accumulator[formField.name] = formField.editable;
-        return accumulator;
-      }, {});
-
-    fatherFormRelationField.input.options.loading.state = 'loading'; // show input bar loader
-
-    //get feature from a child layer source
-    relationLockFeatures[fatherFormRelationField.value] = await _getRelation1_1ChildFeature({
-      relation,
-      fatherFormRelationField,
-    })
-
-    fatherFormRelationField.input.options.loading.state = null; // show input bar loader
-
-    //if locked need to set editable to false
-    //can update child
-    if (relationLockFeatures[fatherFormRelationField.value].locked) {
-      Object.keys(editableRelatedFatherChild)
-        .forEach(fn => fields.find(f => fn === f.name).editable = false);
-    }
-
-    //if not feature is on source child layer, it means it locked or not exist on a server need to check
-    // listen for relation field changes (vue watcher)
-    unwatches.push(
-      Vue.$watch(
-        () => fatherFormRelationField.value,
-        async value => {
-
-          // skip empty values
-          if (!value) {
-            fatherFormRelationField.input.options.loading.state = null;
-            fatherFormRelationField.editable                    = true;
+    // Process only 1:1 relations where the edited layer is the parent.
+    const promises = getCatalogLayerById(layerId)
+      .getRelations()
+      .getArray()
+      .filter(r => 'ONE' === r.getType())
+      .map(relation => {
+        return new Promise(async (resolve, reject) => {
+          // Ignore relations where the edited layer is the child.
+          if (layerId !== relation.getFather()) {
+            resolve();
             return;
           }
+          const fatherField = relation.getFatherField()[0];
+          const value       = features[0].get(fatherField);
 
-          fatherFormRelationField.editable                    = false;     // disable edit
-          fatherFormRelationField.input.options.loading.state = 'loading'; // show input bar loader
-          if (undefined === relationLockFeatures[fatherFormRelationField.value]) {
-            //get feature from a child layer source
-            try {
+          // A null parent key cannot identify a child feature.
+          if (null === value) {
+            resolve();
+            return
+          }
 
-              relationLockFeatures[fatherFormRelationField.value] = await _getRelation1_1ChildFeature({
-                relation,
-                fatherFormRelationField,
-              })
+          // The child must be part of the current editing session.
+          const childLayerId = relation.getChild();
+          const childField   = relation.getChildField()[0];
+          // Ignore read-only child layers.
+          if (!GUI.getPlugin('editing').getLayerById(childLayerId)) {
+            reject();
+            return;
+          }
+          const childToolbox = GUI.getPlugin('editing').getToolBoxById(childLayerId);
+          let childFeature; // Existing child feature, if already staged.
+          let newChild; // Clone or new instance that receives the updates.
 
-            } catch(e) {
-              console.warn(e);
+          // Prefer a feature already present in the child toolbox.
+          childFeature = childToolbox.readEditingFeatures().find(f => f.get(childField) === value)
+
+          const fieldsUpdated = undefined !== (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
+            .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId())
+            .find(({ name }) => fields.find(f => name == f.name).update)
+
+          const isNewChildFeature = undefined === childFeature;
+
+          // Only create or update a child when a joined field changed.
+          if (fieldsUpdated) {
+            // Create the child feature lazily when no staged feature exists.
+            if (isNewChildFeature) {
+              // Create a temporary child feature.
+              childFeature = new Feature();
+              childFeature.setTemporaryId();
+              // Initialise all child fields so the feature has a complete shape.
+              (GUI.getPlugin('editing').getToolBoxById(childLayerId).state.fields || []).forEach(field => childFeature.set(field.name, null));
+              // Link the child to the edited parent.
+              childFeature.set(childField, fields.find(f => fatherField === f.name).value);
+              // Add the temporary feature to the child source.
+              source.addFeature(childFeature);
+              // The new source feature is also the update payload.
+              newChild = childFeature;
+            } else {
+              // Clone existing data before applying joined values.
+              if (childFeature) {
+                //clone child Feature so all changes apply by father is set to clone new feature
+                newChild = childFeature.clone();
+              }
+            }
+
+            // Continue only when a child feature was found or created.
+            if (childFeature) {
+              // Copy editable joined fields from the parent to the child.
+              const editiableRelatedFieldChild = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
+                .filter(f => f.vectorjoin_id && f.vectorjoin_id === relation.getId() && f.editable);
+
+              editiableRelatedFieldChild
+                .forEach(field => newChild.set(field.name.replace(relation.getPrefix(), ''), features[0].get(field.name)));
+
+              // Stage an add or update, depending on whether the child existed.
+              if (isNewChildFeature) {
+
+                // A new parent primary key is temporary until the commit resolves it.
+                if (isPkField(GUI.getPlugin('editing').getLayerById(layerId), fatherField)) {
+                  childFeature.set(childField, features[0].getId()); // set temporary
+                }
+
+                GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushAdd(childLayerId, newChild, false);
+
+              } else {
+                source.updateFeature(newChild);
+                GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(childLayerId, newChild, childFeature);
+
+              }
             }
           }
 
-          const { feature, locked } = relationLockFeatures[fatherFormRelationField.value];
+          resolve();
 
-          Object.keys(editableRelatedFatherChild)
-            .forEach(fn => {
-              const field = fields.find(f => fn === f.name);
-              //set editable property
-              field.editable = locked
-                ? false
-                : editableRelatedFatherChild[fn];
-              // need to check if feature is new and not locked ot not present on a source
-              field.value = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null;
-              // change input to run eventually default expression
-              formService.changeInput(field);
-            });
-
-          // reset edit state
-          fatherFormRelationField.input.options.loading.state = null;
-          fatherFormRelationField.editable                    = true;
-        }
-      )
-    );
-  }
-
-  return unwatches;
-}
-
-/**
- * @param { Object } opts
- * @param opts.relation
- * @param opts.fatherFormRelationField
- * 
- * @returns {Promise<{feature: *, locked: boolean}>}
- */
-async function _getRelation1_1ChildFeature({
-  relation,
-  fatherFormRelationField,
-}) {
-  const fatherLayerId = relation.getFather();
-  const childLayerId  = relation.getChild();         // get relation child layer id
-  const childField    = relation.getChildField()[0];
-
-  // lock feature false
-  let locked  = false;
-  const childToolbox = GUI.getPlugin('editing').getToolBoxById(childLayerId);
-  let feature = childToolbox
-    .readEditingFeatures()
-    .find(f => fatherFormRelationField.value === f.get(childField))
-
-    //get feature from server and lock
-  if (undefined === feature) {
-
-    const unByKey     = childToolbox.oncebefore('featuresLockedByOtherUser', features => feature = features[0])
-
-    await getLayersDependencyFeatures(fatherLayerId, {
-      feature:   new ol.Feature({ [fatherFormRelationField.name]: fatherFormRelationField.value }),
-      relations: [relation],
-    });
-
-    //remove listener
-    childToolbox.un('featuresLockedByOtherUser', unByKey);
-
-    //in case of no locked check feature on a source
-    if (undefined === feature) {
-
-      feature = childToolbox
-        .readEditingFeatures()
-        .find(f => fatherFormRelationField.value === f.get(childField))
-    }
-
-  }
-
-  //not find on source need to check if exist
-  if (undefined === feature) {
-
-    try {
-      const layer = getCatalogLayerById(childLayerId);
-
-      const { data } = await GUI.getData('search:features', {  // get feature of relation layer based on value of relation field
-        inputs: {
-          layer,
-          formatter: 0,
-          filter:    createFilterFormInputs({
-            layer,
-            inputs:  [{ attribute: childField, value: fatherFormRelationField.value, }]
-          }),
-        },
-        outputs: false,
+        })
       });
 
-      if (data?.[0] && 1 === data[0].features.length) {                // NB: length == 1, due to 1:1 relation type
-        //locked
-        locked = true;
-        feature = data[0].features[0];
+    await Promise.allSettled(promises);
+  }
+
+  /**
+   * Finds the child feature for a parent relation value.
+   *
+   * The lookup checks staged editing features first, then requests dependent
+   * features (which can report a lock), and finally searches the server for an
+   * existing feature that is not currently editable.
+   *
+   * @param {Object} options Lookup options.
+   * @param {Object} options.relation 1:1 relation metadata.
+   * @param {Object} options.father_form Parent form field carrying the relation value.
+   * @returns {Promise<{feature: Object|undefined, locked: boolean}>} Matching
+   *   feature and whether it is locked by another user.
+   */
+  async #getRelation1_1ChildFeature({ relation, father_form }) {
+    const fatherLayerId = relation.getFather();
+    const childLayerId  = relation.getChild();
+    const childField    = relation.getChildField()[0];
+
+    // A feature found in the editing source is available for local updates.
+    let locked  = false;
+    const childToolbox = GUI.getPlugin('editing').getToolBoxById(childLayerId);
+    let feature = childToolbox
+      .readEditingFeatures()
+      .find(f => father_form.value === f.get(childField))
+
+      // Ask the dependency loader first; it can return a feature locked by another user.
+    if (undefined === feature) {
+
+      const unByKey     = childToolbox.oncebefore('featuresLockedByOtherUser', features => feature = features[0])
+
+      await getLayersDependencyFeatures(fatherLayerId, {
+        feature:   new ol.Feature({ [father_form.name]: father_form.value }),
+        relations: [relation],
+      });
+
+      // The one-shot listener is no longer needed after the dependency request.
+      childToolbox.un('featuresLockedByOtherUser', unByKey);
+
+      // The dependency request may have populated the child source without locking it.
+      if (undefined === feature) {
+        feature = childToolbox
+          .readEditingFeatures()
+          .find(f => father_form.value === f.get(childField))
       }
-    } catch(e) {
-      console.warn(e);
+
+    }
+
+    // A server search distinguishes a missing child from a non-editable one.
+    if (undefined === feature) {
+
+      try {
+        const layer = getCatalogLayerById(childLayerId);
+
+        const { data } = await GUI.getData('search:features', {  // Search by the parent relation value.
+          inputs: {
+            layer,
+            formatter: 0,
+            filter:    createFilterFormInputs({
+              layer,
+              inputs:  [{ attribute: childField, value: father_form.value, }]
+            }),
+          },
+          outputs: false,
+        });
+
+        if (data?.[0] && 1 === data[0].features.length) {                // A 1:1 relation can return at most one feature.
+          // A server-side match is not editable in the current session.
+          locked = true;
+          feature = data[0].features[0];
+        }
+      } catch(e) {
+        console.warn(e);
+      }
+    }
+
+    return {
+      feature,
+      locked,
     }
   }
 
-  //return
-  return {
-    feature, //feature search
-    locked, //locked status
+  /**
+   * Applies form field values to a feature, including nested child fields.
+   *
+   * The helper converts the string sentinel used by the form to a real null
+   * value before updating the feature properties.
+   *
+   * @param {Object} feature Feature to update.
+   * @param {Object[]} fields Form fields whose values should be applied.
+   * @returns {Object} Attributes written to the feature.
+   */
+  #setFieldsWithValues(feature, fields) {
+    const createAttrs = (fields = []) => fields.reduce((acc, f) => {
+      if ('child' === f.type) {
+        acc[f.name] = createAttrs(f.fields);
+      } else if ('null' === f.value) {
+        f.value = null;
+      }
+      acc[f.name] = f.value;
+      return acc;
+    }, {});
+    const attributes = createAttrs(fields);
+    feature.setProperties(attributes);
+    return attributes;
   }
-}
 
-/**
- * create attributes from fields
- */
-function _setFieldsWithValues(layer, feature, fields) {
-  const createAttrs = (fields = []) => fields.reduce((acc, f) => { 
-    if ('child' === f.type) {
-      acc[f.name] = createAttrs(f.fields);
-    } else if ('null' === f.value) {
-      f.value = null;
-    }
-    acc[f.name] = f.value;
-    return acc;
-  }, {});
-  const attributes = createAttrs(fields);
-  feature.setProperties(attributes);
-  return attributes;
 }

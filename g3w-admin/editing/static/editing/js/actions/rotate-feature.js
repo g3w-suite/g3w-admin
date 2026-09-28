@@ -3,7 +3,6 @@
  */
 
 import { evaluateExpressionFields }         from '../utils/evaluateExpressionFields.js';
-import { setAndUnsetSelectedFeaturesStyle } from '../utils/setAndUnsetSelectedFeaturesStyle.js';
 import { Step }                             from '../g3w-step.js';
 
 const GUI = g3w.app;
@@ -562,39 +561,36 @@ class RotateInteraction extends ol.interaction.Pointer {
 /** @TODO add description */
 export class RotateFeatureStep extends Step {
 
+  /**
+   * changed if geometry or rotaion for Poin geometry is changed
+   */
+  #isChange = false;
+
+  #originalFeature = null;
+
+  #feature = null;
+
   constructor(opts = {}) {
     opts.help = "editing.steps.help.rotate";
-
     super(opts);
-
-    this.isChange          = false; // changed if geometry or rotaion for Poin geometry is changed
-    this._feature          = null;
-    this._originalFeature  = null; 
-    this.drawInteraction   = null;
-    this.promise; // need to be set here in case of picked features
   }
 
-  run(inputs) {               
-    /** Need two different promises: One for stop() method and clean-selected feature,
-     * and another one for a run task. If we use the same promise, when stop a task without move feature,
-     * this.promise.resolve(), it fires also thenable method listens to resolve promise of a run task,
-     * that call stop task method.*/
-    return new Promise((resolve) => {
+  run(inputs) {
+    return new Promise(resolve => {
       const promise        = new Promise(r => this.resolve = r);
-      this.changeKey       = null;
-      setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+      this.highlightInputs({ promise });
       this.addInteraction(
         new RotateInteraction({ features: inputs.features }), {
         'rotatestart': e => {
-          this._feature         = e.feature;
-          this.isChange         = true;
-          this._originalFeature = this._feature.clone();
+          this.#feature         = e.feature;
+          this.#isChange        = true;
+          this.#originalFeature = this.#feature.clone();
         },
         'rotateend': async e => {
-          if (this.isChange) {
+          if (this.#isChange) {
             await this.updateFeature(e.feature);
           }
-          this.isChange = false;
+          this.#isChange = false;
           resolve(inputs);
         },
       }).select(inputs.features.at(- 1));
@@ -608,15 +604,19 @@ export class RotateFeatureStep extends Step {
     const inputs  = this.getInputs();
     const context = this.getContext();
     try {
-      await evaluateExpressionFields({ inputs, context, feature: this._feature });
+      await evaluateExpressionFields({ inputs, context, feature: this.#feature });
     } catch(e) {
       console.warn(e);
     }
-    GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(inputs.layer.getId(), this._feature.clone(), this._originalFeature);
+    GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(
+      inputs.layer.getId(),
+      this.#feature.clone(),
+      this.#originalFeature
+    );
   }
 
   async stop(input, context) {
-    if (this.isChange) {
+    if (this.#isChange) {
      //In case of Point geometry, afetr change rotation and click on tool to stop, need to update feature 
      await this.updateFeature();
      //need to save it 
@@ -624,7 +624,7 @@ export class RotateFeatureStep extends Step {
     }
     this.resolve(true);
     this.resolve  = null;
-    this.isChange = false
+    this.#isChange = false
     GUI.closeUserMessage();
   }
 }
