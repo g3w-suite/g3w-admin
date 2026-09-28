@@ -2,7 +2,7 @@
  * @file
  */
 
-import { getEditingLayer } from './utils/getEditingLayer.js';
+import { getEditingLayer }             from './utils/getEditingLayer.js';
 
 const { Emitter } = g3w;
 const GUI         = g3w.app;
@@ -152,26 +152,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * Hook for subclasses to report an unrecoverable implementation state.
-   *
-   * @returns {void}
-   */
-  panic() {
-    console.log('Panic to implement ..');
-  }
-
-  /**
-   * Set the root task associated with this step.
-   *
-   * @param {*} task Root task or parent operation.
-   * 
-   * @returns {void}
-   */
-  setRoot(task) {
-    this.state.root = task;
-  }
-
-  /**
    * @returns {Object} Progress entries shown for this step.
    */
   getUserMessageSteps() {
@@ -231,46 +211,6 @@ export class Step extends Emitter {
   }
 
   /**
-   * Return the editing type configured for the step.
-   *
-   * @returns {null} Not implemented by the base step.
-   */
-  getEditingType() {
-    return null;
-  }
-
-  /**
-   * Listen for map pointer movement and update the cursor.
-   *
-   * @returns {void}
-   * 
-   * @listens pointermove
-   */
-  registerPointerMoveCursor() {
-    GUI.getMap().on("pointermove", this._pointerMoveCursor)
-  }
-
-  /**
-   * Stop listening for map pointer movement.
-   *
-   * @returns {void}
-   */
-  unregisterPointerMoveCursor() {
-    GUI.getMap().un("pointermove", this._pointerMoveCursor)
-  }
-
-  /**
-   * Update the cursor according to the feature under the pointer.
-   *
-   * @param {Object} evt Map pointer-move event.
-   * 
-   * @returns {void}
-   */
-  _pointerMoveCursor(evt) {
-    this.getTargetElement().style.cursor = (this.forEachFeatureAtPixel(evt.pixel, () => true) ? 'pointer' : '');
-  }
-
-  /**
    * Replace the nested step flow and its user-message entries.
    *
    * @param {Object[]} [steps=[]] Steps in the nested flow.
@@ -299,17 +239,53 @@ export class Step extends Emitter {
   }
 
   /**
-   * Disable sidebar
+   * Apply the selected style to features involved in the current step.
    *
-   * @param {boolean} [bool=true] Whether the sidebar should be disabled.
-   * 
-   * @returns {void}
+  * @param {Object} [options] Selection options.
+   *
+   * @returns {ol.style.Style|void} The original style for synchronous calls.
    */
-  disableSidebar(bool = true) {
-    if (this._isContentChild) {
+  highlightInputs(options = {}) {
+    const features = options.features || this.getInputs()?.features || [];
+
+    if (0 === features.length || (options.promise && 'vector' !== this.getInputs()?.layer?.getType?.()) || features.flat().some(f => !f?.getGeometry?.())) {
       return;
     }
-    GUI.disableSideBar(bool);
+
+    const applyStyle = () => {
+      const feats  = features.flat();
+      const ostyle = feats[0].getStyle();
+      const gtype = feats[0].getGeometry().getType();
+      const style = new ol.style.Style({
+        ...(['LineString', 'MultiLineString', 'Polygon', 'MultiPolygon'].includes(gtype) && {
+          stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 })
+        }),
+        ...(['Polygon', 'MultiPolygon'].includes(gtype) && {
+          fill: new ol.style.Fill({ color: 'rgba(255,255,0,0.25)' })
+        }),
+        ...(['Point', 'MultiPoint'].includes(gtype) && {
+          image: new ol.style.Circle({ radius: 6, fill: new ol.style.Fill({ color: 'rgb(255,255,0)' }) }),
+          zIndex: Infinity
+        })
+      });
+      feats.forEach(f => f.setStyle(style));
+      return ostyle;
+    };
+
+    if (!options.promise) {
+      return applyStyle();
+    }
+
+    setTimeout(async () => {
+      const originalStyle = applyStyle();
+      try {
+        await options.promise;
+      } catch(e) {
+        console.warn(e);
+      } finally {
+        features.flat().forEach(f => f.setStyle(originalStyle));
+      }
+    });
   }
 
   /**
@@ -523,24 +499,6 @@ export class Step extends Emitter {
    */
   getTask() {
     return this;
-  }
-
-  /**
-   * Store the outputs produced by the step task.
-   *
-   * @param {Object} outputs Step outputs.
-   * 
-   * @returns {void}
-   */
-  setOutputs(outputs) {
-    this._outputs = outputs;
-  }
-
-  /**
-   * @returns {Object|null} Step outputs.
-   */
-  getOutputs() {
-    return this._outputs;
   }
 
   /**

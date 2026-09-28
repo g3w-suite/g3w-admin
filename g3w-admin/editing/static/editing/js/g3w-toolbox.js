@@ -23,7 +23,6 @@ import { Feature }                                  from './g3w-feature.js';
 import { setLayerUniqueFieldValues }                from './utils/setLayerUniqueFieldValues.js';
 import { getRelationsInEditing }                    from './utils/getRelationsInEditing.js';
 import { getRelationId }                            from './utils/getRelationId.js';
-import { setAndUnsetSelectedFeaturesStyle }         from './utils/setAndUnsetSelectedFeaturesStyle.js';
 import { chooseFeature }                            from './utils/chooseFeature.js';
 import { cloneFeature }                             from './utils/cloneFeature.js';
 import { evaluateExpressionFields }                 from './utils/evaluateExpressionFields.js';
@@ -36,7 +35,6 @@ import { getEditingLayerById }                      from './utils/getEditingLaye
 import { getRelationsInEditingByFeature }           from './utils/getRelationsInEditingByFeature.js';
 import { addPartToMultigeometries }                 from './utils/addPartToMultigeometries.js';
 import { unlinkRelation }                           from './utils/unlinkRelation.js';
-import { isSameBaseGeometryType }                   from './utils/isSameBaseGeometryType.js';
 import { isPkField }                                from './utils/isPkField.js';
 import { getCatalogLayerById }                      from './utils/getCatalogLayerById.js';
 import { getCatalogLayers }                         from './utils/getCatalogLayers.js';
@@ -483,7 +481,7 @@ export class ToolBox extends Emitter {
                   relations.forEach(r => unlinkRelation({ layerId, relation, relations, index: 0, dialog: false }));
                 });
 
-                this.pushDelete(layerId, feature);
+                GUI.getPlugin('editing').getToolBoxById(layerId).pushDelete(layerId, feature);
 
                 return inputs;
                 
@@ -520,11 +518,7 @@ export class ToolBox extends Emitter {
                 });
 
                 if (inputs.features) {
-                  setAndUnsetSelectedFeaturesStyle({
-                    promise,
-                    inputs,
-                    style:   this.selectStyle,
-                  });
+                  this.highlightInputs({ promise });
                 }
 
                   return promise;
@@ -901,13 +895,13 @@ export class ToolBox extends Emitter {
               const updatelayers = () => {
                 const checkGeometry = type => (
                   type
-                  && isSameBaseGeometryType(geometryType, type)
+                  && geometryType.replace('Multi', '') === type.replace('Multi', '')
                   && (
                     (geometryType === type)
                     || /^Multi(LineString|Polygon|Point|Line)/i.test(geometryType)
                     || !(/^Multi(LineString|Polygon|Point|Line)/i.test(type))
                   )
-                )
+                );
                 layers = [
                   //project layers
                   ...getCatalogLayers({ GEOLAYER: true, BASELAYER: false })
@@ -1163,7 +1157,7 @@ export class ToolBox extends Emitter {
                     new ol.interaction.Snap({ edge: false, features: new ol.Collection(inputs.features) })
                   );
                 })
-                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle })
+                this.highlightInputs({ promise })
                 return promise;
               },
               stop() {
@@ -1248,7 +1242,7 @@ export class ToolBox extends Emitter {
                   );
                 });
 
-                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+                this.highlightInputs({ promise });
                 return promise;
 
               },
@@ -1322,7 +1316,7 @@ export class ToolBox extends Emitter {
             new Step({
               layer: this.getEditingLayer(),
               run(inputs, context) {
-                return new Promise((resolve, reject) => {
+                return new Promise(resolve => {
                   const originaLayer    = inputs.layer;
                   const editingLayer    = getEditingLayer(inputs.layer);
                   const layerId         = originaLayer.getId();
@@ -1524,7 +1518,7 @@ export class ToolBox extends Emitter {
                   );
                 })
 
-                setAndUnsetSelectedFeaturesStyle({ promise, inputs, style: this.selectStyle });
+                this.highlightInputs({ promise });
 
                 return promise;
                 
