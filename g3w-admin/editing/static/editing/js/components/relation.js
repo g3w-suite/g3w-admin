@@ -382,6 +382,12 @@ export default ({
 
     name: 'g3w-relation',
 
+    props: {
+      layerId:  { type: [String, Number], required: true },
+      relation: { type: Object, required: true },
+      relations: { type: Array, required: true },
+    },
+
     mixins: [
       Mixins.mediaMixin,
       Mixins.fieldsMixin,
@@ -389,9 +395,6 @@ export default ({
 
     data() {
       return {
-        // relation,  // ← setted by `Vue.extend` - Relation instance: information about relation from parent layer and current relation layer (ex. child, fields, relationid, etc....) main relation between layerId (current in editing)
-        // relations, // ← setted by `Vue.extend` - array of relations object id,fields and select linked to current parent feature (that is in editing)
-        // layerId,   // ← setted by `Vue.extend`
         show:         true,
         loading :     false,
         show_tools:   false, // whether show vector relation tools

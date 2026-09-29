@@ -301,8 +301,7 @@ export class OpenFormStep extends Step {
         force:              { update: this.getOriginalFeatures()[0].isNew(), valid:  false },
         layerid:            inputs.layer.getId(),
         loading:            false,
-        components:         [],
-        component:          null,
+        relation:           null,
         disabled:           false,
         valid:              true,
         update:             this.getOriginalFeatures()[0].isNew(),
@@ -403,13 +402,16 @@ export class OpenFormStep extends Step {
                   </div>
                 </form>
                 <keep-alive>
-                  <component v-if = "!isRoot"
+                  <g3w-editing-relation v-if = "state.relation"
+                    :key              = "state.relation.relation.id"
+                    :layer-id         = "state.layerid"
+                    :relation         = "state.relation.relation"
+                    :relations        = "state.relation.relations"
                     :handleRelation   = "handleRelation"
                     @addtovalidate    = "addToValidate"
                     @removetovalidate = "removeToValidate"
                     @changeinput      = "changeInput"
                     :state            = "state"
-                    :is               = "state.component"
                   />
                 </keep-alive>
               </div>
@@ -460,14 +462,16 @@ export class OpenFormStep extends Step {
           data() {
             return {
               state:           this.$options.service,
-              switchcomponent: false,
-              isRoot:          true,
               form_structure:  inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
             }
           },
           transitions: { 'addremovetransition': 'showhide' },
-          components: { G3wFormInputs },
+          components: {
+            G3wFormInputs,
+            G3wEditingRelation: () => import('../components/relation.js'),
+          },
           computed: {
+            isRoot()          { return !this.state.relation; },
             enableSave()      { return this.state.valid && this.state.update; },
             hasSaveAll()      { return SELF.#saveAll; },
             isChild()         { return Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable')) },
@@ -482,7 +486,7 @@ export class OpenFormStep extends Step {
             saveButtonTitle() { return SELF.hasChild() ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" : "plugins.editing.insert_edit"; },
           },
           methods: {
-            backToRoot()                               { SELF.#form.component = SELF.#form.id; },
+            backToRoot()                               { SELF.#form.relation = null; },
             handleRelation(relationId)                 { SELF.#handleRelation(relationId); },
             changeInput(input)                         { return SELF.#changeInput(input); },
             addToValidate(input)                       { SELF.#addToValidate(input); },
@@ -490,20 +494,7 @@ export class OpenFormStep extends Step {
             saveForm()                                 { SELF.#saveForm({ context, inputs, resolve }); },
             cancelForm()                               { SELF.#cancelForm({ inputs, reject }); },
             saveAll()                                  { SELF.#saveAllForms(); },
-            closeForm()                                { SELF.#closeForm(); }
-          },
-          watch: {
-            'state.component'(comp) { this.isRoot = comp === SELF.#form.id; },
-          },
-          async updated() {
-            await this.$nextTick();
-            if (this.switchcomponent) {
-              setTimeout(() => {
-                this.switchcomponent = false;
-                SELF.#form.component = SELF.#form.components.find(comp => id === comp.id).component;
-                this.switchcomponent = true;
-              }, 0)
-            }
+            closeForm()                                { SELF.#closeForm(); },
           },
           mounted() {
             SELF.#isValid();
@@ -564,33 +555,6 @@ export class OpenFormStep extends Step {
         .keys(SELF.#filter_expression_fields_dependencies)
         .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
 
-      const COMP = (await import('../components/relation.js')).default;
-
-      // Add editable child relations; 1:1 relations are handled by field watchers.
-      getRelationsInEditingByFeature({
-        layerId,
-        relations: this.hasMulti() ? [] : inputs.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === layerId),
-        feature:   this.hasMulti() ? false : inputs.features[inputs.features.length - 1],
-      })
-        .map(({ relation, relations }) => ({
-          title:     "plugins.editing.edit_relation",
-          name:      relation.name,
-          id:        relation.id,
-          header:    false,            // Relation forms provide their own content header.
-          component: Vue.extend({
-            mixins: [ COMP ],
-            name: `relation_${Date.now()}`,
-            data() {
-              return { layerId, relation, relations };
-            },
-          }),
-        }))
-        .filter(comp => comp)
-        .forEach(comp => {
-          this.#form.components.push(comp);
-        });
-
-      this.#form.component = this.#form.id;
 
       GUI.setContent({
         perc:       this.#form.perc,
@@ -1408,7 +1372,11 @@ export class OpenFormStep extends Step {
     }
     GUI.setLoadingContent(true);
     await setLayerUniqueFieldValues(this.#form.layer.getRelationById(relation.name).getChild());
-    this.#form.component = this.#form.components.find(comp => relation.name === comp.id).component
+    this.#form.relation = getRelationsInEditingByFeature({
+      layerId: this.#layerId,
+      relations: this.#form.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === this.#layerId),
+      feature: this.getFeatures()[0],
+    }).find(({ relation: editingRelation }) => relation.name === editingRelation.id);
     GUI.setLoadingContent(false);
   }
 
