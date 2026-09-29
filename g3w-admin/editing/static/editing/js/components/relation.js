@@ -139,7 +139,7 @@ export default ({
         style        = "margin-right: auto;"
         @keyup       = "globalSearch"
       />
-      <div class = "g3w-relation-tools">
+      <div class = "g3w-relation-tools skin-color">
 
         <!-- EDIT MULTI ATTRIBUTES -->
         <span
