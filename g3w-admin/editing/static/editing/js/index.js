@@ -3,6 +3,7 @@ import { addPartToMultigeometries }            from './utils/addPartToMultigeome
 import { getCatalogLayers }                    from './utils/getCatalogLayers.js';
 import { getCatalogLayerById }                 from './utils/getCatalogLayerById.js';
 import { getEditingLayer }                     from './utils/getEditingLayer.js';
+import { addZValue }                           from './utils/addZValue.js';
 
 const { Plugin, Panel }   = g3w;
 const { G3W_FID }         = g3w.constants;
@@ -238,8 +239,8 @@ new (class extends Plugin {
 
     GUI.onafter('addActionsForLayers', (actions, layers) => {
       for (const id in actions) {
-        const layer = this.getLayerById(id);
-        if (layer) {
+        // project layers
+        if (this.getLayerById(id)) {
           actions[id].push({
             id:    'editing',
             class: "fas fa-pencil-alt",
@@ -253,6 +254,156 @@ new (class extends Plugin {
             },
             cbk: (layer, feature) => GUI.getPlugin('editing').editFeature({ layer, feature }),
           });
+        }
+        // marker geocoder layer
+        if (id  === '__g3w_marker') {
+          /**
+           * Create new feature on selected Point/Multipoint layer
+           */
+          const editItem = async (layerId, feature) => {
+          
+            // disable ol-gecoder while editing
+            GUI.getMapControlByType('geocoding').element.classList.add('g3w-disabled');
+
+            try {
+
+              // get a geometry type of target layer
+              const type = getCatalogLayerById(layerId).getGeometryType();
+
+              // create a new editing feature (Point/MultiPoint + safe alias for keys without `raw_` prefix)
+              const _feature = addZValue({
+                geometryType: type,
+                feature:      new ol.Feature({
+                  ...Object.entries(feature.attributes).reduce((acc, attr) => ({ ...acc, [attr[0].replace(feature.attributes.provider + '_', '').toLowerCase()]: attr[1] }), {}),
+                  ...feature.attributes,
+                  geometry: g3w.utils.convertSingleMultiGeometry(feature.geometry, type),
+                }),
+              });
+
+              // start editing session
+              await this.addLayerFeature({ layerId: layerId, feature: _feature });
+
+            } catch(e) {
+              console.warn(e);
+            }
+
+            GUI.getMapControlByType('geocoding').element.classList.remove('g3w-disabled');
+          }
+          /**
+           * Allow user to choose a project layer where to save selected features
+           */
+        
+          const layer = layers.find(l => '__g3w_marker' === l.id);
+
+          // skip when no "g3w_marker" layer or features comes from an elastich search (project layers)
+          if (!layer || layer?.features?.some?.(f => 'qes' === f?.attributes?.provider)) {
+            return;
+          }
+
+          // Get editing layers that has Point/MultiPoint Geometry type
+          const editable_point_layers = ApplicationState.project
+            .getLayers({ EDITABLE: true, GEOLAYER: true })
+            .flatMap(l => /^(Point|MultiPoint)/.test(l.getGeometryType()) ? ({ id: l.getId(), name: l.getName(), inediting: !!l.isInEditing() }) : []);
+
+          // skip adding when there is no editable layer or  editing panel is open (ie. layer is in editing)
+          if (editable_point_layers.find(l => l.inediting)) {
+            return;
+          }
+
+          // Add "choose_layer" action
+          GUI.state.actiontools['choose_layer'] = {
+            [layer.id]: {
+              layers:   editable_point_layers,
+              icon:     'pencil',
+              label:    'Choose a layer where to add this feature',
+              nolayers: 'No editable point layers found on this project',
+              cbk:      editItem,
+            }
+          };
+
+          actions[layer.id] = actions[layer.id] || [];
+          actions[layer.id].push({
+            id:         'choose_layer',
+            class:      "fas fa-pencil-alt",
+            state:      Vue.observable({ toggled: Array(layer.features.length).fill(null) }),
+            toggleable: true,
+            hint:       'Choose a layer',
+            cbk:        (layer, feature, action, index) => {
+              // skip layer choose when there is only a single editable layer
+              if (1 === editable_point_layers.length) {
+                editItem(editable_point_layers[0].id, feature);
+                return;
+              }
+              // let user choose an editable layer
+              action.state.toggled[index] = !action.state.toggled[index];
+
+              const tools   = GUI.state.currentactiontools[layer.id];        // get current action tools
+              const feats   = GUI.state.currentactionfeaturelayer[layer.id];
+              feats[index]  = action.state.toggled[index] ? action : null;
+              tools[index]  = action.state.toggled[index] ? ({
+                name: 'choose_layer',
+                data:() => ({ layerId: null }),
+                props: {
+                  feature: { type: Object },
+                  config:  { type: Object, default: () => ({ icon: 'pencil', label: 'Choose a Layer', nolayers: 'No layers found', layers: [], cbk: () => {} }) },
+                },
+                template: /* html */ `
+                  <section class = "action-choose-layer">
+                    <label v-t = "config.label"></label>
+                    <div
+                      style               = "width: 100%; display: flex"
+                      @click.prevent.stop = ""
+                    >
+                      <x-select
+                        style     = "flex-grow: 1;"
+                        :value    = "layerId"
+                        :disabled = "!has_layers"
+                        @change   = "layerId = $event.target.value"
+                      >
+                        <x-option
+                          v-for  = "layer in config.layers"
+                          :key   = "layer.id"
+                          :value = "layer.id"
+                        >
+                          <b>{{ layer.name }}</b>
+                        </x-option>
+                        <x-option v-if = "!has_layers" :value="null">{{ $t(config.nolayers) }}</x-option>
+                      </x-select>
+                      <button
+                        v-if        = "has_layers"
+                        style       = "border-radius: 0 3px 3px 0;"
+                        class       = "btn skin-button"
+                        @click.stop = "() => config.cbk(layerId, feature)"
+                      >
+                        <span :class = "$fa(config.icon)"></span>
+                      </button>
+                    </div>
+                  </section>`,
+                  computed: {
+                    has_layers() {
+                      return this.config.layers && this.config.layers.length > 0; 
+                    },
+                  },
+                  created() {
+                    if (this.has_layers) {
+                      this.layerId = this.config.layers[0].id;
+                    }
+                  },
+              }) : null;                                      // set component
+
+              // need to check if pass component and
+              if (
+                tools[index] &&                   // if component is set
+                action.id !== feats[index].id &&  // same action
+                feats[index].toggleable           // check if toggleable
+              ) {
+                feats[index].state.toggled[index] = false;
+              }
+
+            },
+          });
+
+          return;
         }
       }
 
@@ -969,6 +1120,10 @@ new (class extends Plugin {
       const layer     = this.getLayerById(layerId);
       // exclude an eventual attribute pk (primary key) not editable (mean autoincrement)
       const attributes = this.getEditingFields(layerId).filter(attr => !(attr.pk && !attr.editable));
+      // In case of no editable attributes, throw an error.
+      if (0 === attributes.length) {
+        throw new Error('No editable attributes found for this layer.');
+      }
       // start (get no features but set layer in editing)
       GUI.getPlugin('editing').getToolBoxById(layerId).startSession({
         filter: {
