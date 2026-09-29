@@ -491,7 +491,7 @@ export class OpenFormStep extends Step {
             changeInput(input)                         { return SELF.#changeInput(input); },
             addToValidate(input)                       { SELF.#addToValidate(input); },
             removeToValidate(input)                    { SELF.#removeToValidate(input); },
-            saveForm()                                 { SELF.#saveForm({ context, inputs, resolve }); },
+            saveForm()                                 { SELF.#saveForm({ context, inputs, resolve }, this.state.fields); },
             cancelForm()                               { SELF.#cancelForm({ inputs, reject }); },
             saveAll()                                  { SELF.#saveAllForms(); },
             closeForm()                                { SELF.#closeForm(); },
