@@ -541,12 +541,7 @@ export class OpenFormStep extends Step {
             }
             this.#filter_deps[name].push(field.name);
           });
-          this.#getFilterExpression({
-            parentData:   this.#form.parentData,
-            qgs_layer_id: this.#form.layer.getId(),
-            feature:      this.#form.feature,
-            field,
-          });
+          this.#getFilterExpression(field);
         }
 
         // Register update dependencies and evaluate defaults for new features.
@@ -565,12 +560,7 @@ export class OpenFormStep extends Step {
             });
           }
           if (this.#form.isnew) {
-            this.#getDefaultExpression({
-              field,
-              feature:      this.#form.feature,
-              qgs_layer_id: this.#form.layer.getId(),
-              parentData:   this.#form.parentData,
-            });
+            this.#getDefaultExpression(field);
           }
         }
       });
@@ -900,19 +890,16 @@ export class OpenFormStep extends Step {
   /**
    * Evaluates a QGIS default expression and assigns its result to the field.
    *
-   * Pure helper with no form state.
-   *
-   * @param {Object} [expr={}] expression context
-   * @param {Object} expr.field related field
-   * @param {ol.Feature} expr.feature feature to transform into form data
-   * @param {string|number} expr.qgs_layer_id layer id owning the feature data
-   * @param {Object} [expr.parentData] parent form context
+  * @param {Object} field Field whose default expression is evaluated.
    *
    * @returns {Promise<*>} evaluated value, or undefined when no expression exists
    *
    * @throws rejects with the request or expression error; a configured default is restored
    */
-  async #getDefaultExpression({ field, feature, qgs_layer_id, parentData } = {}) {
+  async #getDefaultExpression(field) {
+    const feature      = this.#form.feature;
+    const qgs_layer_id = this.#form.layer.getId();
+    const parentData   = this.#form.parentData;
     const {
       layer_id = qgs_layer_id,
       default_expression,
@@ -963,17 +950,14 @@ export class OpenFormStep extends Step {
    * Fetches features matching a QGIS filter expression and refreshes
    * autocomplete values when the field uses that input type.
    *
-   * Pure helper with no form state.
-   *
-   * @param {Object} [expr={}] expression context
-   * @param {Object} expr.field related field
-   * @param {ol.Feature} expr.feature feature to transform into form data
-   * @param {string|number} expr.qgs_layer_id layer id owning the feature data
-   * @param {Object} [expr.parentData] parent form context
+  * @param {Object} field Field whose filter expression is evaluated.
    *
    * @returns {Promise<Array>} features returned by the vector data endpoint
    */
-  async #getFilterExpression({ field, feature, qgs_layer_id, parentData } = {}) {
+  async #getFilterExpression(field) {
+    const feature      = this.#form.feature;
+    const qgs_layer_id = this.#form.layer.getId();
+    const parentData   = this.#form.parentData;
     const {
       key,
       value,
@@ -1058,12 +1042,7 @@ export class OpenFormStep extends Step {
 
     return Promise.allSettled(
       dependency_fields.map(dependency_field =>
-        this.#getFilterExpression({
-          parentData:   this.#form.parentData,
-          qgs_layer_id: this.#form.layer.getId(),
-          field:        this.#form.fields.find(f => dependency_field === f.name),
-          feature:      this.#form.feature,
-        })
+        this.#getFilterExpression(this.#form.fields.find(f => dependency_field === f.name))
       )
     );
   }
@@ -1289,12 +1268,7 @@ export class OpenFormStep extends Step {
       const dependent_fields = this.#default_deps[input.name];
       if (dependent_fields) {
         await Promise.allSettled(dependent_fields.map(dependency_field =>
-          this.#getDefaultExpression({
-            parentData:   this.#form.parentData,
-            qgs_layer_id: this.#form.layer.getId(),
-            field:        this.#form.fields.find(f => dependency_field === f.name),
-            feature:      this.#form.feature,
-          })
+          this.#getDefaultExpression(this.#form.fields.find(f => dependency_field === f.name))
         ));
       }
       this.#isValid(input);
@@ -1424,12 +1398,7 @@ export class OpenFormStep extends Step {
       const fields_without_dependencies = this.#defaults_on_update.filter(({ name }) => !fields_with_dependencies.has(name));
       await Promise.allSettled(fields_without_dependencies.map(async field => {
         try {
-          await this.#getDefaultExpression({
-            field,
-            feature:      this.#form.feature,
-            qgs_layer_id: this.#form.layer.getId(),
-            parentData:   this.#form.parentData
-          });
+          await this.#getDefaultExpression(field);
         } catch(e) {
           console.warn(e);
         }
