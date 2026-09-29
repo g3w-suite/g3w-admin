@@ -104,23 +104,6 @@ export class OpenFormStep extends Step {
   }
 
   /**
-   * Enables or disables multi-feature editing.
-   *
-   * @param {boolean} [bool=false] Whether multiple features can be edited.
-   * @returns {void}
-   */
-  updateMulti(bool = false) {
-    this.#multi = bool;
-  }
-
-  /**
-   * @returns {boolean} Whether the save-all action is available.
-   */
-  hasSaveAll() {
-    return !!this.#saveAll;
-  }
-
-  /**
    * @returns {boolean} Whether this step edits multiple features.
    */
   hasMulti() {
@@ -304,7 +287,6 @@ export class OpenFormStep extends Step {
         name:               layerName,
         crumb:              { title: layerName },
         id:                 `form_${layerName}`,
-        dataid:             layerName,
         layer:              inputs.layer,
         isnew:              this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
         parentData:         getParentFormData(),
@@ -487,7 +469,7 @@ export class OpenFormStep extends Step {
           components: { G3wFormInputs },
           computed: {
             enableSave()      { return this.state.valid && this.state.update; },
-            hasSaveAll()      { return SELF.hasSaveAll(); },
+            hasSaveAll()      { return SELF.#saveAll; },
             isChild()         { return Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable')) },
             saveAllDisabled() {
               return !(Tool.Stack.items
