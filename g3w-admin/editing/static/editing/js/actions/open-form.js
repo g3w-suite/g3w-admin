@@ -100,7 +100,6 @@ export class OpenFormStep extends Step {
    */
   #originalFeatures;
 
-  #bus;
   #form;
   #filter_expression_fields_dependencies;
   #default_expression_fields_dependencies;
@@ -182,11 +181,12 @@ export class OpenFormStep extends Step {
    * @returns {Promise<*>} Resolves when the form is saved or closed, and rejects when the form is cancelled.
    */
   async run(inputs, context) {
-    this.#bus = new Vue();
     this.#form = null;
-    this.#filter_expression_fields_dependencies = {};
+
+    this.#filter_expression_fields_dependencies  = {};
     this.#default_expression_fields_dependencies = {};
-    this.#default_expression_fields_on_update = [];
+    this.#default_expression_fields_on_update    = [];
+
     GUI.setModal(true);
     // Nested forms can be forced by the caller, otherwise infer nesting from the tool stack.
     this.#isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
@@ -239,10 +239,7 @@ export class OpenFormStep extends Step {
       const unique_values = fields
         // Exclude non-editable primary keys from unique-value handling.
         .filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique))
-        .map(field => ({
-          field,
-          _value: this.getFeatures()[0].get(field.name),
-        }));
+        .map(field => ({ field, _value: this.getFeatures()[0].get(field.name) }));
 
       unique_values.forEach(({ _value, field }) => {
         // Read the values already used by the editing layer.
@@ -320,23 +317,255 @@ export class OpenFormStep extends Step {
       const SELF = this;
 
       this.#form = new Component({
-        feature:         this.getOriginalFeatures()[0].clone(),
-        title:           "plugins.editing.editing_attributes",
-        name:            layerName,
-        crumb:           { title: layerName },
-        id:              `form_${layerName}`,
-        dataid:          layerName,
-        layer:           inputs.layer,
-        isnew:           this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
-        parentData:      getParentFormData(),
-        fields:          form_fields,
-        context_inputs:  this.hasMulti() ? false: { context, inputs },
-        formStructure:   inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
-        modal:           true,
-        push:            this._options.push || this.hasChild(),         // Keep nested forms above the parent content.
-        showgoback:      this._options?.showgoback ?? !this.hasChild(), // Child forms use the parent navigation.
-        /** @TODO make it straightforward: `headerComponent` vs `buttons` ? */
-        headerComponent: this.#saveAll && {
+        feature:            this.getOriginalFeatures()[0].clone(),
+        title:              "plugins.editing.editing_attributes",
+        name:               layerName,
+        crumb:              { title: layerName },
+        id:                 `form_${layerName}`,
+        dataid:             layerName,
+        layer:              inputs.layer,
+        isnew:              this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
+        parentData:         getParentFormData(),
+        fields:             form_fields,
+        context_inputs:     this.hasMulti() ? false: { context, inputs },
+        modal:              true,
+        push:               this._options.push || this.hasChild(),         // Keep nested forms above the parent content.
+        showgoback:         this._options?.showgoback ?? !this.hasChild(), // Child forms use the parent navigation.
+        perc:               inputs.layer?.config?.editing?.form?.perc,
+        isCoreFormService:  true,
+        formId:             undefined,
+        force:              { update: this.getOriginalFeatures()[0].isNew(), valid:  false },
+        layerid:            inputs.layer.getId(),
+        loading:            false,
+        components:         [],
+        component:          null,
+        headers:            [],
+        currentheaderid:    null,
+        disabled:           false,
+        valid:              true,
+        update:             this.getOriginalFeatures()[0].isNew(),
+        tovalidate:         {},
+        footer:             {},
+        ready:              false,
+        setReady:           SELF.#setReady.bind(SELF),
+        setUpdate:          SELF.#setUpdate.bind(SELF),
+        setLoading:         SELF.#setLoading.bind(SELF),
+        isValid:            SELF.#isValid.bind(SELF),
+        getState:           SELF.#getState.bind(SELF),
+        getFields:          SELF.#getFields.bind(SELF),
+        getContext:         SELF.#getContext.bind(SELF),
+        getSession:         SELF.#getSession.bind(SELF),
+        getInputs:          SELF.#getInputs.bind(SELF),
+        saveDefaultExpressionFieldsNotDependencies: SELF.#saveDefaultExpressionFieldsNotDependencies.bind(SELF),
+        vueComponentObject: {
+          template: /* html */ `
+            <div class="g3wform_content" style="position: relative">
+              <bar-loader :loading="state.loading" />
+
+              <!-- FORM HEADER -->
+              <div class="g3wform_header box-header with-border" style="display: flex; flex-direction: column">
+                <section class="g3wform_header_content">
+                  <span
+                    v-for       = "header in state.headers"
+                    :key        = "header.id"
+                    style       = "display:flex; justify-content: space-between; align-items: center"
+                    class       = "title"
+                    :style      = "{fontSize: isMobile() && '1em !important'}"
+                    :class      = "[{item_selected: state.currentheaderid === header.id && state.headers.length > 1},[state.headers.length > 1 ? 'tabs' : 'one' ]]"
+                    @click.stop = "clickHeader(header.id)"
+                  >
+                    <span v-if = "header.icon" style = "margin-right: 5px"><i :class = "header.icon"></i></span>
+                    <span v-t:pre = "header.title" class = "g3w-long-text">{{ header.name }}</span>
+                    <component :valid = "state.valid" :update = "state.update" :is = "header.component" />
+                  </span>
+                </section>
+              </div>
+
+              <!-- FORM BODY -->
+              <div class="g3wform_body" ref="g3wform_body">
+                <form v-if = "isRoot" class = "form-horizontal g3w-form">
+                  <div class = "box-primary">
+                    <div class = "box-body">
+                      <template v-if = "form_structure">
+                        <tabs
+                          :layerid          = "state.layerid"
+                          :feature          = "state.feature"
+                          :handleRelation   = "handleRelation"
+                          :contenttype      = "'editing'"
+                          :addToValidate    = "addToValidate"
+                          :changeInput      = "changeInput"
+                          :removeToValidate = "removeToValidate"
+                          :tabs             = "form_structure"
+                          :fields           = "state.fields"
+                        />
+                      </template>
+                      <template v-else>
+                        <g3w-form-inputs
+                          :state            = "state"
+                          :addToValidate    = "addToValidate"
+                          :removeToValidate = "removeToValidate"
+                          :changeInput      = "changeInput"
+                          @changeinput      = "changeInput"
+                          @addinput         = "addToValidate"
+                          @removeinput      = "removeToValidate"
+                        />
+                      </template>
+                    </div>
+                  </div>
+                </form>
+                <keep-alive>
+                  <component v-if = "!isRoot"
+                    :handleRelation   = "handleRelation"
+                    @addtovalidate    = "addToValidate"
+                    @removetovalidate = "removeToValidate"
+                    @changeinput      = "changeInput"
+                    :state            = "state"
+                    :is               = "state.component"
+                  />
+                </keep-alive>
+              </div>
+
+              <!-- FORM FOOTER -->
+              <div class="form-group g3wform_footer">
+                <div v-if = "isRoot" style = "margin:3px; font-weight: bold">
+                  * <span v-t = "'sdk.form.footer.required_fields'"></span>
+                  <div v-if = "state.footer.message" :style = "[state.footer.style]">
+                    {{ state.footer.message }}
+                  </div>
+                </div>
+                <button
+                  v-if                = "isRoot"
+                  class               = "btn btn-success"
+                  :update             = "state.update"
+                  :valid              = "state.valid"
+                  @click.stop.prevent = "saveForm"
+                  v-disabled          = "!enableSave"
+                  v-t                 = "saveButtonTitle"
+                ></button>
+                <button
+                  v-if                = "isRoot && state.update"
+                  class               = "btn btn-danger"
+                  :update             = "state.update"
+                  :valid              = "state.valid"
+                  @click.stop.prevent = "cancelForm"
+                  v-t                 = "'plugins.editing.ignore_changes'"
+                ></button>
+                <button
+                  v-if                = "isRoot && !state.update"
+                  class               = "btn btn-danger"
+                  :update             = "state.update"
+                  :valid              = "state.valid"
+                  @click.stop.prevent = "cancelForm"
+                  v-t                 = "'close'"
+                ></button>
+                <button
+                  v-if               = "!isRoot"
+                  v-t                = "'back'"
+                  class              = "btn skin-button"
+                  @click.stop.prevet = "backToRoot"
+                ></button>
+              </div>
+            </div>
+          `,
+          name: 'g3w-form',
+          data() {
+            return {
+              state:           this.$options.service,
+              switchcomponent: false,
+              isRoot:          true,
+              form_structure:  inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
+            }
+          },
+          transitions: { 'addremovetransition': 'showhide' },
+          components: { G3wFormInputs },
+          computed: {
+            enableSave()      { return this.state.valid && this.state.update; },
+            saveButtonTitle() { return SELF.hasChild() ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" : "plugins.editing.insert_edit"; },
+          },
+          methods: {
+            backToRoot()                               { SELF.#form.component = SELF.#form.components.find(comp => comp.root).component; },
+            handleRelation(relationId)                 { SELF.#handleRelation(relationId); },
+            switchComponent(id)                        { this.switchcomponent = true; SELF.#setCurrentComponentById(id); },
+            clickHeader(id)                            { if (id !== SELF.#form.currentheaderid && SELF.#form.headers.length > 1) { this.switchComponent(id); } },
+            changeInput(input)                         { return SELF.#changeInput(input); },
+            addToValidate(input)                       { SELF.#addToValidate(input); },
+            removeToValidate(input)                    { SELF.#removeToValidate(input); },
+            saveForm()                                 { SELF.#saveForm.bind(SELF, { context, inputs, resolve }); },
+            cancelForm()                               { SELF.#cancelForm.bind(SELF, { inputs, reject }); }
+          },
+          watch: {
+            'state.component'(comp) { this.isRoot = comp === SELF.#form.components.find(c => c.root).component; },
+          },
+          async updated() {
+            await this.$nextTick();
+            if (this.switchcomponent) { setTimeout(() => this.switchcomponent = false, 0) }
+          },
+          mounted() {
+            SELF.#isValid();
+            SELF.#setReady(true);
+          },
+        },
+      });
+
+      this.#form.fields.forEach(field => {
+
+        // Register filter dependencies and load initial values for expression-enabled fields.
+        if (field.input?.options?.filter_expression) {
+          (new Set([
+            ...(field.input?.options?.filter_expression?.referenced_columns || []),
+            ...(field.input?.options?.filter_expression?.referencing_fields || [])
+          ])).forEach(name => {
+            if (undefined === SELF.#filter_expression_fields_dependencies[name]) {
+              SELF.#filter_expression_fields_dependencies[name] = [];
+            }
+            SELF.#filter_expression_fields_dependencies[name].push(field.name);
+          });
+          SELF.#getFilterExpression({
+            parentData:   this.#form.parentData,
+            qgs_layer_id: this.#form.layer.getId(),
+            feature:      this.#form.feature,
+            field,
+          });
+        }
+
+        // Register update dependencies and evaluate defaults for new features.
+        // Existing features register defaults only when they explicitly apply on update.
+        if (field.input?.options?.default_expression && (field.input?.options?.default_expression?.apply_on_update || this.#form.isnew)) {
+          if (field.input?.options?.default_expression?.apply_on_update) {
+            SELF.#default_expression_fields_on_update.push(field);
+            (new Set([
+              ...(field.input?.options?.default_expression?.referenced_columns || []),
+              ...(field.input?.options?.default_expression?.referencing_fields || [])
+            ])).forEach(name => {
+              if (undefined === SELF.#default_expression_fields_dependencies[name]) {
+                SELF.#default_expression_fields_dependencies[name] = [];
+              }
+              SELF.#default_expression_fields_dependencies[name].push(field.name);
+            });
+          }
+          if (this.#form.isnew) {
+            SELF.#getDefaultExpression({
+              field,
+              feature:      this.#form.feature,
+              qgs_layer_id: this.#form.layer.getId(),
+              parentData:   this.#form.parentData,
+            });
+          }
+        }
+      });
+
+      // Evaluate filters once so dependent input options are populated initially.
+      Object
+        .keys(SELF.#filter_expression_fields_dependencies)
+        .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
+
+      const COMP = (await import('../components/relation.js')).default;
+
+      this.#form.headers.push({
+        title:     this.#form.title,
+        name:      this.#form.name,
+        id:        this.#form.id,
+        component: this.#saveAll && {
           template: /* html */ `
             <section class = "editing-save-all-form" style = "display: flex;">
               <div
@@ -482,407 +711,37 @@ export class OpenFormStep extends Step {
                 }
               }
             },
-          },
-          buttons:         [
-            {
-              id:    'save',
-              title:  this.hasChild()
-                ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" // get custom back label from parent
-                : "plugins.editing.insert_edit",
-              type:  "save",
-              class: "btn-success",
-              // Apply the form values to the staged features.
-              cbk: async (fields = []) => {
-                const service    = Tool.Stack.current.getContext().service;
-                const hasUpdates = !!service?.state?.fields?.some(f => f.update);    // Detect changed fields.
-                const isNew      = !!this.getOriginalFeatures()?.some(f => f.isNew?.()); // New features must be saved even without field updates.
-                const newFeatures = [];
-
-                fields = this.hasMulti() ? fields.filter(f => null !== f.value) : fields;
-
-                // Avoid emitting a save for an unchanged existing feature.
-                if (0 === fields.length || (!isNew && !hasUpdates)) {
-                  resolve(inputs);
-                  return;
-                }
-
-                GUI.setLoadingContent(true);
-                GUI.disableContent(true);
-
-                await service.saveDefaultExpressionFieldsNotDependencies();
-
-                this.getFeatures().forEach(f => {
-                  this.#setFieldsWithValues(f, fields);
-                  newFeatures.push(f.clone());
-                });
-
-                if (this.hasChild()) {
-                  inputs.relationFeatures = {
-                    newFeatures,
-                    originalFeatures: this.getOriginalFeatures()
-                  };
-                }
-
-                await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this.getOriginalFeatures() });
-
-                newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.getLayerId(), f, this.getOriginalFeatures()[i]));
-
-                // Update any editable child feature represented by a 1:1 join field.
-                await this.#handleRelation1_1LayerFields({
-                  layerId:  this.getLayerId(),
-                  features: newFeatures,
-                  fields,
-                  task:     this,
-                });
-
-                GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                GUI.getPlugin('editing').emit(`savedfeature_${this.getLayerId()}`, newFeatures); // called after saved using layerId
-
-                // Mark parent forms as changed when a child form is saved.
-                if (this.hasChild()) {
-                  Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
-                }
-
-                GUI.setLoadingContent(false);
-                GUI.disableContent(false);
-
-                resolve(inputs);
-              }
-            },
-            {
-              id:    'cancel',
-              title: "plugins.editing.ignore_changes",
-              type:  "cancel",
-              class: "btn-danger",
-              // Show a dedicated close action when the form has no unsaved changes.
-              eventButtons: {
-                update: {
-                  false : {
-                    id:    'close',
-                    title: "close",
-                    type:  "cancel",
-                    class: "btn-danger",
-                  }
-                }
-              },
-              cbk: () => {
-                if (this.#saveAllError) {
-                  [...Tool.Stack.items]
-                    .reverse()
-                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll()) // Keep only tools that own a save-all step.
-                    .map( t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo())
-                }
-                GUI.getPlugin('editing').emit('cancelform', inputs.features); // Notify listeners before rejecting the form promise.
-                reject(inputs);
-              }
-            }
-          ],
-        perc:               inputs.layer?.config?.editing?.form?.perc,
-        isCoreFormService:  true,
-        formId:             undefined,
-        force: {
-          update: this.getOriginalFeatures()[0].isNew(),
-          valid:  false
-        },
-        layerid:              inputs.layer.getId(),
-        loading:              false,
-        components:           [],
-        disabledcomponents:   [],
-        component:            null,
-        headers:              [],
-        currentheaderid:      null,
-        disabled:             false,
-        valid:                true,
-        update:               this.getOriginalFeatures()[0].isNew(),
-        tovalidate:           {},
-        componentstovalidate: {},
-        footer:               {},
-        ready:                false,
-        setReady:                             SELF.#setReady.bind(SELF),
-        changeInput:                          SELF.#changeInput.bind(SELF),
-        setUpdate:                            SELF.#setUpdate.bind(SELF),
-        setLoading:                           SELF.#setLoading.bind(SELF),
-        setValidComponent:                    SELF.#setValidComponent.bind(SELF),
-        isValid:                              SELF.#isValid.bind(SELF),
-        addComponents:                        SELF.#addComponents.bind(SELF),
-        addComponent:                         SELF.#addComponent.bind(SELF),
-        disableComponent:                     SELF.#disableComponent.bind(SELF),
-        setCurrentComponentById:              SELF.#setCurrentComponentById.bind(SELF),
-        setRootComponent:                     SELF.#setRootComponent.bind(SELF),
-        isRootComponent:                      SELF.#isRootComponent.bind(SELF),
-        getComponentById:                     SELF.#getComponentById.bind(SELF),
-        addToValidate:                        SELF.#addToValidate.bind(SELF),
-        removeToValidate:                     SELF.#removeToValidate.bind(SELF),
-        getState:                             SELF.#getState.bind(SELF),
-        getFields:                            SELF.#getFields.bind(SELF),
-        getEventBus:                          SELF.#getEventBus.bind(SELF),
-        getContext:                           SELF.#getContext.bind(SELF),
-        getSession:                           SELF.#getSession.bind(SELF),
-        getInputs:                            SELF.#getInputs.bind(SELF),
-        handleRelation:                       SELF.#handleRelation.bind(SELF),
-        saveDefaultExpressionFieldsNotDependencies: SELF.#saveDefaultExpressionFieldsNotDependencies.bind(SELF),
-        vueComponentObject: {
-          template: /* html */ `
-            <div class="g3wform_content" style="position: relative">
-              <bar-loader :loading="state.loading" />
-
-              <!-- FORM HEADER -->
-              <div class="g3wform_header box-header with-border" style="display: flex; flex-direction: column">
-                <section class="g3wform_header_content">
-                  <span
-                    v-for       = "header in state.headers"
-                    :key        = "header.id"
-                    style       = "display:flex; justify-content: space-between; align-items: center"
-                    class       = "title"
-                    :style      = "{fontSize: isMobile() && '1em !important'}"
-                    :class      = "[{item_selected: state.currentheaderid === header.id && state.headers.length > 1},[state.headers.length > 1 ? 'tabs' : 'one' ]]"
-                    @click.stop = "clickHeader(header.id)"
-                  >
-                    <span v-if = "header.icon" style = "margin-right: 5px"><i :class = "header.icon"></i></span>
-                    <span v-t:pre = "header.title" class = "g3w-long-text">{{ header.name }}</span>
-                    <component :valid = "state.valid" :update = "state.update" :is = "header.component" />
-                  </span>
-                </section>
-              </div>
-
-              <!-- FORM BODY -->
-              <div class="g3wform_body" ref="g3wform_body">
-                <component
-                  v-for   = "(component, index) in body.components.before"
-                  :key    = "'before_' + index"
-                  :fields = "state.fields"
-                  :is     = "component"
-                />
-                <template v-if = "'g3w-form-body' === state.component">
-                  <form class = "form-horizontal g3w-form">
-                    <div class = "box-primary">
-                      <div class = "box-body">
-                        <template v-if = "state.formstructure">
-                          <tabs
-                            :layerid          = "state.layerid"
-                            :feature          = "state.feature"
-                            :handleRelation   = "handleRelation"
-                            :contenttype      = "'editing'"
-                            :addToValidate    = "addToValidate"
-                            :changeInput      = "changeInput"
-                            :removeToValidate = "removeToValidate"
-                            :tabs             = "state.formstructure"
-                            :fields           = "state.fields"
-                          />
-                        </template>
-                        <template v-else>
-                          <g3w-form-inputs
-                            :state            = "state"
-                            :addToValidate    = "addToValidate"
-                            :removeToValidate = "removeToValidate"
-                            :changeInput      = "changeInput"
-                            @changeinput      = "changeInput"
-                            @addinput         = "addToValidate"
-                            @removeinput      = "removeToValidate"
-                          />
-                        </template>
-                      </div>
-                    </div>
-                  </form>
-                </template>
-                <keep-alive>
-                  <component v-if = "'g3w-default-form-body' !== state.component"
-                    :handleRelation   = "handleRelation"
-                    @addtovalidate    = "addToValidate"
-                    @removetovalidate = "removeToValidate"
-                    @changeinput      = "changeInput"
-                    :state            = "state"
-                    :is               = "state.component"
-                  />
-                </keep-alive>
-                <component
-                  v-for   = "(component, index) in body.components.after"
-                  :key    = "'after_' + index"
-                  :fields = "state.fields"
-                  :is     = "component"
-                />
-              </div>
-
-              <!-- FORM FOOTER -->
-              <div class="form-group g3wform_footer">
-                <div v-if = "showFooter" style = "margin:3px; font-weight: bold">
-                  * <span v-t = "'sdk.form.footer.required_fields'"></span>
-                  <div v-if = "state.footer.message" :style = "[state.footer.style]">
-                    {{ state.footer.message }}
-                  </div>
-                </div>
-                <button
-                  v-if                = "showFooter"
-                  v-for               = "button in state.buttons"
-                  :key                = "button.id"
-                  class               ="btn "
-                  :class              = "[button.class]"
-                  :update             = "state.update"
-                  :valid              = "state.valid"
-                  @click.stop.prevent = "exec(button.cbk)"
-                  v-disabled          = "!btnEnabled(button)"
-                  v-t                 = "button.title"
-                >
-                </button>
-                <button
-                  v-if               = "!showFooter"
-                  v-t                = "'back'"
-                  class              = "btn skin-button"
-                  @click.stop.prevet ="backToRoot"
-                ></button>
-              </div>
-            </div>
-          `,
-          name: 'g3w-form',
-          data() {
-            return {
-              state:           this.$options.service,
-              originalbuttons: this.$options.service.buttons.map(button => ({ ...button })),
-              switchcomponent: false,
-              showFooter:      true,
-              body:            { components: { before: [], after: [] }
-              }
-            }
-          },
-          transitions: { 'addremovetransition': 'showhide' },
-          components: { G3wFormInputs },
-          computed: {
-            enableSave()                               { return this.state.valid && this.state.update; }
-          },
-          methods: {
-            isRootComponent(component)                 { return SELF.#isRootComponent(component); },
-            backToRoot()                               { SELF.#setRootComponent(); },
-            handleRelation(relationId)                 { SELF.#form.handleRelation(relationId); },
-            disableComponent({ id, disabled = false }) { SELF.#disableComponent({ id, disabled }); },
-            switchComponent(id)                        { this.switchcomponent = true; SELF.#setCurrentComponentById(id); },
-            clickHeader(id)                            { if (id !== SELF.#form.currentheaderid && SELF.#form.headers.length > 1) { this.switchComponent(id); } },
-            exec(cbk)                                  { cbk instanceof Function ? cbk(SELF.#form.fields) : SELF.#form.fields; },
-            btnEnabled(button)                         { return (button.enabled ?? true) && ('save' !== button.type || ('save' === button.type && this.enableSave)); },
-            changeInput(input)                         { return SELF.#changeInput(input); },
-            addToValidate(input)                       { SELF.#addToValidate(input); },
-            removeToValidate(input)                    { SELF.#removeToValidate(input); },
-          },
-          watch: {
-            'state.component'(component) {
-              this.showFooter = SELF.#isRootComponent(component);
-            },
-            'state.update': {
-              immediate: true,
-              handler(value) {
-                this.state.buttons.find((button, index) => {
-                  if (button?.eventButtons?.update?.[value]) {
-                    this.state.buttons.splice(index, 1, { ...button, ...button.eventButtons.update[value] });
-                  } else if(button?.eventButtons?.update) {
-                    this.state.buttons.splice(index, 1, this.originalbuttons[index]);
-                  }
-                });
-              }
-            }
-          },
-          async updated() {
-            await this.$nextTick();
-            if (this.switchcomponent) { setTimeout(() => this.switchcomponent = false, 0) }
-          },
-          created() {
-            SELF.#bus.$on('addtovalidate', this.addToValidate);
-          },
-          mounted() {
-            SELF.#isValid();
-            SELF.#setReady(true);
-          },
-          beforeDestroy() {
-            SELF.#bus.$off('addtovalidate');
           }
-        },
       });
 
-      this.#form.fields.forEach(field => {
-        const { options = {} } = field.input;
+      this.#form.currentheaderid = this.#form.id;
+      this.#form.components.push(this.#form.headers.at(-1));
 
-        // Register filter dependencies and load initial values for expression-enabled fields.
-        const { filter_expression } = options;
-        if (filter_expression) {
-          const {
-            referencing_fields = [],
-            referenced_columns = []
-          } = filter_expression;
+      // Add editable child relations; 1:1 relations are handled by field watchers.
+      getRelationsInEditingByFeature({
+        layerId,
+        relations: this.hasMulti() ? [] : inputs.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === layerId),
+        feature:   this.hasMulti() ? false : inputs.features[inputs.features.length - 1],
+      })
+        .map(({ relation, relations }) => ({
+          title:     "plugins.editing.edit_relation",
+          name:      relation.name,
+          id:        relation.id,
+          header:    false,            // Relation forms provide their own content header.
+          component: Vue.extend({
+            mixins: [ COMP ],
+            name: `relation_${Date.now()}`,
+            data() {
+              return { layerId, relation, relations };
+            },
+          }),
+        }))
+        .filter(comp => comp)
+        .forEach(comp => {
+          this.#form.components.push(comp);
+        });
 
-          const dependency_fields = new Set([
-            ...referenced_columns,
-            ...referencing_fields
-          ]);
-
-          dependency_fields.forEach(name => {
-            if (undefined === SELF.#filter_expression_fields_dependencies[name]) {
-              SELF.#filter_expression_fields_dependencies[name] = [];
-            }
-            SELF.#filter_expression_fields_dependencies[name].push(field.name);
-          });
-
-          SELF.#getFilterExpression({
-            parentData:   this.#form.parentData,
-            qgs_layer_id: this.#form.layer.getId(),
-            feature:      this.#form.feature,
-            field,
-          });
-        }
-
-        // Register update dependencies and evaluate defaults for new features.
-        const { default_expression } = options;
-        if (default_expression) {
-          const {
-            referencing_fields = [],
-            referenced_columns = [],
-            apply_on_update    = false,
-          } = default_expression;
-
-          // Existing features register defaults only when they explicitly apply on update.
-          if (apply_on_update || this.#form.isnew) {
-            if (apply_on_update) {
-              SELF.#default_expression_fields_on_update.push(field);
-
-              new Set([
-                ...referenced_columns,
-                ...referencing_fields
-              ]).forEach(name => {
-                if (undefined === SELF.#default_expression_fields_dependencies[name]) {
-                  SELF.#default_expression_fields_dependencies[name] = [];
-                }
-                SELF.#default_expression_fields_dependencies[name].push(field.name);
-              });
-            }
-
-            if (this.#form.isnew) {
-              SELF.#getDefaultExpression({
-                field,
-                feature:      this.#form.feature,
-                qgs_layer_id: this.#form.layer.getId(),
-                parentData:   this.#form.parentData,
-              });
-            }
-          }
-        }
-      });
-
-      // Evaluate filters once so dependent input options are populated initially.
-      Object
-        .keys(SELF.#filter_expression_fields_dependencies)
-        .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
-
-      if (this.#form.layer && this.#form.formStructure) {
-        this.#form.formstructure = this.#form.layer.getLayerEditingFormStructure();
-      }
-
-      this.#form.addComponents([{
-        id:              this.#form.id,
-        title:           this.#form.title,
-        name:            this.#form.name,
-        root:            true,
-        component:       'g3w-form-body',
-        headerComponent: this.#form.headerComponent
-      }]);
-
-      this.#form.component = 'g3w-form-body';
+      this.#form.component = this.#form.id;
 
       GUI.setContent({
         perc:       this.#form.perc,
@@ -894,39 +753,12 @@ export class OpenFormStep extends Step {
         closable:   false
       });
 
-      const COMP = (await import('../components/relation.js')).default;
-
-      this.#form.addComponents([
-        // Add layer-specific custom components.
-        ...(GUI.getPlugin('editing').state.formComponents[layerId] || []),
-        // Add editable child relations; 1:1 relations are handled by field watchers.
-        ...getRelationsInEditingByFeature({
-          layerId,
-          relations: this.hasMulti() ? [] : inputs.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === layerId),
-          feature:   this.hasMulti() ? false : inputs.features[inputs.features.length - 1],
-        }).map(({ relation, relations }) => ({
-          title:     "plugins.editing.edit_relation",
-          name:      relation.name,
-          id:        relation.id,
-            header:    false,            // Relation forms provide their own content header.
-          component: Vue.extend({
-            mixins: [ COMP ],
-            name: `relation_${Date.now()}`,
-            data() {
-              return { layerId, relation, relations };
-            },
-          }),
-        }))
-      ]);
-
       // Notify consumers that the form is ready.
-      GUI.getPlugin('editing').emit('openform',
-        {
-          layerId: this.getLayerId(),
-          feature: this.getOriginalFeatures()[0],
-          formService: this.#form
-        }
-      );
+      GUI.getPlugin('editing').emit('openform', {
+        layerId: this.getLayerId(),
+        feature: this.getOriginalFeatures()[0],
+        formService: this.#form
+      });
 
       // Attach the service when this step is running without a tool wrapper.
       Tool.Stack?.current?.setContextService?.(this.#form);
@@ -1000,7 +832,7 @@ export class OpenFormStep extends Step {
                   const field    = form_fields.find(f => fn === f.name);
                   field.editable = locked ? false : editable_fields[fn];                                       // Restore editability for each joined child field.
                   field.value    = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null; // Missing or new children expose empty joined values.
-                  this.#form.changeInput(field);                                                              // Let the form service recalculate dependent/default values.
+                  this.#changeInput(field);                                                                    // Let the form service recalculate dependent/default values.
                 });
 
                 // Restore the field state after the lookup completes.
@@ -1462,6 +1294,71 @@ export class OpenFormStep extends Step {
     );
   }
 
+  async #saveForm({ context, inputs, resolve } = {}, fields = []) {
+    const service    = Tool.Stack.current.getContext().service;
+    const hasUpdates = !!service?.state?.fields?.some(f => f.update);
+    const isNew      = !!this.getOriginalFeatures()?.some(f => f.isNew?.());
+    const newFeatures = [];
+
+    fields = this.hasMulti() ? fields.filter(f => null !== f.value) : fields;
+
+    if (0 === fields.length || (!isNew && !hasUpdates)) {
+      resolve(inputs);
+      return;
+    }
+
+    GUI.setLoadingContent(true);
+    GUI.disableContent(true);
+
+    await service.saveDefaultExpressionFieldsNotDependencies();
+
+    this.getFeatures().forEach(f => {
+      this.#setFieldsWithValues(f, fields);
+      newFeatures.push(f.clone());
+    });
+
+    if (this.hasChild()) {
+      inputs.relationFeatures = {
+        newFeatures,
+        originalFeatures: this.getOriginalFeatures()
+      };
+    }
+
+    await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this.getOriginalFeatures() });
+
+    newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.getLayerId(), f, this.getOriginalFeatures()[i]));
+
+    await this.#handleRelation1_1LayerFields({
+      layerId:  this.getLayerId(),
+      features: newFeatures,
+      fields,
+      task:     this,
+    });
+
+    GUI.getPlugin('editing').emit('savedfeature', newFeatures);
+    GUI.getPlugin('editing').emit(`savedfeature_${this.getLayerId()}`, newFeatures);
+
+    if (this.hasChild()) {
+      Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+    }
+
+    GUI.setLoadingContent(false);
+    GUI.disableContent(false);
+
+    resolve(inputs);
+  }
+
+  #cancelForm({ inputs, reject } = {}) {
+    if (this.#saveAllError) {
+      [...Tool.Stack.items]
+        .reverse()
+        .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
+        .forEach(t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo());
+    }
+    GUI.getPlugin('editing').emit('cancelform', inputs.features);
+    reject(inputs);
+  }
+
   #setReady(bool = false) {
     this.#form.ready = bool;
   }
@@ -1520,14 +1417,6 @@ export class OpenFormStep extends Step {
   }
 
   /**
-   * Stores a child component validation result and recomputes form validity.
-   */
-  #setValidComponent({ id, valid }) {
-    this.#form.componentstovalidate[id] = valid;
-    this.#isValid();
-  }
-
-  /**
    * Recomputes overall validity from input and child-component validation states.
    */
   #isValid(input) {
@@ -1570,62 +1459,13 @@ export class OpenFormStep extends Step {
         }
       }
     }
-    this.#form.valid = (
-      Object.values(this.#form.tovalidate).reduce((previous, field) => previous && field.validate.valid, true)
-      && Object.values(this.#form.componentstovalidate).reduce((previous, valid) => previous && valid, true)
-    );
-  }
-
-  /**
-   * Adds multiple child components to the form.
-   */
-  #addComponents(components = []) {
-    for (const component of components) {
-      this.#addComponent(component);
-    }
-  }
-
-  #addComponent(component) {
-    if (!component) { return }
-    const { id, title, name, icon, valid, headerComponent, header = true } = component;
-    if (undefined !== valid) {
-      this.#form.componentstovalidate[id] = valid;
-      this.#form.valid = this.#form.valid && valid;
-      this.#bus.$emit('add-component-validate', { id, valid });
-    }
-    if (header) {
-      this.#form.headers.push({ title, name, id, icon, component: headerComponent });
-      this.#form.currentheaderid = this.#form.currentheaderid || id;
-    }
-    this.#form.components.push(component);
-  }
-
-  #disableComponent({ id, disabled } = {}) {
-    if (disabled) { this.#form.disabledcomponents.push(id) }
-    else { this.#form.disabledcomponents = this.#form.disabledcomponents.filter(disableId => id !== disableId) }
+    this.#form.valid = Object.values(this.#form.tovalidate).reduce((previous, field) => previous && field.validate.valid, true);
   }
 
   #setCurrentComponentById(id) {
-    if (!this.#form.disabledcomponents.includes(id)) {
-      this.#form.currentheaderid = id;
-      this.#form.component = this.#form.components.find(component => id === component.id).component;
-      return this.#form.component;
-    }
-  }
-
-  /**
-   * setRootComponent (is form)
-   */
-  #setRootComponent() {
-    this.#form.component = this.#form.components.find(component => component.root).component;
-  }
-
-  #isRootComponent(component) {
-    return component === this.#form.components.find(item => item.root).component;
-  }
-
-  #getComponentById(id) {
-    return this.#form.components.find(component => id === component.id);
+    this.#form.currentheaderid = id;
+    this.#form.component = this.#form.components.find(comp => id === comp.id).component;
+    return this.#form.component;
   }
 
   #addToValidate(input) {
@@ -1640,7 +1480,6 @@ export class OpenFormStep extends Step {
 
   #getState() { return this.#form; }
   #getFields() { return this.#form.fields; }
-  #getEventBus() { return this.#bus; }
   #getContext() { return this.#form.context_inputs.context; }
   #getSession() { return this.#getContext().session; }
   #getInputs() { return this.#form.context_inputs.inputs; }
@@ -1656,7 +1495,7 @@ export class OpenFormStep extends Step {
 
     GUI.setLoadingContent(true);
     await setLayerUniqueFieldValues(this.#form.layer.getRelationById(relation.name).getChild());
-    this.#form.setCurrentComponentById(relation.name);
+    this.#setCurrentComponentById(relation.name);
     GUI.setLoadingContent(false);
   }
 

@@ -59,7 +59,6 @@ new (class extends Plugin {
       message:             null,  // Current plugin message.
       relations:           [],    // Relations involved in editing.
       layers_in_error:     false, // Whether one or more layer configs failed.
-      formComponents:      {},    // Additional form components, keyed by layer id.
       featuresOnClose:     {},    // Changed feature ids to expose when editing closes.
       uniqueFieldsValues:  {},    // Unique field values, keyed by layer and field.
       saveConfig:          {      // Commit behavior and callbacks configured by integrations.
@@ -169,8 +168,6 @@ new (class extends Plugin {
       stopEditing:                      this.stopEditing.bind(this),
       showPanel:                        this.showPanel.bind(this),
       setSaveConfig:                    this.setSaveConfig.bind(this),
-      addFormComponents:                this.addFormComponents.bind(this),
-
     }
   }
 
@@ -1207,19 +1204,6 @@ new (class extends Plugin {
    */
   setSaveConfig({ mode = 'default', cb = {}, modal = false, messages } = {}) {
     Object.assign(this.state.saveConfig, { mode, modal, messages, cb: { ...this.state.saveConfig.cb, ...cb } });
-  }
-
-  /**
-   * Add custom components to a layer editing form.
-   *
-   * @param {Object} options
-   * @param {string} options.layerId Layer identifier.
-   * @param {Array<Object>} [options.components=[]] Components to register.
-   *
-   * @returns {void}
-   */
-  addFormComponents({ layerId, components = [] } = {}) {
-    this.state.formComponents[layerId] = (this.state.formComponents[layerId] || []).concat(components);
   }
 
   /**
