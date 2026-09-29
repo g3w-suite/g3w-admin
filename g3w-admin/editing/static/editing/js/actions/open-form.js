@@ -652,87 +652,7 @@ export class OpenFormStep extends Step {
       Tool.Stack?.current?.setContextService?.(this.#form);
 
       // Watch changes to fields backed by 1:1 relations.
-      (async () => {
-        const unwatches = []; // Functions that remove the registered Vue watchers.
-
-        // Inspect every 1:1 relation declared by the current layer.
-        for (const relation of getCatalogLayerById(this.getLayerId()).getRelations().getArray().filter(r => 'ONE' === r.getType())) {
-
-          const child_id        = relation.getChild();
-          const father_field    = relation.getFatherField();
-          const locked_features = {}; // Cache lookup results by parent-field value.
-
-          // Do not require the field itself to be editable: default expressions and
-          // other editing tools can still change its value.
-          const father_form = form_fields.find(f => father_field.includes(f.name));
-
-          // Skip relations without a form field or an editable child layer.
-          if (!(father_form && GUI.getPlugin('editing').getLayerById(child_id))) {
-            return unwatches;
-          }
-
-          // Preserve the original editability of joined child fields.
-          const editable_fields = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
-            .filter(f => f.vectorjoin_id && relation.getId() === f.vectorjoin_id)
-            .reduce((accumulator, field) => {
-              const formField             = form_fields.find(f => field.name === f.name);
-              accumulator[formField.name] = formField.editable;
-              return accumulator;
-            }, {});
-
-          father_form.input.options.loading.state = 'loading';
-          locked_features[father_form.value]      = await this.#getRelation1_1ChildFeature({ relation, father_form }); // Resolve and cache the current child feature.
-          father_form.input.options.loading.state = null;
-
-          // A server-side feature is locked and its joined fields cannot be edited.
-          if (locked_features[father_form.value].locked) {
-            Object.keys(editable_fields).forEach(fn => form_fields.find(f => fn === f.name).editable = false);
-          }
-
-          // Resolve future parent-key changes lazily through a Vue watcher.
-          unwatches.push(
-            Vue.$watch(
-              () => father_form.value,
-              async value => {
-
-                // Empty keys do not identify a child feature.
-                if (!value) {
-                  father_form.input.options.loading.state = null;
-                  father_form.editable                    = true;
-                  return;
-                }
-
-                father_form.editable                    = false;     // Prevent changes during lookup.
-                father_form.input.options.loading.state = 'loading'; // Show the field loader.
-                
-                // Resolve the child only once for each parent-key value.
-                if (undefined === locked_features[father_form.value]) {
-                  try {
-                    locked_features[father_form.value] = await this.#getRelation1_1ChildFeature({ relation, father_form });
-                  } catch(e) {
-                    console.warn(e);
-                  }
-                }
-
-                const { feature, locked } = locked_features[father_form.value];
-
-                Object.keys(editable_fields).forEach(fn => {
-                  const field    = form_fields.find(f => fn === f.name);
-                  field.editable = locked ? false : editable_fields[fn];                                       // Restore editability for each joined child field.
-                  field.value    = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null; // Missing or new children expose empty joined values.
-                  this.#changeInput(field);                                                                    // Let the form service recalculate dependent/default values.
-                });
-
-                // Restore the field state after the lookup completes.
-                father_form.input.options.loading.state = null;
-                father_form.editable                    = true;
-              }
-            )
-          );
-        }
-
-        return unwatches;
-      })().then(d => this.#unwatches = d);
+      this.#watchRelation1_1Fields(form_fields);
 
       if (!this.hasChild()) {
         GUI.disableSideBar(true);
@@ -1319,6 +1239,76 @@ export class OpenFormStep extends Step {
     if (!tool.runOnce) {
       tool.start();
     }
+  }
+
+  async #watchRelation1_1Fields(form_fields) {
+    const unwatches = [];
+
+    for (const relation of getCatalogLayerById(this.getLayerId()).getRelations().getArray().filter(r => 'ONE' === r.getType())) {
+      const child_id        = relation.getChild();
+      const father_field    = relation.getFatherField();
+      const locked_features = {};
+      const father_form     = form_fields.find(f => father_field.includes(f.name));
+
+      if (!(father_form && GUI.getPlugin('editing').getLayerById(child_id))) {
+        this.#unwatches = unwatches;
+        return unwatches;
+      }
+
+      const editable_fields = (GUI.getPlugin('editing').getToolBoxById(relation.getFather()).state.fields || [])
+        .filter(f => f.vectorjoin_id && relation.getId() === f.vectorjoin_id)
+        .reduce((accumulator, field) => {
+          const formField             = form_fields.find(f => field.name === f.name);
+          accumulator[formField.name] = formField.editable;
+          return accumulator;
+        }, {});
+
+      father_form.input.options.loading.state = 'loading';
+      locked_features[father_form.value]      = await this.#getRelation1_1ChildFeature({ relation, father_form });
+      father_form.input.options.loading.state = null;
+
+      if (locked_features[father_form.value].locked) {
+        Object.keys(editable_fields).forEach(fn => form_fields.find(f => fn === f.name).editable = false);
+      }
+
+      unwatches.push(
+        Vue.$watch(
+          () => father_form.value,
+          async value => {
+            if (!value) {
+              father_form.input.options.loading.state = null;
+              father_form.editable                    = true;
+              return;
+            }
+
+            father_form.editable                    = false;
+            father_form.input.options.loading.state = 'loading';
+
+            if (undefined === locked_features[father_form.value]) {
+              try {
+                locked_features[father_form.value] = await this.#getRelation1_1ChildFeature({ relation, father_form });
+              } catch(e) {
+                console.warn(e);
+              }
+            }
+
+            const { feature, locked } = locked_features[father_form.value];
+
+            Object.keys(editable_fields).forEach(fn => {
+              const field    = form_fields.find(f => fn === f.name);
+              field.editable = locked ? false : editable_fields[fn];
+              field.value    = feature ? feature.get(field.name.replace(relation.getPrefix(), '')) : null;
+              this.#changeInput(field);
+            });
+
+            father_form.input.options.loading.state = null;
+            father_form.editable                    = true;
+          }
+        )
+      );
+    }
+
+    this.#unwatches = unwatches;
   }
 
   #setReady(bool = false) {
