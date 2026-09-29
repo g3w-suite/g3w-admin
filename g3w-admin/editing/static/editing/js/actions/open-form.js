@@ -1474,3 +1474,39 @@ export class OpenFormStep extends Step {
   }
 
 }
+
+
+document.head.insertAdjacentHTML(
+  'beforeend',
+  /* css */`
+  <style>
+    .g3wform_body                                      { margin-bottom: 10px; overflow-x:hidden; overflow-y: auto; clear:both; margin-bottom: 10px; }
+    .g3wform_body .editbtn                             { padding: 10px; margin: 2px; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1), 0 1px 4px 0 rgba(0,0,0,0.3); border-radius: 30%; display: inline-block; opacity: .4; cursor: not-allowed; }
+    .g3wform_body .editbtn.enabled                     { opacity: 1; cursor: pointer; }
+    .g3wform_body .editbtn.enabled:hover               { background-color: #ddd; }
+    .g3wform_body .editbtn.enabled.toggled             { background-color: #ddd; }
+    .g3wform_body .form-group                          { margin-bottom: 5px; }
+    .g3wform_body .form_editing_relation_input         { position: relative; font-size: 1.2em; font-weight: bold; width: 100%; padding: 10px; }
+    .g3wform_body .divider                             { display: block; position: relative; padding: 0; margin: 5px auto; height: 0; width: 100%; max-height: 0; font-size: 1px; line-height: 0; clear: both; border: none; border-bottom: 1px solid rgba(122, 122, 122, 0.1); }
+
+    .g3wform_content:last-of-type                      { display: flex !important; flex-direction: column; }
+    .g3wform_footer                                    { text-align: center; position: sticky; bottom: 0; margin-top: auto; width: 100%; background-color: #ededed; }
+    .g3wform_footer button                             { font-weight: bold; margin: 5px; min-width: 80px; }
+    .g3wform_header                                    { display: flex; justify-content: space-between; background-color: #fff; }
+    .g3wform_header .title                             { flex-grow: 1; flex-shrink: 1; flex-basis: 0; padding: 5px; overflow: hidden; font-weight: bold; font-size: 1.4em; }
+    .g3wform_header .title.tabs                        { border: 1px solid #eee; margin-right: 2px; border-bottom: 0; }
+    .g3wform_header .title.tabs:hover                  { background-color: #ededed; }
+
+    .g3wform_body :is(.g3w-icon, .relation-editbtn),
+    .g3wform_footer .btn-add,
+    .g3wform_footer .link,
+    .g3wform_body form .box-primary                    { border-top-color: var(--skin-color); }
+    .g3wform_body .form-control:focus                  { border-color: var(--skin-color); }
+    .g3wform_body .relation-editbtn                    { border: 2px solid var(--skin-color); }
+
+    .g3wform_header .title                             { color: hsl(from var(--skin-color) h s calc(l + 20)); }
+    .g3wform_header .title.one                         { color: hsl(from var(--skin-color) h s calc(l - 20)); }
+    .g3wform_header .title.tabs:hover                  { border-bottom: 4px solid hsl(from var(--skin-color) h s calc(l + 40)); }
+    .g3wform_header .item_selected                     { color: hsl(from var(--skin-color) h s calc(l - 20)); border-bottom: 3px solid var(--skin-color) !important; }
+  </style>`
+);
