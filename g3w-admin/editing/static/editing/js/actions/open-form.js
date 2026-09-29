@@ -526,8 +526,8 @@ export class OpenFormStep extends Step {
             changeInput(input)                         { return SELF.#changeInput(input); },
             addToValidate(input)                       { SELF.#addToValidate(input); },
             removeToValidate(input)                    { SELF.#removeToValidate(input); },
-            saveForm()                                 { SELF.#saveForm.bind(SELF, { context, inputs, resolve }); },
-            cancelForm()                               { SELF.#cancelForm.bind(SELF, { inputs, reject }); },
+            saveForm()                                 { SELF.#saveForm({ context, inputs, resolve }); },
+            cancelForm()                               { SELF.#cancelForm({ inputs, reject }); },
             saveAll()                                  { SELF.#saveAllForms(); },
             closeForm()                                { SELF.#closeForm(); }
           },
@@ -1160,7 +1160,7 @@ export class OpenFormStep extends Step {
     if (this.#saveAllError) {
       [...Tool.Stack.items]
         .reverse()
-        .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
+        .filter(t => t.getLastStep() instanceof OpenFormStep)
         .forEach(t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo());
     }
     GUI.getPlugin('editing').emit('cancelform', inputs.features);
@@ -1175,7 +1175,7 @@ export class OpenFormStep extends Step {
       await Promise.allSettled(
         [...Tool.Stack.items]
           .reverse()
-          .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
+          .filter(t => t.getLastStep() instanceof OpenFormStep)
           .map(t => new Promise(async (resolve) => {
             const task   = t.getLastStep();
             const fields = t.getContext().service.fields.filter(f => task.hasMulti() ? null !== f.value : true);
@@ -1203,7 +1203,7 @@ export class OpenFormStep extends Step {
       this.#saveAllError = false;
       [...Tool.Stack.items]
         .reverse()
-        .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
+        .filter(t => t.getLastStep() instanceof OpenFormStep)
         .forEach(t => {
           const service = t.getContext().service;
           service.setUpdate(false, { force: false });
