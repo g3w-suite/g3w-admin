@@ -12,6 +12,15 @@ from weasyprint import HTML as WeasyHTML
 from qgis.core import NULL, Qgis, QgsCoordinateReferenceSystem
 from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
 
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiParameter,
+    OpenApiExample,
+    OpenApiResponse,
+    inline_serializer,
+)
+from rest_framework import serializers as _drf_serializers
+
 from base.version import get_version
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.permissions import ProjectPermission
@@ -98,6 +107,26 @@ def layer_raster_view(request, project_type, project_id, layer_name, *args, **kw
     return view(request, *args, **kwargs)
 
 
+@extend_schema(
+    summary='Deploy information',
+    description='Returns the G3W-SUITE version, the list of installed optional '
+                'modules and the runtime environment (Python, Django, QGIS Server).',
+    responses=inline_serializer(
+        name='DeployInfoData',
+        fields={
+            'version': _drf_serializers.CharField(),
+            'modules': _drf_serializers.ListField(child=_drf_serializers.CharField()),
+            'environment': inline_serializer(
+                name='DeployInfoEnvironment',
+                fields={
+                    'python_version': _drf_serializers.CharField(),
+                    'django_version': _drf_serializers.CharField(),
+                    'qgis-server-version': _drf_serializers.CharField(),
+                },
+            ),
+        },
+    ),
+)
 class G3WSUITEInfoAPIView(G3WAPIView):
     """
     General informations about deploy.
@@ -126,6 +155,30 @@ class G3WSUITEInfoAPIView(G3WAPIView):
         return Response(self.results.results)
 
 
+@extend_schema(
+    summary='Evaluate a QGIS expression',
+    description='Evaluate a `QgsExpression` in the context of a project and an '
+                'optional layer/feature form.',
+    parameters=[
+        OpenApiParameter(name='project_id', type=int, location=OpenApiParameter.PATH,
+                         description='Numeric ID of the QGIS project (qdjango).'),
+    ],
+    request=inline_serializer(
+        name='ExpressionEvalRequest',
+        fields={
+            'expression': _drf_serializers.CharField(help_text='QgsExpression text.'),
+            'qgs_layer_id': _drf_serializers.CharField(required=False),
+            'form_data': _drf_serializers.JSONField(required=False, help_text='GeoJSON feature.'),
+            'formatter': _drf_serializers.IntegerField(required=False, default=0),
+            'parent': _drf_serializers.CharField(required=False, allow_null=True),
+            'field_name': _drf_serializers.CharField(required=False, allow_null=True),
+        },
+    ),
+    responses=inline_serializer(
+        name='ExpressionEvalData',
+        fields={'value': _drf_serializers.JSONField()},
+    ),
+)
 class QgsExpressionLayerContextEvalView(G3WAPIView):
     """This POST only API accepts a QgsExpression, a qdjango project_id and optionally a
         QGIS layer id and a GeoJSON feature data and returns the evaluated QgsExpression
@@ -344,6 +397,23 @@ class InterfaceOws(G3WAPIView):
         return Response(self.results.results)
 
 
+@extend_schema(
+    summary='CRS information by EPSG code',
+    parameters=[
+        OpenApiParameter(name='epsg', type=int, location=OpenApiParameter.PATH,
+                         description='EPSG numeric code (e.g. 4326).'),
+    ],
+    responses=inline_serializer(
+        name='CRSInfoData',
+        fields={
+            'epsg': _drf_serializers.IntegerField(),
+            'proj4': _drf_serializers.CharField(),
+            'geographic': _drf_serializers.BooleanField(),
+            'axisinverted': _drf_serializers.BooleanField(),
+            'extent': _drf_serializers.ListField(child=_drf_serializers.FloatField()),
+        },
+    ),
+)
 class CRSInfoAPIView(G3WAPIView):
     """
     API REST service for info about CRS ask by ESPG code
@@ -380,6 +450,21 @@ class CRSInfoAPIView(G3WAPIView):
         return Response(self.results.results)
 
 
+@extend_schema(
+    summary='Render HTML to PDF',
+    description='Renders the provided HTML markup to a PDF document via WeasyPrint and '
+                'streams it back as an attachment.',
+    request=inline_serializer(
+        name='Html2PdfRequest',
+        fields={
+            'html': _drf_serializers.CharField(help_text='Full HTML markup to render.'),
+            'filename': _drf_serializers.CharField(required=False, default='download.pdf'),
+        },
+    ),
+    responses={200: OpenApiResponse(
+        description='PDF binary stream (`Content-Type: application/pdf`).',
+    )},
+)
 class HTML2PDFAPIView(G3WAPIView):
     """
     API REST service for HTML to PDF conversion
@@ -403,6 +488,17 @@ class HTML2PDFAPIView(G3WAPIView):
 
         return response
 
+@extend_schema(
+    summary='Create a short URL',
+    request=inline_serializer(
+        name='ShortURLRequest',
+        fields={'url': _drf_serializers.URLField()},
+    ),
+    responses=inline_serializer(
+        name='ShortURLData',
+        fields={'short_url': _drf_serializers.CharField()},
+    ),
+)
 class ShortURLView(G3WAPIView):
     """ API view to get a short url code """
 
@@ -432,6 +528,15 @@ class ShortURLView(G3WAPIView):
             raise Http404("Short link not found")
 
 
+@extend_schema(
+    summary='Create a permalink code',
+    description='Stores arbitrary JSON state and returns a short permalink code.',
+    request=_drf_serializers.JSONField,
+    responses=inline_serializer(
+        name='PermaLinkData',
+        fields={'permalink_code': _drf_serializers.CharField()},
+    ),
+)
 class PermaLinkView(G3WAPIView):
     """ API view to get a short url code for a permalink """
 
