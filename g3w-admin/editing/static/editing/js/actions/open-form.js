@@ -328,8 +328,6 @@ export class OpenFormStep extends Step {
         footer:             {},
         ready:              false,
         setUpdate:          SELF.#setUpdate.bind(SELF),
-        setLoading:         SELF.#setLoading.bind(SELF),
-        isValid:            SELF.#isValid.bind(SELF),
         getState:           SELF.#getState.bind(SELF),
         getFields:          SELF.#getFields.bind(SELF),
         getContext:         SELF.#getContext.bind(SELF),
@@ -1355,13 +1353,6 @@ export class OpenFormStep extends Step {
   }
 
   /**
-   * Updates the form-level loading state.
-   */
-  #setLoading(bool = false) {
-    this.#form.loading = bool;
-  }
-
-  /**
    * Recomputes overall validity from input and child-component validation states.
    */
   #isValid(input) {
@@ -1422,7 +1413,7 @@ export class OpenFormStep extends Step {
   #getState() { return this.#form; }
   #getFields() { return this.#form.fields; }
   #getContext() { return this.#form.context_inputs.context; }
-  #getSession() { return this.#getContext().session; }
+  #getSession() { return this.#form.context_inputs.context.session; }
   #getInputs() { return this.#form.context_inputs.inputs; }
 
   /**
