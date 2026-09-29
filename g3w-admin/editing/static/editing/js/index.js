@@ -402,8 +402,6 @@ new (class extends Plugin {
 
             },
           });
-
-          return;
         }
       }
 
