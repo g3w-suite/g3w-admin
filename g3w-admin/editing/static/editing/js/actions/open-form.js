@@ -198,8 +198,6 @@ export class OpenFormStep extends Step {
 
       GUI.getPlugin('editing').setCurrentLayout();
 
-      const layerName = inputs.layer.getName();
-
       // Seed child features with the foreign-key values supplied by the parent form.
       if (this.hasChild()) {
         context.fatherValue = context.fatherValue || []; // Relation values are positional arrays.
@@ -209,7 +207,6 @@ export class OpenFormStep extends Step {
         });
       }
 
-      const formLayerId = inputs.layer.getId();
       const fields      = getFieldsWithValues(
         inputs.layer,
         this.getFeatures()[0],
@@ -227,7 +224,7 @@ export class OpenFormStep extends Step {
 
       unique_values.forEach(({ _value, field }) => {
         // Read the values already used by the editing layer.
-        const current_values = GUI.getPlugin('editing').state.uniqueFieldsValues[formLayerId][field.name] || new Set([]);
+        const current_values = GUI.getPlugin('editing').state.uniqueFieldsValues[this.#layerId][field.name] || new Set([]);
         // Null is handled separately because it is not sortable with field values.
         const values = Array.from(current_values).filter(v => null !== v);
         // Preserve the field-specific numeric or lexical ordering.
@@ -245,12 +242,10 @@ export class OpenFormStep extends Step {
         // Update the layer cache after a successful save.
         const savedfeatureFnc = () => {
           unique_values.forEach(({ _value, field }) => {
-            // An unchanged value does not affect the cache.
-            if (_value === field.value) { return; }
             // Update the layer-level set of used values.
-            if (GUI.getPlugin('editing').state.uniqueFieldsValues[formLayerId][field.name]) {
+            if (_value !== field.value && GUI.getPlugin('editing').state.uniqueFieldsValues[this.#layerId][field.name]) {
               // change layer unique field values
-              const values = GUI.getPlugin('editing').state.uniqueFieldsValues[formLayerId][field.name];
+              const values = GUI.getPlugin('editing').state.uniqueFieldsValues[this.#layerId][field.name];
               // Replace the previous value with the new one.
               values.delete(_value);
               values.add(field.value);
@@ -261,8 +256,8 @@ export class OpenFormStep extends Step {
         // Remove the save listener when the form closes without saving.
         const editing = GUI.getPlugin('editing');
 
-        editing.once(`savedfeature_${formLayerId}`, savedfeatureFnc);
-        editing.once(`closeform_${formLayerId}`, () => editing.off(`savedfeature_${formLayerId}`, savedfeatureFnc));
+        editing.once(`savedfeature_${this.#layerId}`, savedfeatureFnc);
+        editing.once(`closeform_${this.#layerId}`, () => editing.off(`savedfeature_${this.#layerId}`, savedfeatureFnc));
       }
 
       const form_fields = this.hasMulti()
@@ -309,9 +304,9 @@ export class OpenFormStep extends Step {
       this.#form = new Component({
         feature:           this.getOriginalFeatures()[0].clone(),
         title:             "plugins.editing.editing_attributes",
-        name:              layerName,
-        crumb:             { title: layerName },
-        id:                `form_${layerName}`,
+        name:              inputs.layer.getName(),
+        crumb:             { title: inputs.layer.getName() },
+        id:                `form_${inputs.layer.getName()}`,
         layer:             inputs.layer,
         isnew:             this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
         parentData,
