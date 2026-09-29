@@ -2,41 +2,24 @@
  * @file Opens and manages the attribute form used by the editing workflow.
  */
 
-import { getParentFormData }                from '../utils/getParentFormData.js';
-import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
-import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
-import { setLayerUniqueFieldValues }        from '../utils/setLayerUniqueFieldValues.js';
-import { getRelationsInEditingByFeature }   from '../utils/getRelationsInEditingByFeature.js';
-import { getFieldsWithValues }              from '../utils/getFieldsWithValues.js';
-import { isPkField }                        from '../utils/isPkField.js';
-import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
+import { getParentFormData }              from '../utils/getParentFormData.js';
+import { getLayersDependencyFeatures }    from '../utils/getLayersDependencyFeatures.js';
+import { getEditingLayerById }            from '../utils/getEditingLayerById.js';
+import { setLayerUniqueFieldValues }      from '../utils/setLayerUniqueFieldValues.js';
+import { getRelationsInEditingByFeature } from '../utils/getRelationsInEditingByFeature.js';
+import { getFieldsWithValues }            from '../utils/getFieldsWithValues.js';
+import { isPkField }                      from '../utils/isPkField.js';
+import { getCatalogLayerById }            from '../utils/getCatalogLayerById.js';
 
-import { Tool }                             from '../g3w-tool.js';
-import { Step }                             from '../g3w-step.js';
-import { Feature }                          from '../g3w-feature.js';
+import { Tool }                           from '../g3w-tool.js';
+import { Step }                           from '../g3w-step.js';
+import { Feature }                        from '../g3w-feature.js';
 
-const GUI                        = g3w.app;
-const ApplicationState           = g3w.app.state;
-const { Component }              = g3w;
-const { XHR }                    = g3w.utils;
-const { G3wFormInputs }          = g3wsdk.gui.vue.Inputs;
-
-/**
- * Sorts string values alphabetically, ignoring letter case.
- *
- * @param {string[]} arr Values to sort. The array is sorted in place.
- * @returns {string[]} The sorted input array.
- */
-const sortAlphabeticallyArray = (arr) => arr.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-
-/**
- * Sorts numeric values in ascending or descending order.
- *
- * @param {number[]} arr Values to sort. The array is sorted in place.
- * @param {boolean} [ascending=true] Whether to sort from smallest to largest.
- * @returns {number[]} The sorted input array.
- */
-const sortNumericArray        = (arr, ascending = true) => arr.sort((a, b) => (ascending ? (a - b) : (b - a)));
+const GUI               = g3w.app;
+const ApplicationState  = g3w.app.state;
+const { Component }     = g3w;
+const { XHR }           = g3w.utils;
+const { G3wFormInputs } = g3wsdk.gui.vue.Inputs;
 
 /**
  * Step responsible for opening an editing form, synchronising its fields and
@@ -188,6 +171,7 @@ export class OpenFormStep extends Step {
     this.#default_expression_fields_on_update    = [];
 
     GUI.setModal(true);
+
     // Nested forms can be forced by the caller, otherwise infer nesting from the tool stack.
     this.#isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
     this.#layerId          = inputs.layer.getId();
@@ -247,14 +231,12 @@ export class OpenFormStep extends Step {
         // Null is handled separately because it is not sortable with field values.
         const values = Array.from(current_values).filter(v => null !== v);
         // Preserve the field-specific numeric or lexical ordering.
-        field.input.options.values = (['integer', 'float', 'bigint'].includes(field.type) ? sortNumericArray : sortAlphabeticallyArray)(values);
+        field.input.options.values = this.#sortUniqueFieldValues(values, field.type);
         if (current_values.has(null)) {
           field.input.options.values.unshift(null);
         }
-
         // Validation stores non-null exclusions as strings.
         current_values.forEach(v => field.validate.exclude_values.add(![null, undefined].includes(v) ? `${v}` : v));
-
         // The current value is valid for the feature being edited.
         field.validate.exclude_values.delete(`${_value}`);
       });
@@ -345,7 +327,6 @@ export class OpenFormStep extends Step {
         tovalidate:         {},
         footer:             {},
         ready:              false,
-        setReady:           SELF.#setReady.bind(SELF),
         setUpdate:          SELF.#setUpdate.bind(SELF),
         setLoading:         SELF.#setLoading.bind(SELF),
         isValid:            SELF.#isValid.bind(SELF),
@@ -546,7 +527,7 @@ export class OpenFormStep extends Step {
           },
           mounted() {
             SELF.#isValid();
-            SELF.#setReady(true);
+            SELF.#form.ready = true;
           },
         },
       });
@@ -904,6 +885,22 @@ export class OpenFormStep extends Step {
       feature,
       locked,
     }
+  }
+
+  /**
+   * Sorts unique field values according to the field type.
+   *
+   * @param {Array} values Values to sort.
+   * @param {string} fieldType Field data type.
+   * @returns {Array} Sorted values.
+   */
+  #sortUniqueFieldValues(values, fieldType) {
+    // sort numeric array
+    if (['integer', 'float', 'bigint'].includes(fieldType)) {
+      return values.sort((a, b) => a - b);
+    }
+    // sort alphanumeric array
+    return values.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   }
 
   /**
@@ -1311,10 +1308,6 @@ export class OpenFormStep extends Step {
     this.#unwatches = unwatches;
   }
 
-  #setReady(bool = false) {
-    this.#form.ready = bool;
-  }
-
   /**
    * Applies an input change, reevaluates dependent expressions and updates form state.
    *
@@ -1416,7 +1409,9 @@ export class OpenFormStep extends Step {
 
   #addToValidate(input) {
     this.#form.tovalidate[input.name] = input;
-    if (this.#form.ready) { this.#isValid(input) }
+    if (this.#form.ready) {
+      this.#isValid(input);
+    }
   }
 
   #removeToValidate(input) {
