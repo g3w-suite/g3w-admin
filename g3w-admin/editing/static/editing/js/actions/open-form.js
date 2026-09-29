@@ -339,8 +339,6 @@ export class OpenFormStep extends Step {
         loading:            false,
         components:         [],
         component:          null,
-        headers:            [],
-        currentheaderid:    null,
         disabled:           false,
         valid:              true,
         update:             this.getOriginalFeatures()[0].isNew(),
@@ -364,20 +362,50 @@ export class OpenFormStep extends Step {
 
               <!-- FORM HEADER -->
               <div class="g3wform_header box-header with-border" style="display: flex; flex-direction: column">
-                <section class="g3wform_header_content">
-                  <span
-                    v-for       = "header in state.headers"
-                    :key        = "header.id"
-                    style       = "display:flex; justify-content: space-between; align-items: center"
-                    class       = "title"
-                    :style      = "{fontSize: isMobile() && '1em !important'}"
-                    :class      = "[{item_selected: state.currentheaderid === header.id && state.headers.length > 1},[state.headers.length > 1 ? 'tabs' : 'one' ]]"
-                    @click.stop = "clickHeader(header.id)"
-                  >
-                    <span v-if = "header.icon" style = "margin-right: 5px"><i :class = "header.icon"></i></span>
-                    <span v-t:pre = "header.title" class = "g3w-long-text">{{ header.name }}</span>
-                    <component :valid = "state.valid" :update = "state.update" :is = "header.component" />
+                <section
+                  v-if  = "hasSaveAll"
+                  class = "g3wform_header_content"
+                  style = "display:flex; justify-content: space-between; align-items: center"
+                >
+                  <span class = "title" :style = "{fontSize: isMobile() && '1em !important'}">
+                    {{ state.name }}
                   </span>
+                  <div class = "editing-save-all-form" style = "display: flex;">
+                    <div
+                      class  = "editing-button"
+                      :style = "{ cursor: saveAllDisabled ? 'not-allowed' : 'pointer' }"
+                      style  = "background-color: #fff; display: flex; justify-content: flex-end; width: 100%;"
+                    >
+                      <span
+                        class               = "save-all-icon"
+                        v-disabled          = "saveAllDisabled"
+                        @click.stop.prevent = "saveAll"
+                      >
+                        <i
+                          class  = "skin-color"
+                          :class = "g3wtemplate.font['save']"
+                          style  = "font-size: 1.8em; padding: 5px; border-radius: 5px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.5); margin: 5px;"
+                        ></i>
+                      </span>
+                    </div>
+                    <div
+                      v-if       = "isChild"
+                      class      = "close-form-button"
+                      :style     = "{ cursor: !saveAllDisabled ? 'not-allowed' : 'pointer' }"
+                      style      = "background-color: #fff; display: flex; justify-content: flex-end; width: 100%;"
+                    >
+                      <span
+                        class               = "save-all-icon skin-color-dark"
+                        v-disabled          = "!saveAllDisabled"
+                        @click.stop.prevent = "closeForm"
+                      >
+                        <i
+                          :class = "g3wtemplate.font['close']"
+                          style  = "font-size: 1.8em; padding: 5px; border-radius: 5px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.5); margin: 5px;"
+                        ></i>
+                      </span>
+                    </div>
+                  </div>
                 </section>
               </div>
 
@@ -480,25 +508,41 @@ export class OpenFormStep extends Step {
           components: { G3wFormInputs },
           computed: {
             enableSave()      { return this.state.valid && this.state.update; },
+            hasSaveAll()      { return SELF.hasSaveAll(); },
+            isChild()         { return Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable')) },
+            saveAllDisabled() {
+              return !(Tool.Stack.items
+                .slice(0, Tool.Stack.length - 1)
+                .every(w => {
+                  const valid = ((w.getContext()?.service?.isCoreFormService) ? w.getContext().service.getState() : {}).valid;
+                  return valid || undefined === valid;
+                })) || !(this.state.valid && this.state.update);
+            },
             saveButtonTitle() { return SELF.hasChild() ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" : "plugins.editing.insert_edit"; },
           },
           methods: {
-            backToRoot()                               { SELF.#form.component = SELF.#form.components.find(comp => comp.root).component; },
+            backToRoot()                               { SELF.#form.component = SELF.#form.id; },
             handleRelation(relationId)                 { SELF.#handleRelation(relationId); },
-            switchComponent(id)                        { this.switchcomponent = true; SELF.#setCurrentComponentById(id); },
-            clickHeader(id)                            { if (id !== SELF.#form.currentheaderid && SELF.#form.headers.length > 1) { this.switchComponent(id); } },
             changeInput(input)                         { return SELF.#changeInput(input); },
             addToValidate(input)                       { SELF.#addToValidate(input); },
             removeToValidate(input)                    { SELF.#removeToValidate(input); },
             saveForm()                                 { SELF.#saveForm.bind(SELF, { context, inputs, resolve }); },
-            cancelForm()                               { SELF.#cancelForm.bind(SELF, { inputs, reject }); }
+            cancelForm()                               { SELF.#cancelForm.bind(SELF, { inputs, reject }); },
+            saveAll()                                  { SELF.#saveAllForms(); },
+            closeForm()                                { SELF.#closeForm(); }
           },
           watch: {
-            'state.component'(comp) { this.isRoot = comp === SELF.#form.components.find(c => c.root).component; },
+            'state.component'(comp) { this.isRoot = comp === SELF.#form.id; },
           },
           async updated() {
             await this.$nextTick();
-            if (this.switchcomponent) { setTimeout(() => this.switchcomponent = false, 0) }
+            if (this.switchcomponent) {
+              setTimeout(() => {
+                this.switchcomponent = false;
+                SELF.#form.component = SELF.#form.components.find(comp => id === comp.id).component;
+                this.switchcomponent = true;
+              }, 0)
+            }
           },
           mounted() {
             SELF.#isValid();
@@ -560,162 +604,6 @@ export class OpenFormStep extends Step {
         .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
 
       const COMP = (await import('../components/relation.js')).default;
-
-      this.#form.headers.push({
-        title:     this.#form.title,
-        name:      this.#form.name,
-        id:        this.#form.id,
-        component: this.#saveAll && {
-          template: /* html */ `
-            <section class = "editing-save-all-form" style = "display: flex;">
-              <div
-                class  = "editing-button"
-                :style = "{ cursor: disabled ? 'not-allowed' : 'pointer' }"
-                style  = "background-color: #fff; display: flex; justify-content: flex-end; width: 100%;"
-              >
-                <span
-                  class               = "save-all-icon"
-                  v-disabled          = "disabled"
-                  @click.stop.prevent = "saveAll"
-                >
-                  <i
-                    class  = "skin-color"
-                    :class = "g3wtemplate.font['save']"
-                    style  = "font-size: 1.8em; padding: 5px; border-radius: 5px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.5); margin: 5px;"
-                  ></i>
-                </span>
-              </div>
-              <div
-                v-if       = "isChild"
-                class      = "close-form-button"
-                :style     = "{ cursor: !disabled ? 'not-allowed' : 'pointer' }"
-                style      = "background-color: #fff; display: flex; justify-content: flex-end; width: 100%;"
-              >
-                <span
-                  class               = "save-all-icon skin-color-dark"
-                  v-disabled          = "!disabled"
-                  @click.stop.prevent = "closeForm"
-                >
-                  <i
-                    :class = "g3wtemplate.font['close']"
-                    style  = "font-size: 1.8em; padding: 5px; border-radius: 5px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.5); margin: 5px;"
-                  ></i>
-                </span>
-              </div>
-            </section>`,
-            name: 'Saveall',
-            /** Values are supplied by the form service. */
-            props: { update: { type: Boolean }, valid: { type: Boolean } },
-            data() {
-              return {
-                enabled: Tool.Stack.items.slice(0, Tool.Stack.length - 1)
-                  .every(w => {
-                    const valid = ((w.getContext()?.service?.isCoreFormService) ? w.getContext().service.getState() : {}).valid;
-                    return valid || undefined === valid;
-                  }),
-                isChild: Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable'))
-              };
-            },
-            computed: {
-              /** @returns {boolean} Whether save-all should be disabled. */
-              disabled() {
-                return !this.enabled || !(this.valid && this.update);
-              },
-            },
-            methods: {
-              setError: (bool = false) => this.#saveAllError = bool,
-              async saveAll() {
-                // Prevent edits while all staged forms are being saved and committed.
-                GUI.setLoadingContent(true);
-                //Disable form
-                GUI.disableContent(true);
-                try {
-                await Promise.allSettled(
-                  [...Tool.Stack.items]
-                    .reverse()
-                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll()) // Keep only tools that own a save-all step.
-                    .map( t => new Promise(async (resolve) => {
-                      const task   = t.getLastStep();
-                      // In multi-edit mode, null values mean "leave this field unchanged".
-                      const fields = t.getContext().service.fields.filter(f => task.hasMulti() ? null !== f.value : true);
-                      await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
-                      task.getFeatures().forEach(f => SELF.#setFieldsWithValues(f, fields));
-                      const newFeatures = task.getFeatures().map(f => f.clone());
-                      // Preserve the parent/child payload for relation forms.
-                      if (task.hasChild()) {
-                        task.getInputs().relationFeatures = { newFeatures, originalFeatures: task.getOriginalFeatures() };
-                      }
-                      await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task.getOriginalFeatures() });
-                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.getLayerId(), f, task.getOriginalFeatures()[i]));
-                      await SELF.#handleRelation1_1LayerFields({ layerId: task.getLayerId(), features: newFeatures, fields, task });
-                      GUI.getPlugin('editing').emit('savedfeature', newFeatures);                 // called after saved
-                      GUI.getPlugin('editing').emit(`savedfeature_${task.getLayerId()}`, newFeatures); // called after saved using layerId
-                      GUI.getPlugin('editing').getToolBoxById(task.getContext().id).saveChanges();
-                      return resolve();
-                    }))
-                )
-                } catch(e) {
-                  console.warn(e);
-                }
-                try {
-                  await GUI.getPlugin('editing').commit({ modal: false });
-                  // The commit succeeded: staged forms no longer need rollback.
-                    this.setError(false);
-                    [...Tool.Stack.items]
-                    .reverse()
-                    .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
-                    .forEach(t => {
-                      const service = t.getContext().service;
-                      // The server now contains the form values.
-                      service.setUpdate(false, { force: false });
-                      const feature = service.feature;
-                      // A newly committed feature is no longer marked as new locally.
-                      if (feature.isNew()) {
-                        feature.state.new    = false;
-                        service.force.update = false;
-                      }
-                      Object.entries(
-                        GUI.getPlugin('editing').getToolBoxById(t.getContext().id).readEditingFeatures()
-                          .find(f => f.getUid() === feature.getUid()) // Find the committed editing copy.
-                          .getProperties() // Synchronise the form fields with it.
-                      )
-                        .forEach(([k, v]) => {
-                          const field = service.getFields().find(f => k === f.name);
-                          // Geometry and other non-form properties are ignored.
-                          if (field) {
-                            field.value = field._value = v;
-                          }
-                        })
-                    })
-                } catch(e) {
-                  // Keep the undo path available when commit fails.
-                  this.setError(true);
-                  console.warn(e);
-                }
-                // Restore the form after the save-all operation completes.
-                GUI.setLoadingContent(false);
-                //enable form
-                GUI.disableContent(false);
-              },
-              /** Stops the active tool and clears the nested tool stack. */
-              async closeForm() {
-                // Stop the active tool before clearing its stack.
-                const tool = GUI.getPlugin('editing').state.toolboxselected.getActiveTool();
-                //stop active tool and wait
-                await tool.stop();
-                //clear all tool stacks
-                Tool.Stack.items.splice(0);
-                // Restart tools that are not one-shot actions.
-                if (!tool.runOnce) {
-                  tool.start();
-                }
-              }
-            },
-          }
-      });
-
-      this.#form.currentheaderid = this.#form.id;
-      this.#form.components.push(this.#form.headers.at(-1));
 
       // Add editable child relations; 1:1 relations are handled by field watchers.
       getRelationsInEditingByFeature({
@@ -1359,6 +1247,80 @@ export class OpenFormStep extends Step {
     reject(inputs);
   }
 
+  async #saveAllForms() {
+    GUI.setLoadingContent(true);
+    GUI.disableContent(true);
+
+    try {
+      await Promise.allSettled(
+        [...Tool.Stack.items]
+          .reverse()
+          .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
+          .map(t => new Promise(async (resolve) => {
+            const task   = t.getLastStep();
+            const fields = t.getContext().service.fields.filter(f => task.hasMulti() ? null !== f.value : true);
+            await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
+            task.getFeatures().forEach(f => this.#setFieldsWithValues(f, fields));
+            const newFeatures = task.getFeatures().map(f => f.clone());
+            if (task.hasChild()) {
+              task.getInputs().relationFeatures = { newFeatures, originalFeatures: task.getOriginalFeatures() };
+            }
+            await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task.getOriginalFeatures() });
+            newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.getLayerId(), f, task.getOriginalFeatures()[i]));
+            await this.#handleRelation1_1LayerFields({ layerId: task.getLayerId(), features: newFeatures, fields, task });
+            GUI.getPlugin('editing').emit('savedfeature', newFeatures);
+            GUI.getPlugin('editing').emit(`savedfeature_${task.getLayerId()}`, newFeatures);
+            GUI.getPlugin('editing').getToolBoxById(task.getContext().id).saveChanges();
+            resolve();
+          }))
+      );
+    } catch(e) {
+      console.warn(e);
+    }
+
+    try {
+      await GUI.getPlugin('editing').commit({ modal: false });
+      this.#saveAllError = false;
+      [...Tool.Stack.items]
+        .reverse()
+        .filter(t => "function" === typeof t.getLastStep().hasSaveAll())
+        .forEach(t => {
+          const service = t.getContext().service;
+          service.setUpdate(false, { force: false });
+          const feature = service.feature;
+          if (feature.isNew()) {
+            feature.state.new    = false;
+            service.force.update = false;
+          }
+          Object.entries(
+            GUI.getPlugin('editing').getToolBoxById(t.getContext().id).readEditingFeatures()
+              .find(f => f.getUid() === feature.getUid())
+              .getProperties()
+          ).forEach(([k, v]) => {
+            const field = service.getFields().find(f => k === f.name);
+            if (field) {
+              field.value = field._value = v;
+            }
+          });
+        });
+    } catch(e) {
+      this.#saveAllError = true;
+      console.warn(e);
+    }
+
+    GUI.setLoadingContent(false);
+    GUI.disableContent(false);
+  }
+
+  async #closeForm() {
+    const tool = GUI.getPlugin('editing').state.toolboxselected.getActiveTool();
+    await tool.stop();
+    Tool.Stack.items.splice(0);
+    if (!tool.runOnce) {
+      tool.start();
+    }
+  }
+
   #setReady(bool = false) {
     this.#form.ready = bool;
   }
@@ -1462,12 +1424,6 @@ export class OpenFormStep extends Step {
     this.#form.valid = Object.values(this.#form.tovalidate).reduce((previous, field) => previous && field.validate.valid, true);
   }
 
-  #setCurrentComponentById(id) {
-    this.#form.currentheaderid = id;
-    this.#form.component = this.#form.components.find(comp => id === comp.id).component;
-    return this.#form.component;
-  }
-
   #addToValidate(input) {
     this.#form.tovalidate[input.name] = input;
     if (this.#form.ready) { this.#isValid(input) }
@@ -1492,10 +1448,9 @@ export class OpenFormStep extends Step {
       GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
       return;
     }
-
     GUI.setLoadingContent(true);
     await setLayerUniqueFieldValues(this.#form.layer.getRelationById(relation.name).getChild());
-    this.#setCurrentComponentById(relation.name);
+    this.#form.component = this.#form.components.find(comp => relation.name === comp.id).component
     GUI.setLoadingContent(false);
   }
 
