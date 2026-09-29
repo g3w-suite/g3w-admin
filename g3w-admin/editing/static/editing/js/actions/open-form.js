@@ -2,7 +2,6 @@
  * @file Opens and manages the attribute form used by the editing workflow.
  */
 
-import { getParentFormData }              from '../utils/getParentFormData.js';
 import { getLayersDependencyFeatures }    from '../utils/getLayersDependencyFeatures.js';
 import { getEditingLayerById }            from '../utils/getEditingLayerById.js';
 import { setLayerUniqueFieldValues }      from '../utils/setLayerUniqueFieldValues.js';
@@ -84,9 +83,27 @@ export class OpenFormStep extends Step {
   #originalFeatures;
 
   #form;
-  #filter_expression_fields_dependencies;
-  #default_expression_fields_dependencies;
-  #default_expression_fields_on_update;
+
+  /**
+   * Fields whose filter options depend on each source field name.
+   * 
+   * @type {Object<string, string[]>}
+   */
+  #filter_deps;
+
+  /**
+   * Fields whose default expressions depend on each source field name.
+   *
+   * @type {Object<string, string[]>}
+   */
+  #default_deps;
+
+  /**
+   * Fields with default expressions configured to run on update.
+   *
+   * @type {Object[]}
+   */
+  #defaults_on_update;
 
   /**
    * @param {Object} [opts={}] Step options.
@@ -149,9 +166,9 @@ export class OpenFormStep extends Step {
   async run(inputs, context) {
     this.#form = null;
 
-    this.#filter_expression_fields_dependencies  = {};
-    this.#default_expression_fields_dependencies = {};
-    this.#default_expression_fields_on_update    = [];
+    this.#filter_deps        = {};
+    this.#default_deps       = {};
+    this.#defaults_on_update = [];
 
     GUI.setModal(true);
 
@@ -279,42 +296,50 @@ export class OpenFormStep extends Step {
         });
       }
 
+      let parentData;
+      if (Tool.Stack.length > 1) {
+        const { features, layer, fields = [] } = Tool.Stack.parent.getInputs();
+        const feature = features[features.length - 1].clone();
+        fields.forEach(({ name, value }) => feature.set(name, value));
+        parentData = { feature, qgs_layer_id: layer.getId() };
+      }
+
       const SELF = this;
 
       this.#form = new Component({
-        feature:            this.getOriginalFeatures()[0].clone(),
-        title:              "plugins.editing.editing_attributes",
-        name:               layerName,
-        crumb:              { title: layerName },
-        id:                 `form_${layerName}`,
-        layer:              inputs.layer,
-        isnew:              this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
-        parentData:         getParentFormData(),
-        fields:             form_fields,
-        context_inputs:     this.hasMulti() ? false: { context, inputs },
-        modal:              true,
-        push:               this._options.push || this.hasChild(),         // Keep nested forms above the parent content.
-        showgoback:         this._options?.showgoback ?? !this.hasChild(), // Child forms use the parent navigation.
-        perc:               inputs.layer?.config?.editing?.form?.perc,
-        isCoreFormService:  true,
-        formId:             undefined,
-        force:              { update: this.getOriginalFeatures()[0].isNew(), valid:  false },
-        layerid:            inputs.layer.getId(),
-        loading:            false,
-        relation:           null,
-        disabled:           false,
-        valid:              true,
-        update:             this.getOriginalFeatures()[0].isNew(),
-        tovalidate:         {},
-        footer:             {},
-        ready:              false,
-        setUpdate:          this.#setUpdate.bind(this),
-        getState:           this.#getState.bind(this),
-        getFields:          this.#getFields.bind(this),
-        getContext:         this.#getContext.bind(this),
-        getSession:         this.#getSession.bind(this),
-        getInputs:          this.#getInputs.bind(this),
-        saveDefaultExpressionFieldsNotDependencies: this.#saveDefaultExpressionFieldsNotDependencies.bind(this),
+        feature:           this.getOriginalFeatures()[0].clone(),
+        title:             "plugins.editing.editing_attributes",
+        name:              layerName,
+        crumb:             { title: layerName },
+        id:                `form_${layerName}`,
+        layer:             inputs.layer,
+        isnew:             this.getOriginalFeatures().length > 1 ? false : this.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
+        parentData,
+        fields:            form_fields,
+        context_inputs:    this.hasMulti() ? false: { context, inputs },
+        modal:             true,
+        push:              this._options.push || this.hasChild(),         // Keep nested forms above the parent content.
+        showgoback:        this._options?.showgoback ?? !this.hasChild(), // Child forms use the parent navigation.
+        perc:              inputs.layer?.config?.editing?.form?.perc,
+        isCoreFormService: true,
+        formId:            undefined,
+        force:             { update: this.getOriginalFeatures()[0].isNew(), valid:  false },
+        layerid:           inputs.layer.getId(),
+        loading:           false,
+        relation:          null,
+        disabled:          false,
+        valid:             true,
+        update:            this.getOriginalFeatures()[0].isNew(),
+        tovalidate:        {},
+        footer:            {},
+        ready:             false,
+        setUpdate:         this.#setUpdate.bind(this),
+        getState:          this.#getState.bind(this),
+        getFields:         this.#getFields.bind(this),
+        getContext:        this.#getContext.bind(this),
+        getSession:        this.#getSession.bind(this),
+        getInputs:         this.#getInputs.bind(this),
+        saveDefaults:      this.#saveDefaults.bind(this),
         vueComponentObject: {
           template: /* html */ `
             <div class="g3wform_content" style="position: relative">
@@ -511,10 +536,10 @@ export class OpenFormStep extends Step {
             ...(field.input?.options?.filter_expression?.referenced_columns || []),
             ...(field.input?.options?.filter_expression?.referencing_fields || [])
           ])).forEach(name => {
-            if (undefined === this.#filter_expression_fields_dependencies[name]) {
-              this.#filter_expression_fields_dependencies[name] = [];
+            if (undefined === this.#filter_deps[name]) {
+              this.#filter_deps[name] = [];
             }
-            this.#filter_expression_fields_dependencies[name].push(field.name);
+            this.#filter_deps[name].push(field.name);
           });
           this.#getFilterExpression({
             parentData:   this.#form.parentData,
@@ -528,15 +553,15 @@ export class OpenFormStep extends Step {
         // Existing features register defaults only when they explicitly apply on update.
         if (field.input?.options?.default_expression && (field.input?.options?.default_expression?.apply_on_update || this.#form.isnew)) {
           if (field.input?.options?.default_expression?.apply_on_update) {
-            this.#default_expression_fields_on_update.push(field);
+            this.#defaults_on_update.push(field);
             (new Set([
               ...(field.input?.options?.default_expression?.referenced_columns || []),
               ...(field.input?.options?.default_expression?.referencing_fields || [])
             ])).forEach(name => {
-              if (undefined === this.#default_expression_fields_dependencies[name]) {
-                this.#default_expression_fields_dependencies[name] = [];
+              if (undefined === this.#default_deps[name]) {
+                this.#default_deps[name] = [];
               }
-              this.#default_expression_fields_dependencies[name].push(field.name);
+              this.#default_deps[name].push(field.name);
             });
           }
           if (this.#form.isnew) {
@@ -552,7 +577,7 @@ export class OpenFormStep extends Step {
 
       // Evaluate filters once so dependent input options are populated initially.
       Object
-        .keys(this.#filter_expression_fields_dependencies)
+        .keys(this.#filter_deps)
         .forEach(name => this.#evaluateFilterExpressionFields({ name }));
 
 
@@ -1028,7 +1053,7 @@ export class OpenFormStep extends Step {
   }
 
   #evaluateFilterExpressionFields(input = {}) {
-    const dependency_fields = this.#filter_expression_fields_dependencies[input.name];
+    const dependency_fields = this.#filter_deps[input.name];
     if (!dependency_fields) { return; }
 
     return Promise.allSettled(
@@ -1059,7 +1084,7 @@ export class OpenFormStep extends Step {
     GUI.setLoadingContent(true);
     GUI.disableContent(true);
 
-    await service.saveDefaultExpressionFieldsNotDependencies();
+    await service.saveDefaults();
 
     this.getFeatures().forEach(f => {
       this.#setFieldsWithValues(f, this.#form.fields);
@@ -1120,7 +1145,7 @@ export class OpenFormStep extends Step {
           .map(t => new Promise(async (resolve) => {
             const task   = t.getLastStep();
             const fields = t.getContext().service.fields.filter(f => task.hasMulti() ? null !== f.value : true);
-            await Tool.Stack.current.getContext().service.saveDefaultExpressionFieldsNotDependencies();
+            await Tool.Stack.current.getContext().service.saveDefaults();
             task.getFeatures().forEach(f => this.#setFieldsWithValues(f, fields));
             const newFeatures = task.getFeatures().map(f => f.clone());
             if (task.hasChild()) {
@@ -1261,7 +1286,7 @@ export class OpenFormStep extends Step {
     try {
       this.#form.feature.set(input.name, input.value);
       await this.#evaluateFilterExpressionFields(input);
-      const dependent_fields = this.#default_expression_fields_dependencies[input.name];
+      const dependent_fields = this.#default_deps[input.name];
       if (dependent_fields) {
         await Promise.allSettled(dependent_fields.map(dependency_field =>
           this.#getDefaultExpression({
@@ -1367,7 +1392,12 @@ export class OpenFormStep extends Step {
    */
   async #handleRelation({ relation } = {}) {
     if (this.hasMulti()) {
-      GUI.showUserMessage({ type: 'info', message: 'plugins.editing.editing_multiple_relations', duration: 3000, autoclose: true });
+      GUI.showUserMessage({
+        type:      'info',
+        message:   'plugins.editing.editing_multiple_relations',
+        duration:  3000,
+        autoclose: true,
+      });
       return;
     }
     GUI.setLoadingContent(true);
@@ -1381,17 +1411,17 @@ export class OpenFormStep extends Step {
   }
 
   /**
-   * Evaluates default expressions without field dependencies before submission.
+  * Evaluates default expressions without field dependencies before submission.
    *
    * @since 3.8.0
    */
-  async #saveDefaultExpressionFieldsNotDependencies() {
+  async #saveDefaults() {
     try {
-      if (0 === this.#default_expression_fields_on_update.length || !this.#form.fields.some(field => field.update && !field.vectorjoin_id)) {
+      if (0 === this.#defaults_on_update.length || !this.#form.fields.some(field => field.update && !field.vectorjoin_id)) {
         return;
       }
-      const fields_with_dependencies = new Set(Object.values(this.#default_expression_fields_dependencies).flat());
-      const fields_without_dependencies = this.#default_expression_fields_on_update.filter(({ name }) => !fields_with_dependencies.has(name));
+      const fields_with_dependencies = new Set(Object.values(this.#default_deps).flat());
+      const fields_without_dependencies = this.#defaults_on_update.filter(({ name }) => !fields_with_dependencies.has(name));
       await Promise.allSettled(fields_without_dependencies.map(async field => {
         try {
           await this.#getDefaultExpression({
