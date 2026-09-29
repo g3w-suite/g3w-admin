@@ -308,13 +308,13 @@ export class OpenFormStep extends Step {
         tovalidate:         {},
         footer:             {},
         ready:              false,
-        setUpdate:          SELF.#setUpdate.bind(SELF),
-        getState:           SELF.#getState.bind(SELF),
-        getFields:          SELF.#getFields.bind(SELF),
-        getContext:         SELF.#getContext.bind(SELF),
-        getSession:         SELF.#getSession.bind(SELF),
-        getInputs:          SELF.#getInputs.bind(SELF),
-        saveDefaultExpressionFieldsNotDependencies: SELF.#saveDefaultExpressionFieldsNotDependencies.bind(SELF),
+        setUpdate:          this.#setUpdate.bind(this),
+        getState:           this.#getState.bind(this),
+        getFields:          this.#getFields.bind(this),
+        getContext:         this.#getContext.bind(this),
+        getSession:         this.#getSession.bind(this),
+        getInputs:          this.#getInputs.bind(this),
+        saveDefaultExpressionFieldsNotDependencies: this.#saveDefaultExpressionFieldsNotDependencies.bind(this),
         vueComponentObject: {
           template: /* html */ `
             <div class="g3wform_content" style="position: relative">
@@ -486,15 +486,15 @@ export class OpenFormStep extends Step {
             saveButtonTitle() { return SELF.hasChild() ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" : "plugins.editing.insert_edit"; },
           },
           methods: {
-            backToRoot()                               { SELF.#form.relation = null; },
-            handleRelation(relationId)                 { SELF.#handleRelation(relationId); },
-            changeInput(input)                         { return SELF.#changeInput(input); },
-            addToValidate(input)                       { SELF.#addToValidate(input); },
-            removeToValidate(input)                    { SELF.#removeToValidate(input); },
-            saveForm()                                 { SELF.#saveForm({ context, inputs, resolve }, this.state.fields); },
-            cancelForm()                               { SELF.#cancelForm({ inputs, reject }); },
-            saveAll()                                  { SELF.#saveAllForms(); },
-            closeForm()                                { SELF.#closeForm(); },
+            backToRoot()               { SELF.#form.relation = null; },
+            handleRelation(relationId) { SELF.#handleRelation(relationId); },
+            changeInput(input)         { return SELF.#changeInput(input); },
+            addToValidate(input)       { SELF.#addToValidate(input); },
+            removeToValidate(input)    { SELF.#removeToValidate(input); },
+            saveForm()                 { SELF.#saveForm({ context, inputs, resolve }); },
+            cancelForm()               { SELF.#cancelForm({ inputs, reject }); },
+            saveAll()                  { SELF.#saveAllForms(); },
+            closeForm()                { SELF.#closeForm(); },
           },
           mounted() {
             SELF.#isValid();
@@ -511,12 +511,12 @@ export class OpenFormStep extends Step {
             ...(field.input?.options?.filter_expression?.referenced_columns || []),
             ...(field.input?.options?.filter_expression?.referencing_fields || [])
           ])).forEach(name => {
-            if (undefined === SELF.#filter_expression_fields_dependencies[name]) {
-              SELF.#filter_expression_fields_dependencies[name] = [];
+            if (undefined === this.#filter_expression_fields_dependencies[name]) {
+              this.#filter_expression_fields_dependencies[name] = [];
             }
-            SELF.#filter_expression_fields_dependencies[name].push(field.name);
+            this.#filter_expression_fields_dependencies[name].push(field.name);
           });
-          SELF.#getFilterExpression({
+          this.#getFilterExpression({
             parentData:   this.#form.parentData,
             qgs_layer_id: this.#form.layer.getId(),
             feature:      this.#form.feature,
@@ -528,19 +528,19 @@ export class OpenFormStep extends Step {
         // Existing features register defaults only when they explicitly apply on update.
         if (field.input?.options?.default_expression && (field.input?.options?.default_expression?.apply_on_update || this.#form.isnew)) {
           if (field.input?.options?.default_expression?.apply_on_update) {
-            SELF.#default_expression_fields_on_update.push(field);
+            this.#default_expression_fields_on_update.push(field);
             (new Set([
               ...(field.input?.options?.default_expression?.referenced_columns || []),
               ...(field.input?.options?.default_expression?.referencing_fields || [])
             ])).forEach(name => {
-              if (undefined === SELF.#default_expression_fields_dependencies[name]) {
-                SELF.#default_expression_fields_dependencies[name] = [];
+              if (undefined === this.#default_expression_fields_dependencies[name]) {
+                this.#default_expression_fields_dependencies[name] = [];
               }
-              SELF.#default_expression_fields_dependencies[name].push(field.name);
+              this.#default_expression_fields_dependencies[name].push(field.name);
             });
           }
           if (this.#form.isnew) {
-            SELF.#getDefaultExpression({
+            this.#getDefaultExpression({
               field,
               feature:      this.#form.feature,
               qgs_layer_id: this.#form.layer.getId(),
@@ -552,8 +552,8 @@ export class OpenFormStep extends Step {
 
       // Evaluate filters once so dependent input options are populated initially.
       Object
-        .keys(SELF.#filter_expression_fields_dependencies)
-        .forEach(name => SELF.#evaluateFilterExpressionFields({ name }));
+        .keys(this.#filter_expression_fields_dependencies)
+        .forEach(name => this.#evaluateFilterExpressionFields({ name }));
 
 
       GUI.setContent({
@@ -1043,15 +1043,15 @@ export class OpenFormStep extends Step {
     );
   }
 
-  async #saveForm({ context, inputs, resolve } = {}, fields = []) {
+  async #saveForm({ context, inputs, resolve } = {}) {
     const service    = Tool.Stack.current.getContext().service;
     const hasUpdates = !!service?.state?.fields?.some(f => f.update);
     const isNew      = !!this.getOriginalFeatures()?.some(f => f.isNew?.());
     const newFeatures = [];
 
-    fields = this.hasMulti() ? fields.filter(f => null !== f.value) : fields;
+    this.#form.fields = this.hasMulti() ? this.#form.fields.filter(f => null !== f.value) : this.#form.fields;
 
-    if (0 === fields.length || (!isNew && !hasUpdates)) {
+    if (0 === this.#form.fields.length || (!isNew && !hasUpdates)) {
       resolve(inputs);
       return;
     }
@@ -1062,7 +1062,7 @@ export class OpenFormStep extends Step {
     await service.saveDefaultExpressionFieldsNotDependencies();
 
     this.getFeatures().forEach(f => {
-      this.#setFieldsWithValues(f, fields);
+      this.#setFieldsWithValues(f, this.#form.fields);
       newFeatures.push(f.clone());
     });
 
@@ -1080,7 +1080,7 @@ export class OpenFormStep extends Step {
     await this.#handleRelation1_1LayerFields({
       layerId:  this.getLayerId(),
       features: newFeatures,
-      fields,
+      fields:   this.#form.fields,
       task:     this,
     });
 
