@@ -14,11 +14,49 @@ import { Tool }                           from '../g3w-tool.js';
 import { Step }                           from '../g3w-step.js';
 import { Feature }                        from '../g3w-feature.js';
 
-const GUI               = g3w.app;
-const ApplicationState  = g3w.app.state;
-const { Component }     = g3w;
-const { XHR }           = g3w.utils;
-const { G3wFormInputs } = g3wsdk.gui.vue.Inputs;
+const GUI              = g3w.app;
+const ApplicationState = g3w.app.state;
+const { Component }    = g3w;
+const { XHR }          = g3w.utils;
+const { G3WInput }     = g3wsdk.gui.vue.Inputs;
+
+const G3wFormInputs = {
+  name: 'g3w-form-inputs',
+  components: { 'g3w-input': G3WInput },
+  props: {
+    state:                       { type: Object, default: { fields: [] } },
+    addToValidate:               { type: Function },
+    changeInput:                 { type: Function },
+    removeToValidate:            { type: Function },
+    show_required_field_message: { type: Boolean, default: false },
+  },
+  template: /* html */ `
+    <form class="form-horizontal g3w-form">
+      <div class="box-primary">
+        <div class="box-body">
+          <g3w-input
+            v-for             = "field in state.fields"
+            :key              = "field.name"
+            :state            = "field"
+            :removeToValidate = "removeToValidate"
+            :addToValidate    = "addToValidate"
+            :changeInput      = "changeInput"
+            @addToValidate    = "addToValidate"
+            @changeInput      = "changeInput"
+          />
+        </div>
+        <div
+          v-if  = "show_required_field_message"
+          id    = "g3w-for-inputs-required-inputs-message"
+          style = "caret-color: rgba(0,0,0,0); margin-bottom: 5px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center;"
+        >
+          <span>*</span>
+          <span v-t = "'sdk.form.footer.required_fields'"></span>
+        </div>
+      </div>
+    </form>
+  `,
+};
 
 /**
  * Step responsible for opening an editing form, synchronising its fields and
