@@ -186,24 +186,24 @@ export class OpenFormStep extends Step {
       const unique_values = fields
         // Exclude non-editable primary keys from unique-value handling.
         .filter(f => !(f.pk && false === f.editable) && ('unique' === f.input.type || f.validate.unique))
-        .map(field => ({ field, _value: this.getFeatures()[0].get(field.name) }));
-
-      unique_values.forEach(({ _value, field }) => {
-        // Read the values already used by the editing layer.
-        const current_values = GUI.getPlugin('editing').state.uniqueFieldsValues[this.#layerId][field.name] || new Set([]);
-        // Null is handled separately because it is not sortable with field values.
-        const values = Array.from(current_values).filter(v => null !== v);
-        // Preserve the field-specific numeric or lexical ordering.
-        field.input.options.values = this.#sortUniqueFieldValues(values, field.type);
-        if (current_values.has(null)) {
-          field.input.options.values.unshift(null);
-        }
-        // Validation stores non-null exclusions as strings.
-        current_values.forEach(v => field.validate.exclude_values.add(![null, undefined].includes(v) ? `${v}` : v));
-        // The current value is valid for the feature being edited.
-        field.validate.exclude_values.delete(`${_value}`);
-      });
-
+        .map(field => { 
+          const _value = this.getFeatures()[0].get(field.name); 
+          // Read the values already used by the editing layer.
+          const current_values = GUI.getPlugin('editing').state.uniqueFieldsValues[this.#layerId][field.name] || new Set([]);
+          // Null is handled separately because it is not sortable with field values.
+          const values = Array.from(current_values).filter(v => null !== v);
+          // Preserve the field-specific numeric or lexical ordering.
+          field.input.options.values = this.#sortUniqueFieldValues(values, field.type);
+          if (current_values.has(null)) {
+            field.input.options.values.unshift(null);
+          }
+          // Validation stores non-null exclusions as strings.
+          current_values.forEach(v => field.validate.exclude_values.add(![null, undefined].includes(v) ? `${v}` : v));
+          // The current value is valid for the feature being edited.
+          field.validate.exclude_values.delete(`${_value}`);
+          return { field, _value };
+        });
+        
       if (0 !== unique_values.length) {
         // Update the layer cache after a successful save.
         const savedfeatureFnc = () => {
@@ -264,7 +264,11 @@ export class OpenFormStep extends Step {
         parentData = { feature, qgs_layer_id: layer.getId() };
       }
 
-      const SELF = this;
+      const features         = this.getFeatures();
+      const originalFeatures = this.getOriginalFeatures();
+      const isMulti          = this.hasMulti();
+      const isContentChild   = this.hasChild();
+      const saveAllEnabled   = !!this.#saveAll;
 
       this.#form = new Component({ 
         id:                `form_${inputs.layer.getName()}`,
@@ -445,25 +449,30 @@ export class OpenFormStep extends Step {
               unwatches: [],
               state: {
                 name:              inputs.layer.getName(),
-                feature:           SELF.getOriginalFeatures()[0].clone(),
+                feature:           originalFeatures[0].clone(),
                 isCoreFormService: true,
                 formId:            undefined,
-                force:             { update: SELF.getOriginalFeatures()[0].isNew(), valid:  false },
+                force:             { update: originalFeatures[0].isNew(), valid:  false },
                 layer:             inputs.layer,
-                isnew:             SELF.getOriginalFeatures().length > 1 ? false : SELF.getOriginalFeatures()[0].isNew(), // Multi-edit forms never represent a single new feature.
+                isnew:             originalFeatures.length > 1 ? false : originalFeatures[0].isNew(), // Multi-edit forms never represent a single new feature.
                 parentData,
                 fields:            form_fields,
-                context_inputs:    SELF.hasMulti() ? false: { context, inputs },
+                context_inputs:    isMulti ? false: { context, inputs },
                 modal:             true,
                 layerid:           inputs.layer.getId(),
                 loading:           false,
                 relation:          null,
                 disabled:          false,
                 valid:             true,
-                update:            SELF.getOriginalFeatures()[0].isNew(),
+                update:            originalFeatures[0].isNew(),
                 tovalidate:        {},
                 footer:            {},
                 ready:             false,
+                features,
+                originalFeatures,
+                isMulti,
+                isContentChild,
+                saveAllEnabled,
                 form_structure:    inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
               }
             }   
@@ -512,7 +521,7 @@ export class OpenFormStep extends Step {
           computed: {
             isRoot()          { return !this.state.relation; },
             enableSave()      { return this.state.valid && this.state.update; },
-            hasSaveAll()      { return SELF.#saveAll; },
+            hasSaveAll()      { return this.state.saveAllEnabled; },
             isChild()         { return Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable')) },
             saveAllDisabled() {
               return !(Tool.Stack.items
@@ -522,16 +531,16 @@ export class OpenFormStep extends Step {
                   return valid || undefined === valid;
                 })) || !(this.state.valid && this.state.update);
             },
-            saveButtonTitle() { return SELF.hasChild() ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" : "plugins.editing.insert_edit"; },
+            saveButtonTitle() { return this.state.isContentChild ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" : "plugins.editing.insert_edit"; },
           },
           methods: {
             backToRoot()               { this.state.relation = null; },
             async saveForm() {
               const hasUpdates = !!this.state.fields.some(f => f.update);
-              const isNew      = !!SELF.getOriginalFeatures()?.some(f => f.isNew?.());
+              const isNew      = !!this.state.originalFeatures?.some(f => f.isNew?.());
               const newFeatures = [];
 
-              this.state.fields = SELF.hasMulti() ? this.state.fields.filter(f => null !== f.value) : this.state.fields;
+              this.state.fields = this.state.isMulti ? this.state.fields.filter(f => null !== f.value) : this.state.fields;
 
               if (0 === this.state.fields.length || (!isNew && !hasUpdates)) {
                 resolve(inputs);
@@ -543,21 +552,21 @@ export class OpenFormStep extends Step {
 
               await this.saveDefaults();
 
-              SELF.getFeatures().forEach(f => {
+              this.state.features.forEach(f => {
                 this.setFieldsWithValues(f, this.state.fields);
                 newFeatures.push(f.clone());
               });
 
-              if (SELF.hasChild()) {
+              if (this.state.isContentChild) {
                 inputs.relationFeatures = {
                   newFeatures,
-                  originalFeatures: SELF.getOriginalFeatures()
+                  originalFeatures: this.state.originalFeatures
                 };
               }
 
-              await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: SELF.getOriginalFeatures() });
+              await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this.state.originalFeatures });
 
-              newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.state.layerid, f, SELF.getOriginalFeatures()[i]));
+              newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.state.layerid, f, this.state.originalFeatures[i]));
 
               await this.handleRelation1_1LayerFields({
                 layerId:  this.state.layerid,
@@ -569,7 +578,7 @@ export class OpenFormStep extends Step {
               GUI.getPlugin('editing').emit('savedfeature', newFeatures);
               GUI.getPlugin('editing').emit(`savedfeature_${this.state.layerid}`, newFeatures);
 
-              if (SELF.hasChild()) {
+              if (this.state.isContentChild) {
                 Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
               }
 
@@ -1033,7 +1042,7 @@ export class OpenFormStep extends Step {
              * Hook for plugins that synchronize this form with a related feature.
              */
             async handleRelation({ relation } = {}) {
-              if (SELF.hasMulti()) {
+              if (this.state.isMulti) {
                 GUI.showUserMessage({
                   type:      'info',
                   message:   'plugins.editing.editing_multiple_relations',
@@ -1047,7 +1056,7 @@ export class OpenFormStep extends Step {
               this.state.relation = getRelationsInEditingByFeature({
                 layerId: this.state.layerid,
                 relations: this.state.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === this.state.layerid),
-                feature: SELF.getFeatures()[0],
+                feature: this.state.features[0],
               }).find(({ relation: editingRelation }) => relation.name === editingRelation.id);
               GUI.setLoadingContent(false);
             },
