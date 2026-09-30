@@ -559,17 +559,17 @@ export class OpenFormStep extends Step {
 
               await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: SELF.getOriginalFeatures() });
 
-              newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(SELF.getLayerId(), f, SELF.getOriginalFeatures()[i]));
+              newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(this.state.layerid, f, SELF.getOriginalFeatures()[i]));
 
               await this.handleRelation1_1LayerFields({
-                layerId:  SELF.getLayerId(),
+                layerId:  this.state.layerid,
                 features: newFeatures,
                 fields:   this.state.fields,
                 step:     this,
               });
 
               GUI.getPlugin('editing').emit('savedfeature', newFeatures);
-              GUI.getPlugin('editing').emit(`savedfeature_${SELF.getLayerId()}`, newFeatures);
+              GUI.getPlugin('editing').emit(`savedfeature_${this.state.layerid}`, newFeatures);
 
               if (SELF.hasChild()) {
                 Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
