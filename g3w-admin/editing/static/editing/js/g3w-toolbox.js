@@ -47,7 +47,7 @@ import { PickFeaturesInteraction, PickFeatureStep } from './actions/pick-feature
 import { AddFeatureStep }                           from './actions/add-feature.js';
 import { MoveFeatureStep }                          from './actions/move-feature.js';
 import { RotateFeatureStep }                        from './actions/rotate-feature.js';
-import { ModifyGeometryVertexStep }                 from './actions/move-vertex.js';
+import { MoveVertexStep }                           from './actions/move-vertex.js';
 import { AddHoleStep }                              from './actions/add-hole.js';
 import { DeleteHoleStep }                           from './actions/delete-hole.js';
 
@@ -560,7 +560,7 @@ export class ToolBox extends Emitter {
           steps: [
             new PickFeatureStep({ layer: this.getEditingLayer() }),
             new Step({ run: chooseFeature }),
-            new ModifyGeometryVertexStep({ tools: ['snap', 'measure'] }),
+            new MoveVertexStep({ tools: ['snap', 'measure'] }),
           ],
         }),
         // Edit Attributes to Multi features

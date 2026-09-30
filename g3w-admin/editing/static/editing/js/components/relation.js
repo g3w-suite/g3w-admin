@@ -2,28 +2,28 @@
  * @file Relation form editor
  */
 
-import { Tool }                             from '../g3w-tool.js';
-import { Step }                             from '../g3w-step.js';
-import { Feature }                          from '../g3w-feature.js';
-import { cloneFeature }                     from '../utils/cloneFeature.js';
-import { getRelationFieldsFromRelation }    from '../utils/getRelationFieldsFromRelation.js';
-import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
-import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
-import { convertToGeometry }                from '../utils/convertToGeometry.js';
-import { addTableFeature }                  from '../utils/addTableFeature.js';
-import { getFeatureTableFieldValue }        from '../utils/getFeatureTableFieldValue.js';
-import { chooseFeatureFromFeatures }        from '../utils/chooseFeatureFromFeatures.js';
-import { unlinkRelation }                   from '../utils/unlinkRelation.js';
-import { getFieldsWithValues }              from '../utils/getFieldsWithValues.js';
-import { isPkField }                        from '../utils/isPkField.js';
-import { getEditingLayer }                  from '../utils/getEditingLayer.js';
-import { PickFeaturesInteraction }          from '../actions/pick-feature.js';
-import { OpenFormStep }                     from '../actions/open-form.js';
-import { AddFeatureStep }                   from '../actions/add-feature.js';
-import { ModifyGeometryVertexStep }         from '../actions/move-vertex.js';
-import { MoveFeatureStep }                  from '../actions/move-feature.js';
-import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
-import { getCatalogLayers }                 from '../utils/getCatalogLayers.js';
+import { Tool }                          from '../g3w-tool.js';
+import { Step }                          from '../g3w-step.js';
+import { Feature }                       from '../g3w-feature.js';
+import { cloneFeature }                  from '../utils/cloneFeature.js';
+import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRelation.js';
+import { getLayersDependencyFeatures }   from '../utils/getLayersDependencyFeatures.js';
+import { getEditingLayerById }           from '../utils/getEditingLayerById.js';
+import { convertToGeometry }             from '../utils/convertToGeometry.js';
+import { addTableFeature }               from '../utils/addTableFeature.js';
+import { getFeatureTableFieldValue }     from '../utils/getFeatureTableFieldValue.js';
+import { chooseFeatureFromFeatures }     from '../utils/chooseFeatureFromFeatures.js';
+import { unlinkRelation }                from '../utils/unlinkRelation.js';
+import { getFieldsWithValues }           from '../utils/getFieldsWithValues.js';
+import { isPkField }                     from '../utils/isPkField.js';
+import { getEditingLayer }               from '../utils/getEditingLayer.js';
+import { PickFeaturesInteraction }       from '../actions/pick-feature.js';
+import { OpenFormStep }                  from '../actions/open-form.js';
+import { AddFeatureStep }                from '../actions/add-feature.js';
+import { MoveVertexStep }                from '../actions/move-vertex.js';
+import { MoveFeatureStep }               from '../actions/move-feature.js';
+import { getCatalogLayerById }           from '../utils/getCatalogLayerById.js';
+import { getCatalogLayers }              from '../utils/getCatalogLayers.js';
 
 const { Component }              = g3w;
 const { PAGELENGTHS }            = g3w.constants;
@@ -890,7 +890,7 @@ export default ({
             const tool = new Tool({
               type: relationtool.type,
               steps: [ new {
-                'movevertex':  ModifyGeometryVertexStep,
+                'movevertex':  MoveVertexStep,
                 'movefeature': MoveFeatureStep,
               }[toolId]({ selectStyle }) ]
             });
