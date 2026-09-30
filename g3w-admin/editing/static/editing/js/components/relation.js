@@ -830,8 +830,8 @@ export default ({
                 && undefined === Tool.Stack.items.find(i => i.state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
               ) {
                 Tool.Stack.items
-                  .filter(w => w.getContext().service?.isCoreFormService)
-                  .forEach(w => setTimeout(() => w.getContext().service.update = false));
+                  .filter(t => t.getContext().service?.state?.isCoreFormService)
+                  .forEach(t => setTimeout(() => t.getContext().service.state.update = false));
               } else {
                 //set parent tool update to enable to save all buttons
                 Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
@@ -869,7 +869,7 @@ export default ({
               //need to rollback changes done at moment
               GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).rollback();
               //reset eventually state of form parent service (save changes or not)
-              Tool.Stack.parents?.forEach(t => t?.getContext?.()?.service?.setUpdate?.( t?.getContext?.()?.service.fields.some(f => f.update), { force: false }));
+              Tool.Stack.parents?.forEach(t => t?.getContext?.()?.service?.setUpdate?.( t?.getContext?.()?.service?.state?.fields.some(f => f.update), { force: false }));
               d.reject(e);
             }
 
