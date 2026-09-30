@@ -102,15 +102,30 @@ export default {
                 />
               </template>
               <template v-else>
-                <g3w-form-inputs
-                  :state            = "state"
-                  :addToValidate    = "addToValidate"
-                  :removeToValidate = "removeToValidate"
-                  :changeInput      = "changeInput"
-                  @changeinput      = "changeInput"
-                  @addinput         = "addToValidate"
-                  @removeinput      = "removeToValidate"
-                />
+								<form class="form-horizontal g3w-form">
+									<div class="box-primary">
+										<div class="box-body">
+											<g3w-input
+												v-for             = "field in state.fields"
+												:key              = "field.name"
+												:state            = "field"
+												:removeToValidate = "removeToValidate"
+												:addToValidate    = "addToValidate"
+												:changeInput      = "changeInput"
+												@addToValidate    = "addToValidate"
+												@changeInput      = "changeInput"
+											/>
+										</div>
+										<div
+											v-if  = "show_required_field_message"
+											id    = "g3w-for-inputs-required-inputs-message"
+											style = "caret-color: rgba(0,0,0,0); margin-bottom: 5px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center;"
+										>
+											<span>*</span>
+											<span v-t = "'sdk.form.footer.required_fields'"></span>
+										</div>
+									</div>
+								</form>
               </template>
             </div>
           </div>
@@ -236,43 +251,7 @@ export default {
   },
   transitions: { 'addremovetransition': 'showhide' },
   components: {
-    G3wFormInputs: {
-      name: 'g3w-form-inputs',
-      components: { 'g3w-input': G3WInput },
-      props: {
-        state:                       { type: Object, default: { fields: [] } },
-        addToValidate:               { type: Function },
-        changeInput:                 { type: Function },
-        removeToValidate:            { type: Function },
-        show_required_field_message: { type: Boolean, default: false },
-      },
-      template: /* html */ `
-        <form class="form-horizontal g3w-form">
-          <div class="box-primary">
-            <div class="box-body">
-              <g3w-input
-                v-for             = "field in state.fields"
-                :key              = "field.name"
-                :state            = "field"
-                :removeToValidate = "removeToValidate"
-                :addToValidate    = "addToValidate"
-                :changeInput      = "changeInput"
-                @addToValidate    = "addToValidate"
-                @changeInput      = "changeInput"
-              />
-            </div>
-            <div
-              v-if  = "show_required_field_message"
-              id    = "g3w-for-inputs-required-inputs-message"
-              style = "caret-color: rgba(0,0,0,0); margin-bottom: 5px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center;"
-            >
-              <span>*</span>
-              <span v-t = "'sdk.form.footer.required_fields'"></span>
-            </div>
-          </div>
-        </form>
-      `,
-    },
+		'g3w-input':        G3WInput,
     G3wEditingRelation: () => import('../components/relation.js'),
   },
   computed: {
