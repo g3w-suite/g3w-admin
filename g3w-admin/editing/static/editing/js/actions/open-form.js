@@ -106,6 +106,11 @@ export class OpenFormStep extends Step {
    */
   #originalFeatures;
 
+  /**
+   * Reference to the form component.
+   *
+   * @type {Object|null}
+   */
   #form;
 
   /**
@@ -173,7 +178,7 @@ export class OpenFormStep extends Step {
 
     // Nested forms can be forced by the caller, otherwise infer nesting from the tool stack.
     this.#isContentChild   = context?.isContentChild ?? Tool.Stack.length > 1;
-    this.#layerId          = inputs.layer.getId();
+    this.#layerId          = inputs.layer.getId(); //layer on editing
     this.#features         = this.hasMulti() ? inputs.features : [inputs.features[inputs.features.length - 1]];
     this.#originalFeatures = this.getFeatures().map(f => f.clone());
 
@@ -206,7 +211,7 @@ export class OpenFormStep extends Step {
         });
       }
 
-      const fields      = getFieldsWithValues(
+      const fields = getFieldsWithValues(
         inputs.layer,
         this.getFeatures()[0],
         {
@@ -739,10 +744,10 @@ export class OpenFormStep extends Step {
               try {
                 await Promise.allSettled(
                   [...Tool.Stack.items]
-                    .reverse()
-                    .filter(t => t.getLastStep() instanceof OpenFormStep)
+                    .reverse() //reverse the stack to process the most recent tasks first
+                    .filter(t => t.getLastStep() instanceof OpenFormStep) //filter only tasks with the last step being an OpenFormStep
                     .map(t => new Promise(async (resolve) => {
-                      const task   = t.getLastStep();
+                      const task   = t.getLastStep(); // get last step
                       const fields = t.getContext().service.state.fields.filter(f => task.hasMulti() ? null !== f.value : true);
                       await Tool.Stack.current.getContext().service.saveDefaults();
                       task.getFeatures().forEach(f => this.setFieldsWithValues(f, fields));
