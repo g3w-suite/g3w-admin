@@ -277,7 +277,6 @@ export class OpenFormStep extends Step {
           saveAllEnabled,
           resolve,
           reject,
-          OpenFormStep,
         },
       });
 

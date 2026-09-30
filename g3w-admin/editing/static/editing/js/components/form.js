@@ -9,6 +9,7 @@ import { isPkField }                      from '../utils/isPkField.js';
 import { getCatalogLayerById }            from '../utils/getCatalogLayerById.js';
 import { Tool }                           from '../g3w-tool.js';
 import { Feature }                        from '../g3w-feature.js';
+import { OpenFormStep }                   from '../actions/open-form.js';
 
 const GUI              = g3w.app;
 const ApplicationState = g3w.app.state;
@@ -28,7 +29,6 @@ export default {
     saveAllEnabled:  { type: Boolean, required: true },
     resolve:         { type: Function, required: true },
     reject:          { type: Function, required: true },
-    OpenFormStep:    { type: Function, required: true },
   },
   template: /* html */ `
     <div class="g3wform_content" style="position: relative">
@@ -471,7 +471,7 @@ export default {
       if (this.saveAllError) {
         [...Tool.Stack.items]
           .reverse()
-            .filter(t => t.getLastStep() instanceof this.OpenFormStep)
+            .filter(t => t.getLastStep() instanceof OpenFormStep)
           .forEach(t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo());
       }
           GUI.getPlugin('editing').emit('cancelform', this.inputs.features);
@@ -509,7 +509,7 @@ export default {
         await Promise.allSettled(
           [...Tool.Stack.items]
             .reverse() //reverse the stack to process the most recent tasks first
-            .filter(t => t.getLastStep() instanceof this.OpenFormStep) //filter only tasks with the last step being an OpenFormStep
+            .filter(t => t.getLastStep() instanceof OpenFormStep) //filter only tasks with the last step being an OpenFormStep
             .map(t => new Promise(async (resolve) => {
               const step   = t.getLastStep(); // get last step
               const fields = t.getContext().service.state.fields.filter(f => step.hasMulti() ? null !== f.value : true);
@@ -540,7 +540,7 @@ export default {
         this.saveAllError = false;
         [...Tool.Stack.items]
           .reverse()
-          .filter(t => t.getLastStep() instanceof this.OpenFormStep)
+          .filter(t => t.getLastStep() instanceof OpenFormStep)
           .forEach(t => {
             const step    = t.getLastStep();
             const service = t.getContext().service;
