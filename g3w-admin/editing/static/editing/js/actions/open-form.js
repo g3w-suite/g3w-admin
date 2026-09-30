@@ -300,12 +300,7 @@ export class OpenFormStep extends Step {
       const SELF = this;
 
       this.#form = new Component({ 
-        title:             "plugins.editing.editing_attributes",
-        crumb:             { title: inputs.layer.getName() },
         id:                `form_${inputs.layer.getName()}`,
-        push:              this._options.push || this.hasChild(),         // Keep nested forms above the parent content.
-        showgoback:        this._options?.showgoback ?? !this.hasChild(), // Child forms use the parent navigation.
-        perc:              inputs.layer?.config?.editing?.form?.perc,
         service:           {}, //@TODO CHECK A BETTER WAY TO USE SERVICE STATE
         vueComponentObject: {
           template: /* html */ `
@@ -319,7 +314,7 @@ export class OpenFormStep extends Step {
                   class = "g3wform_header_content"
                   style = "display:flex; justify-content: space-between; align-items: center"
                 >
-                  <span class = "title" :style = "{fontSize: isMobile() && '1em !important'}">
+                  <span v-t:pre = "'plugins.editing.editing_attributes'" class = "g3w-long-text" class = "title" :style = "{fontSize: isMobile() && '1em !important'}">
                     {{ state.name }}
                   </span>
                   <div class = "editing-save-all-form" style = "display: flex;">
@@ -1320,12 +1315,13 @@ export class OpenFormStep extends Step {
       });
 
       GUI.setContent({
-        perc:       this.#form.perc,
-        title:      this.#form?.layer?.getName?.(),
+        perc:       inputs.layer?.config?.editing?.form?.perc,
+        title:      inputs.layer.getName(),
+        crumb:      { title: inputs.layer.getName() },
         content:    this.#form,
         split:      this.#form.split ?? 'h',
-        push:       !!this.#form.push, //only one (if other deletes previous component)
-        showgoback: !!this.#form.showgoback,
+        push:       this._options.push || this.hasChild(),         // Keep nested forms above the parent content.
+        showgoback: this._options?.showgoback ?? !this.hasChild(), // Child forms use the parent navigation.
         closable:   false
       });
 
