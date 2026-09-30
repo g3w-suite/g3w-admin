@@ -1325,7 +1325,7 @@ export class OpenFormStep extends Step {
         closable:   false
       });
 
-      /** @deprecated  ?? */
+      /** used on simplereporting plugin */
       // Notify consumers that the form is ready.
       GUI.getPlugin('editing').emit('openform', {
         layerId:     this.getLayerId(),
