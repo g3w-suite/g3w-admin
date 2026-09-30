@@ -45,8 +45,6 @@ new (class extends Plugin {
 
     /**
      * Global plugin state
-     *
-     * @listens mapcontrol:toggled
      */
     this.state = {
       open:                false, // Whether the editing panel is open.
@@ -73,22 +71,15 @@ new (class extends Plugin {
       show_errors:    false,      // Whether the layer configuration warning was shown.
       panel:          null,       // Current editing panel instance.
       currentLayout:  ApplicationState.layout.__current, // Layout before editing opened.
-      unwatchLayout:  Vue.watch(
-        () => ApplicationState.layout.__current,
-        layoutName => this.state.currentLayout = layoutName !== this.getName() ? layoutName : this.state.currentLayout
-      ),
-      /** @TODO Why the onMapControlToggled function is stored within the state? Is it used by any external plugin? */
-      // Stops the active map tool when a map control is toggled.
-      onMapControlToggled: ({ target }) => {
-        target.isToggled() && target.isClickMap() && this.state?.toolboxselected?.getActiveTool?.() && this.state.toolboxselected.stopActiveTool();
-      },
       stopChain: new Set(), // Layer ids already stopped during relation traversal.
       // BACKOMP v3.x
       subscribers: this.___events,
     };
 
-    // set map control toggle event
-    GUI.on('mapcontrol:toggled', this.state.onMapControlToggled);
+    Vue.watch(
+      () => ApplicationState.layout.__current,
+      layoutName => this.state.currentLayout = layoutName !== this.getName() ? layoutName : this.state.currentLayout
+    );
 
     // skip when no editable layer
     if (getCatalogLayers({ EDITABLE: true }).length) {
@@ -96,6 +87,7 @@ new (class extends Plugin {
     }
 
   }
+
 
   /**
    * Return the plugin service instance used by the plugin registry.
@@ -185,8 +177,10 @@ new (class extends Plugin {
    * @listens addActionsForLayers
    * @listens layer:context-menu
    * @listens map:context-menu
+   * @listens mapcontrol:toggled
    */
   async #init() {
+
     // loop through editable layers and get config to create toolboxes
     for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
@@ -238,6 +232,7 @@ new (class extends Plugin {
     GUI.onafter('addActionsForLayers', this.#onAddActionsForLayers.bind(this));
     GUI.on('layer:context-menu',       this.#onLayerContextMenu.bind(this));
     GUI.on('map:context-menu',         this.#onMapContextMenu.bind(this));
+    GUI.on('mapcontrol:toggled',       this.#onMapControlToggled.bind(this));
 
     // init iframe editor
     if (ApplicationState.iframe) {
@@ -1544,6 +1539,18 @@ new (class extends Plugin {
             }
           })),
     });
+  }
+
+  /**
+   * Stop the active map tool when a click-map control is toggled.
+   *
+   * @param {Object} e Map-control event payload.
+   * @param {Object} e.target Toggled map control.
+   */
+  #onMapControlToggled(e) {
+    if (e.target.isToggled() && e.target.isClickMap() && this.state?.toolboxselected?.getActiveTool?.()) {
+      this.state.toolboxselected.stopActiveTool();
+    }
   }
 
 });
