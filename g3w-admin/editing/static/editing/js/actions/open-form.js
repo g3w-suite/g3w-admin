@@ -255,12 +255,6 @@ export class OpenFormStep extends Step {
         parentData = { feature, qgs_layer_id: layer.getId() };
       }
 
-      const features         = this.getFeatures();
-      const originalFeatures = this.getOriginalFeatures();
-      const isMulti          = this.hasMulti();
-      const isContentChild   = this.hasChild();
-      const saveAllEnabled   = !!this.#saveAll;
-
       this.#form = new Component({ 
         id:                `form_${inputs.layer.getName()}`,
         service:           {}, //@TODO CHECK A BETTER WAY TO USE SERVICE STATE
@@ -268,13 +262,13 @@ export class OpenFormStep extends Step {
         propsData: {
           inputs,
           context,
-          originalFeatures,
+          originalFeatures: this.getOriginalFeatures(),
           parentData,
           form_fields,
-          features,
-          isMulti,
-          isContentChild,
-          saveAllEnabled,
+          features:         this.getFeatures(),
+          isMulti:          this.hasMulti(),
+          isContentChild:   this.hasChild(),
+          saveAllEnabled:   !!this.#saveAll,
           resolve,
           reject,
         },
