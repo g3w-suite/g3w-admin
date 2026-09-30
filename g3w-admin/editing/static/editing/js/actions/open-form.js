@@ -314,7 +314,7 @@ export class OpenFormStep extends Step {
                   class = "g3wform_header_content"
                   style = "display:flex; justify-content: space-between; align-items: center"
                 >
-                  <span v-t:pre = "'plugins.editing.editing_attributes'" class = "g3w-long-text" class = "title" :style = "{fontSize: isMobile() && '1em !important'}">
+                  <span v-t:pre = "'plugins.editing.editing_attributes'" class = "g3w-long-text title" :style = "{fontSize: isMobile() && '1em !important'}">
                     {{ state.name }}
                   </span>
                   <div class = "editing-save-all-form" style = "display: flex;">
