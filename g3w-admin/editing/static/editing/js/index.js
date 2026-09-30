@@ -187,7 +187,7 @@ new (class extends Plugin {
    * @listens map:context-menu
    */
   async #init() {
-    //Loop through editable layers and get config to create toolboxes
+    // loop through editable layers and get config to create toolboxes
     for ( const { status, value, reason } of await Promise.allSettled(
       getCatalogLayers({ EDITABLE: true }, { TOC_ORDER : true })
         .filter(layer => layer.isEditable())
@@ -214,7 +214,7 @@ new (class extends Plugin {
       }
     };
 
-    //wait util application GUI is ready to add sidebar item (left menu) and iframe editor
+    // wait until GUI is ready
     await GUI.isReady();
 
     // add sidebar item (left menu)
@@ -234,257 +234,18 @@ new (class extends Plugin {
       comp.onbefore('setOpen', bool => bool && this.showEditingPanel());
     }
 
-    GUI.onafter('addActionsForLayers', (actions, layers) => {
-      for (const id in actions) {
-        // project layers
-        if (this.getLayerById(id)) {
-          actions[id].push({
-            id:    'editing',
-            class: "fas fa-pencil-alt",
-            hint:  'Editing',
-            state:  Vue.observable({ disabled: this.getToolBoxById(id).state.inediting }), //disable when in editing
-            init() {
-              this.unwatch = Vue.watch(() => GUI.getPlugin('editing').getToolBoxById(id).state.inediting, bool => this.state.disabled = bool );
-            },
-            clear() {
-              this.unwatch && this.unwatch(); // remove action when destroy
-            },
-            cbk: (layer, feature) => GUI.getPlugin('editing').editFeature({ layer, feature }),
-          });
-        }
-        // marker geocoder layer
-        if (id  === '__g3w_marker') {
-          /**
-           * Create new feature on selected Point/Multipoint layer
-           */
-          const editItem = async (layerId, feature) => {
-          
-            // disable ol-gecoder while editing
-            GUI.getMapControlByType('geocoding').element.classList.add('g3w-disabled');
+    // init custom GUI elements
+    GUI.onafter('addActionsForLayers', this.#onAddActionsForLayers.bind(this));
+    GUI.on('layer:context-menu',       this.#onLayerContextMenu.bind(this));
+    GUI.on('map:context-menu',         this.#onMapContextMenu.bind(this));
 
-            try {
-
-              // get a geometry type of target layer
-              const type = getCatalogLayerById(layerId).getGeometryType();
-
-              // create a new editing feature (Point/MultiPoint + safe alias for keys without `raw_` prefix)
-              const _feature = addZValue({
-                geometryType: type,
-                feature:      new ol.Feature({
-                  ...Object.entries(feature.attributes).reduce((acc, attr) => ({ ...acc, [attr[0].replace(feature.attributes.provider + '_', '').toLowerCase()]: attr[1] }), {}),
-                  ...feature.attributes,
-                  geometry: g3w.utils.convertSingleMultiGeometry(feature.geometry, type),
-                }),
-              });
-
-              // start editing session
-              await this.addLayerFeature({ layerId: layerId, feature: _feature });
-
-            } catch(e) {
-              console.warn(e);
-            }
-
-            GUI.getMapControlByType('geocoding').element.classList.remove('g3w-disabled');
-          }
-          /**
-           * Allow user to choose a project layer where to save selected features
-           */
-        
-          const layer = layers.find(l => '__g3w_marker' === l.id);
-
-          // skip when no "g3w_marker" layer or features comes from an elastich search (project layers)
-          if (!layer || layer?.features?.some?.(f => 'qes' === f?.attributes?.provider)) {
-            return;
-          }
-
-          // Get editing layers that has Point/MultiPoint Geometry type
-          const editable_point_layers = ApplicationState.project
-            .getLayers({ EDITABLE: true, GEOLAYER: true })
-            .flatMap(l => /^(Point|MultiPoint)/.test(l.getGeometryType()) ? ({ id: l.getId(), name: l.getName(), inediting: !!l.isInEditing() }) : []);
-
-          // skip adding when there is no editable layer or  editing panel is open (ie. layer is in editing)
-          if (editable_point_layers.find(l => l.inediting)) {
-            return;
-          }
-
-          // Add "choose_layer" action
-          GUI.state.actiontools['choose_layer'] = {
-            [layer.id]: {
-              layers:   editable_point_layers,
-              icon:     'pencil',
-              label:    'Choose a layer where to add this feature',
-              nolayers: 'No editable point layers found on this project',
-              cbk:      editItem,
-            }
-          };
-
-          actions[layer.id] = actions[layer.id] || [];
-          actions[layer.id].push({
-            id:         'choose_layer',
-            class:      "fas fa-pencil-alt",
-            state:      Vue.observable({ toggled: Array(layer.features.length).fill(null) }),
-            toggleable: true,
-            hint:       'Choose a layer',
-            cbk:        (layer, feature, action, index) => {
-              // skip layer choose when there is only a single editable layer
-              if (1 === editable_point_layers.length) {
-                editItem(editable_point_layers[0].id, feature);
-                return;
-              }
-              // let user choose an editable layer
-              action.state.toggled[index] = !action.state.toggled[index];
-
-              const tools   = GUI.state.currentactiontools[layer.id];        // get current action tools
-              const feats   = GUI.state.currentactionfeaturelayer[layer.id];
-              feats[index]  = action.state.toggled[index] ? action : null;
-              tools[index]  = action.state.toggled[index] ? ({
-                name: 'choose_layer',
-                data:() => ({ layerId: null }),
-                props: {
-                  feature: { type: Object },
-                  config:  { type: Object, default: () => ({ icon: 'pencil', label: 'Choose a Layer', nolayers: 'No layers found', layers: [], cbk: () => {} }) },
-                },
-                template: /* html */ `
-                  <section class = "action-choose-layer">
-                    <label v-t = "config.label"></label>
-                    <div
-                      style               = "width: 100%; display: flex"
-                      @click.prevent.stop = ""
-                    >
-                      <x-select
-                        style     = "flex-grow: 1;"
-                        :value    = "layerId"
-                        :disabled = "!has_layers"
-                        @change   = "layerId = $event.target.value"
-                      >
-                        <x-option
-                          v-for  = "layer in config.layers"
-                          :key   = "layer.id"
-                          :value = "layer.id"
-                        >
-                          <b>{{ layer.name }}</b>
-                        </x-option>
-                        <x-option v-if = "!has_layers" :value="null">{{ $t(config.nolayers) }}</x-option>
-                      </x-select>
-                      <button
-                        v-if        = "has_layers"
-                        style       = "border-radius: 0 3px 3px 0;"
-                        class       = "btn skin-button"
-                        @click.stop = "() => config.cbk(layerId, feature)"
-                      >
-                        <span :class = "$fa(config.icon)"></span>
-                      </button>
-                    </div>
-                  </section>`,
-                  computed: {
-                    has_layers() {
-                      return this.config.layers && this.config.layers.length > 0; 
-                    },
-                  },
-                  created() {
-                    if (this.has_layers) {
-                      this.layerId = this.config.layers[0].id;
-                    }
-                  },
-              }) : null;                                      // set component
-
-              // need to check if pass component and
-              if (
-                tools[index] &&                   // if component is set
-                action.id !== feats[index].id &&  // same action
-                feats[index].toggleable           // check if toggleable
-              ) {
-                feats[index].state.toggled[index] = false;
-              }
-
-            },
-          });
-        }
-      }
-
-    })
-
-    /** Add the layer editing action to the layer context menu. */
-    GUI.on('layer:context-menu', menu => {
-      menu.items.push({
-        icon: 'fas fa-pencil-alt',
-        label: _('Edit Layer'),
-        cbk: () => {
-          this.showPanel({ toolboxes: [menu.layer.id] });
-          this.startEditing(menu.layer.id);
-          //dispatch escape key event to close any open modals or panels
-          document.dispatchEvent(new KeyboardEvent('keyup', {
-            key: 'Escape',
-            code: 'Escape',
-            keyCode: 27,
-            which: 27,
-            bubbles: true, // Permette all'evento di risalire il DOM
-            cancelable: true
-          }));
-        },
-        position: 10,
-      });
-    });
-
-    /** Add layer editing actions to the map context menu. */
-    GUI.on('map:context-menu', async menu => {
-      // skip if editing panel is open
-      if (this.state.panel) {
-        return
-      }
-      menu.items.push({
-        icon: 'fas fa-pencil-alt',
-        label: _('Edit Layer'),
-        position: 0,
-        children:
-          Object
-            .entries(this.getEditableLayers()).filter(([_, layer]) => 'vector' === layer.getType())
-            .map(([id, layer]) => ({
-              label: layer.getName(),
-              cbk: async () => {
-                let filter;
-                if (2 === menu.map_coords.length) {
-                  try {
-                    const response = await GUI.getData('query:coordinates', {
-                      inputs: {
-                        coordinates:           menu.map_coords,
-                        feature_count:         ApplicationState.project.state.feature_count || 5,
-                        query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
-                        layerIds:              [layer.getId()], //get layerId of editibale layers
-                      },
-                      outputs: false // no content is show
-                    });
-                    if (response?.result && response?.data?.length && response?.data[0]?.features?.length) {
-                      filter = { fids: response?.data[0]?.features.map(f => f.getId()).join(',') }
-                    }
-                  } catch(e) {
-                    console.warn('Error running spatial query: ', e);
-                  }
-                }
-                this.showPanel({ toolboxes: [id] });
-                this.startEditing(id, { filter });
-                //dispatch escape key event to close any open modals or panels
-                document.dispatchEvent(new KeyboardEvent('keyup', {
-                  key: 'Escape',
-                  code: 'Escape',
-                  keyCode: 27,
-                  which: 27,
-                  bubbles: true, // Permette all'evento di risalire il DOM
-                  cancelable: true
-                }));
-              }
-            })),
-      });
-    });
-
-
+    // init iframe editor
     if (ApplicationState.iframe) {
       new (await import('./g3w-iframe.js')).IframeEditor(this);
     }
 
     this.setReady(true);
   }
-
 
   /**
    * [API Method] Return the feature currently displayed by the active editing tool.
@@ -1528,6 +1289,261 @@ new (class extends Plugin {
         ];
       })
     );
+  }
+
+  /**
+   * Register editing actions for project layers and geocoder results.
+   *
+   * @param {Object<string, Array<Object>>} actions Actions grouped by layer id.
+   * @param {Array<Object>} layers Layers included in the action registration.
+   */
+  #onAddActionsForLayers(actions, layers) {
+    for (const id in actions) {
+      // project layers
+      if (this.getLayerById(id)) {
+        actions[id].push({
+          id:    'editing',
+          class: "fas fa-pencil-alt",
+          hint:  'Editing',
+          state:  Vue.observable({ disabled: this.getToolBoxById(id).state.inediting }), //disable when in editing
+          init() {
+            this.unwatch = Vue.watch(() => GUI.getPlugin('editing').getToolBoxById(id).state.inediting, bool => this.state.disabled = bool );
+          },
+          clear() {
+            this.unwatch && this.unwatch(); // remove action when destroy
+          },
+          cbk: (layer, feature) => GUI.getPlugin('editing').editFeature({ layer, feature }),
+        });
+      }
+      // marker geocoder layer
+      if (id  === '__g3w_marker') {
+        /**
+         * Create new feature on selected Point/Multipoint layer
+         */
+        const editItem = async (layerId, feature) => {
+
+          // disable ol-gecoder while editing
+          GUI.getMapControlByType('geocoding').element.classList.add('g3w-disabled');
+
+          try {
+
+            // get a geometry type of target layer
+            const type = getCatalogLayerById(layerId).getGeometryType();
+
+            // create a new editing feature (Point/MultiPoint + safe alias for keys without `raw_` prefix)
+            const _feature = addZValue({
+              geometryType: type,
+              feature:      new ol.Feature({
+                ...Object.entries(feature.attributes).reduce((acc, attr) => ({ ...acc, [attr[0].replace(feature.attributes.provider + '_', '').toLowerCase()]: attr[1] }), {}),
+                ...feature.attributes,
+                geometry: g3w.utils.convertSingleMultiGeometry(feature.geometry, type),
+              }),
+            });
+
+            // start editing session
+            await this.addLayerFeature({ layerId: layerId, feature: _feature });
+          } catch(e) {
+            console.warn(e);
+          }
+
+          GUI.getMapControlByType('geocoding').element.classList.remove('g3w-disabled');
+        }
+
+        /**
+         * Allow user to choose a project layer where to save selected features
+         */
+
+        const layer = layers.find(l => '__g3w_marker' === l.id);
+
+        // skip when no "g3w_marker" layer or features comes from an elastich search (project layers)
+        if (!layer || layer?.features?.some?.(f => 'qes' === f?.attributes?.provider)) {
+          return;
+        }
+
+        // Get editing layers that has Point/MultiPoint Geometry type
+        const editable_point_layers = ApplicationState.project
+          .getLayers({ EDITABLE: true, GEOLAYER: true })
+          .flatMap(l => /^(Point|MultiPoint)/.test(l.getGeometryType()) ? ({ id: l.getId(), name: l.getName(), inediting: !!l.isInEditing() }) : []);
+
+        // skip adding when there is no editable layer or  editing panel is open (ie. layer is in editing)
+        if (editable_point_layers.find(l => l.inediting)) {
+          return;
+        }
+
+        // Add "choose_layer" action
+        GUI.state.actiontools['choose_layer'] = {
+          [layer.id]: {
+            layers:   editable_point_layers,
+            icon:     'pencil',
+            label:    'Choose a layer where to add this feature',
+            nolayers: 'No editable point layers found on this project',
+            cbk:      editItem,
+          }
+        };
+
+        actions[layer.id] = actions[layer.id] || [];
+        actions[layer.id].push({
+          id:         'choose_layer',
+          class:      "fas fa-pencil-alt",
+          state:      Vue.observable({ toggled: Array(layer.features.length).fill(null) }),
+          toggleable: true,
+          hint:       'Choose a layer',
+          cbk:        (layer, feature, action, index) => {
+            // skip layer choose when there is only a single editable layer
+            if (1 === editable_point_layers.length) {
+              editItem(editable_point_layers[0].id, feature);
+              return;
+            }
+            // let user choose an editable layer
+            action.state.toggled[index] = !action.state.toggled[index];
+
+            const tools   = GUI.state.currentactiontools[layer.id];        // get current action tools
+            const feats   = GUI.state.currentactionfeaturelayer[layer.id];
+            feats[index]  = action.state.toggled[index] ? action : null;
+            tools[index]  = action.state.toggled[index] ? ({
+              name: 'choose_layer',
+              data:() => ({ layerId: null }),
+              props: {
+                feature: { type: Object },
+                config:  { type: Object, default: () => ({ icon: 'pencil', label: 'Choose a Layer', nolayers: 'No layers found', layers: [], cbk: () => {} }) },
+              },
+              template: /* html */ `
+                <section class = "action-choose-layer">
+                  <label v-t = "config.label"></label>
+                  <div
+                    style               = "width: 100%; display: flex"
+                    @click.prevent.stop = ""
+                  >
+                    <x-select
+                      style     = "flex-grow: 1;"
+                      :value    = "layerId"
+                      :disabled = "!has_layers"
+                      @change   = "layerId = $event.target.value"
+                    >
+                      <x-option
+                        v-for  = "layer in config.layers"
+                        :key   = "layer.id"
+                        :value = "layer.id"
+                      >
+                        <b>{{ layer.name }}</b>
+                      </x-option>
+                      <x-option v-if = "!has_layers" :value="null">{{ $t(config.nolayers) }}</x-option>
+                    </x-select>
+                    <button
+                      v-if        = "has_layers"
+                      style       = "border-radius: 0 3px 3px 0;"
+                      class       = "btn skin-button"
+                      @click.stop = "() => config.cbk(layerId, feature)"
+                    >
+                      <span :class = "$fa(config.icon)"></span>
+                    </button>
+                  </div>
+                </section>`,
+                computed: {
+                  has_layers() {
+                    return this.config.layers && this.config.layers.length > 0;
+                  },
+                },
+                created() {
+                  if (this.has_layers) {
+                    this.layerId = this.config.layers[0].id;
+                  }
+                },
+            }) : null;                                      // set component
+
+            // need to check if pass component and
+            if (
+              tools[index] &&                   // if component is set
+              action.id !== feats[index].id &&  // same action
+              feats[index].toggleable           // check if toggleable
+            ) {
+              feats[index].state.toggled[index] = false;
+            }
+          },
+        });
+      }
+    }
+  }
+
+  /**
+   * Add the edit command to a layer context menu.
+   *
+   * @param {Object} menu Layer context menu, including the target layer.
+   */
+  #onLayerContextMenu(menu) {
+    menu.items.push({
+      icon: 'fas fa-pencil-alt',
+      label: _('Edit Layer'),
+      cbk: () => {
+        this.showPanel({ toolboxes: [menu.layer.id] });
+        this.startEditing(menu.layer.id);
+        //dispatch escape key event to close any open modals or panels
+        document.dispatchEvent(new KeyboardEvent('keyup', {
+          key: 'Escape',
+          code: 'Escape',
+          keyCode: 27,
+          which: 27,
+          bubbles: true, // Permette all'evento di risalire il DOM
+          cancelable: true
+        }));
+      },
+      position: 10,
+    });
+  }
+
+  /**
+   * Add edit commands for vector layers to the map context menu.
+   *
+   * @param {Object} menu Map context menu, including map coordinates.
+   */
+  async #onMapContextMenu(menu) {
+    // skip if editing panel is open
+    if (this.state.panel) {
+      return
+    }
+    menu.items.push({
+      icon: 'fas fa-pencil-alt',
+      label: _('Edit Layer'),
+      position: 0,
+      children:
+        Object
+          .entries(this.getEditableLayers()).filter(([_, layer]) => 'vector' === layer.getType())
+          .map(([id, layer]) => ({
+            label: layer.getName(),
+            cbk: async () => {
+              let filter;
+              if (2 === menu.map_coords.length) {
+                try {
+                  const response = await GUI.getData('query:coordinates', {
+                    inputs: {
+                      coordinates:           menu.map_coords,
+                      feature_count:         ApplicationState.project.state.feature_count || 5,
+                      query_point_tolerance: ApplicationState.project.getQueryPointTolerance(),
+                      layerIds:              [layer.getId()], //get layerId of editibale layers
+                    },
+                    outputs: false // no content is show
+                  });
+                  if (response?.result && response?.data?.length && response?.data[0]?.features?.length) {
+                    filter = { fids: response?.data[0]?.features.map(f => f.getId()).join(',') }
+                  }
+                } catch(e) {
+                  console.warn('Error running spatial query: ', e);
+                }
+              }
+              this.showPanel({ toolboxes: [id] });
+              this.startEditing(id, { filter });
+              //dispatch escape key event to close any open modals or panels
+              document.dispatchEvent(new KeyboardEvent('keyup', {
+                key: 'Escape',
+                code: 'Escape',
+                keyCode: 27,
+                which: 27,
+                bubbles: true, // Permette all'evento di risalire il DOM
+                cancelable: true
+              }));
+            }
+          })),
+    });
   }
 
 });
