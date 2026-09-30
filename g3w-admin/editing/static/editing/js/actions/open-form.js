@@ -565,7 +565,7 @@ export class OpenFormStep extends Step {
                 layerId:  SELF.getLayerId(),
                 features: newFeatures,
                 fields:   this.state.fields,
-                task:     this,
+                step:     this,
               });
 
               GUI.getPlugin('editing').emit('savedfeature', newFeatures);
@@ -590,14 +590,14 @@ export class OpenFormStep extends Step {
              * @param {string|number} options.layerId Root layer ID.
              * @param {Object[]} [options.features=[]] Updated or newly created root features.
              * @param {Object[]} [options.fields=[]] Root form fields.
-             * @param {Object} options.task Current form step, used to access its toolbox.
+             * @param {Object} options.step Current form step, used to access its toolbox.
              * @returns {Promise<void>} Resolves after all 1:1 relations are processed.
              */
             async handleRelation1_1LayerFields({
               layerId,
               features = [],
               fields   = [],
-              task
+              step
             } = {}) {
 
               // There is no relation work to perform without a staged root feature.
@@ -685,11 +685,11 @@ export class OpenFormStep extends Step {
                             childFeature.set(childField, features[0].getId()); // set temporary
                           }
 
-                          GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushAdd(childLayerId, newChild, false);
+                          GUI.getPlugin('editing').getToolBoxById(step.getContext().id).pushAdd(childLayerId, newChild, false);
 
                         } else {
                           source.updateFeature(newChild);
-                          GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(childLayerId, newChild, childFeature);
+                          GUI.getPlugin('editing').getToolBoxById(step.getContext().id).pushUpdate(childLayerId, newChild, childFeature);
 
                         }
                       }
@@ -747,20 +747,23 @@ export class OpenFormStep extends Step {
                     .reverse() //reverse the stack to process the most recent tasks first
                     .filter(t => t.getLastStep() instanceof OpenFormStep) //filter only tasks with the last step being an OpenFormStep
                     .map(t => new Promise(async (resolve) => {
-                      const task   = t.getLastStep(); // get last step
-                      const fields = t.getContext().service.state.fields.filter(f => task.hasMulti() ? null !== f.value : true);
+                      const step   = t.getLastStep(); // get last step
+                      const fields = t.getContext().service.state.fields.filter(f => step.hasMulti() ? null !== f.value : true);
                       await Tool.Stack.current.getContext().service.saveDefaults();
-                      task.getFeatures().forEach(f => this.setFieldsWithValues(f, fields));
-                      const newFeatures = task.getFeatures().map(f => f.clone());
-                      if (task.hasChild()) {
-                        task.getInputs().relationFeatures = { newFeatures, originalFeatures: task.getOriginalFeatures() };
+                      step.getFeatures().forEach(f => this.setFieldsWithValues(f, fields));
+                      //clone the features to create new instances
+                      const newFeatures = step.getFeatures().map(f => f.clone());
+                      if (step.hasChild()) {
+                        step.getInputs().relationFeatures = { newFeatures, originalFeatures: step.getOriginalFeatures() };
                       }
-                      await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: task.getOriginalFeatures() });
-                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(task.getContext().id).pushUpdate(task.getLayerId(), f, task.getOriginalFeatures()[i]));
-                      await this.handleRelation1_1LayerFields({ layerId: task.getLayerId(), features: newFeatures, fields, task });
+                      await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: step.getOriginalFeatures() });
+                      //context.id is the the of parent layer, instead getLayerId() is the id of relation layer
+                      newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(step.getContext().id).pushUpdate(step.getLayerId(), f, step.getOriginalFeatures()[i]));
+                      await this.handleRelation1_1LayerFields({ layerId: step.getLayerId(), features: newFeatures, fields, step });
                       GUI.getPlugin('editing').emit('savedfeature', newFeatures);
-                      GUI.getPlugin('editing').emit(`savedfeature_${task.getLayerId()}`, newFeatures);
-                      GUI.getPlugin('editing').getToolBoxById(task.getContext().id).saveChanges();
+                      GUI.getPlugin('editing').emit(`savedfeature_${step.getLayerId()}`, newFeatures);
+                      //save changes to the parent layer's toolbox
+                      GUI.getPlugin('editing').getToolBoxById(step.getContext().id).saveChanges();
                       resolve();
                     }))
                 );
@@ -775,6 +778,7 @@ export class OpenFormStep extends Step {
                   .reverse()
                   .filter(t => t.getLastStep() instanceof OpenFormStep)
                   .forEach(t => {
+                    const step    = t.getLastStep();
                     const service = t.getContext().service;
                     service.setUpdate(false, { force: false });
                     const feature = service.state.feature;
@@ -783,7 +787,7 @@ export class OpenFormStep extends Step {
                       service.state.force.update = false;
                     }
                     Object.entries(
-                      GUI.getPlugin('editing').getToolBoxById(t.getInputs().layer.getId()).readEditingFeatures()
+                      GUI.getPlugin('editing').getToolBoxById(step.getLayerId()).readEditingFeatures()
                         .find(f => f.getUid() === feature.getUid())
                         .getProperties()
                     ).forEach(([k, v]) => {
