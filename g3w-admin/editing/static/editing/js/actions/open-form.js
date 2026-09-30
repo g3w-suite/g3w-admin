@@ -40,8 +40,6 @@ export class OpenFormStep extends Step {
    */
   #multi;
 
-  
-
   /**
    * Whether the form was opened as a child of another editing form.
    *
@@ -901,7 +899,7 @@ export class OpenFormStep extends Step {
               if (input) {
                 if (input.validate.mutually && !input.validate.required && !input.validate.empty) {
                   input.validate._valid         = input.validate.valid;
-                  input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && this.#form.tovalidate[inputname].validate.empty, true);
+                  input.validate.mutually_valid = input.validate.mutually.reduce((previous, inputname) => previous && this.state.tovalidate[inputname].validate.empty, true);
                   input.validate.valid          = input.validate.mutually_valid && input.validate.valid;
                 }
                 if (input.validate.mutually && !input.validate.required && input.validate.empty) {
@@ -1358,97 +1356,6 @@ export class OpenFormStep extends Step {
     }
     // sort alphanumeric array
     return values.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-  }
-
-
-  /**
-   * Fetches features matching a QGIS filter expression and refreshes
-   * autocomplete values when the field uses that input type.
-   *
-  * @param {Object} field Field whose filter expression is evaluated.
-   *
-   * @returns {Promise<Array>} features returned by the vector data endpoint
-   */
-  async #getFilterExpression(field) {
-    const feature      = this.#form.feature;
-    const qgs_layer_id = this.#form.layer.getId();
-    const parentData   = this.#form.parentData;
-    const {
-      key,
-      value,
-      layer_id = qgs_layer_id,
-      filter_expression,
-      loading,
-      orderbyvalue
-    } = field.input.options;
-
-    if (!filter_expression) {
-      console.warn('No filter expression provided for field:', field.name);
-      return [];
-    }
-
-    loading.state = 'loading';
-
-    try {
-      let features;
-      const response = await XHR.post({
-        url:         `${ApplicationState.project.getUrl('vector_data')}${layer_id}/`,
-        contentType: 'application/json',
-        data:        JSON.stringify({
-          field_name:  field.name,
-          layer_id,
-          qgs_layer_id,
-          form_data: (new ol.format.GeoJSON()).writeFeatureObject(feature),
-          parent: parentData && ({
-            form_data:    (new ol.format.GeoJSON()).writeFeatureObject(parentData.feature),
-            qgs_layer_id: parentData.qgs_layer_id,
-            formatter:    0,
-          }),
-          formatter:  0,
-          expression: filter_expression.expression,
-          ordering:   [undefined, false].includes(orderbyvalue) ? key : value,
-        }),
-      });
-      if (response.result) {
-        features = response.vector?.data?.features ?? [];
-      } else {
-        throw JSON.stringify(response.error);
-      }
-
-      if ('select_autocomplete' === field.input.type) {
-        field.input.options.values = [];
-        // Temporary array used to map feature properties to input options.
-        const values = [];
-        for (let i = 0; i < features.length; i++) {
-          values.push({
-            key:   features[i].properties[value],
-            value: features[i].properties[key]
-          })
-        }
-
-        // Preserve the current display value when the form has parent data.
-        if (parentData && null !== field.value) {
-          field.value = values.find(({ key }) => key == field.value)?.value ?? field.value;
-        }
-
-        // Avoid adding a synthetic option for an already-expanded multi-value.
-        if (field.value && !(field.input.options.allowmulti && /^\{.*\}$/.test(`${field.value}`)) && !values.find(({ value }) => value == field.value)) {
-          values.unshift({ key: `(${field.value})`, value: field.value, });
-        }
-
-        field.input.options.values = values;
-        // Keep the editing plugin's field definition in sync with the form.
-        const editing_field = parentData && GUI.getPlugin('editing')?.getEditingFields?.(qgs_layer_id)?.find?.(f => f.name === field.name);
-        if (editing_field) { editing_field.input.options.values = values; }
-      }
-
-      return features;
-    } catch(e) {
-      console.warn(e);
-      return Promise.reject(e);
-    } finally {
-      loading.state = 'ready';
-    }
   }
 
 }
