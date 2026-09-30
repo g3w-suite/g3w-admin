@@ -1358,9 +1358,6 @@ export class OpenFormStep extends Step {
    * @returns {void}
    */
   stop() {
-    if (!this.hasChild()) {
-      GUI.disableSideBar(false);
-    }
 
     // Keep the map controls and modal state for top-level forms and table editing.
     // Some actions resolve before creating a form service, for example when copying multiple features from another layer.
@@ -1371,6 +1368,7 @@ export class OpenFormStep extends Step {
 
     // Clear the parent form's update state when this is a top-level form.
     if (!this.hasChild()) {
+      GUI.disableSideBar(false);
       Tool.Stack.current?.getContext?.()?.service?.setUpdate?.(false, { force: false });
     }
 
