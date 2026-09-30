@@ -131,7 +131,7 @@ export default {
           </div>
         </form>
         <keep-alive>
-          <g3w-editing-relation v-if = "state.relation"
+          <relation           v-if = "state.relation"
             :key              = "state.relation.relation.id"
             :layer-id         = "state.layerid"
             :relation         = "state.relation.relation"
@@ -193,13 +193,13 @@ export default {
       * 
       * @type {Object<string, string[]>}
       */
-      filter_deps: {},
+      filter_deps:        {},
       /**
        * Fields whose default expressions depend on each source field name.
        *
        * @type {Object<string, string[]>}
        */
-      default_deps: {},
+      default_deps:       {},
       /**
        * Fields with default expressions configured to run on update.
        *
@@ -211,14 +211,14 @@ export default {
        *
        * @type {boolean}
        */
-      saveAllError: false,
+      saveAllError:       false,
       /**
        * Watchers registered for relation 1:1 fields.
        *
        * @type {Array<() => void>}
        */
-      unwatches: [],
-      state: {
+      unwatches:          [],
+      state:              {
         name:              this.inputs.layer.getName(),
         feature:           this.originalFeatures[0].clone(),
         isCoreFormService: true,
@@ -250,8 +250,8 @@ export default {
   },
   transitions: { 'addremovetransition': 'showhide' },
   components: {
-		'g3w-input':        G3WInput,
-    G3wEditingRelation: () => import('../components/relation.js'),
+		'g3w-input': G3WInput,
+    relation:    () => import('../components/relation.js'),
   },
   computed: {
     isRoot()          { return !this.state.relation; },
