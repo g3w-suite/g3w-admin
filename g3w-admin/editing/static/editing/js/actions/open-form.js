@@ -1325,16 +1325,16 @@ export class OpenFormStep extends Step {
         closable:   false
       });
 
+      /** @deprecated  ?? */
       // Notify consumers that the form is ready.
       GUI.getPlugin('editing').emit('openform', {
-        layerId: this.getLayerId(),
-        feature: this.getOriginalFeatures()[0],
+        layerId:     this.getLayerId(),
+        feature:     this.getOriginalFeatures()[0],
         formService: this.#form.internalComponent
       });
 
       // Attach the service when this step is running without a tool wrapper.
       Tool.Stack?.current?.setContextService?.(this.#form.internalComponent);
-
 
       if (!this.hasChild()) {
         GUI.disableSideBar(true);
