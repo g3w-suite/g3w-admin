@@ -187,7 +187,6 @@ export default {
   `,
   name: 'g3w-form',
   data() {
-    const { inputs, context, originalFeatures, parentData, form_fields, features, isMulti, isContentChild, saveAllEnabled } = this;
     return {
       /**
       * Fields whose filter options depend on each source field name.
@@ -220,32 +219,32 @@ export default {
        */
       unwatches: [],
       state: {
-        name:              inputs.layer.getName(),
-        feature:           originalFeatures[0].clone(),
+        name:              this.inputs.layer.getName(),
+        feature:           this.originalFeatures[0].clone(),
         isCoreFormService: true,
         formId:            undefined,
-        force:             { update: originalFeatures[0].isNew(), valid:  false },
-        layer:             inputs.layer,
-        isnew:             originalFeatures.length > 1 ? false : originalFeatures[0].isNew(), // Multi-edit forms never represent a single new feature.
-        parentData,
-        fields:            form_fields,
-        context_inputs:    isMulti ? false: { context, inputs },
+        force:             { update: this.originalFeatures[0].isNew(), valid:  false },
+        layer:             this.inputs.layer,
+        isnew:             this.originalFeatures.length > 1 ? false : this.originalFeatures[0].isNew(), // Multi-edit forms never represent a single new feature.
+        parentData:        this.parentData,
+        fields:            this.form_fields,
+        context_inputs:    this.isMulti ? false: { context: this.context, inputs: this.inputs },
         modal:             true,
-        layerid:           inputs.layer.getId(),
+        layerid:           this.inputs.layer.getId(),
         loading:           false,
         relation:          null,
         disabled:          false,
         valid:             true,
-        update:            originalFeatures[0].isNew(),
+        update:            this.originalFeatures[0].isNew(),
         tovalidate:        {},
         footer:            {},
         ready:             false,
-        features,
-        originalFeatures,
-        isMulti,
-        isContentChild,
-        saveAllEnabled,
-        form_structure:    inputs.layer.hasFormStructure() && inputs.layer.getLayerEditingFormStructure() || undefined,
+        features:          this.features,
+        originalFeatures:  this.originalFeatures,
+        isMulti:           this.isMulti,
+        isContentChild:    this.isContentChild,
+        saveAllEnabled:    this.saveAllEnabled,
+        form_structure:    this.inputs.layer.hasFormStructure() && this.inputs.layer.getLayerEditingFormStructure() || undefined,
       }
     }   
   },
