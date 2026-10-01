@@ -294,7 +294,6 @@ export class OpenFormStep extends Step {
       GUI.getPlugin('editing').emit('openform', {
         layerId:     this.getLayerId(),
         feature:     this.getOriginalFeatures()[0],
-        formService: this.#form.internalComponent
       });
 
       // Attach the service when this step is running without a tool wrapper.
