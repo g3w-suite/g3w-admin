@@ -935,7 +935,7 @@ export default ({
               ) {
                 Tool.Stack.items
                   .map(t => t.getLastStep()?.getForm?.())
-                  .filter(form => form?.state?.isCoreFormService)
+                  .filter(Boolean)
                   .forEach(form => setTimeout(() => form.state.update = false));
               } else {
                 //set parent tool update to enable to save all buttons

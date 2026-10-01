@@ -225,7 +225,6 @@ export default {
       state:              {
         name:              this.inputs.layer.getName(),
         feature:           this.feature,
-        isCoreFormService: true,
         formId:            undefined,
         force:             { update: this.originalFeatures[0].isNew(), valid:  false },
         layer:             this.inputs.layer,
