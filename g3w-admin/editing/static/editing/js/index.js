@@ -1466,6 +1466,10 @@ new (class extends Plugin {
    * @param {Object} menu Layer context menu, including the target layer.
    */
   #onLayerContextMenu(menu) {
+    // skip external layers
+    if (menu.layer.external) {
+      return; 
+    }
     menu.items.push({
       icon: 'fas fa-pencil-alt',
       label: _('Edit Layer'),
