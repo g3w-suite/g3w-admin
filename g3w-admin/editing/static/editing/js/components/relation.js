@@ -934,8 +934,9 @@ export default ({
                 && undefined === Tool.Stack.items.find(i => i.state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
               ) {
                 Tool.Stack.items
-                  .filter(t => t.getContext().service?.state?.isCoreFormService)
-                  .forEach(t => setTimeout(() => t.getLastStep()?.getForm()?.state.update = false));
+                  .map(t => t.getLastStep()?.getForm?.())
+                  .filter(form => form?.state?.isCoreFormService)
+                  .forEach(form => setTimeout(() => form.state.update = false));
               } else {
                 //set parent tool update to enable to save all buttons
                 Tool.Stack.items.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
@@ -962,10 +963,8 @@ export default ({
               getFieldsWithValues(this.getLayer(), relationfeature, { relation: true })
                 .forEach(f => {
                   relation.fields
-                    .forEach(rf => {
-                      //in case of sync feature get data value of sync feature
-                      if (rf.name === f.name) { rf.value = f.value; }
-                    })
+                     //in case of sync feature get data value of sync feature
+                    .forEach(rf => { if ( f.name === rf.name) { rf.value = f.value; } })
                 });
               d.resolve(true);
             } catch(e) {
