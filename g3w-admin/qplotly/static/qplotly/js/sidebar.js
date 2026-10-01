@@ -79,7 +79,7 @@ export default ({
     id        = "no_plots"
     class     = "skin-color"
   >  
-    <bar-loader style = "align-self: flex-start;" :loading = "service.state.loading"/>
+    <div v-if = "service.state.loading" class = "bar-loader" style = "align-self: flex-start; border: 0"></div>
     <h4 v-if = "!service.state.loading"  v-t-plugin = "'qplotly.no_plots'"></h4>
   </div>
 
