@@ -306,12 +306,11 @@ export default {
       await GUI.getPlugin('editing').emit('saveform', { newFeatures, originalFeatures: this.state.originalFeatures });
 
       newFeatures.forEach((f, i) => GUI.getPlugin('editing').getToolBoxById(this.context.id).pushUpdate(this.state.layerid, f, this.state.originalFeatures[i]));
-
       await this.handleRelation1_1LayerFields({
         layerId:  this.state.layerid,
         features: newFeatures,
         fields:   this.state.fields,
-        step:     this,
+        step:     Tool.Stack.current.getLastStep(),
       });
 
       GUI.getPlugin('editing').emit('savedfeature', newFeatures);
@@ -564,7 +563,7 @@ export default {
      */
     setUpdate(bool = false, options = {}) {
       this.state.force.update = options.force ?? false;
-      this.state.update = this.state.force.update || bool;
+      this.state.update       = this.state.force.update || bool;
       if (false === this.state.update) {
         this.state.fields.forEach(field => field._value = field.value);
       }
