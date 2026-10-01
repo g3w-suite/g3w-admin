@@ -935,10 +935,10 @@ export default ({
               ) {
                 Tool.Stack.items
                   .filter(t => t.getContext().service?.state?.isCoreFormService)
-                  .forEach(t => setTimeout(() => t.getContext().service.state.update = false));
+                  .forEach(t => setTimeout(() => t.getLastStep()?.getForm()?.state.update = false));
               } else {
                 //set parent tool update to enable to save all buttons
-                Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                Tool.Stack.items.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
               }
 
               d.resolve(ok);
@@ -973,7 +973,7 @@ export default ({
               //need to rollback changes done at moment
               GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).rollback();
               //reset eventually state of form parent service (save changes or not)
-              Tool.Stack.parents?.forEach(t => t?.getContext?.()?.service?.setUpdate?.( t?.getContext?.()?.service?.state?.fields.some(f => f.update), { force: false }));
+              Tool.Stack.parents?.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.( t?.getLastStep?.()?.getForm?.()?.state?.fields.some(f => f.update), { force: false }));
               d.reject(e);
             }
 
@@ -1024,7 +1024,7 @@ export default ({
             try {
               await tool.start(options);
 
-              Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+              Tool.Stack.parents.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
               d.resolve(true);
               setTimeout(() => this.startTool(relationtool, index));
             } catch(e) {
@@ -1240,7 +1240,7 @@ export default ({
         }
 
         if (linked) {
-          Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+          Tool.Stack.items.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
         }
 
         tool.stop();

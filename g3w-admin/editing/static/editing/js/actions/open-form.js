@@ -327,7 +327,7 @@ export class OpenFormStep extends Step {
     // Clear the parent form's update state when this is a top-level form.
     if (!this.hasChild()) {
       GUI.disableSideBar(false);
-      Tool.Stack.current?.getContext?.()?.service?.setUpdate?.(false, { force: false });
+      Tool.Stack.current?.getLastStep?.()?.getForm?.()?.setUpdate?.(false, { force: false });
     }
 
     // Nested relation forms may leave other content open in the modal.
