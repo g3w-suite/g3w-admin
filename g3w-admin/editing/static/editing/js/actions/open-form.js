@@ -118,6 +118,13 @@ export class OpenFormStep extends Step {
   }
 
   /**
+   * @returns {Object|null} Vue instance of the opened form.
+   */
+  getForm() {
+    return this.#form?.internalComponent ?? null;
+  }
+
+  /**
    * Opens the form, loads dependent relation features and wires save/cancel
    * handlers to the editing plugin.
    *
@@ -295,9 +302,6 @@ export class OpenFormStep extends Step {
         layerId:     this.getLayerId(),
         feature:     this.getOriginalFeatures()[0],
       });
-
-      // Attach the service when this step is running without a tool wrapper.
-      Tool.Stack?.current?.setContextService?.(this.#form.internalComponent);
 
       if (!this.hasChild()) {
         GUI.disableSideBar(true);

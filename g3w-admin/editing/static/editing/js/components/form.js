@@ -266,7 +266,7 @@ export default {
       return !(Tool.Stack.items
         .slice(0, Tool.Stack.length - 1)
         .every(t => {
-          const valid = ((t.getContext()?.service?.state?.isCoreFormService) ? t.getContext().service.state : {}).valid;
+          const valid = t.getLastStep() instanceof OpenFormStep ? t.getLastStep().getForm()?.state.valid : undefined;
           return valid || undefined === valid;
         })) || !(this.state.valid && this.state.update);
     },
@@ -317,7 +317,7 @@ export default {
       GUI.getPlugin('editing').emit(`savedfeature_${this.state.layerid}`, newFeatures);
 
       if (this.state.isContentChild) {
-        Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+        Tool.Stack.parents.forEach(t => t?.getLastStep()?.getForm()?.setUpdate?.(true, { force: true }));
       }
 
       GUI.setLoadingContent(false);
@@ -492,9 +492,10 @@ export default {
             .reverse() //reverse the stack to process the most recent tasks first
             .filter(t => t.getLastStep() instanceof OpenFormStep) //filter only tasks with the last step being an OpenFormStep
             .map(t => new Promise(async (resolve) => {
-              const step   = t.getLastStep(); // get last step
-              const fields = t.getContext().service.state.fields.filter(f => step.hasMulti() ? null !== f.value : true);
-              await Tool.Stack.current.getContext().service.saveDefaults();
+              const step   = t.getLastStep();
+              const form   = step.getForm();
+              const fields = form.state.fields.filter(f => step.hasMulti() ? null !== f.value : true);
+              await form.saveDefaults();
               step.getFeatures().forEach(f => this.setFieldsWithValues(f, fields));
               //clone the features to create new instances
               const newFeatures = step.getFeatures().map(f => f.clone());
@@ -524,19 +525,19 @@ export default {
           .filter(t => t.getLastStep() instanceof OpenFormStep)
           .forEach(t => {
             const step    = t.getLastStep();
-            const service = t.getContext().service;
-            service.setUpdate(false, { force: false });
-            const feature = service.state.feature;
+            const form    = step.getForm();
+            form.setUpdate(false, { force: false });
+            const feature = form.state.feature;
             if (feature.isNew()) {
               feature.state.new          = false;
-              service.state.force.update = false;
+              form.state.force.update = false;
             }
             Object.entries(
               GUI.getPlugin('editing').getToolBoxById(step.getLayerId()).readEditingFeatures()
                 .find(f => f.getUid() === feature.getUid())
                 .getProperties()
             ).forEach(([k, v]) => {
-              const field = service.state.fields.find(f => k === f.name);
+              const field = form.state.fields.find(f => k === f.name);
               if (field) {
                 field.value = field._value = v;
               }
