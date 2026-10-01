@@ -18,17 +18,21 @@ const { G3WInput }     = g3wsdk.gui.vue.Inputs;
 
 export default {
   props: {
-    inputs:          { type: Object, required: true },
-    context:         { type: Object },
+    inputs:           { type: Object, required: true },
+    feature:          { type: Object, required: true },
+    context:          { type: Object },
+    parentData:       { type: Object },
     originalFeatures: { type: Array, required: true },
-    parentData:      { type: Object },
-    form_fields:     { type: Array, required: true },
-    features:        { type: Array, required: true },
-    isMulti:         { type: Boolean, required: true },
-    isContentChild:  { type: Boolean, required: true },
-    saveAllEnabled:  { type: Boolean, required: true },
-    resolve:         { type: Function, required: true },
-    reject:          { type: Function, required: true },
+    form_fields:      { type: Array, required: true },
+    features:         { type: Array, required: true },
+    form_structure:   { type: Object, required: true },
+    isMulti:          { type: Boolean, required: true },
+    isContentChild:   { type: Boolean, required: true },
+    saveAllEnabled:   { type: Boolean, required: true },
+    isnew:            { type: Boolean, required: true },
+    update:           { type: Boolean, required: true },
+    resolve:          { type: Function, required: true },
+    reject:           { type: Function, required: true },
   },
   template: /* html */ `
     <div class="g3wform_content" style="position: relative">
@@ -220,12 +224,12 @@ export default {
       unwatches:          [],
       state:              {
         name:              this.inputs.layer.getName(),
-        feature:           this.originalFeatures[0].clone(),
+        feature:           this.feature,
         isCoreFormService: true,
         formId:            undefined,
         force:             { update: this.originalFeatures[0].isNew(), valid:  false },
         layer:             this.inputs.layer,
-        isnew:             this.originalFeatures.length > 1 ? false : this.originalFeatures[0].isNew(), // Multi-edit forms never represent a single new feature.
+        isnew:             this.isnew, // Multi-edit forms never represent a single new feature.
         parentData:        this.parentData,
         fields:            this.form_fields,
         context_inputs:    this.isMulti ? false: { context: this.context, inputs: this.inputs },
@@ -235,7 +239,7 @@ export default {
         relation:          null,
         disabled:          false,
         valid:             true,
-        update:            this.originalFeatures[0].isNew(),
+        update:            this.update,
         tovalidate:        {},
         footer:            {},
         ready:             false,
@@ -244,7 +248,7 @@ export default {
         isMulti:           this.isMulti,
         isContentChild:    this.isContentChild,
         saveAllEnabled:    this.saveAllEnabled,
-        form_structure:    this.inputs.layer.hasFormStructure() && this.inputs.layer.getLayerEditingFormStructure() || undefined,
+        form_structure:    this.form_structure,
       }
     }   
   },
