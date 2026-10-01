@@ -1024,7 +1024,7 @@ export default {
           }
           this.filter_deps[name].push(field.name);
         });
-        this.evaluateFilterExpressionFields({ name: field.name });
+        this.getFilterExpression(field);
       }
 
       // Register update dependencies and evaluate defaults for new features.
