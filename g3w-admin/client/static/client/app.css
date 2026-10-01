@@ -206,6 +206,8 @@ button.close                { padding: 0; cursor: pointer; background: transpare
 .spinner-wrapper .spinner.transparent { border: 8px solid var(--skin-color); border-top-color: transparent; }
 .spinner-wrapper .spinner.blue        { border: 8px solid #fff; border-top-color: transparent; }
 .spinner-wrapper.blue                 { background-color: var(--skin-primary); color: white;}
+/* same insets as the map view padding (sidebar, content, footer) */
+#map-spinner                          { position: absolute; inset: 0 var(--mr, 0px) var(--mb, 0px) var(--ml, 0px); z-index: 1; display: flex; align-items: center; justify-content: center; pointer-events: none; }
 
 .bar-loader                           { height: 4px; width: 100%; position: relative; overflow: hidden; background-color: #ddd; }
 .bar-loader:before                    { background-color: hsl(from var(--skin-color) h s calc(l - 20)); display: block; position: absolute; content: ''; left: -200px; width: 200px; height: 4px; animation: loading 1s linear infinite; }
@@ -853,6 +855,10 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .queryresults-container tr.featurebox-header-open + .featurebox-body > td > table             { border-collapse: separate; }
 .queryresults-container tr.featurebox-header-open + .featurebox-body > td > table :is(td, th) { padding: 3px; }
 .field_label                                                                                  { font-weight: bold; }
+.g3w-field                                                                                    { background-color: transparent !important; padding: 3px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.g3w-field > div                                                                              { padding-left: 3px; }
+.g3w-field .field_value                                                                       { padding-left: 0 !important; padding-right: 8px; text-align: right; margin-left: auto; }
+.g3w-field .field_value button                                                                { margin-right: 5px; }
 .queryresults-container .featurebox-body tbody                                                { border: 0; }
 .queryresults-container .featurebox-body tbody td                                             { padding: 0; }
 .queryresults-container .featurebox-body .action-buttons-container                            { line-height: 1.42857143; margin-top: 8px; height: 30px; line-height: 30px; overflow: hidden; }
