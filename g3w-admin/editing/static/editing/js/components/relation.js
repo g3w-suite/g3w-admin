@@ -34,8 +34,6 @@ const {
   PickCoordinatesInteraction,
 }                                = g3w.utils;
 
-const { Mixins }                 = g3wsdk.gui.vue;
-
 const toRawType = value => Object.prototype.toString.call(value).slice(8, -1);
 
 /** @TODO merge `PickFeatureInteraction` into `PickFeaturesInteraction`? */
@@ -388,11 +386,6 @@ export default ({
       relations: { type: Array, required: true },
     },
 
-    mixins: [
-      Mixins.mediaMixin,
-      Mixins.fieldsMixin,
-    ],
-
     data() {
       return {
         show:         true,
@@ -414,6 +407,10 @@ export default ({
     },
 
     computed: {
+      filename() {
+        return this.value ? this.value.split('/').pop() : this.value;
+      },
+
       pages() {
         return Math.ceil(this.relations.length / this.search.page_size);
       },
@@ -467,6 +464,113 @@ export default ({
     },
 
     methods: {
+      isMedia(value) {
+        if (value && 'object' === typeof value && Object === value.constructor) {
+          return !!value.mime_type;
+        }
+        return false;
+      },
+
+      getMediaType(mime_type) {
+        const media = {
+          type:    null,
+          options: {}
+        };
+
+        switch(mime_type) {
+          case 'image/gif':
+          case 'image/png':
+          case 'image/jpeg':
+          case 'image/bmp':
+            media.type = 'image';
+            break;
+          case 'application/pdf':
+            media.type = 'pdf';
+            break;
+          case 'video/mp4':
+          case 'video/ogg':
+          case 'video/x-ms-wmv':
+          case 'video/x-msvideo':
+          case 'video/quicktime':
+            media.type           = 'video';
+            media.options.format = mime_type;
+            break;
+          case 'application/gzip':
+          case 'application/zip':
+            media.type = 'zip';
+            break;
+          case 'application/msword':
+          case 'application/vnd.oasis.opendocument.text':
+            media.type = 'text';
+            break;
+          case 'application/vnd.ms-office':
+          case 'application/vnd.oasis.opendocument.spreadsheet':
+            media.type = 'excel';
+            break;
+          case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+          case 'application/vnd.ms-powerpoint':
+          case 'application/vnd.oasis.opendocument.presentation':
+            media.type = 'ppt';
+            break;
+          default:
+            media.type = 'unknow';
+        }
+        return media;
+      },
+
+      getFieldType(field) {
+        let type = field.type;
+        if ('vue' !== type) {
+          const fieldValue = field.value;
+          const value = fieldValue && 'Object' === toRawType(fieldValue) && !fieldValue.coordinates && !fieldValue.vue ? fieldValue.value : fieldValue;
+          if (!value) {
+            type = 'simple';
+          } else if (value && 'object' === typeof value) {
+            if (value.coordinates) {
+              type = 'geo';
+            } else if (value.vue) {
+              type = 'vue';
+            }
+          } else if (value && Array.isArray(value)) {
+            if (value.length && value[0].photo) {
+              type = 'photo';
+            } else {
+              type = 'simple'
+            }
+          } else if (value.toString().toLowerCase().match(/^(https?:\/\/[^\s]+)\.(png|jpg|jpeg|gif)$/g)) {
+            type = 'photo';
+          } else if (value.toString().match(/^(https?:\/\/[^\s]+)/g)) {
+            type = 'link';
+          } else {
+            type = 'simple';
+          }
+        }
+        return `${type}_field`;
+      },
+
+      isSimple(field) {
+        return 'simple_field' === this.getFieldType(field);
+      },
+
+      isLink(field) {
+        return 'link_field' === this.getFieldType(field);
+      },
+
+      isImage(field) {
+        return 'image_field' === this.getFieldType(field);
+      },
+
+      isPhoto(field) {
+        return 'photo_field' === this.getFieldType(field);
+      },
+
+      isVue(field) {
+        return 'vue_field' === this.getFieldType(field);
+      },
+
+      sanitizeFieldValue(value) {
+        return (Array.isArray(value) && !value.length) ? '' : value;
+      },
 
       /**
        * @param { number } index column index
