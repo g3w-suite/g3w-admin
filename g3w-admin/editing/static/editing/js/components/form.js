@@ -36,7 +36,7 @@ export default {
   },
   template: /* html */ `
     <div class="g3wform_content" style="position: relative">
-      <bar-loader :loading="state.loading" />
+      <div v-if = "state.loading" class = "bar-loader" style = "border: 0"></div>
 
       <!-- FORM HEADER -->
       <div class="g3wform_header box-header with-border" style="display: flex; flex-direction: column">

@@ -73,7 +73,7 @@ export default ({
 
     </div>
 
-    <bar-loader :loading = "loading" />
+    <div v-if = "loading" class = "bar-loader" style = "border: 0"></div>
 
     <div
       v-if       = "!state.changingtools && (state.on || toggled.layer)"

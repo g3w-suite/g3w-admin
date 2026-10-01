@@ -658,13 +658,13 @@ export class ToolBox extends Emitter {
                         name: 'multi-relations-fetures',
                         template: /* html */`
                         <div>
-                          <select v-select2 = "'relationId'" :dropdownParent="true">
-                            <option v-for = "relation in relations" 
+                          <x-select :value = "relationId" @change = "relationId = $event.target.value" style = "color: #333" searchable>
+                            <x-option v-for = "relation in relations"
                               :key   = "relation.state.id" 
                               :value = "relation.state.id">
                                 {{ relation.state.name }}
-                            </option>
-                          </select>
+                            </x-option>
+                          </x-select>
                         </div>
                       `,
                         data() {
@@ -728,13 +728,13 @@ export class ToolBox extends Emitter {
                       name: 'multi-relations-fetures',
                       template: /* html */`
                       <div>
-                        <select v-select2 = "'action'" :dropdownParent="true">
-                          <option v-for = "a in actions" 
+                        <x-select :value = "action" @change = "action = $event.target.value" style = "color: #333">
+                          <x-option v-for = "a in actions"
                             :key   = "a" 
                             :value = "a">
                               {{ a }}
-                          </option>
-                        </select>
+                          </x-option>
+                        </x-select>
                       </div>
                     `,
                       data() {
@@ -949,17 +949,19 @@ export class ToolBox extends Emitter {
                       template: /* html */`
                         <section>
                           <div id = "g3w-select-editable-layers-content">
-                            <select
+                            <x-select
                               id              = "g3w-select-editable-layers-to-copy"
-                              v-select2       = "'id'"
-                              :dropdownParent = "true"
+                              :value          = "id"
+                              style           = "color: #333"
+                              searchable
+                              @change         = "id = $event.target.value"
                             >
-                              <option
+                              <x-option
                                 v-for  = "layer in $options.layers"
                                 :key   = "layer.id"
                                 :value = "layer.id"
-                              >{{ layer.name }}</option>
-                            </select>
+                              >{{ layer.name }}</x-option>
+                            </x-select>
                           </div>
                         </section>
                       `,

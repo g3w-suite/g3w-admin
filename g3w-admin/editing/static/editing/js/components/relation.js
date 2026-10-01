@@ -117,7 +117,7 @@ export default ({
     style       = "margin-bottom: 5px;"
     class       = "g3w-editing-relation"
   >
-    <bar-loader :loading = "loading" />
+    <div v-if = "loading" class = "bar-loader" style = "border: 0"></div>
 
     <!-- RELATION TITLE -->
     <div class = "box-header with-border skin-color" style = "width: 100%;display: flex;font-weight: bold;font-size: 1.3em;align-items: center;background-color: #fff;">
@@ -219,16 +219,20 @@ export default ({
             v-t   = "'plugins.editing.copy_feature_from_other_layer'"
           ></div>
 
-          <select
-            id        = "g3w-select-editable-layers-to-copy"
-            v-select2 = "'copylayerid'"
+          <x-select
+            id       = "g3w-select-editable-layers-to-copy"
+            ref      = "copyselect"
+            :value   = "copylayerid"
+            style    = "color: #333"
+            searchable
+            @change  = "copylayerid = $event.target.value"
           >
-            <option
+            <x-option
               v-for  = "layer in copyLayers"
               :key   = "layer.id"
               :value = "layer.id"
-            >{{ layer.name }}</option>
-          </select>
+            >{{ layer.name }}</x-option>
+          </x-select>
 
           <!-- COPY FEATURE FROM OTHER LAYER -->
           <button
@@ -450,6 +454,12 @@ export default ({
     },
 
     watch: {
+      copylayerid() {
+        this.$nextTick(() => this.syncCopyLayerSelect());
+      },
+      copyLayers() {
+        this.$nextTick(() => this.syncCopyLayerSelect());
+      },
     
       show_tools(bool) {
         this.toggleDOM(!bool);
@@ -464,6 +474,15 @@ export default ({
     },
 
     methods: {
+      syncCopyLayerSelect() {
+        const select = this.$refs.copyselect;
+        if (!select?.container) { return; }
+        const option = Array.from(select.querySelectorAll('x-option'))
+          .find(option => option.value === `${this.copylayerid}`);
+        if (option) { select.select(option, { autoclose: false, emit: false }); }
+        select.setAttribute('value', this.copylayerid ?? '');
+      },
+
       isMedia(value) {
         if (value && 'object' === typeof value && Object === value.constructor) {
           return !!value.mime_type;
