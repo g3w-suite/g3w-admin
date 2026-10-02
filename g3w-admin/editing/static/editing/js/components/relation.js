@@ -309,8 +309,7 @@ export default ({
             <td class = "action-cell">
               <div
                 v-if              = "!fieldrequired && capabilities.includes('change_attr_feature')"
-                class             = "g3w-icon"
-                class             = "fas fa-unlink"
+                class             = "g3w-icon fas fa-unlink"
                 @click.stop       = "unlinkRelation(index)"
                 v-t-tooltip:right = "'plugins.editing.unlink_relation'"
                 style             = "color: var(--skin-color); cursor: pointer; font-size:12px; border-radius:5px;padding: 13px;"
