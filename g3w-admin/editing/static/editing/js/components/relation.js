@@ -2,28 +2,28 @@
  * @file Relation form editor
  */
 
-import { Tool }                             from '../g3w-tool.js';
-import { Step }                             from '../g3w-step.js';
-import { Feature }                          from '../g3w-feature.js';
-import { cloneFeature }                     from '../utils/cloneFeature.js';
-import { getRelationFieldsFromRelation }    from '../utils/getRelationFieldsFromRelation.js';
-import { getLayersDependencyFeatures }      from '../utils/getLayersDependencyFeatures.js';
-import { getEditingLayerById }              from '../utils/getEditingLayerById.js';
-import { convertToGeometry }                from '../utils/convertToGeometry.js';
-import { addTableFeature }                  from '../utils/addTableFeature.js';
-import { getFeatureTableFieldValue }        from '../utils/getFeatureTableFieldValue.js';
-import { chooseFeatureFromFeatures }        from '../utils/chooseFeatureFromFeatures.js';
-import { unlinkRelation }                   from '../utils/unlinkRelation.js';
-import { getFieldsWithValues }              from '../utils/getFieldsWithValues.js';
-import { isPkField }                        from '../utils/isPkField.js';
-import { getEditingLayer }                  from '../utils/getEditingLayer.js';
-import { PickFeaturesInteraction }          from '../actions/pick-feature.js';
-import { OpenFormStep }                     from '../actions/open-form.js';
-import { AddFeatureStep }                   from '../actions/add-feature.js';
-import { ModifyGeometryVertexStep }         from '../actions/move-vertex.js';
-import { MoveFeatureStep }                  from '../actions/move-feature.js';
-import { getCatalogLayerById }              from '../utils/getCatalogLayerById.js';
-import { getCatalogLayers }                 from '../utils/getCatalogLayers.js';
+import { Tool }                          from '../g3w-tool.js';
+import { Step }                          from '../g3w-step.js';
+import { Feature }                       from '../g3w-feature.js';
+import { cloneFeature }                  from '../utils/cloneFeature.js';
+import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRelation.js';
+import { getLayersDependencyFeatures }   from '../utils/getLayersDependencyFeatures.js';
+import { getEditingLayerById }           from '../utils/getEditingLayerById.js';
+import { convertToGeometry }             from '../utils/convertToGeometry.js';
+import { addTableFeature }               from '../utils/addTableFeature.js';
+import { getFeatureTableFieldValue }     from '../utils/getFeatureTableFieldValue.js';
+import { chooseFeatureFromFeatures }     from '../utils/chooseFeatureFromFeatures.js';
+import { unlinkRelation }                from '../utils/unlinkRelation.js';
+import { getFieldsWithValues }           from '../utils/getFieldsWithValues.js';
+import { isPkField }                     from '../utils/isPkField.js';
+import { getEditingLayer }               from '../utils/getEditingLayer.js';
+import { PickFeaturesInteraction }       from '../actions/pick-feature.js';
+import { OpenFormStep }                  from '../actions/open-form.js';
+import { AddFeatureStep }                from '../actions/add-feature.js';
+import { MoveVertexStep }                from '../actions/move-vertex.js';
+import { MoveFeatureStep }               from '../actions/move-feature.js';
+import { getCatalogLayerById }           from '../utils/getCatalogLayerById.js';
+import { getCatalogLayers }              from '../utils/getCatalogLayers.js';
 
 const { Component }              = g3w;
 const { PAGELENGTHS }            = g3w.constants;
@@ -33,9 +33,6 @@ const {
   debounce,
   PickCoordinatesInteraction,
 }                                = g3w.utils;
-
-const { FormService }            = g3wsdk.gui.vue.services;
-const { Mixins }                 = g3wsdk.gui.vue;
 
 const toRawType = value => Object.prototype.toString.call(value).slice(8, -1);
 
@@ -120,7 +117,7 @@ export default ({
     style       = "margin-bottom: 5px;"
     class       = "g3w-editing-relation"
   >
-    <bar-loader :loading = "loading" />
+    <div v-if = "loading" class = "bar-loader" style = "border: 0"></div>
 
     <!-- RELATION TITLE -->
     <div class = "box-header with-border skin-color" style = "width: 100%;display: flex;font-weight: bold;font-size: 1.3em;align-items: center;background-color: #fff;">
@@ -140,12 +137,13 @@ export default ({
         style        = "margin-right: auto;"
         @keyup       = "globalSearch"
       />
-      <div class = "g3w-relation-tools">
+      <div class = "g3w-relation-tools skin-color">
 
         <!-- EDIT MULTI ATTRIBUTES -->
         <span
           v-if               = "relationsLength > 0 && capabilities.includes('change_attr_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.update_multi_features_relations'"
+          data-placement     = "bottom"
+          title              = "plugins.editing.update_multi_features_relations"
           class              = "g3w-icon"
         >
           <span @click.stop = "editMulti()" v-disabled = "relations.every(r => !r.select)">
@@ -156,19 +154,19 @@ export default ({
         <!-- CHANGE ATTRIBUTE -->
         <span
           v-if               = "capabilities.includes('change_attr_feature')"
-          class              = "g3w-icon add-link"
-          v-t-tooltip:bottom = "'plugins.editing.link_relation'"
+          data-placement     = "bottom"
+          title              = "plugins.editing.link_relation"
           @click.stop        = "show_add_link ? linkRelation() : null"
-          :class             = "[{ 'disabled': !show_add_link }, g3wtemplate.font['link']]"
+          :class             = "[{ 'disabled': !show_add_link }, 'g3w-icon add-link fas fa-link']"
         ></span>
 
         <!-- ADD FEATURE -->
         <span
           v-if               = "rcapabilities.includes('add_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.add_relation'"
+          data-placement     = "bottom"
+          title              = "plugins.editing.add_relation"
           @click.stop        = "show_add_link ? addRelation2() : null"
-          class              = "g3w-icon add-link pull-right"
-          :class             = "[{ 'disabled' : !show_add_link }, g3wtemplate.font['plus']]"
+          :class             = "[{ 'disabled' : !show_add_link }, 'g3w-icon add-link pull-right fas fa-plus']"
         ></span>
 
       </div>
@@ -185,7 +183,7 @@ export default ({
         @click.stop = "closeTools"
         style       = "align-self: self-end;"
       >
-        <i class = "g3w-icon skin-color" :class = "g3wtemplate.font['close']"></i>
+        <i class = "g3w-icon skin-color fas fa-times"></i>
       </span>
 
       <!-- ADD VECTOR RELATION -->
@@ -199,7 +197,7 @@ export default ({
           style       = "width: 100%"
           @click.stop = "addRelation"
         >
-          <i :class = "g3wtemplate.font['pencil']"></i>
+          <i class = "fas fa-pencil-alt"></i>
         </button>
       </div>
 
@@ -222,16 +220,20 @@ export default ({
             v-t   = "'plugins.editing.copy_feature_from_other_layer'"
           ></div>
 
-          <select
-            id        = "g3w-select-editable-layers-to-copy"
-            v-select2 = "'copylayerid'"
+          <x-select
+            id       = "g3w-select-editable-layers-to-copy"
+            ref      = "copyselect"
+            :value   = "copylayerid"
+            style    = "color: #333"
+            searchable
+            @change  = "copylayerid = $event.target.value"
           >
-            <option
+            <x-option
               v-for  = "layer in copyLayers"
               :key   = "layer.id"
               :value = "layer.id"
-            >{{ layer.name }}</option>
-          </select>
+            >{{ layer.name }}</x-option>
+          </x-select>
 
           <!-- COPY FEATURE FROM OTHER LAYER -->
           <button
@@ -239,7 +241,7 @@ export default ({
             class       = "btn skin-button"
             @click.stop = "copyFromLayer"
           >
-            <i :class = "g3wtemplate.font['clipboard']"></i>
+            <i class = "fas fa-clipboard"></i>
           </button>
 
         </div>
@@ -297,7 +299,9 @@ export default ({
                   :key            = "tool.state.id"
                   :class          = "{ enabled: true, 'toggled': tool.state.active, ['editbtn ' + tool.state.id]: true }"
                   @click.stop     = "startTool(tool, index)"
-                  v-t-tooltip:top = "'plugins.' + tool.state.name"
+                  data-placement  = "top"
+                  :title          = "'plugins.' + tool.state.name"
+                  :data-i18n-title = "'plugins.' + tool.state.name"
                 >
                   <img
                     height = "20px"
@@ -310,10 +314,10 @@ export default ({
             <td class = "action-cell">
               <div
                 v-if              = "!fieldrequired && capabilities.includes('change_attr_feature')"
-                class             = "g3w-icon"
-                :class            = "g3wtemplate.font['unlink']"
+                class             = "g3w-icon fas fa-unlink"
                 @click.stop       = "unlinkRelation(index)"
-                v-t-tooltip:right = "'plugins.editing.unlink_relation'"
+                data-placement    = "right"
+                title             = "plugins.editing.unlink_relation"
                 style             = "color: var(--skin-color); cursor: pointer; font-size:12px; border-radius:5px;padding: 13px;"
               ></div>
             </td>
@@ -328,7 +332,7 @@ export default ({
                     class  = "previewtype"
                     :class = "getMediaType(attribute.value.mime_type).type"
                   >
-                    <i class = "fa-2x" :class = "g3wtemplate.font[getMediaType(attribute.value.mime_type).type]"></i>
+                    <i :class = "['fa-2x', getMediaType(attribute.value.mime_type).icon]"></i>
                   </div>
                 </a>
                 <div class = "filename">{{ getValue(attribute.value).split('/').pop() }}</div>
@@ -355,7 +359,8 @@ export default ({
             v-if            = "pages > 1"
             v-model         = "search.page"
             style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
-            v-t-tooltip:top = "pages ? search.page: 0 + $t(' of ') + pages" 
+            :title          = "pages ? search.page: 0 + $t(' of ') + pages"
+            :data-i18n-title = "pages ? search.page: 0 + $t(' of ') + pages"
             data-placement  = "top"
           >
             <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
@@ -383,16 +388,14 @@ export default ({
 
     name: 'g3w-relation',
 
-    mixins: [
-      Mixins.mediaMixin,
-      Mixins.fieldsMixin,
-    ],
+    props: {
+      layerId:  { type: [String, Number], required: true },
+      relation: { type: Object, required: true },
+      relations: { type: Array, required: true },
+    },
 
     data() {
       return {
-        // relation,  // ← setted by `Vue.extend` - Relation instance: information about relation from parent layer and current relation layer (ex. child, fields, relationid, etc....) main relation between layerId (current in editing)
-        // relations, // ← setted by `Vue.extend` - array of relations object id,fields and select linked to current parent feature (that is in editing)
-        // layerId,   // ← setted by `Vue.extend`
         show:         true,
         loading :     false,
         show_tools:   false, // whether show vector relation tools
@@ -412,6 +415,10 @@ export default ({
     },
 
     computed: {
+      filename() {
+        return this.value ? this.value.split('/').pop() : this.value;
+      },
+
       pages() {
         return Math.ceil(this.relations.length / this.search.page_size);
       },
@@ -451,6 +458,12 @@ export default ({
     },
 
     watch: {
+      copylayerid() {
+        this.$nextTick(() => this.syncCopyLayerSelect());
+      },
+      copyLayers() {
+        this.$nextTick(() => this.syncCopyLayerSelect());
+      },
     
       show_tools(bool) {
         this.toggleDOM(!bool);
@@ -465,6 +478,132 @@ export default ({
     },
 
     methods: {
+      syncCopyLayerSelect() {
+        const select = this.$refs.copyselect;
+        if (!select?.container) { return; }
+        const option = Array.from(select.querySelectorAll('x-option'))
+          .find(option => option.value === `${this.copylayerid}`);
+        if (option) { select.select(option, { autoclose: false, emit: false }); }
+        select.setAttribute('value', this.copylayerid ?? '');
+      },
+
+      isMedia(value) {
+        if (value && 'object' === typeof value && Object === value.constructor) {
+          return !!value.mime_type;
+        }
+        return false;
+      },
+
+      getMediaType(mime_type) {
+        const media = {
+          type:    null,
+          options: {}
+        };
+
+        switch(mime_type) {
+          case 'image/gif':
+          case 'image/png':
+          case 'image/jpeg':
+          case 'image/bmp':
+            media.type = 'image';
+            break;
+          case 'application/pdf':
+            media.type = 'pdf';
+            break;
+          case 'video/mp4':
+          case 'video/ogg':
+          case 'video/x-ms-wmv':
+          case 'video/x-msvideo':
+          case 'video/quicktime':
+            media.type           = 'video';
+            media.options.format = mime_type;
+            break;
+          case 'application/gzip':
+          case 'application/zip':
+            media.type = 'zip';
+            break;
+          case 'application/msword':
+          case 'application/vnd.oasis.opendocument.text':
+            media.type = 'text';
+            break;
+          case 'application/vnd.ms-office':
+          case 'application/vnd.oasis.opendocument.spreadsheet':
+            media.type = 'excel';
+            break;
+          case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+          case 'application/vnd.ms-powerpoint':
+          case 'application/vnd.oasis.opendocument.presentation':
+            media.type = 'ppt';
+            break;
+          default:
+            media.type = 'unknow';
+        }
+        media.icon = ({
+          image: 'far fa-image',
+          pdf: 'fas fa-file-pdf',
+          video: 'far fa-file-video',
+          zip: 'far fa-file-archive',
+          text: 'far fa-file-alt',
+          excel: 'far fa-file-excel',
+          ppt: 'far fa-file-powerpoint',
+          unknow: 'far fa-question-circle',
+        })[media.type] || 'far fa-question-circle';
+        return media;
+      },
+
+      getFieldType(field) {
+        let type = field.type;
+        if ('vue' !== type) {
+          const fieldValue = field.value;
+          const value = fieldValue && 'Object' === toRawType(fieldValue) && !fieldValue.coordinates && !fieldValue.vue ? fieldValue.value : fieldValue;
+          if (!value) {
+            type = 'simple';
+          } else if (value && 'object' === typeof value) {
+            if (value.coordinates) {
+              type = 'geo';
+            } else if (value.vue) {
+              type = 'vue';
+            }
+          } else if (value && Array.isArray(value)) {
+            if (value.length && value[0].photo) {
+              type = 'photo';
+            } else {
+              type = 'simple'
+            }
+          } else if (value.toString().toLowerCase().match(/^(https?:\/\/[^\s]+)\.(png|jpg|jpeg|gif)$/g)) {
+            type = 'photo';
+          } else if (value.toString().match(/^(https?:\/\/[^\s]+)/g)) {
+            type = 'link';
+          } else {
+            type = 'simple';
+          }
+        }
+        return `${type}_field`;
+      },
+
+      isSimple(field) {
+        return 'simple_field' === this.getFieldType(field);
+      },
+
+      isLink(field) {
+        return 'link_field' === this.getFieldType(field);
+      },
+
+      isImage(field) {
+        return 'image_field' === this.getFieldType(field);
+      },
+
+      isPhoto(field) {
+        return 'photo_field' === this.getFieldType(field);
+      },
+
+      isVue(field) {
+        return 'vue_field' === this.getFieldType(field);
+      },
+
+      sanitizeFieldValue(value) {
+        return (Array.isArray(value) && !value.length) ? '' : value;
+      },
 
       /**
        * @param { number } index column index
@@ -572,7 +711,7 @@ export default ({
           console.warn(e);
         }
 
-        tool.stop();
+        await tool.stop();
 
       },
 
@@ -760,7 +899,7 @@ export default ({
                   reject(e);
 
                 } finally {
-                  tool.stop();
+                  await tool.stop();
                   relationtool.state.active = false;
 
                 }
@@ -828,11 +967,12 @@ export default ({
                 && undefined === Tool.Stack.items.find(i => i.state.changes.filter(({ feature }) => relationfeature.getUid() !== feature.getUid()).length > 0)
               ) {
                 Tool.Stack.items
-                  .filter(w => w.getContext().service instanceof FormService)
-                  .forEach(w => setTimeout(() => w.getContext().service.state.update = false));
+                  .map(t => t.getLastStep()?.getForm?.())
+                  .filter(Boolean)
+                  .forEach(form => setTimeout(() => form.state.update = false));
               } else {
                 //set parent tool update to enable to save all buttons
-                Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+                Tool.Stack.items.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
               }
 
               d.resolve(ok);
@@ -856,10 +996,8 @@ export default ({
               getFieldsWithValues(this.getLayer(), relationfeature, { relation: true })
                 .forEach(f => {
                   relation.fields
-                    .forEach(rf => {
-                      //in case of sync feature get data value of sync feature
-                      if (rf.name === f.name) { rf.value = f.value; }
-                    })
+                     //in case of sync feature get data value of sync feature
+                    .forEach(rf => { if ( f.name === rf.name) { rf.value = f.value; } })
                 });
               d.resolve(true);
             } catch(e) {
@@ -867,11 +1005,11 @@ export default ({
               //need to rollback changes done at moment
               GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).rollback();
               //reset eventually state of form parent service (save changes or not)
-              Tool.Stack.parents?.forEach(t => t?.getContext?.()?.service?.setUpdate?.( t?.getContext?.()?.service.state.fields.some(f => f.update), { force: false }));
+              Tool.Stack.parents?.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.( t?.getLastStep?.()?.getForm?.()?.state?.fields.some(f => f.update), { force: false }));
               d.reject(e);
             }
 
-            tool.stop();
+            await tool.stop();
           }
 
           // zoom to relation vector feature
@@ -888,7 +1026,7 @@ export default ({
             const tool = new Tool({
               type: relationtool.type,
               steps: [ new {
-                'movevertex':  ModifyGeometryVertexStep,
+                'movevertex':  MoveVertexStep,
                 'movefeature': MoveFeatureStep,
               }[toolId]({ selectStyle }) ]
             });
@@ -918,7 +1056,7 @@ export default ({
             try {
               await tool.start(options);
 
-              Tool.Stack.parents.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+              Tool.Stack.parents.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
               d.resolve(true);
               setTimeout(() => this.startTool(relationtool, index));
             } catch(e) {
@@ -927,7 +1065,7 @@ export default ({
             }
 
             tool.unbindEscKeyUp();
-            tool.stop();
+            await tool.stop();
             unwatch();
           }
 
@@ -1024,7 +1162,7 @@ export default ({
           this.rollback(options.context.id, [this._relationLayerId]);
         }
 
-        tool.stop();
+        await tool.stop();
 
         if (isVector) {
           tool.unbindEscKeyUp();
@@ -1134,10 +1272,10 @@ export default ({
         }
 
         if (linked) {
-          Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+          Tool.Stack.items.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
         }
 
-        tool.stop();
+        await tool.stop();
 
         this.disabled = false;
       },

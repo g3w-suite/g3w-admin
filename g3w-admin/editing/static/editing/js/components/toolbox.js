@@ -45,9 +45,10 @@ export default ({
       <!-- TOGGLE RELATION LAYERS (LAYERS FILTER) -->
       <i
         v-if              = "father"
-        :class            = "'filter-by-relation ' + g3wtemplate.font['relation']"
+        class             = "filter-by-relation fas fa-sitemap"
         @click            = "toggleFilterByRelation"
-        v-t-tooltip:right = "'plugins.editing.filter_by_relation'"
+        data-placement    = "right"
+        title             = "plugins.editing.filter_by_relation"
       ></i>
 
       <!-- PANEL TITLE -->
@@ -66,14 +67,15 @@ export default ({
             'pull-right':       !isMobile(),
             'enabled':          isLayerReady,
             'g3w-icon-toggled': state.on,
-            [g3wtemplate.font[(state.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
+            ['fa fa-check']:      state.on || toggled.layer,
+            ['fas fa-pencil-alt']: !(state.on || toggled.layer)
           }"
         ></i>
       </span>
 
     </div>
 
-    <bar-loader :loading = "loading" />
+    <div v-if = "loading" class = "bar-loader" style = "border: 0"></div>
 
     <div
       v-if       = "!state.changingtools && (state.on || toggled.layer)"
@@ -84,14 +86,14 @@ export default ({
 
       <!-- HAS NO GEOMETRY -->
       <div v-if = "!state.layer.isGeoLayer()" class = "info">
-        <i :class = "g3wtemplate.font['info']"></i>
+        <i class = "fas fa-info-circle"></i>
         <span v-t = "'plugins.editing.toolbox_has_no_geometry'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
       <!-- HAS RELATION -->
       <div v-if = "hasRelations" class = "info">
-        <i :class = "g3wtemplate.font['info']"></i>
+        <i class = "fas fa-info-circle"></i>
         <span v-t = "'plugins.editing.toolbox_has_relation'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
@@ -144,8 +146,8 @@ export default ({
                   v-model = "tool.options.checked"
                   @change = "() => tool.options.onChange(tool.options.checked)"
                 />
-                <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right = "'plugins.editing.show_measure_tool'">
-                  <b :class = "g3wtemplate.font['measure']"></b>
+                <label for = "g3w_editing_show_measure_tool" data-placement = "right" title = "plugins.editing.show_measure_tool">
+                  <b class = "fas fa-ruler-combined"></b>
                 </label>
               </div>
 
@@ -162,8 +164,8 @@ export default ({
                     :id     = "'snap_' + state.id"
                     v-model = "tool.options.checked"
                   />
-                  <label :for = "'snap_' + state.id" v-t-tooltip:right.create= " 'plugins.editing.snap'">
-                    <span :class = "g3wtemplate.font['magnete']"></span>
+                  <label :for = "'snap_' + state.id" data-placement = "right" title = "plugins.editing.snap">
+                    <span class = "fas fa-magnet"></span>
                   </label>
                 </div>
               
@@ -179,10 +181,11 @@ export default ({
                   <label
                     v-if             = "snapAll"
                     :for             = "'snap_all_' + state.id + '_all'"
-                    v-t-tooltip:left = "'plugins.editing.snapall'"
+                    data-placement   = "left"
+                    title            = "plugins.editing.snapall"
                   >
-                    <span :class = "g3wtemplate.font['magnete']"></span>
-                    <b    :class = "g3wtemplate.font['layers']" style = "margin-left: 3px;"></b>
+                    <span class = "fas fa-magnet"></span>
+                    <b    class = "fas fa-layer-group" style = "margin-left: 3px;"></b>
                   </label>
                 </div> 
                 

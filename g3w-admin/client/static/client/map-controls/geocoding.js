@@ -15,9 +15,6 @@ const _                = g3w.gettext;
 const {
   getUniqueDomId,
   flattenObject,
-  addZValue,
-  convertSingleMultiGeometry,
-  getCatalogLayerById,
   debounce,
 } = g3w.utils;
 
@@ -131,7 +128,6 @@ class GeocodingControl extends ol.control.Control {
 
     GUI.on('set-layer-zindex',             this.#setLayerZindex.bind(this));
     GUI.onafter('removeFeatureFromResult', this.#removeFeatureFromResult.bind(this));
-    GUI.onafter('addActionsForLayers',     this.#addLayerActions.bind(this));
 
     // register vector layer
     GUI.getMap().addLayer(this.LAYER);
@@ -511,45 +507,6 @@ class GeocodingControl extends ol.control.Control {
   }
 
   /**
-   * Create new feature on selected Point/Multipoint layer
-   */
-  async #editItem(layerId, feature) {
-    const editing = GUI.getPlugin('editing');
-
-    // skip on missing plugin dependency
-    if (!editing) {
-      return;
-    }
-
-    // disable ol-gecoder while editing
-    this.element.classList.add('g3w-disabled');
-
-    try {
-
-      // get a geometry type of target layer
-      const type = getCatalogLayerById(layerId).getGeometryType();
-
-      // create a new editing feature (Point/MultiPoint + safe alias for keys without `raw_` prefix)
-      const _feature = addZValue({
-        geometryType: type,
-        feature:      new ol.Feature({
-          ...Object.entries(feature.attributes).reduce((acc, attr) => ({ ...acc, [attr[0].replace(feature.attributes.provider + '_', '').toLowerCase()]: attr[1] }), {}),
-          ...feature.attributes,
-          geometry: convertSingleMultiGeometry(feature.geometry, type),
-        }),
-      });
-
-      // start editing session
-      await editing.addLayerFeature({ layerId: layerId, feature: _feature });
-
-    } catch(e) {
-      console.warn(e);
-    }
-
-    this.element.classList.remove('g3w-disabled');
-  }
-
-  /**
    * Remove item from list (dropdown)
    */
   #removeItem(uid) {
@@ -575,122 +532,6 @@ class GeocodingControl extends ol.control.Control {
     if (this.LAYER.get('id') === layer.id) {
       this.#removeItem(feature.id);
     }
-  }
-
-  /**
-   * Allow user to choose a project layer where to save selected features
-   */
-  #addLayerActions(actions, layers) {
-    const layer = layers.find(l => this.LAYER.get('id') === l.id);
-
-    // skip when no "g3w_marker" layer or features comes from an elastich search (project layers)
-    if (!layer || layer?.features?.some?.(f => 'qes' === f?.attributes?.provider)) {
-      return;
-    }
-
-    // Get editing layers that has Point/MultiPoint Geometry type
-    const editable_point_layers = ApplicationState.project
-      .getLayers({ EDITABLE: true, GEOLAYER: true })
-      .flatMap(l => /^(Point|MultiPoint)/.test(l.getGeometryType()) ? ({ id: l.getId(), name: l.getName(), inediting: !!l.isInEditing() }) : []);
-
-    // skip adding when there is no editable layer or  editing panel is open (ie. layer is in editing)
-    if (editable_point_layers.find(l => l.inediting)) {
-      return;
-    }
-
-    // Add "choose_layer" action
-    GUI.state.actiontools['choose_layer'] = {
-      [layer.id]: {
-        layers:   editable_point_layers,
-        icon:     'pencil',
-        label:    'Choose a layer where to add this feature',
-        nolayers: 'No editable point layers found on this project',
-        cbk:      this.#editItem,
-      }
-    };
-
-    actions[layer.id] = actions[layer.id] || [];
-    actions[layer.id].push({
-      id:         'choose_layer',
-      class:      "fas fa-pencil-alt",
-      state:      Vue.observable({ toggled: Array(layer.features.length).fill(null) }),
-      toggleable: true,
-      hint:       'Choose a layer',
-      cbk:        (layer, feature, action, index) => {
-        // skip layer choose when there is only a single editable layer
-        if (1 === editable_point_layers.length) {
-          this.#editItem(editable_point_layers[0].id, feature);
-          return;
-        }
-        // let user choose an editable layer
-        action.state.toggled[index] = !action.state.toggled[index];
-
-        const tools   = GUI.state.currentactiontools[layer.id];        // get current action tools
-        const feats   = GUI.state.currentactionfeaturelayer[layer.id];
-        feats[index]  = action.state.toggled[index] ? action : null;
-        tools[index]  = action.state.toggled[index] ? ({
-          name: 'choose_layer',
-          data:() => ({ layerId: null }),
-          props: {
-            feature: { type: Object },
-            config:  { type: Object, default: () => ({ icon: 'pencil', label: 'Choose a Layer', nolayers: 'No layers found', layers: [], cbk: () => {} }) },
-          },
-          template: /* html */ `
-            <section class = "action-choose-layer">
-              <label v-t = "config.label"></label>
-              <div
-                style               = "width: 100%; display: flex"
-                @click.prevent.stop = ""
-              >
-                <x-select
-                  style     = "flex-grow: 1;"
-                  :value    = "layerId"
-                  :disabled = "!has_layers"
-                  @change   = "layerId = $event.target.value"
-                >
-                  <x-option
-                    v-for  = "layer in config.layers"
-                    :key   = "layer.id"
-                    :value = "layer.id"
-                  >
-                    <b>{{ layer.name }}</b>
-                  </x-option>
-                  <x-option v-if = "!has_layers" :value="null">{{ $t(config.nolayers) }}</x-option>
-                </x-select>
-                <button
-                  v-if        = "has_layers"
-                  style       = "border-radius: 0 3px 3px 0;"
-                  class       = "btn skin-button"
-                  @click.stop = "() => config.cbk(layerId, feature)"
-                >
-                  <span :class = "$fa(config.icon)"></span>
-                </button>
-              </div>
-            </section>`,
-            computed: {
-              has_layers() {
-                return this.config.layers && this.config.layers.length > 0; 
-              },
-            },
-            created() {
-              if (this.has_layers) {
-                this.layerId = this.config.layers[0].id;
-              }
-            },
-        }) : null;                                      // set component
-
-        // need to check if pass component and
-        if (
-          tools[index] &&                   // if component is set
-          action.id !== feats[index].id &&  // same action
-          feats[index].toggleable           // check if toggleable
-        ) {
-          feats[index].state.toggled[index] = false;
-        }
-
-      },
-    });
-
   }
 
 }

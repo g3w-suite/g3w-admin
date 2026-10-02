@@ -30,7 +30,7 @@ export async function unlinkRelation({
     getRelationFieldsFromRelation({ relation, layerId: id }).ownField.forEach(f => feature.set(f, null))
     GUI.getPlugin('editing').getToolBoxById(Tool.Stack.current.getContext().id).pushUpdate(id, feature, originalRelation);
     relations.splice(index, 1);
-    Tool.Stack.items.forEach(t => t?.getContext?.()?.service?.setUpdate?.(true, { force: true }));
+    Tool.Stack.items.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
     return true;
   }
 }

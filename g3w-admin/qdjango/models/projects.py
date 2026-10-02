@@ -422,6 +422,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     )
     geocoding_providers = models.TextField(_('Geocoding providers'), blank=True, null=True)
 
+    wmts_grids = models.JSONField(
+        _('WMTS grids'), 
+        blank=True, 
+        null=True
+    )
+
     class Meta:
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')
@@ -884,6 +890,12 @@ class Layer(G3WACLModelMixins, models.Model):
         null=True,
     )
 
+    wmtscapabilities = models.JSONField(
+        _('Dict wmts options'),
+        blank=True,
+        null=True,
+    )
+
     # geometryType
     geometrytype = models.CharField(
         _('Geometry type'),
@@ -1001,6 +1013,15 @@ class Layer(G3WACLModelMixins, models.Model):
     external = models.BooleanField(
         _('Get WMS/WMS externally'),
         default=False,
+        blank=True,
+    )
+
+    # admin-selected format to render this layer as WMTS, must also be available in wmtscapabilities
+    wmts_format = models.CharField(
+        _('Render layer as WMTS'),
+        max_length=10,
+        choices=(('png', 'PNG'), ('jpeg', 'JPEG')),
+        null=True,
         blank=True,
     )
 
