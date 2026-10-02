@@ -125,7 +125,7 @@ export default {
 											style = "caret-color: rgba(0,0,0,0); margin-bottom: 5px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center;"
 										>
 											<span>*</span>
-											<span v-t = "'sdk.form.footer.required_fields'"></span>
+                      <span v-t = "'Required fields'"></span>
 										</div>
 									</div>
 								</form>
@@ -151,7 +151,7 @@ export default {
       <!-- FORM FOOTER -->
       <div class = "form-group g3wform_footer">
         <div v-if = "isRoot" style = "margin:3px; font-weight: bold">
-          * <span v-t = "'sdk.form.footer.required_fields'"></span>
+          * <span v-t = "'Required fields'"></span>
           {{ state.footer.message }}
         </div>
         <button
