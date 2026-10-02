@@ -314,8 +314,7 @@ export default ({
             <td class = "action-cell">
               <div
                 v-if              = "!fieldrequired && capabilities.includes('change_attr_feature')"
-                class             = "g3w-icon"
-                class             = "fas fa-unlink"
+                class             = "g3w-icon fas fa-unlink"
                 @click.stop       = "unlinkRelation(index)"
                 data-placement    = "right"
                 title             = "plugins.editing.unlink_relation"

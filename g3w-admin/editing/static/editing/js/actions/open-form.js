@@ -279,7 +279,7 @@ export class OpenFormStep extends Step {
           features:         this.getFeatures(),
           isMulti:          this.hasMulti(),
           isContentChild:   this.hasChild(),
-          saveAllEnabled:   !!this.#saveAll,
+          saveAll:          !!this.#saveAll,
           resolve,
           reject,
         },
