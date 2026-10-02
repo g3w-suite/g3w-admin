@@ -47,7 +47,8 @@ export default ({
         v-if              = "father"
         class             = "filter-by-relation fas fa-sitemap"
         @click            = "toggleFilterByRelation"
-        v-t-tooltip:right = "'plugins.editing.filter_by_relation'"
+        data-placement    = "right"
+        title             = "plugins.editing.filter_by_relation"
       ></i>
 
       <!-- PANEL TITLE -->
@@ -145,7 +146,7 @@ export default ({
                   v-model = "tool.options.checked"
                   @change = "() => tool.options.onChange(tool.options.checked)"
                 />
-                <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right = "'plugins.editing.show_measure_tool'">
+                <label for = "g3w_editing_show_measure_tool" data-placement = "right" title = "plugins.editing.show_measure_tool">
                   <b class = "fas fa-ruler-combined"></b>
                 </label>
               </div>
@@ -163,7 +164,7 @@ export default ({
                     :id     = "'snap_' + state.id"
                     v-model = "tool.options.checked"
                   />
-                  <label :for = "'snap_' + state.id" v-t-tooltip:right.create= " 'plugins.editing.snap'">
+                  <label :for = "'snap_' + state.id" data-placement = "right" title = "plugins.editing.snap">
                     <span class = "fas fa-magnet"></span>
                   </label>
                 </div>
@@ -180,7 +181,8 @@ export default ({
                   <label
                     v-if             = "snapAll"
                     :for             = "'snap_all_' + state.id + '_all'"
-                    v-t-tooltip:left = "'plugins.editing.snapall'"
+                    data-placement   = "left"
+                    title            = "plugins.editing.snapall"
                   >
                     <span class = "fas fa-magnet"></span>
                     <b    class = "fas fa-layer-group" style = "margin-left: 3px;"></b>

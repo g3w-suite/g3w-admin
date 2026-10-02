@@ -531,7 +531,8 @@ export class Tool extends Emitter {
                       @click          = "completeStep(step)"
                       :class          = "'btn btn-success' + (step.buttonnext.disabled ? ' g3w-disabled' : '' )"
                       style           = "margin-left: 10px;"
-                      v-t-tooltip:top = "'plugins.editing.next'"
+                      data-placement  = "top"
+                      title           = "plugins.editing.next"
                     >
                       <i style = "font-weight: bold; font-size: 1.3em;" class = "fas fa-arrow-right"></i>
                     </button>

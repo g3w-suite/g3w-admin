@@ -142,7 +142,8 @@ export default ({
         <!-- EDIT MULTI ATTRIBUTES -->
         <span
           v-if               = "relationsLength > 0 && capabilities.includes('change_attr_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.update_multi_features_relations'"
+          data-placement     = "bottom"
+          title              = "plugins.editing.update_multi_features_relations"
           class              = "g3w-icon"
         >
           <span @click.stop = "editMulti()" v-disabled = "relations.every(r => !r.select)">
@@ -153,7 +154,8 @@ export default ({
         <!-- CHANGE ATTRIBUTE -->
         <span
           v-if               = "capabilities.includes('change_attr_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.link_relation'"
+          data-placement     = "bottom"
+          title              = "plugins.editing.link_relation"
           @click.stop        = "show_add_link ? linkRelation() : null"
           :class             = "[{ 'disabled': !show_add_link }, 'g3w-icon add-link fas fa-link']"
         ></span>
@@ -161,7 +163,8 @@ export default ({
         <!-- ADD FEATURE -->
         <span
           v-if               = "rcapabilities.includes('add_feature')"
-          v-t-tooltip:bottom = "'plugins.editing.add_relation'"
+          data-placement     = "bottom"
+          title              = "plugins.editing.add_relation"
           @click.stop        = "show_add_link ? addRelation2() : null"
           :class             = "[{ 'disabled' : !show_add_link }, 'g3w-icon add-link pull-right fas fa-plus']"
         ></span>
@@ -296,7 +299,9 @@ export default ({
                   :key            = "tool.state.id"
                   :class          = "{ enabled: true, 'toggled': tool.state.active, ['editbtn ' + tool.state.id]: true }"
                   @click.stop     = "startTool(tool, index)"
-                  v-t-tooltip:top = "'plugins.' + tool.state.name"
+                  data-placement  = "top"
+                  :title          = "'plugins.' + tool.state.name"
+                  :data-i18n-title = "'plugins.' + tool.state.name"
                 >
                   <img
                     height = "20px"
@@ -312,7 +317,8 @@ export default ({
                 class             = "g3w-icon"
                 class             = "fas fa-unlink"
                 @click.stop       = "unlinkRelation(index)"
-                v-t-tooltip:right = "'plugins.editing.unlink_relation'"
+                data-placement    = "right"
+                title             = "plugins.editing.unlink_relation"
                 style             = "color: var(--skin-color); cursor: pointer; font-size:12px; border-radius:5px;padding: 13px;"
               ></div>
             </td>
@@ -354,7 +360,8 @@ export default ({
             v-if            = "pages > 1"
             v-model         = "search.page"
             style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
-            v-t-tooltip:top = "pages ? search.page: 0 + $t(' of ') + pages" 
+            :title          = "pages ? search.page: 0 + $t(' of ') + pages"
+            :data-i18n-title = "pages ? search.page: 0 + $t(' of ') + pages"
             data-placement  = "top"
           >
             <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
