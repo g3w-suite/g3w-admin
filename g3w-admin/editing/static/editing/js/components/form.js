@@ -535,7 +535,7 @@ export default {
       GUI.disableContent(false);
     },
     async closeAll() {
-      await Tool.Stack.current?.stop();
+      await Tool.Stack.current?.stopAll();
     },
     /**
      * Sets the dirty state and, when clearing it, resets field baselines.
