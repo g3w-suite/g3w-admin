@@ -60,8 +60,7 @@ export default {
                 @click.stop.prevent = "saveAll"
               >
                 <i
-                  class  = "skin-color"
-                  :class = "g3wtemplate.font['save']"
+                  class  = "skin-color far fa-save"
                   style  = "font-size: 1.8em; padding: 5px; border-radius: 5px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.5); margin: 5px;"
                 ></i>
               </span>
@@ -78,7 +77,7 @@ export default {
                 @click.stop.prevent = "closeForm"
               >
                 <i
-                  :class = "g3wtemplate.font['close']"
+                  class  = "fas fa-times"
                   style  = "font-size: 1.8em; padding: 5px; border-radius: 5px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.5); margin: 5px;"
                 ></i>
               </span>

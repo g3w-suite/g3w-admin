@@ -551,7 +551,7 @@ new (class extends Plugin {
         //in case of online application
         if (online) {
           dialog = GUI.dialog({
-            message: /* html */`<h4 class="text-center"><i style="margin-right: 5px;" class="${GUI.getFontClass('spinner')}"></i>${_('plugins.editing.saving')}</h4>`,
+            message: /* html */`<h4 class="text-center"><i style="margin-right: 5px;" class="fas fa-spinner"></i>${_('plugins.editing.saving')}</h4>`,
             closeButton: false
           });
         }

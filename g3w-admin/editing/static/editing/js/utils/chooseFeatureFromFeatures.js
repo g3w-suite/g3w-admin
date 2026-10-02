@@ -40,8 +40,7 @@ export function chooseFeatureFromFeatures({
                 <!-- ZOOM TO FEATURE -->
                 <div
                   @click.stop = "zoomToFeature(feature)"
-                  :class      = "g3wtemplate.font['marker']"
-                  class       = "skin-color"
+                  class       = "skin-color fas fa-map-marker-alt"
                   style       = "padding-left: 3px; font-size: 1.3em; cursor: pointer; margin-top: 10px;"
                 ></div>
 

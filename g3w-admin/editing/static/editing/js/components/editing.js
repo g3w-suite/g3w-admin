@@ -36,17 +36,17 @@ export default ({
 
         <!-- SAVE BUTTON -->
         <div @click.stop = "commit" :class = "['editing-button', (canCommit ? 'enabled': '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['save']]"></span>
+          <span class = "editing-icon far fa-save"></span>
         </div>
 
         <!-- UNDO BUTTON -->
         <div @click.stop = "undo" :class = "['editing-button', (canUndo ? 'enabled': '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['arrow-left']]"></span>
+          <span class = "editing-icon fas fa-chevron-left"></span>
         </div>
 
         <!-- REDO BUTTON -->
         <div @click.stop = "redo" :class = "['editing-button', (canRedo ? 'enabled' : '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['arrow-right']]"></span>
+          <span class = "editing-icon fas fa-chevron-right"></span>
         </div>
 
       </div>

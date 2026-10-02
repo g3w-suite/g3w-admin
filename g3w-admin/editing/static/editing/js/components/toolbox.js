@@ -45,7 +45,7 @@ export default ({
       <!-- TOGGLE RELATION LAYERS (LAYERS FILTER) -->
       <i
         v-if              = "father"
-        :class            = "'filter-by-relation ' + g3wtemplate.font['relation']"
+        class             = "filter-by-relation fas fa-sitemap"
         @click            = "toggleFilterByRelation"
         v-t-tooltip:right = "'plugins.editing.filter_by_relation'"
       ></i>
@@ -66,7 +66,8 @@ export default ({
             'pull-right':       !isMobile(),
             'enabled':          isLayerReady,
             'g3w-icon-toggled': state.on,
-            [g3wtemplate.font[(state.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
+            ['fa fa-check']:      state.on || toggled.layer,
+            ['fas fa-pencil-alt']: !(state.on || toggled.layer)
           }"
         ></i>
       </span>
@@ -84,14 +85,14 @@ export default ({
 
       <!-- HAS NO GEOMETRY -->
       <div v-if = "!state.layer.isGeoLayer()" class = "info">
-        <i :class = "g3wtemplate.font['info']"></i>
+        <i class = "fas fa-info-circle"></i>
         <span v-t = "'plugins.editing.toolbox_has_no_geometry'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
       <!-- HAS RELATION -->
       <div v-if = "hasRelations" class = "info">
-        <i :class = "g3wtemplate.font['info']"></i>
+        <i class = "fas fa-info-circle"></i>
         <span v-t = "'plugins.editing.toolbox_has_relation'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
@@ -145,7 +146,7 @@ export default ({
                   @change = "() => tool.options.onChange(tool.options.checked)"
                 />
                 <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right = "'plugins.editing.show_measure_tool'">
-                  <b :class = "g3wtemplate.font['measure']"></b>
+                  <b class = "fas fa-ruler-combined"></b>
                 </label>
               </div>
 
@@ -163,7 +164,7 @@ export default ({
                     v-model = "tool.options.checked"
                   />
                   <label :for = "'snap_' + state.id" v-t-tooltip:right.create= " 'plugins.editing.snap'">
-                    <span :class = "g3wtemplate.font['magnete']"></span>
+                    <span class = "fas fa-magnet"></span>
                   </label>
                 </div>
               
@@ -181,8 +182,8 @@ export default ({
                     :for             = "'snap_all_' + state.id + '_all'"
                     v-t-tooltip:left = "'plugins.editing.snapall'"
                   >
-                    <span :class = "g3wtemplate.font['magnete']"></span>
-                    <b    :class = "g3wtemplate.font['layers']" style = "margin-left: 3px;"></b>
+                    <span class = "fas fa-magnet"></span>
+                    <b    class = "fas fa-layer-group" style = "margin-left: 3px;"></b>
                   </label>
                 </div> 
                 

@@ -153,10 +153,9 @@ export default ({
         <!-- CHANGE ATTRIBUTE -->
         <span
           v-if               = "capabilities.includes('change_attr_feature')"
-          class              = "g3w-icon add-link"
           v-t-tooltip:bottom = "'plugins.editing.link_relation'"
           @click.stop        = "show_add_link ? linkRelation() : null"
-          :class             = "[{ 'disabled': !show_add_link }, g3wtemplate.font['link']]"
+          :class             = "[{ 'disabled': !show_add_link }, 'g3w-icon add-link fas fa-link']"
         ></span>
 
         <!-- ADD FEATURE -->
@@ -164,8 +163,7 @@ export default ({
           v-if               = "rcapabilities.includes('add_feature')"
           v-t-tooltip:bottom = "'plugins.editing.add_relation'"
           @click.stop        = "show_add_link ? addRelation2() : null"
-          class              = "g3w-icon add-link pull-right"
-          :class             = "[{ 'disabled' : !show_add_link }, g3wtemplate.font['plus']]"
+          :class             = "[{ 'disabled' : !show_add_link }, 'g3w-icon add-link pull-right fas fa-plus']"
         ></span>
 
       </div>
@@ -182,7 +180,7 @@ export default ({
         @click.stop = "closeTools"
         style       = "align-self: self-end;"
       >
-        <i class = "g3w-icon skin-color" :class = "g3wtemplate.font['close']"></i>
+        <i class = "g3w-icon skin-color fas fa-times"></i>
       </span>
 
       <!-- ADD VECTOR RELATION -->
@@ -196,7 +194,7 @@ export default ({
           style       = "width: 100%"
           @click.stop = "addRelation"
         >
-          <i :class = "g3wtemplate.font['pencil']"></i>
+          <i class = "fas fa-pencil-alt"></i>
         </button>
       </div>
 
@@ -240,7 +238,7 @@ export default ({
             class       = "btn skin-button"
             @click.stop = "copyFromLayer"
           >
-            <i :class = "g3wtemplate.font['clipboard']"></i>
+            <i class = "fas fa-clipboard"></i>
           </button>
 
         </div>
@@ -312,7 +310,7 @@ export default ({
               <div
                 v-if              = "!fieldrequired && capabilities.includes('change_attr_feature')"
                 class             = "g3w-icon"
-                :class            = "g3wtemplate.font['unlink']"
+                class             = "fas fa-unlink"
                 @click.stop       = "unlinkRelation(index)"
                 v-t-tooltip:right = "'plugins.editing.unlink_relation'"
                 style             = "color: var(--skin-color); cursor: pointer; font-size:12px; border-radius:5px;padding: 13px;"
@@ -329,7 +327,7 @@ export default ({
                     class  = "previewtype"
                     :class = "getMediaType(attribute.value.mime_type).type"
                   >
-                    <i class = "fa-2x" :class = "g3wtemplate.font[getMediaType(attribute.value.mime_type).type]"></i>
+                    <i :class = "['fa-2x', getMediaType(attribute.value.mime_type).icon]"></i>
                   </div>
                 </a>
                 <div class = "filename">{{ getValue(attribute.value).split('/').pop() }}</div>
@@ -534,6 +532,16 @@ export default ({
           default:
             media.type = 'unknow';
         }
+        media.icon = ({
+          image: 'far fa-image',
+          pdf: 'fas fa-file-pdf',
+          video: 'far fa-file-video',
+          zip: 'far fa-file-archive',
+          text: 'far fa-file-alt',
+          excel: 'far fa-file-excel',
+          ppt: 'far fa-file-powerpoint',
+          unknow: 'far fa-question-circle',
+        })[media.type] || 'far fa-question-circle';
         return media;
       },
 

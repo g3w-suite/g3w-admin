@@ -74,8 +74,7 @@ export default ({
             <span class = "tool" v-t-tooltip:right = "'plugins.editing.edit_feature'">
               <i
                 v-if             = "showTool('change_attr_feature')"
-                :class           = "g3wtemplate.font['pencil']"
-                class            = "g3w-icon"
+                class            = "g3w-icon fas fa-pencil-alt"
                 style            = "color:#30cce7;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "editFeature(feature.__g3w_uid)"
@@ -86,8 +85,7 @@ export default ({
             <span class = "tool" v-t-tooltip:right = "'plugins.editing.create_a_copy'">
               <i
                 v-if             = "showTool('add_feature')"
-                :class           = "g3wtemplate.font['copy-paste']"
-                class            = "g3w-icon"
+                class            = "g3w-icon far fa-copy"
                 style            = "color:#d98b14;margin: 5px;padding: 5px 7px 5px 7px;"
                 aria-hidden      = "true"
                 @click.stop      = "copyFeature(feature.__g3w_uid)"
@@ -98,8 +96,7 @@ export default ({
             <span class = "tool" v-t-tooltip:right = "'plugins.editing.delete_feature'">
               <i
                 v-if             = "showTool('delete_feature')"
-                :class           = "g3wtemplate.font['trash-o']"
-                class            = "g3w-icon"
+                class            = "g3w-icon far fa-trash-alt"
                 style            = "color:red;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "deleteFeature(feature.__g3w_uid)"

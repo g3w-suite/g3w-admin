@@ -8,7 +8,7 @@ const DateTime = {
         <div ref="picker" class="input-group date">
           <input :id="id" type="text" class="form-control" />
           <span class="input-group-addon" style="cursor: pointer">
-            <span :class="g3wtemplate.getFontClass('time' === type ? 'time' : 'calendar')"></span>
+            <span :class="'time' === type ? 'far fa-clock' : 'fas fa-calendar-alt'"></span>
           </span>
         </div>
       </div>
