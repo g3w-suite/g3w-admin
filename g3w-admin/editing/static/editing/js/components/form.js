@@ -28,7 +28,7 @@ export default {
     form_structure:   { type: Array, required: true },
     isMulti:          { type: Boolean, required: true },
     isContentChild:   { type: Boolean, required: true },
-    saveAllEnabled:   { type: Boolean, required: true },
+    saveAll:          { type: Boolean, required: true },
     isnew:            { type: Boolean, required: true },
     update:           { type: Boolean, required: true },
     resolve:          { type: Function, required: true },
@@ -57,7 +57,7 @@ export default {
               <span
                 class               = "save-all-icon"
                 v-disabled          = "saveAllDisabled"
-                @click.stop.prevent = "saveAll"
+                @click.stop.prevent = "saveAllForm"
               >
                 <i
                   class  = "skin-color far fa-save"
@@ -161,30 +161,26 @@ export default {
           :valid              = "state.valid"
           @click.stop.prevent = "saveForm"
           v-disabled          = "!enableSave"
-          v-t                 = "saveButtonTitle"
-        ></button>
+        > {{ $t(saveButtonTitle) }} </button>
         <button
           v-if                = "isRoot && state.update"
           class               = "btn btn-danger"
           :update             = "state.update"
           :valid              = "state.valid"
           @click.stop.prevent = "cancelForm"
-          v-t                 = "'plugins.editing.ignore_changes'"
-        ></button>
+        >{{ $t('ignore_changes')  }}</button>
         <button
           v-if                = "isRoot && !state.update"
           class               = "btn btn-danger"
           :update             = "state.update"
           :valid              = "state.valid"
           @click.stop.prevent = "cancelForm"
-          v-t                 = "'close'"
-        ></button>
+        > {{ $t('close') }} </button>
         <button
           v-if               = "!isRoot"
-          v-t                = "'back'"
-          class              = "btn skin-button"
-          @click.stop.prevet = "backToRoot"
-        ></button>
+          class               = "btn skin-button"
+          @click.stop.prevent = "backToRoot"
+        > {{ $t('back') }} </button>
       </div>
     </div>
   `,
@@ -245,7 +241,7 @@ export default {
         originalFeatures:  this.originalFeatures,
         isMulti:           this.isMulti,
         isContentChild:    this.isContentChild,
-        saveAllEnabled:    this.saveAllEnabled,
+        saveAll:           this.saveAll,
         form_structure:    this.form_structure,
       }
     }   
@@ -258,9 +254,13 @@ export default {
   computed: {
     isRoot()          { return !this.state.relation; },
     enableSave()      { return this.state.valid && this.state.update; },
-    hasSaveAll()      { return this.state.saveAllEnabled; },
+    hasSaveAll()      { return this.state.saveAll; },
     isChild()         { return Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable')) },
     saveAllDisabled() {
+      console.log({
+        update: this.state.update,
+        valid: this.state.valid,
+      })
       return !(Tool.Stack.items
         .slice(0, Tool.Stack.length - 1)
         .every(t => {
@@ -480,7 +480,7 @@ export default {
       feature.setProperties(attributes);
       return attributes;
     },
-    async saveAll() {
+    async saveAllForm() {
       GUI.setLoadingContent(true);
       GUI.disableContent(true);
 
@@ -790,11 +790,13 @@ export default {
       }
       GUI.setLoadingContent(true);
       await setLayerUniqueFieldValues(this.state.layer.getRelationById(relation.name).getChild());
+      this.state.relation = null;
       this.state.relation = getRelationsInEditingByFeature({
         layerId: this.state.layerid,
         relations: this.state.layer.getRelations().getArray().filter(r => r.getType() !== 'ONE' && r.getFather() === this.state.layerid),
         feature: this.state.features[0],
       }).find(({ relation: editingRelation }) => relation.name === editingRelation.id);
+  
       GUI.setLoadingContent(false);
     },
     async watchRelation1_1Fields(form_fields) {
