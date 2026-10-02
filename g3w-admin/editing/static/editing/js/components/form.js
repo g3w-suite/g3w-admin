@@ -168,7 +168,7 @@ export default {
           :update             = "state.update"
           :valid              = "state.valid"
           @click.stop.prevent = "cancelForm"
-        >{{ $t('ignore_changes')  }}</button>
+        >{{ $t('plugins.editing.ignore_changes')  }}</button>
         <button
           v-if                = "isRoot && !state.update"
           class               = "btn btn-danger"
