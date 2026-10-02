@@ -387,7 +387,7 @@ export default ({
         console.warn(e);
       }
 
-      this.tool.stop();
+      await this.tool.stop();
     },
 
     /**
@@ -416,7 +416,7 @@ export default ({
         console.warn(e);
       }
 
-      this.tool.stop();
+      await this.tool.stop();
     },
 
     /**

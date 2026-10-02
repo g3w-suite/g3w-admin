@@ -311,6 +311,13 @@ export class OpenFormStep extends Step {
   }
 
   /**
+   * Notify form consumers when the tool cancels this step.
+   */
+  cancel() {
+    GUI.getPlugin('editing').emit('cancelform', this.getInputs().features);
+  }
+
+  /**
    * Restores the UI state and removes watchers when the form is closed.
    *
    * @returns {void}

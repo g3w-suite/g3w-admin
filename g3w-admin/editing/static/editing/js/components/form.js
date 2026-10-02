@@ -74,7 +74,7 @@ export default {
               <span
                 class               = "save-all-icon skin-color-dark"
                 v-disabled          = "!saveAllDisabled"
-                @click.stop.prevent = "closeForm"
+                @click.stop.prevent = "closeAll"
               >
                 <i
                   class  = "fas fa-times"
@@ -206,12 +206,6 @@ export default {
        */
       defaults_on_update: [],
       /**
-       * Whether a failed save-all commit requires undoing staged changes.
-       *
-       * @type {boolean}
-       */
-      saveAllError:       false,
-      /**
        * Watchers registered for relation 1:1 fields.
        *
        * @type {Array<() => void>}
@@ -322,6 +316,10 @@ export default {
       GUI.disableContent(false);
 
       this.resolve(this.inputs);
+    },
+    cancelForm() {
+      GUI.getPlugin('editing').emit('cancelform', this.inputs.features);
+      this.reject(this.inputs);
     },
     /**
      * Propagates editable 1:1 join fields to the related child layer.
@@ -445,17 +443,6 @@ export default {
 
       await Promise.allSettled(promises);
     },
-
-    cancelForm() {
-      if (this.saveAllError) {
-        [...Tool.Stack.items]
-          .reverse()
-            .filter(t => t.getLastStep() instanceof OpenFormStep)
-          .forEach(t => GUI.getPlugin('editing').getToolBoxById(t.getLastStep().getContext().id).undo());
-      }
-          GUI.getPlugin('editing').emit('cancelform', this.inputs.features);
-          this.reject(this.inputs);
-    },
     /**
      * Applies form field values to a feature, including nested child fields.
      *
@@ -517,7 +504,6 @@ export default {
 
       try {
         await GUI.getPlugin('editing').commit({ modal: false });
-        this.saveAllError = false;
         [...Tool.Stack.items]
           .reverse()
           .filter(t => t.getLastStep() instanceof OpenFormStep)
@@ -542,20 +528,14 @@ export default {
             });
           });
       } catch(e) {
-        this.saveAllError = true;
         console.warn(e);
       }
 
       GUI.setLoadingContent(false);
       GUI.disableContent(false);
     },
-    async closeForm() {
-      const tool = GUI.getPlugin('editing').state.toolboxselected.getActiveTool();
-      await tool.stop();
-      Tool.Stack.items.splice(0);
-      if (!tool.runOnce) {
-        tool.start();
-      }
+    async closeAll() {
+      await Tool.Stack.current?.stop();
     },
     /**
      * Sets the dirty state and, when clearing it, resets field baselines.
@@ -1062,7 +1042,6 @@ export default {
     this.ready = true;
   },
   beforeDestroy() {
-    this.saveAllError = false;
     this.unwatches.forEach(unwatch => unwatch());
     this.unwatches = [];
   }

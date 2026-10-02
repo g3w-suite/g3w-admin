@@ -711,7 +711,7 @@ export default ({
           console.warn(e);
         }
 
-        tool.stop();
+        await tool.stop();
 
       },
 
@@ -899,7 +899,7 @@ export default ({
                   reject(e);
 
                 } finally {
-                  tool.stop();
+                  await tool.stop();
                   relationtool.state.active = false;
 
                 }
@@ -1009,7 +1009,7 @@ export default ({
               d.reject(e);
             }
 
-            tool.stop();
+            await tool.stop();
           }
 
           // zoom to relation vector feature
@@ -1065,7 +1065,7 @@ export default ({
             }
 
             tool.unbindEscKeyUp();
-            tool.stop();
+            await tool.stop();
             unwatch();
           }
 
@@ -1162,7 +1162,7 @@ export default ({
           this.rollback(options.context.id, [this._relationLayerId]);
         }
 
-        tool.stop();
+        await tool.stop();
 
         if (isVector) {
           tool.unbindEscKeyUp();
@@ -1275,7 +1275,7 @@ export default ({
           Tool.Stack.items.forEach(t => t?.getLastStep?.()?.getForm?.()?.setUpdate?.(true, { force: true }));
         }
 
-        tool.stop();
+        await tool.stop();
 
         this.disabled = false;
       },

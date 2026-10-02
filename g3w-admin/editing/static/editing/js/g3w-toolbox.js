@@ -2203,7 +2203,7 @@ export class ToolBox extends Emitter {
     //In case of father layer with changes
     if (fathersInEditing.length > 0) {
       this.stopLoading();
-      this.stopActiveTool();
+      await this.stopActiveTool();
       this.enableTools(false);
       this.clearToolboxMessages();
       this.#stopChildren(this.state.id);
@@ -2219,7 +2219,7 @@ export class ToolBox extends Emitter {
       this.stopLoading();
       this.setEditing(false);
       this.#getFeaturesOption = {};
-      this.stopActiveTool();
+      await this.stopActiveTool();
       this.clearToolboxMessages();
       this.emit('stop-editing');
       // clear layer unique field values
@@ -2835,15 +2835,17 @@ export class ToolBox extends Emitter {
       return;
     }
 
+    // Clear selection before awaiting stop, so its completion cannot restart the tool.
+    this.state.toolsoftool = [];
+    this.state.activetool  = null;
+
     try {
       // remove all event listeners and stop active tool
       if (activeTool) {
+        activeTool.active = false;
         activeTool.off();
-        await this.#stopTool(activeTool, true);
+        await this.#stopTool(activeTool);
       }
-      // set empty array cause reactivity of vue instead of splice(0)
-      this.state.toolsoftool       = [];
-      this.state.activetool        = null;
     } catch(e) {
       console.warn(e);
     }
@@ -3824,13 +3826,14 @@ export class ToolBox extends Emitter {
         GUI.showSidebar();
       }    
       tool.active       = false;
-      this.rollback();
+      await this.rollback();
     } finally {
+      await tool.stop();
       //In case of runOnce stop activ tool tnat stop tool;
-      if (tool.runOnce) {
+      if (tool.runOnce && this.getActiveTool() === tool) {
         this.stopActiveTool();
       }
-      if (!tool.runOnce && 'vector' === this.getLayer().getType() ) {
+      if (!tool.runOnce && this.getActiveTool() === tool && 'vector' === this.getLayer().getType() ) {
         await this.#startTool(tool);
       }
     }
@@ -3842,13 +3845,12 @@ export class ToolBox extends Emitter {
    * Stops an editing tool and emits its stop event.
    *
    * @param {Object} tool Tool instance to stop.
-   * @param {boolean} [force=false] Whether the tool must stop immediately.
    * 
    * @returns {Promise<void>} Resolves after cleanup and stop notification.
    */
-  async #stopTool(tool, force = false) {
+  async #stopTool(tool) {
     try {
-      await tool.stop(force); // stop tool binded to tool
+      await tool.stop();
     } catch(e) {
       console.warn(e);
       this.rollback();

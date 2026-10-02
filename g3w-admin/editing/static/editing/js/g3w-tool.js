@@ -35,9 +35,12 @@ export class Tool extends Emitter {
   /**
    * Promise controls the currently running tool flow.
    *
-   * @type {{resolve: Function, reject: Function}|null}
+  * @type {{resolve: Function, reject: Function, completed: boolean}|null}
    */
   #promise = null;
+
+  /** Shared promise: only one shutdown or cleanup can change the stack at a time. */
+  static #closing = null;
 
   /**
    * Original type value used to identify this tool.
@@ -423,6 +426,9 @@ export class Tool extends Emitter {
    * @returns {void}
    */
   resolve() {
+    if (this.#promise) {
+      this.#promise.completed = true;
+    }
     this.#promise?.resolve?.();
   }
 
@@ -438,6 +444,7 @@ export class Tool extends Emitter {
    * @fires settoolsoftool
    */
   async runStep(step, inputs) {
+    const promise = this.#promise;
     try {
       //set step message
       this.setHelpMessage(step.state.help);
@@ -445,6 +452,9 @@ export class Tool extends Emitter {
       this.emit('settoolsoftool', (step.tools || []));
       //run step
       const outputs = await step.__run(inputs, this.getContext());
+      if (promise !== this.#promise) {
+        throw new Error('Editing tool stopped');
+      }
       // onDone → check if all step is resolved
       this.#stepIndex++;
       //check if is the last of tool steps
@@ -457,7 +467,9 @@ export class Tool extends Emitter {
       }
     } catch(e) { 
       //In case of reject
-      this.#stepIndex = 0;
+      if (promise === this.#promise) {
+        this.#stepIndex = 0;
+      }
       return Promise.reject(e);
     }
   }
@@ -478,7 +490,7 @@ export class Tool extends Emitter {
    */
   start(options = {}) {
     return new Promise(async (resolve, reject) => {
-      this.#promise = { resolve, reject };
+      const promise = this.#promise = { resolve, reject, completed: false };
       /** @type {Object|undefined} Inputs shared by the current step flow. */
       this._inputs  = options.inputs;
       /** @type {Object} Context shared by the current step flow. */
@@ -576,8 +588,13 @@ export class Tool extends Emitter {
         const outputs = await this.runStep(this.getSteps()[this.#stepIndex], this.getInputs());
         //In case of show user message (tool steps)
         if (showUserMessage) {
-          setTimeout(() => { this.clearUserMessagesSteps(); resolve(outputs); }, 500);
+          setTimeout(() => {
+            this.clearUserMessagesSteps();
+            promise.completed = true;
+            resolve(outputs);
+          }, 500);
         } else {
+          promise.completed = true;
           resolve(outputs);
         }
       } catch(e) {
@@ -593,56 +610,89 @@ export class Tool extends Emitter {
   }
 
   /**
-   * Stop the current step and any nested tool, then remove this tool from the stack.
+   * Cancel the chain, or only clean up this task if it completed successfully.
    *
-   * @returns {Promise<void>} Resolves after the current step and child tools stop.
+   * @returns {Promise<void>} Resolves after rollback and cleanup finish.
    * 
    * @fires stop
    */
-  async stop() {
-    return new Promise(async (resolve, reject) => {
+  stop() {
+    // All callers wait for the same operation, including automatic stop callbacks.
+    if (Tool.#closing) {
+      return Tool.#closing;
+    }
+    if (null === this.#stackIndex) {
+      return Promise.resolve();
+    }
 
-      this.#promise = null;
+    // A successful task keeps its changes. Pending or cancelled tasks close the chain.
+    const cancelAll = !this.#promise?.completed;
+    const toolsToClose = Tool.Stack.items
+      .slice(cancelAll ? 0 : Tool.Stack.items.indexOf(this))
+      .reverse();
+    // Assign the shared promise before cleanup can trigger another stop() call.
+    Tool.#closing = Promise.resolve().then(async () => {
+      const errors = [];
 
-      try {
-        await this.#child?.stop?.();
-      } catch(e) {
-        console.warn(e);
+      for (const tool of toolsToClose) {
+        const runningFlow = tool.#promise;
+        const step = tool.getRunningStep();
+
+        // Never undo changes when stop() is called after a successful save.
+        if (cancelAll) {
+          try {
+            await GUI.getPlugin('editing').getToolBoxById(tool.getContext().id).rollback();
+          } catch(error) {
+            errors.push(error);
+          }
+        }
+
+        // Cleanup runs even if rollback failed, and children are processed first.
+        tool.#promise = null;
+        tool.#child = null;
+        try {
+          if (step) {
+            tool.clearMessages();
+            await step.__stop();
+          }
+        } catch(error) {
+          errors.push(error);
+        } finally {
+          tool.#stepIndex = 0;
+          tool.#stackIndex = null;
+          const index = Tool.Stack.items.indexOf(tool);
+          if (index !== -1) {
+            Tool.Stack.items.splice(index, 1);
+          }
+          try {
+            tool.emit('stop');
+          } catch(error) {
+            errors.push(error);
+          }
+        }
+
+        if (cancelAll) {
+          // Optional task-specific notification; Tool does not know about forms.
+          try {
+            await step?.cancel?.();
+          } catch(error) {
+            errors.push(error);
+          } finally {
+            // Release callers waiting on start(), even if cleanup or cancel failed.
+            runningFlow?.reject(tool.getInputs() || new Error('Editing tool stopped'));
+          }
+        }
       }
 
-      // remove child
-      this.#child = null;
-
-      // stop flow
-      try {
-        //get current step
-        const step = this.getSteps()[this.#stepIndex];
-        //check if it is running
-        if (step.isRunning()) {
-          //clear messages steps
-          this.clearMessages();
-          //wait stop run
-          await step.__stop();
-        }
-        // reset counter and reject flow
-        if (this.#stepIndex > 0) {
-          this.#stepIndex = 0;
-          reject();
-          return Promise.reject();
-        } else {
-          resolve();
-        }
-      } catch(e) {
-        console.warn(e);
-        reject(e);
-      } finally {
-        //remove tool from stack
-        Tool.Stack.items.splice(this.getStackIndex(), 1);
-
-        //emit stop Tool
-        this.emit('stop');
+      // Close every task first; then report the first failure to the caller.
+      if (errors.length) {
+        throw errors[0];
       }
+    }).finally(() => {
+      // A later editing session can start a new shutdown, even after an error.
+      Tool.#closing = null;
     });
+    return Tool.#closing;
   }
 
   /**
