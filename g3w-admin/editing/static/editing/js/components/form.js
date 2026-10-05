@@ -118,14 +118,6 @@ export default {
 												@changeInput      = "changeInput"
 											/>
 										</div>
-										<div
-											v-if  = "show_required_field_message"
-											id    = "g3w-for-inputs-required-inputs-message"
-											style = "caret-color: rgba(0,0,0,0); margin-bottom: 5px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center;"
-										>
-											<span>*</span>
-                      <span v-t = "'Required fields'"></span>
-										</div>
 									</div>
 								</form>
               </template>
