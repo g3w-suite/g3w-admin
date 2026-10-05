@@ -25,7 +25,7 @@ export default {
     originalFeatures: { type: Array, required: true },
     form_fields:      { type: Array, required: true },
     features:         { type: Array, required: true },
-    form_structure:   { type: Array, required: true },
+    form_structure:   { type: Array,  },
     isMulti:          { type: Boolean, required: true },
     isContentChild:   { type: Boolean, required: true },
     saveAll:          { type: Boolean, required: true },

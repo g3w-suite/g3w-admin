@@ -1333,9 +1333,9 @@ export default ({
         return  {
           parentFeature:   Tool.Stack.current.getFeatures().at(-1), // get parent feature
           context: {
-            id:            this.layerId, //set parent layer id                         
-            excludeFields: fields.ownField,                                 // array of fields to be excluded
-            fatherValue:   parent.map(([_, value]) => value),               // values of parent fields in relation
+            id:            Tool.Stack.items.at(0).getContext().id,  //get root layer id                       
+            excludeFields: fields.ownField,                         // array of fields to be excluded
+            fatherValue:   parent.map(([_, value]) => value),       // values of parent fields in relation
             fatherField:   parent.map(([field]) => fields.ownField[fields.relationField.findIndex(rField => field === rField)]), //children fields
           },
           inputs: {
