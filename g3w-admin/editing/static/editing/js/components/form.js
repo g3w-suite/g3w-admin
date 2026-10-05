@@ -108,7 +108,7 @@ export default {
 									<div class="box-primary">
 										<div class="box-body">
 											<g3w-input
-												v-for             = "field in state.fields"
+												v-for             = "field in state.fields.filter(field => field.visible)"
 												:key              = "field.name"
 												:state            = "field"
 												:removeToValidate = "removeToValidate"
