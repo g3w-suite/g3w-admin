@@ -519,7 +519,7 @@ export class Tool extends Emitter {
   start(options = {}) {
     return new Promise(async (resolve, reject) => {
       this.#inputs  = options.inputs;
-      this.#context = options.context || {};
+      this.#context = options.context ?? {};
 
       // Keep each active tool in the stack exactly once.
       if (!Tool.Stack.items.includes(this)) {
@@ -527,11 +527,11 @@ export class Tool extends Emitter {
       }
 
       this.#steps      = options.steps ?? this.#steps;
-      this.#steps.forEach(step => step._tool = this);
+      this.#steps.forEach(s => s.setTool(this));
 
       const showUserMessage = Object.keys(this.#userMessageSteps).length > 0;
       if (showUserMessage) {
-        this.#showUserMessages();
+        this.#showUserMessages?.();
       }
       this.emit('start');
 

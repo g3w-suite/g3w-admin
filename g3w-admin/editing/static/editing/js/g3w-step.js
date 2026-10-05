@@ -4,11 +4,41 @@
 
 import { getEditingLayer }             from './utils/getEditingLayer.js';
 
+
+
 const { Emitter } = g3w;
 const GUI         = g3w.app;
 
 export class Step extends Emitter {
-
+  
+  /**
+   * Private field storing the bound function that executes the step task.
+   */
+  #run;
+  /**
+  * Private field storing the bound function that stops the step task.
+  */
+  #stop;
+  /**
+   * Private field storing the shared context for the step execution.
+   */
+  #context;
+  /**
+   * Private field storing the inputs for the step execution.
+   */
+  #inputs;  
+  /**
+   * Private field storing the outputs for the step execution.
+   */
+  #outputs;
+  /**
+   * Private field storing the currently selected tool.
+   */
+  #tool;
+  /**
+   * Private field storing the tools exposed by the step.
+   */
+  #tools;
   /**
    * @param {Object} [options={}] Step configuration.
    * @param {Object} [options.inputs] Initial values passed to the step.
@@ -42,35 +72,35 @@ export class Step extends Emitter {
      * 
      * @type {Function}
      */
-    this._run    = (options.run  || this.run  || (async () => true)).bind(this);
+    this.#run    = (options.run  || this.run  || (async () => true)).bind(this);
 
     /**
      * Bound function that stops the step task.
      * 
      * @type {Function}
      */
-    this._stop   = (options.stop || this.stop || (async () => true)).bind(this);
+    this.#stop   = (options.stop || this.stop || (async () => true)).bind(this);
 
     /**
      * Inputs consumed by the step, such as features or layer.
      *
      * @type {Object|null}
      */
-    this._inputs = options.inputs || null;
+    this.#inputs = options.inputs || null;
 
     /**
      * Shared context, such as the current editing options.
      *
      * @type {Object|null}
      */
-    this._context = options.context || null;
+    this.#context = options.context || null;
 
     /**
      * Outputs produced by the step task.
      *
      * @type {Object|null}
      */
-    this._outputs = options.outputs || null;
+    this.#outputs = options.outputs || null;
 
     /**
      * Mutable state exposed while the step is running.
@@ -78,18 +108,18 @@ export class Step extends Emitter {
      * @type {{id: (string|null), name: (string|null), help: (string|null), running: boolean, error: (Error|null), message: (string|null), usermessagesteps: Object}}
      */
     this.state = {
-      id:      options.id   || null,
-      name:    options.name || null,
-      help:    options.help || null,    // help to show what the user has to do
-      running: false,                   // running
-      error:   null,                    // error
-      message: options.message || null, // message
+      id:               options.id      ?? null,
+      name:             options.name    ?? null,
+      help:             options.help    ?? null,    // help to show what the user has to do
+      message:          options.message ?? null, // message
+      running:          false,                   // running
+      error:            null,                    // error
       usermessagesteps: {}
     };
 
     this.registerEscKeyEvent(options.escKeyPressEventHandler)
 
-    /** @TODO add description */
+    /** check if there are nested steps */
     if (options.steps) {
       this.setSteps(options.steps);
     }
@@ -106,7 +136,7 @@ export class Step extends Emitter {
 
     /** @TODO add description */
     if (options.tools) {
-      this._tools = options.tools;
+      this.#tools = options.tools;
     }
 
   }
@@ -119,7 +149,7 @@ export class Step extends Emitter {
    * @returns {void}
    */
   setInputs(inputs) {
-    this._inputs = this.inputs = inputs;
+    this.#inputs = this.inputs = inputs;
   }
 
   /**
@@ -128,7 +158,7 @@ export class Step extends Emitter {
    * @returns {Object|null} Current step inputs.
    */
   getInputs() {
-    return this._inputs;
+    return this.#inputs;
   }
 
   /**
@@ -139,7 +169,7 @@ export class Step extends Emitter {
    * @returns {Object|null} The assigned context.
    */
   setContext(context) {
-    return this._context = this.context = context;
+    return this.#context = this.context = context;
   }
 
   /**
@@ -148,7 +178,7 @@ export class Step extends Emitter {
    * @returns {Object|null} Current execution context.
    */
   getContext() {
-    return this.context;
+    return this.#context;
   }
 
   /**
@@ -396,24 +426,24 @@ export class Step extends Emitter {
 
     };
 
-    if (this._tools && 0 === this._tool._toolsoftool.length) {
-      this._tool._toolsoftool.push(...(
-        this._tools
+    if (this.#tools && 0 === this.#tool._toolsoftool.length) {
+      this.#tool._toolsoftool.push(...(
+        this.#tools
           .filter(tool => ('measure' !== tool || ('vector' === inputs.layer.getType() && !(/^(Multi)?Point/i.test(inputs.layer.getGeometryType())))))
           .map(tool => toolsOfTools[tool])
       ));
     }
 
-    if (this._tools) {
-      this._tool._toolsoftool.forEach(t => t.options.run({ layer: inputs.layer }));
-      this._tool.emit('settoolsoftool', this._tool._toolsoftool);
+    if (this.#tools) {
+      this.#tool._toolsoftool.forEach(t => t.options.run({ layer: inputs.layer }));
+      this.#tool.emit('settoolsoftool', this.#tool._toolsoftool);
     }
 
     this.emit('run', { inputs, context });
 
     try {
       this.state.running = true;                // change state to running
-      return await this._run(inputs, context);
+      return await this.#run(inputs, context);
     } catch(e) {
       console.warn(e);
       this.state.error = e;
@@ -432,8 +462,8 @@ export class Step extends Emitter {
    * @fires stop
    */
   async __stop() {
-    this._tool?._toolsoftool?.forEach?.(t => t.options.stop());
-    await this._stop(this._inputs, this._context);   // stop task
+    this.#tool?._toolsoftool?.forEach?.(t => t.options.stop());
+    await this.#stop(this._inputs, this._context);   // stop task
     this.state.running = false;                // remove running state
     this.emit('stop');
   }
@@ -501,6 +531,10 @@ export class Step extends Emitter {
     return this;
   }
 
+  setTool(tool) {
+    this.#tool = tool;
+  }
+
   /**
    * Associate this step with its parent tool and exposed tools.
    *
@@ -510,8 +544,8 @@ export class Step extends Emitter {
    * @returns {void}
    */
   setToolsOfTools(tool, tools = [] ) {
-    this._tool     = tool;
-    this._tools    = tools;
+    this.#tool     = tool;
+    this.#tools    = tools;
   }
 
 }
