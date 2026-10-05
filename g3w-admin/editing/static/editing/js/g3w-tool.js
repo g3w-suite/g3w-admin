@@ -537,7 +537,7 @@ export class Tool extends Emitter {
 
       try {
         // run all steps
-        const outputs = await this.runSteps(this.getInputs());
+        const outputs = await this.runSteps(this.#inputs);
         if (showUserMessage) {
           setTimeout(() => {
             this.clearUserMessagesSteps();
@@ -651,7 +651,7 @@ export class Tool extends Emitter {
    * @returns {unknown} Features from the current inputs.
    */
   getFeatures() {
-    return this.getInputs().features;
+    return this.#inputs.features;
   }
 
   /**
@@ -670,7 +670,7 @@ export class Tool extends Emitter {
    * @returns {unknown} Layer from the current inputs.
    */
   getLayer() {
-    return this.getInputs().layer;
+    return this.#inputs.layer;
   }
 
   
