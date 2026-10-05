@@ -3813,11 +3813,12 @@ export class ToolBox extends Emitter {
     }
 
     try {
+      //start tool
       await tool.start({
         inputs:  { layer: this.getLayer(), features: [] },
         context: { id: this.state.id }
       });
-      
+      //save temprary changes to history
       await this.saveChanges();
       GUI.getPlugin('editing').saveChange(); // after save temp change check if editing service has a autosave
     } catch(e) {

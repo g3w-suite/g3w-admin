@@ -73,7 +73,6 @@ export default {
             >
               <span
                 class               = "save-all-icon skin-color-dark"
-                v-disabled          = "!saveAllDisabled"
                 @click.stop.prevent = "closeAll"
               >
                 <i
@@ -251,16 +250,14 @@ export default {
     hasSaveAll()      { return this.state.saveAll; },
     isChild()         { return Tool.Stack.length > 1 && !(2 === Tool.Stack.length && Tool.Stack.at(0).isType('edittable')) },
     saveAllDisabled() {
-      console.log({
-        update: this.state.update,
-        valid: this.state.valid,
-      })
-      return !(Tool.Stack.items
+      const parentForms = Tool.Stack.items
         .slice(0, Tool.Stack.length - 1)
-        .every(t => {
-          const valid = t.getLastStep() instanceof OpenFormStep ? t.getLastStep().getForm()?.state.valid : undefined;
-          return valid || undefined === valid;
-        })) || !(this.state.valid && this.state.update);
+        .filter(tool => tool.getLastStep() instanceof OpenFormStep)
+        .map(tool => tool.getLastStep().getForm());
+      const parentFormsValid = parentForms.every(form => form?.state.valid);
+      const hasUpdates       = this.state.update || parentForms.some(form => form?.state.update);
+
+      return !parentFormsValid || !(this.state.valid && hasUpdates);
     },
     saveButtonTitle() { return this.state.isContentChild ? Tool.Stack.parent.getBackButtonLabel() || "plugins.editing.save_and_back" : "plugins.editing.insert_edit"; },
   },
@@ -535,7 +532,7 @@ export default {
       GUI.disableContent(false);
     },
     async closeAll() {
-      await Tool.Stack.current?.stopAll();
+      await Tool.Stack.stop();
     },
     /**
      * Sets the dirty state and, when clearing it, resets field baselines.
@@ -718,6 +715,7 @@ export default {
             this.getDefaultExpression(this.state.fields.find(f => dependency_field === f.name))
           ));
         }
+        //validate the input before updating the form state
         this.isValid(input);
         this.state.update = (
           this.state.force.update

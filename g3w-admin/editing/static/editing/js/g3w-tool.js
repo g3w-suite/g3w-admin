@@ -30,18 +30,31 @@ export class Tool extends Emitter {
     get current()  { return Tool.Stack.items.at(-1); },
     /** @param {number} index Zero-based stack index. @returns {Tool|undefined} */
     at(index)      { return Tool.Stack.items.at(index); },
+    /** Stop every active tool and roll back their changes. */
+    async stop() {
+      //get the id of the root layer id
+      const tool = Tool.Stack.items.at(0);
+      // Stop all active tools in reverse order before rolling back the root tool.
+      for (const tool of [...Tool.Stack.items].reverse()) {
+        await tool.stop();
+      }
+      // Roll back the changes made by the root tool.
+      await GUI.getPlugin('editing').getToolBoxById(tool.getContext().id).rollback();
+      // Restart the root tool if it is not set to run only once.
+      if (!tool.runOnce) {
+        await tool.start(
+          {
+            inputs:  { 
+              layer: tool.getInputs().layer,
+              features: [] 
+            },
+            context: tool.getContext(),
+          }
+        );
+      }
+      
+    }
   };
-
-  /**
-   * Controls the current start() call. `completed` tells stop() whether rollback
-   * is needed or the tool finished successfully.
-   *
-   * @type {{resolve: Function, reject: Function, completed: boolean}|null}
-   */
-  #promise = null;
-
-  /** Makes concurrent stop() calls wait for the same stack cleanup. */
-  static #closing = null;
 
   /**
    * Original type value used to identify this tool.
@@ -56,6 +69,20 @@ export class Tool extends Emitter {
    * @type {Object[]}
    */
   #steps = [];
+
+  /**
+   * Current step inputs.
+   *
+   * @type {Object}
+   */
+  #inputs = {};
+
+  /**
+   * Shared context passed to every step.
+   *
+   * @type {Object}
+   */
+  #context = {};
 
   /**
    * Translation key displayed as the current tool help message.
@@ -195,12 +222,15 @@ export class Tool extends Emitter {
      *
      * @type {boolean}
      */
-    this.runOnce = options?.runOnce || false;
+    this.runOnce      = options?.runOnce || false;
 
     this.#type        = options?.type        || null;
     this.#steps       = options?.steps       || [];
     this.#helpMessage = options?.helpMessage ?? null;
 
+    /**
+     * Initialize user message steps if any are provided.
+     */
     if (this.#steps.length > 0) {
       this.setUserMessagesSteps(this.#steps);
     }
@@ -212,7 +242,7 @@ export class Tool extends Emitter {
      */
     this.backbuttonlabel = options?.backbuttonlabel || null; 
 
-    /** @TODO add description */
+    /** Register the ESC key event if requested by the options. */
     if (true === options.registerEscKeyEvent) {
       this.registerEscKeyEvent();
     }
@@ -251,18 +281,9 @@ export class Tool extends Emitter {
    */
   isType(type) {
     if (Array.isArray(type)) {
-      return type.some(t => t === this.#type);
+      return type.some(t => this.#type === t);
     }
-    return type === this.#type;
-  }
-
-  /**
-   * Store a service in the shared tool context.
-   *
-   * @param {unknown} service Service stored in the tool context.
-   */
-  setContextService(service) {
-    this.getContext().service = service;
+    return this.#type === type;
   }
 
   /**
@@ -282,14 +303,14 @@ export class Tool extends Emitter {
    * @returns {void}
    */
   setInput({ key, value }) {
-    this._inputs[key] = value;
+    this.#inputs[key] = value;
   }
 
   /**
    * @returns {Object|undefined} Inputs passed to the current step.
    */
   getInputs() {
-    return this._inputs;
+    return this.#inputs;
   }
 
   /**
@@ -300,14 +321,14 @@ export class Tool extends Emitter {
    * @returns {void}
    */
   setContext(context) {
-    this._context = context;
+    this.#context = context;
   }
 
   /**
    * @returns {Object|undefined} The current step context.
    */
   getContext() {
-    return this._context;
+    return this.#context;
   }
 
   /**
@@ -382,61 +403,28 @@ export class Tool extends Emitter {
   }
 
   /**
-   * Reject the promise returned by {@link Tool#start} and notify listeners.
-   *
-   * @returns {void}
-   * 
-   * @fires reject
-   */
-  reject() {
-    this.#promise?.reject?.();
-    this.emit('reject');
-  }
-
-  /**
-   * Resolve the promise returned by {@link Tool#start}.
-   *
-   * @returns {void}
-   */
-  resolve() {
-    if (this.#promise) {
-      this.#promise.completed = true;
-    }
-    this.#promise?.resolve?.();
-  }
-
-  /**
    * Run each configured step in order and pass its output to the next step.
    *
    * @param {*} inputs Values passed to the first step.
    * @returns {Promise<*>} Output from the final step.
    * @fires settoolsoftool
    */
-  async runStep(inputs) {
-    const runningPromise = this.#promise;
+  async runSteps(inputs) {
+    //get current running promise for this tool instance
     try {
-      if (!this.#steps?.length) {
-        throw new Error('Cannot run a tool without steps');
-      }
-
-      let outputs = inputs;
-
+      //loop through each step and execute it
       for (let index = 0; index < this.#steps.length; index++) {
         const step = this.#steps[index];
         this.setHelpMessage(step.state.help);
         this.emit('settoolsoftool', step.tools || []);
-
-        outputs = await step.__run(outputs, this.getContext());
-        if (runningPromise !== this.#promise) {
-          // A stopped or restarted flow now owns the tool state.
-          throw new Error('Editing tool stopped');
-        }
+        //run step and pass its output to the next step
+        inputs = await step.__run(inputs, this.getContext());
       }
 
-      return outputs;
-    } catch(error) {
+      return inputs;
+    } catch(err) {
       // A stopped flow must not reset state belonging to a newer run.
-      throw error;
+      throw err;
     }
   }
 
@@ -529,17 +517,16 @@ export class Tool extends Emitter {
    * @fires start
    */
   start(options = {}) {
-    return new Promise((resolve, reject) => {
-      const promise = this.#promise = { resolve, reject, completed: false };
-      this._inputs  = options.inputs;
-      this._context = options.context || {};
+    return new Promise(async (resolve, reject) => {
+      this.#inputs  = options.inputs;
+      this.#context = options.context || {};
 
       // Keep each active tool in the stack exactly once.
       if (!Tool.Stack.items.includes(this)) {
         Tool.Stack.items.push(this);
       }
 
-      this.#steps      = options.steps || this.#steps;
+      this.#steps      = options.steps ?? this.#steps;
       this.#steps.forEach(step => step._tool = this);
 
       const showUserMessage = Object.keys(this.#userMessageSteps).length > 0;
@@ -548,128 +535,52 @@ export class Tool extends Emitter {
       }
       this.emit('start');
 
-      this.runStep(this.getInputs())
-        .then(outputs => {
-          if (showUserMessage) {
-            setTimeout(() => {
-              this.clearUserMessagesSteps();
-              promise.completed = true;
-              resolve(outputs);
-            }, 500);
-          } else {
-            promise.completed = true;
-            resolve(outputs);
-          }
-        })
-        .catch(e => {
-          console.warn(e);
-          if (showUserMessage) {
+      try {
+        // run all steps
+        const outputs = await this.runSteps(this.getInputs());
+        if (showUserMessage) {
+          setTimeout(() => {
             this.clearUserMessagesSteps();
-          }
-          reject(e);
-        });
+            resolve(outputs)
+          }, 500);
+        } else {
+          resolve(outputs);
+        }
+      } catch(e) {
+        console.warn(e);
+        if (showUserMessage) {
+          this.clearUserMessagesSteps();
+        }
+        reject(e);
+      }
     });
-  }
-
-  /** Stop this tool and its active descendants. */
-  stop() {
-    const index = Tool.Stack.items.indexOf(this);
-    if (-1 === index) {
-      return Promise.resolve();
-    }
-
-    const toolsToClose = Tool.Stack.items.slice(index).reverse();
-    return this.#stopTools(toolsToClose, !this.#promise?.completed);
-  }
-
-  /** Stop every active tool and roll back their changes. */
-  stopAll() {
-    return this.#stopTools([...Tool.Stack.items].reverse(), true);
   }
 
   /**
    * Close tools from child to parent. Continue cleanup after errors, then report
    * the first failure to the caller.
-   *
-   * @param {Tool[]} toolsToClose Tools in the order they should be closed.
-   * @param {boolean} cancelFlow Whether to roll back and reject each flow.
+   * @param {boolean} [force=false] 
    * @returns {Promise<void>} Resolves after cleanup completes.
    */
-  #stopTools(toolsToClose, cancelFlow) {
-    if (Tool.#closing) {
-      return Tool.#closing;
-    }
-    if (0 === toolsToClose.length || !Tool.Stack.items.includes(this)) {
-      return Promise.resolve();
-    }
-
-    Tool.#closing = Promise.resolve().then(async () => {
-      const errors = [];
-      for (const tool of toolsToClose) {
-        try {
-          await tool.#stopTool(cancelFlow);
-        } catch(error) {
-          errors.push(error);
-        }
-      }
-
-      if (errors.length) {
-        throw errors[0];
-      }
-    }).finally(() => {
-      // A later editing session can start a new shutdown, even after an error.
-      Tool.#closing = null;
-    });
-    return Tool.#closing;
-  }
-
-  /** Roll back if needed, stop the active step, and release stack state. */
-  async #stopTool(cancelFlow) {
-    const runningFlow = this.#promise;
-    const step = this.getRunningStep();
-    const errors = [];
-
-    if (cancelFlow) {
-      try {
-        await GUI.getPlugin('editing').getToolBoxById(this.getContext().id).rollback();
-      } catch(error) {
-        errors.push(error);
-      }
-    }
-
-    this.#promise = null;
+  async stop() {
     try {
-      if (step) {
-        this.clearMessages();
-        await step.__stop();
-      }
-    } catch(error) {
-      errors.push(error);
-    } finally {
-      const index = Tool.Stack.items.indexOf(this);
-      if (index !== -1) {
-        Tool.Stack.items.splice(index, 1);
-      }
+      //get running step
+      const step = this.getRunningStep();
       try {
-        this.emit('stop');
-      } catch(error) {
-        errors.push(error);
-      }
-    }
-
-    if (cancelFlow) {
-      try {
-        await step?.cancel?.();
-      } catch(error) {
-        errors.push(error);
+        if (step) {
+          this.clearMessages();
+          await step.__stop();
+        }
+  
+      } catch(err) {
+        console.warn(err);
       } finally {
-        runningFlow?.reject(this.getInputs() || new Error('Editing tool stopped'));
+        Tool.Stack.items.splice(Tool.Stack.items.indexOf(this), 1);
       }
+    } catch(err) {
+      console.warn(err);
     }
-
-    if (errors.length) {
-      throw errors[0];
-    }
+  
   }
 
   /**
@@ -678,11 +589,12 @@ export class Tool extends Emitter {
    * @returns {void}
    */
   clearUserMessagesSteps() {
-    Object.values(this.#userMessageSteps).forEach(step => {
-      step.done = false;
-      if (step.buttonnext) {
-        step.buttonnext.disabled = true;
-      }
+    Object.values(this.#userMessageSteps)
+      .forEach(step => {
+        step.done = false;
+        if (step.buttonnext) {
+          step.buttonnext.disabled = true;
+        }
     });
     GUI.closeUserMessage();
   }
