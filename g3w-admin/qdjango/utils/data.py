@@ -574,18 +574,13 @@ class QgisProjectLayer(XmlData):
         return None if wfsCapabilities == 0 else wfsCapabilities
 
     def _getDataWmtsCapabilities(self):
-            """
-            Set WMTS capability for layer.
-            :return: dict of WMTS layer capabilities.
-            :rtype: dict
-            """
-    
-            wmtsCapabilities = None
-            for wmtslayer in self.qgisProject.wmtsLayers:
-                if self.layerId in wmtslayer:
-                    wmtsCapabilities = self.qgisProject.wmtsLayers[wmtslayer]
-    
-            return wmtsCapabilities
+        """
+        Set WMTS capability for layer.
+        :return: dict of WMTS layer capabilities.
+        :rtype: dict
+        """
+
+        return self.qgisProject.wmtsLayers.get(self.layerId)
 
     def _getDataDatasource(self):
         """
