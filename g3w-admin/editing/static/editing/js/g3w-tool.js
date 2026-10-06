@@ -536,6 +536,8 @@ export class Tool extends Emitter {
       this.emit('start');
 
       try {
+        //disable context menu
+        GUI.getMap().set('can_show_context_menu', false);
         // run all steps
         const outputs = await this.runSteps(this.#inputs);
         if (showUserMessage) {
@@ -580,6 +582,8 @@ export class Tool extends Emitter {
     } catch(err) {
       console.warn(err);
     }
+    // restore context menu visibility
+    GUI.getMap().set('can_show_context_menu', true);
   
   }
 
