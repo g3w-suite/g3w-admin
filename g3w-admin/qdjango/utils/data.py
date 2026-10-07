@@ -1741,7 +1741,7 @@ class QgisProject(XmlData):
                     'layouts': self.layouts,
                     'title_ur': kwargs.get('title_ur'),
                     'context_base_legend': self.contextbaselegend,
-                    'wmts_grids': self.wmtsGrids
+                    'wmts_grids': self.wmtsGrids,
                     'srid': self.srid
                 }
 
