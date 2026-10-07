@@ -1671,7 +1671,8 @@ class QgisProject(XmlData):
                     'relations': self.layerRelations,
                     'layouts': self.layouts,
                     'title_ur': kwargs.get('title_ur'),
-                    'context_base_legend': self.contextbaselegend
+                    'context_base_legend': self.contextbaselegend,
+                    'srid': self.srid
                 }
 
                 for p in (
@@ -1710,6 +1711,7 @@ class QgisProject(XmlData):
                 self.instance.context_base_legend = self.contextbaselegend
                 self.instance.wms_use_layer_ids = self.wmsuselayerids
                 self.instance.is_dirty = False
+                self.instance.srid = self.srid
 
                 self.instance.save()
 
