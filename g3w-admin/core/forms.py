@@ -193,13 +193,17 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         """
 
         if self.instance.pk:
-            projects = Project.objects.filter(group=self.instance)
-            if projects.exists():
+            project = Project.objects.filter(group_id=self.instance.pk).only('srid', 'qgis_file').first()
+            if project:
                 srid = self.cleaned_data['srid'].auth_srid
-                layer_srid = projects[0].qgis_project.crs().postgisSrid()
-                if srid != layer_srid:
+                project_srid = project.srid
+                if project_srid is None:
+                    qgis_project = project.qgis_project
+                    project_srid = qgis_project.crs().postgisSrid() if qgis_project else None
+
+                if srid != project_srid:
                     raise ValidationError(
-                        _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"))
+                        _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{project_srid}"))
 
         return self.cleaned_data['srid']
 
