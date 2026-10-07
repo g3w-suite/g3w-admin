@@ -1742,6 +1742,7 @@ class QgisProject(XmlData):
                     'title_ur': kwargs.get('title_ur'),
                     'context_base_legend': self.contextbaselegend,
                     'wmts_grids': self.wmtsGrids
+                    'srid': self.srid
                 }
 
                 for p in (
@@ -1781,6 +1782,7 @@ class QgisProject(XmlData):
                 self.instance.wms_use_layer_ids = self.wmsuselayerids
                 self.instance.wmts_grids = self.wmtsGrids
                 self.instance.is_dirty = False
+                self.instance.srid = self.srid
 
                 self.instance.save()
 
