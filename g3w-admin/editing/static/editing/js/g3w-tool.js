@@ -99,6 +99,19 @@ export class Tool extends Emitter {
   #userMessageSteps = {};
 
   /**
+   * Whether the Escape key event is registered for this tool.
+   *
+   * @type {boolean}
+   */
+  #registerEscKeyEvent = false;
+
+  /**
+   * Escape key up event handler.
+   *
+   * @type {Function|null}
+   */
+  #escKeyUpHandler = null;
+  /**
    * Tools exposed by the current step through the tool-of-tools event.
    *
    * @type {string[]}
@@ -243,9 +256,8 @@ export class Tool extends Emitter {
     this.backbuttonlabel = options?.backbuttonlabel || null; 
 
     /** Register the ESC key event if requested by the options. */
-    if (true === options.registerEscKeyEvent) {
-      this.registerEscKeyEvent();
-    }
+    this.#registerEscKeyEvent = options.registerEscKeyEvent ?? false;
+    
   }
 
   /**
@@ -516,46 +528,63 @@ export class Tool extends Emitter {
    * 
    * @fires start
    */
-  start(options = {}) {
-    return new Promise(async (resolve, reject) => {
-      this.#inputs  = options.inputs;
-      this.#context = options.context ?? {};
+  async start(options = {}) {
+    
+    this.#inputs  = options.inputs;
+    this.#context = options.context ?? {};
 
-      // Keep each active tool in the stack exactly once.
-      if (!Tool.Stack.items.includes(this)) {
-        Tool.Stack.items.push(this);
-      }
+    // Keep each active tool in the stack exactly once.
+    if (!Tool.Stack.items.includes(this)) {
+      Tool.Stack.items.push(this);
+    }
 
-      this.#steps      = options.steps ?? this.#steps;
-      this.#steps.forEach(s => s.setTool(this));
+    this.#steps      = options.steps ?? this.#steps;
+    this.#steps.forEach(s => s.setTool(this));
 
-      const showUserMessage = Object.keys(this.#userMessageSteps).length > 0;
+    const showUserMessage = Object.keys(this.#userMessageSteps).length > 0;
+    if (showUserMessage) {
+      this.#showUserMessages?.();
+    }
+    this.emit('start');
+
+    //race promises to handle either the escape key being pressed or the steps completing
+    const promises = [];
+
+    if (this.#registerEscKeyEvent) {
+      const { promise, reject: rejectEsc } = Promise.withResolvers();
+      
+      this.#escKeyUpHandler = evt => {
+        if (evt.key === 'Escape') {
+          rejectEsc();
+        }
+      };
+      
+      document.addEventListener('keyup', this.#escKeyUpHandler);
+      promises.push(promise);
+    }
+
+    try {
+      //disable context menu
+      GUI.getMap().set('can_show_context_menu', false);
+      
+      promises.push(this.runSteps(this.#inputs));
+
+      const outputs = await Promise.race(promises);
       if (showUserMessage) {
-        this.#showUserMessages?.();
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.clearUserMessagesSteps();
       }
-      this.emit('start');
-
-      try {
-        //disable context menu
-        GUI.getMap().set('can_show_context_menu', false);
-        // run all steps
-        const outputs = await this.runSteps(this.#inputs);
-        if (showUserMessage) {
-          setTimeout(() => {
-            this.clearUserMessagesSteps();
-            resolve(outputs)
-          }, 500);
-        } else {
-          resolve(outputs);
-        }
-      } catch(e) {
-        console.warn(e);
-        if (showUserMessage) {
-          this.clearUserMessagesSteps();
-        }
-        reject(e);
+      
+      return outputs;
+      
+    } catch(e) {
+      console.warn(e);
+      if (showUserMessage) {
+        this.clearUserMessagesSteps();
       }
-    });
+      throw e;
+    } 
+    
   }
 
   /**
@@ -584,6 +613,10 @@ export class Tool extends Emitter {
     }
     // restore context menu visibility
     GUI.getMap().set('can_show_context_menu', true);
+
+    if (this.#registerEscKeyEvent) {
+      document.removeEventListener('keyup', this.#escKeyUpHandler);
+    }
   
   }
 
@@ -675,50 +708,6 @@ export class Tool extends Emitter {
    */
   getLayer() {
     return this.#inputs.layer;
-  }
-
-  
-  /**
-   * Reject the active flow when Escape is released.
-   * 
-   * @param {KeyboardEvent} evt Keyup event carrying the tool and callback data.
-   * 
-   * @listens document:keyup
-   */
-  escKeyUpHandler(evt) {
-    if ('Escape' === evt.key) {
-      evt.data.tool.reject();
-      evt.data.callback();
-    }
-  }
-
-  /**
-   * Remove the Escape key listener for this tool.
-   */
-  unbindEscKeyUp() {
-    $(document).unbind('keyup', this.escKeyUpHandler);
-  }
-
-  /**
-   * Bind Escape to reject the current flow and run a callback.
-   *
-   * @param {Function} [callback=() => {}] Callback invoked after rejection.
-   */
-  bindEscKeyUp(callback = () => {}) {
-    $(document).on('keyup', { tool: this, callback }, this.escKeyUpHandler);
-  }
-
-  /**
-   * Register Escape handling for the tool lifecycle.
-   *
-   * @param {Function} [callback=() => {}] Callback invoked on Escape.
-   * 
-   * @listens start
-   * @listens stop
-   */
-  registerEscKeyEvent(callback) {
-    this.on('start', () => this.bindEscKeyUp(callback));
-    this.on('stop',  () => this.unbindEscKeyUp());
   }
 
 }

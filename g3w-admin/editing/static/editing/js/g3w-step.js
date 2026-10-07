@@ -39,6 +39,7 @@ export class Step extends Emitter {
    * Private field storing the tools exposed by the step.
    */
   #tools;
+  
   /**
    * @param {Object} [options={}] Step configuration.
    * @param {Object} [options.inputs] Initial values passed to the step.
@@ -46,7 +47,6 @@ export class Step extends Emitter {
    * @param {Object} [options.outputs] Initial step outputs.
    * @param {Function} [options.run] Function executed by {@link Step#__run}.
    * @param {Function} [options.stop] Function executed by {@link Step#__stop}.
-   * @param {Function} [options.escKeyPressEventHandler] Callback invoked on Escape.
    * @param {string} [options.id] Step identifier.
    * @param {string} [options.name] Step name or translation key.
    * @param {string} [options.help] Help message or translation key.
@@ -116,8 +116,6 @@ export class Step extends Emitter {
       error:            null,                    // error
       usermessagesteps: {}
     };
-
-    this.registerEscKeyEvent(options.escKeyPressEventHandler)
 
     /** check if there are nested steps */
     if (options.steps) {
@@ -316,56 +314,6 @@ export class Step extends Emitter {
         features.flat().forEach(f => f.setStyle(originalStyle));
       }
     });
-  }
-
-  /**
-   * Invoke the registered callback when Escape is released.
-   *
-   * @param {Object} evt Keyup event with callback data.
-   * 
-   * @returns {void}
-   * 
-   * @listens document:keyup
-   */
-  escKeyUpHandler(evt) {
-    if ('Escape' === evt.key) {
-      evt.data.callback({ task: evt.data.task });
-    }
-  }
-
-  /**
-   * Remove the document keyup listener for Escape.
-   *
-   * @returns {void}
-   */
-  unbindEscKeyUp() {
-    $(document).unbind('keyup', this.escKeyUpHandler);
-  }
-
-  /**
-   * Bind a callback to the document Escape key event.
-   *
-   * @param {Function} [callback=() => {}] Callback invoked on Escape.
-   * 
-   * @returns {void}
-   */
-  bindEscKeyUp(callback = () => {}) {
-    $(document).on('keyup', { callback, task: this }, this.escKeyUpHandler);
-  }
-
-  /**
-   * Register and unregister Escape handling with the step lifecycle.
-   *
-   * @param {Function} [callback] Callback invoked on Escape.
-   * 
-   * @listens run
-   * @listens stop
-   */
-  registerEscKeyEvent(callback) {
-    if (callback) {
-      this.on('run',  () => this.bindEscKeyUp(callback));
-      this.on('stop', () => this.unbindEscKeyUp());
-    }
   }
 
   /**
