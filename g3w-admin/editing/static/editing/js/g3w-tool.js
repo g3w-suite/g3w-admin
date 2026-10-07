@@ -111,6 +111,14 @@ export class Tool extends Emitter {
    * @type {Function|null}
    */
   #escKeyUpHandler = null;
+
+  /**
+   * Reject the active run when Escape is pressed.
+   *
+   * @type {Function|null}
+   */
+  #rejectEsc = null;
+
   /**
    * Tools exposed by the current step through the tool-of-tools event.
    *
@@ -550,17 +558,14 @@ export class Tool extends Emitter {
     //race promises to handle either the escape key being pressed or the steps completing
     const promises = [];
 
-    if (this.#registerEscKeyEvent) {
-      const { promise, reject: rejectEsc } = Promise.withResolvers();
-      
-      this.#escKeyUpHandler = evt => {
-        if (evt.key === 'Escape') {
-          rejectEsc();
-        }
-      };
-      
-      document.addEventListener('keyup', this.#escKeyUpHandler);
+    if (this.#registerEscKeyEvent || this.#escKeyUpHandler) {
+      const { promise, reject } = Promise.withResolvers();
+      this.#rejectEsc = reject;
       promises.push(promise);
+
+      if (this.#registerEscKeyEvent && !this.#escKeyUpHandler) {
+        this.bindEscKeyUp();
+      }
     }
 
     try {
@@ -585,6 +590,32 @@ export class Tool extends Emitter {
       throw e;
     } 
     
+  }
+
+  /**
+   * Bind Escape to reject the active run and invoke an optional callback.
+   *
+   * @param {Function} [callback=() => {}] Callback invoked on Escape.
+   */
+  bindEscKeyUp(callback = () => {}) {
+    this.unbindEscKeyUp();
+    this.#escKeyUpHandler = evt => {
+      if ('Escape' !== evt.key) {
+        return;
+      }
+      this.#rejectEsc?.();
+      callback();
+    };
+    document.addEventListener('keyup', this.#escKeyUpHandler);
+  }
+
+  /** Remove this tool's Escape key listener. */
+  unbindEscKeyUp() {
+    if (!this.#escKeyUpHandler) {
+      return;
+    }
+    document.removeEventListener('keyup', this.#escKeyUpHandler);
+    this.#escKeyUpHandler = null;
   }
 
   /**
@@ -613,10 +644,8 @@ export class Tool extends Emitter {
     }
     // restore context menu visibility
     GUI.getMap().set('can_show_context_menu', true);
-
-    if (this.#registerEscKeyEvent) {
-      document.removeEventListener('keyup', this.#escKeyUpHandler);
-    }
+    this.unbindEscKeyUp();
+    this.#rejectEsc = null;
   
   }
 
