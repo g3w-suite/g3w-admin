@@ -1,7 +1,5 @@
 /**
  * @file List of edits (changes modal)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { areCoordinatesEqual }       from '../utils/areCoordinatesEqual.js';
@@ -18,13 +16,13 @@ template: /*html*/`
     v-if    = "relation && Object.keys(commits).filter(c => commits[c].length).length"
     class   = "skin-color g3w-long-text"
     style   = "font-weight: bold; margin: 15px 0"
-    v-t:pre = "'plugins.editing.messages.commit.header_relation'"
+    v-t:pre = "'plugins.editing.commit.header_relation'"
   >: {{ layer.getName() }}</h4>
 
   <template
     v-for = "c in Object.keys(commits).filter(c => commits[c].length)"
   >
-    <h4 v-t:pre = "'plugins.editing.messages.commit.'+c"> ({{ commits[c].length }}) </h4>
+    <h4 v-t:pre = "'plugins.editing.commit.'+c"> ({{ commits[c].length }}) </h4>
     <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
     <ul>
       <li v-for = "item in commits[c]">
@@ -80,8 +78,8 @@ template: /*html*/`
 
   data() {
     return {
-      features:  this.layer.getEditor().readFeatures(),        // original features
-      efeatures: this.layer.getEditor().readEditingFeatures(), // edited features,
+      features:  GUI.getPlugin('editing').getToolBoxById(this.layer.layerId).readFeatures(),        // original features
+      efeatures: GUI.getPlugin('editing').getToolBoxById(this.layer.layerId).readEditingFeatures(), // edited features,
     };
   },
 
@@ -99,7 +97,9 @@ template: /*html*/`
         property: key
       });
 
-      return value?.value ?? value; //@since 4.0.0 in case of object value, for example image or pdf, return value.value instead of [object Object] to show the value in the changes modal
+      // return value.value instead of [object Object] to show
+      // the value in the changes modal (eg. in case of object value, for example image or pdf)
+      return value?.value ?? value; 
     },
 
     /**
@@ -164,7 +164,9 @@ template: /*html*/`
     isEdited(item, key) {
       const feat  = this.getFeature(item); // NB: undefined when added
       const efeat = this.getEditingFeature(item); // NB: undefined when deleted
-      if ([feat, efeat].includes(undefined)) { return false }
+      if ([feat, efeat].includes(undefined)) {
+        return false;
+      }
       if (this.getType(item) && 'geometry' === key) {
         return !areCoordinatesEqual({ feature: feat, coordinates: efeat.get(key).getCoordinates() });
       }
@@ -184,7 +186,7 @@ template: /*html*/`
 
   async mounted() {
     // insert a visual reference for `<empty>` values
-    (this.$refs.value || []).filter(d =>  [null, undefined].includes(d.textContent)).forEach(d => d.innerHTML = `<i><code>&lt;empty&gt;</code></i>`);
+    (this.$refs.value || []).filter(d => [null, undefined].includes(d.textContent)).forEach(d => d.innerHTML = `<i><code>&lt;empty&gt;</code></i>`);
   },
 
 });

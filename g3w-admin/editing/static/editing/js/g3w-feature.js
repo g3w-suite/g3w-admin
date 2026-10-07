@@ -1,6 +1,5 @@
 /**
- * @file ORIGINAL SOURCE: src/map/layers/feature.js@v4.0.0
- * @since 4.1.0
+ * @file
  */
 
 const { GEOMETRY_FIELDS } = g3w.constants;
@@ -15,7 +14,7 @@ export class Feature extends ol.Feature {
       new:     state?.new     ?? false,
       action:  state?.action  ?? null,
       visible: state?.visible ?? true,
-      locked:  state?.locked  ?? false, //@since 4.0.0 check if feature is locked by another user
+      locked:  state?.locked  ?? false, // whether feature is locked by another user
     };
 
     //store unique id for the feature
@@ -135,7 +134,6 @@ export class Feature extends ol.Feature {
   }
 
   /**
-   * @since 4.0.0 
    * @returns {boolean} 
    */
   isLocked() {
