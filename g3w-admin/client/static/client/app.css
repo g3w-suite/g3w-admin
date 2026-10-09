@@ -1162,6 +1162,7 @@ body.is-mobile .tree-item input[type="checkbox"]    { accent-color: var(--skin-c
 
 #g3w-themes                            { display: none; padding: 0; }
 #g3w-themes.menu-open                  { display: block; }
+#themes:not(:has(#g3w-themes > li))    { display: none; }
 .current_map_theme                     { overflow: hidden; white-space: normal; text-overflow: ellipsis; }
 .project_map_theme                     { font-weight: bold; padding: 3px; border-bottom: 1px solid #fff; }
 .user_map_theme                        { font-weight: bold; padding: 5px 3px; display: flex; justify-content: space-between; border-bottom: 1px solid #fff; }
