@@ -2545,6 +2545,10 @@ body .main-header .navbar .sidebar-toggle:focus {
     background: rgba(255, 255, 255, .12);
     color: #fff;
 }
+body.skin-blue .main-header .navbar .sidebar-toggle:hover,
+body.skin-blue .main-header .navbar .sidebar-toggle:focus {
+    background: #7a8e26;
+}
 
 /* Right-menu links / icons */
 body .main-header .navbar .navbar-custom-menu > .nav > li > a,
@@ -6228,6 +6232,7 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
     gap: 8px;
 }
 .projects-cards-grid.is-list-view .project-card {
+    height: 92px;
     flex-direction: row;
     align-items: stretch;
     border-radius: 10px;
@@ -6239,8 +6244,8 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 }
 .projects-cards-grid.is-list-view .project-card .pc-thumb {
     height: auto;
-    width: 140px;
-    min-width: 140px;
+    width: 168px;
+    min-width: 168px;
     flex-shrink: 0;
 }
 .projects-cards-grid.is-list-view .project-card .pc-body {
@@ -6287,7 +6292,7 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 /* Bookmark sits over the map thumbnail (top-right corner of the thumb) */
 .projects-cards-grid.is-list-view .project-card .pc-bookmark {
     top: 6px;
-    left: 108px;
+    left: 136px;
     right: auto;
 }
 .projects-cards-grid.is-list-view .project-card .pc-drag-handle {
@@ -6298,6 +6303,7 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 
 @media (max-width: 768px) {
     .projects-cards-grid.is-list-view .project-card {
+        height: auto;
         flex-direction: column;
     }
     .projects-cards-grid.is-list-view .project-card .pc-thumb {
@@ -6514,6 +6520,7 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 
 #groups_list.is-list-view .group-card,
 #macrogroups_list.is-list-view .group-card {
+    height: 92px;
     display: flex;
     flex-direction: row;
     align-items: stretch;
@@ -6529,8 +6536,8 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 /* Cover becomes a left thumbnail */
 #groups_list.is-list-view .group-card .group-cover,
 #macrogroups_list.is-list-view .group-card .group-cover {
-    width: 220px;
-    min-width: 220px;
+    width: 264px;
+    min-width: 264px;
     height: auto;
     padding: 12px 14px;
     display: flex;
@@ -6616,6 +6623,7 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 @media (max-width: 768px) {
     #groups_list.is-list-view .group-card,
     #macrogroups_list.is-list-view .group-card {
+        height: auto;
         flex-direction: column;
     }
     #groups_list.is-list-view .group-card .group-cover,
@@ -7241,6 +7249,61 @@ body .main-sidebar .sidebar-menu .treeview-menu > li.active > a {
 body .main-sidebar .sidebar-menu > li > a > .fa-angle-left,
 body .main-sidebar .sidebar-menu > li > a > .pull-right-container > .fa-angle-left {
     color: #a8d8d9;
+}
+
+/* Right control sidebar — match the primary navigation palette */
+body .control-sidebar.control-sidebar-dark,
+body .control-sidebar.control-sidebar-dark + .control-sidebar-bg {
+    background: #0e7274;
+    color: #e3f2f3;
+}
+body .control-sidebar-dark .control-sidebar-heading {
+    color: #8ec8ca;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 14px 0 6px;
+    margin: 6px 0;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+body .control-sidebar-dark .tab-pane > .control-sidebar-heading:first-child {
+    margin-top: 0;
+    border-top: 0;
+}
+body .control-sidebar-dark .control-sidebar-menu > li > a {
+    color: #e3f2f3;
+    padding-left: 12px;
+    border-left: 3px solid transparent;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+body .control-sidebar-dark .control-sidebar-menu > li:hover > a,
+body .control-sidebar-dark .control-sidebar-menu > li.active > a,
+body .control-sidebar-dark .control-sidebar-menu .treeview-menu > li:hover > a,
+body .control-sidebar-dark .control-sidebar-menu .treeview-menu > li.active > a {
+    background: #149ea0;
+    color: #fff;
+    border-left-color: #cfe9ea;
+}
+body .control-sidebar-dark .control-sidebar-subheading {
+    color: #e3f2f3;
+    font-weight: 600;
+}
+body .control-sidebar-dark .control-sidebar-menu > li > a .menu-info > p {
+    color: #a8d8d9;
+}
+body .control-sidebar-dark .control-sidebar-menu .menu-icon {
+    color: #fff;
+    background-color: #149ea0 !important;
+}
+body .control-sidebar-dark .control-sidebar-menu .treeview-menu {
+    background: rgba(255, 255, 255, .06);
+    border-left: 3px solid rgba(255, 255, 255, .1);
+}
+body .control-sidebar-dark .control-sidebar-menu .treeview-menu > li > a {
+    color: #e3f2f3;
+    padding-left: 12px;
+    border-left: 3px solid transparent;
 }
 
 /* ---- 2) Unified table action chips — neutral / edit / view variant ---- */
