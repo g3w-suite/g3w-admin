@@ -117,20 +117,20 @@ class BaseLayerControl extends ol.control.Control {
 
   #getImgURL(layerId) {
     const baseLayer = this.layers.find(l => layerId === l.getId())?.state;
-    let image;
-    if ('OSM' === baseLayer?.servertype) {
-      image = 'osm.png';
-    }
-    if ('Bing' === baseLayer?.servertype) {
-      image = `bing${baseLayer.source.subtype}.png`;
-    }
+    // NB: custom icons are stored in media url (by django)
     if (baseLayer?.icon) {
-      image = baseLayer.icon;
+      return `${baseLayer.icon}`;
     }
     if (!baseLayer) {
       return `${GUI.getResourcesUrl()}images/nobaselayer.png`;
     }
-    return `${GUI.getResourcesUrl()}images/${image || 'no-image.svg'}`;
+    if ('OSM' === baseLayer?.servertype) {
+      return `${GUI.getResourcesUrl()}images/osm.png`;
+    }
+    if ('Bing' === baseLayer?.servertype) {
+      return `${GUI.getResourcesUrl()}images/bing${baseLayer.source.subtype}.png`;
+    }
+    return `${GUI.getResourcesUrl()}images/no-image.svg`;
   }
 
   /** Keep layer visibility/checked status in sync */

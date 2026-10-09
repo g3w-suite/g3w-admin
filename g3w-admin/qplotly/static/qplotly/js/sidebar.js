@@ -34,7 +34,7 @@ export default ({
                 @click.stop    = "toggleFilter(chart.layerId)"
                 :class         = "{ 'toggled': chart.tools.filter.active }"
                 data-placement = "bottom"
-                v-t-tooltip    = "'plugins.qplotly.tooltip.filter_chart'"
+                title          = "plugins.qplotly.tooltip.filter_chart"
               ></span>
               <span
                 v-if           = "!rel && service.state.geolayer"
@@ -43,7 +43,7 @@ export default ({
                 :class         = "{ 'toggled': service.state.bbox_filter }"
                 @click.stop    = "toggleBBox"
                 data-placement = "bottom"
-                v-t-tooltip    = "'plugins.qplotly.tooltip.show_all_features_on_map'"
+                title          = "plugins.qplotly.tooltip.show_all_features_on_map"
               ></span>
               <a
                 v-if           = "edit_url"
@@ -52,7 +52,7 @@ export default ({
                 style          = "margin: auto"
                 class          = "action-button action-button-icon far fa-edit"
                 data-placement = "bottom"
-                v-t-tooltip    = "'Edit in admin'"
+                title          = "Edit in admin"
               ></a>
             </div>
 
@@ -79,7 +79,7 @@ export default ({
     id        = "no_plots"
     class     = "skin-color"
   >  
-    <bar-loader style = "align-self: flex-start;" :loading = "service.state.loading"/>
+    <div v-if = "service.state.loading" class = "bar-loader" style = "align-self: flex-start; border: 0"></div>
     <h4 v-if = "!service.state.loading"  v-t-plugin = "'qplotly.no_plots'"></h4>
   </div>
 

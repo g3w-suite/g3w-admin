@@ -2,14 +2,14 @@
  * @file
  */
 
-import { evaluateExpressionFields }                     from '../utils/evaluateExpressionFields.js';
-import { getEditingLayer }                              from '../utils/getEditingLayer.js';
-import { Step }                                         from '../g3w-step.js';
+import { evaluateExpressionFields } from '../utils/evaluateExpressionFields.js';
+import { getEditingLayer }          from '../utils/getEditingLayer.js';
+import { Step }                     from '../g3w-step.js';
 
 const GUI                      = g3w.app;
 const { createMeasureTooltip } = g3w.utils;
 
-export class ModifyGeometryVertexStep extends Step {
+export class MoveVertexStep extends Step {
 
   #originalStyle = null;
 

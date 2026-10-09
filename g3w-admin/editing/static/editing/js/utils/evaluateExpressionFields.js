@@ -1,5 +1,5 @@
 import { getFieldsWithValues } from '../utils/getFieldsWithValues.js';
-import { getParentFormData }   from '../utils/getParentFormData.js';
+import { Tool }                from '../g3w-tool.js';
 
 const ApplicationState = g3w.state;
 const { XHR }          = g3w.utils;
@@ -34,7 +34,14 @@ export async function evaluateExpressionFields({
         promises.push(
           new Promise(async (resolve, reject) => {
             try {
-              const parentData = getParentFormData();
+              let parentData;
+              if (Tool.Stack.length > 1) {
+                const { features, layer, fields = [] } = Tool.Stack.parent.getInputs();
+                const parentFeature = features[features.length - 1].clone();
+                fields.forEach(({ name, value }) => parentFeature.set(name, value));
+                parentData = { feature: parentFeature, qgs_layer_id: layer.getId() };
+              }
+
               if (field.input.options.default_expression) {
                 field.input.options.loading.state = 'loading';
 
@@ -86,7 +93,14 @@ export async function evaluateExpressionFields({
         promises.push(
           new Promise(async (resolve, reject) => {
             try {
-              const parentData = getParentFormData();
+              let parentData;
+              if (Tool.Stack.length > 1) {
+                const { features, layer, fields = [] } = Tool.Stack.parent.getInputs();
+                const parentFeature = features[features.length - 1].clone();
+                fields.forEach(({ name, value }) => parentFeature.set(name, value));
+                parentData = { feature: parentFeature, qgs_layer_id: layer.getId() };
+              }
+
                 if (field.input.options.filter_expression) {
 
                 field.input.options.loading.state = 'loading';

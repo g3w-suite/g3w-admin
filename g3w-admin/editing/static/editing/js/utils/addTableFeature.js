@@ -4,7 +4,6 @@ const GUI = g3w.app;
 
 /** @TODO add description */
 export async function addTableFeature(inputs, context) {
-  console.log(context.id);
   let feature;
 
   if (inputs.features.length) {

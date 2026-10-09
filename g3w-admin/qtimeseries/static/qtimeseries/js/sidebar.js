@@ -1,5 +1,41 @@
 const GUI = g3w.app;
 
+const DateTime = {
+  template: /* html */`
+    <div>
+      <label :for="id" style="display: block" v-t="label"></label>
+      <div class="form-group">
+        <div ref="picker" class="input-group date">
+          <input :id="id" type="text" class="form-control" />
+          <span class="input-group-addon" style="cursor: pointer">
+            <span :class="'time' === type ? 'far fa-clock' : 'fas fa-calendar-alt'"></span>
+          </span>
+        </div>
+      </div>
+    </div>`,
+  props: ['label', 'format', 'minDate', 'maxDate', 'type', 'value'],
+  data() { return { id: g3wsdk.core.utils.getUniqueDomId() }; },
+  async mounted() {
+    await this.$nextTick();
+    this.picker = $(this.$refs.picker);
+    this.picker.datetimepicker({
+      minDate:     this.minDate,
+      maxDate:     this.maxDate,
+      defaultDate: this.value,
+      useCurrent:  false,
+      format:      this.format,
+      locale:      g3w.state.language,
+    });
+    this.picker.on('dp.change', ({ date }) => this.$emit('change', moment(date).format(this.format)));
+  },
+  watch: {
+    value(value)   { this.picker?.data('DateTimePicker')?.date(value); },
+    minDate(value) { this.picker?.data('DateTimePicker')?.minDate(value); },
+    maxDate(value) { this.picker?.data('DateTimePicker')?.maxDate(value); },
+  },
+  beforeDestroy() { this.picker?.off('dp.change'); },
+};
+
 export default ({
 
   // language=html
@@ -10,21 +46,20 @@ export default ({
 
         <label style="display: block">Layer</label>
 
-        <select
+        <x-select
           id        = "timeserieslayer"
-          class     = "form-control"
           ref       = "select-layers"
+          :class    = "{ 'single-layer': 1 === current_layers.length }"
           :multiple = "layers.length > 0"
-          v-select2 = "'current_layers'"
-          :search   = "false"
+          :value    = "current_layers.join(',')"
+          @change   = "changeLayers"
         >
-          <option
+          <x-option
             v-for     = "(layer, index) in layers"
             :key      = "layer.id"
             :value    = "index"
-            :selected = "current_layers.indexOf(index.toString()) > -1"
-          >{{ layer.name }}</option>
-        </select>
+          >{{ layer.name }}</x-option>
+        </x-select>
 
         <div v-if="!changed_layer">
           <datetime
@@ -57,30 +92,37 @@ export default ({
             :step   = "step_multiplier"
             v-model = "step"
           />
-          <range
-            v-disabled    = "range.max === range.min "
-            label         = "plugins.qtimeseries.steps"
-            :max          = "range.max"
-            :value        = "range.value"
-            :min          = "range.min"
-            ref           = "rangecomponent"
-            @change-range = "changeRangeStep"
-          />
+          <div v-disabled="range.max === range.min">
+            <section style="display: flex; justify-content: space-between; font-weight: bold">
+              <section style="align-self: flex-end"><span class="min-max-label">{{ range.min }}</span></section>
+              <div style="display: flex; flex-direction: column; margin: 0 3px">
+                <label for="qtimeseries-range" style="display: block" class="skin-color" v-t="'plugins.qtimeseries.steps'"></label>
+                <input
+                  id      = "qtimeseries-range"
+                  type    = "range"
+                  :min    = "range.min"
+                  :max    = "range.max"
+                  :value  = "range.value"
+                  :style  = "{ backgroundSize: (range.max > range.min ? (range.value - range.min) * 100 / (range.max - range.min) : 0) + '% 100%' }"
+                  @change = "changeRangeStep({ value: $event.target.value })"
+                />
+              </div>
+              <section style="align-self: flex-end"><span>{{ range.max }}</span></section>
+            </section>
+          </div>
           <label style="display: block"></label>
-          <select
-            class     = "form-control"
+          <x-select
             id        = "g3w-timeseries-select-unit"
-            v-select2 = "'step_unit'"
-            :search   = "false"
+            :value    = "step_unit"
+            @change   = "step_unit = $event.target.value"
           >
-            <option
+            <x-option
               v-for        = "u in step_units"
               :key         = "u.moment"
               :value       = "u.moment"
-              :selected    = "step_unit == u.moment"
               v-t-plugin   = "'qtimeseries.stepsunit.'+ u.label"
-            ></option>
-          </select>
+            ></x-option>
+          </x-select>
         </div>
       </form>
 
@@ -134,6 +176,8 @@ export default ({
     </section>`,
 
   name: "SidebarItem",
+
+  components: { datetime: DateTime },
 
   data() {
     const { 
@@ -470,29 +514,29 @@ export default ({
       this.getTimeLayer();
     },
 
-    /**
-     * Remove "x" symbol to remove one layer from multiple select. Work with at least one layer
-     */
-    hideSingleLayerSelectionClear() {
-      this.$refs['select-layers'].parentElement.querySelectorAll('.select2-container .select2-selection__choice__remove').forEach(el => el.style.display = 'none')
+    syncSelectedLayers() {
+      const select = this.$refs['select-layers'];
+      if (!select?.container) { return; }
+      select.selected_options = [];
+      select.container.querySelectorAll('x-option').forEach(option => {
+        option.removeAttribute('selected');
+        if (this.current_layers.includes(option.value)) {
+          select.select(option, { autoclose: false, emit: false });
+        }
+      });
+      select.select(null, { autoclose: false, emit: false });
+      select.setAttribute('value', this.current_layers.join(','));
     },
 
-    /**
-     * Disable (add g3w-disable class) to option select
-     * for avoid to haven't no layer selected. At least
-     * need to has one layer to work with.
-     */
-    disabledSingleLayerClickUnSelect() {
-      const q = document.querySelectorAll.bind(document);
-      if (this.open) {
-        setTimeout(() => {
-          if (this.select_layers.length === 1) {
-            q('.select2-results__options li[aria-selected="true"]').forEach(el => el.classList.add('g3w-disabled'));
-          } else {
-            q('.select2-results__options li').forEach(el => el.classList.remove('g3w-disabled'));
-          }
-        });
+    changeLayers(event) {
+      const select = event.target;
+      const layers = select.selected_options.map(option => option.value);
+      if (!layers.length) {
+        select.select(this.current_layers[0], { autoclose: false, emit: false });
+        select.setAttribute('value', this.current_layers.join(','));
+        return;
       }
+      this.current_layers = layers;
     },
 
   },
@@ -528,9 +572,7 @@ export default ({
       immediate: false,
       async handler(newVal, oldVal) {
         await this.$nextTick();
-        if (1 === newVal.length) {
-          this.hideSingleLayerSelectionClear();
-        }
+        this.syncSelectedLayers();
         this.resetTimeLayer(oldVal.map(index => this.layers[index]));
         this.init();
       }
@@ -548,11 +590,9 @@ export default ({
 
   },
 
-  created() {
-    $('#timeserieslayer').on('select2:open', this.disabledSingleLayerClickUnSelect.bind(this));
-  },
   async mounted() {
     await this.$nextTick();
+    this.syncSelectedLayers();
     this.init();
   },
 
@@ -574,6 +614,12 @@ document.head.insertAdjacentHTML(
   position: relative;
   padding: 10px;
   color:#FFF;
+}
+#g3w_raster_timeseries_content x-select {
+  color: #333;
+}
+#timeserieslayer.single-layer .x-remove {
+  display: none;
 }
 .qtimeseries-buttons {
   display: flex;

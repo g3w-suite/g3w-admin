@@ -30,11 +30,11 @@ export function getFieldsWithValues(layer, obj, opts = {}) {
 
   fields.forEach(field => {
 
-    field.value  = attributes[field.name];
-    field._value = attributes[field.name];     // store original value
-    field.update = false;                      // at beginning set update false. Used to form
+    field.value   = attributes[field.name];
+    field._value  = attributes[field.name];     // store original value
+    field.update  = false;                      // at beginning set update false. Used to form
 
-    field.visible = exclude.indexOf(field.name) === -1; // exclude contain field to set visible false
+    field.visible = !exclude.includes(field.name); // Fields in exclude are hidden.
 
     // for editing purpose
     if (undefined === field.validate) {
