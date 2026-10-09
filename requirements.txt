@@ -26,7 +26,6 @@ owslib
 defusedxml
 django-import-export==3.2.0
 coverage
-urllib3
 python-magic
 celery==5.4.0
 deprecation
