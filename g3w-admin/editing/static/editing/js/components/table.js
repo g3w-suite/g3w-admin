@@ -68,14 +68,13 @@ export default ({
         :id     = "feature.__g3w_uid"
         :index  = "index"
       >
-        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" v-t-tooltip:top = "feature.__g3w_locked ? 'plugins.editing.featureslockbyotheruser' : ''">
+        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" data-placement = "top" :title = "feature.__g3w_locked && 'plugins.editing.featureslockbyotheruser' || ''" :data-i18n-title = "feature.__g3w_locked && 'plugins.editing.featureslockbyotheruser' || ''">
           <div style = "display:flex;justify-content: space-between;">
             <!-- EDIT FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.edit_feature'">
+            <span class = "tool" data-placement = "right" title = "plugins.editing.edit_feature">
               <i
                 v-if             = "showTool('change_attr_feature')"
-                :class           = "g3wtemplate.font['pencil']"
-                class            = "g3w-icon"
+                class            = "g3w-icon fas fa-pencil-alt"
                 style            = "color:#30cce7;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "editFeature(feature.__g3w_uid)"
@@ -83,11 +82,10 @@ export default ({
             </span>
 
             <!-- COPY FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.create_a_copy'">
+            <span class = "tool" data-placement = "right" title = "plugins.editing.create_a_copy">
               <i
                 v-if             = "showTool('add_feature')"
-                :class           = "g3wtemplate.font['copy-paste']"
-                class            = "g3w-icon"
+                class            = "g3w-icon far fa-copy"
                 style            = "color:#d98b14;margin: 5px;padding: 5px 7px 5px 7px;"
                 aria-hidden      = "true"
                 @click.stop      = "copyFeature(feature.__g3w_uid)"
@@ -95,11 +93,10 @@ export default ({
             </span>
 
             <!-- DELETE FEATURE -->
-            <span class = "tool" v-t-tooltip:right = "'plugins.editing.delete_feature'">
+            <span class = "tool" data-placement = "right" title = "plugins.editing.delete_feature">
               <i
                 v-if             = "showTool('delete_feature')"
-                :class           = "g3wtemplate.font['trash-o']"
-                class            = "g3w-icon"
+                class            = "g3w-icon far fa-trash-alt"
                 style            = "color:red;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "deleteFeature(feature.__g3w_uid)"
@@ -150,7 +147,8 @@ export default ({
       <select
         v-model         = "search.page"
         style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
-        v-t-tooltip:top = "search.page + $t(' of ') + pages"
+        :title          = "search.page + $t(' of ') + pages"
+        :data-i18n-title = "search.page + $t(' of ') + pages"
         data-placement  = "top"
       >
         <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
@@ -389,7 +387,7 @@ export default ({
         console.warn(e);
       }
 
-      this.tool.stop();
+      await this.tool.stop();
     },
 
     /**
@@ -418,7 +416,7 @@ export default ({
         console.warn(e);
       }
 
-      this.tool.stop();
+      await this.tool.stop();
     },
 
     /**
