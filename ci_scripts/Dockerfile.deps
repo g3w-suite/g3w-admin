@@ -1,4 +1,4 @@
-FROM ubuntu:noble
+FROM ubuntu:resolute
 LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -9,7 +9,7 @@ RUN apt-get update && apt install -y \
     libxslt-dev \
     libgdal-dev \
     python3-dev \
-    libgdal34t64 \
+    libgdal38 \
     python3-gdal \
     python3-pip \
     curl \
@@ -20,20 +20,31 @@ RUN apt-get update && apt install -y \
     libsqlite3-mod-spatialite \
     dirmngr \
     xvfb \
-    postgresql-client
+    postgresql-client \
+    libqt6sql6-psql 
 
-# PyQGIS latest version
+# PyQGIS: set repository
+# -------------------------------------------------
 RUN curl -L -sS https://download.qgis.org/downloads/qgis-archive-keyring.gpg > /etc/apt/keyrings/qgis-archive-keyring.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/qgis-archive-keyring.gpg] https://qgis.org/ubuntu noble main" | \
+    echo "deb [signed-by=/etc/apt/keyrings/qgis-archive-keyring.gpg] https://qgis.org/ubuntu resolute main" | \
     tee /etc/apt/sources.list.d/qgis.list && \
-    apt-get update && apt-get install -y python3-qgis qgis-server
+# Yarn: set repository
+# -------------------------------------------------
+    curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | \
+    gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] \
+    https://dl.yarnpkg.com/debian/ stable main" | \
+    tee /etc/apt/sources.list.d/yarn.list
 
-# Yarn
+# PyQGIS: install
+# Yarn: install
+# -------------------------------------------------
+RUN apt update && apt install -y python3-qgis qgis-server && \
+    apt install -y yarn
 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | \
-    tee /etc/apt/sources.list.d/yarn.list && \
-    apt-get update && apt install -y yarn
+# PyQGIS: exposes QGIS Python bindings to any Python interpreter
+# -------------------------------------------------
+ENV PYTHONPATH=/usr/share/qgis/python:${PYTHONPATH}
 
 RUN mkdir /code
 WORKDIR /code

@@ -1,7 +1,7 @@
 {% load sitetree %}
 {% load i18n %}
 {% for item in sitetree_items %}
-    {% if sitetree_items|length_is:"1" and item.url == "home" %}
+    {% if sitetree_items|length == 1 and item.url == "home" %}
     {% elif not forloop.last %}
         <li><a href="{% sitetree_url for item %}">{{ item.title_resolved }}</a></li>
     {% else %}
