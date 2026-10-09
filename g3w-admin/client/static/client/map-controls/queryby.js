@@ -179,7 +179,7 @@ export class QueryBy extends MapControl {
                   >
                     <x-option value="__ALL__">{{ $t(all) }}</x-option>
                     <x-option v-for="(layer, index) in layers" :key="layer.getId()" :value="layer.getId()">
-                      <i :class="g3wtemplate.getFontClass(layer.isVisible() ? 'eye' : 'eye-close')"></i>&nbsp;&nbsp;{{ layer.get('name') }}
+                      <i :class="layer.isVisible() ? 'far fa-eye' : 'far fa-eye-slash'"></i>&nbsp;&nbsp;{{ layer.get('name') }}
                     </x-option>
                     <x-option value="__NEW__">{{ $t('__NEW__') }}</x-option>
                   </x-select>

@@ -17,7 +17,7 @@ export default ({
   template: /*html*/`
     <div class = "g3w-editing-panel">
 
-      <bar-loader :loading = "saving"/>
+      <div v-if = "saving" class = "bar-loader" style = "border: 0"></div>
 
       <!-- OFFLINE MESSAGE -->
       <div
@@ -36,17 +36,17 @@ export default ({
 
         <!-- SAVE BUTTON -->
         <div @click.stop = "commit" :class = "['editing-button', (canCommit ? 'enabled': '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['save']]"></span>
+          <span class = "editing-icon far fa-save"></span>
         </div>
 
         <!-- UNDO BUTTON -->
         <div @click.stop = "undo" :class = "['editing-button', (canUndo ? 'enabled': '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['arrow-left']]"></span>
+          <span class = "editing-icon fas fa-chevron-left"></span>
         </div>
 
         <!-- REDO BUTTON -->
         <div @click.stop = "redo" :class = "['editing-button', (canRedo ? 'enabled' : '')]">
-          <span :class = "['editing-icon', g3wtemplate.font['arrow-right']]"></span>
+          <span class = "editing-icon fas fa-chevron-right"></span>
         </div>
 
       </div>
@@ -63,19 +63,20 @@ export default ({
         class = "skin-color"
       >
         <label for = "g3w-select-editable-layers-to-show" v-t = "'Layers'"></label>
-        <select
+        <x-select
           id         = "g3w-select-editable-layers-to-show"
-          :multiple  = "true"
-          :clear     = "true"
+          multiple
+          searchable
           ref        = "selectlayers"
-          v-select2  = "'selectedlayers'"
+          :value     = "selectedlayers.join(',')"
+          @change    = "onSelectedLayersChange"
         >
-          <option
+          <x-option
             v-for  = "editinglayer in editinglayers"
             :value = "editinglayer.id"
             :key   = "editinglayer.id"
-          >{{ editinglayer.name }}</option>
-        </select>
+          >{{ editinglayer.name }}</x-option>
+        </x-select>
       </div>
 
       <!-- TOOLBOXES -->
@@ -141,7 +142,26 @@ export default ({
         this._selectedlayers = layers;
       }
 
-      $(this.$refs.selectlayers).val(this.selectedlayers).trigger('change');
+      this.$nextTick(() => this.syncSelectedLayers());
+    },
+
+    onSelectedLayersChange(event) {
+      if (!event.target.isOpen && !this.selectedlayers.length) { return; }
+      this.selectedlayers = event.target.selected_options.map(option => option.value);
+    },
+
+    syncSelectedLayers() {
+      const select = this.$refs.selectlayers;
+      if (!select?.container) { return; }
+      select.selected_options = [];
+      select.container.querySelectorAll('x-option').forEach(option => {
+        option.removeAttribute('selected');
+        if (this.selectedlayers.includes(option.value)) {
+          select.select(option, { autoclose: false, emit: false });
+        }
+      });
+      select.select(null, { autoclose: false, emit: false });
+      select.setAttribute('value', this.selectedlayers.join(','));
     },
 
     undo() {
@@ -481,6 +501,7 @@ export default ({
    */
   async mounted() {
     await this.$nextTick();
+    this.syncSelectedLayers();
     //emit openeditingpanel event. Used by simplereporting plugin
     GUI.getPlugin('editing').emit('openeditingpanel');
   },
@@ -660,6 +681,7 @@ document.head.insertAdjacentHTML(
   }
   .g3w-editing-panel #g3w-select-editable-layers-to-show {
     cursor: pointer;
+    color: #333;
   }
 </style>`
 );
