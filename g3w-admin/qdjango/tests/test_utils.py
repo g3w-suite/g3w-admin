@@ -744,7 +744,7 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
         # DatasourceExists
         project = QgisProject(qgis_file)
         project.group = self.project_group
-        with self.assertRaises(QgisProjectLayerException):
+        with self.assertRaises(QgisProjectException):
             project.clean()
 
         qgis_file.close()
@@ -754,10 +754,58 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
         qgis_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
 
-        # Project is not valid
-        with self.assertRaises(Exception) as exc:
-            project = QgisProject(qgis_file)
+        # Broken layer no longer aborts construction, it's reported by clean() instead
+        project = QgisProject(qgis_file)
+        project.group = self.project_group
+        with self.assertRaises(QgisProjectException):
+            project.clean()
         qgis_file.close()
+
+    def test_datasource_validator_aggregates_multiple_errors(self):
+        """Test that clean() collects errors from all broken layers instead of stopping at the first one"""
+
+        qgis_filename = 'test_wrong_geodata_gdal_type_path.qgs'
+        qgis_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+
+        project = QgisProject(qgis_file)
+        project.group = self.project_group
+
+        # simulate a second, unrelated layer that failed to build during project load
+        project.layer_errors.append('Missing data file for layer fake_layer')
+
+        with self.assertRaises(QgisProjectException) as exc:
+            project.clean()
+
+        # both the simulated construction error and the real DatasourceExists
+        # validator error (on the bluemarble layer) must be reported together
+        self.assertEqual(len(exc.exception.errors), 2)
+        joined_errors = '; '.join(exc.exception.errors)
+        self.assertIn('fake_layer', joined_errors)
+        self.assertIn('bluemarble', joined_errors)
+
+        qgis_file.close()
+
+
+    # The following test is usefull where .clean() is used to validate the project before saving
+    # ------------------------------------------------------------------------------------------
+    # def test_save_raises_when_layer_errors_are_present(self):
+    #     """Test that save() does not persist projects when construction already recorded layer errors"""
+
+    #     qgis_filename = 'test_wrong_geodata_org_type_path.qgs'
+    #     qgis_file = File(open('{}{}{}'.format(
+    #         CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+
+    #     project = QgisProject(qgis_file)
+    #     project.group = self.project_group
+    #     project_count = Project.objects.count()
+
+    #     with self.assertRaises(QgisProjectException):
+    #         project.save()
+
+    #     self.assertEqual(Project.objects.count(), project_count)
+
+    #     qgis_file.close()
 
 
 class TestTemplateTags(QdjangoTestBase):
@@ -975,4 +1023,3 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         self.assertTrue('referencing_fields' in dfields['area']['input']['options']['default_expression'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['referencing_fields'], ['length'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['apply_on_update'], False)
-

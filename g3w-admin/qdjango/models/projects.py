@@ -248,6 +248,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         blank=True,
     )
 
+    # srid
+    srid = models.IntegerField(
+        _('Project SRID'),
+        blank=True,
+        null=True,
+    )
+
     # Qgis version project
     qgis_version = models.CharField(
         _('Qgis project version'),

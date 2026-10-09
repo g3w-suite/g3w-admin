@@ -1,7 +1,5 @@
 /**
  * @file Editing panel (left menu)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import ToolboxComponent             from '../components/toolbox.js';
@@ -26,7 +24,7 @@ export default ({
         v-if  = "!ApplicationState.online"
         id    = "onlineofflinemessage"
       >
-        <div v-t = "'plugins.editing.messages.offline'"></div>
+        <div v-t = "'plugins.editing.offline'"></div>
       </div>
 
       <!-- COMMIT BAR -->
@@ -59,7 +57,6 @@ export default ({
       ></div>
 
       <!-- LAYERS SELECT -->
-      <!-- ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1 -->
       <div
         v-if  = "state.showselectlayers && editinglayers.length > 1"
         id    = "g3w-select-editable-layers-content"
@@ -110,16 +107,13 @@ export default ({
       resourcesurl:          this.$options.resourcesurl,
       showcommitbar:         this.$options.showcommitbar,
       saving:                false, // whether to show loading bar while committing to server (click on save disk icon)
-      layersInEditing:       0, //@since 3.8.0 Number of layers in editing
+      layersInEditing:       0,     // Number of layers in editing
       editingButtonsEnabled: true,
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       selectedlayers:        [],
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       editinglayers:         Object.entries(GUI.getPlugin('editing')
                               .getEditableLayers())
-                              .filter(([_,l]) => l.config.editing.visible) //exclude layers that are set visible to false
+                              .filter(([id]) => GUI.getPlugin('editing').getToolBoxById(id).state.visible) //exclude layers that are set visible to false
                               .map(([id, layer]) => ({ id, name: layer.getName(), title: layer.getTitle() })),
-      /** @since g3w-client-plugin-editing@v3.8.0 */
       activetool:            null,
     };
   },
@@ -197,7 +191,7 @@ export default ({
       const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
 
       try {
-        if (toolbox.state.editing.history.commit) {
+        if (toolbox.state.history.commit) {
           await GUI.getPlugin('editing').commit();
         }
       } catch(e) {
@@ -211,7 +205,7 @@ export default ({
         console.warn(e);
       }
       // re-enable query map control
-      const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.editing.on) && GUI.getMapControl('query');
+      const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.on) && GUI.getMapControl('query');
       if (control && !control.isToggled()) {
         control.toggle();
       }
@@ -264,14 +258,9 @@ export default ({
      * which could be in relation with current level (eg. Join 1:1) in order to prevent an
      * out-of-sync database state on remote QGIS server.
      * 
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * ORIGINAL SOURCE: g3w-client/src/core/editing/session.js@v3.9.1
-     * 
      * @param { string } id
      *
      * @returns { Promise<unknown> }
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     async commit_dirty(id) {
       const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
@@ -283,14 +272,14 @@ export default ({
           console.info('[EDITING] committed dirty');
         }
       } catch (e) {
-        // revert changes (clear history and session)
+        // revert changes (clear history)
         try {
           [layerId]
             .concat(toolbox.getDependencies())
             .forEach(id => {
               const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
               // set original features get from server without changes
-              toolbox.getEditor().getEditingSource().setFeatures((toolbox.getEditor().readFeatures() || []).map(f => f.clone()));
+              toolbox.setFeatures((toolbox.readFeatures() || []).map(f => f.clone()));
               toolbox.clearHistory();   // clear history of a layer (no changes)
               toolbox.stopActiveTool(); // stop eventually active tool
             });
@@ -312,8 +301,6 @@ export default ({
     },
 
     /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-     * 
      * Check if already have off lines changes
      *
      * @param { Object }  opts
@@ -321,8 +308,6 @@ export default ({
      * @param { boolean } [opts.unlock=false]
      *
      * @returns { Promise<unknown> }
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     checkOfflineChanges({
       modal  = true,
@@ -368,11 +353,10 @@ export default ({
 
   computed: {
     /**
-     * @since 4.1.0 Listen changes of each layers
-     * @returns 
+     * Listen changes of each layers
      */
     changes() {
-      return this.state.toolboxes.filter(t => t.state.editing.history.commit).length > 0;
+      return this.state.toolboxes.filter(t => t.state.history.commit).length > 0;
     },
 
     canCommit() {
@@ -381,7 +365,7 @@ export default ({
         'default' === this.state.saveConfig.mode
         && this.state.toolboxselected
         && !this.state.toolboxselected.state.activetool
-        && this.state.toolboxselected.state.editing.history.commit
+        && this.state.toolboxselected.state.history.commit
         && this.editingButtonsEnabled
       );
     },
@@ -390,7 +374,7 @@ export default ({
       const canUndo = (
         this.state.toolboxselected
         && !this.state.toolboxselected.state.activetool
-        && this.state.toolboxselected.state.editing.history.undo
+        && this.state.toolboxselected.state.history.undo
         && this.editingButtonsEnabled
       );
 
@@ -403,7 +387,7 @@ export default ({
       const canRedo = (
         this.state.toolboxselected
         && !this.state.toolboxselected.state.activetool
-        && this.state.toolboxselected.state.editing.history.redo
+        && this.state.toolboxselected.state.history.redo
         && this.editingButtonsEnabled
       );
 
@@ -430,25 +414,19 @@ export default ({
 
     /**
      * @param { Boolean } bool true if at least one layer has changes. false if all layer haven't changes
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     changes(bool) {
       ApplicationState.sidebar.btn_close     = !bool;
       ApplicationState.sidebar.tooltip_close = bool ? '⚠️ Confirm changes (✅) on each level to close' : '';
     },
 
-    /**
-     * ORIGINAL SOURCE: componentsSelectEditingLayers.vue@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     selectedlayers(layers = []) {
       const has_layers = layers.length > 0;
 
       this.editinglayers.forEach(({ id }) => {
         const toolbox     = GUI.getPlugin('editing').getToolBoxById(id);
-        const is_commit   = has_layers && toolbox.state.editing.history.commit;
+        const is_commit   = has_layers && toolbox.state.history.commit;
         const is_selected = layers.includes(id);
 
         toolbox.setShow(has_layers ? is_selected : true);
@@ -491,7 +469,7 @@ export default ({
 
     // open editing panel state
     this.state.open = false;
-    getCatalogLayers({ EDITABLE: true }).forEach(l => l.state.editing.inediting = true);
+    getCatalogLayers({ EDITABLE: true }).forEach(l => GUI.getPlugin('editing').getToolBoxById(l.getId()).state.inediting = true);
 
     GUI.on('opencontent',  this._enableEditingButtons);
     GUI.on('closeform',    this._enableEditingButtons);
@@ -508,8 +486,6 @@ export default ({
   },
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
-   * 
    * Called on a close editing panel panel
    */
   async beforeDestroy() {
@@ -517,7 +493,7 @@ export default ({
 
     // reset editing panel state
     this.state.open = false;
-    getCatalogLayers({ EDITABLE: true }).forEach(l => l.state.editing.inediting = false);
+    getCatalogLayers({ EDITABLE: true }).forEach(l => GUI.getPlugin('editing').getToolBoxById(l.getId()).state.inediting = false);
 
     GUI.off('opencontent',  this._enableEditingButtons);
     GUI.off('closeform',    this._enableEditingButtons);
@@ -605,6 +581,10 @@ export default ({
     if (control && !control.isToggled()) {
       control.toggle();
     }
+
+    //set editing panel null
+    GUI.getPlugin('editing').state.panel = null;
+
   },
 
 });
