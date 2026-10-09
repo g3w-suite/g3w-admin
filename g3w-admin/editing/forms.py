@@ -347,10 +347,40 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
         self.helper.form_tag = False
 
         layout_args = [
-            Field('from_user', css_class='select2', style="width:100%;"),
-            Field('to_users', css_class='select2', style="width:100%;"),
-            Field('from_group', css_class='select2', style="width:100%;"),
-            Field('to_groups', css_class='select2', style="width:100%;"),
+            Div(
+                HTML(
+                    '<div class="cp-section-head">'
+                    '<span class="cp-section-icon"><i class="fa fa-user"></i></span>'
+                    '<div><h4>{title}</h4><p>{desc}</p></div>'
+                    '</div>'.format(
+                        title=_('Single users'),
+                        desc=_('Copy editing permissions from one user to one or more recipients.'),
+                    )
+                ),
+                Div(
+                    Field('from_user', css_class='select2', style="width:100%;"),
+                    Field('to_users', css_class='select2', style="width:100%;"),
+                    css_class='cp-grid',
+                ),
+                css_class='cp-section',
+            ),
+            Div(
+                HTML(
+                    '<div class="cp-section-head">'
+                    '<span class="cp-section-icon"><i class="fa fa-users"></i></span>'
+                    '<div><h4>{title}</h4><p>{desc}</p></div>'
+                    '</div>'.format(
+                        title=_('User groups'),
+                        desc=_('Copy editing permissions from one group of users to one or more recipient groups.'),
+                    )
+                ),
+                Div(
+                    Field('from_group', css_class='select2', style="width:100%;"),
+                    Field('to_groups', css_class='select2', style="width:100%;"),
+                    css_class='cp-grid',
+                ),
+                css_class='cp-section',
+            ),
         ]
 
         self.helper.layout = Layout(*layout_args)

@@ -33,18 +33,16 @@ def getAuthPermissionContentType():
 
 def get_adminlte_skin_by_user(user):
     """
-    Return css adminLte skin class by user
-    """
+    Return css adminLte skin class.
 
-    groupsUser = user.groups.values_list('name', flat=True)
-    if user.is_superuser and user.is_staff:
-        return 'yellow'
-    elif user.is_superuser:
-        return 'red'
-    elif G3W_EDITOR1 in groupsUser or G3W_EDITOR2 in groupsUser:
-        return 'purple'
-    elif G3W_VIEWER1 in groupsUser or G3W_VIEWER2 in groupsUser:
-        return 'green'
+    The g3w-admin restyle uses a single, role-independent palette (teal),
+    applied via overrides in ``core/static/css/g3wadmin.css``. We therefore
+    return the same neutral AdminLTE skin (``blue``) for every user, which
+    guarantees a single skin CSS file is loaded and that the ``.skin-*`` body
+    class is consistent. The visual identity is fully controlled by our own
+    overrides, regardless of user role.
+    """
+    return 'blue'
 
 
 def clean_for_json(json_string):
