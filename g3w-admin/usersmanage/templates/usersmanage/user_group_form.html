@@ -52,25 +52,48 @@
 {% endblock %}
 
 {% block page_header %}
-<h1>
-    {% trans 'System user groups' %}
-    <small>{% trans 'System users list and property' %}</small>
-</h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        <i class="fa fa-users"></i>
+        {% if form.instance.pk %}{% trans 'Edit user group' %}{% else %}{% trans 'New user group' %}{% endif %}
+      </h1>
+      <p>
+        {% if form.instance.pk %}
+          {{ form.instance.name }}
+          {% if form.instance.role %} &mdash; <em>{{ form.instance.role|title }}</em>{% endif %}
+        {% else %}
+          {% trans 'Create a group of users sharing the same role and bulk-assign permissions to projects.' %}
+        {% endif %}
+      </p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <a href="{% url 'user-group-list' %}" class="hero-back">
+        <i class="fa fa-arrow-left"></i> {% trans 'Back to user groups' %}
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block main_content %}
-    <form method="post" id="user-group-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
+
+<div class="form-shell" id="user-group-form-shell">
+
+    <form method="post" id="user-group-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
         {% if form.errors %}
-            <div class="row">
-                <div class="col-md-12">
-                <div class="alert alert-danger alert-dismissable">
-                    <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                        {% trans 'Some errors on form. Check it and send again.' %}
-                    </div>
+            <div class="form-alert form-alert-error">
+                <i class="fa fa-exclamation-triangle"></i>
+                <div>
+                    <strong>{% trans 'Some errors on form' %}</strong>
+                    <span>{% trans 'Check the highlighted fields and submit again.' %}</span>
                 </div>
             </div>
         {% endif %}
         {% crispy form %}
         {% g3wadmin_add_button_form %}
     </form>
+
+</div>
 {% endblock %}
