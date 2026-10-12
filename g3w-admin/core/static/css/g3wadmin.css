@@ -7695,6 +7695,55 @@ body .control-sidebar-dark .control-sidebar-menu .treeview-menu > li > a {
     color: #0e7274 !important;
 }
 
+/* Match the layers table pagination to the Data / Structure tabs. */
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    margin: 2px 0;
+    background: #fff;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li {
+    float: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    color: #6c7a89;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    line-height: 20px;
+    text-decoration: none;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li > a:hover,
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li > a:focus {
+    color: #0e7274;
+    background: #e0f5f5;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.active > a,
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.active > a:hover,
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.active > a:focus {
+    color: #fff;
+    background: #149ea0;
+    border: 0;
+    box-shadow: 0 4px 10px -4px rgba(20, 158, 160, .5);
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.disabled > a {
+    color: #6c7a89;
+    background: transparent;
+    cursor: not-allowed;
+    opacity: .55;
+}
+
 /* Generic teal link rule has higher specificity than the canonical
    .qa-btn pill rule — force white text on primary variant. */
 .project-shortcut-actions .qa-btn.qa-btn-primary,
