@@ -2733,6 +2733,25 @@ body .main-sidebar .sidebar-menu > li.menu-open > a > .pull-right-container > .f
     color: #fff;
 }
 
+/* Keep treeview labels clear of their expansion chevron. */
+body:not(.sidebar-collapse) .main-sidebar .sidebar-menu > li.treeview > a {
+    display: flex;
+    align-items: center;
+    padding-right: 3px;
+}
+body:not(.sidebar-collapse) .main-sidebar .sidebar-menu > li.treeview > a > span:not(.pull-right) {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body:not(.sidebar-collapse) .main-sidebar .sidebar-menu > li.treeview > a > .fa-angle-left {
+    position: static;
+    flex: none;
+    margin: 0 0 0 3px;
+}
+
 /* Sidebar mini (collapsed) tweaks */
 body.sidebar-mini.sidebar-collapse .main-sidebar .sidebar-menu > li:hover > a {
     background: #95ad36;
