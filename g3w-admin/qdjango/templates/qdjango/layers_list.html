@@ -69,6 +69,16 @@
     );
     $('#layers_table').off('draw.dt.lyrddstate').on('draw.dt.lyrddstate', __syncAllDropdownToggles);
 
+    $('#layers_table').off('click.wmtsformat').on('click.wmtsformat', '.wmts-format-option', function (event) {
+        event.preventDefault();
+        var $option = $(this);
+        var $dropdown = $option.closest('.wmts-format-dropdown');
+        ga.widget.setLayerData($option, { wmts_format: $option.attr('data-wmts-format') });
+        $dropdown.find('.wmts-format-label').text($option.text());
+        $dropdown.find('.wmts-format-menu > li').removeClass('active');
+        $option.parent().addClass('active');
+    });
+
     // add expression svg
     ga.ui.expression_svg = '<svg id="expressioniconsvg" height="20" width="20" viewBox="0 0 32 32"\n' +
         '     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >\n' +
@@ -436,15 +446,27 @@
 
                             <td>
                                 {% if object.wmtscapabilities.png or object.wmtscapabilities.jpeg %}
-                                <select class="form-control" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" onchange="ga.widget.setLayerData($(event.target), { ['wmts_format']: this.value });">
-                                    <option value="">{% trans 'Not active' %}</option>
-                                    {% if object.wmtscapabilities.png %}
-                                    <option value="png" {% if object.wmts_format == 'png' %}selected{% endif %}>image/png</option>
-                                    {% endif %}
-                                    {% if object.wmtscapabilities.jpeg %}
-                                    <option value="jpeg" {% if object.wmts_format == 'jpeg' %}selected{% endif %}>image/jpeg</option>
-                                    {% endif %}
-                                </select>
+                                <div class="dropdown wmts-format-dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="wmts-format-label">{% if object.wmts_format == 'png' and object.wmtscapabilities.png %}image/png{% elif object.wmts_format == 'jpeg' and object.wmtscapabilities.jpeg %}image/jpeg{% else %}{% trans 'Not active' %}{% endif %}</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu wmts-format-menu">
+                                        <li class="{% if not object.wmts_format %}active{% endif %}">
+                                            <a href="#" class="wmts-format-option" data-wmts-format="" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}">{% trans 'Not active' %}</a>
+                                        </li>
+                                        {% if object.wmtscapabilities.png %}
+                                        <li class="{% if object.wmts_format == 'png' %}active{% endif %}">
+                                            <a href="#" class="wmts-format-option" data-wmts-format="png" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}">image/png</a>
+                                        </li>
+                                        {% endif %}
+                                        {% if object.wmtscapabilities.jpeg %}
+                                        <li class="{% if object.wmts_format == 'jpeg' %}active{% endif %}">
+                                            <a href="#" class="wmts-format-option" data-wmts-format="jpeg" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}">image/jpeg</a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
                                 {% endif %}
                             </td>
 

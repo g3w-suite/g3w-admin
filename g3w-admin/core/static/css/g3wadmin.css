@@ -1442,7 +1442,8 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
     padding: 6px 10px;
 }
 .layers-table .dropdown.open > .btn-default.dropdown-toggle,
-.layers-table .dropdown > .btn-default.dropdown-toggle:hover {
+.layers-table .dropdown > .btn-default.dropdown-toggle:hover,
+.layers-table .dropdown > .btn-default.dropdown-toggle:focus {
     background: #f8fafc;
     border-color: #cbd5e1;
     color: #1f2937;
@@ -1460,6 +1461,23 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
     display: flex;
     align-items: center;
     gap: 8px;
+}
+.layers-table .wmts-format-menu > li > a {
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #374151 !important;
+    font-size: 13px;
+}
+.layers-table .wmts-format-menu > li > a:hover,
+.layers-table .wmts-format-menu > li > a:focus {
+    background: #f8fafc;
+    color: #1f2937 !important;
+}
+.layers-table .wmts-format-menu > li.active > a,
+.layers-table .wmts-format-menu > li.active > a:hover,
+.layers-table .wmts-format-menu > li.active > a:focus {
+    background: #eef5fb;
+    color: #374151 !important;
 }
 .layers-table .dropdown-menu .menu > li input[type="checkbox"] {
     margin: 0 4px 0 0;
@@ -7693,6 +7711,55 @@ body .control-sidebar-dark .control-sidebar-menu .treeview-menu > li > a {
 }
 .project-tabs .ptab:not(.is-active):hover {
     color: #0e7274 !important;
+}
+
+/* Match the layers table pagination to the Data / Structure tabs. */
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    margin: 2px 0;
+    background: #fff;
+    border: 1px solid #eef0f3;
+    border-radius: 10px;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li {
+    float: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    color: #6c7a89;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    line-height: 20px;
+    text-decoration: none;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li > a:hover,
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li > a:focus {
+    color: #0e7274;
+    background: #e0f5f5;
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.active > a,
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.active > a:hover,
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.active > a:focus {
+    color: #fff;
+    background: #149ea0;
+    border: 0;
+    box-shadow: 0 4px 10px -4px rgba(20, 158, 160, .5);
+}
+.layers-panel #layers_table_wrapper .dataTables_paginate ul.pagination > li.disabled > a {
+    color: #6c7a89;
+    background: transparent;
+    cursor: not-allowed;
+    opacity: .55;
 }
 
 /* Generic teal link rule has higher specificity than the canonical
