@@ -1442,7 +1442,8 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
     padding: 6px 10px;
 }
 .layers-table .dropdown.open > .btn-default.dropdown-toggle,
-.layers-table .dropdown > .btn-default.dropdown-toggle:hover {
+.layers-table .dropdown > .btn-default.dropdown-toggle:hover,
+.layers-table .dropdown > .btn-default.dropdown-toggle:focus {
     background: #f8fafc;
     border-color: #cbd5e1;
     color: #1f2937;
@@ -1460,6 +1461,23 @@ table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important;
     display: flex;
     align-items: center;
     gap: 8px;
+}
+.layers-table .wmts-format-menu > li > a {
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #374151 !important;
+    font-size: 13px;
+}
+.layers-table .wmts-format-menu > li > a:hover,
+.layers-table .wmts-format-menu > li > a:focus {
+    background: #f8fafc;
+    color: #1f2937 !important;
+}
+.layers-table .wmts-format-menu > li.active > a,
+.layers-table .wmts-format-menu > li.active > a:hover,
+.layers-table .wmts-format-menu > li.active > a:focus {
+    background: #eef5fb;
+    color: #374151 !important;
 }
 .layers-table .dropdown-menu .menu > li input[type="checkbox"] {
     margin: 0 4px 0 0;
