@@ -3,7 +3,7 @@
 
 # G3W-ADMIN
 
-Admin server for G3W-SUITE written in Python, based on **Django** LTS (v4.2) and **QGIS Server** LTR (v3.40)
+Admin server for G3W-SUITE written in Python, based on **Django** LTS (v5.2) and **QGIS Server** LTR (v4.2.4)
 
 ![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
 
@@ -15,10 +15,11 @@ Software releases follow theese main branches as described in the compatibility 
 
 | Branch     | Python | Django         | QGIS          | [client]     | First release | Status         |
 |------------|--------|----------------|---------------|--------------|---------------|----------------|
-| [dev]      | 3.12   | 5.2            | 3.44          | dev          | Unreleased    | ⚠️️ Unstable    |
-| [v.3.11.x] | 3.12   | 4.2            | 3.44          | 4.1.2        | Jun 2026      | New release    |
-| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.11       | Jun 2026      | 🪲️ Bug fixing  |
-| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🪲️ Bug fixing  |
+| [dev]      | 3.14   | 5.2            | 4.2           | dev          | Unreleased    | ⚠️️ Unstable    |
+| [v.4.0.x]  | 3.14   | 5.2            | 4.2           | dev          | Oct 2026      | 🪲️ Bug fixing  |
+| [v.3.11.x] | 3.12   | 4.2            | 3.44          | 4.1.2        | Jun 2026      | 🪲️ Bug fixing  |
+| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.11       | Jun 2026      | 🚨 End of Life |
+| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🚨 End of Life |
 | [v.3.8.x]  | 3.10   | 3.2            | 3.34          | 3.10.3       | Sep 2024      | 🚨 End of Life |
 | [v.3.7.x]  | 3.10   | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🚨 End of Life |
 | [v.3.6.x]  | 3.10   | 3.2            | 3.28          | 3.8.15       | May 2023      | 🚨 End of Life |
