@@ -1985,7 +1985,7 @@ class QgisProject(XmlData):
             self.intialExtent = None
 
     def updateQgisFileDatasource(self):
-        """Update qgis file datasource for SpatiaLite, OGR and embedded layers.
+        r"""Update qgis file datasource for SpatiaLite, OGR and embedded layers.
 
         SpatiaLite and OGR layers need their datasource string to be
         modified at import time so that the original path is replaced with
