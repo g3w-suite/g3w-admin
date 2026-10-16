@@ -14,12 +14,29 @@ from core.api.permissions import ProjectPermission
 from guardian.utils import get_anonymous_user
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from rest_framework import serializers as _drf_serializers
+from drf_spectacular.utils import extend_schema, OpenApiParameter, inline_serializer
 from qdjango.models import Project
 from qdjango.api.projects.permissions import ProjectIsActivePermission
 from qes.utils.indexer import QGISElasticsearchIndexer
 
 
 
+@extend_schema(
+    summary='Elasticsearch search inside a project',
+    description='Returns the search results from the Elasticsearch index '
+                'restricted to the given project, after the standard ACL check.',
+    parameters=[
+        OpenApiParameter(name='project_id', type=int, location=OpenApiParameter.PATH,
+                         description='Numeric ID of the qdjango Project.'),
+        OpenApiParameter(name='q', type=str, location=OpenApiParameter.QUERY,
+                         required=True, description='Full-text query string.'),
+    ],
+    responses=inline_serializer(
+        name='QesSearchData',
+        fields={'results': _drf_serializers.ListField(child=_drf_serializers.JSONField())},
+    ),
+)
 class QesSearchAPIView(G3WAPIView):
     """ API view for search on Elasticsearch"""
 

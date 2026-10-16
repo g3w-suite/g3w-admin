@@ -20,8 +20,25 @@ from usersmanage.utils import (
 
 from core.utils.decorators import cache_page
 from django.utils.decorators import method_decorator
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 
+_PROJECT_PARAMS = [
+    OpenApiParameter(name='group_slug', type=str, location=OpenApiParameter.PATH,
+                     description='Slug of the group containing the project.'),
+    OpenApiParameter(name='project_type', type=str, location=OpenApiParameter.PATH,
+                     description='Project backend app name (e.g. `qdjango`).'),
+    OpenApiParameter(name='project_id', type=int, location=OpenApiParameter.PATH,
+                     description='Numeric ID of the project.'),
+]
+
+
+@extend_schema(
+    summary='Project configuration for the map client',
+    description='Returns the full serialized configuration of a project '
+                '(layers, metadata, capabilities) used to bootstrap the map client.',
+    parameters=_PROJECT_PARAMS,
+)
 class ClientConfigApiView(APIView):
     """
     APIView to get data Project and layers
@@ -96,6 +113,13 @@ class ClientConfigApiView(APIView):
         return Response(ps_data)
 
 
+@extend_schema(
+    summary='Group + project initial configuration',
+    description='Returns the initial client configuration combining the group '
+                'data with the selected project. Includes base layers, static URLs, '
+                'logos and the main map metadata.',
+    parameters=_PROJECT_PARAMS,
+)
 class GroupConfigApiView(APIView):
     """
     APIView to get data Project and layers, used by client into development status.
