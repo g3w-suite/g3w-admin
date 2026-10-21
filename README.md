@@ -5,7 +5,7 @@
 
 Admin server for G3W-SUITE written in Python, based on **Django** LTS (v5.2) and **QGIS Server** LTR (v4.2.4)
 
-![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
+![Admin GUI](https://github.com/user-attachments/assets/98ae5bd2-160c-4f82-8c8a-d32979ed161e)
 
 ---
 
