@@ -880,7 +880,6 @@ export class ToolBox extends Emitter {
             name: "editing.pastefeaturesfromotherlayers",
             icon: "mActionEditPaste.svg",
             enable: (function() {
-              const catalogService      = GUI.getService('catalog');
               const layerId             = SELF.#layer.getId();
               const geometryType        = SELF.#layer.getGeometryType();
               const data = {
@@ -907,7 +906,7 @@ export class ToolBox extends Emitter {
                   ...getCatalogLayers({ GEOLAYER: true, BASELAYER: false })
                     .filter(l => (layerId !== l.getId()) && checkGeometry(l.getGeometryType())),
                   //external layer
-                  ...catalogService.getExternalLayers({type:'vector'}).filter(l => checkGeometry(l.geometryType))
+                  ...GUI.getExternalLayers({type:'vector'}).filter(l => checkGeometry(l.geometryType))
                 ].map((l, i) => ({
                   id:       (l.state || {id: l.id}).id,
                   name:     (l.state || {name: l.name}).name,
@@ -919,8 +918,8 @@ export class ToolBox extends Emitter {
               return ({ bool, tool = {} }) => {
                 data.tool = tool;
                 data.bool = bool;
-                catalogService.onafter('addExternalLayer',    updatelayers);
-                catalogService.onafter('removeExternalLayer', updatelayers);
+                GUI.onafter('loadExternalLayer',   updatelayers);
+                GUI.onafter('unloadExternalLayer', updatelayers);
                 return updatelayers()
               }
             }()),
