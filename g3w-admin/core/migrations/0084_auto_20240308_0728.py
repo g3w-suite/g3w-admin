@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0083_auto_20230921_0949'),
+        ('core', '0096_enable_pg_trgm'),
     ]
 
     operations = [

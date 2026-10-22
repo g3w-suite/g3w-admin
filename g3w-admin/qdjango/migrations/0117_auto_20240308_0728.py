@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0116_auto_20231204_1357'),
+        ('qdjango', '0145_merge_0141_project_srid_0144_layer_wmts_format'),
     ]
 
     operations = [
