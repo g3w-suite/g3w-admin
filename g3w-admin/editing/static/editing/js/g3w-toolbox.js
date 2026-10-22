@@ -906,7 +906,9 @@ export class ToolBox extends Emitter {
                   ...getCatalogLayers({ GEOLAYER: true, BASELAYER: false })
                     .filter(l => (layerId !== l.getId()) && checkGeometry(l.getGeometryType())),
                   //external layer
-                  ...GUI.getExternalLayers({type:'vector'}).filter(l => checkGeometry(l.geometryType))
+                  ...GUI.getExternalLayers({type:'vector'})
+                    .map(l => l._externalLayer)
+                    .filter(l => checkGeometry(l.geometryType))
                 ].map((l, i) => ({
                   id:       (l.state || {id: l.id}).id,
                   name:     (l.state || {name: l.name}).name,
