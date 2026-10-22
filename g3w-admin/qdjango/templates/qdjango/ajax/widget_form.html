@@ -15,6 +15,7 @@
 	ga.Qdjango.localVars['layer_columns'] = {{ layer.database_columns | safe }};
     ga.Qdjango.localVars['layer_edittypes'] = {{ layer_edittypes | safe }};
 	ga.Qdjango.localVars['layer_name'] = "{{ layer.qgs_layer_id }}";
+    ga.Qdjango.localVars['project_id'] = {{ layer.project.pk }};
 	ga.Qdjango.localVars['project_layers'] = {{ project_layers | safe }};
     ga.Qdjango.localVars['relations'] = {{ relations | safe }};
     {% if context_data %}

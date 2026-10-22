@@ -313,7 +313,6 @@ class UsersManageTest(BaseUsermanageTestCase):
         self.test_editor2_3.userbackend.save()
 
         def fake_receiver(sender, **kwargs):
-            print ('passa')
             return [
                 'add_user'
             ]

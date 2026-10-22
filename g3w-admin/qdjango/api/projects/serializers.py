@@ -12,13 +12,21 @@ from qdjango.models import (
     SessionTokenFilter,
     GeoConstraintRule,
     MSG_LEVELS,
-    FilterLayerSaved
+    FilterLayerSaved,
+    CustomerTheme
 )
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
+from qdjango.utils.qgis import wmts_extents
 from qdjango.signals import load_qdjango_widget_layer
+from guardian.utils import get_anonymous_user
 from qdjango.apps import get_qgs_project
-from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
+from qdjango.utils.structure import (
+    QdjangoMetaLayer, 
+    datasourcearcgis2dict, 
+    get_attributes
+)
+from qdjango.utils.session import reset_filtertoken
 from qdjango.api.layers.serializers import FilterLayerSavedSerializer
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
@@ -30,6 +38,7 @@ from core.utils.qgisapi import (
     get_qgis_layer,
     count_qgis_features,
     get_qgis_featurecount,
+    qvariant_type_name,
 )
 from core.utils.general import clean_for_json
 from core.utils.geo import get_crs_bbox
@@ -40,7 +49,9 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsCoordinateTransformContext,
-    QgsExpression
+    QgsExpression, 
+    QgsLayerTreeModel, 
+    QgsMapThemeCollection
 )
 from qgis.server import QgsServerProjectUtils
 from qgis.PyQt.QtCore import QVariant, QDate, QDateTime, Qt
@@ -113,7 +124,19 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         map_relations = []
         for relation in relations:
             relation['type'] = RELATIONS_ONE_TO_MANY
-            map_relations.append(relation)
+
+            # Check ACL for referencedLayer and referencingLayer
+            # Send only with http requests
+
+            if self.request:
+                referencedlayer = instance.layer_set.get(qgs_layer_id=relation['referencedLayer'])
+                referencinglayer = instance.layer_set.get(qgs_layer_id=relation['referencingLayer'])
+                if (self.request.user.has_perm('qdjango.view_layer', referencedlayer) or
+                    get_anonymous_user().has_perm('qdjango.view_layer', referencedlayer)) and \
+                        (get_anonymous_user().has_perm('qdjango.view_layer', referencinglayer) or
+                         self.request.user.has_perm('qdjango.view_layer', referencinglayer)):
+                    map_relations.append(relation)
+
         return map_relations
 
     def get_map_layers_relations_from_vectorjoins(self, layer_id, vectorjoins, layers):
@@ -223,19 +246,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return metadata
 
-    def reset_filtertoken(self):
-        """Check session token filter ad delete it"""
-
-        try:
-            if settings.SESSION_COOKIE_NAME in self.request.COOKIES:
-                stf = SessionTokenFilter.objects.get(
-                    sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
-                stf.delete()
-        except AttributeError:
-            return None
-        except SessionTokenFilter.DoesNotExist:
-            return None
-
     def layer_is_empty(self, layer):
         """
         Check if a vector layer is empty (not data)
@@ -260,15 +270,27 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :return: None
         """
 
-        ret['map_themes'] = []
+        ret['map_themes'] = {
+            'project': [],
+            'custom': []
+        }
+
+        # Check for QGIS project themes
+        # -----------------------------
         map_themes = qgs_project.mapThemeCollection().mapThemes()
-        if len(map_themes) == 0:
-            return
+        
+        # Check for current theme active
+        # Alessandro Pasotti (elpaso) snippet
+        ltr = qgs_project.layerTreeRoot()
+        model = QgsLayerTreeModel(ltr)
+
+        cur_theme = QgsMapThemeCollection.createThemeFromCurrentState( ltr, model )
 
         for map_theme in map_themes:
             theme = {
                 'theme': map_theme,
-                'styles': {}
+                'styles': {},
+                'default': cur_theme == qgs_project.mapThemeCollection().mapThemeState(map_theme)
             }
 
             for r in qgs_project.mapThemeCollection().mapThemeState(map_theme).layerRecords():
@@ -276,7 +298,18 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     r.layer().id(): r.currentStyle
                 })
 
-            ret['map_themes'].append(theme)
+            ret['map_themes']['project'].append(theme)
+
+        # Check for custom themes
+        # -----------------------
+        if self.request and not self.request.user.is_anonymous:
+            c_themes = CustomerTheme.objects.filter(project_id=ret['id'], user=self.request.user)
+            for c_theme in c_themes:
+                ret['map_themes']['custom'].append({
+                    'theme': c_theme.name,
+                    'styles': c_theme.styles
+                })
+
 
 
     def get_bookmarks(self, qgs_project):
@@ -385,6 +418,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
+
         # Check Geoconstraint rule whit autozoom flagged and calculate new initentext
         try:
             initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
@@ -397,10 +431,21 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except Exception as e:
             logger.error(f'[Project serializer] Initextent by geocontraint error: {str(e)}')
 
+
+        # Add print layouts
+        # ---------------------------------------------------------
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
-        # Ordering
+        
+        # Ordering layouts by name
         ret['print'].sort(key=lambda x: x['name'])
+
+        # Filter labels reserved for print layout
+        for layout in ret['print']:
+            layout['labels'] = [
+                label for label in layout['labels'] 
+                if label['id'] not in settings.RESERVED_PRINT_LAYOUT_LABELS
+            ]
 
         # Get layer which request.user can view:
         if self.request:
@@ -480,6 +525,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(
                     layer_serialized_data)
 
+                # Check if layer is exclude from toc
+                layer['toc'] = not layer_serialized_data['exclude_from_toc']
+
                 # check for vectorjoins and add to project relations
                 if layer_serialized_data['vectorjoins']:
                     ret['relations'] += self.get_map_layers_relations_from_vectorjoins(
@@ -495,19 +543,14 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 else:
                     ret['layers'].append(layer_serialized_data)
 
-                # get widgects for layer
+                # get widgets for layer
                 widgets = layers[layer['id']].widget_set.all()
                 for widget in widgets:
-                    widget_serializzer_data = WidgetSerializer(
-                        widget, layer=layers[layer['id']]).data
-                    if widget_serializzer_data['type'] in ('search', 'search_1n'):
-                        widget_serializzer_data['options']['layerid'] = layer['id']
-                        widget_serializzer_data['options']['querylayerid'] = layer['id']
-
-                        ret['search'].append(widget_serializzer_data)
+                    w_data = WidgetSerializer(widget, layer=layers[layer['id']], layerid=layer['id']).data
+                    if w_data['type'] in ('search', 'search_1n'):
+                        ret['search'].append(w_data)
                     else:
-                        load_qdjango_widget_layer.send(
-                            self, layer=layer, ret=ret, widget=widget)
+                        load_qdjango_widget_layer.send(self, layer=layer, ret=ret, widget=widget)
 
         for l in ret['layerstree']:
             try:
@@ -553,7 +596,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if instance.relations:
             ret['relations'] += self.get_map_layers_relations(instance)
 
-        # add project metadata
+        # Add project metadata
         ret['metadata'] = self.get_metadata(instance, qgs_project)
 
         # set client options/actions
@@ -582,7 +625,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except:
             pass
 
-        ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
+        # deprecated since 3.8
+        ret['search_endpoint'] = 'api'
 
         # Add bookmarks:
         # ---------------------------------
@@ -597,7 +641,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['messages'] = self.get_messages(instance)
 
         # reset tokenfilter by session
-        self.reset_filtertoken()
+        reset_filtertoken(self.request)
 
         # add edit url if user has grant
         if hasattr(self.request, 'user') and self.request.user.has_perm('qdjango.change_project', instance):
@@ -612,6 +656,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'group_slug': instance.group.slug,
                 'project_slug': instance.slug
             })
+
+        # Add other settings:
+        ret['show_load_layer_error'] = settings.G3W_CLIENT_SHOW_LOAD_LAYER_ERRORS
 
         return ret
 
@@ -667,14 +714,17 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'servertype',
             'vectorjoins',
             'exclude_from_legend',
+            'exclude_from_toc',
             'not_show_attributes_table',
             'download',
             'download_xls',
             'download_gpx',
             'download_csv',
             'download_gpkg',
+            'download_pdf',
             'editor_form_structure',
-            'styles'
+            'styles',
+            'max_preview_fields'
         )
 
     def column_to_exclude(self, instance):
@@ -696,26 +746,29 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :param instance: qdjango Layer model instance
         :return: list
         """
-        columns = mapLayerAttributes(
-            instance) if instance.database_columns else []
 
-        # evaluate fields to show or not by qgis project
-        column_to_exclude = self.column_to_exclude(instance)
+        return get_attributes(instance, request=self.request)
+        
+        # columns = mapLayerAttributes(
+        #     instance) if instance.database_columns else []
 
-        if self.request:
-            visible_columns = instance.visible_fields_for_user(self.request.user)
-            for column in columns:
-                column['show'] = (column['name'] in visible_columns) and (
-                    column['name'] not in column_to_exclude)
-        else:
-            for column in columns:
-                column['show'] = False if column['name'] in column_to_exclude else True
+        # # evaluate fields to show or not by qgis project
+        # column_to_exclude = self.column_to_exclude(instance)
 
-        return columns
+        # if self.request:
+        #     visible_columns = instance.visible_fields_for_user(self.request.user)
+        #     for column in columns:
+        #         column['show'] = (column['name'] in visible_columns) and (
+        #             column['name'] not in column_to_exclude)
+        # else:
+        #     for column in columns:
+        #         column['show'] = False if column['name'] in column_to_exclude else True
+
+        # return columns
 
     def get_ows(self, instance):
         """
-        Get wfscapabilities to add wos services for layer
+        Get wfscapabilities, wmtscapabilities to add ows services for layer
         :param instance: Qdjango Layer model instance
         :return: array
         """
@@ -723,8 +776,35 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret = ['WMS']
         if instance.wfscapabilities:
             ret.append('WFS')
+        if instance.wmtscapabilities and instance.wmts_format:
+                ret.append('WMTS')
 
         # TODO: add WCS if is set
+
+        return ret
+
+    def get_wmtscapabilities(self, instance):
+        wc = instance.wmtscapabilities
+
+        ret = {}
+        wmts_grids = self.instance.project.wmts_grids
+        if not wmts_grids or not instance.wmtscapabilities or not instance.wmts_format:
+            return ret
+
+        # only the admin-selected format, and only if still advertised as available
+        if not instance.wmtscapabilities.get(instance.wmts_format):
+            return ret
+
+        #Add grids
+        ret['grids'] = []       
+        for grid in wmts_grids:
+            # add the grid extent
+            cache_extent, grid_extent = wmts_extents(instance)
+            grid['extent'] = grid_extent
+            ret['grids'].append(grid)
+
+        # Add formats        
+        ret['formats'] = [f'image/{instance.wmts_format}']
 
         return ret
 
@@ -758,7 +838,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     attribute['comment'] = f.comment()
                     attribute['length'] = f.length()
                     attribute['precision'] = f.precision()
-                    attribute['type'] = QVariant.typeToName(f.type())
+                    attribute['type'] = qvariant_type_name(f.type())
                     attribute['alias'] = f.alias()
 
                     metadata['attributes'].append(attribute)
@@ -789,6 +869,28 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             metadata['abstract'] = qgs_maplayer.abstract()
 
         return metadata
+
+    def get_min_max_scale(self, instance, ret):
+        """
+        Check if the layer has min and max scale per user
+        """
+
+        # Get mx and min scale from max/min-_scale_style properties
+        max_scale = instance.get_max_scale_style()
+        min_scale = instance.get_min_scale_style()
+        scalebasedvisibility = instance.get_scalebasedvisibility_style()
+
+        # Check if the layer has min and max scale per user
+        if hasattr(self.request, 'user'):
+
+            svl = instance.get_scalevisibilityconstraint(self.request.user)
+
+            if svl:
+                min_scale = svl.minscale
+                max_scale = svl.maxscale
+                scalebasedvisibility = True
+
+        return min_scale, max_scale, scalebasedvisibility
 
     def to_representation(self, instance):
         ret = super(LayerSerializer, self).to_representation(instance)
@@ -864,6 +966,9 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 except Exception as e:
                     logger.debug(f'WMS layer GetFeatureInfo formats available: {e}')
 
+            # Remove possibility to show attributes table for WMS and ARCGIS server type
+            ret['not_show_attributes_table'] = True
+
 
 
         # replace crs property if is not none with dict structure
@@ -896,10 +1001,14 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # eval editor_form_structure
         if ret['editor_form_structure']:
-            ret['editor_form_structure'] = eval(instance.editor_form_structure)
+            ret['editor_form_structure'] = instance.get_editor_form_structure()
 
         # add ows
         ret['ows'] = self.get_ows(instance)
+
+        # Add wmts capabilities
+        ret['wmtscapabilities'] = self.get_wmtscapabilities(instance)
+        
 
         # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
         if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:
@@ -912,6 +1021,11 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             for f in self.filters:
                 ret['filters'].append(FilterLayerSavedSerializer(f).data)
 
+        # Set current opacity translated to 0 - 100
+        ret['opacity'] = int(qgs_maplayer.opacity() * 100)
+
+        # Check for Scale layer visibility constraint per user
+        ret['minscale'], ret['maxscale'], ret['scalebasedvisibility'] = self.get_min_max_scale(instance, ret)
         return ret
 
 
@@ -922,78 +1036,76 @@ class WidgetSerializer(serializers.ModelSerializer):
 
     def __init__(self, instance=None, data=empty, **kwargs):
         self.layer = kwargs['layer']
+        self.layerid = kwargs['layerid']
         del(kwargs['layer'])
+        del(kwargs['layerid'])
         super(WidgetSerializer, self).__init__(instance, data, **kwargs)
 
     def to_representation(self, instance):
         ret = super(WidgetSerializer, self).to_representation(instance)
-        ret['type'] = instance.widget_type
 
-        # get edittype
-        edittypes = eval(self.layer.edittypes)
+        body = json.loads(instance.body)
 
-        if ret['type'] == 'search':
-            body = json.loads(instance.body)
+        # Get edittype
+        edittypes = self.layer.get_edittypes()
 
+        has_relations = 'search' == instance.widget_type and '' != body.get('relations', '')
+
+        # rewrite type ('search' → 'search_1n' if has relations) 
+        ret['type'] = 'search_1n' if has_relations else instance.widget_type
+
+        # check if field has a widget edit type
+        def etype(field, key, default=None):
+            return edittypes.get(field['name'], {}).get(key, default)
+
+        if ret['type'] not in ('search', 'search_1n'):
+            ret['body'] = body
+
+        # TODO: reduce nesting level (there are too many things called 'options')
+        else:
             ret['options'] = {
                 'queryurl': None,
                 'title': body['title'],
+                'paginate': body['paginate'] if 'paginate' in body else False,
                 'results': body['results'],
-                'filter': [],
                 'dozoomtoextent': body['dozoomtoextent'],
-                # 'zoom': body['zoom']
-            }
-
-            # other layers
-            if 'otherlayers' in body:
-                ret['options'].update({
-                    'otherquerylayerids': body['otherlayers']
-                })
-
-            for field in body['fields']:
-
-                # if widgettype is selectbox, get values
-                if 'widgettype' in field and field['widgettype'] == 'selectbox':
-
-                    field['input']['type'] = 'selectfield'
-                    field['input']['options']['values'] = []
-
-                    edittype = edittypes[field['name']]
-
-                    # check if field has a widget edit type
-                    widget_type = edittype['widgetv2type']
-                    if field['name'] in edittypes and widget_type in ('ValueMap', 'ValueRelation'):
-                        if widget_type == 'ValueMap':
-                            field['input']['options']['values'] = edittype['values']
-                        else:
-
-                            # Add layer params
-                            field['input']['options']['key'] = edittype['Value']
-                            field['input']['options']['value'] = edittype['Key']
-                            field['input']['options']['layer_id'] = edittype['Layer']
-
-                # For AutoccOmpleteBox input type
-                if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
-                    field['input']['type'] = 'autocompletefield'
-
-                input = field['input']
-                input['options']['blanktext'] = field['blanktext']
-                ret['options']['filter'].append({
+                'layerid': self.layerid,
+                'querylayerid': self.layerid,
+                # other layers
+                'otherquerylayerids': body.get('otherlayers', []), 
+                # search inputs
+                'filter': [{
                     'op': field['filterop'],
                     'attribute': field['name'],
                     'label': field['label'],
-                    'input': input,
-                    'logicop': field.get('logicop', 'AND').upper()
-                })
+                    'logicop': field.get('logicop', 'AND').upper(),
+                    'input': {
+                        **field['input'],
+                        'widget_type': etype(field, 'widgetv2type'),
+                        'type': ({
+                            'autocompletebox': 'autocompletefield',
+                            'selectbox': 'selectfield'
+                        }).get(field.get('widgettype'), field['input'].get('type')),
+                        # alternative unique layer id
+                        'alternativeuniquelayer': field.get('alternativeuniquelayer', None),
+                        'options': {
+                            **field['input'].get('options', {}),
+                            #'values': etype(field, 'values', []),     # removed in v3.8
+                            'description': field.get('blanktext', ''), # FIXME incorrect field name: "blanktext" ?
+                            # ValueRelation → add layer params
+                            **({
+                                'key' : etype(field, 'Value'),
+                                'value': etype(field, 'Key'),
+                                'layer_id': etype(field, 'Layer'),
+                            } if 'ValueRelation' == etype(field, 'widgetv2type') else {}),
+                            
+                        },
+                    },
+                } for field in body['fields']],
+                # relation id
+                **({ 'search_1n_relationid': body['relations'] } if has_relations else {})
+            }
 
-            # rewrite type if relations is set relations
-            if 'relations' in body and body['relations'] != '':
-                ret['type'] = 'search_1n'
-                ret['options']['search_1n_relationid'] = body['relations']
-                del(body['relations'])
-
-        else:
-            ret['body'] = json.loads(instance.body)
         return ret
 
     class Meta:

@@ -104,7 +104,8 @@ class CachingViewsTests(CachingTestBase):
             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
             'geographic': True,
             'axisinverted': True,
-            'extent': [-180.0, -90.0, 180.0, 90.0]
+            #'extent': [-180.0, -90.0, 180.0, 90.0]
+            'extent': [0, 0, 8388608, 8388608]
         })
 
         # update
@@ -132,7 +133,8 @@ class CachingViewsTests(CachingTestBase):
             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
             'geographic': True,
             'axisinverted': True,
-            'extent': [-180.0, -90.0, 180.0, 90.0]
+            #'extent': [-180.0, -90.0, 180.0, 90.0]
+            'extent': [0, 0, 8388608, 8388608]
         })
 
         base_layer_pk = base_layer.pk

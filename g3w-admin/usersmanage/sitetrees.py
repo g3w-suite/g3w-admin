@@ -8,7 +8,7 @@ sitetrees = (
 
      # ITALIAN 
      G3Wtree(
-          'acl',
+          'acl_it',
           title='ACL',
           module='usermanage',
           items=[
@@ -63,7 +63,7 @@ sitetrees = (
 
      # ENGLISH
      G3Wtree(
-          'acl_en',
+          'acl',
           title='ACL',
           module='usermanage',
           items=[
@@ -115,6 +115,62 @@ sitetrees = (
                ),
           ]
      ),
+
+     # GERMAN
+     G3Wtree(
+          'acl_de',
+          title='ACL',
+          module='usermanage',
+          items=[
+               item(
+                    'ACL',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Benutzer',
+                    '#',
+                    icon_css_class='fa fa-users',
+                    children=[
+                         item(
+                              'Benutzer hinzufügen',
+                              'user-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-user-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Benutzerliste',
+                              'user-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-users'
+                         ),
+                         item(
+                              'Benutzeraktualisierung',
+                              'user-update object.pk',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False
+                         ),
+                         item(
+                              'Gruppenbenutzer hinzufügen',
+                              'user-group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Gruppenbenutzerliste',
+                              'user-group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              access_by_perms=['auth.add_user']
+                         )
+                    ]
+               ),
+          ]
+     ),
+
 
      # FRENCH
      G3Wtree(
@@ -216,6 +272,116 @@ sitetrees = (
                          ),
                          item(
                               'Lista grupuri de utilizatori',
+                              'user-group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              access_by_perms=['auth.add_user']
+                         )
+                    ]
+               ),
+          ]
+     ),
+
+     # BULGARIAN
+     G3Wtree(
+          'acl_bg',
+          title='Управление на достъп',
+          module='usermanage',
+          items=[
+               item(
+                    'Управление на достъп',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Потребители',
+                    '#',
+                    icon_css_class='fa fa-users',
+                    children=[
+                         item(
+                              'Добави потребител',
+                              'user-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-user-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Списък потребители',
+                              'user-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-users'
+                         ),
+                         item(
+                              'Промяна на потребител',
+                              'user-update object.pk',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False
+                         ),
+                         item(
+                              'Добави потребител в група',
+                              'user-group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Списък групи с потребители',
+                              'user-group-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-list',
+                              access_by_perms=['auth.add_user']
+                         )
+                    ]
+               ),
+          ]
+     ),
+
+     # PORTUGUESE
+     G3Wtree(
+          'acl_pt',
+          title='ACL',
+          module='usermanage',
+          items=[
+               item(
+                    'ACL',
+                    '#',
+                    type_header=True
+               ),
+               item(
+                    'Utilizadores',
+                    '#',
+                    icon_css_class='fa fa-users',
+                    children=[
+                         item(
+                              'Adicionar utilizador',
+                              'user-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-user-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Listar utilizadores',
+                              'user-list',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-users'
+                         ),
+                         item(
+                              'Actualizar utilizador',
+                              'user-update object.pk',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-edit',
+                              in_menu=False
+                         ),
+                         item(
+                              'Adicionar grupo de utilizadores',
+                              'user-group-add',
+                              url_as_pattern=True,
+                              icon_css_class='fa fa-plus',
+                              access_by_perms=['auth.add_user']
+                         ),
+                         item(
+                              'Listar grupo de utilizadores',
                               'user-group-list',
                               url_as_pattern=True,
                               icon_css_class='fa fa-list',

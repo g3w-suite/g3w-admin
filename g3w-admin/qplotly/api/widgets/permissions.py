@@ -54,3 +54,26 @@ class QplotlyWidgetPermission(BasePermission):
 
         except ObjectDoesNotExist:
             return False
+
+
+class QplotlyWidgetRelatedPermission(BasePermission):
+    """
+    API permission for related_widgets management on a QplotlyWidget.
+    Resolves the project from the source widget (pk) and project_id kwargs.
+    Allows access only to users with change_project permission on the related project.
+    """
+
+    def has_permission(self, request, view):
+
+        if request.user.is_superuser:
+            return True
+
+        try:
+            widget = QplotlyWidget.objects.get(pk=view.kwargs['pk'])
+            layer = widget.layers.first()
+            if layer is None:
+                return False
+            return request.user.has_perm('qdjango.change_project', layer.project)
+
+        except (ObjectDoesNotExist, KeyError):
+            return False

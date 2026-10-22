@@ -107,6 +107,7 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         kwargs['initial']['password'] = self.object.password
         if hasattr(self.object, 'userdata'):
             kwargs['initial']['department'] = self.object.userdata.department
+            kwargs['initial']['other_info'] = self.object.userdata.other_info
             kwargs['initial']['avatar'] = self.object.userdata.avatar
 
         if hasattr(self.object, 'userbackend'):
@@ -371,7 +372,7 @@ class G3WUserRegistrationView(registration_views.RegistrationView):
             message,
             settings.DEFAULT_FROM_EMAIL,
             [a.email for a in admins],
-            fail_silently=False,
+            fail_silently=True,
         )
 
 class G3WUserPasswordRecoveryMixin(object):

@@ -1,0 +1,837 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-05 20:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: core/admin.py:29
+msgid "Basic settings"
+msgstr "Основни настройки"
+
+#: core/admin.py:32
+msgid "Access settings"
+msgstr "Настройки за достъп"
+
+#: core/admin.py:36
+msgid "Display settings"
+msgstr "Настройки за визуализация"
+
+#: core/admin.py:40
+msgid "Additional settings"
+msgstr "Допълнителни настройки"
+
+#: core/api/base/views.py:148
+msgid "Data are not correct or insufficent!"
+msgstr "Данните са неправилни или недостатъчни!"
+
+#: core/api/base/views.py:154
+msgid "A error server is occured!"
+msgstr "Възникна грешка на сървъра!"
+
+#: core/api/base/views.py:162
+msgid "Not found"
+msgstr "Не е намерено"
+
+#: core/api/base/views.py:168
+msgid "Permission denied"
+msgstr "Достъпът е отказан"
+
+#: core/api/views.py:36
+msgid "Expression evaluation error."
+msgstr "Грешка при изчисляване на израза."
+
+#: core/api/views.py:41
+msgid "Expression parse error."
+msgstr "Грешка при анализ на израза."
+
+#: core/api/views.py:47
+msgid "Expression empty error."
+msgstr "Изразът е празен."
+
+#: core/api/views.py:53
+msgid "Expression form data error."
+msgstr "Грешка във формата на израза."
+
+#: core/api/views.py:59
+msgid "Layer error."
+msgstr "Грешка в слоя."
+
+#: core/configs.py:11
+msgid "Search"
+msgstr "Търсене"
+
+#: core/configs.py:28
+msgid "Law"
+msgstr "Закон"
+
+#: core/forms.py:55 core/forms.py:425
+msgid "General data"
+msgstr "Общи данни"
+
+#: core/forms.py:60 core/forms.py:240 core/forms.py:430
+msgid "Translatable fields"
+msgstr "Полета за превеждане"
+
+#: core/forms.py:80
+msgid "GEO data"
+msgstr "Гео данни"
+
+#: core/forms.py:101
+msgid "Base Layers and Map default features"
+msgstr "Картни основи и стандартни настройки на картата"
+
+#: core/forms.py:128
+msgid "Logo/Picture"
+msgstr "Лого/Изображение"
+
+#: core/forms.py:155
+msgid "Copyright"
+msgstr "Авторски права"
+
+#: core/forms.py:201
+#, python-brace-format
+msgid ""
+"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
+msgstr ""
+"SRID EPSG:{srid} не е равен на SRID на текущия проект EPSG:{layer_srid}"
+
+#: core/forms.py:236
+msgid "Frontend home data"
+msgstr "Начални данни на потребителския интерфейс"
+
+#: core/forms.py:261
+msgid "Frontend about data"
+msgstr "Данни за секция \"Относно\""
+
+#: core/forms.py:282
+msgid "Frontend groups map data"
+msgstr "Данни за картата на групите"
+
+#: core/forms.py:298
+msgid "Frontend login data"
+msgstr "Данни за вход"
+
+#: core/forms.py:316
+msgid "Frontend social data"
+msgstr "Данни за социални мрежи"
+
+#: core/forms.py:338
+msgid "Map client data"
+msgstr "Данни за картовия клиент"
+
+#: core/forms.py:356
+msgid "Registration"
+msgstr "Регистрация"
+
+#: core/forms.py:382
+msgid "Editor users"
+msgstr "Редактори"
+
+#: core/forms.py:402
+msgid "ACL Users"
+msgstr "ACL потребители"
+
+#: core/forms.py:434
+msgid ""
+"<b>Attention!</b> These settings are valid only for map groups with only one "
+"MacroGroup"
+msgstr ""
+"<b>Внимание!</b> Тези настройки са валидни само за картографски групи с една "
+"макрогрупа"
+
+#: core/forms.py:475
+msgid "Macro cartographic group"
+msgstr "Макро картографска група"
+
+#: core/forms.py:477
+msgid "Editor level 1"
+msgstr "Редактор ниво 1"
+
+#: core/forms.py:478
+msgid "Editor level 2"
+msgstr "Редактор ниво 2"
+
+#: core/forms.py:479
+msgid "User editor group"
+msgstr "Група потребители редактори"
+
+#: core/forms.py:480
+msgid "User viewer group"
+msgstr "Група потребители зрители"
+
+#: core/models.py:27
+msgid "Qdjango2 module"
+msgstr "Qdjango2 модул"
+
+#: core/models.py:31
+msgid "Type header"
+msgstr "Тип заглавка"
+
+#: core/models.py:32
+msgid "Icon CSS class"
+msgstr "CSS клас за икона"
+
+#: core/models.py:39 core/models.py:151
+#: core/templates/core/ajax/group_detail.html:8
+msgid "SRID"
+msgstr "SRID"
+
+#: core/models.py:40
+msgid "SRS name"
+msgstr "Име на SRS"
+
+#: core/models.py:41
+msgid "SRS ID"
+msgstr "SRS ID"
+
+#: core/models.py:42
+msgid "WKT SRS"
+msgstr "WKT SRS"
+
+#: core/models.py:43
+msgid "PROJ coordinate definition"
+msgstr "PROJ координатна дефиниция"
+
+#: core/models.py:60 core/models.py:78 core/models.py:136
+msgid "Name"
+msgstr "Име"
+
+#: core/models.py:61 core/models.py:96 core/models.py:137 core/models.py:425
+#: core/templates/core/ajax/macrogroup_detail.html:7
+#: core/templates/core/macrogroup_list_table.html:28
+msgid "Title"
+msgstr "Заглавие"
+
+#: core/models.py:62
+msgid "Icon"
+msgstr "Икона"
+
+#: core/models.py:63 core/models.py:79 core/models.py:97 core/models.py:138
+#: core/templates/core/ajax/macrogroup_detail.html:9
+msgid "Description"
+msgstr "Описание"
+
+#: core/models.py:64
+msgid "Property"
+msgstr "Свойство"
+
+#: core/models.py:70
+msgid "Base Layer"
+msgstr "Картна основа"
+
+#: core/models.py:71
+msgid "Base Layers"
+msgstr "Картни основи"
+
+#: core/models.py:85
+msgid "Map control"
+msgstr "Контрола на картата"
+
+#: core/models.py:86 core/models.py:157
+msgid "Map controls"
+msgstr "Контроли на картата"
+
+#: core/models.py:94
+msgid "Identification name"
+msgstr "Име за идентификация"
+
+#: core/models.py:95
+msgid "Internal identification Macrogroup name"
+msgstr "Вътрешно име за идентификация на макрогрупа"
+
+#: core/models.py:98 core/models.py:145
+msgid "Logo image"
+msgstr "Лого изображение"
+
+#: core/models.py:99 core/models.py:147
+msgid "Logo link"
+msgstr "Връзка към логото"
+
+#: core/models.py:100 core/models.py:148
+msgid "Enter link with http:// or https//"
+msgstr "Въведете линк с http:// или https://"
+
+#: core/models.py:101
+msgid "Use title for client"
+msgstr "Използвай заглавието за клиента"
+
+#: core/models.py:102 core/models.py:172
+msgid "Use logo image for client"
+msgstr "Използвай логото за клиента"
+
+#: core/models.py:105 core/models.py:140
+msgid "Slug"
+msgstr "Slug"
+
+#: core/models.py:128
+msgid "MACRO Group"
+msgstr "Макро група"
+
+#: core/models.py:129 core/utils/forms.py:48
+msgid "MACRO Groups"
+msgstr "Макро групи"
+
+#: core/models.py:142
+msgid "Is active"
+msgstr "Активен"
+
+#: core/models.py:154
+msgid "Base layers"
+msgstr "Картни основи"
+
+#: core/models.py:160
+msgid "Background color"
+msgstr "Цвят на фона"
+
+#: core/models.py:164
+msgid "Terms of use text"
+msgstr "Текст с условия за ползване"
+
+#: core/models.py:167
+msgid "Terms of use link"
+msgstr "Линк към условия за ползване"
+
+#: core/models.py:170
+msgid "MACRO groups"
+msgstr "Макро групи"
+
+#: core/models.py:173
+msgid ""
+"As for MacroGroup options is possible to use current logo group as client "
+"logo, if MacroGroup option is active this options takes precendence"
+msgstr ""
+"За опциите на макрогрупата може да се използва текущото лого на групата като "
+"клиентско лого; ако е активирана опцията за макрогрупа, тя има предимство"
+
+#: core/models.py:178 core/models.py:416 core/templates/core/group_form.html:11
+msgid "Group"
+msgstr "Група"
+
+#: core/models.py:179 core/templates/core/ajax/macrogroup_detail.html:11
+#: core/templates/core/macrogroup_list_table.html:29
+msgid "Groups"
+msgstr "Групи"
+
+#: core/models.py:417
+msgid "Project type"
+msgstr "Тип проект"
+
+#: core/models.py:418
+msgid "Project type id"
+msgstr "ID на тип проект"
+
+#: core/models.py:426
+msgid "Subtitle"
+msgstr "Подзаглавие"
+
+#: core/models.py:427
+msgid "Home description"
+msgstr "Описание на началната страница"
+
+#: core/models.py:428
+msgid "About title"
+msgstr "Заглавие на секция \"Относно\""
+
+#: core/models.py:429
+msgid "About description"
+msgstr "Описание на секция \"Относно\""
+
+#: core/models.py:430
+msgid "About name"
+msgstr "Име в секция \"Относно\""
+
+#: core/models.py:431
+msgid "About phone"
+msgstr "Телефон в секция \"Относно\""
+
+#: core/models.py:432
+msgid "About email"
+msgstr "Имейл в секция \"Относно\""
+
+#: core/models.py:433
+msgid "About address"
+msgstr "Адрес в секция \"Относно\""
+
+#: core/models.py:434
+msgid "Groups title"
+msgstr "Заглавие на групи"
+
+#: core/models.py:435
+msgid "Groups map description"
+msgstr "Описание на картата на групите"
+
+#: core/models.py:436
+msgid "Login title"
+msgstr "Заглавие на вход"
+
+#: core/models.py:437
+msgid "Login description"
+msgstr "Описание на вход"
+
+#: core/models.py:438
+msgid "Suite logo"
+msgstr "Лого на пакета"
+
+#: core/models.py:439
+msgid "Suite logo URL"
+msgstr "URL на логото на пакета"
+
+#: core/models.py:440
+msgid "Registration introductory message"
+msgstr "Встъпително съобщение при регистрация"
+
+#: core/models.py:443
+msgid "Credits"
+msgstr "Кредити"
+
+#: core/models.py:446
+msgid "Main map title"
+msgstr "Заглавие на основната карта"
+
+#: core/models.py:448
+msgid "Facebook link"
+msgstr "Линк към Facebook"
+
+#: core/models.py:449
+msgid "Twitter link"
+msgstr "Линк към Twitter"
+
+#: core/models.py:450
+msgid "Google+ link"
+msgstr "Линк към Google+"
+
+#: core/models.py:451
+msgid "Youtube link"
+msgstr "Линк към YouTube"
+
+#: core/models.py:452
+msgid "Instagram link"
+msgstr "Линк към Instagram"
+
+#: core/models.py:453
+msgid "Flickr link"
+msgstr "Линк към Flickr"
+
+#: core/models.py:454
+msgid "Tripadvisor link"
+msgstr "Линк към Tripadvisor"
+
+#: core/models.py:462
+msgid "App name"
+msgstr "Име на приложение"
+
+#: core/models.py:463
+msgid "Project ID"
+msgstr "Идентификатор на проект"
+
+#: core/models.py:464
+msgid "Alias"
+msgstr "Псевдоним"
+
+#: core/models.py:468
+msgid "NotSet"
+msgstr "Не е зададено"
+
+#: core/models.py:469
+msgid "Info"
+msgstr "Информация"
+
+#: core/models.py:470
+msgid "Warning"
+msgstr "Предупреждение"
+
+#: core/models.py:471
+msgid "Debug"
+msgstr "Отстраняване на грешки"
+
+#: core/models.py:472
+msgid "Error"
+msgstr "Грешка"
+
+#: core/models.py:473
+msgid "Fatal"
+msgstr "Фатална грешка"
+
+#: core/models.py:479
+msgid "Logger name"
+msgstr "Име на логер"
+
+#: core/models.py:480
+msgid "Level"
+msgstr "Ниво"
+
+#: core/models.py:481
+msgid "Message"
+msgstr "Съобщение"
+
+#: core/models.py:482
+msgid "Trace"
+msgstr "Трасе"
+
+#: core/models.py:483
+msgid "Created at"
+msgstr "Създадено на"
+
+#: core/models.py:490 core/models.py:491
+msgid "Logging"
+msgstr "Логване"
+
+#: core/models.py:500
+msgid "Original URL"
+msgstr "Оригинален URL"
+
+#: core/models.py:501
+msgid "Short code"
+msgstr "Кратък код"
+
+#: core/models.py:523 core/templates/core/ajax/macrogroup_detail.html:5
+msgid "Data"
+msgstr "Данни"
+
+#: core/models.py:524
+msgid "Permalink code"
+msgstr "Код за постоянен линк"
+
+#: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
+msgid "error page"
+msgstr "страница с грешка"
+
+#: core/templates/core/403_MGC.html:15 core/templates/core/403_MPC.html:15
+msgid "Access denied"
+msgstr "Достъпът е отказан"
+
+#: core/templates/core/403_MGC.html:17
+msgid "You can't add new Group"
+msgstr "Не можете да добавите нова група"
+
+#: core/templates/core/403_MPC.html:17
+msgid "You can't add new Project"
+msgstr "Не можете да добавите нов проект"
+
+#: core/templates/core/ajax/group_detail.html:5
+msgid "Geografic component"
+msgstr "Географски компонент"
+
+#: core/templates/core/ajax/group_detail.html:7
+msgid "Geographic coordinate system"
+msgstr "Географска координатна система"
+
+#: core/templates/core/ajax/group_detail.html:9
+msgid "Units"
+msgstr "Единици"
+
+#: core/templates/core/ajax/group_detail.html:10
+msgid "Principal map"
+msgstr "Основна карта"
+
+#: core/templates/core/ajax/group_detail.html:11
+msgid "Max scale"
+msgstr "Максимален мащаб"
+
+#: core/templates/core/ajax/group_detail.html:12
+msgid "Min scale"
+msgstr "Минимален мащаб"
+
+#: core/templates/core/ajax/group_detail.html:13
+msgid "Overview Map"
+msgstr "Общ преглед на карта"
+
+#: core/templates/core/ajax/group_detail.html:14
+msgid "Panoramic max scale"
+msgstr "Панорамен максимален мащаб"
+
+#: core/templates/core/ajax/group_detail.html:15
+msgid "Panoramic min scale"
+msgstr "Панорамен минимален мащаб"
+
+#: core/templates/core/ajax/group_detail.html:18
+msgid "Users"
+msgstr "Потребители"
+
+#: core/templates/core/ajax/group_detail.html:21
+msgid "Editor level 1 user"
+msgstr "Потребител редактор ниво 1"
+
+#: core/templates/core/ajax/group_detail.html:25
+msgid "Editor level 2 user"
+msgstr "Потребител редактор ниво 2"
+
+#: core/templates/core/ajax/group_detail.html:26
+msgid "Viewer users"
+msgstr "Потребители прегледачи"
+
+#: core/templates/core/ajax/group_detail.html:27
+msgid "Editor user groups"
+msgstr "Групи редактори"
+
+#: core/templates/core/ajax/group_detail.html:28
+msgid "Viewer user groups"
+msgstr "Групи прегледачи"
+
+#: core/templates/core/ajax/group_detail.html:35
+msgid "Interface component"
+msgstr "Интерфейс компонент"
+
+#: core/templates/core/ajax/group_detail.html:37
+msgid "Interface language"
+msgstr "Език на интерфейса"
+
+#: core/templates/core/ajax/group_detail.html:38
+msgid "Language"
+msgstr "Език"
+
+#: core/templates/core/ajax/group_detail.html:39
+msgid "Associated logo"
+msgstr "Свързано лого"
+
+#: core/templates/core/ajax/group_detail.html:40
+msgid "HeaderLogoImg"
+msgstr "Лого на заглавката"
+
+#: core/templates/core/ajax/group_detail.html:48
+msgid "HeaderLogoHeight"
+msgstr "Височина на логото"
+
+#: core/templates/core/ajax/group_detail.html:49
+msgid "HeaderLogoLink"
+msgstr "Линк на логото"
+
+#: core/templates/core/ajax/group_detail.html:50
+msgid "Terms of use"
+msgstr "Условия за ползване"
+
+#: core/templates/core/ajax/group_detail.html:51
+msgid "HeaderTermsOfUseText"
+msgstr "Текст за условия за ползване"
+
+#: core/templates/core/ajax/group_detail.html:52
+msgid "HeaderTermsOfUseLink"
+msgstr "Линк за условия за ползване"
+
+#: core/templates/core/ajax/system_info.html:4
+#: core/templates/core/ajax/system_info.html:17
+msgid "General"
+msgstr "Общи"
+
+#: core/templates/core/ajax/system_info.html:10
+msgid "DataBase"
+msgstr "База данни"
+
+#: core/templates/core/ajax/system_info.html:16
+msgid "Libraries"
+msgstr "Библиотеки"
+
+#: core/templates/core/ajax/system_info.html:21
+msgid "Geographic"
+msgstr "Географски"
+
+#: core/templates/core/ajax/system_info.html:27
+msgid "Python"
+msgstr "Python"
+
+#: core/templates/core/generalsuitedata_form.html:11
+msgid "General suite data"
+msgstr "Общи данни за пакета"
+
+#: core/templates/core/generalsuitedata_form.html:24
+#: core/templates/core/group_form.html:45
+#: core/templates/core/macrogroup_form.html:54
+msgid "Alert"
+msgstr "Предупреждение"
+
+#: core/templates/core/generalsuitedata_form.html:25
+#: core/templates/core/group_form.html:46
+#: core/templates/core/macrogroup_form.html:55
+msgid "Some errors on form. Check it and send again."
+msgstr "Има грешки във формата. Проверете и изпратете отново."
+
+#: core/templates/core/group_deactive_list.html:10
+msgid "Cartographic groups deactivated"
+msgstr "Деактивирани картографски групи"
+
+#: core/templates/core/group_deactive_list.html:34
+#: core/templates/core/group_list.html:97
+#: core/templates/core/search/group.html:25
+msgid "Group projects"
+msgstr "Проекти на групата"
+
+#: core/templates/core/group_deactive_list.html:34
+#: core/templates/core/group_form.html:33
+#: core/templates/core/group_list.html:97
+#: core/templates/core/project_list.html:11
+msgid "Projects"
+msgstr "Проекти"
+
+#: core/templates/core/group_deactive_list.html:41
+#: core/templates/core/group_list.html:104
+#: core/templates/core/macrogroup_list.html:66
+#: core/templates/core/macrogroup_list_table.html:37
+#: core/templates/core/project_list.html:75
+#: core/templates/core/project_list.html:77
+#: core/templates/core/search/group.html:24
+#: core/templates/core/search/macrogroup.html:22
+msgid "Show detail"
+msgstr "Покажи детайли"
+
+#: core/templates/core/group_deactive_list.html:50
+msgid "Redo/Active"
+msgstr "Възстанови/Активирай"
+
+#: core/templates/core/group_deactive_list.html:59
+#: core/templates/core/macrogroup_list.html:83
+#: core/templates/core/macrogroup_list_table.html:43
+msgid "Delete"
+msgstr "Изтрий"
+
+#: core/templates/core/group_deactive_list.html:62
+msgid "Warning: deleting the group will delete the projects it contains!"
+msgstr "Внимание: изтриването на групата ще изтрие и проектите в нея!"
+
+#: core/templates/core/group_form.html:33
+msgid "Current"
+msgstr "Текущи"
+
+#: core/templates/core/group_list.html:10
+#: core/templates/core/search/group.html:9
+msgid "Cartographic groups"
+msgstr "Картографски групи"
+
+#: core/templates/core/group_list.html:51
+msgid "Filter by"
+msgstr "Филтрирай по"
+
+#: core/templates/core/group_list.html:60
+msgid "Filter"
+msgstr "Филтрирай"
+
+#: core/templates/core/group_list.html:85
+msgid "Add new project"
+msgstr "Добави нов проект"
+
+#: core/templates/core/group_list.html:113
+#: core/templates/core/macrogroup_list.html:74
+#: core/templates/core/macrogroup_list_table.html:40
+#: core/templates/core/project_list.html:82
+#: core/templates/core/project_list.html:84
+#: core/templates/core/search/group.html:28
+#: core/templates/core/search/macrogroup.html:24
+msgid "Edit"
+msgstr "Редактирай"
+
+#: core/templates/core/group_list.html:125
+msgid "Delete/Deactivate"
+msgstr "Изтрий/Деактивирай"
+
+#: core/templates/core/group_list.html:134
+msgid ""
+"<strong>Warning</strong>: deleting the group (move to bucket) will delete "
+"the projects it contains (move to the bucket)!"
+msgstr ""
+"<strong>Внимание</strong>: изтриването на групата (преместване в коша) ще "
+"изтрие и проектите в нея (също ще се преместят в коша)!"
+
+#: core/templates/core/include/add_project.html:4
+msgid "Add project"
+msgstr "Добави проект"
+
+#: core/templates/core/include/add_project.html:10
+msgid "Select project type to add:"
+msgstr "Изберете тип проект за добавяне:"
+
+#: core/templates/core/include/cookieconsent.html:11
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr ""
+"Този уебсайт използва бисквитки, за да ви осигури най-добро потребителско "
+"изживяване"
+
+#: core/templates/core/include/cookieconsent.html:12
+msgid "Got it"
+msgstr "Разбрах"
+
+#: core/templates/core/include/form_buttons.html:7
+msgid "Save"
+msgstr "Запази"
+
+#: core/templates/core/include/form_buttons.html:13
+msgid "Redo/Back"
+msgstr "Върни се/Назад"
+
+#: core/templates/core/macrogroup_form.html:10
+msgid "Macro Group"
+msgstr "Макро група"
+
+#: core/templates/core/macrogroup_form.html:27
+msgid "Current groups"
+msgstr "Текущи групи"
+
+#: core/templates/core/macrogroup_list.html:10
+#: core/templates/core/macrogroup_list_table.html:10
+#: core/templates/core/search/macrogroup.html:8
+msgid "Cartographic macro groups"
+msgstr "Картографски макро групи"
+
+#: core/templates/core/macrogroup_list_table.html:21
+msgid "Macro group"
+msgstr "Макро група"
+
+#: core/templates/core/tags/add_layer.html:3
+msgid "Layer"
+msgstr "Слой"
+
+#: core/templates/core/tags/add_project.html:7
+msgid "Project"
+msgstr "Проект"
+
+#: core/utils/data.py:24
+msgid "[{} error on {}({})]-- {}"
+msgstr "[{} грешка при {}({})]-- {}"
+
+#: core/utils/forms.py:21
+msgid "Default base layer"
+msgstr "Основен базов слой"
+
+#: core/utils/qgisapi.py:511
+msgid "Function \"{}\" is not allowed for security reasons!"
+msgstr "Функцията \"{}\" не е разрешена поради съображения за сигурност!"
+
+#: core/utils/qgisapi.py:516
+msgid "Variable \"{}\" is not allowed for security reasons!"
+msgstr "Променливата \"{}\" не е разрешена поради съображения за сигурност!"
+
+#: core/utils/qgisapi.py:528 core/utils/qgisapi.py:545
+msgid "QGIS layer with id \"{}\" could not be found!"
+msgstr "QGIS слой с id \"{}\" не може да бъде намерен!"
+
+#: core/utils/qgisapi.py:551
+msgid "QDjango project with id \"{}\" could not be found!"
+msgstr "QDjango проект с id \"{}\" не може да бъде намерен!"
+
+#: core/utils/qgisapi.py:561
+msgid "A valid QGIS layer is required to process form data!"
+msgstr "Изисква се валиден QGIS слой за обработка на данните от формата!"
+
+#: core/utils/qgisapi.py:575
+msgid "A valid QGIS layer (parent layer) is required to process form data!"
+msgstr ""
+"Изисква се валиден QGIS слой (родителски слой) за обработка на данните от "
+"формата!"
+
+#: core/utils/structure.py:187
+msgid "Yes"
+msgstr "Да"

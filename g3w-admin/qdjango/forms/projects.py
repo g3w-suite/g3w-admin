@@ -1,30 +1,20 @@
-import os
-
-from qgis.core import QgsProject
-import re
-import zipfile
-
 from core.mixins.forms import *
-from core.models import Group as G3WGroup
 from core.utils.forms import crispyBoxBaseLayer
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import HTML, Div, Field
 from django import forms
 from django.core.files.base import ContentFile
-from django.db.models import Q
 from django.urls import reverse
 from django.forms import ValidationError, widgets
-from django.utils.translation import ugettext
-from django.utils.translation import gettext_lazy as _
-from django.utils.html import mark_safe
+from django.utils.translation import gettext_lazy as _, ngettext
+from django.utils.html import mark_safe, format_html, format_html_join
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from guardian.shortcuts import get_objects_for_user
 from modeltranslation.forms import TranslationModelForm
-from django_bleach.forms import BleachField
+from django_nh3.forms import Nh3Field
 from usersmanage.forms import G3WACLForm, label_users
 from usersmanage.utils import (
     crispyBoxACL,
-    get_fields_by_user,
     get_groups_for_object,
     get_user_groups_for_object,
     get_viewers_for_object,
@@ -32,11 +22,37 @@ from usersmanage.utils import (
 )
 from qdjango.models import *
 from qdjango.utils.data import QgisProject
-from qdjango.utils.validators import ProjectExists
 from qdjango.utils.models import get_geocoding_providers
 
 import shutil
 import json
+import re
+import zipfile
+import os
+
+
+def _format_qgis_project_errors_html(layer_messages, project_messages):
+    """Render QGIS project upload errors as one safe HTML block, grouped by scope"""
+
+    total = len(layer_messages) + len(project_messages)
+    html = format_html(
+        '<p><strong>{}</strong></p>',
+        ngettext('%(count)d error found:', '%(count)d errors found:', total) % {'count': total}
+    )
+
+    for label_singular, label_plural, messages in (
+        ('%(count)d layer error', '%(count)d layer errors', layer_messages),
+        ('%(count)d project error', '%(count)d project errors', project_messages),
+    ):
+        if not messages:
+            continue
+        html += format_html(
+            '<p>{}:</p><ul>{}</ul>',
+            ngettext(label_singular, label_plural, len(messages)) % {'count': len(messages)},
+            format_html_join('', '<li>{}</li>', ((m,) for m in messages))
+        )
+
+    return mark_safe(html)
 
 
 class QdjangoProjectFormMixin(object):
@@ -103,6 +119,18 @@ class QdjangoProjectFormMixin(object):
                 os.remove(qgis_file.path)
 
         except Exception as e:
+            # show every collected error at once instead of only the first one
+            errors = getattr(e, 'errors', None)
+            if errors and len(errors) > 1:
+                layer_messages = getattr(e, 'layer_error_messages', None)
+                project_messages = getattr(e, 'project_error_messages', None)
+                if layer_messages is not None and project_messages is not None:
+                    raise ValidationError(_format_qgis_project_errors_html(layer_messages, project_messages))
+
+                summary = ngettext(
+                    '%(count)d error found:', '%(count)d errors found:', len(errors)
+                ) % {'count': len(errors)}
+                raise ValidationError([summary, *errors])
             raise ValidationError(str(e))
         return qgis_file
 
@@ -198,7 +226,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
         widget=forms.PasswordInput(),
     )
 
-    description = BleachField(
+    description = Nh3Field(
         required=False,
     )
 
@@ -253,7 +281,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         ),
                         Div(
                             HTML(
-                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"
+                                "<p><b>{}</b>: <span class='translate translatable_fields'></span></p>".format(_('Translatable fields'))
                             ),
                             'qgis_file',
                             'qgis_file-uploads',
@@ -321,6 +349,8 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             'toc_layers_init_status',
                             'toc_themes_init_status',
                             'legend_position',
+                            'sidebar_collapse',
+                            'show_metadata_section',
                             'autozoom_query',
                             'wms_getmap_format',
                             'feature_count_wms',
@@ -381,7 +411,9 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'toc_layers_init_status',
             'toc_themes_init_status',
             'legend_position',
+            'sidebar_collapse',
             'autozoom_query',
+            'show_metadata_section',
             'multilayer_query',
             'multilayer_querybybbox',
             'multilayer_querybypolygon',
@@ -519,7 +551,7 @@ class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         widgets = {'body': widgets.HiddenInput}
 
 
-class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
+class FilterByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
     """Form for Layer action filter by users/groups"""
 
     viewer_users = forms.MultipleChoiceField(

@@ -7,67 +7,107 @@
 {% load g3wadmin_tags %}
 
 {% block page_header %}
-    <h1>{% trans 'Cartographic groups deactivated' %}</h1>
+<div class="dash-hero dash-hero-trash">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        <i class="fa fa-trash"></i>
+        {% trans 'Deactivated cartographic groups' %}
+      </h1>
+      <p>
+        {% trans 'Groups currently in the bin. Restore them to bring projects back online, or delete permanently to free up space.' %}
+      </p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <a href="{% url 'group-list' %}" class="hero-back">
+        <i class="fa fa-arrow-left"></i> {% trans 'Back to active groups' %}
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
+
 {% block main_content %}
+
+<div class="filter-toolbar trash-toolbar">
+    <div class="trash-toolbar-info">
+        <i class="fa fa-archive"></i>
+        <span>
+            <strong>{{ object_list|length }}</strong>
+            {% blocktrans count counter=object_list|length %}deactivated group{% plural %}deactivated groups{% endblocktrans %}
+        </span>
+    </div>
+</div>
+
+{% if object_list %}
 <div id="groups_list" class="row">
 {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
     <div class="col-md-3 col-sm-6" id="group_{{ object.pk }}">
-     <div class="box box-widget widget-user" id="group_{{ object.slug }}">
-                <!-- Add the bg color to the header using any of the bg-* classes -->
-                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') center center;">
-                <div class="row">
-                    <div class="col-sm-12 widget-group-title handle">
-                        <h3 class="widget-user-username">{{ object.name }}</h3>
-                        <h5 class="widget-user-desc">{{ object.title }} <small>({{ object.srid }})</small></h5>
-                    </div>
+        <div class="group-card is-deactivated" id="group_{{ object.slug }}">
+            <div class="group-cover"
+                 {% if object.header_logo_img %}style="background-image:url('{{ MEDIA_URL }}{{ object.header_logo_img }}');"{% endif %}>
+                <span class="deactivated-badge">
+                    <i class="fa fa-archive"></i> {% trans 'Deactivated' %}
+                </span>
+                <h3 class="group-name">{{ object.name }}</h3>
+                <div class="group-meta">
+                    {{ object.title }}<span class="srid-badge">EPSG:{{ object.srid }}</span>
                 </div>
+            </div>
+            <div class="group-body">
+                <a class="group-projects-link" href="{% url 'project-list' object.slug %}">
+                    <i class="fa fa-map"></i>
+                    {% g3wadmin_get_projects_number object user %} {% trans 'Projects' %}
+                </a>
+                <div class="group-actions">
+                    {% if "view_group" in userObj_perms %}
+                    <a href="#" data-toggle="tooltip" data-placement="top"
+                       title="{% trans 'Show detail' %}"
+                       data-widget-type="detailItem"
+                       data-detail-url="{% url 'group-detail' object.slug %}">
+                        <i class="ion ion-eye"></i>
+                    </a>
+                    {% endif %}
+                    {% if "change_group" in userObj_perms %}
+                    <a href="#" class="restore"
+                       data-toggle="tooltip" data-placement="top"
+                       title="{% trans 'Restore / Activate' %}"
+                       data-widget-type="activeDeactiveItem"
+                       data-active-deactive-url="{% url 'group-active' object.slug %}"
+                       data-item-selector="#group_{{ object.slug }}">
+                        <i class="ion ion-arrow-return-left"></i>
+                    </a>
+                    {% endif %}
+                    {% if "delete_group" in userObj_perms %}
+                    <a href="#" class="danger"
+                       data-toggle="tooltip" data-placement="top"
+                       title="{% trans 'Delete permanently' %}"
+                       data-widget-type="deleteItem"
+                       data-delete-url="{% url 'group-delete' object.slug %}"
+                       data-item-selector="#group_{{ object.slug }}">
+                        <i class="ion ion-trash-b"></i>
+                        <div class="hidden pre-delete-message">
+                            <div>{% blocktrans %}Warning: deleting the group will delete the projects it contains!{% endblocktrans %}</div>
+                        </div>
+                    </a>
+                    {% endif %}
                 </div>
-                <div class="box-footer">
-                  <div class="row">
-                   <div class="col-sm-2 col-xs-2">
-                    </div><!-- /.col -->
-                    <div class="col-sm-4 col-xs-4">
-                      <div class="description-block projects-group">
-                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{% g3wadmin_get_projects_number object user %} {% trans 'Projects' %}</a></h5>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                         <div class="icon">
-                         {% if "view_group" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' object.slug %}"><i class="ion ion-eye"></i></a>
-                         {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "change_group" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'group-active' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-arrow-return-left"></i></a>
-                        {% endif %}
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        <div class="icon">
-                        {% if "delete_group" in userObj_perms %}
-                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
-                        {% endif %}
-                            <div class="hidden pre-delete-message">
-                                <div>{% blocktrans %}Warning: deleting the group will delete the projects it contains!{% endblocktrans %}</div>
-                            </div>
-                        </div>
-                      </div><!-- /.description-block -->
-                    </div><!-- /.col -->
-                  </div><!-- /.row -->
-                </div>
-          </div><!-- /.widget-user -->
+            </div>
+        </div>
     </div>
 {% endfor %}
 </div>
+{% else %}
+    <div class="empty-state">
+        <i class="fa fa-archive"></i>
+        <strong>{% trans 'The bin is empty' %}</strong>
+        <p>{% trans 'There are no deactivated cartographic groups to show.' %}</p>
+        <a class="qa-btn" href="{% url 'group-list' %}" style="margin-top:12px;">
+            <i class="fa fa-arrow-left"></i> {% trans 'Back to active groups' %}
+        </a>
+    </div>
+{% endif %}
+
 {% endblock %}

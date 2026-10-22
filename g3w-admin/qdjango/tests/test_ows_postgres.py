@@ -68,16 +68,18 @@ def check_qgis_patches():
 class OwsTestPostgres(QdjangoTestBase):
     """Test proxy to QgsServer"""
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
+        super().setUp()
 
         project_path = os.path.join(
             CURRENT_PATH + TEST_BASE_PATH, 'pg_multiple_pks.qgs')
-        cls.temp_dir = QTemporaryDir()
-        cls.temp_project_path = os.path.join(
-            cls.temp_dir.path(), 'pg_multiple_pks.qgs')
+        self.temp_dir = QTemporaryDir()
+
+        # For Djanog 4.2 and initial class serialization
+        self.temp_dir_path = self.temp_dir.path()
+        self.temp_project_path = os.path.join(
+            self.temp_dir_path, 'pg_multiple_pks.qgs')
 
         # Create test layer
         conn_str = "host={HOST} port={PORT} dbname={NAME} user={USER} password={PASSWORD}".format(
@@ -95,42 +97,41 @@ class OwsTestPostgres(QdjangoTestBase):
         conn.executeSql(
             "INSERT INTO multiple_pks VALUES ( 1, 2, '1-2', ST_GeomFromText('point(8 46)', 4326))")
 
-        cls.layer_uri = conn_str + \
+        self.layer_uri = conn_str + \
             " sslmode=disable key='pk1,pk2' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='0' table=\"public\".\"multiple_pks\" (geom)"
-        layer = QgsVectorLayer(cls.layer_uri, 'multiple_pks', 'postgres')
+        layer = QgsVectorLayer(self.layer_uri, 'multiple_pks', 'postgres')
 
         assert layer.isValid()
 
         project = open(project_path, 'r').read()
-        with open(cls.temp_project_path, 'w+') as f:
+        with open(self.temp_project_path, 'w+') as f:
             f.write(re.sub(r'<datasource>.*</datasource>',
-                           '<datasource>%s</datasource>' % cls.layer_uri, project))
+                           '<datasource>%s</datasource>' % self.layer_uri, project))
 
         Project.objects.filter(
             title='Test qdjango postgres multiple_pks project').delete()
 
-        cls.qdjango_project = Project(
-            qgis_file=File(open(cls.temp_project_path, 'r')), title='Test qdjango postgres multiple_pks project', group=cls.project_group)
-        cls.qdjango_project.save()
+        self.qdjango_project = Project(
+            qgis_file=File(open(self.temp_project_path, 'r')), title='Test qdjango postgres multiple_pks project', group=self.project_group)
+        self.qdjango_project.save()
 
-        cls.qdjango_layer, created = Layer.objects.get_or_create(
+        self.qdjango_layer, created = Layer.objects.get_or_create(
             name='multiple_pks',
             title='multiple_pks',
             origname='multiple_pks',
             qgs_layer_id='multiple_pks_67787984_68b5_423c_bc5e_ce92d8d74d70',
-            project=cls.qdjango_project,
+            project=self.qdjango_project,
             layer_type='postgres',
-            datasource=cls.layer_uri
+            datasource=self.layer_uri
         )
         assert created
 
-        cls.client = APIClient()
+        self.client = APIClient()
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
+    def tearDown(self):
+        super().tearDown()
         iface = QGS_SERVER.serverInterface()
-        iface.removeConfigCacheEntry(cls.qdjango_project.qgis_project.fileName())
+        iface.removeConfigCacheEntry(self.qdjango_project.qgis_project.fileName())
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
@@ -226,7 +227,7 @@ class OwsTestPostgres(QdjangoTestBase):
 
         self.assertEqual(response.status_code, 200)
 
-        result_path = os.path.join(self.temp_dir.path(), 'red.png')
+        result_path = os.path.join(self.temp_dir_path, 'red.png')
         with open(result_path, 'wb+') as f:
             f.write(response.content)
 
@@ -253,7 +254,7 @@ class OwsTestPostgres(QdjangoTestBase):
         # Test
         self.assertEqual(response.status_code, 200)
 
-        result_path = os.path.join(self.temp_dir.path(), 'white.png')
+        result_path = os.path.join(self.temp_dir_path, 'white.png')
         with open(result_path, 'wb+') as f:
             f.write(response.content)
 

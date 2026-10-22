@@ -36,6 +36,7 @@ from core.utils.ie import modelresource_factory
 from core.utils.projects import countAllProjects
 from core.utils.response import send_file
 from core.utils.logs.db_handler import DatabaseLogHandler
+from core.utils.slugify import django_slugify, django_slugify_allow_unicode, pyslugify
 from qdjango.models import Project
 
 from .base import CoreTestBase
@@ -90,13 +91,16 @@ class CoreUtilsTest(CoreTestBase):
     def test_get_adminlte_skin_by_user(self):
         """ Test same name function """
 
-        self.assertEqual(get_adminlte_skin_by_user(self.test_admin1), 'yellow')
-        self.assertEqual(get_adminlte_skin_by_user(self.test_admin2), 'red')
+        # The restyle uses a single role-independent palette: every user
+        # gets the same neutral AdminLTE skin ("blue"); the visual identity
+        # is applied via CSS overrides, not via role-based skin switching.
+        self.assertEqual(get_adminlte_skin_by_user(self.test_admin1), 'blue')
+        self.assertEqual(get_adminlte_skin_by_user(self.test_admin2), 'blue')
         self.assertEqual(get_adminlte_skin_by_user(
-            self.test_editor1), 'purple')
+            self.test_editor1), 'blue')
         self.assertEqual(get_adminlte_skin_by_user(
-            self.test_editor2), 'purple')
-        self.assertEqual(get_adminlte_skin_by_user(self.test_viewer1), 'green')
+            self.test_editor2), 'blue')
+        self.assertEqual(get_adminlte_skin_by_user(self.test_viewer1), 'blue')
 
     def test_project_type_permission_required(self):
         """ Test same name function decorator """
@@ -212,6 +216,28 @@ class CoreUtilsTest(CoreTestBase):
         self.assertTrue(response.as_attachment)
         self.assertEqual(fobj.read(), b''.join(response.streaming_content))
         fobj.close()
+
+
+    def test_django_slugify(self):
+        self.assertEqual(django_slugify('This is a test ---'), 'this-is-a-test')
+        self.assertEqual(django_slugify('影師嗎'), '')
+        self.assertEqual(django_slugify('Computer-Компютър-111'), 'computer-111')
+        self.assertEqual(django_slugify('jaja---lol-méméméoo--a'), 'jaja-lol-mememeoo-a')
+        self.assertEqual(django_slugify('i love 🦄'), 'i-love')
+
+    def test_django_slugify_with_unicode(self):
+        self.assertEqual(django_slugify_allow_unicode('This is a test ---'), 'this-is-a-test')
+        self.assertEqual(django_slugify_allow_unicode('影師嗎'), '影師嗎')
+        self.assertEqual(django_slugify_allow_unicode('Computer-Компютър-111'), 'computer-компютър-111')
+        self.assertEqual(django_slugify_allow_unicode('jaja---lol-méméméoo--a'), 'jaja-lol-méméméoo-a')
+        self.assertEqual(django_slugify_allow_unicode('i love 🦄'), 'i-love')
+
+    def test_django_pyslugify(self):
+        self.assertEqual(pyslugify('This is a test ---'), 'this-is-a-test')
+        self.assertEqual(pyslugify('影師嗎'), 'ying-shi-ma')
+        self.assertEqual(pyslugify('Computer-Компютър-111'), 'computer-kompiutr-111')
+        self.assertEqual(pyslugify('jaja---lol-méméméoo--a'), 'jaja-lol-mememeoo-a')
+        self.assertEqual(pyslugify('i love 🦄'), 'i-love')
 
 class TestDbLogger(TestCase):
     def setUp(self):

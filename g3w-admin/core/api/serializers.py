@@ -17,6 +17,16 @@ from copy import copy
 import json
 
 
+def _merge_dicts(current, updates):
+    merged = copy(current)
+    for key, value in updates.items():
+        if isinstance(merged.get(key), dict) and isinstance(value, dict):
+            merged[key] = _merge_dicts(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
 def update_serializer_data(serializer_data, data):
     """
     update layerserializer data by type: update or append
@@ -138,7 +148,18 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     self.project = project
 
                 # project thumbnail
-                project_thumb = project.thumbnail.name if bool(project.thumbnail.name) \
+                thumbnail = project.thumbnail
+                try:
+                    if project.group.use_logo_client:
+                        thumbnail = project.group.header_logo_img
+                    else:
+                        macrogroup = project.group.macrogroups.get(
+                            use_logo_client=True)
+                        thumbnail = macrogroup.logo_img
+                except:
+                    pass
+
+                project_thumb = thumbnail.name if bool(thumbnail.name) \
                     else '{}client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
 
                 # Get project url
@@ -202,11 +223,14 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         #     }
         # }
 
+        def update_plugins(plugin_data):
+            ret['plugins'] = _merge_dicts(ret['plugins'], plugin_data)
+
+
         plugins = initconfig_plugin_start.send(sender=self, project=self.projectId, projectType=self.projectType)
         for data_plugin in plugins:
             if data_plugin[1] and isinstance(data_plugin[1], dict):
-                ret['plugins'] = copy(ret['plugins'])
-                ret['plugins'].update(data_plugin[1])
+                update_plugins(data_plugin[1])
             elif data_plugin[1] and isinstance(data_plugin[1], list):
                 for dp in data_plugin[1]:
                     if dp['mode'] == 'delete':
@@ -217,8 +241,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                             except:
                                 pass
                     elif dp['mode'] == 'update':
-                        ret['plugins'] = copy(ret['plugins'])
-                        ret['plugins'].update(dp['data'])
+                        update_plugins(dp['data'])
 
 
         # powerd_by
@@ -240,9 +263,10 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['layout'] = {}
 
         # add legend settings if set to layout
-        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', None)
+        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', settings.BASE_G3W_CLIENT_LEGEND)
         if layout_legend:
-            ret['layout']['legend'] = layout_legend
+            settings.BASE_G3W_CLIENT_LEGEND.update(layout_legend)
+            ret['layout']['legend'] = settings.BASE_G3W_CLIENT_LEGEND
 
         # Check if G3W_CLIENT_LEGEND['layertitle'] set it tu false
         if self.project.legend_position == 'toc':
@@ -268,6 +292,18 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                             options['providers'].update({
                                 gp: settings.GEOCODING_PROVIDERS[gp]
                             })
+                    if "qes" in settings.INSTALLED_APPS and mapcontrol.name == 'geocoding':
+
+                        qes = {}
+                        
+                        # Check for settings
+                        if hasattr(settings, 'QES_RESULTS_OPTIONS'):
+                            qes.update(settings.QES_RESULTS_OPTIONS)
+                            
+                        options['providers'].update({
+                            'qes': qes
+                        })
+
 
             ret['mapcontrols'].update({
                 mapcontrol.name: options

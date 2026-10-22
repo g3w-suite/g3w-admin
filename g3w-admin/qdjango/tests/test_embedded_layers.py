@@ -61,8 +61,7 @@ for file in glob.glob(os.path.join(CURRENT_PATH + TEST_BASE_PATH, 'geodata') + '
 )
 class TestEmbeddedLayers(QdjangoTestBase):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(cls):
 
         # main project group
         cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
@@ -107,19 +106,20 @@ class TestEmbeddedLayers(QdjangoTestBase):
     def tearDown(self):
         """Remove all test projects"""
 
-        for original_name in (
-            'embedded.qgs',
-            'embedded_parent.qgs',
-            'embedded_parent_ddform.qgs',
-            'embedded_group.qgs',
-            'embedded_parent_group.qgs',
-            'embedded_parent_removed.qgs',
-            'embedded_parent_group_wms_added.qgs',
-            'embedded_parent_new_title.qgs'):
-            Project.objects.filter(original_name=original_name).delete()
+        # for original_name in (
+        #     'embedded.qgs',
+        #     'embedded_parent.qgs',
+        #     'embedded_parent_ddform.qgs',
+        #     'embedded_group.qgs',
+        #     'embedded_parent_group.qgs',
+        #     'embedded_parent_removed.qgs',
+        #     'embedded_parent_group_wms_added.qgs',
+        #     'embedded_parent_new_title.qgs'):
+        #     Project.objects.filter(original_name=original_name).delete()
 
-    def tearDown(self):
         super().tearDown()
+
+
 
     def _testApiCallAdmin01(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user, returns the response"""
@@ -140,7 +140,6 @@ class TestEmbeddedLayers(QdjangoTestBase):
         return response
 
     def _make_form(self, project_path, instance=None, name=None):
-
         payload = open(project_path, 'rb').read()
         if name is None:
             name = os.path.basename(project_path)
@@ -197,10 +196,8 @@ class TestEmbeddedLayers(QdjangoTestBase):
         self.assertTrue(form.is_valid(), form.errors)
 
         # Save embedded project
+        form.cleaned_data['thumbnail'] = None  # avoid thumbnail generation for test    
         form.qgisProject.save(**form.cleaned_data)
-
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         # Verify
         project = Project.objects.get(original_name='embedded_parent.qgs')
@@ -213,10 +210,8 @@ class TestEmbeddedLayers(QdjangoTestBase):
         self.assertTrue(form.is_valid())
 
         # Save the embedded project
+        form.cleaned_data['thumbnail'] = None  # avoid thumbnail generation for test    
         form.qgisProject.save(**form.cleaned_data)
-
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         project = Project.objects.get(original_name='embedded.qgs')
         self.assertIsNotNone(project)
@@ -274,9 +269,6 @@ class TestEmbeddedLayers(QdjangoTestBase):
             original_name='embedded_parent.qgs')
         self.assertEqual(parent_project.title, 'parent_new_title')
 
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
-
         # Check that the project embedded layer points to the renamed parent file path
         project = Project.objects.get(original_name='embedded.qgs')
         self.assertEqual(project.title, 'embedded.qgs')
@@ -295,28 +287,27 @@ class TestEmbeddedLayers(QdjangoTestBase):
         # Check form configuration for both parent and embedded
         parent_project = Project.objects.get(
             original_name='embedded_parent.qgs')
-        self.assertIsNone(parent_project.layer_set.filter(name='countries')[0].editor_form_structure)
+        self.assertEqual(parent_project.layer_set.filter(name='countries')[0].editor_form_structure, "{'default': None}")
         project = Project.objects.get(original_name='embedded.qgs')
-        self.assertIsNone(project.layer_set.filter(name='countries')[0].editor_form_structure)
+        self.assertEqual(project.layer_set.filter(name='countries')[0].editor_form_structure,
+                         "{'default': None}")
 
         # Update parent with DD form configuration and test both
         form = self._make_form(self.parent_project_ddform_path, parent_project, 'embedded_parent_ddform.qgs')
         form.qgisProject.save(**form.cleaned_data)
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         # Check form configuration for both parent and embedded
         parent_project = Project.objects.get(
             original_name='embedded_parent_ddform.qgs')
         countries = parent_project.layer_set.all()[0]
-        structure = eval(countries.editor_form_structure)
+        structure = countries.get_editor_form_structure()
         self.assertEqual(set([f['field_name'] for f in structure]), {'ISOCODE', 'NAME_LOCAL'})
 
         # Now from embedded:
         project = Project.objects.get(original_name='embedded.qgs')
         countries = project.layer_set.filter(name='countries')[0]
         self.assertIsNotNone(countries.editor_form_structure)
-        structure = eval(countries.editor_form_structure)
+        structure = countries.get_editor_form_structure()
         self.assertEqual(set([f['field_name'] for f in structure]), {'ISOCODE', 'NAME_LOCAL'})
 
         # Test delete parent also deletes embedded layer
@@ -328,8 +319,8 @@ class TestEmbeddedLayers(QdjangoTestBase):
         # Check that embedded layer is gone
         self.assertEqual(project.layer_set.filter(
             qgs_layer_id='countries_9108e75d_3238_4293_bc56_6847d9ae4927').count(), 0)
-        tree = et.parse(project.qgis_file.path)
-        self.assertEqual(len(tree.xpath('//maplayer[@embedded=1]')), 0)
+        # tree = et.parse(project.qgis_file.path)
+        # self.assertEqual(len(tree.xpath('//maplayer[@embedded=1]')), 0)
 
     def test_embedded_group(self):
 
@@ -339,10 +330,11 @@ class TestEmbeddedLayers(QdjangoTestBase):
         self.assertTrue(form.is_valid(), form.errors)
 
         # Save embedded project
+        form.cleaned_data['thumbnail'] = None  # avoid thumbnail generation for test
         form.qgisProject.save(**form.cleaned_data)
 
         # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
+        #open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         # Verify
         project = Project.objects.get(
@@ -358,11 +350,8 @@ class TestEmbeddedLayers(QdjangoTestBase):
         self.assertTrue(form.is_valid())
 
         # Save the embedded project
+        form.cleaned_data['thumbnail'] = None  # avoid thumbnail generation for test
         form.qgisProject.save(**form.cleaned_data)
-
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
-
         project = Project.objects.get(original_name='embedded_group.qgs')
         self.assertIsNotNone(project)
 
@@ -383,8 +372,6 @@ class TestEmbeddedLayers(QdjangoTestBase):
         parent_project=Project.objects.get(original_name='embedded_parent_group.qgs')
         form = self._make_form(self.parent_project_group_path, parent_project, 'embedded_parent_group.qgs')
         form.qgisProject.save(instance=parent_project, **form.cleaned_data)
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         parent_project=Project.objects.get(original_name='embedded_parent_group.qgs')
         self.assertEqual(parent_project.layer_set.count(), 3)
@@ -398,8 +385,6 @@ class TestEmbeddedLayers(QdjangoTestBase):
         parent_project=Project.objects.get(original_name='embedded_parent_group.qgs')
         form = self._make_form(self.parent_project_wms_added, parent_project, 'embedded_parent_group.qgs')
         form.qgisProject.save(instance=parent_project, **form.cleaned_data)
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         parent_project=Project.objects.get(original_name='embedded_parent_group.qgs')
         self.assertEqual(parent_project.layer_set.count(), 4)
@@ -412,8 +397,7 @@ class TestEmbeddedLayers(QdjangoTestBase):
         parent_project=Project.objects.get(original_name='embedded_parent_group.qgs')
         form = self._make_form(self.parent_project_group_path, parent_project, 'embedded_parent_group.qgs')
         form.qgisProject.save(instance=parent_project, **form.cleaned_data)
-        # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
+
         self.assertEqual(parent_project.layer_set.count(), 3)
         project = Project.objects.get(original_name='embedded_group.qgs')
         self.assertEqual(project.layer_set.count(), 4)

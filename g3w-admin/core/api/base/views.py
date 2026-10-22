@@ -4,7 +4,6 @@ from copy import copy
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpRequest
 from django.urls import resolve, reverse
-from django.utils.translation import ugettext
 from django.utils.translation import gettext_lazy as _
 from qgis.core import (
     QgsJsonExporter,
@@ -16,6 +15,8 @@ from qgis.core import (
     QgsVectorLayer,
     QgsJsonUtils,
     QgsFeature,
+    QgsExpressionContext,
+    QgsExpressionContextUtils
 )
 
 from qgis.PyQt.QtCore import QVariant
@@ -23,10 +24,16 @@ from qgis.PyQt.QtCore import QVariant
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.api.authentication import CsrfExemptSessionAuthentication
+from core.api.authentication import (
+    CsrfExemptSessionAuthentication,
+    TokenAuthentication403,
+    BasicAuthentication403,
+    JWTAuthentication403
+)
 from core.api.filters import IntersectsBBoxFilter
 from core.signals import (before_return_vector_data_layer,
                           post_create_maplayerattributes,
@@ -36,6 +43,8 @@ from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 from core.utils.qgisapi import get_qgis_features, count_qgis_features, server_fid
 from qdjango.apps import QGS_APPLICATION
+
+from natsort import natsorted
 
 import logging
 
@@ -51,6 +60,7 @@ MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
 MODE_GEOTIFF = 'geotiff' # For raster layers
 MODE_FEATURE_COUNT = 'featurecount'
+MODE_EDITORFORMSTRUCTURE_COUNT = 'editorformstructure'
 
 MIME_TYPES_MOD = {
     MODE_SHP: {
@@ -192,13 +202,16 @@ class BaseVectorApiView(G3WAPIView):
     """
 
     authentication_classes = (
-        CsrfExemptSessionAuthentication,
+        CsrfExemptSessionAuthentication, 
+        TokenAuthentication403,
+        JWTAuthentication403,
+        BasicAuthentication403
     )
 
     # Parameter for locking features data into db
     app_name = None
 
-    # specific fileds data for media fifileds like picture/movies
+    # specific fields data for media file-fields like picture/movies
     media_properties = dict()
 
     # Database keyname to use if different from default settings
@@ -217,6 +230,10 @@ class BaseVectorApiView(G3WAPIView):
     ]
 
     pagination_class = G3WAPIPaginator
+
+    # For qgis layer style management
+    style = None
+    current_style = None
 
     @property
     def paginator(self):
@@ -428,6 +445,18 @@ class BaseVectorApiView(G3WAPIView):
             'fields': fields,
         }
 
+        # Filter fields by user
+        if self.request.user:
+            visiblefields = self.layer.visible_fields_for_user(self.request.user)
+            if len(visiblefields) != len(vector_params['fields']):
+                newfields = []
+                for f in vector_params['fields']:
+                    if f['name'] in visiblefields:
+                        newfields.append(f)
+
+                if newfields:
+                    vector_params['fields'] = newfields
+
         # post_create_maplayerattributes signal
         post_create_maplayerattributes.send(
             self, layer=self.layer, vector_params=vector_params)
@@ -444,10 +473,17 @@ class BaseVectorApiView(G3WAPIView):
 
         # Create the QGIS feature request, it will be passed through filters
         # and to the final QGIS API get features call.
-        qgis_feature_request = QgsFeatureRequest()
+        qgis_feature_request = self.instance_qgsfeaturerequest()
 
         # Prepare arguments for the get feature call
         kwargs = {}
+
+        # Get visible fields for user
+        visiblefields = None
+        if self.request.user:
+            visiblefields = self.layer.visible_fields_for_user(self.request.user)
+            #if len(visiblefields) != len(vector_params['fields']):
+                #pass
 
         # Apply filter backends, store original subset string
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
@@ -465,13 +501,19 @@ class BaseVectorApiView(G3WAPIView):
 
         # Make sure we have all attrs we need to build the server FID
         provider = self.metadata_layer.qgis_layer.dataProvider()
-        if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
-            attrs = qgis_feature_request.subsetOfAttributes()
-            for attr_idx in provider.pkAttributeIndexes():
-                if attr_idx not in attrs:
-                    attrs.append(attr_idx)
-            qgis_feature_request.setSubsetOfAttributes(attrs)
 
+        def set_qfr_attridx(qgs_feature_request, provider):
+            """
+            Internal function to set the attribute indexes for the feature request
+            """
+            if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
+                attrs = qgis_feature_request.subsetOfAttributes()
+                for attr_idx in provider.pkAttributeIndexes():
+                    if attr_idx not in attrs:
+                        attrs.append(attr_idx)
+                qgis_feature_request.setSubsetOfAttributes(attrs)
+
+        # Get feature: apply pagination if 'page' parameters is set
         self.features = get_qgis_features(
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
 
@@ -504,6 +546,7 @@ class BaseVectorApiView(G3WAPIView):
                 self.request_data.get('fformatter'))
 
             qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
+            qfield = self.metadata_layer.qgis_layer.fields()[qfieldidx]
             r_qfieldidx = qfieldidx
             qlayer = self.metadata_layer.qgis_layer
             qfeatures = self.features
@@ -547,10 +590,14 @@ class BaseVectorApiView(G3WAPIView):
                         if 'ffield' in self.request_data:
                             req.GET['field'] = self.request_data.get('ffield')
 
+                        # Add 'ordering'
+                        if 'ordering' in self.request_data:
+                            req.GET['ordering'] = self.request_data.get('ordering')
+
                         view = LayerVectorView.as_view()
                         res = view(req, *[], **kwargs).render()
-                        uniques = json.loads(res.content)['data']
 
+                        uniques = json.loads(res.content)['data']
 
             if not uniques:
 
@@ -580,13 +627,83 @@ class BaseVectorApiView(G3WAPIView):
                                 QVariant(),
                                 u
                             )
-                            values.append([json.loads(QgsJsonUtils.encodeValue(u)), fvalue])
+
+                            to_append = True
+
+                            # 'suggest' (get/post) parameter used inside the QGIS SuggestFilterBackend
+                            # must be applied to the formatted value (fvalue) because the result of formatted value
+                            # can also derive from QgsExression(s).
+                            if 'suggest' in self.request_data and 'fformatter' in self.request_data:
+
+                                # Replace suggest file with r_pvalue if pvalue == suggest field
+                                s_field, s_value = self.request_data.get('suggest').split('|')
+                                to_append = False
+                                if s_field == pvalue and str(s_value).lower() in str(fvalue).lower():
+                                    to_append = True
+
+                            if to_append:
+                                values.append([json.loads(QgsJsonUtils.encodeValue(u)), fvalue])
                 except Exception as e:
                     logger.error(f'Response vector widget unique: {e}')
                     continue
 
-            # sort values
-            values.sort()
+            # Sort values
+            if ('fformatter' in self.request_data
+                and 'ordering' in self.request_data
+                and self.request_data['fformatter'] in self.request_data['ordering']):
+                rev = True if self.request_data['ordering'].startswith('-') else False
+
+                values = natsorted(values, key=lambda v: str(v[1]).casefold() if isinstance(v, list) else str(v).casefold(), reverse=rev)
+            else:
+                values.sort(key=lambda v: str(v).casefold())
+
+            # If other layers are added for querying uniques,
+            # call every vector fformatter to get formatted value for uniques of other layer
+            if 'otherquerylayerids' in self.request_data:
+
+                other_layer_ids = self.request_data.get('otherquerylayerids').split(',')
+                for olid in other_layer_ids:
+                    kwargs.update({'project_type': 'qdjango',
+                                    'project_id': self.layer.project.pk,
+                                    'layer_name': olid,
+                                    'mode_call': 'data'
+                                    })
+
+                    url = reverse('core-vector-api', kwargs=kwargs)
+                    req = HttpRequest()
+                    req.method = 'GET'
+                    req.user = request.user
+                    req.resolver_match = resolve(url)
+                    req.GET['formatter'] = 1
+                    req.GET['fformatter'] = self.request_data.get('fformatter')
+
+                    if 'ffield' in self.request_data:
+                        req.GET['field'] = self.request_data.get('ffield')
+
+                    if 'ordering' in self.request_data:
+                        req.GET['ordering'] = self.request_data.get('ordering')
+
+                    # Call the view and merge results
+                    try:
+                        from qdjango.vector import LayerVectorView
+                    except ImportError:
+                        pass
+                    view = LayerVectorView.as_view()
+                    other_res = view(req, *[], **kwargs).render()
+                    other_data = json.loads(other_res.content).get('data', [])
+
+                    # Merge avoiding duplicates (deduplicate on raw value)
+                    existing_raw = {u[0] for u in values if isinstance(u, list)}
+                    for item in other_data:
+                        if isinstance(item, list) and item[0] not in existing_raw:
+                            values.append(item)
+                            existing_raw.add(item[0])
+    
+                # Re-apply ordering after merge
+                if 'ordering' in self.request_data:
+                    rev = self.request_data['ordering'].startswith('-')
+                    values = natsorted(values, key=lambda v: str(v[1]).casefold() if isinstance(v, list) else str(v).casefold(), reverse=rev)
+
             self.results.update({
                 'data': values,
                 'count': len(values)
@@ -672,11 +789,35 @@ class BaseVectorApiView(G3WAPIView):
                 f = feature_collection['features'][i]
                 f['id'] = fids_map[f['id']]
 
-            self.results.update(APIVectorLayerStructure(**{
+                if visiblefields:
+                    f['properties'] = {k: f['properties'][k] for k in f['properties'] if k in visiblefields}
+            api_vector_data = {
                 'data': feature_collection,
                 'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
-                'geometryType': self.metadata_layer.geometry_type,
-            }).as_dict())
+                'geometryType': self.metadata_layer.geometry_type
+            }
+
+            # Case with 'autofilter' parameter: get every id from qgis_feature_request
+            # ------------------------------------------------------------------------
+            if 'autofilter' in self.request_data and str(self.request_data['autofilter']) == '1':
+
+                    # Remove pagination
+                    for k in ('page', 'page_size'):
+                        if k in kwargs:
+                            del(kwargs[k])
+
+                    # Reset limit
+                    if qgis_feature_request.limit() != -1:
+                        qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
+                        qgis_feature_request.setLimit(-1)
+
+                        set_qfr_attridx(qgis_feature_request, provider)
+
+                    self.total_feature_ids = [str(server_fid(f, provider)) for f in get_qgis_features(
+                        self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
+
+
+            self.results.update(APIVectorLayerStructure(**api_vector_data).as_dict())
 
             # FIXME: add extra fields data by signals and receivers
             # FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
@@ -694,6 +835,23 @@ class BaseVectorApiView(G3WAPIView):
         # FIXME: use QgsProject crs(), can be (in a try/except block):
         # self.layer.project.qgis_project.crs() != self.layer.qgis_layer.crs()
         self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
+
+    def instance_qgsfeaturerequest(self):
+        """
+        Return a QgsFeatureRequest instance with context
+        :return: QgsFeatureRequest
+        """
+
+        # Add context to QgsFeatureRequest
+        qgis_feature_request = QgsFeatureRequest()
+
+        ctx = QgsExpressionContext()
+        ctx.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(self.metadata_layer.qgis_layer))
+
+        qgis_feature_request.setExpressionContext(ctx)
+
+
+        return qgis_feature_request
 
     def get_response_data(self, request):
         """
@@ -723,15 +881,38 @@ class BaseVectorApiView(G3WAPIView):
         # Get request data by GET or POST method
         self.request_data = request.query_params if request.method == 'GET' else request.data
 
+        # Set self.download_relations
+        try:
+            self.download_relations = int(self.request_data.get('down_with_relations', '0'))
+        except:
+            self.download_relations = 0
+
+        # Set layer style
+        # If style come from requests data
+        # Change to style requested
+        if 'style' in self.request_data:
+            self.style = self.request_data['style']
+            self.current_style = self.metadata_layer.qgis_layer.styleManager().currentStyle()
+
+        if self.current_style and self.style and self.style != self.current_style:
+            self.metadata_layer.qgis_layer.styleManager().setCurrentStyle(self.style)
+
         # get results
         response = self.get_response_data(request)
+
+        # Reset style
+        try:
+            if self.current_style and self.style and self.style != self.current_style:
+                self.metadata_layer.qgis_layer.styleManager().setCurrentStyle(self.current_style)
+        except:
+            pass
 
         if response is None:
 
             # before to send response
             extra_data = before_return_vector_data_layer.send(self)
             for ed in extra_data:
-                if ed[1] and ed[0].__name__ in ('add_constraints', 'add_atomic_capabilities'):
+                if ed[1] and ed[0].__name__ in ('add_constraints', 'add_atomic_capabilities', 'add_filter_token'):
                     self.results.results.update(ed[1])
 
             # response a APIVectorLayer

@@ -2,15 +2,17 @@ import logging
 import os
 import time
 
-from django.utils.text import slugify
-from django_extensions.db.fields import AutoSlugField
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import UniqueConstraint
 from ordered_model.models import OrderedModel
 from core.configs import *
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from core.models import (BaseLayer, Group, GroupProjectPanoramic,
                          ProjectMapUrlAlias)
+from core.fields import AutoSlugField
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
+from core.utils.slugify import slugify
 from django.conf import settings
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User
@@ -24,6 +26,7 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from qdjango.utils.models import get_constraints4layer, get_widgets4layer
 from qdjango.utils.storage import QgisFileOverwriteStorage
+from qdjango.utils.qgis import get_aliases
 from qgis.core import QgsMapLayerStyle, QgsRectangle, QgsVectorLayer
 from qgis.PyQt.QtXml import QDomDocument
 from usersmanage.configs import *
@@ -33,6 +36,8 @@ from usersmanage.utils import (
     getUserGroups,
     setPermissionUserObject,
 )
+
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -159,7 +164,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     CLIENT_TOC_TABS = Choices(
         ('layers', _('Layers')),
-        ('baselayers', _('Base layers')),
         ('legend', _('Legend'))
     )
 
@@ -242,6 +246,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         max_length=255,
         null=True,
         blank=True,
+    )
+
+    # srid
+    srid = models.IntegerField(
+        _('Project SRID'),
+        blank=True,
+        null=True,
     )
 
     # Qgis version project
@@ -360,9 +371,20 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     autozoom_query = models.BooleanField(
         _('Automatic zoom to query result features'),
-        default=False,
+        default=True,
         help_text=_('Automatic zoom on query result features for only one layer'),
     )
+
+    show_metadata_section = models.BooleanField(
+        _("Show the 'Metadata' section on left bar"),
+        default=False,
+        help_text=_("It is possible choose if show or hide the 'Metadata' section on left bar"),
+    )
+
+    sidebar_collapse = models.BooleanField(
+        _('Start left sidebar collapsed'), 
+        default=False, 
+        help_text=_('Choose if the left sidebar is collapsed on start of webgis'))
 
     layouts = models.TextField(
         _('Project layouts'),
@@ -400,12 +422,18 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     wms_getmap_format = models.CharField(
         _('WMS GetMap image format'),
-        default='image/png; mode=8bit',
+        default='image/png',
         max_length=255,
         null=True,
         choices=WMS_GETMAP_FORMAT,
     )
     geocoding_providers = models.TextField(_('Geocoding providers'), blank=True, null=True)
+
+    wmts_grids = models.JSONField(
+        _('WMTS grids'), 
+        blank=True, 
+        null=True
+    )
 
     class Meta:
         verbose_name = _('Project')
@@ -483,15 +511,15 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
             setPermissionUserObject(user, self, permissions='view_project', mode=mode)
 
-            layerAction = (
-                'addPermissionsToViewers'
-                if mode == 'add'
-                else 'removePermissionsToViewers'
-            )
+        layerAction = (
+            'addPermissionsToViewers'
+            if mode == 'add'
+            else 'removePermissionsToViewers'
+        )
 
-            layers = self.layer_set.all()
-            for layer in layers:
-                getattr(layer, layerAction)(users_id)
+        layers = self.layer_set.all()
+        for layer in layers:
+            getattr(layer, layerAction)(users_id)
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
         for group_id in groups_id:
@@ -513,16 +541,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                     mode=mode,
                 )
 
-            layerAction = (
-                'add_permissions_to_editor_user_groups'
-                if mode == 'add'
-                else 'remove_permissions_to_editor_user_groups'
-            )
+        layerAction = (
+            'add_permissions_to_editor_user_groups'
+            if mode == 'add'
+            else 'remove_permissions_to_editor_user_groups'
+        )
 
-            layers = self.layer_set.all()
+        layers = self.layer_set.all()
 
-            for layer in layers:
-                getattr(layer, layerAction)(groups_id)
+        for layer in layers:
+            getattr(layer, layerAction)(groups_id)
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
         for group_id in groups_id:
@@ -534,16 +562,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 mode=mode,
             )
 
-            layerAction = (
-                'add_permissions_to_viewer_user_groups'
-                if mode == 'add'
-                else 'remove_permissions_to_viewer_user_groups'
-            )
+        layerAction = (
+            'add_permissions_to_viewer_user_groups'
+            if mode == 'add'
+            else 'remove_permissions_to_viewer_user_groups'
+        )
 
-            layers = self.layer_set.all()
+        layers = self.layer_set.all()
 
-            for layer in layers:
-                getattr(layer, layerAction)(groups_id)
+        for layer in layers:
+            getattr(layer, layerAction)(groups_id)
 
     def tree(self):
         def readLeaf(layer, layers):
@@ -631,16 +659,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         try:
 
-            users = User.objects.all() if user == None else [user]
-
             # Invalidate project cache
             pre_keys = (
                 f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.slug}_{'qdjango'}_{self.pk}",
                 f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
             )
 
-            # Invalidate every cache for every user
-            users = User.objects.all()
+            users = User.objects.all() if user == None else [user]
             for user in users:
                 for pre_key in pre_keys:
                     d = cache.delete(f"{pre_key}_{str(user.pk)}")
@@ -654,6 +679,22 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 f"[CACHING /api/config] - An error on cache invalidation: {e}"
             )
 
+    def get_scalevisibilitylayerconstraint(self, user, use_ids=True):
+        """
+        Return the ScaleVisibilityConstraint instance if exists for user for every layer
+        Check also for groups of user
+        """
+
+        res = {}
+        for l in self.layer_set.all():
+            peruser = l.get_scalevisibilityconstraint(user)
+            if peruser:
+                if use_ids:
+                    res[l.qgs_layer_id] = peruser
+                else:
+                    res[l.name] = peruser
+
+        return res
 
 post_delete.connect(check_overviewmap_project, sender=Project)
 
@@ -698,7 +739,7 @@ class Layer(G3WACLModelMixins, models.Model):
     # General info
     name = models.CharField(
         _('Name'),
-        max_length=255,
+        max_length=1000,
     )
 
     title = models.CharField(
@@ -708,14 +749,14 @@ class Layer(G3WACLModelMixins, models.Model):
     )
     origname = models.CharField(
         _('Original Name'),
-        max_length=256,
+        max_length=1000,
         null=True,
         blank=True,
     )
 
     qgs_layer_id = models.CharField(
         _('Qgis Layer Project ID'),
-        max_length=255,
+        max_length=1000,
         blank=True,
         null=True,
     )
@@ -791,15 +832,30 @@ class Layer(G3WACLModelMixins, models.Model):
         null=True,
     )
 
-    # minscale and maxscale and scalebasedvisibility
+    # DEPRECATED: This property will be removed in version 4.0
+    # It will be used max_scale_style
     min_scale = models.IntegerField(
         _('Layer Min Scale visibility'),
         blank=True,
         null=True,
     )
 
+    min_scale_style = models.JSONField(
+        _('Layer Max Scale visibility for layer styel'),
+        blank=True,
+        null=True,
+    )
+
+    # DEPRECATED: This property will be removed in version 4.0
+    # It will be used max_scale_style
     max_scale = models.IntegerField(
         _('Layer Max Scale visibility'),
+        blank=True,
+        null=True,
+    )
+
+    max_scale_style = models.JSONField(
+        _('Layer Max Scale visibility for layer styel'),
         blank=True,
         null=True,
     )
@@ -807,6 +863,12 @@ class Layer(G3WACLModelMixins, models.Model):
     scalebasedvisibility = models.BooleanField(
         _('Layer scale based visibility'),
         default=False,
+    )
+
+    scalebasedvisibility_style = models.JSONField(
+        _('Scale based visibility for layer style'),
+        blank=True,
+        null=True,
     )
 
     # srid
@@ -831,6 +893,12 @@ class Layer(G3WACLModelMixins, models.Model):
 
     wfscapabilities = models.IntegerField(
         _('Bitwise wfs options'),
+        blank=True,
+        null=True,
+    )
+
+    wmtscapabilities = models.JSONField(
+        _('Dict wmts options'),
         blank=True,
         null=True,
     )
@@ -883,6 +951,14 @@ class Layer(G3WACLModelMixins, models.Model):
         blank=True,
     )
 
+    # exclude from toc
+    exclude_from_toc = models.BooleanField(
+        _('Exclude to TOC'),
+        default=False,
+        blank=True,
+        null=True
+    )
+
     # form editor layout
     editor_layout = models.CharField(
         _('Form editor layout'),
@@ -927,6 +1003,12 @@ class Layer(G3WACLModelMixins, models.Model):
         blank=True,
     )
 
+    download_pdf = models.BooleanField(
+        _('Download single attributes row in pdf format'),
+        default=False,
+        blank=True,
+    )
+
     # layer extension
     extent = models.TextField(
         _('Layer extension'),
@@ -938,6 +1020,15 @@ class Layer(G3WACLModelMixins, models.Model):
     external = models.BooleanField(
         _('Get WMS/WMS externally'),
         default=False,
+        blank=True,
+    )
+
+    # admin-selected format to render this layer as WMTS, must also be available in wmtscapabilities
+    wmts_format = models.CharField(
+        _('Render layer as WMTS'),
+        max_length=10,
+        choices=(('png', 'PNG'), ('jpeg', 'JPEG')),
+        null=True,
         blank=True,
     )
 
@@ -954,6 +1045,9 @@ class Layer(G3WACLModelMixins, models.Model):
         editable=False,
         db_index=True,
     )
+
+    max_preview_fields = models.IntegerField(_('Number of fields to show in info result'), default=3,
+                                                    blank=True, null=True)
 
     objects = models.Manager()  # The default manager.
 
@@ -994,6 +1088,36 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return styles
 
+    @property
+    def download_shp(self):
+        """Alias for self.download"""
+
+        return self.download
+
+    def can_be_downloaded(self, with_pdf=False):
+        """
+        Returns True if the layer can be downloaded, and return also a list of the available formats
+
+        :param with_pdf: if True, the pdf format is also checked
+        :return: tuple (can_be_downloaded, list of formats)
+        """
+
+        formats = ['shp', 'gpx', 'csv', 'gpkg', 'xls']
+        if with_pdf:
+            formats.append('pdf')
+
+        cbd = any([getattr(self, f"download_{f}") for f in formats])
+        dfs = []
+
+        # Create list of formats
+        if cbd:
+            for f in formats:
+                if getattr(self, f"download_{f}"):
+                    dfs.append(f)
+
+        return cbd, dfs
+
+
     def visible_fields_for_user(self, user):
         """Returns a list of field names visible by the user
         according to ColumnAcl"""
@@ -1005,7 +1129,7 @@ class Layer(G3WACLModelMixins, models.Model):
                 if user.is_anonymous:
                     user = get_anonymous_user()
 
-                for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
+                for acl in self.columnacl_set.filter(models.Q(users=user) | models.Q(groups__in=user.groups.all())).distinct():
                     attributes = list(set(attributes) -
                                       set(acl.restricted_fields))
 
@@ -1208,7 +1332,7 @@ class Layer(G3WACLModelMixins, models.Model):
         Check if a field_name has a QGIS Form ValueRelation Widget
         """
 
-        edittypes = eval(self.edittypes)
+        edittypes = self.get_edittypes()
         return edittypes[field_name]["widgetv2type"] == "ValueRelation"
 
     @property
@@ -1226,6 +1350,93 @@ class Layer(G3WACLModelMixins, models.Model):
             'maxy': rect.yMaximum(),
         }
 
+    def get_edittypes(self, style=None):
+        """
+        Get edittypes for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        et = eval(self.edittypes)
+        try:
+            return et[style]
+        except KeyError:
+            return et
+
+    def get_editor_form_structure(self, style=None):
+        """
+        Get editor_from_struct for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+
+        if not self.editor_form_structure:
+            return None
+        
+        # This patch the upgrade from 3.8.x to 3.10.x fro style mamagement
+        efs = eval(self.editor_form_structure)
+        if isinstance(efs, dict):
+            return efs.get(style, None)
+        else:
+            return efs
+        
+    
+    def get_fields_style(self, style=None):
+        """
+        Get database_columns for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        aliases = get_aliases(self.qgis_layer)
+        fields = eval(self.database_columns)
+        for field in fields:
+            if field['name'] in aliases[style]:
+                field['label'] = aliases[style][field['name']]
+
+        return fields
+    
+    def get_max_scale_style(self, style=None):
+        """
+        Get max_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.max_scale_style.get(style, self.max_scale) if self.max_scale_style else self.max_scale
+    
+    def get_min_scale_style(self, style=None):
+        """
+        Get mix_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.min_scale_style.get(style, self.min_scale) if self.min_scale_style else self.min_scale
+    
+    def get_scalebasedvisibility_style(self, style=None):
+        """
+        Get mix_scale_style for layer by style if style is not None
+        """
+
+        # If not set get the current qgis layer style
+        if not style:
+            style = self.qgis_layer.styleManager().currentStyle()
+
+        return self.scalebasedvisibility_style.get(style, self.scalebasedvisibility) if self.scalebasedvisibility_style else self.scalebasedvisibility
+        
+
     def __str__(self):
         return self.name
 
@@ -1241,8 +1452,26 @@ class Layer(G3WACLModelMixins, models.Model):
             ('change_attr_feature', 'Can update features attributes into layer'),
         )
 
-    def database_columns_by_name(self):
-        return {db_col['name']: db_col for db_col in eval(self.database_columns)}
+    def database_columns_by_name(self, style=None):
+        """
+        Retrieves a dictionary mapping database column names to their definitions.
+
+        :param style: The style to use for retrieving fields. If provided, uses
+            get_fields_style(style) to get the fields for the specified style.
+            If not provided, evaluates the database_columns attribute.
+        :type style: str, optional
+
+        :return: A dictionary where each key is a column name and each value is the corresponding
+            column definition.
+        :rtype: dict
+        """
+
+        if style:
+            fields = self.get_fields_style(style)
+        else:
+            fields = eval(self.database_columns) if self.database_columns else None
+
+        return {db_col['name']: db_col for db_col in fields}
 
     def getWidgetsNumber(self):
         """
@@ -1260,6 +1489,35 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return len(get_constraints4layer(self))
 
+    def get_scalevisibilityconstraint(self, user):
+        """
+        Return the ScaleVisibilityConstraint instance if exists for user
+        Check also for groups of user
+        """
+
+        peruser = None
+
+        try:
+            if user.is_anonymous:
+                user = get_anonymous_user()
+
+            return self.scale_visibility_layer.get(user=user)
+
+        except ObjectDoesNotExist:
+
+            # Try with user's groups
+            # Get viewer groups of user
+            if not user.is_anonymous:
+                groups = user.groups.exclude(name__in=[G3W_VIEWER1, G3W_VIEWER2])
+                for g in groups:
+                    try:
+                        peruser = self.scale_visibility_layer.get(group=g)
+                    except ObjectDoesNotExist:
+                        pass
+
+        return peruser
+
+
     def getColumnAclNumber(self):
         """
         Count ColumnAcl for self layer
@@ -1267,6 +1525,15 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         return self.columnacl_set.count() if self.has_column_acl else 0
+
+
+    def getScaleVisibilityLayerConstraintNumber(self):
+        """
+        Count ScaleVisibilityLayerConstraint for self layer
+        :return: integer
+        """
+
+        return self.scale_visibility_layer.count()
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(
@@ -1412,3 +1679,42 @@ class Widget(G3WACLModelMixins, models.Model):
     @staticmethod
     def get_by_type(type='search'):
         return Widget.objects.filter(widget_type=type)
+
+
+class CustomerTheme(models.Model):
+    """
+    Model to store custom Map Theme
+    """
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(_('Theme name'), max_length=255)
+    theme = models.TextField(_('JSON theme structure'))
+
+    @property
+    def styles(self):
+        return json.loads(self.theme)['styles']
+
+    @property
+    def layerstree(self):
+        return json.loads(self.theme)['layerstree']
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+
+        super().save(force_insert=force_insert, force_update=force_update, using=using,
+             update_fields=update_fields)
+
+        # Invalidate cache project
+        self.project.invalidate_cache(user=self.user)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                name='unique_name_user',
+                fields=['project', 'user', 'name']
+            )
+        ]

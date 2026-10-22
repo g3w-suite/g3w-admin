@@ -41,9 +41,21 @@ from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
-from .base import (QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION,
-                   QGS328_RELATION_REFERENCE)
+from .base import (
+    QdjangoTestBase,
+    CURRENT_PATH,
+    TEST_BASE_PATH,
+    QGS310_WIDGET_FILE,
+    CoreGroup,
+    G3WSpatialRefSys,
+    QGS322_FILE,
+    QGS322_INITEXTENT_GEOCONSTRAINT_FILE,
+    QGS322_FORMATTING_DATE,
+    QGS328_FILE,
+    QGS328_VALUE_RELATION,
+    QGS328_RELATION_REFERENCE,
+    QGS340_THEME_FILE
+)
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -53,10 +65,13 @@ import os
 import zipfile
 import base64
 from io import BytesIO
+import csv
 
 
 QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
 QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE = 'test_temporal_vector_layer_316_not_active.qgs'
+QGS_FILE_CASCADE_AUTORELATION = 'cascade_autorelation_334.qgs'
+QGIS_FILE_DOWNLOAD_WITH_RELATIONS = "g3wsuite_project_test_qgis340.qgs"
 
 # Temporal raster layer wmst
 QGS_FILE_WMST = 'test_WMST.qgs'
@@ -69,12 +84,9 @@ class BaseConstraintsApiTests():
     _rule_view_name = 'subsetstringrule'
 
     @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-    @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+
+        QdjangoTestBase.setUpClass()
 
         # Add admin01 to a group
         cls.viewer1_group = cls.main_roles['Viewer Level 1']
@@ -314,47 +326,46 @@ class TestExpressionRules(BaseConstraintsApiTests, QdjangoTestBase):
 class TestQdjangoProjectsAPI(QdjangoTestBase):
     """ Test qdjango project API """
 
-    @classmethod
-    def setUpClass(cls):
 
-        super().setUpClass()
-        cls.client = APIClient()
+    def setUp(self):
+
+        super().setUp()
+        self.client = APIClient()
 
         # Add new project for fields excluded from WMS service
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
-        cls.project322 = QgisProject(qgis_project_file)
-        cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
-        cls.project322.group = cls.project_group
-        cls.project322.save()
+        self.project322 = QgisProject(qgis_project_file)
+        self.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
+        self.project322.group = self.project_group
+        self.project322.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_FILE), 'r'))
-        cls.project328 = QgisProject(qgis_project_file)
-        cls.project328.title = 'A project QGIS 3.28'
-        cls.project328.group = cls.project_group
-        cls.project328.save()
+        self.project328 = QgisProject(qgis_project_file)
+        self.project328.title = 'A project QGIS 3.28'
+        self.project328.group = self.project_group
+        self.project328.save()
 
-        cls.project_group_3857 = CoreGroup(
+        self.project_group_3857 = CoreGroup(
             name="Group3857",
             title="Group3857",
             header_logo_img="",
             srid=G3WSpatialRefSys.objects.get(auth_srid=3857),
         )
 
-        cls.project_group_3857.save()
+        self.project_group_3857.save()
 
         qgis_project_file = File(
             open("{}{}{}".format(CURRENT_PATH, TEST_BASE_PATH, QGS328_VALUE_RELATION), "r")
         )
-        cls.project328_value_relation = QgisProject(qgis_project_file)
-        cls.project328_value_relation.title = "A project QGIS 3.28 fro value relation"
-        cls.project328_value_relation.group = cls.project_group_3857
-        cls.project328_value_relation.save()
+        self.project328_value_relation = QgisProject(qgis_project_file)
+        self.project328_value_relation.title = "A project QGIS 3.28 fro value relation"
+        self.project328_value_relation.group = self.project_group_3857
+        self.project328_value_relation.save()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.project322.instance.delete()
-        cls.project328.instance.delete()
-        super().tearDownClass()
+    def tearDown(self):
+        self.project322.instance.delete()
+        self.project328.instance.delete()
+        super().tearDown()
 
     def _testApiCall(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user"""
@@ -369,7 +380,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         # No auth
         response = self.client.get(path)
-        self.assertIn(response.status_code, [302, 403])
+        self.assertIn(response.status_code, [302, 401, 403])
 
         # Auth
         self.assertTrue(self.client.login(
@@ -614,18 +625,21 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
             'name': 'spatialite_points',
             'expanded': True,
             'id': 'spatialite_points20190604101052075',
+            'toc': True,
             'visible': True,
             'showfeaturecount': True
         }, {
             'name': 'world',
             'expanded': False,
             'id': 'world20181008111156525',
+            'toc': True,
             'visible': True,
             'showfeaturecount': True
         }, {
             'name': 'bluemarble',
             'expanded': True,
             'id': 'bluemarble20181008111156906',
+            'toc': True,
             'visible': True
         }]
         self.assertEqual(resp['layerstree'], to_compare)
@@ -637,7 +651,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
 
     def test_server_filters_value_relation_api(self):
-        """ Test server filter FieldFilterBacked  for fileds with ValueRelation QGIS form widget """
+        """ Test server filter FieldFilterBacked  for fields with ValueRelation QGIS form widget """
 
         pois = Layer.objects.get(
             project_id=self.project328_value_relation.instance.pk, qgs_layer_id='poi_2c470d17_a234_464c_83f8_416bcdedda17')
@@ -688,46 +702,48 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         super().setUpClass()
         cls.client = APIClient()
 
+    def setUp(self):
+        super().setUp()
+
         qgis_project_file_widget = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
-        cls.project_widget310 = QgisProject(qgis_project_file_widget)
-        cls.project_widget310.title = 'A project with widget QGIS 3.10'
-        cls.project_widget310.group = cls.project_group
-        cls.project_widget310.save()
+        self.project_widget310 = QgisProject(qgis_project_file_widget)
+        self.project_widget310.title = 'A project with widget QGIS 3.10'
+        self.project_widget310.group = self.project_group
+        self.project_widget310.save()
 
         # Add new project for fields excluded from WMS service
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
-        cls.project322 = QgisProject(qgis_project_file)
-        cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
-        cls.project322.group = cls.project_group
-        cls.project322.save()
+        self.project322 = QgisProject(qgis_project_file)
+        self.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
+        self.project322.group = self.project_group
+        self.project322.save()
 
         # Add new project for date datetime formatting
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FORMATTING_DATE), 'r'))
-        cls.project322_datewidget = QgisProject(qgis_project_file)
-        cls.project322_datewidget.group = cls.project_group
-        cls.project322_datewidget.save()
+        self.project322_datewidget = QgisProject(qgis_project_file)
+        self.project322_datewidget.group = self.project_group
+        self.project322_datewidget.save()
 
         # For RelationReference widget
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_RELATION_REFERENCE), 'r'))
-        cls.project328_rrwidget = QgisProject(qgis_project_file)
-        cls.project328_rrwidget.group = cls.project_group
-        cls.project328_rrwidget.save()
+        self.project328_rrwidget = QgisProject(qgis_project_file)
+        self.project328_rrwidget.group = self.project_group
+        self.project328_rrwidget.save()
 
         qgis_project_file = File(
             open("{}{}{}".format(CURRENT_PATH, TEST_BASE_PATH, QGS328_VALUE_RELATION), "r")
         )
-        cls.project328_value_relation = QgisProject(qgis_project_file)
-        cls.project328_value_relation.title = "A project QGIS 3.28 fro value relation"
-        cls.project328_value_relation.group = cls.project_group
-        cls.project328_value_relation.save()
+        self.project328_value_relation = QgisProject(qgis_project_file)
+        self.project328_value_relation.title = "A project QGIS 3.28 fro value relation"
+        self.project328_value_relation.group = self.project_group
+        self.project328_value_relation.save()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.project_widget310.instance.delete()
-        cls.project322.instance.delete()
-        cls.project328_value_relation.instance.delete()
-        super().tearDownClass()
+    def tearDown(self):
+        self.project_widget310.instance.delete()
+        self.project322.instance.delete()
+        self.project328_value_relation.instance.delete()
+        super().tearDown()
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True, method='get'):
         """Utility to make test calls for admin01 user"""
@@ -1363,8 +1379,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         fields = [f for f in vl.fields()]
 
-        self.assertEqual(len(fields), 1)
-        self.assertEqual(fields[0].name(), 'NAME')
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(fields[1].name(), 'NAME')
 
         # TEST API GPX DOWNLOAD
         # ==============================================
@@ -1573,6 +1589,33 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
 
         qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"ISO2_CODE" IN (\'IT\', \'FR\')')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        # For IN comparator
+        # .................
+        # Test http 'get' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|in|[IT,FR]'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|in|[IT,FR]'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression(
             '"ISO2_CODE" = \'IT\' OR "ISO2_CODE" = \'FR\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
@@ -1660,7 +1703,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -1670,7 +1713,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             },
                                             method='post').content)
 
@@ -1746,7 +1789,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                                 cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -1758,7 +1801,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                              cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                                'field': 'ISO2_CODE|eq|IT|AND,NAME|eq|Florence'
                                             },
                                             method='post').content)
 
@@ -1824,6 +1867,24 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # item[0] and item[1] are identical
         for item in resp['data']:
             self.assertEqual(item[0], item[1])
+        
+        self.assertEqual(len(resp['data']), 8884)
+
+        # Test field without relative widget with other query layer
+        # ---------------------------------------------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_rrwidget.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fformatter': 'NAME',
+                                                'otherquerylayerids': "rivers20171228095726368"
+                                            }).content)
+
+        # item[0] and item[1] are identical
+        for item in resp['data']:
+            self.assertEqual(item[0], item[1])
+
+        self.assertEqual(len(resp['data']), 9167)
 
         # Test RelatioReference
         # ---------------------
@@ -1930,7 +1991,43 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(jres['vector']['fields'][1]['name'], 'CAPITAL')
         self.assertEqual(jres['vector']['fields'][1]['input']['type'], 'texthtml')
 
+    def test_autofilter_parameter(self):
+        """
+        Test the 'autofilter' parameter for /vector/api/data REST API
+        """
 
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'])
+        resp = json.loads(response.content)
+        self.assertFalse('filtertoken' in resp)
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+            kwargs={
+                'autofilter': 'true'
+            })
+        resp = json.loads(response.content)
+        self.assertFalse('filtertoken' in resp)
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+            kwargs={
+                'autofilter': '1'
+            })
+        resp = json.loads(response.content)
+        self.assertTrue('filtertoken' in resp)
 
 
 class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
@@ -2082,23 +2179,22 @@ class QgisTemporalVectorProject(QdjangoTestBase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = APIClient()
-
-    @classmethod
-    def setUpTestData(cls):
+        
+    def setUp(self):
 
         # main project group
-        cls.project_group = CoreGroup(name='GroupTemporal', title='GroupTemporal', header_logo_img='',
+        self.project_group = CoreGroup(name='GroupTemporal', title='GroupTemporal', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
-        cls.project_group.save()
+        self.project_group.save()
 
         # Test data for temporal vector layer
         qgis_project_file = File(
             open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD), 'r',
                  encoding='utf-8'))
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project_temporal_vector_field = QgisProject(qgis_project_file)
-        cls.project_temporal_vector_field.group = cls.project_group
-        cls.project_temporal_vector_field.save()
+        self.project_temporal_vector_field = QgisProject(qgis_project_file)
+        self.project_temporal_vector_field.group = self.project_group
+        self.project_temporal_vector_field.save()
         qgis_project_file.close()
 
         # Test WMST
@@ -2106,19 +2202,20 @@ class QgisTemporalVectorProject(QdjangoTestBase):
             open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_WMST), 'r',
                  encoding='utf-8'))
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project_wmst = QgisProject(qgis_project_file)
-        cls.project_wmst.group = cls.project_group
-        cls.project_wmst.save()
+        self.project_wmst = QgisProject(qgis_project_file)
+        self.project_wmst.group = self.project_group
+        self.project_wmst.save()
         qgis_project_file.close()
 
         qgis_project_file = File(
             open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE), 'r',
                  encoding='utf-8'))
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project_temporal_vector_not_active = QgisProject(qgis_project_file)
-        cls.project_temporal_vector_not_active.group = cls.project_group
-        cls.project_temporal_vector_not_active.save()
+        self.project_temporal_vector_not_active = QgisProject(qgis_project_file)
+        self.project_temporal_vector_not_active.group = self.project_group
+        self.project_temporal_vector_not_active.save()
         qgis_project_file.close()
+
 
     def test_qgs_project_temporal_vector(self):
         """ Test properties into qgsproject object and models """
@@ -2222,31 +2319,32 @@ class TestInitextentByGeoconstraint(QdjangoTestBase):
     Test changing initextent property of initconfig API REST by user geoconstraint rules.
     """
 
-    @classmethod
-    def setUpTestData(cls):
-        # main project group
-        cls.project_group = CoreGroup(name='GroupInitExtentGeoconstraint', title='GroupInitExtentGeoconstraint', header_logo_img='',
+    
+    def setUp(self):
+        
+        # Main project group
+        self.project_group = CoreGroup(name='GroupInitExtentGeoconstraint', title='GroupInitExtentGeoconstraint', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
-        cls.project_group.save()
+        self.project_group.save()
 
         # Load project
         qgis_project_file = File(open(f'{CURRENT_PATH}{TEST_BASE_PATH}{QGS322_INITEXTENT_GEOCONSTRAINT_FILE}', 'r'))
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.title = 'Test project for initextent by geoconstraint'
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.title = 'Test project for initextent by geoconstraint'
+        self.project.group = self.project_group
+        self.project.save()
 
         group_viewer = UserGroup.objects.get(name='Viewer Level 1')
 
         # Viewer level 1: viewer2
-        cls.test_viewer2 = User.objects.create_user(username='viewer2', password='viewer2')
-        cls.test_viewer2.groups.add(group_viewer)
-        cls.test_viewer2.save()
+        self.test_viewer2 = User.objects.create_user(username='viewer2', password='viewer2')
+        self.test_viewer2.groups.add(group_viewer)
+        self.test_viewer2.save()
 
         # Viewer level 1: viewer3
-        cls.test_viewer3 = User.objects.create_user(username='viewer3', password='viewer3')
-        cls.test_viewer3.groups.add(group_viewer)
-        cls.test_viewer3.save()
+        self.test_viewer3 = User.objects.create_user(username='viewer3', password='viewer3')
+        self.test_viewer3.groups.add(group_viewer)
+        self.test_viewer3.save()
 
     def _make_request_with_geocontraints(self, url, u, expr):
         """
@@ -2331,3 +2429,617 @@ class TestInitextentByGeoconstraint(QdjangoTestBase):
         # Login ad viewer3
         # --------------------------------------------------------
         self._make_request_with_geocontraints(url, self.test_viewer3, "name='AREA2' OR name='AREA3'")
+
+
+class TestVectorApiConfigCrossRelation(QdjangoTestBase):
+    """ Test /vector/api/config response with 2 layers in cross relation: avoid recursion !! """
+
+    def setUp(self):
+
+        self.project_group_3857 = CoreGroup(name='GroupRelation3857', title='GroupRelation3857', header_logo_img='',
+                                          srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        self.project_group_3857.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_CASCADE_AUTORELATION), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_cascading_autorelation = QgisProject(qgis_project_file)
+        self.project_cascading_autorelation.group = self.project_group_3857
+        self.project_cascading_autorelation.save()
+        qgis_project_file.close()
+
+    def test_vector_api_config(self):
+        """ Test /vector/api/config """
+
+        # civic_numbers_d8775c54_1762_4d44_ad2c_a14090ba3bb0
+        # buildings_56f242c4_c984_43a0_a163_ae774f62b839
+
+        self.client.login(username='admin01', password='admin01')
+        url = reverse('core-vector-api',
+                      args=[
+                          'config',
+                          'qdjango',
+                          self.project_cascading_autorelation.instance.pk,
+                          'civic_numbers_d8775c54_1762_4d44_ad2c_a14090ba3bb0'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'config',
+                          'qdjango',
+                          self.project_cascading_autorelation.instance.pk,
+                          'buildings_56f242c4_c984_43a0_a163_ae774f62b839'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        self.client.logout()
+
+class TestVectorApiDataDownloadWithRelations(QdjangoTestBase):
+    """
+    Test /vector/api/data download with relations
+    """
+
+    def setUp(self):
+
+        self.group_with_relations = CoreGroup(name='GroupDownWithRelation4326', title='GroupDownWithRelation4326',
+                                                header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+        self.group_with_relations.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_DOWNLOAD_WITH_RELATIONS), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_down_with_relations = QgisProject(qgis_project_file)
+        self.project_down_with_relations.group = self.group_with_relations
+        self.project_down_with_relations.save()
+        qgis_project_file.close()
+
+    def test_vector_api_download(self):
+        """
+        Test Download api
+        """
+
+        countries = self.project_down_with_relations.instance.layer_set.get(
+            qgs_layer_id='countries_simpl20171228095706310')
+        cities = self.project_down_with_relations.instance.layer_set.get(
+            qgs_layer_id='cities10000eu20171228095720113')
+
+        # Activate download
+        countries.download = True
+        countries.download_csv = True
+        countries.download_gpkg = True
+        countries.save()
+
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+
+        url = reverse(
+            'core-vector-api',
+            kwargs={
+                'mode_call': 'shp',
+                'project_type': 'qdjango',
+                'project_id': self.project_down_with_relations.instance.id,
+                'layer_name': countries.qgs_layer_id
+            }
+        )
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+
+        # Download with relations
+        # ------------------------
+
+        # No file in relations because no download is active fore relations layer (cities)
+        url += '?down_with_relations=1'
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        self.assertTrue(len(os.listdir(temp.path())), 4)
+
+        # Active download also for relations layer
+        cities.download = True
+        cities.download_csv = True
+        cities.save()
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        self.assertTrue(len(os.listdir(temp.path())), 8)
+
+        # Inactive download for shp, aspect export as .csv
+        cities.download = False
+        cities.save()
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+
+        files_list = os.listdir(temp.path())
+        self.assertTrue(len(files_list), 5)
+        self.assertTrue('Cities.csv' in files_list)
+
+        url += "&field=ISOCODE|eq|IT"
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(res.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+
+        files_list = os.listdir(temp.path())
+        self.assertTrue(len(files_list), 5)
+        self.assertTrue('Cities.csv' in files_list)
+
+        with open(f"{temp.path()}/Cities.csv", mode="r", encoding="utf-8") as file:
+            reader = csv.reader(file)
+            total_rows = sum(1 for _ in reader)
+
+        # 1124 + header
+        self.assertEqual(total_rows, 1125)
+
+        self.client.logout()
+
+class TestVectorApiGeoFilter(QdjangoTestBase):
+    """ Test /vector/api/config with geo filter
+        Test geo_filter_wkt and geo_fitler_mode parameters
+    """
+
+    def setUp(self):
+
+        self.project_group_3857 = CoreGroup(name='GroupGeoFilter3857', title='GroupGeoFilter3857', header_logo_img='',
+                                          srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        self.project_group_3857.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS340_THEME_FILE), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_geo_filter = QgisProject(qgis_project_file)
+        self.project_geo_filter.group = self.project_group_3857
+        self.project_geo_filter.save()
+        qgis_project_file.close()
+
+    def test_vector_api_geo_filter(self):
+
+        self.client.login(username='admin01', password='admin01')
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 8965)
+
+        # Add a geo_filter_wkt
+        # mode: intersects (default)
+        wkt = 'Polygon ((1096269.93631389969959855 5632333.77473515085875988, 1418298.05854365834966302 5406914.08917431905865669, 1398976.37120987288653851 5117088.7791675366461277, 1006102.06208956707268953 5104207.65427834633737803, 864409.6883084736764431 5252340.59050403535366058, 851528.56341928336769342 5503522.52584324683994055, 1096269.93631389969959855 5632333.77473515085875988))'
+
+        url += f'?geo_filter_wkt={wkt}'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 150)
+
+        # Test inersects vs contains on layer countries
+        # ---------------------------------------------
+        wkt = 'Polygon ((-1239720.59820769750513136 5636026.31521254032850266, 261954.69451352674514055 5628285.72092016320675611, 734130.94634855119511485 4622008.46291109547019005, 370323.01460681110620499 3801505.46791908610612154, -767544.34637267340440303 3708618.33641055691987276, -1293904.75825433968566358 4374309.44555501639842987, -1239720.59820769750513136 5636026.31521254032850266))'
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                      ])
+
+        url += f'?geo_filter_wkt={wkt}'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+        self.assertEqual(len(jres['vector']['data']['features']), 5)
+
+        url += '&geo_filter_mode=contains'
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Exclude France
+        self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+        # Test post
+        # ----------------------------------
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Exclude France
+        self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+        # Test exceptions
+        # ----------------------------------
+        res = self.client.post(url, {
+            'geo_filter_wkt': 'fake wkt',
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+
+        self.assertEqual(jres, {"result":False,"error":{"code":"servererror","message":"A error server is occured!","data":"The WKT geometry is not valid: String input unrecognized as WKT EWKT, and HEXEWKB."}})
+
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'fake_mode'
+        })
+
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+
+        self.assertEqual(jres, {'result': False, 'error': {'code': 'servererror', 'message': 'A error server is occured!', 'data': "'geo_filter_mode' must be one of ('intersects', 'contains')"}})
+
+
+        # Test reproject
+        # -----------------------------
+        # Areoporti 3857
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'aeroporti_3857_e9d2f842_0851_437e_9dfe_7b30a1bb4160'
+                      ])
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['vector']['data']['features']), 19)
+
+        #Areoporti 4326
+        url = reverse('core-vector-api',
+                      args=[
+                          'data',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'aeroporti_4326_49526f36_2ce3_4051_863f_d8e3e1de97e3'
+                      ])
+        res = self.client.post(url, {
+            'geo_filter_wkt': wkt,
+            'geo_filter_mode': 'contains'
+        })
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['vector']['data']['features']), 19)
+
+
+        self.client.logout()
+
+    def test_vector_api_featurecount_with_style(self):
+        """
+        Test for /vector/api/featurecount/ with style
+        """
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'featurecount',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                      ])
+
+        response = self.client.get(url)
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent, {'result': True, 'data': {'0': 54},
+                                    'capabilities': [
+                                        'add_feature',
+                                        'change_feature',
+                                        'delete_feature',
+                                        'change_attr_feature']
+                                    })
+
+        response = self.client.get(f'{url}?style=new_style')
+
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent, {'result': True,
+            'data': {
+                '{4fbcc944-0cd7-4a54-90c5-feeb5787fb31}': 10,
+                '{615324e6-d85f-4fad-aa42-a18aa9c02c19}': 11,
+                '{711763e5-55cc-4e5f-9d17-4d84f9a8b74d}': 11,
+                '{99edb832-867c-4c23-ae23-87fdacd3cbb1}': 11,
+                '{fab0aeb1-643e-430f-b3f1-9cd283c5aeeb}': 8
+            },
+            'capabilities': [
+                'add_feature',
+                'change_feature',
+                'delete_feature',
+                'change_attr_feature']
+            })
+
+
+
+        self.client.logout()
+
+class TestVectorApiEditorformstructureFeaturecountFilter(TestVectorApiGeoFilter):
+
+    def test_vector_api_editorformstructure_with_style(self):
+        """
+        Test for /vector/api/editorformstructure/ with style
+        """
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'editorformstructure',
+                          'qdjango',
+                          self.project_geo_filter.instance.pk,
+                          'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                      ])
+
+        response = self.client.get(url)
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent['data']['editor_form_structure'],
+ [
+             {'alias': 'ISOCODE', 'field_name': 'ISOCODE', 'index': 0, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_LOCAL', 'field_name': 'NAME_LOCAL', 'index': 1, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_EN', 'field_name': 'NAME_EN', 'index': 2, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'CAPITAL_EN', 'field_name': 'CAPITAL_EN', 'index': 3, 'showlabel': True, 'visibility_expression': None}
+         ])
+        
+        self.assertEqual(jcontent['data']['maxscale'], 0)
+        self.assertEqual(jcontent['data']['minscale'], 100000000)
+        self.assertFalse(jcontent['data']['scalebasedvisibility'])
+
+        response = self.client.get(f'{url}?style=new_style')
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent['data']['editor_form_structure'],
+ [
+             {'alias': 'ISOCODE', 'field_name': 'ISOCODE', 'index': 0, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_LOCAL', 'field_name': 'NAME_LOCAL', 'index': 1, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'NAME_EN', 'field_name': 'NAME_EN', 'index': 2, 'showlabel': True, 'visibility_expression': None},
+             {'alias': 'CAPITAL_EN', 'field_name': 'CAPITAL_EN', 'index': 3, 'showlabel': True,'visibility_expression': None},
+             {'columncount': 1, 'groupbox': False, 'name': 'TAB1', 'nodes': [
+                    {'alias': 'NAME_IT', 'field_name': 'NAME_IT', 'index': 6, 'showlabel': True, 'visibility_expression': None},
+                    {'alias': 'CAPITAL_IT', 'field_name': 'CAPITAL_IT', 'index': 7, 'showlabel': True,'visibility_expression': None}
+             ], 'showlabel': True}
+         ])
+        
+        self.assertEqual(jcontent['data']['maxscale'], 0)
+        self.assertEqual(jcontent['data']['minscale'], 100000000)
+        self.assertFalse(jcontent['data']['scalebasedvisibility'])
+
+
+class TestProjectsBookmarkAPI(QdjangoTestBase):
+    """
+    Test for /projects/bookmark api
+    """
+
+    def test_crud_bookmark(self):
+        """
+        Test CRUD for bookmark api
+        """
+
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
+
+        url = reverse('qdjango-api-bookmark-project')
+
+        # Create
+        response = self.client.post(url, {
+            'project': self.project.instance.pk,
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 201)
+        jres = json.loads(response.content)
+
+        self.assertTrue('id' in jres)
+        self.assertEqual(jres['project'], self.project.instance.pk)
+        self.assertEqual(jres['user'], self.test_admin1.pk)
+
+        # Create second
+        response = self.client.post(url, {
+            'project': self.project310.instance.pk,
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 201)
+        jres = json.loads(response.content)
+
+        self.assertTrue('id' in jres)
+        self.assertEqual(jres['project'], self.project310.instance.pk)
+        self.assertEqual(jres['user'], self.test_admin1.pk)
+
+        # Udate: is no important
+
+        response = self.client.put(url, {
+            'project': self.project310.instance.pk,
+        }, content_type='application/json')
+
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertTrue('id' in jres)
+        self.assertEqual(jres['project'], self.project310.instance.pk)
+        self.assertEqual(jres['user'], self.test_admin1.pk)
+
+        # Get
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['count'], 2)
+
+        # Delete
+
+        response = self.client.delete(url, {
+            'project': self.project310.instance.pk,
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 204)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['count'], 1)
+
+        self.client.logout()
+
+        # Check for other user
+        self.assertTrue(self.client.login(
+            username=self.test_viewer1.username, password=self.test_viewer1.username))
+        
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['count'], 0)
+
+        self.client.logout()
+
+    def test_exceptions(self):
+        """
+        Test exceptions for bookmark api
+        """
+
+        self.assertTrue(self.client.login(
+            username=self.test_viewer1.username, password=self.test_viewer1.username))
+
+        url = reverse('qdjango-api-bookmark-project')
+
+        # Create without project
+        response = self.client.post(url, {
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres, {
+            'result': False,
+            'error': {
+                'code': 'validation',
+                'data': {
+                    'project': [
+                        'This field is required.'
+                        ]
+                },
+                'message': 'Data are not correct or insufficent!',
+            }
+        })
+
+        # Create with invalid project
+        response = self.client.post(url, {
+            'project': '9999',
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres, {
+            'result': False,
+            'error': {
+                'code': 'validation',
+                'data': {
+                    'project': [
+                        'Invalid pk "9999" - object does not exist.'
+                        ]
+                },
+                'message': 'Data are not correct or insufficent!',
+            }
+        })
+
+
+        # Delete without project
+        response = self.client.delete(url, {
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 404)
+        jres = json.loads(response.content)
+
+
+        # Delete with invalid project
+        response = self.client.delete(url, {
+            'project': '9999',
+        }, content_type='application/json')
+
+        self.assertEqual(response.status_code, 404)
+        jres = json.loads(response.content)
+
+        # No permmission on project
+        response = self.client.post(url, {
+            'project': self.project.instance.pk,
+        }, content_type='application/json') 
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres, {
+            'result': False,
+            'error': {
+                'code': 'validation',
+                'data': {
+                    'project': [
+                        'You do not have permission to view this project.'
+                        ]
+                },
+                'message': 'Data are not correct or insufficent!',
+            }
+        })
+
+        self.client.logout()
+        
+
+       

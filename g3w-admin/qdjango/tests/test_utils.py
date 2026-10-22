@@ -9,6 +9,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2019-11-28'
 __copyright__ = 'Copyright 2019, GIS3W'
 
+from import_export.utils import original
 
 from .base import QdjangoTestBase
 from django.urls import reverse
@@ -16,9 +17,9 @@ from django.test import TestCase, override_settings
 from django.core.files import File
 from django.conf import settings
 from qdjango.models import Project, Layer, Widget
-from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSettingsWMS
+from qdjango.utils.data import QgisProject, QgisProjectSettingsWMS
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
-from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
+from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict, apply_tree_patch
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_capabilities4layer
 from qdjango.utils.qgis import explode_expression
 from qdjango.templatetags.qdjango_tags import is_geom_type_gpx_compatible
@@ -33,11 +34,19 @@ DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGIS_FILE_MDAL = 'mdal_layer_qgis_322.qgs'
 QGIS_FILE_EXPRESSION_DEFAULT = 'test_default_field_expression_322.qgs'
+QGS_FILE_ORGANIZE_COLUMNS = 'g3wsuite_project_test_qgis334.qgs'
+
+from qgis.core import Qgis
 
 
+@override_settings(
+            DATASOURCE_PATH=DATASOURCE_PATH,
+            LANGUAGE_CODE='en',
+            LANGUAGES = (
+                ('en', 'English'),
+            ))
 class QgisProjectTest(TestCase):
 
-    @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
     def setUp(self):
 
         qgis_project_file = File(open('{}{}{}'.format(
@@ -49,7 +58,11 @@ class QgisProjectTest(TestCase):
         qgis_project_file.close()
 
         qgis_project_file = File(open('{}{}{}'.format(
-            CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r', encoding='utf-8'))
+            CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_ORGANIZE_COLUMNS), 'r', encoding='utf-8'))
+
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_organize_column = QgisProject(qgis_project_file)
+        qgis_project_file.close()
 
 
     def test_qgis_project(self):
@@ -142,10 +155,7 @@ class QgisProjectTest(TestCase):
 
         # check layouts
         # -------------------------------------------
-        layouts_to_check = '[' \
-                           '{"name": "A4", "w": 297.0, "h": 210.0, "labels": [{"id": "Print", "text": "Print"}], "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177, "overview": false, "scale": 24651341.004171893, "extent": {"xmin": -33.650906640076606, "ymin": 20.637462798706206, "xmax": 60.849040859923356, "ymax": 79.35250370863265}}]},' \
-                           '{"name": "atlas_test", "w": 297.0, "h": 210.0, "labels": [], "atlas": {"qgs_layer_id": "countries_simpl20171228095706310", "field_name": "ISOCODE"}, "maps": [{"name": "map0", "displayname": "Map 1", "w": 117.063, "h": 76.29999107142858, "overview": false, "scale": 2621775.4915320138, "extent": {"xmin": 17.62596823561644, "ymin": 39.497494100000004, "xmax": 22.71810776438356, "ymax": 42.8164779}}]}' \
-                           ']'
+        layouts_to_check = '[{"name": "A4", "w": 297.0, "h": 210.0, "labels": [{"id": "Print", "text": "Print"}], "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177, "overview": false, "scale": 24651506.00932284, "extent": {"xmin": -33.650906640076606, "ymin": 20.637462798706206, "xmax": 60.849040859923356, "ymax": 79.35250370863265}}]}, {"name": "atlas_test", "w": 297.0, "h": 210.0, "labels": [], "atlas": {"qgs_layer_id": "countries_simpl20171228095706310", "field_name": "ISOCODE"}, "maps": [{"name": "map0", "displayname": "Map 1", "w": 117.063, "h": 76.29999107142858, "overview": false, "scale": 2621720.004979744, "extent": {"xmin": 17.62596823561644, "ymin": 39.497494100000004, "xmax": 22.71810776438356, "ymax": 42.8164779}}]}]'
 
         self.assertEqual(json.loads(self.project.layouts),
                          json.loads(layouts_to_check))
@@ -169,7 +179,8 @@ class QgisProjectTest(TestCase):
                 self.assertTrue(layer.isVisible)
                 self.assertEqual(layer.srid, 4030)
                 self.assertEqual(layer.editOptions, 1)
-                self.assertEqual(layer.extent, 'POLYGON((-31.26574700000000462 32.3974759999999975, 69.07032000000000949 32.3974759999999975, 69.07032000000000949 81.85736800000000812, -31.26574700000000462 81.85736800000000812, -31.26574700000000462 32.3974759999999975))')
+                if Qgis.QGIS_VERSION_INT < 33800:
+                    self.assertEqual(layer.extent, 'POLYGON((-31.26574700000000462 32.3974759999999975, 69.07032000000000949 32.3974759999999975, 69.07032000000000949 81.85736800000000812, -31.26574700000000462 81.85736800000000812, -31.26574700000000462 32.3974759999999975))')
 
                 # important check datasource, main for shp and raster data
                 # --------------------------------------------------------
@@ -217,7 +228,7 @@ class QgisProjectTest(TestCase):
                     'ISO_NUM': 'ISO_NUM'
                 })
 
-                self.assertEqual(layer.aliases, aliases_to_check)
+                self.assertEqual(layer.aliases['predefinito'], aliases_to_check)
 
                 # check columns
                 # --------------------------------------------------------
@@ -244,7 +255,7 @@ class QgisProjectTest(TestCase):
                 # check editTypes
                 # --------------------------------------------------------
 
-                edit_types_to_check = '{"ISOCODE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_LOCAL": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "POPULATION": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "AREA_KM2": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "ISO_NUM": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
+                edit_types_to_check = '{"predefinito": {"ISOCODE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_LOCAL": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "POPULATION": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "AREA_KM2": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "ISO_NUM": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}}'
 
                 self.assertEqual(
                     layer.editTypes, json.loads(edit_types_to_check))
@@ -255,12 +266,13 @@ class QgisProjectTest(TestCase):
 
                 # check editorformstructure
                 # --------------------------------------------------------
-                self.assertIsNone(layer.editorformstructure)
+                self.assertEqual(layer.editorformstructure,  {'predefinito': None})
 
             if layer.layerId == 'cities10000eu20171228095720113':
 
                 # check extent
-                self.assertEqual(layer.extent, 'POLYGON((-9.71666669999999932 35.00999999999999801, 57.35194440000000071 35.00999999999999801, 57.35194440000000071 69.96666670000000465, -9.71666669999999932 69.96666670000000465, -9.71666669999999932 35.00999999999999801))')
+                if Qgis.QGIS_VERSION_INT < 33800:
+                    self.assertEqual(layer.extent, 'POLYGON((-9.71666669999999932 35.00999999999999801, 57.35194440000000071 35.00999999999999801, 57.35194440000000071 69.96666670000000465, -9.71666669999999932 69.96666670000000465, -9.71666669999999932 35.00999999999999801))')
 
                 # check editorlayout
                 # --------------------------------------------------------
@@ -269,7 +281,7 @@ class QgisProjectTest(TestCase):
                 # check editorformstructure
                 # --------------------------------------------------------
 
-                editor_form_structure_to_check = [{'name': 'Folder 1',
+                editor_form_structure_to_check = {'predefinito':[{'name': 'Folder 1',
                                                    'showlabel': True,
                                                    'groupbox': False,
                                                    'columncount': 1,
@@ -306,16 +318,24 @@ class QgisProjectTest(TestCase):
                                                               'visibility_expression': None,
                                                               'index': 3,
                                                               'field_name': 'ISO2_CODE',
-                                                              'alias': 'ISO Code'}]}]
+                                                              'alias': 'ISO Code'}]}]}
 
                 self.assertEqual(layer.editorformstructure,
                                  editor_form_structure_to_check)
 
                 # check editTypes
                 # --------------------------------------------------------
-                edit_types_to_check = '{"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": false}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": true, "Max": 2147483647, "Min": -2147483648, "Precision": 0, "Step": 1, "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
+                edit_types_to_check = '{"predefinito": {"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": false}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": true, "Max": 2147483647, "Min": -2147483648, "Precision": 0, "Step": 1, "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}}'
                 self.assertEqual(
                     layer.editTypes, json.loads(edit_types_to_check))
+
+
+        # Check orzanize columns new order
+        # Get cities layer
+        for layer in self.project_organize_column.layers:
+            if layer.layerId == 'cities10000eu20171228095720113':
+                expected_colums = [{'name': 'GEONAMEID', 'type': 'QLONGLONG', 'label': 'Geo named'}, {'name': 'GTOPO30', 'type': 'QLONGLONG', 'label': 'GTOPO30'}, {'name': 'POPULATION', 'type': 'QLONGLONG', 'label': 'POPULATION'}, {'name': 'NAME', 'type': 'QSTRING', 'label': 'Name'}, {'name': 'ASCIINAME', 'type': 'QSTRING', 'label': 'Ascii name'}, {'name': 'ISO2_CODE', 'type': 'QSTRING', 'label': 'ISO Code'}]
+                self.assertEqual(layer.columns, expected_colums)
 
     def test_get_schema_table(self):
 
@@ -440,15 +460,14 @@ class QgisWMSProjectSettingsTest(TestCase):
 class QdjangoUtilsTest(QdjangoTestBase):
     """ Test for utils methods and functions"""
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r'))
-        cls.project_mdal = QgisProject(qgis_project_file)
-        cls.project_mdal.title = 'A project with mdal layer'
-        cls.project_mdal.group = cls.project_group
-        cls.project_mdal.save()
+        self.project_mdal = QgisProject(qgis_project_file)
+        self.project_mdal.title = 'A project with mdal layer'
+        self.project_mdal.group = self.project_group
+        self.project_mdal.save()
 
     @classmethod
     def tearDownClass(cls):
@@ -542,6 +561,172 @@ class QdjangoUtilsTest(QdjangoTestBase):
 
         self.client.logout()
 
+    def test_apply_tree_patch(self):
+        """ Test for apply_tree_patch function """
+
+        original_tree = """
+            [
+            {
+                "name": "Geographical group",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "buildings",
+                        "expanded": true,
+                        "id": "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
+                        "visible": true,
+                        "showfeaturecount": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "roads",
+                        "expanded": true,
+                        "id": "roads_ea006d6f_bd87_4635_aae0_4e9e7842b3f4",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Work areas",
+                        "expanded": true,
+                        "id": "work_areas_f0ecbe28_cbd1_4a38_8a57_ab6da91473fe",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Type - Subtype",
+                        "expanded": true,
+                        "id": "type_subtype_caec4a0b_e7c4_4542_b59c_769f2033d6b1",
+                        "visible": false,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "1:N referencing tables",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "Maintenance works",
+                        "expanded": true,
+                        "id": "maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Buildings rating",
+                        "expanded": true,
+                        "id": "buildings_rating_3d535fae_fd04_4df6_b6ff_8cbd13df078f",
+                        "visible": true,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "OFC 2023 (GSD 20cm) di proprietà di  Regione Toscana. Esecuzione volo CGR SpA (Compagnia Generale Ripreseaeree). Copertura del territorio: completa. Immagini a 8 bit di colore.",
+                "expanded": true,
+                "id": "_a4453b18_6ce6_4207_be30_3c91b0ab49e8",
+                "visible": false,
+                "toc": true
+            }
+        ]"""
+
+        patch_tree = """
+        [
+            {
+                "name": "Geographical group",
+                "nodes": [
+                    {
+                        "id": "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
+                        "visible": false
+                    },
+                    {
+                        "id": "work_areas_f0ecbe28_cbd1_4a38_8a57_ab6da91473fe",
+                        "visible": false
+                    }
+                ]
+            }
+        ]
+        """
+
+        exptected_tree = """
+            [
+            {
+                "name": "Geographical group",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "buildings",
+                        "expanded": true,
+                        "id": "buildings_2f43dc1d_6725_42d2_a09b_dd446220104a",
+                        "visible": false,
+                        "showfeaturecount": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "roads",
+                        "expanded": true,
+                        "id": "roads_ea006d6f_bd87_4635_aae0_4e9e7842b3f4",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Work areas",
+                        "expanded": true,
+                        "id": "work_areas_f0ecbe28_cbd1_4a38_8a57_ab6da91473fe",
+                        "visible": false,
+                        "toc": true
+                    },
+                    {
+                        "name": "Type - Subtype",
+                        "expanded": true,
+                        "id": "type_subtype_caec4a0b_e7c4_4542_b59c_769f2033d6b1",
+                        "visible": false,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "1:N referencing tables",
+                "expanded": true,
+                "mutually-exclusive": false,
+                "nodes": [
+                    {
+                        "name": "Maintenance works",
+                        "expanded": true,
+                        "id": "maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63",
+                        "visible": true,
+                        "toc": true
+                    },
+                    {
+                        "name": "Buildings rating",
+                        "expanded": true,
+                        "id": "buildings_rating_3d535fae_fd04_4df6_b6ff_8cbd13df078f",
+                        "visible": true,
+                        "toc": true
+                    }
+                ],
+                "checked": true
+            },
+            {
+                "name": "OFC 2023 (GSD 20cm) di proprietà di  Regione Toscana. Esecuzione volo CGR SpA (Compagnia Generale Ripreseaeree). Copertura del territorio: completa. Immagini a 8 bit di colore.",
+                "expanded": true,
+                "id": "_a4453b18_6ce6_4207_be30_3c91b0ab49e8",
+                "visible": false,
+                "toc": true
+            }
+        ]"""
+
+        patched_tree = apply_tree_patch(original_tree=json.loads(original_tree), patch_tree=json.loads(patch_tree))
+
+        self.assertEqual(patched_tree, json.loads(exptected_tree))
+
+
 
 class QdjangoUtilsDataValidators(QdjangoTestBase):
     """Test for validators loaded into  import data classes"""
@@ -556,7 +741,7 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
         # DatasourceExists
         project = QgisProject(qgis_file)
         project.group = self.project_group
-        with self.assertRaises(QgisProjectLayerException):
+        with self.assertRaises(QgisProjectException):
             project.clean()
 
         qgis_file.close()
@@ -566,10 +751,58 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
         qgis_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
 
-        # Project is not valid
-        with self.assertRaises(Exception) as exc:
-            project = QgisProject(qgis_file)
+        # Broken layer no longer aborts construction, it's reported by clean() instead
+        project = QgisProject(qgis_file)
+        project.group = self.project_group
+        with self.assertRaises(QgisProjectException):
+            project.clean()
         qgis_file.close()
+
+    def test_datasource_validator_aggregates_multiple_errors(self):
+        """Test that clean() collects errors from all broken layers instead of stopping at the first one"""
+
+        qgis_filename = 'test_wrong_geodata_gdal_type_path.qgs'
+        qgis_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+
+        project = QgisProject(qgis_file)
+        project.group = self.project_group
+
+        # simulate a second, unrelated layer that failed to build during project load
+        project.layer_errors.append('Missing data file for layer fake_layer')
+
+        with self.assertRaises(QgisProjectException) as exc:
+            project.clean()
+
+        # both the simulated construction error and the real DatasourceExists
+        # validator error (on the bluemarble layer) must be reported together
+        self.assertEqual(len(exc.exception.errors), 2)
+        joined_errors = '; '.join(exc.exception.errors)
+        self.assertIn('fake_layer', joined_errors)
+        self.assertIn('bluemarble', joined_errors)
+
+        qgis_file.close()
+
+
+    # The following test is usefull where .clean() is used to validate the project before saving
+    # ------------------------------------------------------------------------------------------
+    # def test_save_raises_when_layer_errors_are_present(self):
+    #     """Test that save() does not persist projects when construction already recorded layer errors"""
+
+    #     qgis_filename = 'test_wrong_geodata_org_type_path.qgs'
+    #     qgis_file = File(open('{}{}{}'.format(
+    #         CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+
+    #     project = QgisProject(qgis_file)
+    #     project.group = self.project_group
+    #     project_count = Project.objects.count()
+
+    #     with self.assertRaises(QgisProjectException):
+    #         project.save()
+
+    #     self.assertEqual(Project.objects.count(), project_count)
+
+    #     qgis_file.close()
 
 
 class TestTemplateTags(QdjangoTestBase):
@@ -590,14 +823,13 @@ class TestTemplateTags(QdjangoTestBase):
 class QdjangoTestUtilsQgis(QdjangoTestBase):
     """ Test for qdjango.utils.qgis module and functions """
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_EXPRESSION_DEFAULT), 'r'))
-        cls.project_dexp = QgisProject(qgis_project_file)
-        cls.project_dexp.group = cls.project_group
-        cls.project_dexp.save()
+        self.project_dexp = QgisProject(qgis_project_file)
+        self.project_dexp.group = self.project_group
+        self.project_dexp.save()
 
     def test_explode_expression(self):
         """
@@ -692,6 +924,60 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         self.assertTrue('referencing_fields' in ee)
         self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
 
+        # Test current_value with spaces before '(' after 'current_value'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value ( \'doublespace\'  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value with spaces before '(' after 'current_value'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value  ( \'doublespace\'  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value  ( 'doublespace' )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
     def test_expression_default_api_layer_config(self):
         """
         Test Layer API REST config with expression default value
@@ -711,7 +997,7 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         dfields = {f['name']: f for f in jres['vector']['fields']}
 
         # Check fields with default value not expression
-        self.assertTrue('default_expression' not in dfields['name']['input']['options'])
+        self.assertTrue('default_expression' in dfields['name']['input']['options'])
         self.assertEqual(dfields['name']['input']['options']['default'], 'default_name')
 
         self.assertTrue('default_expression' not in dfields['subname']['input']['options'])
@@ -734,8 +1020,3 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         self.assertTrue('referencing_fields' in dfields['area']['input']['options']['default_expression'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['referencing_fields'], ['length'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['apply_on_update'], False)
-
-
-
-
-

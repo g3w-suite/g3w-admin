@@ -1,0 +1,123 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-18 17:01+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: editing/static/editing/js/actions/select-elements.js:42
+msgid "plugins.editing.steps.help.select_elements"
+msgstr "Seleccione elementos para continuar"
+
+#: editing/static/editing/js/components/relation.js:718
+#: editing/static/editing/js/components/table.js:356
+#: editing/static/editing/js/g3w-toolbox.js:451
+msgid "plugins.editing.messages.delete_feature"
+msgstr "Eliminando objeto..."
+
+#: editing/static/editing/js/components/relation.js:1035
+msgid "plugins.editing.relation_already_added"
+msgstr "Relación ya añadida"
+
+#: editing/static/editing/js/components/table.js:338
+msgid "plugins.editing.messages.link_relations"
+msgstr "Vinculando relaciones..."
+
+#: editing/static/editing/js/components/table.js:359
+#: editing/static/editing/js/g3w-toolbox.js:454
+msgid "plugins.editing.messages.delete_feature_relations"
+msgstr "Eliminando relaciones del objeto..."
+
+#: editing/static/editing/js/g3w-toolbox.js:624
+msgid "plugins.editing.relations"
+msgstr "Relaciones de edición"
+
+#: editing/static/editing/js/g3w-toolbox.js:695
+msgid "plugins.editing.tools.update_multi_features_relations_from_parents"
+msgstr "Actualizar múltiples objectos de relaciones desde padres"
+
+#: editing/static/editing/js/g3w-toolbox.js:933
+msgid "plugins.editing.relation.copy_feature_from_other_layer"
+msgstr "Copiar objecto desde otra capa"
+
+#: editing/static/editing/js/g3w-toolbox.js:1659
+msgid "plugins.editing.messages.constraints.enable_editing"
+msgstr "Active la edición en la capa para empezar a editar"
+
+#: editing/static/editing/js/g3w-toolbox.js:3387
+#: editing/static/editing/js/index.js:1151
+msgid "server_error"
+msgstr "Se ha producido un error en la solicitud al servidor"
+
+#: editing/static/editing/js/index.js:531
+msgid "plugins.editing.messages.commit_feature"
+msgstr "Guardando objecto..."
+
+#: editing/static/editing/js/index.js:533
+msgid "save"
+msgstr "Guardar"
+
+#: editing/static/editing/js/index.js:534
+msgid "exitnosave"
+msgstr "Salir sin guardar"
+
+#: editing/static/editing/js/index.js:535
+msgid "annul"
+msgstr "Anular"
+
+#: editing/static/editing/js/index.js:579
+msgid "plugins.editing.messages.saving"
+msgstr "Guardando..."
+
+#: editing/static/editing/js/utils/chooseFeatureFromFeatures.js:17
+msgid "plugins.editing.modal.tools.copyfeaturefromprojectlayer.title"
+msgstr "Copiar objecto desde otra capa del proyecto"
+
+#: editing/static/editing/js/utils/unlinkRelation.js:27
+msgid "plugins.editing.messages.unlink_relation"
+msgstr "Desvinculando relación..."
+
+#: editing/static/editing/js/widget.js:140
+msgid "User"
+msgstr "Usuario"
+
+#: editing/static/editing/js/widget.js:141
+msgid "Add"
+msgstr "Añadir"
+
+#: editing/static/editing/js/widget.js:142
+msgid "Update geometry"
+msgstr "Actualizar geometría"
+
+#: editing/static/editing/js/widget.js:143
+msgid "Delete"
+msgstr "Eliminar"
+
+#: editing/static/editing/js/widget.js:144
+msgid "Update attributes"
+msgstr "Actualizar atributos"
+
+#: editing/static/editing/js/widget.js:213
+msgid "Layer"
+msgstr "Capa"
+
+#: editing/static/editing/js/widget.js:214
+msgid "Add logging field"
+msgstr "Añadir campo de registro"
+
+#: editing/static/editing/js/widget.js:215
+msgid "Update logging field"
+msgstr "Actualizar campo de registro"

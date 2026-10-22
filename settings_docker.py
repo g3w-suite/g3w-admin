@@ -3,17 +3,16 @@ G3WADMIN_PROJECT_APPS = []
 
 G3WADMIN_LOCAL_MORE_APPS = [
     'editing',
-    'caching',
     'filemanager',
     'qplotly',
-    'openrouteservice',
-    'qtimeseries'
+    'qtimeseries',
+    'qes'
 ]
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'g3w-suite',
+        'NAME': 'g3w_suite',
         'USER': 'docker',
         'PASSWORD': 'docker',
         'HOST': 'postgis',
@@ -58,7 +57,7 @@ TILESTACHE_CACHE_TOKEN = '1234567'
 # ===============================
 FILEMANAGER_ROOT_PATH = DATASOURCE_PATH
 
-ALLOWED_HOSTS = "*"
+ALLOWED_HOSTS = ["*"]
 
 LOGGING = {
     'version': 1,
@@ -141,6 +140,12 @@ SPATIALITE_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu/mod_spatialite.so'
 
 SESSION_COOKIE_NAME = 'gis3w-admin'
 
+
+# SLUGS
+# =======================================
+SLUGIFY_FUNCTION = "core.utils.slugify.pyslugify"
+
+
 # OPENROUTESERVICE SETTINGS
 # ===============================
 # following settings work if 'openrouteservice' module is in 'G3WADMIN_LOCAL_MORE_APPS'
@@ -156,3 +161,15 @@ ORS_PROFILES = {
     "driving-car": {"name": "Car"},
     "driving-hgv": {"name": "Heavy Goods Vehicle"}
 }
+
+# Default elasticsearch settings
+# --------------------------------
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://elasticsearch:9200',
+        #'http_auth': ('username', 'password')
+    }
+}
+
+# Activate/deactivate es indexing projects
+QES_INDEXING_PROJECT = False

@@ -44,8 +44,11 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     ls ${PROJECTS_DIR} || mkdir ${PROJECTS_DIR}
     ls ${DATASOURCE_PATH} || mkdir ${DATASOURCE_PATH}
 
-    wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
-
+    until pg_isready -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432}; do
+      echo "wait 30s until is ready"
+      sleep 30;
+    done
+    
     pushd .
     cd ${DJANGO_DIRECTORY}/core/static
     rm -rf bower_components
@@ -68,9 +71,9 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     done
     # sync menu tree items
     python3 manage.py sitetree_resync_apps
-    python3 manage.py createsuperuser --noinput --username admin --email admin@email.com || true
+    python3 manage.py createsuperuser --noinput --username ${G3WSUITE_ADMIN_USERNAME:-admin} --email admin@email.com || true
     # Set fake password for all users
-    python3 manage.py set_passwords --password admin
+    python3 manage.py set_passwords --password ${G3WSUITE_ADMIN_PASSWORD:-admin}
 
     # For django-file-form: create <media_directory>/temp_uploads if not exists
     ls ${MEDIA_ROOT}/temp_uploads || mkdir ${MEDIA_ROOT}/temp_uploads
@@ -81,7 +84,10 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
 else
     echo "Setup was already done, skipping ..."
     # Wait for postgis
-    wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
+    until pg_isready -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432}; do
+      echo "wait 30s until is ready"
+      sleep 30;
+    done
 
     # Restore on restart ln -s for bower_component
     cd ${DJANGO_DIRECTORY}/core/static

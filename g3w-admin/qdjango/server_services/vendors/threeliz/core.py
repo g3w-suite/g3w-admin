@@ -181,7 +181,9 @@ def print_layout(project, layout_name, feature_filter: str = None, scales=None, 
             else:
                 atlas_layout.reportContext().setPredefinedScales(scales)
 
-        if not scales and atlas_layout.referenceMap().atlasScalingMode() == QgsLayoutItemMap.Predefined:
+        # For layout without Map items is necessary check referenceMap id not None
+        if (not scales and atlas_layout.referenceMap() and
+                atlas_layout.referenceMap().atlasScalingMode() == QgsLayoutItemMap.Predefined):
             if Qgis.QGIS_VERSION_INT >= 30900:
                 use_project = project.useProjectScales()
                 map_scales = project.mapScales()

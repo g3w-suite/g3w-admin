@@ -25,7 +25,8 @@ class BaseUserMediaHandler(object):
 
         return f"{settings.MEDIA_ROOT}{property.replace(settings.MEDIA_URL, '')}"
 
-    def __init__(self, file_name=None, layer=None, metadata_layer=None, feature=None, request=None):
+    def __init__(self, file_name=None, layer=None, metadata_layer=None, feature=None, request=None, ds_md5=None):
+        """ Initialize class with parameters """
 
         self.file_name = file_name
 
@@ -43,6 +44,9 @@ class BaseUserMediaHandler(object):
         self.feature = feature
 
         self.request = request
+
+        # Md5 of layer datasource
+        self.ds_md5 = ds_md5
 
 
     def set_layer_md5_source(self):
@@ -69,6 +73,7 @@ class BaseUserMediaHandler(object):
 
     def get_path_to_save(self):
         """ Get and build local path to save media """
+
         return '{}{}/{}'.format(settings.USER_MEDIA_ROOT, self.type, self.layer_md5_source)
 
     def get_domain(self):
@@ -89,12 +94,22 @@ class BaseUserMediaHandler(object):
         else:
             return '{}://{}'.format(schema, self.request.get_host())
 
+    def _new_path(self, file_name):
+        """ Build new path to save media file """
+
+        # 2025-12-19: use layer_md5_source to avoid porblems on change original datasource
+        return reverse('user-media', kwargs={
+                                'project_type': self.type,
+                                'ds_layer_id': self.layer_md5_source,
+                                'file_name': file_name
+                                })
+
     def new_value(self, change=False):
         """ Build and save media value from client """
 
         self.set_layer_md5_source()
         current_instance = self.get_current_instance()
-        edittypes = eval(self.layer.edittypes) if self.layer.edittypes else {}
+        edittypes = self.layer.get_edittypes() if self.layer.edittypes else {}
 
         for field, data in list(edittypes.items()):
             if data['widgetv2type'] == 'ExternalResource' and field in self.feature_properties:
@@ -104,17 +119,14 @@ class BaseUserMediaHandler(object):
                 if file_name:
                     file_name = urllib.parse.unquote(file_name)
 
+
                 path_to_save = self.get_path_to_save()
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
+                
 
                 # Check if it is a user-media view
-                is_media_view = True
-                try:
-
-                    # Before is necessary remo domain
-                    resolve(urllib.parse.urlparse(self.feature_properties[field]).path)
-                except:
-                    is_media_view = False
+                url_path = urllib.parse.urlparse(self.feature_properties[field]).path
+                is_media_view = bool(url_path) and url_path.startswith(f'{settings.MEDIA_URL}temp_uploads/')
 
                 if change:
                     if self.feature_properties[field]:
@@ -160,6 +172,23 @@ class BaseUserMediaHandler(object):
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
 
+                        # Check if file already exists, add suffix if needed
+                        # This case can happen when user upload the same image or doc 
+                        # for other feature. In this case the delete_old_flag must be set to False
+                        # to avoid to delete the file just uploaded.
+                        if os.path.exists(path_file_to_save):
+                            delete_old = False
+                            base, ext = os.path.splitext(file_name)
+                            count = 1
+                            while True:
+                                new_file_name = f"{base}_{count}{ext}"
+                                new_path_file_to_save = '{}/{}'.format(path_to_save, new_file_name)
+                                if not os.path.exists(new_path_file_to_save):
+                                    file_name = new_file_name
+                                    path_file_to_save = new_path_file_to_save
+                                    break
+                                count += 1
+
                         # for upload of the same image or doc during parallel attribute editing
                         # move delete fo temp uploaded files at the end of commit workflow.
                         shutil.copy(path_to_file_tmp, path_file_to_save)
@@ -167,11 +196,17 @@ class BaseUserMediaHandler(object):
                         # build new value
 
                         self.feature_properties[field] = '{}{}'.format(self.get_domain(),
-                                    reverse('user-media', kwargs={
-                                        'project_type': self.type,
-                                        'layer_id': self.layer.pk,
-                                        'file_name': file_name
-                                }))
+                                                                       self._new_path(file_name))
+                    else:
+                        if is_media_view:
+
+                            value = current_field_value
+                            # Try to fix old record saved with temp_uploads path
+                            if os.path.exists(path_file_to_save):
+                                value = self._new_path(file_name)
+
+                            # Restore to current_feature value
+                            self.feature_properties[field] = value
 
                     if delete_old:
                         to_delete = '{}/{}'.format(path_to_save, current_file_name)
@@ -181,12 +216,18 @@ class BaseUserMediaHandler(object):
     def change_value(self):
 
         self.set_layer_md5_source()
-        edittypes = eval(self.layer.edittypes)
+
 
     def send_file(self):
         """ Send current media saved """
-        self.set_layer_md5_source()
-        file_path = '{}/{}'.format(self.get_path_to_save(), self.file_name)
+        
+        if self.layer:
+            self.set_layer_md5_source()
+            file_path = '{}/{}'.format(self.get_path_to_save(), self.file_name)
+        else:
+
+            # Case layer not found, try to search create path by self_ds_md5
+            file_path = f'{settings.USER_MEDIA_ROOT}{self.type}/{self.ds_md5}/{self.file_name}'
         return send_file(self.file_name, file_path_mime(file_path), file_path, False)
 
 

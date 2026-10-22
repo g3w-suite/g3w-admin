@@ -27,9 +27,9 @@ class QTimeSeriesAPITestAPI(QTimeSeriesBaseTest):
         jcontent = json.loads(response.content)
 
         # check qplotly into plugins section
-        self.assertTrue('qtimeseries' in jcontent['group']['plugins'])
+        self.assertTrue('qtimeseries' in jcontent['plugins'])
 
-        plugin = jcontent['group']['plugins']['qtimeseries']
+        plugin = jcontent['plugins']['qtimeseries']
 
         self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
             self.project_raster.instance.pk))

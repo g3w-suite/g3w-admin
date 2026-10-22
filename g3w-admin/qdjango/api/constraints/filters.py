@@ -26,7 +26,7 @@ class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
         qgis_layer = metadata_layer.qgis_layer
 
         # get context from view, default 'v (view)'
-        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, view.layer.pk,
+        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, metadata_layer.layer.pk,
                                                                                 context=getattr(view, 'context', 'v'))
         if not subset_string:
             return
@@ -49,9 +49,7 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        qgis_layer = metadata_layer.qgis_layer
-
-        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, view.layer.pk,
+        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, metadata_layer.layer.pk,
                                                                                 context=getattr(view, 'context', 'v'))
         if not expression_text:
             return
@@ -62,13 +60,11 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
 class GeoConstraintsFilter(BaseFilterBackend):
     """A filter backend that applies constraints to the editing data request"""
 
-    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
-
-        qgis_layer = metadata_layer.qgis_layer
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view, **kwargs):
 
         rule_parts = []
 
-        rules = GeoConstraintRule.get_active_constraints_for_user(request.user, view.layer,
+        rules = GeoConstraintRule.get_active_constraints_for_user(request.user, metadata_layer.layer,
                                                                   context=getattr(view, 'context', 'v'))
 
         for rule in rules:

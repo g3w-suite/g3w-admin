@@ -29,8 +29,11 @@ class LayerAclAccessControlFilter(QgsAccessControlFilter):
         self.server_iface = server_iface
 
     def layerPermissions(self, layer):
-    
+
         rights = QgsAccessControlFilter.LayerPermissions()
+
+        if layer.customProperty('g3w-suite-internal', False):
+            rights.canRead = True
 
         try:
             qdjango_layer = Layer.objects.get(
@@ -63,7 +66,7 @@ class LayerAclAccessControlFilter(QgsAccessControlFilter):
 
         except Layer.DoesNotExist:
             pass
-    
+
         return rights
 
 

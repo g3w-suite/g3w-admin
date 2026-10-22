@@ -1,0 +1,17 @@
+import { getRelationId } from '../utils/getRelationId.js';
+
+const GUI = g3w.app;
+
+/**
+ * @param { Object } opts
+ * @param opts.layerId
+ * @param opts.relations
+ *
+ * @returns { Array }
+ */
+export function getRelationsInEditing({
+  layerId,
+  relations = [],
+}) {
+  return relations.filter(r => GUI.getPlugin('editing').getToolBoxById(getRelationId({ layerId, relation: r })));
+}

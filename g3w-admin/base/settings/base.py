@@ -22,21 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with DEBUG turned on in production!
 DEBUG = True
 
-# SECURITY WARNING: keep the SECRET_KEY used in production secret!
-if not hasattr(__import__(__name__), 'SECRET_KEY'):
-    try:
-        # Parse SECRET_KEY from SECRET_KEY_FILE environment variable
-        with open(os.getenv('SECRET_KEY_FILE', '/shared-volume/.secret_key')) as f:
-            SECRET_KEY = f.read().strip()
-    except:
-        print('[SECRET_KEY] setting not provided, fallback to a temporary random key')
-        # Generate a temporary secret key (on each reboot) until you
-        # provide a SECRET_KEY or SECRET_KEY_FILE variable 
-        from django.core.management.utils import get_random_secret_key
-        SECRET_KEY = get_random_secret_key()
-
 ALLOWED_HOSTS = ['localhost']
-
 
 # Application definition
 
@@ -48,21 +34,24 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    #'django.contrib.sites',
+    'django.contrib.sites',
 ]
 
 THIRD_PARTY_APPS = [
     'django_file_form',
     'django_file_form.ajaxuploader',
+    'django_filters',
     'model_utils',
     'formtools',
     'crispy_forms',
+    'crispy_bootstrap3',
     'guardian',
     'sitetree',
     'django_extensions',
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'drf_spectacular',
     'import_export',
     'mptt',
@@ -70,12 +59,27 @@ THIRD_PARTY_APPS = [
     'ajax_select',
     'modeltranslation',
     'huey.contrib.djhuey',
-    'bx_py_utils',  # required by huey_monitor
+    'bx_django_utils',  # required by huey_monitor
     'huey_monitor',
     'about',
-    'django_bleach',
+    'django_nh3',
     'django_registration',
-    'captcha'
+    'django_recaptcha',
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.microsoft",
+    "allauth.socialaccount.providers.google",
+    "allauth.usersessions",
+    # django-two-factor-auth
+    # ------------------------------------------
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+     # Used for G3W-SUITE inside iframe
+    "corsheaders"
 ]
 
 G3WADMIN_APPS = [
@@ -97,13 +101,23 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+
+    # CORS
+    "corsheaders.middleware.CorsMiddleware",
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'usersmanage.middleware.JWTAutologinMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'qdjango.process_events_middleware.process_events_middleware',
+
+    # Allauth middleware
+    'allauth.account.middleware.AccountMiddleware',
+    'allauth.usersessions.middleware.UserSessionsMiddleware'
 ]
 
 
@@ -127,10 +141,6 @@ TEMPLATES = [
             'loaders': [
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader'
-                    #('django.template.loaders.cached.Loader', [
-                    #    'django.template.loaders.filesystem.Loader',
-                    #    'django.template.loaders.app_directories.Loader'
-                    #]),
             ],
         },
     },
@@ -142,7 +152,6 @@ WSGI_APPLICATION = 'base.wsgi.application'
 ATOMIC_REQUESTS = True
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -162,10 +171,12 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
 )
 
 GUARDIAN_RAISE_403 = True
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SITETREE_MODEL_TREE = 'core.G3W2Tree'
@@ -176,19 +187,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
 LOGOUT_NEXT_PAGE = '/'
 LOGIN_REDIRECT_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'it-it'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = False
 
@@ -199,17 +210,20 @@ LOCALE_PATHS = (
 
 gettext = lambda s: s
 LANGUAGES = (
-    ('it', 'Italian'),
     ('en', 'English'),
+    ('it', 'Italian'),
     ('fr', 'French'),
     ('fi', 'Finnish'),
     ('se', 'Swedish'), # FIXME: correct language code should be "sv"
     ('ro', 'Romanian'),
     ('de', 'Deutsch'),
     ('pl', 'Polish')
+    ('bg', 'Bulgarian'),
+    ('pt', 'Portuguese'),
+    ('es', 'Español'),
 )
 
-MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
 # if prefix for default language put in to url
 PREFIX_DEFAULT_LANGUAGE = True
@@ -225,6 +239,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'UNICODE_JSON': False,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.api.authentication.BasicAuthentication403',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
 
 # FOR MEDIA
@@ -242,8 +260,6 @@ MUST_LOGIN = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
 STATIC_URL = '/static/'
 
 SITE_TITLE = 'g3w-admin'
@@ -253,7 +269,7 @@ QDJANGO_SERVER_URL = 'http://localhost'
 QDJANGO_PRJ_CACHE = True
 QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_'
 
-# data for proxy server
+# Data for proxy server
 PROXY_SERVER = False
 
 # LOGGING_CONFIG = None
@@ -292,13 +308,17 @@ CLIENTS_AVAILABLE = []
 CLIENT_DEFAULT = 'client'
 CLIENT_G3WSUITE_LOGO = 'g3wsuite_logo_h40.png'
 CLIENT_OWS_METHOD = 'GET'
-G3W_CLIENT_SEARCH_ENDPOINT = 'ows' #or 'api' for to use api layer vector with FieldFilterBackend
+
+# deprecated since 3.8
+G3W_CLIENT_SEARCH_ENDPOINT = 'api'
 
 # If True not show empty layer into toc and main map
 G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
 
-SITE_ID = 1
+# Set to show or not error ion loading layer in G3W-CLIENT
+G3W_CLIENT_SHOW_LOAD_LAYER_ERRORS = False
 
+SITE_ID = 1
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -313,7 +333,7 @@ INTERNAL_IPS = [
 # Extentions file can be uploaded by django-file-form ajax uploader
 G3WFILE_FORM_UPLOAD_FORMATS = ['qgs', 'qgz', 'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ods']
 
-G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv', 'gpkg']
+G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv', 'gpkg', 'pdf']
 G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS = ['geotiff', 'xls', 'csv', 'gpkg']
 
 # Setting to activate/deactivate user password reset by email.
@@ -337,10 +357,17 @@ REGISTRATION_ACTIVE_BY_ADMIN = False
 # ------------------------------
 PASSWORD_CHANGE_FIRST_LOGIN = False
 
+# TWO FACTOR AUTHENTICATION SETTINGS
+# ----------------------------------
+ENABLE_TWO_FACTOR_AUTH = False
+
+# DJANGO OTP SETTINGS
+# ----------------------
+OTP_EMAIL_SUBJECT = 'Your second factor token for G3W-SUITE'
+
 
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
-
 LOAD_QPLOTLY_FROM_PROJECT = False
 
 # VENDOR KEYS SETTINGS
@@ -354,17 +381,19 @@ ANONYMOUS_USER_SESSIONID = '_anonymous_g3w_suite_sessionid_'
 # Custom token session client cookie name
 G3W_CLIENT_COOKIE_SESSION_TOKEN = 'g3wclientsessiontoken'
 
-# BLEACH SETTINGS
+# NH3 SETTINGS
 # ----------------
 # Which HTML tags are allowed
-BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr', 'td', 'th', 'b', 'ul', 'li', 'ol',
-                       'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span']
-BLEACH_STRIP_TAGS = True
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
-BLEACH_ALLOWED_STYLES = [
+NH3_ALLOWED_TAGS = {'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr', 'td', 'th', 'b', 'ul', 'li', 'ol',
+                       'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span'}
+NH3_STRIP_TAGS = True
+NH3_ALLOWED_ATTRIBUTES = {
+    "*": {'href', 'title', 'style', 'src', 'target', 'class'},
+}
+NH3_ALLOWED_STYLES = [
     'background-color', 'color', 'font-size'
 ]
-BLEACH_STRIP_COMMENTS = True
+NH3_STRIP_COMMENTS = True
 
 # For reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -383,4 +412,104 @@ RECAPTCHA_REQUIRED_SCORE = 0.85
 # Settings for ReCaptcha v2. Default checkbox
 RECAPTCHA_VERSION2_TYPE = 'checkbox' # or 'invisible'
 
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
+
+# SOCIAL ACCOUNT LOGIN SETTINGS
+# -----------------------------
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_ADAPTER = 'usersmanage.vendors.allauth.adapter.G3WSocialAccountAdapter'
+
+# Activate/deactivate user login session tracking
+USERSESSIONS_TRACK_ACTIVITY = False
+
+SOCIALACCOUNT_ONLY = True
+SOCIALACCOUNT_USER_ROLE = 'Viewer Level 1'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# For iframe
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Placehold service
+PLACEHOLD_SERVICE = 'https://placehold.co/'
+
+# Default elasticsearch settings
+# --------------------------------
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://localhost:9200',
+        #'http_auth': ('username', 'password')
+    }
+}
+
+# Activate/deactivate es indexing projects
+QES_INDEXING_PROJECT = True
+
+QES_SEARCH_QUERY = {
+                    "bool": {
+                        "should": [
+                            {
+                                "match_phrase": {
+                                    "text_content": {
+                                    "query": '$query_text',
+                                    "boost": 4
+                                    }
+                                }
+                            },
+                            {
+                                "match": {
+                                    "text_content": {
+                                    "query": '$query_text',
+                                    "operator": "and",
+                                    "boost": 2
+                                    }
+                                }
+                            },
+                            {
+                                "wildcard": {
+                                    "text_content.raw": {
+                                    "value": "*$query_text*",
+                                    "boost": 1
+                                    }
+                                }
+                            },
+                            {
+                                "multi_match": {
+                                    "query": '$query_text',
+                                    "fields": ["text_content"],
+                                    "fuzziness": 1,
+                                    "boost": 1
+                                }
+                            }
+                        ],
+                        "minimum_should_match": 1
+                        }
+                    }
+
+# Elasticsearch default sort by layer_id ascending
+QES_SEARCH_SORT = { 
+    "layer_id": { 
+        "order": "asc" 
+    } 
+}
+
+# By project id and qgis_layer_id is posssible se fileds to index
+QES_INDEXING_FIELDS = {}
+
+# If QES_INDEXING_CRON_SCHEDULE is defined, then the periodic task will be executed according to the schedule defined in settings, i.e.:
+# indexing every 4 hours,
+# from huey import crontab
+# QES_INDEXING_CRON_SCHEDULE = crontab(hour='*/4')
+QES_INDEXING_CRON_SCHEDULE = None
+
+# RESERVERD PRINT LAYOUT LABELS
+# ------------------------
+# Important: add here reserved labels for print layout, in particular if they are used by plugins
+# Reserved QGIS print layout labels
+RESERVED_PRINT_LAYOUT_LABELS = [
+    'g3w_username', # Reserved for the username of the logged in user
+    'g3w_user_email', # Reserved for the email of the logged in user
+    'g3w_user_first_name', # Reserved for the first name of the logged in user
+    'g3w_user_last_name' # Reserved for the last name of the logged in user
+]
+
+

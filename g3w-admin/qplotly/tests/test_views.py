@@ -16,7 +16,7 @@ from django.test import override_settings
 from django.test.client import Client
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject
 from django_downloadview.test import assert_download_response
-from django.utils.text import slugify
+from core.utils.slugify import slugify
 from qplotly.models import QplotlyWidget
 
 from .test_utils import CURRENT_PATH, QGS_FILE, TEST_BASE_PATH, get_data_plotly_settings_from_file, DATASOURCE_PATH
@@ -39,29 +39,28 @@ class QplotlyTestViews(QdjangoTestBase):
 
         cls.client = Client()
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
         # main project group
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
+        self.project_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.group = self.project_group
+        self.project.save()
         qgis_project_file.close()
 
         file = File(open(f'{DATASOURCE_PATH}countries_pie_plot_with_title.xml', 'r'))
-        cls.countries_plot_xml = file.read()
+        self.countries_plot_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}cities_histogram_plot.xml', 'r'))
-        cls.cities_histogram_plot_xml = file.read()
+        self.cities_histogram_plot_xml = file.read()
         file.close()
 
     def test_download_xml(self):
@@ -111,8 +110,11 @@ class QplotlyTestViews(QdjangoTestBase):
 
         self.assertFalse(qwidget.show_on_start_client)
 
-        # get download url
-        url = reverse('qplotly-project-layer-widget-showonstartclient', kwargs={
+        # Get action url
+        # action can be 'showonstartclient' or 'showinsidebar
+        # case showonstartclient
+        url = reverse('qplotly-project-layer-widget-action-set', kwargs={
+            'action': 'showonstartclient',
             'pk': qwidget.pk
         })
 
@@ -120,9 +122,8 @@ class QplotlyTestViews(QdjangoTestBase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
 
-        # test set
+        # Test set
         self.assertTrue(self.client.login(username='admin01', password='admin01'))
-        print(url)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -131,3 +132,38 @@ class QplotlyTestViews(QdjangoTestBase):
 
         qwidget.refresh_from_db()
         self.assertTrue(qwidget.show_on_start_client)
+
+        response = self.client.get(f'{url}?show=0')
+        self.assertEqual(response.status_code, 200)
+
+        jresponse = json.loads(response.content)
+        self.assertEqual(jresponse['status'], 'ok')
+
+        qwidget.refresh_from_db()
+        self.assertFalse(qwidget.show_on_start_client)
+
+        # case showposition
+        url = reverse('qplotly-project-layer-widget-action-set', kwargs={
+            'action': 'showposition',
+            'pk': qwidget.pk
+        })
+
+        # test login required
+        response = self.client.post(url, data={'value': 'query'}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        jresponse = json.loads(response.content)
+        self.assertEqual(jresponse['status'], 'ok')
+
+        qwidget.refresh_from_db()
+        self.assertEqual(qwidget.show_position, 'query')
+
+        response = self.client.post(url, data={'value': 'sidebar'})
+        self.assertEqual(response.status_code, 200)
+
+        jresponse = json.loads(response.content)
+        self.assertEqual(jresponse['status'], 'ok')
+
+        qwidget.refresh_from_db()
+        self.assertEqual(qwidget.show_position, 'sidebar')
+

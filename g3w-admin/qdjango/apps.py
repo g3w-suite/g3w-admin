@@ -11,7 +11,11 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_migrate
 
-from qgis.core import QgsApplication, QgsProject, QgsPathResolver
+from qgis.core import (
+    QgsApplication,
+    QgsProject,
+    QgsPathResolver,
+)
 from qgis.server import QgsServer, QgsServerSettings, QgsConfigCache
 
 from usersmanage.configs import *
@@ -33,6 +37,10 @@ if settings.DEBUG:
 # Setup AUTH DB
 if hasattr(settings, 'QGIS_AUTH_DB_DIR_PATH') and settings.QGIS_AUTH_DB_DIR_PATH:
     os.environ['QGIS_AUTH_DB_DIR_PATH'] = settings.QGIS_AUTH_DB_DIR_PATH
+
+# Setup AUTH DB URI
+if hasattr(settings, 'QGIS_AUTH_DB_URI') and settings.QGIS_AUTH_DB_URI:
+    os.environ['QGIS_AUTH_DB_URI'] = settings.QGIS_AUTH_DB_URI
 
 if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_FILE:
     auth_file = settings.QGIS_AUTH_PASSWORD_FILE
@@ -98,9 +106,24 @@ def init_qgis():
     if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
         if QgsApplication.authManager().isDisabled():
             raise ImproperlyConfigured('QGIS AuthManager is not enabled')
+        
+        # If using the QPSQL auth storage, ensure it's writable and initialized (creates tables if missing)
+        reg = QgsApplication.authManager().authConfigurationStorageRegistry()
+        storages = list(reg.storages())
+        qpsql_storage = next((st for st in storages if "QPSQL:" in st.name()), None)
+        if qpsql_storage is not None:
+            qpsql_storage.setReadOnly(False)
+            qpsql_storage.initialize()  # create tables if missing
 
         if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
             raise ImproperlyConfigured('Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
+
+        # Validate that the master password is persisted/available
+        if qpsql_storage is not None:
+            if not qpsql_storage.masterPasswords():
+                raise ImproperlyConfigured('QGIS Auth DB master password is not set in the database')
+        elif not QgsApplication.authManager().masterPasswordIsSet():
+            raise ImproperlyConfigured('QGIS Auth DB master password is not set')
 
     # Manipulate environment variables here
     os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
@@ -111,6 +134,10 @@ def init_qgis():
 
     # Singleton server instance (reused across each request)
     QGS_SERVER = QgsServer()
+
+    # Initialize GDAL drivers that are required when GDAL is compiled with ECW support
+    QgsApplication.restoreGdalDriver('ECW')
+    QgsApplication.restoreGdalDriver('JP2ECW')
 
     QGS_APPLICATION.messageLog().messageReceived.connect(get_qgis_log)
 

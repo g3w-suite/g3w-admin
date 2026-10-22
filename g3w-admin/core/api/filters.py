@@ -10,6 +10,7 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2020-02-10'
 __copyright__ = 'Copyright 2020, Gis3w'
 
+from django.contrib.gis.geos import GEOSGeometry, GEOSException
 import json
 from qgis.core import (
     QgsCoordinateReferenceSystem,
@@ -19,11 +20,13 @@ from qgis.core import (
     QgsCoordinateTransformContext,
     QgsExpressionContextUtils,
     QgsJsonUtils,
+    QgsGeometry
 )
 from rest_framework.exceptions import ParseError
 from urllib.parse import unquote
 from core.utils.qgisapi import get_qgis_layer, get_qgis_features
 from qdjango.models import Layer
+import re
 
 class BaseFilterBackend():
     """Base class for QGIS request filters"""
@@ -142,8 +145,10 @@ class OrderingFilter(BaseFilterBackend):
                 if not self._is_valid_field(qgis_layer, ordering, view):
                     continue
 
+                # Because the fields inside a QGIS expression must be declared inside
+                # the expression string with the double brackets ("field_name")
                 ordering_rules.append(QgsFeatureRequest.OrderByClause(
-                    ordering, ascending))
+                    f'"{ordering}"', ascending))
 
             if ordering_rules:
                 order_by = QgsFeatureRequest.OrderBy(ordering_rules)
@@ -231,11 +236,7 @@ class SuggestFilterBackend(BaseFilterBackend):
         qgis_layer = metadata_layer.qgis_layer
 
         # Try to get param from GET
-        suggest_value = request.query_params.get('suggest')
-
-        if not suggest_value:
-            # Try to get from POST
-            suggest_value = request.data.get('suggest')
+        suggest_value = request.query_params.get('suggest', request.data.get('suggest'))
 
         if suggest_value:
 
@@ -274,13 +275,11 @@ class FieldFilterBackend(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        # Try to get param from GET
-        suggest_value = request.query_params.get('field')
+        # Check for field parameter
+        suggest_value = request.query_params.get('field', request.data.get('field'))
 
-        if not suggest_value:
-
-            # Try to get from POST
-            suggest_value = request.data.get('field')
+        # Check for formatter parameter
+        formatter = str(request.query_params.get('formatter', request.data.get('formatter')))
 
         if suggest_value:
 
@@ -289,7 +288,22 @@ class FieldFilterBackend(BaseFilterBackend):
             # field can be multiple separated by ','
             # i.e. $field=name|eq|Rome,state|eq|Italy
 
-            fields = suggest_value.split(',')
+            #pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
+            #pattern = r',(?=(?:[^()[\]]*(?:\([^()]*\)|\[[^\[\]]*\]))*[^()[\]]*$)'
+            #fields = re.split(pattern, suggest_value)
+
+            pattern = re.compile(r'\|(AND|OR),')
+            fields = []
+            last_index = 0
+            for match in pattern.finditer(suggest_value):
+                end = match.end()  # where separator end
+                op = match.group(1)
+                segment = suggest_value[last_index:match.start()] + f'|{op}'
+                fields.append(segment)
+                last_index = end
+            # Add last part
+            fields.append(suggest_value[last_index:])
+
 
             count = 0
             nfields = len(fields)
@@ -309,6 +323,12 @@ class FieldFilterBackend(BaseFilterBackend):
                         raise ParseError(
                             'Invalid field string supplied for parameter field')
 
+                # Make lowercase field_operator
+                field_operator = field_operator.lower()
+
+                # URL-decode field_value (it is passed as a URL parameter)
+                field_value = unquote(field_value)
+
                 if not self._is_valid_field(qgis_layer, field_name):
                     raise Exception(
                         f"{field_name} doesn't belong from layer {qgis_layer.name()}!")
@@ -318,45 +338,49 @@ class FieldFilterBackend(BaseFilterBackend):
                     pre_post_operator = '%' if field_operator in (
                         'like', 'ilike') else ''
 
-                    if "formatter" in request.query_params:
-                        formatter = request.query_params.get("formatter")
-                        if (
-                            formatter.isnumeric()
-                            and int(formatter) == 1
-                            and view.layer.has_value_relation_widget(field_name)
-                        ):
-                            config = qgis_layer.editorWidgetSetup(
-                                qgis_layer.fields().indexFromName(field_name)
-                            ).config()
-                            relation_qgs_layer = get_qgis_layer(
-                                view.layer.project.layer_set.get(qgs_layer_id=config["Layer"])
-                            )
+                    if (formatter
+                        and formatter.isnumeric()
+                        and int(formatter) == 1
+                        and view.layer.has_value_relation_widget(field_name)
+                    ):
+                        config = qgis_layer.editorWidgetSetup(
+                            qgis_layer.fields().indexFromName(field_name)
+                        ).config()
+                        relation_qgs_layer = get_qgis_layer(
+                            view.layer.project.layer_set.get(qgs_layer_id=config["Layer"])
+                        )
 
-                            qfr = QgsFeatureRequest()
-                            pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
-                            vr_single_search_expression = (
-                                "{field_name} {field_operator} {field_value}".format(
-                                    field_name=self._quote_identifier(config["Value"]),
-                                    field_operator=self.COMPARATORS_MAP[field_operator],
-                                    field_value=self._quote_value(
-                                        f"{pre_post_operator}{unquote(field_value)}{pre_post_operator}"
-                                    ),
-                                )
+                        qfr = QgsFeatureRequest()
+                        pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
+                        vr_single_search_expression = (
+                            "{field_name} {field_operator} {field_value}".format(
+                                field_name=self._quote_identifier(config["Value"]),
+                                field_operator=self.COMPARATORS_MAP[field_operator],
+                                field_value=self._quote_value(
+                                    f"{pre_post_operator}{unquote(field_value)}{pre_post_operator}"
+                                ),
                             )
-                            qfr.combineFilterExpression(vr_single_search_expression)
-                            features = get_qgis_features(relation_qgs_layer, qfr)
+                        )
 
-                            if len(features) > 0:
-                                field_operator = "in"
-                                in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
-                                field_value = f"({in_content})"
+
+                        qfr.combineFilterExpression(vr_single_search_expression)
+                        features = get_qgis_features(relation_qgs_layer, qfr)
+
+                        if len(features) > 0:
+                            field_operator = "in"
+                            in_content = ",".join([str(f[config["Key"]]) for f in features])
+                            field_value = f"({in_content})"
 
                     pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
                     if field_operator != 'in':
                         quoted_field_value = self._quote_value(
                             f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                     else:
-                        quoted_field_value = field_value
+                        # Case 'in' operator
+                        # Expexted format: [1,2,3] or [a,b,c] or (1,2,3) or (a,b,c)
+                        single_values = field_value[1:-1].split(',')
+                        field_value = f"({','.join([self._quote_value(sv.strip()) for sv in single_values])})"
+                        quoted_field_value = unquote(field_value)
 
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),
@@ -402,8 +426,11 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
             """
 
             fields = layer.qgis_layer.fields()
+            # NOTE: the `encoding` parameter of QgsJsonUtils.stringToFeatureList
+            # was removed in QGIS 4.2. Calling with 2 args is compatible with
+            # both QGIS 3.44 (encoding defaults to None) and QGIS 4.2.
             form_feature = QgsJsonUtils.stringToFeatureList(
-                json.dumps(form_data), fields, None)[0]
+                json.dumps(form_data), fields)[0]
             for k, v in form_data['properties'].items():
                 form_feature.setAttribute(k, v)
 
@@ -437,4 +464,88 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
 
                 except:
                     raise Exception("Layer or project could not be found!")
+
+
+class WKTPolyFilter(BaseFilterBackend):
+    """
+    A REST API filter for filter data by WKT geometry (Polygon/MultiPolygon) with intersects/contains method
+    """
+
+    def _get_wkt_from_request(self, request_data):
+        """Get WKT from request and validate it
+
+        :param request_data: request data
+        :type request_data: dict
+        :raises ParseError: parse error
+        :return: wkt string, comparison method (intersects, contains)
+        :rtype: str, str
+        """
+
+        # Check for geo_filter_wkt
+        wkt = request_data.get('geo_filter_wkt')
+
+        if not wkt:
+            return None, None
+
+        # Check for Comparison method
+        comp_method = request_data.get('geo_filter_mode')
+
+        if not comp_method:
+
+            # Default method
+            comp_method = 'intersects'
+
+        else:
+            if comp_method not in ('intersects, contains'):
+                raise ParseError("'geo_filter_mode' must be one of ('intersects', 'contains')")
+
+        # Validate WKT
+        # ---------------------------------------
+        err_msg = 'The WKT geometry is not valid'
+        try:
+            geometry = GEOSGeometry(wkt)
+
+            # Check topology of the geometry
+            if not geometry.valid:
+                raise ParseError(err_msg)
+
+        except (GEOSException, ValueError) as e:
+            raise ParseError(f"{err_msg}: {e}")
+
+        return wkt, comp_method
+
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
+
+        # only for layer with geometry
+        if not qgis_layer.isSpatial():
+            return
+
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        wkt, comp_method = self._get_wkt_from_request(request_data)
+
+        if wkt:
+
+            # Check if necessary reproject
+            if hasattr(view, 'reproject') and view.reproject:
+
+                geom = QgsGeometry.fromWkt(wkt)
+                from_srid = view.layer.project.group.srid.auth_srid
+                to_srid = view.layer.srid
+                ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(
+                    from_srid), QgsCoordinateReferenceSystem(to_srid), QgsCoordinateTransformContext())
+                geom.transform(ct)
+
+                # Restore to WKT
+                wkt = geom.asWkt()
+
+            # Build expression string
+            expression = f"{comp_method}(geom_from_wkt('{wkt}'), $geometry)"
+
+            qgis_feature_request.combineFilterExpression(expression)
 

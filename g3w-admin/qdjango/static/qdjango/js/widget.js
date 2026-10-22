@@ -23,6 +23,9 @@ ga.Qdjango = {
         detail: "/" + SITE_PREFIX_URL + "qdjango/api/expressionrule/detail/",
       },
     },
+    search: {
+      alternativeuniqueselect: "/" + SITE_PREFIX_URL + "qdjango/api/alternativeuniquelayer/",
+    }
   },
   data: {
     viewers: [],
@@ -110,8 +113,12 @@ ga.Qdjango.widgetEditor = {
         })
         break
       case "search":
+
+        paginate = $(".rightCol").find("#paginate").prop('checked');
+
         obj = {
           title: $(".rightCol").find("#title").val(), // Search title
+          paginate: paginate,
           query: "simpleWmsSearch", // It can be removed?
           usewmsrequest: true, // Always set to true
           fields: [],
@@ -169,7 +176,7 @@ ga.Qdjango.widgetEditor = {
           }
 
           // Add relation_reference
-          if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
+          if (_.indexOf(fieldname, ga.Qdjango.localVars.layer_edittypes) != -1 && ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
               (fieldwidgettype == 'selectbox')) {
             options['relation_reference'] = true ? v.find(".cmpRelationReference").find("select").val() == '1': false
           }
@@ -184,6 +191,7 @@ ga.Qdjango.widgetEditor = {
               type: inputtype, // TIPO DI CAMPO //
               options: options,
             },
+            alternativeuniquelayer: v.find(".cmpAlternativeUniqueLayerSelect").find("select").val(), // Alternative layer for unique values
             logicop: v.find("select.logic_operator").val(),
           })
         })
@@ -252,7 +260,12 @@ ga.Qdjango.widgetEditor = {
     var textInput = $('<input class="form-control" type="text" name="resultfield_text" value="' + alInVa + '">')
 
     var tiVa = that.isset(values) && that.isset(values.title) ? values.title : ""
+    var paVa = that.isset(values) && that.isset(values.paginate) ? values.paginate : false
     var title = $('<input class="form-control" type="text" name="title" id="title" value="' + tiVa + '">')
+    var paginate = $('<input type="checkbox" name="paginate" id="paginate" value="1">')
+    if (paVa) {
+      paginate.prop('checked', true);
+    }
 
     var div = $(
       '<div class="bloccoGenerale box box-danger">\
@@ -265,14 +278,21 @@ ga.Qdjango.widgetEditor = {
 							<div class="row">\
 								<div class="form-group col-md-12">\
 									<div class="controls title">\
-									<label class="control-label requiredField">' +
-        gettext("Search title") +
-        "</label>\
+									<label class="control-label requiredField">\
+									' + gettext("Search title") + '\
+                                    </label>\
+									</div>\
+								</div>\
+								<div class="form-group col-md-12">\
+									<div class="controls paginate">\
+									<label class="control-label requiredField">\
+									' + gettext("Paginate resutls") + '\
+                                    </label>\
 									</div>\
 								</div>\
 							</div>\
 						<div>\
-					</div>"
+					</div>'
     )
 
     var onAddAction = function (btn, values) {
@@ -311,6 +331,11 @@ ga.Qdjango.widgetEditor = {
       .find(".title")
       .append(title)
       .append('<div class="help-block">' + gettext("Client search title identification") + "</div>")
+
+    div
+      .find(".paginate")
+      .append(paginate)
+      .append('<div class="help-block">' + gettext("Check it if you want paginate the search results") + "</div>")
 
     div.find(".fieldSelect").first().append(fieldSelect)
     div.find(".textInput").first().append(textInput)
@@ -365,30 +390,38 @@ ga.Qdjango.widgetEditor = {
 										<option value="ltgt">&lt;&gt; (' + gettext("not equal") + ')</option>\
 										<option value="gte">&gt;= (' + gettext("greater than equal") + ')</option>\
 										<option value="lte">&lt;= (' + gettext("lower than equal") + ')</option>\
+										<option value="in">IN (' + gettext("within") + ')</option>\
 										<option value="LIKE">LIKE (' + gettext("like case sensitive") + ")</option>\
 									</select>"
     )
 
-    // si aggiunge e si fa apparire la dipendenza se seleziona
-
+    // Add and show the dependency if selected
     var cmpDependanceSelect = $('<select class="form-control" name="dependence_field">' + '<option value=""> ----- </option>' + "</select>")
-
 
     var options = that.widgettype
 
     var widgetSelect = $('<select class="form-control" name="widget_type"></select>')
     $.each(options, function (k, i) {
-      widgetSelect.append('<option value="' + k + '">' + i + "</option>")
+        widgetSelect.append('<option value="' + k + '">' + i + "</option>")
     })
 
-    // add widget types
+    // Add widget types
     if (this.layer_type != "spatialite") {
       cmpOperatorSelect.append('<option value="ILIKE">ILIKE (' + gettext("like not case sensitive") + ")</option>")
     }
 
     if (that.isset(values) && that.isset(values.filterop)) cmpOperatorSelect.val($("<div/>").html(values.filterop).text())
 
-    // add control on cmpOperatorSelect for field type:
+    // Add select for alternative layer for unique values field:
+    // add a select where you can choose a layer
+    // from which to take the unique values for the field indicated in the widget
+    // this is useful for very large layers, for example the cadastre,
+    // where performing a unique value search would be very slow
+
+    var alternativeUniqueLayerSelect = $('<select class="form-control" name="alt_unique_layer"></select>')
+
+
+    // Add control on cmpOperatorSelect for field type:
     fieldSelect.on("change", function () {
 
       var likeopts = cmpOperatorSelect.find("option[value='LIKE']")
@@ -407,10 +440,24 @@ ga.Qdjango.widgetEditor = {
       // Case QDATETIME
       //if (_.indexOf(['QDATETIME', 'QDATE'], $(this).find("option:selected").data().type) != -1 &&
       widgetSelect.find('[value="datetimebox"]').remove();
-      if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
-        // Append 'DatetimBox' to widget selectbox
-        widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
+      if (_.indexOf([$(this).val()], ga.Qdjango.localVars.layer_edittypes) != -1) {
+        if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
+          // Append 'DatetimBox' to widget selectbox
+          widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
+        }
+
+        // Remove `AutoCompleteBox` from widget type list
+        if (ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type == 'ValueRelation') {
+          widgetSelect.find("option[value=\"autocompletebox\"]").hide();
+        } else {
+          widgetSelect.find("option[value=\"autocompletebox\"]").show();
+        }
       }
+
+      // Tringger widgetSelect change if widgetSelect 'selectbox' or 'autocompletebox' are setted
+      if (widgetSelect.val() == "selectbox" || widgetSelect.val() == "autocompletebox") {
+        widgetSelect.trigger("change")
+      } 
 
     })
 
@@ -476,6 +523,14 @@ ga.Qdjango.widgetEditor = {
 										' + gettext("This field has a 'ReletaionReference' form widget active, do you want use if for searching?") + '\
 										</div>\
 									</div>\
+                  <div class="col-md-6 cmpAlternativeUniqueLayer invisible">\
+										<div class="controls cmpAlternativeUniqueLayerSelect ">\
+											<label class="control-label">' + gettext("Use Alternative Unique Layer") + '</label>\
+										</div>\
+										<div class="help-block">\
+										' + gettext("Is possibile to select an alternative layer to use for get unique values") + '\
+										</div>\
+									</div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3">\
@@ -528,6 +583,7 @@ ga.Qdjango.widgetEditor = {
     div.find(".cmpDependanceSelect").append(cmpDependanceSelect)
     div.find(".widgetType").append(widgetSelect)
     div.find(".cmpRelationReferenceSelect").append(relationReferenceSelect)
+    div.find(".cmpAlternativeUniqueLayerSelect").append(alternativeUniqueLayerSelect)
 
     $(".rightCol").append(div)
 
@@ -544,11 +600,44 @@ ga.Qdjango.widgetEditor = {
 
         // Check if field has RelationReference widget
         fieldname = div.find(".fieldSelect").find("select").val();
-        if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
+        if (_.indexOf(fieldname, ga.Qdjango.localVars.layer_edittypes) != -1 && ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
           div.find(".cmpRelationReference").removeClass("invisible")
         } else {
           div.find(".cmpRelationReference").addClass("invisible")
         }
+
+        // Show alternative unique layer select
+        div.find(".cmpAlternativeUniqueLayer").removeClass("invisible")
+
+        // Get lust of alternative layers for unique values
+        data = {
+          'field': div.find('[name="searchfield"]').val(),
+        }
+        $.each(that.layerColumns, function (i, v) {
+          if (v.name === data.field) {
+            data['type'] = v.type;
+          }
+        });
+        $.ajax({
+          url: ga.Qdjango.urls.search.alternativeuniqueselect + ga.Qdjango.localVars['project_id'] + "/" + ga.Qdjango.localVars['layer_name'] + "/",
+          type: "POST",
+          dataType: "json",
+          data: data,
+          success: function (data) {
+            var $select_alt = div.find('[name="alt_unique_layer"]');
+            $select_alt.empty();
+            $select_alt.append('<option value=""> ------ </option>');
+            $.each(data.data, function (i, v) {
+              
+              //var selected = '';
+              var selected = that.isset(values) && that.isset(values.alternativeuniquelayer) && values.alternativeuniquelayer === v.id ? "selected" : ""
+              $select_alt.append('<option value="' + v.id + '" ' + selected + '>' + v.name + "</option>");
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error("Error fetching alternative layers:", error);
+          }
+        });
 
         // On select dependance change
         $select.find("select").on("change", function(){
@@ -579,10 +668,19 @@ ga.Qdjango.widgetEditor = {
       } else {
         div.find(".cmpDependanceSelectLabel").addClass("invisible")
         div.find(".cmpRelationReference").addClass("invisible")
+        div.find(".cmpAlternativeUniqueLayer").addClass("invisible")
         $select.addClass("invisible")
         $dependence_strict.addClass("invisible");
         $numdigaut.hide()
       }
+
+      // Activate IN operator for selectbox and autocompletebox
+        if ($(this).val() == "selectbox" || $(this).val() == "autocompletebox") {
+            cmpOperatorSelect.find("option[value='in']").prop("disabled", false);
+        } else {
+            cmpOperatorSelect.find("option[value='in']").prop("disabled", true);
+        }
+
     })
 
     widgetSelect.trigger("change")
@@ -1345,10 +1443,10 @@ _.extend(g3wadmin.widget, {
     Build singlelayer constraints table
      */
   _singlelayerConstraintsTable: function (layer_pk, res) {
-    var $div = $('<div style="margin-left:40px;">')
+    var $div = $('<div class="layer-sub-panel singlelayer-constraints-list" style="margin-left:40px;">')
 
     // add new constraint btn
-    $newConstraint = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> ' + gettext("New alphanumeric constraints") + "</a>")
+    $newConstraint = $('<a href="#" class="btn btn-sm btn-default btn-add-singlelayer-constraint"><i class="ion ion-plus-circled"></i> ' + gettext("New alphanumeric constraints") + "</a>")
     $newConstraint.on("click", function () {
       ga.widget._singlelayerConstraintForm($newConstraint, null, {
         "modal-title": gettext("New alphanumeric constraints"),
@@ -1520,20 +1618,21 @@ _.extend(g3wadmin.widget, {
 _.extend(g3wadmin.tpl, {
   singlelayerConstraintRules: _.template(
     '\
-		<div class="intro" style="margin-bottom: 20px;"><%= intro %></div>\
-        <div class="row">\
-            <div class="col-md-12 rules-list">\
+        <div class="constraint-rules-form">\
+            <div class="constraint-rules-intro">\
+                <i class="fa fa-cubes" aria-hidden="true"></i>\
+                <div>\
+                    <strong>' +
+      gettext("Constraint rules") +
+      '</strong>\
+                    <span><%= intro %></span>\
+                </div>\
             </div>\
-        </div>\
-        <div class="row">\
-            <div class="col-md-12">\
-                <div class="row text-center">\
-                    <div class="col-md-12">\
-                        <button type="button" class="btn btn-success add-rule"><i class="glyphicon glyphicon-plus"></i> ' +
+            <div class="rules-list"></div>\
+            <div class="constraint-rules-actions">\
+                <button type="button" class="btn btn-success add-rule"><i class="fa fa-plus"></i> ' +
       gettext("Add") +
       "</button>\
-                    </div>\
-                </div>\
             </div>\
         </div>\
     "
@@ -1541,67 +1640,53 @@ _.extend(g3wadmin.tpl, {
 
   singlelayerConstraintRule: _.template(
     '\
-    <div class="row rule-form" style="border-top: 1px solid gray;">\
-        <div class="col-md-12 form-errors" style="color: #ff0000;"></div>\
-        <div class="col-md-10 rule-fields">\
-            <form action="<%= action %>" id="#constraint-rule-<%= rulePk %>">\
+    <div class="rule-form">\
+        <div class="form-errors"></div>\
+        <div class="rule-fields">\
+            <form action="<%= action %>" id="constraint-rule-<%= rulePk %>">\
                 <input type="hidden" name="pk" value="<%= rulePk %>" />\
                 <input type="hidden" name="constraint" value="<%= constraintPk %>" />\
-                <div class="row">\
-                    <div class="col-md-4">\
-                        <div class="row">\
-                            <div class="col-md-12">\
-                            <div class="form-group">\
-                                <label class="control-label ">Viewer</label>\
-                                <div class="controls ">\
-                                    <select name="user" class="select form-control">\
-                                        <option value="">---------</option>\
-                                    </select>\
-                                </div>\
-                            </div>\
+                <div class="rule-grid">\
+                    <div class="rule-targets">\
+                        <div class="form-group rule-field">\
+                            <label class="control-label">' +
+      gettext("Viewer") +
+      '</label>\
+                            <div class="controls">\
+                                <select name="user" class="select form-control">\
+                                    <option value="">---------</option>\
+                                </select>\
                             </div>\
                         </div>\
-                        <div class="row">\
-                            <div class="col-md-12">\
-                            <div class="form-group">\
-                                <label class="control-label ">User viewer group</label>\
-                                <div class="controls ">\
-                                    <select name="group" class="select form-control">\
-                                        <option value="">---------</option>\
-                                    </select>\
-                                </div>\
-                            </div>\
+                        <div class="form-group rule-field">\
+                            <label class="control-label">' +
+      gettext("User viewer group") +
+      '</label>\
+                            <div class="controls">\
+                                <select name="group" class="select form-control">\
+                                    <option value="">---------</option>\
+                                </select>\
                             </div>\
                         </div>\
                     </div>\
-                    <div class="col-md-8">\
-                        <div class="row">\
-                            <div class="col-md-12">\
-                            <div class="form-group">\
-                                <label class="control-label "><%= rule_form_label %></label>\
-                                <div class="controls ">\
-                                    <textarea name="rule" style="width:100%;"></textarea>\
-                                </div>\
-                            </div>\
+                    <div class="rule-expr">\
+                        <div class="form-group rule-field">\
+                            <label class="control-label"><%= rule_form_label %></label>\
+                            <div class="controls">\
+                                <textarea name="rule" class="form-control" rows="6"></textarea>\
                             </div>\
                         </div>\
                     </div>\
                 </div>\
             </form>\
         </div>\
-        <div class="col-md-2 rule-actions">\
-            <div class="row" style="font-size: 24px;">\
-                <span class="col-xs-2 icon">\
-                    <a href="#" class="bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
+        <div class="rule-actions">\
+            <a href="#" class="rule-action-btn bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Save") +
       '"><i class="fa fa-save"></i></a>\
-                </span>\
-                <span class="col-xs-2 icon">\
-                    <a href="#" class="bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
+            <a href="#" class="rule-action-btn rule-action-btn-danger bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Delete") +
-      '"><i class="ion ion-trash-b"></i></a>\
-                </span>\
-            </div>\
+      '"><i class="fa fa-trash"></i></a>\
         </div>\
     </div>\
     '
@@ -1609,54 +1694,75 @@ _.extend(g3wadmin.tpl, {
 
   singlelayerConstraintForm: _.template(
     '\
-        <form action="<%= action %>" id="form-singlelayerconstraint-<%= layerId %>">\
+        <form action="<%= action %>" class="alphaconstraint-form" id="form-singlelayerconstraint-<%= layerId %>">\
             <input type="hidden" name="layer" value="<%= layerId %>" />\
             <input type="hidden" name="active" value="1" />\
-            <div class="row">\
-				<div class="col-md-12">\
-					<div class="info"><h4>' +
+            <div class="alphaconstraint-shell">\
+                <div class="alphaconstraint-intro">\
+                    <i class="fa fa-filter" aria-hidden="true"></i>\
+                    <div>\
+                        <strong>' +
+      gettext("Alphanumeric constraint") +
+      '</strong>\
+                        <span>' +
       gettext("Set a name and a possible description for the alphanumeric constraint") +
-      ':</h4></div>\
-					<div class="form-group">\
-						<label class="control-label ">' +
+      '</span>\
+                    </div>\
+                </div>\
+                <div class="form-group alphaconstraint-field">\
+                    <label class="control-label" for="id_name">' +
       gettext("Name") +
       '</label>\
-						<div class="controls ">\
-							<input class="form-control" name="name" style="width:100%;"></input>\
-						</div>\
-					</div>\
-					<div class="form-group">\
-						<label class="control-label ">' +
+                    <div class="controls">\
+                        <input class="form-control" id="id_name" name="name" />\
+                    </div>\
+                </div>\
+                <div class="form-group alphaconstraint-field">\
+                    <label class="control-label" for="id_description">' +
       gettext("Description") +
       '</label>\
-						<div class="controls ">\
-							<textarea class="form-control" name="description" style="width:100%;"></textarea>\
-						</div>\
-					</div>\
-					<div class="form-group">\
-						<div id="div_id_for_view" class="checkbox">\
-							<label for="id_for_view" class="">\
-								<input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
-								' +
+                    <div class="controls">\
+                        <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>\
+                    </div>\
+                </div>\
+                <div class="alphaconstraint-options">\
+                    <div class="alphaconstraint-options-title">' +
+      gettext("Options") +
+      '</div>\
+                    <div class="form-group alphaconstraint-toggle">\
+                        <div id="div_id_for_view" class="checkbox">\
+                            <label for="id_for_view">\
+                                <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
+                                <span class="alphaconstraint-toggle-text">\
+                                    <strong>' +
       gettext("Active for visualization") +
-      '\
-							</label>\
-						</div>\
-						<input type="hidden" name="for_view" value="true">\
-					</div>\
-					<div class="form-group">\
-						<div id="div_id_for_editing" class="checkbox">\
-							<label for="id_for_editing" class="">\
-								<input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
-								' +
+      '</strong>\
+                                    <small>' +
+      gettext("Apply this constraint when the layer is shown on the map.") +
+      '</small>\
+                                </span>\
+                            </label>\
+                        </div>\
+                        <input type="hidden" name="for_view" value="true">\
+                    </div>\
+                    <div class="form-group alphaconstraint-toggle">\
+                        <div id="div_id_for_editing" class="checkbox">\
+                            <label for="id_for_editing">\
+                                <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
+                                <span class="alphaconstraint-toggle-text">\
+                                    <strong>' +
       gettext("Active for editing") +
-      '\
-							</label>\
-						</div>\
-						<input type="hidden" name="for_editing">\
-					</div>\
-				</div>\
-			</div>\
+      '</strong>\
+                                    <small>' +
+      gettext("Apply this constraint when users edit the layer features.") +
+      '</small>\
+                                </span>\
+                            </label>\
+                        </div>\
+                        <input type="hidden" name="for_editing">\
+                    </div>\
+                </div>\
+            </div>\
         </form>'
   ),
 
@@ -1727,19 +1833,23 @@ _.extend(ga.Qdjango, {
 _.extend(g3wadmin.tpl, {
   geoConstraintRules: _.template(
     '\
-      <div class="row">\
-          <div class="col-md-12 rules-list">\
+      <div class="constraint-rules-form">\
+          <div class="constraint-rules-intro">\
+              <i class="fa fa-cubes" aria-hidden="true"></i>\
+              <div>\
+                  <strong>' +
+      gettext("Geo-constraint rules") +
+      '</strong>\
+                  <span>' +
+      gettext("Define, for each user and/or group of users, viewing/editing rules based on the constraint layer geometry.") +
+      '</span>\
+              </div>\
           </div>\
-      </div>\
-      <div class="row">\
-          <div class="col-md-12">\
-              <div class="row text-center">\
-                  <div class="col-md-12">\
-                      <button type="button" class="btn btn-success add-rule"><i class="glyphicon glyphicon-plus"></i> ' +
+          <div class="rules-list"></div>\
+          <div class="constraint-rules-actions">\
+              <button type="button" class="btn btn-success add-rule"><i class="fa fa-plus"></i> ' +
       gettext("Add") +
       "</button>\
-                  </div>\
-              </div>\
           </div>\
       </div>\
   "
@@ -1747,67 +1857,53 @@ _.extend(g3wadmin.tpl, {
 
   geoConstraintRule: _.template(
     '\
-  <div class="row rule-form" style="border-top: 1px solid gray;">\
-      <div class="col-md-12 form-errors" style="color: #ff0000;"></div>\
-      <div class="col-md-10 rule-fields">\
-          <form action="<%= action %>" id="#constraint-rule-<%= rulePk %>">\
+  <div class="rule-form">\
+      <div class="form-errors"></div>\
+      <div class="rule-fields">\
+          <form action="<%= action %>" id="geoconstraint-rule-<%= rulePk %>">\
               <input type="hidden" name="pk" value="<%= rulePk %>" />\
               <input type="hidden" name="constraint" value="<%= constraintPk %>" />\
-              <div class="row">\
-                  <div class="col-md-4">\
-                      <div class="row">\
-                          <div class="col-md-12">\
-                          <div class="form-group">\
-                              <label class="control-label ">Viewer</label>\
-                              <div class="controls ">\
-                                  <select name="user" class="select form-control">\
-                                      <option value="">---------</option>\
-                                  </select>\
-                              </div>\
-                          </div>\
+              <div class="rule-grid">\
+                  <div class="rule-targets">\
+                      <div class="form-group rule-field">\
+                          <label class="control-label">' +
+      gettext("Viewer") +
+      '</label>\
+                          <div class="controls">\
+                              <select name="user" class="select form-control">\
+                                  <option value="">---------</option>\
+                              </select>\
                           </div>\
                       </div>\
-                      <div class="row">\
-                          <div class="col-md-12">\
-                          <div class="form-group">\
-                              <label class="control-label ">User viewer group</label>\
-                              <div class="controls ">\
-                                  <select name="group" class="select form-control">\
-                                      <option value="">---------</option>\
-                                  </select>\
-                              </div>\
-                          </div>\
+                      <div class="form-group rule-field">\
+                          <label class="control-label">' +
+      gettext("User viewer group") +
+      '</label>\
+                          <div class="controls">\
+                              <select name="group" class="select form-control">\
+                                  <option value="">---------</option>\
+                              </select>\
                           </div>\
                       </div>\
                   </div>\
-                  <div class="col-md-8">\
-                      <div class="row">\
-                          <div class="col-md-12">\
-                          <div class="form-group">\
-                              <label class="control-label ">SQL</label>\
-                              <div class="controls ">\
-                                  <textarea name="rule" style="width:100%;"></textarea>\
-                              </div>\
-                          </div>\
+                  <div class="rule-expr">\
+                      <div class="form-group rule-field">\
+                          <label class="control-label">SQL</label>\
+                          <div class="controls">\
+                              <textarea name="rule" class="form-control" rows="6"></textarea>\
                           </div>\
                       </div>\
                   </div>\
               </div>\
           </form>\
       </div>\
-      <div class="col-md-2 rule-actions">\
-          <div class="row" style="font-size: 24px;">\
-              <span class="col-xs-2 icon">\
-                  <a href="#" class="bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
+      <div class="rule-actions">\
+          <a href="#" class="rule-action-btn bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Save") +
       '"><i class="fa fa-save"></i></a>\
-              </span>\
-              <span class="col-xs-2 icon">\
-                  <a href="#" class="bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
+          <a href="#" class="rule-action-btn rule-action-btn-danger bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
       gettext("Delete") +
-      '"><i class="ion ion-trash-b"></i></a>\
-              </span>\
-          </div>\
+      '"><i class="fa fa-trash"></i></a>\
       </div>\
   </div>\
   '
@@ -1815,58 +1911,93 @@ _.extend(g3wadmin.tpl, {
 
   geoConstraintForm: _.template(
     '\
-      <form action="<%= action %>" id="form-constraint-<%= layerId %>">\
+      <form action="<%= action %>" class="geoconstraint-form" id="form-constraint-<%= layerId %>">\
           <input type="hidden" name="layer" value="<%= layerId %>" />\
           <input type="hidden" name="active" value="1" />\
-          <div class="info"><h4>' +
+          <div class="geoconstraint-shell">\
+              <div class="geoconstraint-intro">\
+                  <i class="fa fa-object-ungroup" aria-hidden="true"></i>\
+                  <div>\
+                      <strong>' +
+      gettext("Geo-constraint") +
+      '</strong>\
+                      <span>' +
       gettext("Select the constraint layer, only Polygon or MultiPolygon geometry") +
-      ':</h4></div>\
-          <div class="controls">\
-              <label>' +
+      '</span>\
+                  </div>\
+              </div>\
+              <div class="form-group geoconstraint-field">\
+                  <label class="control-label" for="id_constraint_layer">' +
       gettext("Constraint layer") +
       '</label>\
-              <select name="constraint_layer" class="select form-control"></select>\
-          </div>\
-          <div class="form-group">\
-              <label class="control-label ">' +
+                  <div class="controls">\
+                      <select id="id_constraint_layer" name="constraint_layer" class="select form-control"></select>\
+                  </div>\
+                  <p class="help-block">' +
+      gettext("Only Polygon or MultiPolygon geometry layers are allowed.") +
+      '</p>\
+              </div>\
+              <div class="form-group geoconstraint-field">\
+                  <label class="control-label" for="id_description">' +
       gettext("Description") +
       '</label>\
-              <div class="controls ">\
-                 <textarea class="form-control" name="description" style="width:100%;"></textarea>\
+                  <div class="controls">\
+                      <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>\
+                  </div>\
               </div>\
-          </div>\
-          <div class="form-group">\
-              <div id="div_id_for_view" class="checkbox">\
-                  <label for="id_for_view" class="">\
-                      <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
-                      ' +
+              <div class="geoconstraint-options">\
+                  <div class="geoconstraint-options-title">' +
+      gettext("Options") +
+      '</div>\
+                  <div class="form-group geoconstraint-toggle">\
+                      <div id="div_id_for_view" class="checkbox">\
+                          <label for="id_for_view">\
+                              <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
+                              <span class="geoconstraint-toggle-text">\
+                                  <strong>' +
       gettext("Active for visualization") +
-      '\
-                  </label>\
-              </div>\
-              <input type="hidden" name="for_view" value="true">\
-          </div>\
-          <div class="form-group">\
-              <div id="div_id_for_editing" class="checkbox">\
-                  <label for="id_for_editing" class="">\
-                      <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
-                      ' +
+      '</strong>\
+                                  <small>' +
+      gettext("Restrict which features are visible on the map.") +
+      '</small>\
+                              </span>\
+                          </label>\
+                      </div>\
+                      <input type="hidden" name="for_view" value="true">\
+                  </div>\
+                  <div class="form-group geoconstraint-toggle">\
+                      <div id="div_id_for_editing" class="checkbox">\
+                          <label for="id_for_editing">\
+                              <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
+                              <span class="geoconstraint-toggle-text">\
+                                  <strong>' +
       gettext("Active for editing") +
-      '\
-                  </label>\
-              </div>\
-              <input type="hidden" name="for_editing">\
-          </div>\
-          <div class="form-group">\
-              <div id="div_id_autozoom" class="checkbox">\
-                  <label for="id_autozoom" class="">\
-                      <input type="checkbox" name="icheck_autozoom" id="id_autozoom" class="checkboxinput">\
-                      ' +
+      '</strong>\
+                                  <small>' +
+      gettext("Restrict which features can be edited.") +
+      '</small>\
+                              </span>\
+                          </label>\
+                      </div>\
+                      <input type="hidden" name="for_editing">\
+                  </div>\
+                  <div class="form-group geoconstraint-toggle">\
+                      <div id="div_id_autozoom" class="checkbox">\
+                          <label for="id_autozoom">\
+                              <input type="checkbox" name="icheck_autozoom" id="id_autozoom" class="checkboxinput">\
+                              <span class="geoconstraint-toggle-text">\
+                                  <strong>' +
       gettext("Autozoom on map bootstrap") +
-      '\
-                  </label>\
+      '</strong>\
+                                  <small>' +
+      gettext("Zoom the map to the constraint extent on initial load.") +
+      '</small>\
+                              </span>\
+                          </label>\
+                      </div>\
+                      <input type="hidden" name="autozoom">\
+                  </div>\
               </div>\
-              <input type="hidden" name="autozoom">\
           </div>\
       </form>'
   ),
@@ -2166,10 +2297,10 @@ _.extend(g3wadmin.widget, {
     Build constraints table
      */
   _geoConstraintsTable: function (layer_pk, res) {
-    var $div = $('<div style="margin-left:40px;">')
+    var $div = $('<div class="geoconstraints-list" style="margin-left:40px;">')
 
     // add new constraint btn
-    $newConstraint = $('<a href="#" class="btn btn-default btn-sm"><i class="ion ion-plus-circled"></i> ' + gettext("New geo constraint") + "</a>")
+    $newConstraint = $('<a href="#" class="btn btn-default btn-sm btn-add-geoconstraint"><i class="ion ion-plus-circled"></i> ' + gettext("New geo constraint") + "</a>")
     $newConstraint.on("click", function () {
       ga.widget._geoConstraintForm($newConstraint, null, {
         "modal-title": gettext("New constraint"),
@@ -2343,10 +2474,10 @@ _.extend(g3wadmin.widget, {
       throw new Error("Attribute column-acl-layer-pk not defined")
     }
 
-    let $div = $('<div style="margin-left:40px;">')
+    let $div = $('<div class="layer-sub-panel column-acl-list" style="margin-left:40px;">')
 
     // add new acl btn
-    $newColumnAcl = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Column Level Constraint") + "</a>")
+    $newColumnAcl = $('<a href="#" class="btn btn-sm btn-default btn-add-column-acl"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Column Level Constraint") + "</a>")
     $newColumnAcl.on("click", function () {
       ga.widget._newColumnAclForm($datatable, $newColumnAcl, params, {
         "modal-title": gettext("New Column Level Constraint"),
@@ -2361,8 +2492,8 @@ _.extend(g3wadmin.widget, {
       `<thead>
         <tr>
             <th style="width:180px;">${gettext("Actions")}</th>
-            <th>${gettext("User")}</th>
-            <th>${gettext("Group")}</th>
+            <th>${gettext("Users")}</th>
+            <th>${gettext("Groups")}</th>
             <th>${gettext("Restricted Fields")}</th>
         </tr>
       </thead>`
@@ -2397,8 +2528,8 @@ _.extend(g3wadmin.widget, {
       $tbody.append(`
             <tr>
                 <td>${actions}</td>
-                <td>${v["username"]}</td>
-                <td>${v["groupname"]}</td>
+                <td>${v["usernames"].join(', ')}</td>
+                <td>${v["groupnames"].join(', ')}</td>
                 <td>${v["restricted_fields"]}</td>
             </tr>`)
     })
@@ -2565,16 +2696,13 @@ _.extend(g3wadmin.widget, {
       url: params["info-layer-user"],
       success: function (res) {
         let users = res["results"]
-        let $el = modal.$modal.find('[name="user"]')
+        let $el = modal.$modal.find('[name="users"]')
         $el.empty() // remove old options
-        $el.append($("<option></option>").attr("value", "").text("--"))
         $.each(users, function (key, value) {
           $el.append($("<option></option>").attr("value", value["pk"]).text(value["username"]))
         })
-        if (!isNew) {
-          if (form_params["column_acl_record"]["user"] != "") {
-            $el.val(form_params["column_acl_record"]["user"])
-          }
+        if (!isNew && form_params["column_acl_record"]["users"].length) {
+          $el.val(form_params["column_acl_record"]["users"])
         }
       },
       complete: function () {},
@@ -2588,17 +2716,13 @@ _.extend(g3wadmin.widget, {
       url: params["info-layer-authgroup"],
       success: function (res) {
         let groups = res["results"]
-        //let $el = $('[name="group"]')
-        let $el = modal.$modal.find('[name="group"]')
+        let $el = modal.$modal.find('[name="groups"]')
         $el.empty() // remove old options
-        $el.append($("<option></option>").attr("value", "").text("--"))
         $.each(groups, function (key, value) {
           $el.append($("<option></option>").attr("value", value["pk"]).text(value["name"]))
         })
-        if (!isNew) {
-          if (form_params["column_acl_record"]["group"] != "") {
-            $el.val(form_params["column_acl_record"]["group"])
-          }
+        if (!isNew && form_params["column_acl_record"]["groups"].length) {
+          $el.val(form_params["column_acl_record"]["groups"])
         }
       },
       complete: function () {},
@@ -2625,17 +2749,13 @@ _.extend(g3wadmin.widget, {
     modal.setConfirmButtonAction(function (e) {
       let dt = form.getData("array")
       // Validate
-      if (dt["user"] == "" && dt["group"] == "") {
-        let $ediv = form.$form.find(".form-errors")
-        $ediv.html("")
-        $ediv.append(`<h4 class="badge bg-red">${gettext("You must select a 'group' or a 'user'!")}</h4>`)
-        return
-      }
+      dt["users"] = form.$form.find('[name="users"]').val() || []
+      dt["groups"] = form.$form.find('[name="groups"]').val() || []
 
-      if (dt["user"] != "" && dt["group"] != "") {
+      if (dt["users"].length === 0 && dt["groups"].length === 0) {
         let $ediv = form.$form.find(".form-errors")
         $ediv.html("")
-        $ediv.append(`<h4 class="badge bg-red">${gettext("You cannot select both a 'group' and a 'user': they are mutually exclusive!")}</h4>`)
+        $ediv.append(`<h4 class="badge bg-red">${gettext("You must select at least one user or one group!")}</h4>`)
         return
       }
 
@@ -2659,8 +2779,8 @@ _.extend(g3wadmin.widget, {
 
     modal.show()
 
-    modal.$modal.find('[name="user"]').select2()
-    modal.$modal.find('[name="group"]').select2()
+    modal.$modal.find('[name="users"]').select2()
+    modal.$modal.find('[name="groups"]').select2()
     modal.$modal.find('[name="restricted_fields"]').select2()
   },
 })
@@ -2675,38 +2795,51 @@ ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
 
 _.extend(g3wadmin.tpl, {
   _newColumnAclForm: _.template(`
-        <form action="<%= form_action %>" id="form-new-column-acl-<%= layerId %>">
-        <input type="hidden" name="pk" value="<%= columnAclPk %>">
-        <input type="hidden" name="layer" value="<%= layerId %>">
-        <div class="form-errors"></div>
-            <div class="row">
-				<div class="col-md-12">
-					<div class="info"><%= title %></div>
-					<div class="form-group">
-						<label class="control-label ">${gettext("User (required if group is not set)")}</label>
-						<div class="controls ">
-							<select class="form-select" name="user" style="width:100%;"/>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label ">${gettext("Group (required if user is not set)")}</label>
-						<div class="controls ">
-                        <select class="form-select" name="group" style="width:100%;" />
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label ">${gettext("Hidden Fields (required)")}</label>
-						<div class="controls ">
-							<select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;">
-                            </select>
-						</div>
-					</div>
-
-				</div>
-			</div>
+        <form action="<%= form_action %>" class="column-acl-form" id="form-new-column-acl-<%= layerId %>">
+            <input type="hidden" name="pk" value="<%= columnAclPk %>">
+            <input type="hidden" name="layer" value="<%= layerId %>">
+            <div class="form-errors"></div>
+            <div class="column-acl-shell">
+                <div class="column-acl-intro">
+                    <i class="fa fa-columns" aria-hidden="true"></i>
+                    <div>
+                        <strong>${gettext("Column level constraint")}</strong>
+                        <span><%= title %></span>
+                    </div>
+                </div>
+                <div class="column-acl-field column-acl-field-fields">
+                    <label class="control-label">${gettext("Hidden Fields (required)")}</label>
+                    <div class="controls">
+                        <select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;"></select>
+                    </div>
+                </div>
+                <div class="column-acl-grid">
+                    <div class="column-acl-field">
+                        <label class="control-label">${gettext("Users (required if no group is set)")}</label>
+                        <div class="controls">
+                            <select class="form-select" multiple name="users" style="width:100%;"></select>
+                        </div>
+                    </div>
+                    <div class="column-acl-field">
+                        <label class="control-label">${gettext("Groups (required if no user is set)")}</label>
+                        <div class="controls">
+                            <select class="form-select" multiple name="groups" style="width:100%;"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>`),
+})
+
+// Add ScaleLayerVisibilityConstraint manager widget
+// -------------------------------------------------
+// activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
+ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
+  $widgetItem.find('[data-widget-type="scalevisconstraintManagerList"]').on("click", async function (e) {
+    const widget = 'scalevisconstraintManagerList';
+    const a = (await import(`${STATIC_BASE_URL}qdjango/js/data-widget-${widget}.js`));
+    a[widget]($(this).parents("table").DataTable(), $(this));
+  })
 })
 
 // Add Style manager widget
@@ -2723,10 +2856,10 @@ _.extend(g3wadmin.widget, {
       throw new Error("Attribute stylemanager-layer-pk not defined")
     }
 
-    let $div = $('<div style="margin-left:40px;">')
+    let $div = $('<div class="layer-sub-panel styles-list" style="margin-left:40px;">')
 
     // add new style btn
-    $newStyle = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Style From QML") + "</a>")
+    $newStyle = $('<a href="#" class="btn btn-sm btn-default btn-add-style"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Style From QML") + "</a>")
     $newStyle.on("click", function () {
       ga.widget._newStyleForm($datatable, $newStyle, {
         "modal-title": gettext("New Style From QML"),
@@ -3017,31 +3150,32 @@ ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
 
 _.extend(g3wadmin.tpl, {
   _newStyleForm: _.template(`
-        <form action="<%= form_action %>" id="form-newstyle-<%= layerId %>">
-        <div class="form-errors"></div>
-        <input type="hidden" name="qml" value="" />
-            <div class="row">
-				<div class="col-md-12">
-					<div class="info"><%= title %></div>
-					<div class="info">${gettext("The style defined in the uploaded QML must be compatible with the target layer.")}</div>
-					<div class="form-group">
-						<label class="control-label ">${gettext("Style name (required)")}</label>
-						<div class="controls ">
-							<input class="form-control" value="" placeholder="${gettext("Enter the unique name of the new style")}" required name="name" style="width:100%;">
-						</div>
-					</div>
-
-                    <div class="form-group" style="border: 1px dot-dash grey;  text-align: center">
-						<div class="controls qq-upload-button-selector" style="position: relative; padding: 10px;">
-							<input class="form-control" id="load_qml_file" accept=".qml" title="" name="qml_file" type="file" style="top:0; left:0; cursor:pointer;opacity:0; width:100%; position:absolute; height: 100%;" />
-							<h4>${gettext("Upload layer style QML file")}</h4>
-							<div>
-                                <i class="fa fa-upload fa-3x" aria-hidden="true"></i>
-                            </div>
-						</div>
-						<span id="qml_filename" style="display:none;"></span>
-					</div>
-				</div>
-			</div>
+        <form action="<%= form_action %>" class="qml-style-form" id="form-newstyle-<%= layerId %>">
+            <div class="form-errors"></div>
+            <input type="hidden" name="qml" value="" />
+            <div class="qml-style-shell">
+                <div class="qml-style-intro">
+                    <i class="fa fa-paint-brush" aria-hidden="true"></i>
+                    <div>
+                        <strong>${gettext("Layer style")}</strong>
+                        <span><%= title %></span>
+                        <small>${gettext("The style defined in the uploaded QML must be compatible with the target layer.")}</small>
+                    </div>
+                </div>
+                <div class="qml-style-field">
+                    <label class="control-label">${gettext("Style name (required)")}</label>
+                    <div class="controls">
+                        <input class="form-control" value="" placeholder="${gettext("Enter the unique name of the new style")}" required name="name" style="width:100%;">
+                    </div>
+                </div>
+                <div class="qml-style-upload">
+                    <input class="qml-style-upload-input" id="load_qml_file" accept=".qml" title="" name="qml_file" type="file" />
+                    <div class="qml-style-upload-content">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                        <h4>${gettext("Upload layer style QML file")}</h4>
+                        <span id="qml_filename" class="qml-style-upload-filename"></span>
+                    </div>
+                </div>
+            </div>
         </form>`),
 })

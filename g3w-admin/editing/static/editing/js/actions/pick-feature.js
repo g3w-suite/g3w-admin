@@ -1,0 +1,68 @@
+/**
+ * @file
+ */
+
+import { getEditingLayer }                  from '../utils/getEditingLayer.js';
+import { Step }                             from '../g3w-step.js';
+
+/**
+ * @see https://openlayers.org/en/v5.3.0/apidoc/module-ol_interaction_Pointer.html
+ */
+export class PickFeaturesInteraction extends ol.interaction.Pointer {
+
+  constructor(opts = {}) {
+    let features = []; // picked features
+
+    const featuresAtPixel = ({ pixel, map } = {}) => map.getFeaturesAtPixel(pixel, {
+      layerFilter:  l => opts.layer === l,
+      hitTolerance: isMobile?.any ? 10 : 0,
+    });
+
+    super({
+      handleDownEvent(e) {
+        features = featuresAtPixel(e);
+        return features;
+      },
+      handleUpEvent(e) {
+        if (features?.length > 0) {
+          this.dispatchEvent({ type: 'picked', features, coordinate: e.coordinate, layer: opts.layer });
+        }
+        return true;
+      },
+      handleMoveEvent(e) {
+        e.map.getTargetElement().style.cursor = (featuresAtPixel(e) ?? []).length > 0 ? 'pointer' : '';
+      }
+    });
+  }
+
+}
+
+export class PickFeatureStep extends Step {
+
+  constructor(opts = {}) {
+    opts.help      = "editing.pick_feature";
+    opts.highlight = opts?.highlight ?? false;
+    opts.multi     = opts?.multi     ?? false;
+    super(opts);
+  }
+
+  async run(inputs) {
+    const promise = new Promise((resolve) => {
+      this.addInteraction(
+        new PickFeaturesInteraction({ layer: getEditingLayer(inputs.layer) }), {
+          'picked': e => {
+            if (0 === inputs.features.length) {
+              inputs.features   = e.features;
+              inputs.coordinate = e.coordinate;
+            }
+            if (this.getSteps()) { this.setUserMessageStepDone('select'); }
+            resolve(inputs);
+          },
+        });
+    })
+    
+    this.highlightInputs({ promise });
+    return promise;
+  }
+
+}

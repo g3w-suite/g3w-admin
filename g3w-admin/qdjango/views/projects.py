@@ -17,16 +17,23 @@ from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
 from core.utils.decorators import project_type_permission_required, is_active_required
+from core.models import GroupProjectPanoramic
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.models import Group as AuthGroup
-from usersmanage.decorators import user_passes_test_or_403
-from usersmanage.utils import userHasGroups, get_groups_for_object, get_users_for_object
+from usersmanage.utils import userHasGroups, get_groups_for_object
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
+
+get_qplotlywidgets4layer = None
+if 'qplotly' in settings.INSTALLED_APPS:
+    try:
+        from qplotly.utils.models import get_qplotlywidgets4layer
+    except ImportError:
+        get_qplotlywidgets4layer = None
 
 from qdjango.signals import load_qdjango_widgets_data
 from qdjango.mixins.views import *
@@ -37,9 +44,11 @@ from qdjango.models import (
     LayerAcl,
     GeoConstraint,
     SingleLayerConstraint,
-    ColumnAcl
+    ColumnAcl, 
+    ProjectBookmark,
+    ScaleVisibilityLayerConstraint
 )
-from qdjango.utils.models import get_widgets4layer, comparedbdatasource
+from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_public_project_ids
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
 
@@ -79,7 +88,10 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         # Get inactive projects
         context['inactive_project_list'] = get_objects_for_user(self.request.user, 'qdjango.view_project', Project) \
             .filter(group=self.group, is_active=0).order_by('order')
-
+        
+        # Get project bookmarked per user
+        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user, project__in=self.get_queryset()).values_list('project_id', flat=True)
+        context['public_project_ids'] = get_public_project_ids(context['object_list'])
         return context
 
 
@@ -296,6 +308,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
             project_user_groups_viewers = [v for v in project_user_groups_viewers]
 
             widgets = []
+            dl_capabilities = []
             for l in self.object.layer_set.all():
 
                 # Get geoconstraints by layer id
@@ -303,6 +316,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                 expconstraints = SingleLayerConstraint.objects.filter(layer=l)
                 hiddenlayers = LayerAcl.objects.filter(layer=l)
                 hiddenfields = ColumnAcl.objects.filter(layer=l)
+                scaleconstraints = ScaleVisibilityLayerConstraint.objects.filter(layer=l)
 
                 # Geoconstrain
                 gc = {
@@ -328,6 +342,39 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     'users': [],
                     'ugroups': []
                 }
+
+                # Scalevisibility constraints
+                sv = {
+                    'layer': l,
+                    'constraints': [],
+                }
+
+                for svc in scaleconstraints:
+                    sv['constraints'].append(svc)
+
+                if len(sv['constraints']) > 0:
+                    if 'scaleconstraints' not in ctx:
+                        ctx['scaleconstraints'] = [sv]
+                    else:
+                        ctx['scaleconstraints'].append(sv)
+
+                def dl_capabilities_by_layer(l):
+                    toret = []
+                    for dlf in ('', '_xls', '_gpx', '_csv', '_gpkg', '_pdf'):
+                        if getattr(l, f'download{dlf}', False):
+                            if dlf == '':
+                                toret.append('SHP/GEOTIFF')
+                            else:
+                                toret.append(dlf[1:].upper())
+                    return toret
+
+                dl = {
+                    'layer': l,
+                    'dl_capabilities': dl_capabilities_by_layer(l)
+                }
+
+                if len(dl['dl_capabilities']) > 0:
+                    dl_capabilities.append(dl)
 
                 # Widgets
                 for w in get_widgets4layer(l):
@@ -388,9 +435,11 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                         ctx['expconstraints'].append(ec)
 
                 for hidef in hiddenfields:
-
+                    user_names = list(hidef.users.values_list('username', flat=True))
+                    group_names = list(hidef.groups.values_list('name', flat=True))
+                    subject = ', '.join(user_names + group_names) or '—'
                     hf['hiddenfields'].append((
-                        hidef.user.username if hidef.user else hidef.group.name,
+                        subject,
                         hidef.restricted_fields
                     ))
 
@@ -414,6 +463,28 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                 if widgets:
                     ctx['widgets'] = widgets
+
+                # QPlotly widgets
+
+                if 'qplotly' in settings.INSTALLED_APPS and get_qplotlywidgets4layer:
+                    import logging
+                    try:
+                        plots = get_qplotlywidgets4layer(l)
+                    except Exception:
+                        logging.getLogger("g3wadmin.debug").exception(
+                            "Qdjango project /api/config error in get_qplotlywidgets4layer"
+                        )
+                    else:
+                        if plots:
+                            qp = {
+                                'layer': l,
+                                'plots': plots,
+                            }
+                            ctx.setdefault('plots', []).append(qp)
+
+
+            if dl_capabilities:
+                ctx['dl_capabilities'] = dl_capabilities
 
         return ctx
 
@@ -486,6 +557,13 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
         if 'qdjango' in settings.CACHES:
             caches['qdjango'].delete(
                 settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+            
+        # Remove panoramic options if is set
+        try:
+            gpano = GroupProjectPanoramic.objects.get(project_id=self.object.id, group=self.object.group, project_type='qdjango')
+            gpano.delete()
+        except:
+            pass
 
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
 
@@ -596,9 +674,17 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.exclude_from_legend = int(
                 request.POST['exclude_from_legend'])
 
+        if 'exclude_from_toc' in request.POST:
+            layer.exclude_from_toc = int(
+                request.POST['exclude_from_toc'])
+
         if 'not_show_attributes_table' in request.POST:
             layer.not_show_attributes_table = int(
                 request.POST['not_show_attributes_table'])
+
+        if 'max_preview_fields' in request.POST:
+            layer.max_preview_fields = int(
+                request.POST['max_preview_fields'])
 
         for format in settings.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS:
             k = 'download_layer'
@@ -614,6 +700,15 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
 
         if 'external' in request.POST:
             layer.external = int(request.POST['external'])
+
+        if 'wmts_format' in request.POST:
+            value = request.POST['wmts_format']
+            # only accept a format the project actually advertises as available (avoid trusting client input)
+            if value in ('png', 'jpeg') and layer.wmtscapabilities and layer.wmtscapabilities.get(value):
+                layer.wmts_format = value
+            else:
+                layer.wmts_format = None
+
         layer.save()
 
         # Invalidate project cache
@@ -663,7 +758,9 @@ class QdjangoLayerWidgetsMixin(object):
         context = super().get_context_data()
         context['layer'] = self.layer
         context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
-        context['layer_edittypes'] = json.dumps(eval(self.layer.edittypes))
+
+        # Get layer edit types for default layer style
+        context['layer_edittypes'] = json.dumps(self.layer.get_edittypes())
 
         # Get every relations were layer is child
         context['relations'] = json.dumps(self.get_relations(self.layer))
@@ -725,17 +822,6 @@ class QdjangoLayerWidgetCreateView(QdjangoLayerWidgetsMixin, G3WRequestViewMixin
         # add layer
         self.object.layers.add(self.layer)
 
-        '''
-        if not self.request.user.is_superuser:
-            self.object.addPermissionsToEditor(self.request.user)
-        else:
-            editor_users = get_users_for_object(self.layer, 'change_layer', 'Editor Maps Groups')
-            if editor_users:
-                self.object.addPermissionsToEditor(editor_users[0])
-
-        viewers = map(lambda o: o.id, get_users_for_object(self.layer, 'view_layer', 'Viewer Maps Groups'))
-        self.object.addPermissionsToViewers(viewers)
-        '''
 
         return ret
 
@@ -800,6 +886,10 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
         else:
             self.widget.layers.remove(self.layer)
 
+        # Invalidate project cache
+        self.layer.project.invalidate_cache()
+
+
 
 class QdjangoLayerDetailView(G3WRequestViewMixin, DetailView):
     """Detail view for qdjango layer object"""
@@ -817,8 +907,8 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
     View for filter layer by user/group form
     """
 
-    form_class = FitlerByUserLayerForm
-    template_name = 'qdjango/layer_actions/fitler_by_user_layer_form.html'
+    form_class = FilterByUserLayerForm
+    template_name = 'qdjango/layer_actions/filter_by_user_layer_form.html'
 
     @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
                                                        return_403=True))
@@ -918,8 +1008,9 @@ class ProjectSetOrderView(View):
 
     model = Project
 
-    # only user with change_group for this group can change overview map.
-    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    # only user with change_project permission on the project can change order.
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'pk', 'project_id'),
+                                          raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 

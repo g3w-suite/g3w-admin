@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-05 19:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: caching/forms.py:11
+msgid "Active"
+msgstr "Активен"
+
+#: caching/forms.py:14
+msgid "Save as base layer"
+msgstr "Запази като картна основа"
+
+#: caching/forms.py:15
+msgid "Base layer title"
+msgstr "Заглавие на картната основа"
+
+#: caching/forms.py:16
+msgid "Base layer description"
+msgstr "Описание на картната основа"
+
+#: caching/forms.py:17
+msgid "Base layer attribution"
+msgstr "Авторство на картната основа"
+
+#: caching/forms.py:27
+msgid "Check on uncheck to activate/deactivate caching layer capabilities:"
+msgstr ""
+"Отметнете или махнете, за да активирате/деактивирате възможностите за "
+"кеширане на слоя:"
+
+#: caching/forms.py:40
+msgid "Reset cache"
+msgstr "Изчисти кеша"
+
+#: caching/forms.py:40
+msgid "Reset cache for project"
+msgstr "Изчисти кеша за проекта"
+
+#: caching/forms.py:52
+msgid "Base layer data"
+msgstr "Данни за картната основа"
+
+#: caching/forms.py:74
+msgid "This field is required"
+msgstr "Това поле е задължително"
+
+#: caching/templates/caching/caching_layer_active_form.html:7
+msgid "Alert"
+msgstr "Известие"
+
+#: caching/templates/caching/caching_layer_active_form.html:8
+msgid "Some errors on form. Check it and send again."
+msgstr "Има грешки във формата. Проверете и изпратете отново."
+
+#: caching/templates/caching/layer_action.html:7
+msgid "Caching layer"
+msgstr "Кеширащ слой"
+
+#: caching/templates/caching/layer_action.html:9
+msgid "Activation layer caching"
+msgstr "Активиране на кеширане на слоя"
+
+#: caching/views.py:201
+msgid "Cache erased!"
+msgstr "Кешът е изтрит!"

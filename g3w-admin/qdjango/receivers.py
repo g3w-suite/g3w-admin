@@ -2,16 +2,31 @@ import logging
 import os
 from pathlib import Path
 
-from core.models import ProjectMapUrlAlias
+from core.models import (
+    ProjectMapUrlAlias,
+    PermaLinkURL
+)
 from core.signals import (
     execute_search_on_models,
     load_layer_actions,
     pre_delete_project,
     pre_update_project,
+    before_return_vector_data_layer,
+    post_serialize_project
 )
 from django.conf import settings
+from django.urls import (
+    reverse, resolve
+)
+from django.http import HttpRequest
 from django.contrib.auth.signals import user_logged_out
-from django.db.models.signals import post_delete, post_save, pre_delete, pre_save
+from django.db.models.signals import (
+    post_delete,
+    post_save,
+    pre_delete,
+    pre_save,
+    m2m_changed,
+)
 from django.dispatch import receiver
 from django.template import loader
 from qgis.core import QgsProject
@@ -24,11 +39,22 @@ from .models import (
     GeoConstraintRule,
     ConstraintSubsetStringRule,
     ConstraintExpressionRule,
-    Message
+    Message,
+    ScaleVisibilityLayerConstraint,
+    LayerAcl
 )
 from .searches import ProjectSearch
-from .signals import post_save_qdjango_project_file
-from .views import QdjangoProjectListView, QdjangoProjectUpdateView
+from .views import (
+    QdjangoProjectListView,
+    QdjangoProjectUpdateView
+)
+from .vector import (
+    LayerVectorView,
+    MODE_DATA
+)
+from .utils.structure import apply_tree_patch
+
+import json
 
 logger = logging.getLogger("django.request")
 
@@ -100,21 +126,33 @@ def delete_project_file_on_update(sender, **kwargs):
 
 
 
-@receiver(post_delete, sender=Layer)
-def remove_embedded_layers(sender, **kwargs):
-    """
-    Checks for layers embedded from the deleted layer,
-    deletes them accordingly and remove the whole project if empty
-    """
+# @receiver(post_delete, sender=Layer)
+# def remove_embedded_layers(sender, **kwargs):
+#     """
+#     Checks for layers embedded from the deleted layer,
+#     deletes them accordingly and remove the whole project if empty
+#     """
 
-    layer = kwargs["instance"]
-    # If it is embedded make sure it is removed from the project
-    # because it may be a cascade
-    if layer.parent_project is not None:
-        project = QgsProject()
-        assert project.read(layer.project.qgis_file.file.name)
-        project.removeMapLayers([layer.qgs_layer_id])
-        assert project.write()
+#     layer = kwargs["instance"]
+#     origin = kwargs.get("origin")
+
+#     # True if the Layer deletion comes as a cascade from a Project
+#     cascaded_from_project = (
+#         isinstance(origin, Project)
+#         or (hasattr(origin, "model") and origin.model is Project)
+#     )
+
+#     if cascaded_from_project:
+#         # it's a cascade from the Project: probably no need to rewrite the .qgs
+#         return
+    
+#     # If it is embedded make sure it is removed from the project
+#     # because it may be a cascade
+#     if layer.parent_project is not None:
+#         project = QgsProject()
+#         assert project.read(layer.project.qgis_file.file.name)
+#         project.removeMapLayers([layer.qgs_layer_id])
+#         assert project.write()
 
 
 @receiver(post_save, sender=Project)
@@ -309,6 +347,25 @@ def invalid_prj_cache_by_columnacl(**kwargs):
         f"{kwargs['instance'].layer.project}"
     )
 
+
+def _invalid_prj_cache_by_columnacl_m2m(sender, instance, **kwargs):
+    """Invalidate project cache when users or groups M2M on ColumnAcl change"""
+    instance.layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on M2M change of column acl users/groups: "
+        f"{instance.layer.project}"
+    )
+
+
+m2m_changed.connect(
+    _invalid_prj_cache_by_columnacl_m2m,
+    sender=ColumnAcl.users.through,
+)
+m2m_changed.connect(
+    _invalid_prj_cache_by_columnacl_m2m,
+    sender=ColumnAcl.groups.through,
+)
+
 @receiver(post_save, sender=Message)
 @receiver(pre_delete, sender=Message)
 def invalid_prj_cache_by_message(**kwargs):
@@ -319,3 +376,131 @@ def invalid_prj_cache_by_message(**kwargs):
         f"Parent qdjango project /api/config invalidate on create/update/delete of a project messages: "
         f"{kwargs['instance'].project}"
     )
+
+
+@receiver(before_return_vector_data_layer)
+def add_filter_token(**kwargs):
+    """
+    Add a 'filtertoken' to response if 'autofilter' is set to 1
+    :return: A dict with autofilter token
+    :rtype: dict, None
+    """
+
+    # Check if is instance of layerVectorView
+    if (
+        isinstance(kwargs["sender"], LayerVectorView)
+        and kwargs["sender"].mode_call == MODE_DATA
+        and 'autofilter' in kwargs["sender"].request_data
+        and str(kwargs["sender"].request_data['autofilter']) == '1'
+    ):
+        layer = kwargs["sender"].layer
+
+        try:
+            # Get fids
+            results = kwargs["sender"].results.results
+            if results['result'] and hasattr(kwargs["sender"], 'total_feature_ids'):
+                fids = kwargs["sender"].total_feature_ids
+
+                # Add a 'fake' fids array value for to create a filtertoken with zero results
+                if not fids:
+                    fids = ['-99999']
+
+                rkwargs = {'project_type': 'qdjango',
+                           'project_id': layer.project.pk,
+                           'layer_name': layer.qgs_layer_id,
+                           'mode_call': 'filtertoken'
+                           }
+
+                url = reverse('core-vector-api', kwargs=rkwargs)
+                req = HttpRequest()
+                req.method = 'GET'
+                req.COOKIES = kwargs["sender"].request.COOKIES
+                req.user = kwargs["sender"].request.user
+                req.resolver_match = resolve(url)
+                req.GET['fidsin'] = ",".join(fids)
+
+                view = LayerVectorView.as_view()
+                res = view(req, *[], **rkwargs).render()
+
+                return json.loads(res.content)['data']
+        except Exception as e:
+            logger.error(f'[ERROR]: Error on getting FILTERTOKEN: {e}')
+            return None
+
+
+@receiver(post_save, sender=ScaleVisibilityLayerConstraint)
+@receiver(pre_delete, sender=ScaleVisibilityLayerConstraint)
+def invalid_prj_cache_by_scalevisibilitylayerconstraint(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    kwargs['instance'].layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a scale visibility layer constraint: "
+        f"{kwargs['instance'].layer.project}"
+    )
+
+@receiver(post_save, sender=LayerAcl)
+@receiver(pre_delete, sender=LayerAcl)
+def invalid_prj_cache_by_layeracl(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    kwargs['instance'].layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a LayerACL: "
+        f"{kwargs['instance'].layer.project}"
+    )
+
+@receiver(post_serialize_project)
+def update_by_permalinkcode(sender, **kwargs):
+
+    # Check if permalink_code exists
+    try:
+        permalink = PermaLinkURL.objects.get(permalink_code=sender.request.session['permalink_code'])
+    except:
+        return
+
+
+    orig_data = kwargs['ps_data'] if 'ps_data' in kwargs else sender.data
+
+    data = {
+        'operation_type': 'update',
+        'values': {}
+    }
+
+    for key, value in permalink.data.get("data", {}).items():
+        if key in orig_data:
+
+            # Special case for layer
+            if key == 'layerstree':
+                data['values'][key] = apply_tree_patch(orig_data['layerstree'], value)
+            elif  key == 'layers':
+                ltu = {l['id']: l for l in value}
+
+                for layer in orig_data['layers']:
+                    if layer['id'] in ltu:
+                        for kl,vl in ltu[layer['id']].items():
+                            orig_data['layers'][orig_data['layers'].index(layer)][kl] = vl
+
+                data['values'][key] = orig_data['layers']
+            else:
+
+                # Update data
+                data['values'][key] = value
+
+        else:
+            # Add new data
+            data['values'][key] = value
+    
+    if settings.DEBUG:
+        logging.getLogger("g3wadmin.debug").debug(
+            f"PERMALINK: {permalink.permalink_code} \n"
+            f"{json.dumps(data, indent=2, default=str)}"
+        )
+
+    # Delete permalink_code from session
+    try:
+        del sender.request.session['permalink_code']
+    except:
+        pass
+
+    return data

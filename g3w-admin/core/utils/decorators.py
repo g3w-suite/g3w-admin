@@ -10,6 +10,7 @@ from django.apps import apps
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from guardian.exceptions import GuardianError
 from guardian.utils import get_40x_or_None, get_anonymous_user
+from qdjango.utils.session import reset_filtertoken
 
 import logging
 
@@ -133,7 +134,16 @@ def is_active_required(lookup_variables=None, is_active=1):
                 lookup_dict[lookup] = kwargs[view_arg]
             obj = get_object_or_404(model, **lookup_dict)
 
-            if not obj.is_active == is_active:
+            try:
+                permanent_delete = request.POST['permanent_delete']
+                if permanent_delete == '0':
+                    permanent_delete = False
+                else:   
+                    permanent_delete = True
+            except:
+                permanent_delete = False
+
+            if not permanent_delete and not obj.is_active == is_active:
                 return HttpResponseForbidden()
 
             return view_func(request, *args, **kwargs)
@@ -161,13 +171,16 @@ def cache_page(timeout, key_args, key_prefix="", cache_alias=None):
         def _wrapped_view(request, *args, **kwargs):
 
             # Check if caching is active
-            if not settings.QDJANGO_PRJ_CACHE:
+            if not settings.QDJANGO_PRJ_CACHE or request.session.get('permalink_code') != None:
                 return view_func(request, *args, **kwargs)
 
             if request.user.is_anonymous:
                 user_pk =  get_anonymous_user().pk
             else:
                 user_pk = request.user.pk
+
+            # Reset sessiontokenfilter
+            reset_filtertoken(request)
 
             key = f"{key_prefix}{'_'.join([str(kwargs[k]) for k in key_args]  + [str(user_pk)])}"
             logger.debug(f"[CACHING /api/config]: Key {key}")

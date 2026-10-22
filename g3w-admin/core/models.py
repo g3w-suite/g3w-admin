@@ -1,46 +1,46 @@
 
 from django.conf import settings
-from django.conf.global_settings import LANGUAGES
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.db import models
 from django.apps import apps
-from django_extensions.db.fields import AutoSlugField
 from guardian.shortcuts import get_objects_for_user
 from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
-from model_utils import Choices
-from django_extensions.db.fields import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
 from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
 from usersmanage.configs import *
 from .utils.structure import getProjectsByGroup
+from .fields import AutoSlugField
 try:
     from osgeo import osr
 except:
     pass
+
+import string
+import random
 import logging
 
 class G3W2Tree(TreeBase):
-    module = models.CharField('Qdjango2 Module', max_length=50, null=True, blank=True)
+    module = models.CharField(_('Qdjango2 module'), max_length=50, null=True, blank=True)
 
 
 class G3W2TreeItem(TreeItemBase):
-    type_header = models.BooleanField('Tipo header', default=False, blank=True)
-    icon_css_class = models.CharField('Icon css class', max_length=50,null=True, blank=True)
+    type_header = models.BooleanField(_('Type header'), default=False, blank=True)
+    icon_css_class = models.CharField(_('Icon CSS class'), max_length=50,null=True, blank=True)
 
 
 class G3WSpatialRefSys(models.Model):
     """
     Clone of Postgis spatial_ref_sys for no geo database
     """
-    srid = models.IntegerField(primary_key=True)
-    auth_name = models.CharField(max_length=256)
-    auth_srid = models.IntegerField()
-    srtext = models.CharField(max_length=2048)
-    proj4text = models.CharField(max_length=2048)
+    srid = models.IntegerField(_('SRID'), primary_key=True)
+    auth_name = models.CharField(_('SRS name'), max_length=256)
+    auth_srid = models.IntegerField(_('SRS ID'))
+    srtext = models.CharField(_('WKT SRS'), max_length=2048)
+    proj4text = models.CharField(_('PROJ coordinate definition'), max_length=2048)
 
     def __str__(self):
         '''
@@ -57,26 +57,26 @@ class BaseLayer(OrderedModel):
     """
     Model to store Base layers
     """
-    name = models.CharField(max_length=255)
-    title = models.CharField(max_length=255)
-    icon = models.ImageField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    property = models.TextField()
+    name = models.CharField(_('Name'), max_length=255)
+    title = models.CharField(_('Title'), max_length=255)
+    icon = models.ImageField(_('Icon'), null=True, blank=True)
+    description = models.TextField(_('Description'), null=True, blank=True)
+    property = models.TextField(_('Property'))
 
     def __str__(self):
         return "{} ({})".format(self.title, self.name)
 
     class Meta(OrderedModel.Meta):
-        verbose_name = 'Base Layer'
-        verbose_name_plural = 'Base Layers'
+        verbose_name = _('Base Layer')
+        verbose_name_plural = _('Base Layers')
 
 
 class MapControl(OrderedModel):
     """
     Model for Map Controls: zoom, query, etc..
     """
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
+    name = models.CharField(_('Name'), max_length=255)
+    description = models.TextField(_('Description'), null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -102,7 +102,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     use_logo_client = models.BooleanField(_('Use logo image for client'), default=False)
 
     slug = AutoSlugField(
-        _('Slug'), unique=True, populate_from=['name'])
+        _('Slug'), unique=True, populate_from=['name'], overwrite=True)
 
     def __str__(self):
         return self.title
@@ -124,6 +124,11 @@ class MacroGroup(TimeStampedModel, OrderedModel):
         """
         self._permissions_to_editors(users_id, 'remove')
 
+    class Meta():
+        verbose_name = _('MACRO Group')
+        verbose_name_plural = _('MACRO Groups')
+        ordering = ("order",)
+
 
 class Group(TimeStampedModel, OrderedModel):
     """A group of projects."""
@@ -132,7 +137,7 @@ class Group(TimeStampedModel, OrderedModel):
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
     slug = AutoSlugField(
-        _('Slug'), populate_from=['name'], unique=True
+        _('Slug'), populate_from=['name'], unique=True, overwrite=True
         )
     is_active = models.BooleanField(_('Is active'), default=1)
 
@@ -143,16 +148,16 @@ class Group(TimeStampedModel, OrderedModel):
                                        help_text=_('Enter link with http:// or https//'))
 
     # Group SRID (a.k.a. EPSG)
-    srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid', on_delete=models.DO_NOTHING)
+    srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid', on_delete=models.DO_NOTHING, verbose_name=_('SRID'))
 
     # baselayers
-    baselayers = models.ManyToManyField(BaseLayer, blank=True)
+    baselayers = models.ManyToManyField(BaseLayer, blank=True, verbose_name=_('Base layers'))
 
     # mapcontrols
-    mapcontrols = models.ManyToManyField(MapControl)
+    mapcontrols = models.ManyToManyField(MapControl, verbose_name=_('Map controls'))
 
     # background color map default
-    background_color = models.CharField(max_length=7, default='#ffffff', blank=True)
+    background_color = models.CharField(_('Background color'), max_length=7, default='#ffffff', blank=True)
 
     # Company TOS
     header_terms_of_use_text = models.TextField(
@@ -162,17 +167,21 @@ class Group(TimeStampedModel, OrderedModel):
         _('Terms of use link'), blank=True
         )
 
-    macrogroups = models.ManyToManyField(MacroGroup, blank=True)
+    macrogroups = models.ManyToManyField(MacroGroup, blank=True, verbose_name=_('MACRO groups'))
 
     use_logo_client = models.BooleanField(_('Use logo image for client'), default=False,
                                           help_text=_('As for MacroGroup options is possible to use current logo group '
                                                       'as client logo, if MacroGroup option is active this options takes '
                                                       'precendence'))
 
-    class Meta:
+    class Meta():
+        verbose_name = _('Group')
+        verbose_name_plural = _('Groups')
         permissions = (
             ('add_project_to_group', 'Can add project to the group'),
         )
+        ordering = ("order",)
+
 
     def __str__(self):
         return self.name
@@ -450,9 +459,9 @@ class ProjectMapUrlAlias(models.Model):
     Model to set alias map url
     ie: /map/qdjango/group-slug/1 => /map/<alias_field_value>
     """
-    app_name = models.CharField(max_length=255)
-    project_id = models.IntegerField()
-    alias =models.CharField(max_length=512, unique=True)
+    app_name = models.CharField(_('App name'), max_length=255)
+    project_id = models.IntegerField(_('Project ID'), )
+    alias =models.CharField(_('Alias'), max_length=512, unique=True)
 
 
 LOG_LEVELS = (
@@ -467,15 +476,61 @@ class StatusLog(models.Model):
     """
     Model to store log's row inside DB
     """
-    logger_name = models.CharField(max_length=100)
-    level = models.PositiveSmallIntegerField(choices=LOG_LEVELS, default=logging.ERROR, db_index=True)
-    msg = models.TextField()
-    trace = models.TextField(blank=True, null=True)
-    create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
+    logger_name = models.CharField(_('Logger name'), max_length=100)
+    level = models.PositiveSmallIntegerField(_('Level'), choices=LOG_LEVELS, default=logging.ERROR, db_index=True)
+    msg = models.TextField(_('Message'))
+    trace = models.TextField(_('Trace'), blank=True, null=True)
+    create_datetime = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
 
     def __str__(self):
         return self.msg
 
     class Meta:
         ordering = ('-create_datetime',)
-        verbose_name_plural = verbose_name = 'Logging'
+        verbose_name = _('Logging')
+        verbose_name_plural = _('Logging')
+
+
+def generate_short_code(length=6):
+    """ Generate a random short code """
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+class ShortURL(TimeStampedModel):
+    """ Model to store short code for shor url"""
+    original_url = models.URLField(_('Original URL'), max_length=2000)
+    short_code = models.CharField(_('Short code'), max_length=10, unique=True, blank=True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.short_code:
+            while True:
+                code = generate_short_code()
+                if not ShortURL.objects.filter(short_code=code).exists():
+                    self.short_code = code
+                    break
+        super().save(*args, **kwargs)
+
+    def get_short_url(self):
+        return f"su/{self.short_code}"
+
+
+class PermaLinkURL(TimeStampedModel):
+    """
+    Model to create a permalink code for store information about the webgis client state.
+    I.e. current extent, toc layer switched on/off annotations etc.
+    """
+
+    data = models.JSONField(_("Data"))
+    permalink_code = models.CharField(_("Permalink code"), max_length=10, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.permalink_code:
+            while True:
+                code = generate_short_code()
+                if not PermaLinkURL.objects.filter(permalink_code=code).exists():
+                    self.permalink_code = code
+                    break
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.permalink_code

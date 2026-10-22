@@ -146,3 +146,17 @@ _.extend(g3wadmin, {
 window.ga = g3wadmin;
 
 
+// lazy load next-gen widgets (see: https://github.com/g3w-suite/g3w-admin/pull/746)
+document.addEventListener('click', async function (e) {
+    const item        = e.target.closest('[data-widget-type]'); 
+    const widget_type = item?.getAttribute('data-widget-type');
+    if( [
+        "setProjectBookmark",
+      ].includes(widget_type)) {
+        try {
+            await (await import(`../../components/data-widget-${widget_type}.js`)).default(item);
+        } catch (e) {
+            g3wadmin.widget.showError(e);
+        }
+    }
+});

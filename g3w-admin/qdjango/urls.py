@@ -7,7 +7,7 @@ __author__    = 'lorenzetti@gis3w.it'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__   = "MPL 2.0"
 
-from django.urls import re_path
+from django.urls import re_path, path
 from django.contrib.auth.decorators import login_required
 from sitetree.sitetreeapp import register_dynamic_trees, compose_dynamic_tree
 from base.urls import G3W_SITETREE_I18N_ALIAS

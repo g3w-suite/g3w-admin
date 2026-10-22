@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="a">
+      <stop offset="0" stop-color="#c2c2c2"/>
+      <stop offset="1" stop-color="#9f9f9f"/>
+    </linearGradient>
+    <linearGradient id="b" x1="660.1" x2="658.5" y1="6.6" y2="108.8" gradientTransform="translate(-45)" gradientUnits="userSpaceOnUse" href="#a"/>
+  </defs>
+  <path fill="#eee" d="M0 0h256v256H0z"/>
+  <g transform="translate(-389 68)">
+    <rect width="82.5" height="90.5" x="405" y="162" fill="#9f9f9f" ry="8.4" transform="rotate(-16)"/>
+    <g stroke="#fff" stroke-linecap="round" stroke-linejoin="round" transform="rotate(16 604 -191)">
+      <rect width="107.8" height="116" x="547" y="2" fill="url(#b)" stroke-width="5.4" ry="4.6"/>
+      <path fill="#ccc" fill-rule="evenodd" stroke-width="2.3" d="M559 13h85v77h-85Z" color="#000" overflow="visible" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1;marker:none"/>
+      <path fill="#fff" fill-rule="evenodd" stroke-width="2.3" d="M559 13h85v36h-85Z" color="#000" overflow="visible" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1;marker:none"/>
+      <path fill="#ccc" fill-rule="evenodd" stroke-width="2.3" d="m564 49 6-9 11-8 3 3 2-7h2l2-5 31 31" color="#000" overflow="visible" paint-order="stroke" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1;marker:none"/>
+      <path fill="#b3b3b3" fill-rule="evenodd" stroke-width="2.3" d="m590 22 3 16-4-2-8-5 1 8v5l2 5 12-2 15-4-8-13-2 2-5-4z" color="#000" overflow="visible" paint-order="stroke" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1;marker:none"/>
+      <path fill="#ccc" fill-rule="evenodd" stroke-width="2.3" d="m585 54 14-13 3-2 4-7 5-4 31 31" color="#000" overflow="visible" paint-order="stroke" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1;marker:none"/>
+      <path fill="#b3b3b3" fill-rule="evenodd" stroke-width="2.3" d="m611 28 6 14v10l4 4 4-3 8-2 3-1 1-1h-6l-7-7-5-9-2 2z" color="#000" overflow="visible" paint-order="stroke" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1;marker:none"/>
+      <path fill="#fff" fill-rule="evenodd" stroke-width="2.3" d="M585 90c0-1-2-3 3-5 5-3 21-6 26-10 3-3-12-7-10-10 2-2 11-4 15-6 3-1 2-3 5-5s12-3 13-5c-2 2-12 3-16 5l-8 5-18 5c-5 4 8 8 2 11-7 4-25 7-33 10q-6 3-5 5" color="#000" overflow="visible" paint-order="stroke" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1;marker:none"/>
+    </g>
+  </g>
+</svg>

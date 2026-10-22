@@ -3,7 +3,7 @@
 
 # G3W-ADMIN
 
-Admin server for G3W-SUITE written in Python, based on **Django** LTS (v3.2) and **QGIS Server** LTR (v3.28)
+Admin server for G3W-SUITE written in Python, based on **Django** LTS (v5.2) and **QGIS Server** LTR (v4.2.4)
 
 ![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
 
@@ -13,21 +13,31 @@ Admin server for G3W-SUITE written in Python, based on **Django** LTS (v3.2) and
 
 Software releases follow theese main branches as described in the compatibility table:
 
-| Branch     | Python         | Django         | QGIS          | [client]     | First release | Status         |
-|------------|----------------|----------------|---------------|--------------|---------------|----------------|
-| [dev]      | 3.10           | 3.2            | 3.28          | dev          | Unreleased    | ⚠️️ Unstable     |
-| [v.3.7.x]  | 3.10           | 3.2            | 3.28          | 3.9.0        | Dec 2023      | 🪲️ Bug fixing   |
-| [v.3.6.x]  | 3.10           | 3.2            | 3.28          | 3.8.15       | May 2023      | 🪲️ Bug fixing   |
-| [v.3.5.x]  | 3.10           | 2.2            | 3.22          | 3.7          | Nov 2022      | 🚨 End of Life |
-| [v.3.4.x]  | 3.8            | 2.2            | 3.22          | 3.4          | Mar 2022      | 🚨 End of Life |
-| [v.3.3.x]  | 3.6            | 2.2            | 3.16          | 3.3          | Sep 2021      | 🚨 End of Life | 
-| [v.3.2.x]  | 3.6            | 2.2            | 3.16          | 3.2          | Apr 2021      | 🚨 End of Life |
-| [v.3.1.x]  | 3.6            | 2.2            | 3.10          | 3.1          | Nov 2020      | 🚨 End of Life |
-| [v.3.0.x]  | 3.6            | 2.2            | 3.10          | 3.0          | Nov 2020      | 🚨 End of Life |
-| [dj22-py3] | 3.6            | 2.2            | [🔗]          |              |               | 🚨 End of Life |
-| [py2]      | 2.7            | 1.11           | [🔗]          |              |               | 🚨 End of Life |
+| Branch     | Python | Django         | QGIS          | [client]     | First release | Status         |
+|------------|--------|----------------|---------------|--------------|---------------|----------------|
+| [dev]      | 3.14   | 5.2            | 4.2           | dev          | Unreleased    | ⚠️️ Unstable    |
+| [v.4.0.x]  | 3.14   | 5.2            | 4.2           | dev          | Oct 2026      | 🪲️ Bug fixing  |
+| [v.3.11.x] | 3.12   | 4.2            | 3.44          | 4.1.2        | Jun 2026      | 🪲️ Bug fixing  |
+| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.11       | Jun 2026      | 🚨 End of Life |
+| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🚨 End of Life |
+| [v.3.8.x]  | 3.10   | 3.2            | 3.34          | 3.10.3       | Sep 2024      | 🚨 End of Life |
+| [v.3.7.x]  | 3.10   | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🚨 End of Life |
+| [v.3.6.x]  | 3.10   | 3.2            | 3.28          | 3.8.15       | May 2023      | 🚨 End of Life |
+| [v.3.5.x]  | 3.10   | 2.2            | 3.22          | 3.7          | Nov 2022      | 🚨 End of Life |
+| [v.3.4.x]  | 3.8    | 2.2            | 3.22          | 3.4          | Mar 2022      | 🚨 End of Life |
+| [v.3.3.x]  | 3.6    | 2.2            | 3.16          | 3.3          | Sep 2021      | 🚨 End of Life | 
+| [v.3.2.x]  | 3.6    | 2.2            | 3.16          | 3.2          | Apr 2021      | 🚨 End of Life |
+| [v.3.1.x]  | 3.6    | 2.2            | 3.10          | 3.1          | Nov 2020      | 🚨 End of Life |
+| [v.3.0.x]  | 3.6    | 2.2            | 3.10          | 3.0          | Nov 2020      | 🚨 End of Life |
+| [dj22-py3] | 3.6    | 2.2            | [🔗]          |              |               | 🚨 End of Life |
+| [py2]      | 2.7    | 1.11           | [🔗]          |              |               | 🚨 End of Life |
+
 
 [dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.11.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.11.x
+[v.3.10.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.10.x
+[v.3.9.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.9.x
+[v.3.8.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.8.x
 [v.3.7.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.7.x
 [v.3.6.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.6.x
 [v.3.5.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.5.x
@@ -67,6 +77,22 @@ Then in your development environment:
 2. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
 3. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
 4. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
+
+##### For Ubuntu 24.04
+
+Installa *nvm* for install node at version 8.x:
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+
+# Installa Node.js 8.x
+nvm install 8.17.0
+nvm use 8.17.0
+
+# Installa Gulp
+npm install -g gulp-cli@2.3.0
+```
+
 
 After that you can clone this repository:
 
@@ -170,12 +196,12 @@ Any additional package must be placed into the [`/g3w-admin/g3w-admin`](./g3w-ad
 
 ## Testing
 
-Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.28) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
+Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.34) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
 
 The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 - [Dockerfile.deps](ci_scripts/Dockerfile.deps) + [docker-compose.yml](docker-compose.yml) → latest QGIS release
-- [Dockerfile.ltr.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.ltr.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.28)
+- [Dockerfile.ltr.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.ltr.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.34)
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
@@ -184,6 +210,8 @@ More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [build_suite
 ---
 
 ## FAQ
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/g3w-suite/g3w-admin)
 
 <details>
 
@@ -206,21 +234,25 @@ Depending on the component you want to translate you can start by consulting one
 
 ### Contributors
 
-* GIS3W: [wlorenzetti](https://github.com/wlorenzetti), [leolami](https://github.com/leolami/), [volterra79](https://github.com/volterra79), [raruto](https://github.com/Raruto), [giohappy](https://github.com/giohappy)
-* QCooperative: [elpaso](https://github.com/elpaso), [luipir](https://github.com/luipir)
-* Kartoza: [NyakudyaA](https://github.com/NyakudyaA)
+- GIS3W: [wlorenzetti](https://github.com/wlorenzetti), [leolami](https://github.com/leolami/), [volterra79](https://github.com/volterra79), [raruto](https://github.com/Raruto), [giohappy](https://github.com/giohappy)
+- QCooperative: [elpaso](https://github.com/elpaso), [luipir](https://github.com/luipir)
+- Kartoza: [NyakudyaA](https://github.com/NyakudyaA)
 
 ### Translators
 
-* Romanian: [tudorbarascu](https://github.com/tudorbarascu)
-* German: [r3gis](https://www.r3gis.com)
-* French: [democracy essentials](https://www.democracy-essentials.eu)
+- Bulgarian: [suricactus](https://github.com/suricactus)
+- French: [democracy essentials](https://www.democracy-essentials.eu), [sig-echirolles](https://github.com/sig-echirolles)
+- German: [r3gis](https://www.r3gis.com)
+- Italian: [wlorenzetti](https://github.com/wlorenzetti)
+- Portuguese: [SrNetoChan](https://github.com/SrNetoChan)
+- Romanian: [tudorbarascu](https://github.com/tudorbarascu)
+- Spanish: [samtux](https://github.com/samtux)
 
 ---
 
 **Compatibile with:**
-[![Django version](https://img.shields.io/badge/Django-2.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.28-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![Django version](https://img.shields.io/badge/Django-4.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.34-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 

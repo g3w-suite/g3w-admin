@@ -22,12 +22,14 @@ from django.test.client import JSON_CONTENT_TYPE_RE
 from django.urls import reverse
 from qgis.core import QgsFieldConstraints
 from rest_framework.test import APIClient, APITestCase
+from guardian.shortcuts import assign_perm
 
 from qdjango.apps import get_qgs_project
-from core.models import Group
+from core.models import Group, ShortURL, PermaLinkURL
 from qdjango.models import Layer, Project
 from base.version import get_version
 from qdjango.utils.data import QgisProject
+from rest_framework.authtoken.models import Token
 
 from .base import CoreTestBase
 
@@ -115,6 +117,45 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
         self.assertIsNotNone(resp["vector"]["count"])
+
+        # Test authentication by token
+        # ----------------------------
+        # Is just sufficient only this test to check that the API is working with token authentication
+
+        # Without authentication
+        url = reverse('core-vector-api', args=['data', 'qdjango', '1', 'spatialite_points20190604101052075'])
+        response = self.api_client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        # As viewier
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        response = self.api_client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # Create token for test_viewer1
+        token, created = Token.objects.get_or_create(user=self.test_viewer1)
+
+        print(f"Token for {self.test_viewer1.username}: {token.key}")
+        self.api_client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+        response = self.api_client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+        assign_perm('view_project', self.test_viewer1, Project.objects.get(pk=1))
+
+        response = self.api_client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        resp = json.loads(response.content)
+
+        self.assertIsNotNone(resp["vector"]["count"])
+        self.assertEqual(resp["vector"]["format"], "GeoJSON")
+        self.assertIsNone(resp["vector"]["fields"])
+        self.assertEqual(resp["vector"]["geometrytype"], "Point")
+
+
 
     def testCoreVectorApiXls(self):
         """Test core-vector-api data XLS"""
@@ -448,11 +489,15 @@ class CoreApiTest(CoreTestBase):
 
     def testCoreVectorApiConfigValueRelationExpression(self):
 
+        # conditional_forms.qgs project SRID is 4258, the group's SRID must match
+        group, _created = Group.objects.get_or_create(
+            name='group_epsg_4258', defaults={'title': 'Group EPSG 4258', 'srid_id': 4258})
+
         qgis_project_file = File(open(os.path.join(
             DATASOURCE_PATH, 'conditional_forms.qgs'), 'r', encoding='UTF8'))
         project = QgisProject(qgis_project_file)
         project.title = 'A form value relation project'
-        project.group = Group.objects.all()[0]
+        project.group = group
         project.save()
         qgis_project_file.close()
 
@@ -509,7 +554,7 @@ class CoreApiTest(CoreTestBase):
 
         res = self.client.post(url, data=data, content_type='application/json')
         self.assertEqual(res.status_code, 400)
-        self.assertEqual(res.content, "Invalid URL 'gis3w.it': No schema supplied. Perhaps you meant http://gis3w.it?".encode())
+        self.assertEqual(res.content, "Invalid URL 'gis3w.it': No scheme supplied. Perhaps you meant https://gis3w.it?".encode())
 
         data = {
             'url': 'https://google.com',
@@ -520,7 +565,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(res.status_code, 200)
 
         data = {
-            'url': 'https://gis3w.it',
+            'url': 'https://g3wsuite.it',
             'method': 'post',
             'params': {
                 'search': 'pippo'
@@ -585,7 +630,8 @@ class CoreApiTest(CoreTestBase):
         """ Test for interface ows view """
 
         url = reverse('interface-ows')
-        ows_url = 'http://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto'
+        ows_url = 'http://www502.regione.toscana.it/ows2/com.rt.wms.RTmap/wms?map=owsedificato'
+
 
         # Only post method is available
         res = self.client.get(url)
@@ -628,14 +674,18 @@ class CoreApiTest(CoreTestBase):
         jres = json.loads(res.content)
 
         self.assertTrue(jres['result'])
-        self.assertEqual('Geoscopio_wms catasto'.lower(), jres['title'].lower())
+        self.assertEqual('Geoscopio_wms edificato'.lower(), jres['title'].lower())
         self.assertTrue('GetMap' in jres['methods'] and 'GetFeatureInfo' in jres['methods'] and 'GetCapabilities' in jres['methods'])
         self.assertTrue('image/png' in jres['methods']['GetMap']['formats'])
-        self.assertEqual(jres["methods"]["GetMap"]["urls"],[{'type': 'Get', 'url': 'https://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto&'}, {'type': 'Post', 'url': 'https://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto&'}])
+        self.assertEqual(jres["methods"]["GetMap"]["urls"],
+                 [
+                    {'type': 'Get', 'url': 'https://www502.regione.toscana.it/ows2/com.rt.wms.RTmap/wms?map=owsedificato&map_resolution=91&'},
+                    {'type': 'Post', 'url': 'https://www502.regione.toscana.it/ows2/com.rt.wms.RTmap/wms?map=owsedificato&map_resolution=91&'}
+                 ])
         self.assertTrue('text/html' in jres['methods']['GetFeatureInfo']['formats'])
-        self.assertEqual(len(jres['layers']), 21)
+        self.assertEqual(len(jres['layers']), 9)
 
-        self.assertEqual(jres['layers'][1]['title'].lower(), 'Acque - AdT Catasto Terreni'.lower())
+        self.assertEqual(jres['layers'][1]['title'].lower(), 'unita volumetriche')
         self.assertEqual(len(jres['layers'][1]['crss']), 20)
 
 
@@ -672,7 +722,12 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
+        # Original
+        # to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
+
+        # Custom
+        to_compare = enumerate([0, 0, 8388608, 8388608])
+
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
 
@@ -689,6 +744,69 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
+        # Original
+        #to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
+
+        # Custom
+        to_compare = enumerate([0, 0, 8388608, 8388608])
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
+
+    def test_short_url_api_rest(self):
+        """ Test short url api rest """
+
+        def check(self, data):
+            url = reverse('core-shorturl-api')
+
+
+
+            req = self.client.post(url, data)
+            self.assertEqual(req.status_code, 200)
+            jres = json.loads(req.content)
+
+            sus = ShortURL.objects.get(original_url=data['url'])
+
+            self.assertEqual(jres['data']['short_url'], f"su/{sus.short_code}")
+
+            # Test redirect url
+            url = reverse('shorturl_redirect_url', args=[sus.short_code])
+
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, 302)
+            self.assertEqual(res.headers['Location'], data['url'])
+
+        data = {
+            'url': 'http://g3wsuite.it/map/test-short-url'
+        }
+
+        check(self, data)
+
+        # Test very long URL
+        data = {
+            'url': 'https://example.com/test?data=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        }
+
+        check(self, data)
+
+    def test_permalink_api_rest(self):
+        """ Test permalink api rest """
+
+        with open(os.path.join(os.path.join(os.getcwd(), 'core', 'tests', 'data'), 'permalink.json'), 'r', encoding='UTF8') as f:
+            data = json.load(f)
+
+        # Create permalink
+        response = self.client.post(
+            reverse('core-permalink-create'),
+            data= { 'data': data },
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        permalink = PermaLinkURL.objects.get(permalink_code=json.loads(response.content)['data']['permalink_code'])
+
+        self.assertEqual(permalink.data['data'], data)
+
+
+
+

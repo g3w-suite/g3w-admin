@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
+from rest_framework.fields import empty
 
 from qdjango.models import Layer
 from qplotly.models import QplotlyWidget
@@ -61,8 +62,8 @@ class QplotlyWidgetSerializer(serializers.ModelSerializer):
             'type',
             'title',
             'layers',
-            'project',
-            'show_on_start_client'
+            'show_on_start_client',
+            'show_position',
         ]
 
         validators = [
@@ -92,6 +93,17 @@ class QplotlyWidgetSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         self._get_validate_data_from_settings(validated_data)
         return super().update(instance=instance, validated_data=validated_data)
+    
+    def to_representation(self, instance):
 
+        ret = super().to_representation(instance)
+
+        # add layers qgs_layer_id
+        try:
+            ret['project'] = self.context['project'].pk
+        except Exception:
+            pass
+
+        return ret
 
 
