@@ -989,8 +989,8 @@ export class ToolBox extends Emitter {
                             this.setUserMessageStepDone('chooselayer');
                             try {
                               const feature = await (async () => {
-                              //get selected layer
-                              const layer   = layers.find(l => l.selected);
+                                //get selected layer
+                                const layer   = layers.find(l => l.selected);
                                 const features = await (new Promise(async resolve => {
                                   this.addInteraction(
                                     layer.external
@@ -1055,13 +1055,16 @@ export class ToolBox extends Emitter {
                               // property are lost
                               attributes.forEach(({ name }) => {
                                 if (undefined === feature.get(name)) { feature.set(name, null) }
-                              })
+                              });
 
                               (GUI.getPlugin('editing').getToolBoxById(originalLayer.getId()).state.fields || [])
                                 .filter(f => !f.editable) // un-editable fields
                                 .map(f => f.name)
                                 .find(field => {
-                                  if (isPkField(originalLayer, field)) { feature.set(field, null) }
+                                  if (isPkField(originalLayer, field)) { 
+                                    feature.set(field, null);
+                                    return true; 
+                                  }
                                 });
                               //remove eventually Z Values
                               removeZValue({ feature });
