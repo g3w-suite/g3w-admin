@@ -17,26 +17,10 @@
     {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
     {% endif %}
-    <!-- Pace -->
-    <script src="{% static "bower_components/pace/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
-    <!-- vendor.css -->
-    <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/font-awesome/css/font-awesome.min.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/ionicons/css/ionicons.min.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/select2/dist/css/select2.min.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/pace/themes/yellow/pace-theme-loading-bar.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" %}">
-    <link rel="stylesheet" href="{% static "modules/jquery.filer/css/jquery.filer.css" %}">
-    <link rel="stylesheet" href="{% static "modules/jquery.filer/assets/fonts/jquery.filer-icons/jquery-filer.css" %}">
-    <link rel="stylesheet" href="{% static "modules/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/datatables/media/css/dataTables.bootstrap.min.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/green.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/blue.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/yellow.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/jstree/dist/themes/default/style.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/jstree-bootstrap-theme/dist/themes/proton/style.min.css" %}">
-    <link rel="stylesheet" href="{% static "modules/summernote/summernote.css" %}">
+    <!-- Pace must start before the page and other scripts load. -->
+    <script src="{% static "vendors/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
+    <link rel="stylesheet" href="{% static "vendors/pace.css" %}">
+    <link rel="stylesheet" href="{% static "vendors/vendors.css" %}">
 
     {# TODO: deprecate Shim and Respond.js #}
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -46,7 +30,6 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
     <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
@@ -56,8 +39,6 @@
     <link rel="stylesheet" href="{% static "css/g3wadmin.css"%}">
     <link rel="stylesheet" href="{% static "css/g3wadmin_dashboard_widget.css"%}">
     <link rel="stylesheet" href="{% static "css/g3wadmin_placeholder.css" %}">
-
-    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/cookieconsent/build/cookieconsent.min.css' %}" />
 
     {% for css in css_modules %}
     <link rel="stylesheet" type="text/css" href="{% static css %}" />
@@ -198,37 +179,7 @@
       const STATIC_BASE_URL       = SETTINGS.STATIC_BASE_URL;
     </script>
 
-    <!-- vendor.js -->
-    <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
-    <script src="{% static "bower_components/jquery-ui/jquery-ui.min.js" %}"></script>
-    <script src="{% static "bower_components/jquery-cookie/jquery.cookie.js" %}"></script>
-    <script src="{% static "bower_components/jquery-file-download/src/Scripts/jquery.fileDownload.js" %}"></script>
-    <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js" %}"></script>
-    <script src="{% static "bower_components/underscore/underscore-min.js" %}"></script>
-    <script src="{% static "bower_components/select2/dist/js/select2.full.min.js" %}"></script>
-    <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
-    <script src="{% static "bower_components/bootstrap-timepicker/js/bootstrap-timepicker.js" %}"></script>
-    <script src="{% static "modules/jquery.filer/js/jquery.filer.min.js" %}"></script>
-    <script src="{% static "bower_components/datatables/media/js/jquery.dataTables.min.js" %}"></script>
-    <script src="{% static "bower_components/datatables/media/js/dataTables.bootstrap.min.js" %}"></script>
-    <script src="{% static "modules/jquery.datatable/lang.js" %}"></script>
-    <script src="{% static "bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js" %}"></script>
-    <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
-    <script src="{% static "bower_components/proj4/dist/proj4.js" %}"></script>
-    <script src="{% static "bower_components/jstree/dist/jstree.min.js" %}"></script>
-    <script src="{% static "modules/summernote/summernote.min.js" %}"></script>
-    <script src="{% static "modules/summernote/lang/summernote-it-IT.min.js" %}"></script>
-    <!-- Bootstrap-datepicker-locals -->
-    {% for l in SETTINGS.LANGUAGES %}
-      {% if l.0 == 'se' %}
-        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}"></script>
-      {% elif not l.0 == 'en' %}
-        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}"></script>
-      {% endif %}
-    {% endfor %}
-    <!-- AdminLTE App -->
-    <script src="{% static "adminlte/js/app.min.js" %}"></script>
+    <script src="{% static "vendors/vendors.js" %}"></script>
     <!-- Django-file-form -->
     <script src="{% static "file_form/file_form.js" %}"></script>
     <!--<script src="{% static "file_form/file_form.debug.js" %}"></script>-->
@@ -258,7 +209,6 @@
     <script src="{{ js }}"></script>
     {% endfor %}{% endif %}
 
-    <script type="text/javascript" src="{% static 'bower_components/cookieconsent/build/cookieconsent.min.js' %}"></script>
     {% include 'core/include/cookieconsent.html' %}
 
     {% block custom_js_links_page %}{% endblock %}
