@@ -255,7 +255,7 @@ class QGISElasticsearchIndexer:
             # active for the project/deployment, layers not present in it
             # are skipped — matching the legacy whitelist behaviour.
             indexing_fields = _get_indexing_fields(qlayer.id(), project=project)
-            if indexing_fields is None and (
+            if not indexing_fields and (
                 settings.QES_INDEXING_FIELDS or 'es_conf' in settings.INSTALLED_APPS
             ):
                 logger.info(f"{self.log_tag} - Generate document from api - No fields to index for layer {qlayer.name()}, skipping")
