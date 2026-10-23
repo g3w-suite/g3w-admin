@@ -1,22 +1,20 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Italian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-27 09:27+0000\n"
-"PO-Revision-Date: 2023-11-30 10:33+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: it <info@g3wsuite.it>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.1\n"
 
 #: static/qdjango/js/data-widget-scalevisconstraintManagerList.js:28
 msgid "Create New Scale Visibility Layer Constraint"
@@ -121,7 +119,7 @@ msgstr "Titolo della ricerca"
 
 #: static/qdjango/js/widget.js:289
 msgid "Paginate resutls"
-msgstr ""
+msgstr "Paginazione dei risultati"
 
 #: static/qdjango/js/widget.js:333
 msgid "Client search title identification"
@@ -129,11 +127,11 @@ msgstr "Titolo identificativo della ricerca che apparirà sul client"
 
 #: static/qdjango/js/widget.js:338
 msgid "Check it if you want paginate the search results"
-msgstr ""
+msgstr "Seleziona per paginare i risultati della ricerca"
 
 #: static/qdjango/js/widget.js:381
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: static/qdjango/js/widget.js:382
 msgid "Yes"
@@ -165,7 +163,7 @@ msgstr "minore o uguale di"
 
 #: static/qdjango/js/widget.js:393
 msgid "within"
-msgstr ""
+msgstr "contenuto in"
 
 #: static/qdjango/js/widget.js:394 static/qdjango/js/widget.js:436
 msgid "like case sensitive"
@@ -185,11 +183,11 @@ msgstr "Campo"
 
 #: static/qdjango/js/widget.js:489
 msgid "Widget"
-msgstr ""
+msgstr "Widget"
 
 #: static/qdjango/js/widget.js:494
 msgid "Alias"
-msgstr ""
+msgstr "Alias"
 
 #: static/qdjango/js/widget.js:499 static/qdjango/js/widget.js:1471
 #: static/qdjango/js/widget.js:1726 static/qdjango/js/widget.js:1928
@@ -219,12 +217,12 @@ msgstr ""
 
 #: static/qdjango/js/widget.js:526
 msgid "Use Alternative Unique Layer"
-msgstr ""
+msgstr "Usa un layer alternativo per i valori univoci"
 
 #: static/qdjango/js/widget.js:529
 msgid ""
 "Is possibile to select an alternative layer to use for get unique values"
-msgstr ""
+msgstr "? possibile selezionare un layer alternativo per ottenere valori univoci"
 
 #: static/qdjango/js/widget.js:536
 msgid "Dependency"
@@ -372,7 +370,7 @@ msgstr "Layer"
 
 #: static/qdjango/js/widget.js:1961
 msgid "Autozoom on map bootstrap"
-msgstr ""
+msgstr "Zoom automatico all?avvio della mappa"
 
 #: static/qdjango/js/widget.js:1974
 msgid "Manage geo-constaints"
@@ -383,10 +381,9 @@ msgid "New geo constraint"
 msgstr "Nuovo geo vincolo"
 
 #: static/qdjango/js/widget.js:2271
-#, fuzzy
 #| msgid "New alphanumeric constraints"
 msgid "New constraint"
-msgstr "Nuovo vincolo alfanumerico"
+msgstr "Nuovo vincolo"
 
 #: static/qdjango/js/widget.js:2289
 msgid "Layer constraint"
@@ -394,13 +391,12 @@ msgstr "Layer vincolo"
 
 #: static/qdjango/js/widget.js:2297
 msgid "Autozoom"
-msgstr ""
+msgstr "Zoom automatico"
 
 #: static/qdjango/js/widget.js:2298
-#, fuzzy
 #| msgid "Subset rules count"
 msgid "Rules count"
-msgstr "Conto delle regole di tipo subset"
+msgstr "Numero di regole"
 
 #: static/qdjango/js/widget.js:2343
 msgid "Update constraint"
@@ -479,10 +475,9 @@ msgid "Delete style from the layer."
 msgstr "Elimina lo stile dal layer"
 
 #: static/qdjango/js/widget.js:2881
-#, fuzzy
 #| msgid "Edit style name or replace the style from an uploaded QML file."
 msgid "Edit style name or replace the style QML."
-msgstr ""
+msgstr "Modifica il nome dello stile o sostituisci il file QML dello stile."
 "Modifica il nome dello stile o rimpiazza lo style con un QML file caricato."
 
 #: static/qdjango/js/widget.js:2925
@@ -538,7 +533,6 @@ msgstr "Inserisci il nome univoco del nuovo stile"
 msgid "Upload layer style QML file"
 msgstr "Carica un file QML"
 
-#, fuzzy
 #~| msgid "Actions"
 #~ msgid "Attention"
 #~ msgstr "Azioni"

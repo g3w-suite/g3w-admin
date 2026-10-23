@@ -1,84 +1,83 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Polish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzett@gis3w.it>, 2024.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-08 06:57+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: pl <info@g3wsuite.it>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
 "(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
 "n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 
 #: core/static/dist/js/g3wadmin.min.js:20 core/static/js/g3wadmin/tpl.js:15
 msgid "Title"
-msgstr ""
+msgstr "Tytuł"
 
 #: core/static/dist/js/g3wadmin.min.js:20 core/static/js/g3wadmin/tpl.js:16
 msgid "Content"
-msgstr ""
+msgstr "Treść"
 
 #: core/static/dist/js/g3wadmin.min.js:20
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/tpl.js:21
 #: core/static/js/g3wadmin/widget.js:229 core/static/js/g3wadmin/widget.js:837
 msgid "Close"
-msgstr ""
+msgstr "Zamknij"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:116
 msgid "Delete item"
-msgstr ""
+msgstr "Usuń element"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:117
 msgid "Are you sure to delete this Item"
-msgstr ""
+msgstr "Czy na pewno chcesz usunąć ten element"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:169
 msgid " item"
-msgstr ""
+msgstr " element"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:170
 msgid "Are you sure to "
-msgstr ""
+msgstr "Czy na pewno chcesz "
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:226
 msgid "Detail object"
-msgstr ""
+msgstr "Szczegóły obiektu"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:358
 msgid "Form title"
-msgstr ""
+msgstr "Tytuł formularza"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:419
 msgid "Upload file"
-msgstr ""
+msgstr "Prześlij plik"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:447
 msgid "Drag&Drop files here"
-msgstr ""
+msgstr "Przeciągnij i upuść pliki tutaj"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:448
 msgid "Browse Files"
-msgstr ""
+msgstr "Przeglądaj pliki"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:519
 msgid "ERROR"
-msgstr ""
+msgstr "BŁĄD"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:815
 #: core/static/js/g3wadmin/widget.js:825
 msgid "Access"
-msgstr ""
+msgstr "Dostęp"
 
 #: core/static/dist/js/g3wadmin.min.js:34 core/static/js/g3wadmin/widget.js:834
 msgid "WEB Services"
-msgstr ""
+msgstr "Usługi internetowe"

@@ -1,18 +1,16 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Finnish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: fi <info@g3wsuite.it>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,54 +18,54 @@ msgstr ""
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:13
 msgid "Title"
-msgstr ""
+msgstr "Otsikko"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:14
 msgid "Content"
-msgstr ""
+msgstr "Sis?lt?"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:19
 #: core/static/js/g3wadmin/widget.js:166 core/static/js/g3wadmin/widget.js:872
 msgid "Close"
-msgstr ""
+msgstr "Sulje"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:107
 msgid "Delete item"
-msgstr ""
+msgstr "Poista kohde"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:108
 msgid "Are you sure to delete this Item"
-msgstr ""
+msgstr "Haluatko varmasti poistaa t?m?n kohteen"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:163
 msgid "Detail object"
-msgstr ""
+msgstr "Objektin tiedot"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:300
 msgid "Form title"
-msgstr ""
+msgstr "Lomakkeen otsikko"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:368
 msgid "Upload file"
-msgstr ""
+msgstr "Lataa tiedosto"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:400
 msgid "Drag&Drop files here"
-msgstr ""
+msgstr "Ved? ja pudota tiedostot t?h?n"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:401
 msgid "Browse Files"
-msgstr ""
+msgstr "Selaa tiedostoja"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:480
 msgid "ERROR"
-msgstr ""
+msgstr "VIRHE"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:842
 #: core/static/js/g3wadmin/widget.js:860
 msgid "Access"
-msgstr ""
+msgstr "K?ytt?oikeus"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:869
 msgid "WEB Services"
-msgstr ""
+msgstr "WEB-palvelut"

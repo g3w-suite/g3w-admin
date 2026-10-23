@@ -243,7 +243,7 @@ Depending on the component you want to translate you can start by consulting one
 - Bulgarian: [suricactus](https://github.com/suricactus)
 - French: [democracy essentials](https://www.democracy-essentials.eu), [sig-echirolles](https://github.com/sig-echirolles)
 - German: [r3gis](https://www.r3gis.com)
-- Italian: [wlorenzetti](https://github.com/wlorenzetti)
+- Italian: [wlorenzetti](https://github.com/wlorenzetti), [elpaso](https://github.com/elpaso), [volterra79](https://github.com/volterra79), [leolami](https://github.com/leolami), [Raruto](https://github.com/Raruto).
 - Portuguese: [SrNetoChan](https://github.com/SrNetoChan)
 - Romanian: [tudorbarascu](https://github.com/tudorbarascu)
 - Spanish: [samtux](https://github.com/samtux)

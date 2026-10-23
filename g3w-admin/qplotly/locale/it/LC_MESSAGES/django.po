@@ -1,29 +1,20 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Italian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 14:59+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: it <info@g3wsuite.it>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: qplotly/api/widgets/serializers.py:44
-#, python-brace-format
-msgid ""
-"Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
-"source_layer_id}"
-msgstr "Il layer con id {layer.qgs_layer_id} non è uguale all'impostazione {settings.source_layer_id}"
 
 #: qplotly/models.py:12
 msgid "XML original settings"
@@ -49,56 +40,118 @@ msgstr "Tipo di grafico"
 msgid "Plot title"
 msgstr "Titolo del grafico"
 
-#: qplotly/models.py:19
+#: qplotly/models.py:18
 msgid "Set as default plot on starting map"
 msgstr "Imposta come grafico predefinito all'avvio della mappa"
 
-#: qplotly/models.py:24
+#: qplotly/models.py:28
+#| msgid "Qplotly widgets"
+msgid "Related widgets"
+msgstr "Widget correlati"
+
+#: qplotly/models.py:32 qplotly/models.py:127
 msgid "Order"
 msgstr "Ordine"
 
-#: qplotly/models.py:31
+#: qplotly/models.py:39
 msgid "SChart show position"
 msgstr "Posizione di visualizzazione SChart"
 
-#: qplotly/models.py:48
+#: qplotly/models.py:57
 msgid "XML is not a DataPlotly settings."
 msgstr "XML non è un setting DataPlotly"
 
-#: qplotly/models.py:54
-#, python-brace-format
-msgid ""
-"Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
-msgstr "Il layer con qgs_layer_id={settings.source_layer_id} non è presente nel database"
-
-#: qplotly/models.py:58
+#: qplotly/models.py:68
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
 "values."
-msgstr "L'origine dati del layer nelle impostazioni DataPlotly non corrisponde all'origine dati nei valori."
+msgstr ""
+"L'origine dati del layer nelle impostazioni DataPlotly non corrisponde "
+"all'origine dati nei valori."
+
+#: qplotly/models.py:83
+msgid "Order must be \"asc\" or \"desc\"."
+msgstr "L'ordinamento deve essere \"asc\" o \"desc\"."
+
+#: qplotly/models.py:110
+msgid "Source widget"
+msgstr "Widget di origine"
+
+#: qplotly/models.py:116
+msgid "Target widget"
+msgstr "Widget di destinazione"
+
+#: qplotly/models.py:122
+msgid "Project"
+msgstr "Progetto"
+
+#: qplotly/models.py:135
+#| msgid "Qplotly widgets"
+msgid "QPlotly Widget relation"
+msgstr "Relazione tra widget QPlotly"
+
+#: qplotly/models.py:136
+#| msgid "Qplotly widgets"
+msgid "QPlotly Widget relations"
+msgstr "Relazioni tra widget QPlotly"
 
 #: qplotly/templates/qplotly/layer_action.html:8
 msgid "Qplotly widgets"
 msgstr "Widget Qplotly"
 
-#: qplotly/templates/qplotly/plots_list_order.html:5
-msgid ""
-"<b>Drag</b> and <b>drop</b> the following table's rows to change the widget "
-"list order"
-msgstr "<b>Trascina</b> e <b>rilascia</b> le righe della tabella seguente per cambiare l'ordine dei widget"
+#: qplotly/templates/qplotly/plots_list_order.html:9
+#| msgid "Qplotly widgets"
+msgid "Reorder widgets"
+msgstr "Riordina widget"
 
 #: qplotly/templates/qplotly/plots_list_order.html:10
+msgid ""
+"Drag and drop the rows to change the order in which the Qplotly widgets will "
+"appear."
+msgstr "Trascina le righe per cambiare l'ordine di visualizzazione dei widget Qplotly."
+
+#: qplotly/templates/qplotly/plots_list_order.html:18
 msgid "Title"
 msgstr "Titolo"
 
-#: qplotly/templates/qplotly/plots_list_order.html:11
+#: qplotly/templates/qplotly/plots_list_order.html:19
 msgid "Type"
 msgstr "Tipo"
 
-#: qplotly/templates/qplotly/plots_list_order_action.html:6
-#: qplotly/templates/qplotly/plots_list_order_action.html:9
+#: qplotly/templates/qplotly/plots_list_order.html:25
+msgid "Drag to reorder"
+msgstr "Trascina per riordinare"
+
+#: qplotly/templates/qplotly/plots_list_order.html:29
+msgid "Has related widgets"
+msgstr "Ha widget correlati"
+
+#: qplotly/templates/qplotly/plots_list_order_action.html:5
+#: qplotly/templates/qplotly/plots_list_order_action.html:8
 msgid "Project's Qploty Widgets order"
 msgstr "Ordine dei widget Qplotly del progetto"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Layer with id {layer.qgs_layer_id} is no equal to setting "
+#~ "{settings.source_layer_id}"
+#~ msgstr ""
+#~ "Il layer con id {layer.qgs_layer_id} non è uguale all'impostazione "
+#~ "{settings.source_layer_id}"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
+#~ msgstr ""
+#~ "Il layer con qgs_layer_id={settings.source_layer_id} non è presente nel "
+#~ "database"
+
+#~ msgid ""
+#~ "<b>Drag</b> and <b>drop</b> the following table's rows to change the "
+#~ "widget list order"
+#~ msgstr ""
+#~ "<b>Trascina</b> e <b>rilascia</b> le righe della tabella seguente per "
+#~ "cambiare l'ordine dei widget"
 
 #~ msgid "Actions"
 #~ msgstr "Azioni"
