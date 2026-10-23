@@ -227,44 +227,47 @@ export default ({
   /**
    * @listens service~change-charts
    */
-  async mounted() {
+  mounted() {
+    this.mountPromise = (async () => {
 
-    //show chart on query result
-    if (this.container) {
-      this.container.append(this.$el);
-    }
-    
-    this.service.on('change-charts', this.draw);
+      //show chart on query result
+      if (this.container) {
+        this.container.append(this.$el);
+      }
 
-    // show chart in sidebar
-    if (!this.container) {
-      await GUI.showContent({
-        content: this.$el,
-        title:   'plugins.qplotly.title',
+      this.service.on('change-charts', this.draw);
+
+      // show chart in sidebar
+      if (!this.container) {
+        await GUI.showContent({
+          content: this.$el,
+          title:   'plugins.qplotly.title',
+        });
+      }
+
+      // at mount time get Charts
+      const { charts, order } = await this.service.getCharts({
+        layerIds: this.ids, // provided by query result service otherwise is undefined
+        rel:      this.rel, // provided by query result service otherwise is undefined
       });
-    }
 
-    // at mount time get Charts
-    const { charts, order } = await this.service.getCharts({
-      layerIds: this.ids, // provided by query result service otherwise is undefined
-      rel:      this.rel, // provided by query result service otherwise is undefined
-    });
+      // set charts
+      await this.draw({ charts, order });
 
-    // set charts
-    await this.draw({ charts, order });
-    
-    this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
-    this.resize.observe(this.$el);
-    
-    this.service.state.showCharts = true;
-    
+      this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
+      this.resize.observe(this.$el);
+
+      this.service.state.showCharts = true;
+
+    })();
+    return this.mountPromise;
   },
 
   /**
    * un listen all events
    */
   beforeDestroy() {
-    this.resize.unobserve(this.$el);
+    this.resize?.unobserve(this.$el);
 
     if (this.container) {
       this.$el.remove();

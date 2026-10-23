@@ -9,7 +9,6 @@
   const { Plugin }                      = g3wsdk.core.plugin;
   const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
   const MAP                             = GUI.getService('map');
-  const QUERY                           = GUI.getService('queryresults');
 
   new class extends Plugin {
 
@@ -21,8 +20,6 @@
 
     /**
      * @fires   service~ready
-     * @listens queryresults~show-chart
-     * @listens queryresults~hide-chart
      */
     constructor() {
 
@@ -80,20 +77,14 @@
         layer.on('filtertokenchange', debounce(({ layerId }) => this.toggleCharts({ layerId }))); 
       });
 
-      QUERY.addLayersPlotIds(Array.from(this.#QUERY_RELATIONS_LAYERS).map(l => l.getId()));
-
-      //Handle event coming from query resut content
-      QUERY.on('show-chart', (ids, container, rel) => this.toggleCharts({ show: true, container, ids, rel }));
-      QUERY.on('hide-chart', container             => this.toggleCharts({ show: false, container }));
-
       // check if some some plot has visible geolayer 
       this.state.geolayer = this.config.plots.some(p => p.show && p.tools.geolayer.show);
 
       // Add query action (show relations (plot))
-      QUERY.onafter('addActionsForLayers', (actions, layers) => {
+      GUI.onafter('addActionsForLayers', (actions, layers) => {
         layers.forEach(layer => {
           const relations      = ApplicationState.project.getRelations().filter(r => layer.id === r.referencedLayer);
-          const charts         = relations.filter(r => 'MANY' === r.type).map(r => QUERY.plotLayerIds.find(id => id === r.referencingLayer)).filter(Boolean);
+          const charts         = relations.filter(r => 'MANY' === r.type).map(r => Array.from(this.#QUERY_RELATIONS_LAYERS).map(l => l.getId()).find(id => id === r.referencingLayer)).filter(Boolean);
           const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
           if (charts.length) {
             let _container;
@@ -137,13 +128,83 @@
         });
       });
 
-      // setup gui
-      GUI.isReady().then(async () => {
-
-        if (!this.registerPlugin(this.config.gid)) {
+      // Listen for the 'addActionsForRelation' event to add chart actions for relations.
+      GUI.onafter('addActionsForRelation', (actions, { relation, fid, addPanel, removePanel }) => {
+        if (!Array.from(this.#QUERY_RELATIONS_LAYERS).some(layer => layer.getId() === relation.referencingLayer)) {
           return;
         }
 
+        let chart, pending;
+
+        let disposed = false; // Becomes true when clear starts; this action cannot be reused.
+        const state  = Vue.observable({ toggled: false, disabled: false });
+        const open   = async () => {
+          chart         = await addPanel({ id: 'qplotly', label: 'Chart width' });
+          state.toggled = true;
+          await this.toggleCharts({
+            show:      true,
+            ids:       [relation.referencingLayer],
+            container: chart,
+            rel:       { relations: [relation], fid },
+          });
+        };
+        const close  = async () => {
+          try {
+            if (chart) {
+              await this.toggleCharts({ show: false, container: chart });
+            }
+          } finally {
+            // Always remove the panel, even if chart cleanup fails.
+            removePanel('qplotly');
+            chart         = null;
+            state.toggled = false;
+          }
+        };
+
+        actions.push({
+          id:    'qplotly-relation-chart',
+          class: 'fas fa-chart-bar',
+          hint:  'Show Chart',
+          state,
+          async cbk() {
+            // Ignore clicks while loading and callbacks after this action has been cleared.
+            if (state.disabled || disposed) {
+              return;
+            }
+            state.disabled = true;
+            try {
+              if (state.toggled) {
+                await close();
+                return;
+              }
+
+              // Track panel creation as well as chart loading before allowing cleanup.
+              pending = open();
+              await pending;
+            } catch(e) {
+              await close();
+              throw e;
+            } finally {
+              pending        = null;
+              state.disabled = false;
+            }
+          },
+          //called when relation component is cleared or the action is disposed
+          // Ensures that any in-flight chart operations are completed and the chart is properly closed.
+          async clear() {
+            // Block future callbacks before waiting for an in-flight chart mount to finish.
+            disposed = true;
+            await pending;
+            await close();
+          },
+        });
+      });
+
+      // setup gui
+      GUI.isReady().then(async () => {
+        if (!this.registerPlugin(this.config.gid)) {
+          return;
+        }
         // multi plot selector
         const sidebar = this.#SIDEBAR = this.createSideBarComponent({
           data: () => ({ service: this, }),
@@ -544,7 +605,7 @@
     }
 
     /**
-     * Called when queryResultService emit event show-chart (or open/close sidebar item)
+    * Called by chart actions or when opening/closing the sidebar item.
      * 
      * @param { Object }  opts
      * @param { boolean } opts.show whether to show charts
@@ -584,20 +645,25 @@
           
           this.#CHARTS.push(component);
 
-          // Block execution until the 'loading' state in the sidebar becomes false
-          await new Promise(res => component.$watch(() => this.state.loading, loading => !loading && res(), { immediate: true }));
+          // Wait until the sidebar has finished drawing its charts and setting up observers.
+          await component.mountPromise;
         }
 
         if (false === show) {
           // Find the chart instance associated with the provided container selector
-          const index = this.#CHARTS.findIndex(c => container?.selector === c?.container?.selector);
+          const index = this.#CHARTS.findIndex(component => (container?.[0] ?? container) === (component.container?.[0] ?? component.container));
           if (index !== -1) {
-            // Properly destroy the Vue instance and remove it from the tracking array
-            this.#CHARTS[index].$destroy();
-            this.#CHARTS.splice(index, 1);
-            
-            // Cleanup plot data after closing the sidebar
-            plots.forEach(p => p.loaded && this.clearData(p));
+            const component = this.#CHARTS[index];
+            try {
+              await component.mountPromise;
+            } finally {
+              // Properly destroy the Vue instance and remove it from the tracking array
+              component.$destroy();
+              this.#CHARTS.splice(index, 1);
+
+              // Cleanup plot data after closing the sidebar
+              plots.forEach(p => p.loaded && this.clearData(p));
+            }
           }
         }
 
