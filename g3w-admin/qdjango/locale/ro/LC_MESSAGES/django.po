@@ -1,44 +1,46 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Romanian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:58+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: ro <info@g3wsuite.it>\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
 "2:1));\n"
-#: qdjango/admin.py:75 qdjango/models/projects.py:275
-#: qdjango/models/projects.py:495 qdjango/templates/qdjango/layers_list.html:73
+"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20) ? 1 : 2));\n"
+
+#: qdjango/admin.py:83 qdjango/models/projects.py:439
+#: qdjango/models/projects.py:784
 msgid "Project"
 msgstr "Proiect"
 
-#: qdjango/admin.py:149
+#: qdjango/admin.py:167
+#, python-brace-format
 msgid "{} can not be deleted because: {}"
 msgstr "{} nu poate fi șters deoarece: {}"
 
-#: qdjango/admin.py:164
+#: qdjango/admin.py:182
 #, python-format
 msgid "This object can not be deleted because: %s."
 msgstr "Acest obiect nu poate fi șters deoarece: %s."
 
-#: qdjango/admin.py:176
+#: qdjango/admin.py:194
+#, python-brace-format
 msgid ""
 "Authentication configuration {} can not be deleted because one or more "
 "layers are using it: {}"
 msgstr ""
-"Configurația de autentificare {} nu poate fi ștearsă deoarece "
-"unul sau mai multe straturi o folosesc: {}"
+"Configurația de autentificare {} nu poate fi ștearsă deoarece unul sau mai "
+"multe straturi o folosesc: {}"
 
 #: qdjango/api/layers/views.py:39 qdjango/api/layers/views.py:154
 msgid "Style not found."
@@ -72,59 +74,76 @@ msgstr "Trebuie specificat fie \"nume\", fie \"curent\" fie \"qml\"."
 msgid "Unknown error while modifying the style."
 msgstr "Eroare necunoscută la modificarea stilului."
 
-#: qdjango/forms.py:51
-msgid "File must have 'qgs' or 'qgz' extension"
-msgstr ""
+#: qdjango/forms/messages.py:41
+msgid "General data"
+msgstr "Date generale"
 
-#: qdjango/forms.py:91
+#: qdjango/forms/messages.py:59
+msgid "Validity"
+msgstr "Valabilitate"
+
+#: qdjango/forms/messages.py:83
+msgid "Date from from must be less than Date to"
+msgstr "Data de început trebuie să fie anterioară datei de sfârșit"
+
+#: qdjango/forms/messages.py:84
+msgid "Date to must be more than Date from"
+msgstr "Data de sfârșit trebuie să fie ulterioară datei de început"
+
+#: qdjango/forms/projects.py:40 qdjango/forms/projects.py:131
+#, python-format
+msgid "%(count)d error found:"
+msgid_plural "%(count)d errors found:"
+msgstr[0] "%(count)d eroare găsită:"
+msgstr[1] "%(count)d erori găsite:"
+msgstr[2] "%(count)d de erori găsite:"
+
+#: qdjango/forms/projects.py:75
+msgid "File must have 'qgs' or 'qgz' extension"
+msgstr "Fișierul trebuie să aibă extensia 'qgs' sau 'qgz'"
+
+#: qdjango/forms/projects.py:144
 msgid "Url alias can contains only numbers, letters, - or _"
 msgstr "Fișierul trebuie să aibă extensia 'qgs' sau 'qgz'."
 
-#: qdjango/forms.py:96
+#: qdjango/forms/projects.py:153
 msgid "This alias is used by another project/map"
 msgstr "Acest alias este folosit de un alt proiect/hartă"
 
-#: qdjango/forms.py:109
+#: qdjango/forms/projects.py:169
 msgid "Max extent is smaller than init map extent"
 msgstr "Extinderea maximă este mai mică decât extinderea hărții init"
 
-#: qdjango/forms.py:118
-msgid ""
-"Is not possible set Legend position rendering to \"{Project."
-"CLIENT_LEGEND_POSITION['toc']}\" "
-msgstr ""
-"Nu este posibil să setați redarea poziției legendei la \"{Proiect."
-" CLIENT_LEGEND_POSITION['toc']}\""
-
-#: qdjango/forms.py:138 qdjango/templates/qdjango/project_list.html:25
+#: qdjango/forms/projects.py:203
 msgid "URL alias"
-msgstr ""
+msgstr "Alias URL"
 
-#: qdjango/forms.py:139
+#: qdjango/forms/projects.py:204
 msgid ""
 "You can set a human readable URL for the map. Only alphanumeric characters, "
 "not white space or special characters"
 msgstr ""
-"Puteți seta o adresă URL care poate fi citită de oameni pentru hartă. Doar caractere "
-" alfanumerice, nu spații albe sau caractere speciale"
+"Puteți seta o adresă URL care poate fi citită de oameni pentru hartă. Doar "
+"caractere  alfanumerice, nu spații albe sau caractere speciale"
 
-#: qdjango/forms.py:144
+#: qdjango/forms/projects.py:210
 msgid "QGIS Authentication ID"
-msgstr ""
+msgstr "ID de autentificare QGIS"
 
-#: qdjango/forms.py:145 qdjango/models/qgisauth.py:97
+#: qdjango/forms/projects.py:214 qdjango/models/qgisauth.py:97
 msgid "7 alphanumeric ASCII chars"
 msgstr "7 caractere alfanumerice ASCII"
 
-#: qdjango/forms.py:147
+#: qdjango/forms/projects.py:219
+#: qdjango/templates/qdjango/ajax/project_detail.html:118
 msgid "Username"
-msgstr ""
+msgstr "Utilizator"
 
-#: qdjango/forms.py:149
+#: qdjango/forms/projects.py:224
 msgid "Password"
-msgstr ""
+msgstr "Parola"
 
-#: qdjango/forms.py:181
+#: qdjango/forms/projects.py:264
 #, python-brace-format
 msgid ""
 "Warning: an invalid layer is using an existing authentication configuration "
@@ -132,78 +151,101 @@ msgid ""
 "correct by browinsg the URL<a target=_new href=\"{admin_url}\">{admin_url}</"
 "a>"
 msgstr ""
-"Avertisment: un strat nevalid utilizează o configurație de autentificare existentă"
-" ({authentication_id}). Solicitați unui administrator să verifice dacă configurația"
-" este corectă, răsfoind adresa URL<a target=_new href=\"{admin_url}\">{admin_url}</a>"
+"Avertisment: un strat nevalid utilizează o configurație de autentificare "
+"existentă ({authentication_id}). Solicitați unui administrator să verifice "
+"dacă configurația este corectă, răsfoind adresa URL<a target=_new "
+"href=\"{admin_url}\">{admin_url}</a>"
 
-#: qdjango/forms.py:193
+#: qdjango/forms/projects.py:277
 msgid "Qgis Project"
 msgstr "Proiectul Qgis"
 
-#: qdjango/forms.py:219
+#: qdjango/forms/projects.py:284
+msgid "Translatable fields"
+msgstr "Câmpuri traductibile"
+
+#: qdjango/forms/projects.py:309
 msgid "Description data"
 msgstr "Date de descriere"
 
-#: qdjango/forms.py:243
+#: qdjango/forms/projects.py:341
 msgid "Options and actions"
 msgstr "Opțiuni și acțiuni"
 
-#: qdjango/forms.py:276 qdjango/models/qgisauth.py:115
+#: qdjango/forms/projects.py:383 qdjango/models/qgisauth.py:115
 msgid "QGIS Authentication"
 msgstr "Autentificare QGIS"
 
-#: qdjango/forms.py:432
+#: qdjango/forms/projects.py:559
 msgid "Viewers"
-msgstr ""
+msgstr "Vizualizatori"
 
-#: qdjango/forms.py:433
+#: qdjango/forms/projects.py:561
 msgid "Select/Unselect user with viewer role can view the layer"
-msgstr "Selectați/Deselectați utilizatorul cu rol de vizualizator poate vizualiza stratul"
+msgstr ""
+"Selectați/Deselectați utilizatorul cu rol de vizualizator poate vizualiza "
+"stratul"
 
-#: qdjango/forms.py:435
+#: qdjango/forms/projects.py:567
 msgid "Select/Unselect viewer groups can view the layer"
 msgstr "Selectați/Deselectați grupurile de vizualizatori pot vizualiza stratul"
 
-#: qdjango/forms.py:436
+#: qdjango/forms/projects.py:568
 msgid "User viewer groups"
-msgstr ""
+msgstr "Grupuri de utilizatori vizualizatori"
 
-#: qdjango/forms.py:451
+#: qdjango/forms/projects.py:583
 msgid "Select viewers with 'view permission' on project that can view layer:"
-msgstr "Selectați vizualizatori cu 'permisiune de vizualizare' pe proiect"
-" care pot vizualiza stratul:"
+msgstr ""
+"Selectați vizualizatori cu 'permisiune de vizualizare' pe proiect care pot "
+"vizualiza stratul:"
 
 #: qdjango/models/column_acl.py:40
 #, python-format
 msgid "%(value)s is not a vector layer"
 msgstr "%(value)s nu este un strat vectorial"
 
+#: qdjango/models/column_acl.py:51
+#: qdjango/templates/qdjango/ajax/project_detail.html:17
+#: qdjango/templates/qdjango/ajax/project_detail.html:308
+msgid "Users"
+msgstr "Utilizatori"
+
+#: qdjango/models/column_acl.py:53
+#| msgid "Editor user groups"
+msgid "User groups"
+msgstr "Grupuri utilizatori"
+
 #: qdjango/models/column_acl.py:56
 msgid "Restricted fields"
 msgstr "Câmpuri restricționate"
 
-#: qdjango/models/column_acl.py:70
+#: qdjango/models/column_acl.py:63
 msgid "Column level constraint"
 msgstr "Constrângere la nivel de coloană"
 
-#: qdjango/models/column_acl.py:72
+#: qdjango/models/column_acl.py:65
 msgid "Column level constraints"
 msgstr "Constrângeri la nivel de coloană"
 
-#: qdjango/models/column_acl.py:83
+#: qdjango/models/column_acl.py:76
+#, python-brace-format
 msgid "Field \"{}\" is not available in layer {}."
 msgstr "Câmpul \"{}\" nu este disponibil în stratul {}."
 
-#: qdjango/models/constraints.py:45 qdjango/models/projects.py:482
-#: qdjango/models/projects.py:978 qdjango/models/qgisauth.py:98
-#: qdjango/templates/qdjango/ajax/layer_detail.html:11
+#: qdjango/models/constraints.py:45 qdjango/models/projects.py:741
+#: qdjango/models/projects.py:1626 qdjango/models/qgisauth.py:98
+#: qdjango/templates/qdjango/ajax/layer_detail.html:23
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:9
-#: qdjango/templates/qdjango/layers_list.html:109
+#: qdjango/templates/qdjango/layers_list.html:255
+#: qdjango/templates/qdjango/layers_list.html:275
 msgid "Name"
 msgstr "Nume"
 
 #: qdjango/models/constraints.py:46 qdjango/models/geoconstraints.py:54
-#: qdjango/models/projects.py:182 qdjango/models/projects.py:488
+#: qdjango/models/projects.py:214 qdjango/models/projects.py:765
+#: qdjango/templates/qdjango/ajax/project_detail.html:174
+#: qdjango/templates/qdjango/ajax/project_detail.html:220
 msgid "Description"
 msgstr "Descriere"
 
@@ -213,8 +255,9 @@ msgstr "Activ pentru vizualizare"
 
 #: qdjango/models/constraints.py:50 qdjango/models/geoconstraints.py:60
 msgid "Active this constraint for users have viewing grant on layer/project"
-msgstr "activați această constrângere pentru utilizatorii care au "
-"acordarea de vizualizare pe strat/proiect"
+msgstr ""
+"activați această constrângere pentru utilizatorii care au acordarea de "
+"vizualizare pe strat/proiect"
 
 #: qdjango/models/constraints.py:51 qdjango/models/geoconstraints.py:61
 msgid "Active for editing"
@@ -222,11 +265,14 @@ msgstr "Activ pentru editare"
 
 #: qdjango/models/constraints.py:53 qdjango/models/geoconstraints.py:63
 msgid "Active this constraint for users have editing grant on layer/project"
-msgstr "Activează această constrângere pentru utilizatorii care au acordarea de editare pe strat/proiect"
+msgstr ""
+"Activează această constrângere pentru utilizatorii care au acordarea de "
+"editare pe strat/proiect"
 
-#: qdjango/models/constraints.py:89 qdjango/models/geoconstraints.py:106
+#: qdjango/models/constraints.py:89 qdjango/models/geoconstraints.py:111
 msgid "Almonst one of fields for_view and for_editing it must be True"
-msgstr "Aproape unul dintre câmpurile for_view și for_editing trebuie să fie True"
+msgstr ""
+"Aproape unul dintre câmpurile for_view și for_editing trebuie să fie True"
 
 #: qdjango/models/constraints.py:96
 msgid "Layer constraint"
@@ -234,7 +280,7 @@ msgstr "Constrângere de strat"
 
 #: qdjango/models/constraints.py:97
 msgid "Layer constraints"
-msgstr ""
+msgstr "Restricții ale stratului"
 
 #: qdjango/models/constraints.py:111
 msgid "Rule definition"
@@ -248,15 +294,15 @@ msgstr ""
 "Definiția regulii, fie o condiție SQL WHERE, fie o definiție QgsExpression, "
 "în funcție de tipul regulii"
 
-#: qdjango/models/constraints.py:143 qdjango/models/geoconstraints.py:161
+#: qdjango/models/constraints.py:143 qdjango/models/geoconstraints.py:166
 msgid "You cannot define a user and a group at the same time"
-msgstr ""
+msgstr "Nu puteți defini simultan un utilizator și un grup"
 
-#: qdjango/models/constraints.py:147 qdjango/models/geoconstraints.py:165
+#: qdjango/models/constraints.py:147 qdjango/models/geoconstraints.py:170
 msgid "You must define a user OR a group"
 msgstr "Trebuie să definiți un utilizator SAU un grup"
 
-#: qdjango/models/constraints.py:152 qdjango/models/geoconstraints.py:170
+#: qdjango/models/constraints.py:152 qdjango/models/geoconstraints.py:175
 #, python-format
 msgid "There is an error in the SQL rule where condition: %s"
 msgstr "Există o eroare în regula SQL în care condiția: %s"
@@ -275,431 +321,616 @@ msgstr "Regula expresiei constrângerii"
 
 #: qdjango/models/constraints.py:347
 msgid "Constraint expression rules"
-msgstr ""
+msgstr "Reguli pentru expresiile de restricționare"
 
-#: qdjango/models/geoconstraints.py:94
+#: qdjango/models/geoconstraints.py:64
+msgid "Autozoom on map boostrap"
+msgstr "Zoom automat la inițializarea hărții"
+
+#: qdjango/models/geoconstraints.py:66
+msgid ""
+"Active this to make possible auto zoom on geometric constraint (combining "
+"every rule) for user on map boostrap"
+msgstr "Activați această opțiune pentru a permite zoomul automat la restricția geometrică (combinând toate regulile) pentru utilizator la inițializarea hărții"
+
+#: qdjango/models/geoconstraints.py:99
 msgid "Layers types must be spatialite or postgres"
 msgstr "Reguli de exprimare a constrângerii"
 
-#: qdjango/models/geoconstraints.py:98
+#: qdjango/models/geoconstraints.py:103
 msgid "Constraint layer geometry type must be Polygon or MultiPolygon"
-msgstr "Tipul de geometrie a stratului de constrângere trebuie să fie Polygon sau MultiPolygon"
+msgstr ""
+"Tipul de geometrie a stratului de constrângere trebuie să fie Polygon sau "
+"MultiPolygon"
 
-#: qdjango/models/geoconstraints.py:102
+#: qdjango/models/geoconstraints.py:107
 msgid "Editing and constraints layer cannot be the same layer"
 msgstr "Stratul de editare și constrângeri nu poate fi același strat"
 
-#: qdjango/models/geoconstraints.py:113
+#: qdjango/models/geoconstraints.py:118
 msgid "Layer geoconstraint"
 msgstr "Geoconstrângere strat"
 
-#: qdjango/models/geoconstraints.py:114
+#: qdjango/models/geoconstraints.py:119
 msgid "Layer geoconstraints"
 msgstr "Geoconstrângeri de straturi"
 
-#: qdjango/models/geoconstraints.py:129
+#: qdjango/models/geoconstraints.py:134
 msgid "SQL WHERE clause for the constraint layer"
 msgstr "Clauza SQL WHERE pentru stratul de constrângeri"
 
-#: qdjango/models/geoconstraints.py:142
+#: qdjango/models/geoconstraints.py:147
 msgid "Geoconstraint rule"
 msgstr "Regula geoconstrângerii"
 
-#: qdjango/models/geoconstraints.py:143
+#: qdjango/models/geoconstraints.py:148
 msgid "Geoconstraint rules"
 msgstr "Reguli de geoconstrângere"
 
-#: qdjango/models/projects.py:145
+#: qdjango/models/layerscaleconstraints.py:34
+#| msgid "Layer constraint"
+msgid "Scale visibility layer constraint"
+msgstr "Restricție de vizibilitate a stratului în funcție de scară"
+
+#: qdjango/models/layerscaleconstraints.py:35
+#| msgid "Layer constraint"
+msgid "Scale visibility layer constraints"
+msgstr "Restricții de vizibilitate a stratului în funcție de scară"
+
+#: qdjango/models/messages.py:32
+msgid "Set the main title of the message"
+msgstr "Setați titlul principal al mesajului"
+
+#: qdjango/models/messages.py:33
+msgid "Set the body of the message"
+msgstr "Setați conținutul mesajului"
+
+#: qdjango/models/messages.py:35
+msgid "Select level of message"
+msgstr "Selectați nivelul mesajului"
+
+#: qdjango/models/messages.py:36
+msgid "Starting date of message display"
+msgstr "Data de început a afișării mesajului"
+
+#: qdjango/models/messages.py:37
+msgid "Ending date of message display"
+msgstr "Data de sfârșit a afișării mesajului"
+
+#: qdjango/models/projects.py:161
 msgid "Single"
 msgstr "Singur"
 
-#: qdjango/models/projects.py:146
+#: qdjango/models/projects.py:162
 msgid "Multiple"
 msgstr "Multiplu"
 
-#: qdjango/models/projects.py:150 qdjango/models/projects.py:870
-#: qdjango/templates/qdjango/project_form.html:44
-#: qdjango/templates/qdjango/project_list.html:48
-#: qdjango/templates/qdjango/search/project.html:38
+#: qdjango/models/projects.py:166 qdjango/models/projects.py:1445
+#: qdjango/templates/qdjango/project_form.html:82
+#: qdjango/templates/qdjango/project_form.html:84
+#: qdjango/templates/qdjango/project_list.html:146
+#: qdjango/templates/qdjango/search/project.html:52
 msgid "Layers"
 msgstr "Straturi"
 
-#: qdjango/models/projects.py:151
-msgid "Base layers"
-msgstr "Straturi de bază"
-
-#: qdjango/models/projects.py:152
+#: qdjango/models/projects.py:167
+#: qdjango/templates/qdjango/layers_list.html:499
 msgid "Legend"
 msgstr "Legendă"
 
-#: qdjango/models/projects.py:156 qdjango/models/projects.py:161
+#: qdjango/models/projects.py:171 qdjango/models/projects.py:176
 msgid "Collapsed"
 msgstr "S-a prăbușit"
 
-#: qdjango/models/projects.py:157 qdjango/models/projects.py:162
+#: qdjango/models/projects.py:172 qdjango/models/projects.py:177
 msgid "Not collapsed"
-msgstr "Not collapsed"
+msgstr "Extins"
 
-#: qdjango/models/projects.py:166
+#: qdjango/models/projects.py:181
 msgid "In a separate TAB"
 msgstr "Într-un TAB separat"
 
-#: qdjango/models/projects.py:167
+#: qdjango/models/projects.py:181
 msgid "Into TOC layers"
 msgstr "În straturi TOC"
 
-#: qdjango/models/projects.py:172
+#: qdjango/models/projects.py:184
+msgid "PNG 1bit"
+msgstr "PNG 1 bit"
+
+#: qdjango/models/projects.py:185
+msgid "PNG 8bit"
+msgstr "PNG 8 biți"
+
+#: qdjango/models/projects.py:186
+msgid "PNG 16bit"
+msgstr "PNG 16 biți"
+
+#: qdjango/models/projects.py:187
+msgid "PNG"
+msgstr "PNG"
+
+#: qdjango/models/projects.py:188
+msgid "JPEG"
+msgstr "JPEG"
+
+#: qdjango/models/projects.py:189
+msgid "WEBP"
+msgstr "WEBP"
+
+#: qdjango/models/projects.py:194
 msgid "QGIS project file"
 msgstr "Fișierul de proiect QGIS"
 
-#: qdjango/models/projects.py:179 qdjango/models/projects.py:483
-#: qdjango/templates/qdjango/ajax/layer_detail.html:7
+#: qdjango/models/projects.py:202 qdjango/models/projects.py:746
+#: qdjango/templates/qdjango/ajax/layer_detail.html:19
+#: qdjango/templates/qdjango/ajax/project_detail.html:417
+#: qdjango/templates/qdjango/message/list.html:75
 msgid "Title"
 msgstr "Ttlu"
 
-#: qdjango/models/projects.py:181
-#: qdjango/templates/qdjango/project_list.html:24
+#: qdjango/models/projects.py:207
 msgid "Public title"
 msgstr "Titlu public"
 
-#: qdjango/models/projects.py:184 qdjango/models/projects.py:490
-#: qdjango/models/projects.py:983
+#: qdjango/models/projects.py:220 qdjango/models/projects.py:770
+#: qdjango/models/projects.py:1645
 msgid "Slug"
-msgstr ""
+msgstr "Terminația/Slug"
 
-#: qdjango/models/projects.py:186 qdjango/models/projects.py:492
+#: qdjango/models/projects.py:225 qdjango/models/projects.py:777
 msgid "Is active"
 msgstr "Este activ"
 
-#: qdjango/models/projects.py:189
-#: qdjango/templates/qdjango/ajax/project_detail.html:30
+#: qdjango/models/projects.py:228
+#: qdjango/templates/qdjango/ajax/project_detail.html:35
 msgid "Thumbnail"
-msgstr ""
+msgstr "Miniatură"
 
-#: qdjango/models/projects.py:192
+#: qdjango/models/projects.py:234
 msgid "Group"
 msgstr "Grup"
 
-#: qdjango/models/projects.py:196
-#: qdjango/templates/qdjango/ajax/project_detail.html:7
+#: qdjango/models/projects.py:240
 msgid "Initial extent"
 msgstr "Întinderea inițială"
 
-#: qdjango/models/projects.py:198
+#: qdjango/models/projects.py:245
 msgid "Max extent"
 msgstr "Intindere maxima"
 
-#: qdjango/models/projects.py:202
+#: qdjango/models/projects.py:253
+#| msgid "Project"
+msgid "Project SRID"
+msgstr "SRID-ul proiectului"
+
+#: qdjango/models/projects.py:260
 msgid "Qgis project version"
 msgstr "Versiunea proiectului Qgis"
 
-#: qdjango/models/projects.py:206
+#: qdjango/models/projects.py:267
 msgid "Layers tree structure"
 msgstr "Structura arborelui straturilor"
 
-#: qdjango/models/projects.py:209
+#: qdjango/models/projects.py:275
 msgid "Base Layer"
 msgstr "Strat de baza"
 
-#: qdjango/models/projects.py:212 qdjango/models/projects.py:548
+#: qdjango/models/projects.py:284 qdjango/models/projects.py:928
 msgid "Layer relations"
 msgstr "Relații de straturi"
 
-#: qdjango/models/projects.py:216
+#: qdjango/models/projects.py:291
 msgid "WMS use layer ids"
 msgstr "WMS utilizează ID-uri de strat"
 
-#: qdjango/models/projects.py:219
+#: qdjango/models/projects.py:294
 msgid "Qgis project original name"
 msgstr "Numele original al proiectului Qgis"
 
-#: qdjango/models/projects.py:225
+#: qdjango/models/projects.py:304
 msgid "Max feature to get for query"
 msgstr "Funcție maximă de obținut pentru interogare"
 
-#: qdjango/models/projects.py:228
+#: qdjango/models/projects.py:308
 msgid "Query control mode"
 msgstr "Modul de control al interogărilor"
 
-#: qdjango/models/projects.py:230
+#: qdjango/models/projects.py:315
 msgid "Query by bbox control mode"
 msgstr "Interogare prin modul de control bbox"
 
-#: qdjango/models/projects.py:233
+#: qdjango/models/projects.py:322
 msgid "Query by polygon control mode"
 msgstr "Interogare prin modul de control al poligonului"
 
-#: qdjango/models/projects.py:236
+#: qdjango/models/projects.py:329
 msgid "Context base legend"
 msgstr "Legenda bazei de context"
 
-#: qdjango/models/projects.py:239
-msgid "Tab's TOC active as default"
-msgstr "Tab's TOC active as default"
+#: qdjango/models/projects.py:332
+msgid "Show only the symbols for the features falling into the requested area"
+msgstr "Afișați doar simbolurile elementelor aflate în zona solicitată"
 
-#: qdjango/models/projects.py:242
+#: qdjango/models/projects.py:337
+msgid "Tab's TOC active as default"
+msgstr "Fila TOC activ? implicit"
+
+#: qdjango/models/projects.py:341
+msgid "Set tab's TOC open by default on init client"
+msgstr "Setați fila cuprinsului să fie deschisă implicit la inițializarea clientului"
+
+#: qdjango/models/projects.py:345
 msgid "Tab's TOC layer initial status"
 msgstr "Starea inițială a stratului TOC al filei"
 
-#: qdjango/models/projects.py:248
+#: qdjango/models/projects.py:350
+msgid ""
+"Set tab's TOC layers initials state: 'Collapsed (close)' or 'Not collapsed "
+"(open)'"
+msgstr "Setați starea inițială a straturilor din fila cuprinsului: 'Restrânse (închise)' sau 'Nerestrânse (deschise)'"
+
+#: qdjango/models/projects.py:355
 msgid "Map themes list initial status"
 msgstr "Starea inițială a listei de teme ale hărții"
 
-#: qdjango/models/projects.py:254
+#: qdjango/models/projects.py:360
+msgid ""
+"Set map themes list initials state: 'Collapsed (close)' or 'Not collapsed "
+"(open)'"
+msgstr "Setați starea inițială a listei de teme ale hărții: 'Restrânsă (închisă)' sau 'Nerestrânsă (deschisă)'"
+
+#: qdjango/models/projects.py:365
 msgid "Legend position rendering"
 msgstr "Redarea poziţiei legendei"
 
-#: qdjango/models/projects.py:257
+#: qdjango/models/projects.py:369
+#| msgid "Legend position rendering"
+msgid "Set legend position rendering"
+msgstr "Setați poziția de afișare a legendei"
+
+#: qdjango/models/projects.py:373
 msgid "Automatic zoom to query result features"
 msgstr "Mărire automată pentru a interoga caracteristicile rezultatelor"
 
-#: qdjango/models/projects.py:260
+#: qdjango/models/projects.py:375
+#| msgid "Automatic zoom to query result features"
+msgid "Automatic zoom on query result features for only one layer"
+msgstr "Zoom automat pe elementele rezultate din interogare doar pentru un singur strat"
+
+#: qdjango/models/projects.py:379
+msgid "Show the 'Metadata' section on left bar"
+msgstr "Afișați secțiunea 'Metadate' în bara laterală stângă"
+
+#: qdjango/models/projects.py:381
+msgid ""
+"It is possible choose if show or hide the 'Metadata' section on left bar"
+msgstr "Puteți alege dacă secțiunea 'Metadate' este afișată sau ascunsă în bara laterală stângă"
+
+#: qdjango/models/projects.py:385
+msgid "Start left sidebar collapsed"
+msgstr "Porniți cu bara laterală stângă restrânsă"
+
+#: qdjango/models/projects.py:387
+msgid "Choose if the left sidebar is collapsed on start of webgis"
+msgstr "Alegeți dacă bara laterală stângă este restrânsă la pornirea webgis"
+
+#: qdjango/models/projects.py:390
 msgid "Project layouts"
 msgstr "Aspecte de proiect"
 
-#: qdjango/models/projects.py:262
-msgid "User QGIS project map start extent as webgis init extent"
-msgstr "Extensia de pornire a hărții de proiect QGIS de utilizator ca extindere de inițializare webgis"
+#: qdjango/models/projects.py:396
+#| msgid "User QGIS project map start extent as webgis init extent"
+msgid "Use QGIS project map start extent as webgis init extent"
+msgstr "Folosiți extinderea inițială a hărții din proiectul QGIS ca extindere inițială pentru webgis"
 
-#: qdjango/models/projects.py:265
+#: qdjango/models/projects.py:402
 msgid ""
 "The project has been modified by the G3W-Suite application after it was "
 "uploaded."
 msgstr ""
 "Proiectul a fost modificat de aplicația G3W-Suite după ce a fost încărcat."
 
-#: qdjango/models/projects.py:268
+#: qdjango/models/projects.py:410
 msgid ""
 "Mutex to lock the project when it is being written by the G3W-Suite "
 "application. This field is used internally by the suite through a context "
 "manager"
 msgstr ""
-"Mutex pentru a bloca proiectul atunci când este scris de aplicația "
-"G3W-Suite. Acest câmp este utilizat intern de suită printr-un manager de context"
+"Mutex pentru a bloca proiectul atunci când este scris de aplicația G3W-"
+"Suite. Acest câmp este utilizat intern de suită printr-un manager de context"
 
-#: qdjango/models/projects.py:271
+#: qdjango/models/projects.py:417
 msgid "Fields to se order"
 msgstr "Câmpuri de comandat"
 
-#: qdjango/models/projects.py:276
-#: qdjango/templates/qdjango/search/project.html:8
+#: qdjango/models/projects.py:424
+msgid "WMS GetMap image format"
+msgstr "Formatul imaginii WMS GetMap"
+
+#: qdjango/models/projects.py:430
+msgid "Geocoding providers"
+msgstr "Furnizori de geocodare"
+
+#: qdjango/models/projects.py:433
+msgid "WMTS grids"
+msgstr "Grile WMTS"
+
+#: qdjango/models/projects.py:440
+#: qdjango/templates/qdjango/project_list.html:53
+#: qdjango/templates/qdjango/search/project.html:10
 msgid "Projects"
 msgstr "Proiecte"
 
-#: qdjango/models/projects.py:464
+#: qdjango/models/projects.py:719
 msgid "Postgres"
-msgstr ""
+msgstr "Postgres"
 
-#: qdjango/models/projects.py:465
+#: qdjango/models/projects.py:720
 msgid "SpatiaLite"
-msgstr ""
+msgstr "SpatiaLite"
 
-#: qdjango/models/projects.py:466
+#: qdjango/models/projects.py:721
 msgid "Raster"
-msgstr ""
+msgstr "Raster"
 
-#: qdjango/models/projects.py:467
+#: qdjango/models/projects.py:722
 msgid "WFS"
-msgstr ""
+msgstr "WFS"
 
-#: qdjango/models/projects.py:468
+#: qdjango/models/projects.py:723
 msgid "WMS"
-msgstr ""
+msgstr "WMS"
 
-#: qdjango/models/projects.py:469
+#: qdjango/models/projects.py:724
 msgid "OGR"
-msgstr ""
+msgstr "OGR"
 
-#: qdjango/models/projects.py:470
+#: qdjango/models/projects.py:725
 msgid "GDAL"
-msgstr ""
+msgstr "GDAL"
 
-#: qdjango/models/projects.py:471
+#: qdjango/models/projects.py:726
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
-#: qdjango/models/projects.py:472
+#: qdjango/models/projects.py:727
 msgid "ArcGisMapServer"
-msgstr ""
+msgstr "ArcGisMapServer"
 
-#: qdjango/models/projects.py:473
+#: qdjango/models/projects.py:728
 msgid "ArcGisFeatureServer"
-msgstr ""
+msgstr "ArcGisFeatureServer"
 
-#: qdjango/models/projects.py:474
+#: qdjango/models/projects.py:729
 msgid "MSSQL"
-msgstr ""
+msgstr "MSSQL"
 
-#: qdjango/models/projects.py:475
+#: qdjango/models/projects.py:730
 msgid "VirtualLayer"
-msgstr ""
+msgstr "VirtualLayer"
 
-#: qdjango/models/projects.py:476
+#: qdjango/models/projects.py:731
 msgid "Oracle"
-msgstr ""
+msgstr "Oracle"
 
-#: qdjango/models/projects.py:477
+#: qdjango/models/projects.py:732 qdjango/models/projects.py:734
 msgid "Vector Tile"
-msgstr ""
+msgstr "Dale vectoriale"
 
-#: qdjango/models/projects.py:478
+#: qdjango/models/projects.py:733
 msgid "WCS"
-msgstr ""
+msgstr "WCS"
 
-#: qdjango/models/projects.py:485
+#: qdjango/models/projects.py:735
+#| msgid "Base layers"
+msgid "Mesh layer"
+msgstr "Strat de tip plasă"
+
+#: qdjango/models/projects.py:736
+msgid "PostGis raster"
+msgstr "Raster PostGis"
+
+#: qdjango/models/projects.py:751
 msgid "Original Name"
 msgstr "Numele original"
 
-#: qdjango/models/projects.py:487
+#: qdjango/models/projects.py:758
 msgid "Qgis Layer Project ID"
 msgstr "ID-ul proiectului Qgis Layer"
 
-#: qdjango/models/projects.py:498
+#: qdjango/models/projects.py:790
 msgid "Parent Project for Embedded layers"
 msgstr "Proiect părinte pentru straturi încorporate"
 
-#: qdjango/models/projects.py:502 qdjango/models/projects.py:981
+#: qdjango/models/projects.py:800 qdjango/models/projects.py:1639
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:10
-#: qdjango/templates/qdjango/layers_list.html:110
+#: qdjango/templates/qdjango/ajax/project_detail.html:228
+#: qdjango/templates/qdjango/ajax/project_detail.html:418
+#: qdjango/templates/qdjango/layers_list.html:256
+#: qdjango/templates/qdjango/layers_list.html:280
 msgid "Type"
 msgstr "Tip"
 
-#: qdjango/models/projects.py:503
+#: qdjango/models/projects.py:806
+#: qdjango/templates/qdjango/ajax/layer_detail.html:31
 msgid "Datasource"
-msgstr ""
+msgstr "Sursă de date"
 
-#: qdjango/models/projects.py:504
+#: qdjango/models/projects.py:810
 msgid "Is visible"
 msgstr "Este vizibil"
 
-#: qdjango/models/projects.py:505
+#: qdjango/models/projects.py:815
 msgid "Order"
 msgstr "Ordin"
 
-#: qdjango/models/projects.py:508
+#: qdjango/models/projects.py:821
 msgid "Associated data file"
 msgstr "Fișier de date asociat"
 
-#: qdjango/models/projects.py:517
+#: qdjango/models/projects.py:830
 msgid "Database columns"
 msgstr "Coloane baze de date"
 
-#: qdjango/models/projects.py:521
+#: qdjango/models/projects.py:838
 msgid "Layer Min Scale visibility"
 msgstr "Vizibilitatea la scară minimă a stratului"
 
-#: qdjango/models/projects.py:523
-msgid "Layer Max Scale visibility"
-msgstr ""
+#: qdjango/models/projects.py:844 qdjango/models/projects.py:858
+#| msgid "Layer Min Scale visibility"
+msgid "Layer Max Scale visibility for layer styel"
+msgstr "Scara maximă de vizibilitate a stratului pentru stilul stratului"
 
-#: qdjango/models/projects.py:525
+#: qdjango/models/projects.py:852
+msgid "Layer Max Scale visibility"
+msgstr "Scara maximă de vizibilitate a stratului"
+
+#: qdjango/models/projects.py:864
 msgid "Layer scale based visibility"
 msgstr "Vizibilitatea la scară maximă a stratului"
 
-#: qdjango/models/projects.py:528
+#: qdjango/models/projects.py:869
+#| msgid "Layer scale based visibility"
+msgid "Scale based visibility for layer style"
+msgstr "Vizibilitate în funcție de scară pentru stilul stratului"
+
+#: qdjango/models/projects.py:876
 msgid "Layer SRID"
 msgstr "Stratul SRID"
 
-#: qdjango/models/projects.py:532
+#: qdjango/models/projects.py:883
 msgid "Bitwise capabilities"
 msgstr "Capabilitati pe biți"
 
-#: qdjango/models/projects.py:534
+#: qdjango/models/projects.py:889
 msgid "Bitwise edit options"
 msgstr "Opțiuni de editare pe biți"
 
-#: qdjango/models/projects.py:536
+#: qdjango/models/projects.py:895
 msgid "Bitwise wfs options"
 msgstr "Opțiuni wfs pe biți"
 
-#: qdjango/models/projects.py:540
+#: qdjango/models/projects.py:901
+#| msgid "Bitwise wfs options"
+msgid "Dict wmts options"
+msgstr "Dicționar de opțiuni wmts"
+
+#: qdjango/models/projects.py:908
 msgid "Geometry type"
 msgstr "Tipul geometriei"
 
-#: qdjango/models/projects.py:543
+#: qdjango/models/projects.py:915
 msgid "Attributes excluded from wms"
 msgstr "Atribute excluse din wms"
 
-#: qdjango/models/projects.py:545
+#: qdjango/models/projects.py:921
 msgid "Attributes excluded from wfs"
 msgstr "Atribute excluse din wfs"
 
-#: qdjango/models/projects.py:552
+#: qdjango/models/projects.py:935
 msgid "Columns layer widgets"
 msgstr "Widgeturi pentru stratul coloane"
 
-#: qdjango/models/projects.py:556
-#: qdjango/templates/qdjango/layers_list.html:117
+#: qdjango/models/projects.py:942
 msgid "Not show attributes table"
 msgstr "Nu se afișează tabelul cu atribute"
 
-#: qdjango/models/projects.py:560
+#: qdjango/models/projects.py:949
 msgid "Exclude to legend"
 msgstr "Excludeți din legendă"
 
-#: qdjango/models/projects.py:564
+#: qdjango/models/projects.py:956
+#| msgid "Exclude to legend"
+msgid "Exclude to TOC"
+msgstr "Excludere din cuprins"
+
+#: qdjango/models/projects.py:964
 msgid "Form editor layout"
 msgstr "Aspect editor de formulare"
 
-#: qdjango/models/projects.py:566
+#: qdjango/models/projects.py:971
 msgid "Editor form structure"
 msgstr "Structura formularului editorului"
 
-#: qdjango/models/projects.py:569
+#: qdjango/models/projects.py:977
 msgid "Download data"
 msgstr "Descărcați date"
 
-#: qdjango/models/projects.py:571
+#: qdjango/models/projects.py:983
 msgid "Download data in xls format"
 msgstr "Descărcați datele în format xls"
 
-#: qdjango/models/projects.py:573
+#: qdjango/models/projects.py:989
 msgid "Download data in gpx format"
 msgstr "Descărcați datele în format gpx"
 
-#: qdjango/models/projects.py:575
+#: qdjango/models/projects.py:995
 msgid "Download data in csv format"
 msgstr "Descărcați datele în format csv"
 
-#: qdjango/models/projects.py:577
+#: qdjango/models/projects.py:1001
 msgid "Download data in gpkg format"
 msgstr "Descărcați datele în format gpkg"
 
-#: qdjango/models/projects.py:580
+#: qdjango/models/projects.py:1007
+#| msgid "Download data in gpx format"
+msgid "Download single attributes row in pdf format"
+msgstr "Descărcare rând individual de atribute în format pdf"
+
+#: qdjango/models/projects.py:1014
 msgid "Layer extension"
 msgstr "Extensie de strat"
 
-#: qdjango/models/projects.py:584
+#: qdjango/models/projects.py:1021
 msgid "Get WMS/WMS externally"
 msgstr "Obțineți WMS/WMS extern"
 
-#: qdjango/models/projects.py:588
+#: qdjango/models/projects.py:1028
+msgid "Render layer as WMTS"
+msgstr "Redare strat ca WMTS"
+
+#: qdjango/models/projects.py:1037
 msgid "Temporal properties"
 msgstr "Proprietăți temporale"
 
-#: qdjango/models/projects.py:591
+#: qdjango/models/projects.py:1043
 msgid "Has column ACL constraints"
 msgstr "Are constrângeri ACL pe coloană"
 
-#: qdjango/models/projects.py:869
+#: qdjango/models/projects.py:1049
+msgid "Number of fields to show in info result"
+msgstr "Numărul de câmpuri de afișat în rezultatul informativ"
+
+#: qdjango/models/projects.py:1444
+#: qdjango/templates/qdjango/ajax/project_detail.html:307
 msgid "Layer"
 msgstr "Strat"
 
-#: qdjango/models/projects.py:979
+#: qdjango/models/projects.py:1631
 msgid "Body"
 msgstr "Corp"
 
-#: qdjango/models/projects.py:980
+#: qdjango/models/projects.py:1635
 msgid "datasource"
-msgstr ""
+msgstr "sursă de date"
+
+#: qdjango/models/projects.py:1691
+msgid "Theme name"
+msgstr "Numele temei"
+
+#: qdjango/models/projects.py:1692
+#| msgid "Layers tree structure"
+msgid "JSON theme structure"
+msgstr "Structura JSON a temei"
 
 #: qdjango/models/qgisauth.py:96
 msgid "Auth ID"
-msgstr ""
+msgstr "ID de autentificare"
 
 #: qdjango/models/qgisauth.py:99
 msgid "URI"
-msgstr ""
+msgstr "URI"
 
 #: qdjango/models/qgisauth.py:100
 msgid "Currently not implemented"
@@ -715,7 +946,7 @@ msgstr "Versiune"
 
 #: qdjango/models/qgisauth.py:103
 msgid "Config"
-msgstr "Config"
+msgstr "Configurație"
 
 #: qdjango/models/qgisauth.py:104
 msgid ""
@@ -734,9 +965,10 @@ msgstr "Autentificări QGIS"
 msgid ""
 "QGIS Auth %s cannot be deleted because it is used by the following layers: %s"
 msgstr ""
-"QGIS Auth %s nu poate fi ștearsă deoarece este folosită de următoarele straturi: %s"
+"QGIS Auth %s nu poate fi ștearsă deoarece este folosită de următoarele "
+"straturi: %s"
 
-#: qdjango/templates/qdjango/ajax/layer_detail.html:15
+#: qdjango/templates/qdjango/ajax/layer_detail.html:27
 msgid "QGIS layer ID"
 msgstr "ID-ul stratului QGIS"
 
@@ -745,7 +977,9 @@ msgid "Add new widget"
 msgstr "Adăugați un widget nou"
 
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:8
-#: qdjango/templates/qdjango/project_list.html:21
+#: qdjango/templates/qdjango/layers_list.html:262
+#: qdjango/templates/qdjango/layers_list.html:302
+#: qdjango/templates/qdjango/message/list.html:74
 msgid "Actions"
 msgstr "Acțiuni"
 
@@ -754,37 +988,200 @@ msgid "Linked"
 msgstr "Legat"
 
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:22
-#: qdjango/templates/qdjango/project_list.html:71
+#: qdjango/templates/qdjango/message/list.html:90
+#: qdjango/templates/qdjango/project_list.html:264
 msgid "Delete"
 msgstr "Șterge"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:11
-msgid "Users"
-msgstr "Utilizatori"
+#: qdjango/templates/qdjango/ajax/project_detail.html:8
+msgid "General"
+msgstr "General"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:14
+#: qdjango/templates/qdjango/ajax/project_detail.html:20
 msgid "Editor level 1 user"
 msgstr "Editor de nivel 1 utilizator"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:17
+#: qdjango/templates/qdjango/ajax/project_detail.html:23
 msgid "Editor level 2 user"
 msgstr "Utilizator nivel 2 editor"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:18
+#: qdjango/templates/qdjango/ajax/project_detail.html:24
 msgid "Viewer users"
 msgstr "Utilizatorii de vizualizare"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:19
+#: qdjango/templates/qdjango/ajax/project_detail.html:25
 msgid "Editor user groups"
 msgstr "Editor grupuri de utilizatori"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:20
+#: qdjango/templates/qdjango/ajax/project_detail.html:26
 msgid "Viewer user groups"
 msgstr "Grupuri de utilizatori Viewer"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:38
+#: qdjango/templates/qdjango/ajax/project_detail.html:43
 msgid "Qgis project Version:"
 msgstr "Versiunea proiectului Qgis:"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:48
+msgid "URL alias:"
+msgstr "Alias URL:"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:65
+#| msgid "Widgets list"
+msgid "Widgets"
+msgstr "Widgeturi"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:75
+#: qdjango/templates/qdjango/ajax/project_detail.html:380
+#| msgid "Layer error"
+msgid "Layer name"
+msgstr "Numele stratului"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:76
+msgid "Search name"
+msgstr "Numele căutării"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:98
+msgid "Editing properties"
+msgstr "Proprietăți de editare"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:109
+msgid "Scale"
+msgstr "Scara"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:110
+msgid "User adding data field"
+msgstr "Câmp utilizator ce adaugă date"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:111
+msgid "User editing data field "
+msgstr "Câmp pentru utilizatorul care editează date "
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:112
+msgid "User group adding data field"
+msgstr "Câmp pentru grupul de utilizatori care adaugă date"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:113
+msgid "User group editing data field "
+msgstr "Câmp pentru grupul de utilizatori care editează date "
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:119
+#: qdjango/templates/qdjango/ajax/project_detail.html:137
+#| msgid "Version"
+msgid "Permissions"
+msgstr "Permisiuni"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:136
+msgid "User Group Name"
+msgstr "Numele grupului de utilizatori"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:161
+#| msgid "Geoconstraint rules"
+msgid "Geo-constraints"
+msgstr "Restricții geografice"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:173
+#| msgid "contains layer"
+msgid "Constraint Layer"
+msgstr "Strat de restricționare"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:175
+#: qdjango/templates/qdjango/ajax/project_detail.html:221
+msgid "For view"
+msgstr "Pentru vizualizare"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:175
+#: qdjango/templates/qdjango/ajax/project_detail.html:176
+#: qdjango/templates/qdjango/ajax/project_detail.html:177
+#: qdjango/templates/qdjango/ajax/project_detail.html:221
+#: qdjango/templates/qdjango/ajax/project_detail.html:222
+msgid "Yes"
+msgstr "Da"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:175
+#: qdjango/templates/qdjango/ajax/project_detail.html:176
+#: qdjango/templates/qdjango/ajax/project_detail.html:177
+#: qdjango/templates/qdjango/ajax/project_detail.html:221
+#: qdjango/templates/qdjango/ajax/project_detail.html:222
+msgid "No"
+msgstr "Nu"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:176
+#: qdjango/templates/qdjango/ajax/project_detail.html:222
+#| msgid "Active for editing"
+msgid "For editing"
+msgstr "Pentru editare"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:177
+msgid "Autozoom"
+msgstr "Zoom automat"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:182
+#: qdjango/templates/qdjango/ajax/project_detail.html:227
+#: qdjango/templates/qdjango/ajax/project_detail.html:346
+#| msgid "Viewer user groups"
+msgid "User / User Group"
+msgstr "Utilizator / Grup de utilizatori"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:183
+#: qdjango/templates/qdjango/ajax/project_detail.html:229
+msgid "Rule"
+msgstr "Regulă"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:208
+#| msgid "Expression check violation"
+msgid "Expression constraints"
+msgstr "Restricții prin expresii"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:255
+#| msgid "Layer constraint"
+msgid "Scale user/group layer constraints"
+msgstr "Restricții de scară ale stratului pentru utilizator/grup"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:269
+#| msgid "Users"
+msgid "User"
+msgstr "Utilizator"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:270
+#| msgid "Group"
+msgid "User Group"
+msgstr "Grup de utilizatori"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:271
+msgid "Min Scale"
+msgstr "Scara minimă"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:272
+msgid "Max Scale"
+msgstr "Scara maximă"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:297
+#| msgid "Embedded layers"
+msgid "Hidden layers"
+msgstr "Straturi ascunse"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:309
+#| msgid "Group"
+msgid "User Groups"
+msgstr "Grupuri de utilizatori"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:332
+#: qdjango/templates/qdjango/ajax/project_detail.html:347
+#| msgid "Restricted fields"
+msgid "Hidden fields"
+msgstr "Câmpuri ascunse"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:370
+#: qdjango/templates/qdjango/ajax/project_detail.html:381
+#: qdjango/templates/qdjango/layers_list.html:265
+#: qdjango/templates/qdjango/layers_list.html:391
+#| msgid "Bitwise capabilities"
+msgid "Download capabilities"
+msgstr "Opțiuni de descărcare"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:403
+msgid "Plots"
+msgstr "Diagrame"
 
 #: qdjango/templates/qdjango/check_embedded_layer_on_delete.html:3
 msgid "contains layer"
@@ -824,201 +1221,445 @@ msgstr "Ascundeți stratul după utilizatori/grupuri"
 msgid "Hide layer by User/Groups"
 msgstr "Ascundeți stratul după utilizator/grupuri"
 
-#: qdjango/templates/qdjango/layer_actions/fitler_by_user_layer_form.html:7
-#: qdjango/templates/qdjango/project_form.html:57
-msgid "Alert"
-msgstr "Alerta"
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:10
+#: qdjango/templates/qdjango/message/form.html:47
+#: qdjango/templates/qdjango/project_form.html:95
+msgid "Some errors on form"
+msgstr "Formularul conține erori"
 
-#: qdjango/templates/qdjango/layer_actions/fitler_by_user_layer_form.html:8
-#: qdjango/templates/qdjango/project_form.html:58
-msgid "Some errors on form. Check it and send again."
-msgstr "Unele erori la formular. Verificați-l și trimiteți din nou."
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:11
+#: qdjango/templates/qdjango/message/form.html:48
+#: qdjango/templates/qdjango/project_form.html:96
+msgid "Check the highlighted fields and submit again."
+msgstr "Verificați câmpurile evidențiate și trimiteți din nou."
 
-#: qdjango/templates/qdjango/layers_list.html:62
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:19
+#| msgid "Layer scale based visibility"
+msgid "Filter layer visibility"
+msgstr "Filtrare vizibilitate strat"
+
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:20
+msgid ""
+"Pick which viewer users and viewer groups are allowed to see this layer."
+msgstr "Alegeți utilizatorii și grupurile de vizualizatori care au permisiunea de a vedea acest strat."
+
+#: qdjango/templates/qdjango/layers_list.html:188
 msgid "QGIS Project Layers"
 msgstr "Straturi de proiect QGIS"
 
-#: qdjango/templates/qdjango/layers_list.html:78
-#: qdjango/templates/qdjango/project_form.html:42
-#: qdjango/templates/qdjango/project_list.html:43
-#: qdjango/templates/qdjango/project_list.html:97
-#: qdjango/templates/qdjango/search/project.html:17
-#: qdjango/templates/qdjango/search/project.html:33
+#: qdjango/templates/qdjango/layers_list.html:193
+#: qdjango/templates/qdjango/message/list.html:20
+#: qdjango/templates/qdjango/project_form.html:35
+msgid "Back to projects"
+msgstr "Înapoi la proiecte"
+
+#: qdjango/templates/qdjango/layers_list.html:213
+#: qdjango/templates/qdjango/message/list.html:40
+#: qdjango/templates/qdjango/project_form.html:67
+#: qdjango/templates/qdjango/project_form.html:69
+#: qdjango/templates/qdjango/project_list.html:113
+#: qdjango/templates/qdjango/project_list.html:140
+#: qdjango/templates/qdjango/search/project.html:28
+#: qdjango/templates/qdjango/search/project.html:47
 msgid "Show map"
 msgstr "Arată harta"
 
-#: qdjango/templates/qdjango/layers_list.html:81
-#: qdjango/templates/qdjango/layers_list.html:145
-#: qdjango/templates/qdjango/project_form.html:43
-#: qdjango/templates/qdjango/project_list.html:53
-#: qdjango/templates/qdjango/search/project.html:34
+#: qdjango/templates/qdjango/layers_list.html:214
+#: qdjango/templates/qdjango/message/list.html:41
+msgid "Map"
+msgstr "Hartă"
+
+#: qdjango/templates/qdjango/layers_list.html:218
+#: qdjango/templates/qdjango/layers_list.html:277
+#: qdjango/templates/qdjango/message/list.html:45
+#: qdjango/templates/qdjango/project_form.html:73
+#: qdjango/templates/qdjango/project_form.html:77
+#: qdjango/templates/qdjango/project_list.html:152
+#: qdjango/templates/qdjango/project_list.html:251
+#: qdjango/templates/qdjango/search/project.html:48
 msgid "Show detail"
 msgstr "Arată detalii"
 
-#: qdjango/templates/qdjango/layers_list.html:84
-#: qdjango/templates/qdjango/project_list.html:65
-#: qdjango/templates/qdjango/search/project.html:37
+#: qdjango/templates/qdjango/layers_list.html:219
+#: qdjango/templates/qdjango/message/list.html:46
+msgid "Detail"
+msgstr "Detalii"
+
+#: qdjango/templates/qdjango/layers_list.html:223
+#: qdjango/templates/qdjango/layers_list.html:224
+#: qdjango/templates/qdjango/message/list.html:50
+#: qdjango/templates/qdjango/message/list.html:51
+#: qdjango/templates/qdjango/message/list.html:87
+#: qdjango/templates/qdjango/project_list.html:167
+#: qdjango/templates/qdjango/search/project.html:51
 msgid "Edit"
 msgstr "Editați"
 
-#: qdjango/templates/qdjango/layers_list.html:99
+#: qdjango/templates/qdjango/layers_list.html:233
 msgid "Data"
 msgstr "Date"
 
-#: qdjango/templates/qdjango/layers_list.html:100
+#: qdjango/templates/qdjango/layers_list.html:234
 msgid "Structure"
 msgstr "Structura"
 
-#: qdjango/templates/qdjango/layers_list.html:108
+#: qdjango/templates/qdjango/layers_list.html:241
+#| msgid "Project layouts"
+msgid "Project layers actions"
+msgstr "Acțiuni pentru straturile proiectului"
+
+#: qdjango/templates/qdjango/layers_list.html:254
+#: qdjango/templates/qdjango/layers_list.html:274
 msgid "Label"
 msgstr "Eticheta"
 
-#: qdjango/templates/qdjango/layers_list.html:112
+#: qdjango/templates/qdjango/layers_list.html:257
+#| msgid "Embedded layers"
+msgid "Embedded"
+msgstr "Încorporat"
+
+#: qdjango/templates/qdjango/layers_list.html:259
+#: qdjango/templates/qdjango/layers_list.html:291
 msgid "WMS External"
 msgstr "WMS extern"
 
-#: qdjango/templates/qdjango/layers_list.html:118
-msgid "No legend"
-msgstr "Fără legendă"
+#: qdjango/templates/qdjango/layers_list.html:264
+#: qdjango/templates/qdjango/layers_list.html:375
+msgid "Preview fields (max.)"
+msgstr "Câmpuri de previzualizare (max.)"
 
-#: qdjango/templates/qdjango/layers_list.html:120
-msgid "Download as shp/geotiff"
-msgstr "Download as shp/geotiff"
+#: qdjango/templates/qdjango/layers_list.html:267
+#: qdjango/templates/qdjango/layers_list.html:479
+#| msgid "Bitwise capabilities"
+msgid "Visibility capabilities"
+msgstr "Opțiuni de vizibilitate"
 
-#: qdjango/templates/qdjango/layers_list.html:123
-msgid "Download as gpkg"
-msgstr "Descărcați ca gpkg"
+#: qdjango/templates/qdjango/layers_list.html:285
+#| msgid ""
+#| "Layer \"%s\" is embedded from project \"%s\" but the project does not "
+#| "exist"
+msgid ""
+"This layer is embedded from another project. Click to go to source project "
+"layers"
+msgstr "Acest strat este încorporat din alt proiect. Apăsați pentru a accesa straturile proiectului sursă"
 
-#: qdjango/templates/qdjango/layers_list.html:126
-msgid "Download as xls"
-msgstr "Descărcați ca xls"
-
-#: qdjango/templates/qdjango/layers_list.html:129
-msgid "Download as csv"
-msgstr "Descărcați ca csv"
-
-#: qdjango/templates/qdjango/layers_list.html:132
-msgid "Download as gpx"
-msgstr "Descărcați ca gpx"
-
-#: qdjango/templates/qdjango/layers_list.html:175
+#: qdjango/templates/qdjango/layers_list.html:314
 msgid "Geo-constraints by Users/Groups"
 msgstr "Geo-constrângeri de către Utilizatori/Grupuri"
 
-#: qdjango/templates/qdjango/layers_list.html:183
+#: qdjango/templates/qdjango/layers_list.html:322
 msgid "Alphanumeric and QGIS expressions constraints by Users/Groups"
-msgstr "Constrângeri de expresii alfanumerice și QGIS de către utilizatori/grupuri"
+msgstr ""
+"Constrângeri de expresii alfanumerice și QGIS de către utilizatori/grupuri"
 
-#: qdjango/templates/qdjango/layers_list.html:191
+#: qdjango/templates/qdjango/layers_list.html:330
 msgid "Hide columns by Users/Groups"
 msgstr "Ascundeți coloanele după utilizatori/grupuri"
 
-#: qdjango/templates/qdjango/layers_list.html:202
+#: qdjango/templates/qdjango/layers_list.html:341
 msgid "Widgets list"
 msgstr "Lista de widget-uri"
 
-#: qdjango/templates/qdjango/layers_list.html:208
+#: qdjango/templates/qdjango/layers_list.html:347
 msgid "Manage layer styles"
 msgstr "Gestionați stilurile de straturi"
 
-#: qdjango/templates/qdjango/project_form.html:15
-msgid "QGIS project"
-msgstr "Proiectul QGIS"
+#: qdjango/templates/qdjango/layers_list.html:360
+#| msgid "Hide layer by Users/Groups"
+msgid "Scale visibility layer by Users/Groups"
+msgstr "Vizibilitatea stratului în funcție de scară pentru utilizatori/grupuri"
 
-#: qdjango/templates/qdjango/project_form.html:17
-msgid "New QGIS project"
-msgstr "Noul proiect QGIS"
-
-#: qdjango/templates/qdjango/project_form.html:18
-msgid "Create a new QGIS project for current group"
-msgstr "Creați un nou proiect QGIS pentru grupul curent"
-
-#: qdjango/templates/qdjango/project_form.html:38
-msgid "Shortcuts"
-msgstr "Comenzi rapide"
-
-#: qdjango/templates/qdjango/project_list.html:11
-msgid "Qgis project type"
-msgstr "Tipul de proiect Qgis"
-
-#: qdjango/templates/qdjango/project_list.html:19
-msgid "Panoramic"
-msgstr "Panoramic"
-
-#: qdjango/templates/qdjango/project_list.html:23
-msgid "QGIS project title"
-msgstr "Titlul proiectului QGIS"
-
-#: qdjango/templates/qdjango/project_list.html:26
-msgid "Created/Modified"
-msgstr "Creat/Modificat"
-
-#: qdjango/templates/qdjango/project_list.html:59
-msgid "Test WMS capabilities"
-msgstr "Testează capabilitățile WMS"
-
-#: qdjango/templates/qdjango/project_list.html:81
+#: qdjango/templates/qdjango/layers_list.html:397
+#: qdjango/templates/qdjango/project_list.html:173
+#: qdjango/templates/qdjango/project_list.html:259
 msgid "Download"
 msgstr "Descarcă"
 
-#: qdjango/templates/qdjango/project_list.html:86
-msgid "Upload"
-msgstr "Încarcă"
+#: qdjango/templates/qdjango/layers_list.html:407
+msgid "Download as shp/geotiff"
+msgstr "Descarc? ?n format SHP/GeoTIFF"
 
-#: qdjango/templates/qdjango/project_list.html:86
-msgid "Upload qgis project file"
-msgstr "Încarcă fișierul proiect qgis"
+#: qdjango/templates/qdjango/layers_list.html:414
+msgid "Download as gpkg"
+msgstr "Descărcați ca gpkg"
 
-#: qdjango/templates/qdjango/project_list.html:92
-msgid "WEB services available"
-msgstr "Servicii WEB disponibile"
+#: qdjango/templates/qdjango/layers_list.html:420
+msgid "Download as xls"
+msgstr "Descărcați ca xls"
 
-#: qdjango/templates/qdjango/project_list.html:119
-msgid "created"
-msgstr "creată"
+#: qdjango/templates/qdjango/layers_list.html:426
+msgid "Download as csv"
+msgstr "Descărcați ca csv"
 
-#: qdjango/templates/qdjango/project_list.html:122
+#: qdjango/templates/qdjango/layers_list.html:434
+msgid "Download as gpx"
+msgstr "Descărcați ca gpx"
+
+#: qdjango/templates/qdjango/layers_list.html:441
+#| msgid "Download as gpx"
+msgid "Download as pdf"
+msgstr "Descărcare ca pdf"
+
+#: qdjango/templates/qdjango/layers_list.html:456
+#: qdjango/templates/qdjango/layers_list.html:461
+#| msgid "Is active"
+msgid "Not active"
+msgstr "Inactiv"
+
+#: qdjango/templates/qdjango/layers_list.html:483
+msgid "Hide"
+msgstr "Ascundere"
+
+#: qdjango/templates/qdjango/layers_list.html:493
+#| msgid "Not show attributes table"
+msgid "Attributes table"
+msgstr "Tabel de atribute"
+
+#: qdjango/templates/qdjango/layers_list.html:504
+#| msgid "Layer"
+msgid "Layer TOC"
+msgstr "Cuprinsul stratului"
+
+#: qdjango/templates/qdjango/message/form.html:15
+#| msgid "Qgis project version"
+msgid "Edit project message"
+msgstr "Editare mesaj de proiect"
+
+#: qdjango/templates/qdjango/message/form.html:17
+#| msgid "New QGIS project"
+msgid "New project message"
+msgstr "Mesaj de proiect nou"
+
+#: qdjango/templates/qdjango/message/form.html:23
+#| msgid "Project"
+msgid "project"
+msgstr "proiect"
+
+#: qdjango/templates/qdjango/message/form.html:25
+#, python-format
+msgid ""
+"Compose a notification message for the project <strong>%(name)s</strong>."
+msgstr "Compuneți un mesaj de notificare pentru proiectul <strong>%(name)s</strong>."
+
+#: qdjango/templates/qdjango/message/form.html:31
+msgid "Back to messages"
+msgstr "Înapoi la mesaje"
+
+#: qdjango/templates/qdjango/message/list.html:15
+#| msgid "QGIS Project Layers"
+msgid "QGIS Project Messages"
+msgstr "Mesaje ale proiectului QGIS"
+
+#: qdjango/templates/qdjango/message/list.html:62
+#| msgid "Projects"
+msgid "Project messages"
+msgstr "Mesaje de proiect"
+
+#: qdjango/templates/qdjango/message/list.html:63
+msgid "Notifications shown to users when they open this project."
+msgstr "Notificări afișate utilizatorilor când deschid acest proiect."
+
+#: qdjango/templates/qdjango/message/list.html:67
+msgid "Message"
+msgstr "Mesaj"
+
+#: qdjango/templates/qdjango/message/list.html:76
+msgid "Level"
+msgstr "Nivel"
+
+#: qdjango/templates/qdjango/message/list.html:77
+msgid "Available from"
+msgstr "Disponibil de la"
+
+#: qdjango/templates/qdjango/message/list.html:78
+msgid "Available to"
+msgstr "Disponibil până la"
+
+#: qdjango/templates/qdjango/project_form.html:19
+#| msgid "QGIS project"
+msgid "Edit QGIS project"
+msgstr "Editare proiect QGIS"
+
+#: qdjango/templates/qdjango/project_form.html:21
+msgid "New QGIS project"
+msgstr "Noul proiect QGIS"
+
+#: qdjango/templates/qdjango/project_form.html:27
+#| msgid "group:"
+msgid "in group"
+msgstr "în grupul"
+
+#: qdjango/templates/qdjango/project_form.html:29
+#, python-format
+msgid ""
+"Upload a QGIS project for the cartographic group <strong>%(name)s</strong>."
+msgstr "Încărcați un proiect QGIS pentru grupul cartografic <strong>%(name)s</strong>."
+
+#: qdjango/templates/qdjango/project_form.html:59
+#| msgid "Project layouts"
+msgid "Project shortcuts"
+msgstr "Scurtături pentru proiect"
+
+#: qdjango/templates/qdjango/project_form.html:60
+msgid "Quick access to map view, detail and layers list for this project."
+msgstr "Acces rapid la vizualizarea hărții, detalii și lista de straturi pentru acest proiect."
+
+#: qdjango/templates/qdjango/project_list.html:57
+msgid "Trash"
+msgstr "Coș de gunoi"
+
+#: qdjango/templates/qdjango/project_list.html:61
+msgid "View mode"
+msgstr "Mod de vizualizare"
+
+#: qdjango/templates/qdjango/project_list.html:63
+msgid "Grid view"
+msgstr "Vizualizare grilă"
+
+#: qdjango/templates/qdjango/project_list.html:67
+msgid "List view"
+msgstr "Vizualizare listă"
+
+#: qdjango/templates/qdjango/project_list.html:88
+msgid "Project not accessible to anonymous users"
+msgstr "Proiectul nu este accesibil utilizatorilor anonimi"
+
+#: qdjango/templates/qdjango/project_list.html:93
+#| msgid "Panoramic"
+msgid "Panoramic map"
+msgstr "Hartă panoramică"
+
+#: qdjango/templates/qdjango/project_list.html:99
+msgid "Panoramic"
+msgstr "Panoramic"
+
+#: qdjango/templates/qdjango/project_list.html:107
+msgid "Set bookmark"
+msgstr "Marcare ca favorit"
+
+#: qdjango/templates/qdjango/project_list.html:107
+msgid "Remove bookmark"
+msgstr "Eliminare din favorite"
+
+#: qdjango/templates/qdjango/project_list.html:116
+#| msgid "Fields to se order"
+msgid "Drag to reorder"
+msgstr "Trageți pentru reordonare"
+
+#: qdjango/templates/qdjango/project_list.html:127
+msgid "Open via alias"
+msgstr "Deschidere prin alias"
+
+#: qdjango/templates/qdjango/project_list.html:132
+#: qdjango/templates/qdjango/project_list.html:238
 msgid "modified"
 msgstr "modificat"
 
-#: qdjango/templates/qdjango/project_list.html:139
+#: qdjango/templates/qdjango/project_list.html:161
+msgid "Test WMS capabilities"
+msgstr "Testează capabilitățile WMS"
+
+#: qdjango/templates/qdjango/project_list.html:180
+msgid "WEB services available"
+msgstr "Servicii WEB disponibile"
+
+#: qdjango/templates/qdjango/project_list.html:185
+msgid "Messages"
+msgstr "Mesaje"
+
+#: qdjango/templates/qdjango/project_list.html:191
+msgid "Delete/Deactivate"
+msgstr "Ștergere/Dezactivare"
+
+#: qdjango/templates/qdjango/project_list.html:212
 msgid "No projects available."
 msgstr "Nu există proiecte disponibile."
 
-#: qdjango/templates/qdjango/search/project.html:29
+#: qdjango/templates/qdjango/project_list.html:215
+msgid "Add your first QGIS project to start mapping."
+msgstr "Adăugați primul proiect QGIS pentru a începe cartografierea."
+
+#: qdjango/templates/qdjango/project_list.html:217
+msgid "There are no projects shared with you in this group yet."
+msgstr "Nu există încă proiecte partajate cu dvs. în acest grup."
+
+#: qdjango/templates/qdjango/project_list.html:237
+msgid "created"
+msgstr "creată"
+
+#: qdjango/templates/qdjango/project_list.html:243
+msgid "Redo/Active"
+msgstr "Restaurare/Activare"
+
+#: qdjango/templates/qdjango/project_list.html:283
+msgid "The trash is empty."
+msgstr "Coșul de gunoi este gol."
+
+#: qdjango/templates/qdjango/search/project.html:16
+#| msgid "Collapsed"
+msgid "Collapse / expand"
+msgstr "Restrângere / extindere"
+
+#: qdjango/templates/qdjango/search/project.html:42
 msgid "group:"
 msgstr "grup:"
 
-#: qdjango/utils/data.py:313
+#: qdjango/utils/data.py:366
 msgid "Missing or invalid type for layer"
 msgstr "Tip lipsă sau nevalid pentru strat"
 
-#: qdjango/utils/data.py:453
+#: qdjango/utils/data.py:615
+#, python-brace-format
 msgid "Current datasource is {}"
 msgstr "Sursa de date actuală este {}"
 
-#: qdjango/utils/data.py:902
+#: qdjango/utils/data.py:1233
+#, python-brace-format
 msgid "The project file is malformed: {}"
 msgstr "Fișierul de proiect este incorect: {}"
 
-#: qdjango/utils/data.py:923 qdjango/utils/data.py:939
+#: qdjango/utils/data.py:1254 qdjango/utils/data.py:1270
+#, python-brace-format
 msgid "Could not read QGIS project file: {}"
 msgstr "Nu s-a putut citi fișierul de proiect QGIS: {}"
 
-#: qdjango/utils/data.py:1097 qdjango/utils/data.py:1490
+#: qdjango/utils/data.py:1407
+#, python-format
+msgid "Layer \"%(name)s\" could not be loaded: %(reason)s"
+msgstr "Stratul \"%(name)s\" nu a putut fi încărcat: %(reason)s"
+
+#: qdjango/utils/data.py:1447 qdjango/utils/data.py:2067
+#, python-brace-format
 msgid ""
 "The project contains an embedded group {} from a project that could not be "
 "found {}"
 msgstr ""
-"Proiectul conține un grup încorporat {} dintr-un proiect care nu a putut fi găsit {}"
+"Proiectul conține un grup încorporat {} dintr-un proiect care nu a putut fi "
+"găsit {}"
 
-#: qdjango/utils/data.py:1467
+#: qdjango/utils/data.py:1713
+#, python-format
+#| msgid "Layers"
+msgid "Layer \"%s\": %s"
+msgstr "Stratul \"%s\": %s"
+
+#: qdjango/utils/data.py:1715
+#, python-format
+#| msgid "Projects"
+msgid "Project: %s"
+msgstr "Proiect: %s"
+
+#: qdjango/utils/data.py:2042
+#, python-brace-format
 msgid ""
 "The project contains an embedded layer {} from a project that could not be "
 "found {}"
-msgstr "Proiectul conține un strat încorporat {} dintr-un proiect care nu a putut fi găsit {}"
+msgstr ""
+"Proiectul conține un strat încorporat {} dintr-un proiect care nu a putut fi "
+"găsit {}"
 
-#: qdjango/utils/data.py:1544
+#: qdjango/utils/data.py:2121
+#, python-brace-format
 msgid "The project settings is malformed: {} ----- {}"
 msgstr "Setările proiectului sunt incorecte: {} ----- {}"
 
@@ -1026,54 +1667,55 @@ msgstr "Setările proiectului sunt incorecte: {} ----- {}"
 msgid "Qgis Exceptions errors"
 msgstr "Erori Qgis Exceptions"
 
-#: qdjango/utils/exceptions.py:10
+#: qdjango/utils/exceptions.py:15
 msgid "Project error"
 msgstr "Eroare de proiect"
 
-#: qdjango/utils/exceptions.py:18
+#: qdjango/utils/exceptions.py:23
 msgid "Layer error"
 msgstr "Eroare de strat"
 
-#: qdjango/utils/validators.py:80
+#: qdjango/utils/validators.py:83
 #, python-format
 msgid "Feature geometry type %s does not match layer type: %s"
-msgstr "Tipul de geometrie caracteristică %s nu se potrivește cu tipul de strat: %s"
+msgstr ""
+"Tipul de geometrie caracteristică %s nu se potrivește cu tipul de strat: %s"
 
-#: qdjango/utils/validators.py:108
+#: qdjango/utils/validators.py:111
 msgid "Field value must be NOT NULL"
 msgstr "Valoarea câmpului trebuie să fie NOT NULL"
 
-#: qdjango/utils/validators.py:119
+#: qdjango/utils/validators.py:129
 #, python-format
 msgid "Field value '%s' cannot be converted to %s"
 msgstr "Valoarea câmpului „%s” nu poate fi convertită în %s"
 
-#: qdjango/utils/validators.py:156
+#: qdjango/utils/validators.py:166
 msgid "Field value must be UNIQUE"
 msgstr "Valoarea câmpului trebuie să fie UNIC"
 
-#: qdjango/utils/validators.py:175
+#: qdjango/utils/validators.py:185
 msgid "Expression check violation"
 msgstr "Încălcarea verificării expresiei"
 
-#: qdjango/utils/validators.py:176
+#: qdjango/utils/validators.py:186
 #, python-format
 msgid "%s Expression: %s"
 msgstr "%s Expresie: %s"
 
-#: qdjango/utils/validators.py:210
+#: qdjango/utils/validators.py:220
 #, python-format
 msgid "Project SRID (%s) and group SRID (%s) must be the same"
 msgstr "SRID de proiect (%s) și SRID de grup (%s) trebuie să fie aceleași"
 
-#: qdjango/utils/validators.py:230
+#: qdjango/utils/validators.py:240
 #, python-format
 msgid ""
 "Layer \"%s\" is embedded from project \"%s\" but the project does not exist"
 msgstr ""
 "Stratul \"%s\" este încorporat din proiectul \"%s\", dar proiectul nu există"
 
-#: qdjango/utils/validators.py:234
+#: qdjango/utils/validators.py:244
 #, python-format
 msgid ""
 "Layer \"%s\" is embedded from project \"%s\" but the project does not "
@@ -1082,63 +1724,118 @@ msgstr ""
 "Stratul \"%s\" este încorporat din proiectul \"%s\", dar proiectul nu "
 "conține acest strat"
 
-#: qdjango/utils/validators.py:244
-#, python-format
-msgid ""
-"Layer \"%s\" is embedded by the project \"%s\" but the uploaded project file "
-"does not contain this layer anymore"
-msgstr ""
-"Stratul \"%s\" este încorporat de proiectul \"%s\", dar fișierul de proiect "
-"încărcat nu mai conține acest strat"
-
-#: qdjango/utils/validators.py:266
+#: qdjango/utils/validators.py:278
 msgid "A project with the same title already exists"
-msgstr ""
+msgstr "Există deja un proiect cu același titlu"
 
-#: qdjango/utils/validators.py:280
+#: qdjango/utils/validators.py:302
 msgid "Title project not empty"
 msgstr "Un proiect cu același titlu există deja"
 
-#: qdjango/utils/validators.py:293
+#: qdjango/utils/validators.py:315
+#, python-brace-format
 msgid "More than one layer with same name/shortname: {}"
 msgstr "Mai mult de un strat cu același nume/nume scurt: {}"
 
-#: qdjango/utils/validators.py:319
+#: qdjango/utils/validators.py:341
+#, python-brace-format
 msgid "Check WMS start extent project property: {} didn't set"
-msgstr "Verificați proprietatea proiectului de extindere a pornirii WMS: {} nu a fost setat"
+msgstr ""
+"Verificați proprietatea proiectului de extindere a pornirii WMS: {} nu a "
+"fost setat"
 
-#: qdjango/utils/validators.py:324
+#: qdjango/utils/validators.py:346
 msgid "xmax smaller then xmin "
 msgstr "xmax mai mic decât xmin "
 
-#: qdjango/utils/validators.py:326
+#: qdjango/utils/validators.py:348
 msgid "ymax smaller then ymin "
 msgstr "ymax mai mic decât ymin "
 
-#: qdjango/utils/validators.py:362
+#: qdjango/utils/validators.py:387
+#, python-brace-format
 msgid "Cannot connect to Postgis raster layer {} "
 msgstr "Nu se poate conecta la stratul raster Postgis {} "
 
-#: qdjango/utils/validators.py:368
-msgid "Missing data file for layer {} "
-msgstr "Lipsește fișierul de date pentru stratul {}"
+#: qdjango/utils/validators.py:397
+#, python-brace-format
+#| msgid "Missing data file for layer {} "
+msgid "Missing data file for MESH layer {} "
+msgstr "Lipsește fișierul de date pentru stratul MESH {} "
 
-#: qdjango/utils/validators.py:370
+#: qdjango/utils/validators.py:399 qdjango/utils/validators.py:407
+#, python-brace-format
 msgid "which should be located at {}"
 msgstr "care ar trebui să fie situat la {}"
 
-#: qdjango/utils/validators.py:390
+#: qdjango/utils/validators.py:405
+#, python-brace-format
+msgid "Missing data file for layer {} "
+msgstr "Lipsește fișierul de date pentru stratul {}"
+
+#: qdjango/utils/validators.py:434
+#, python-brace-format
 msgid ""
 "The follow fields name of layer {} contains white spaces and/or special "
 "characters: {}"
 msgstr ""
-"Următoarele câmpuri numele stratului {} conține spații albe și/sau "
-"caractere speciale: {}"
+"Următoarele câmpuri numele stratului {} conține spații albe și/sau caractere "
+"speciale: {}"
 
-#: qdjango/utils/validators.py:393
+#: qdjango/utils/validators.py:437
 msgid "Please use 'Alias' fields in QGIS project"
 msgstr "Vă rugăm să utilizați câmpurile „Alias” în proiectul QGIS"
 
-#: qdjango/views.py:106
+#: qdjango/views/projects.py:152
 msgid "The project has been modified by G3W-Suite after it was uploaded."
 msgstr "Proiectul a fost modificat de G3W-Suite după ce a fost încărcat."
+
+#: qdjango/views/projects.py:733
+#| msgid "Current datasource is {}"
+msgid "same datasource"
+msgstr "aceeași sursă de date"
+
+#~ msgid ""
+#~ "Is not possible set Legend position rendering to "
+#~ "\"{Project.CLIENT_LEGEND_POSITION['toc']}\" "
+#~ msgstr ""
+#~ "Nu este posibil să setați redarea poziției legendei la \"{Proiect. "
+#~ "CLIENT_LEGEND_POSITION['toc']}\""
+
+#~ msgid "Alert"
+#~ msgstr "Alerta"
+
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Unele erori la formular. Verificați-l și trimiteți din nou."
+
+#~ msgid "No legend"
+#~ msgstr "Fără legendă"
+
+#~ msgid "Create a new QGIS project for current group"
+#~ msgstr "Creați un nou proiect QGIS pentru grupul curent"
+
+#~ msgid "Shortcuts"
+#~ msgstr "Comenzi rapide"
+
+#~ msgid "Qgis project type"
+#~ msgstr "Tipul de proiect Qgis"
+
+#~ msgid "QGIS project title"
+#~ msgstr "Titlul proiectului QGIS"
+
+#~ msgid "Created/Modified"
+#~ msgstr "Creat/Modificat"
+
+#~ msgid "Upload"
+#~ msgstr "Încarcă"
+
+#~ msgid "Upload qgis project file"
+#~ msgstr "Încarcă fișierul proiect qgis"
+
+#, python-format
+#~ msgid ""
+#~ "Layer \"%s\" is embedded by the project \"%s\" but the uploaded project "
+#~ "file does not contain this layer anymore"
+#~ msgstr ""
+#~ "Stratul \"%s\" este încorporat de proiectul \"%s\", dar fișierul de "
+#~ "proiect încărcat nu mai conține acest strat"
