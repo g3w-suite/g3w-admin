@@ -135,11 +135,11 @@
         }
 
         let chart, pending;
-        
-        let disposed = false;
+
+        let disposed = false; // Becomes true when clear starts; this action cannot be reused.
         const state  = Vue.observable({ toggled: false, disabled: false });
         const open   = async () => {
-          chart = await addPanel({ id: 'qplotly', label: 'Chart width' });
+          chart         = await addPanel({ id: 'qplotly', label: 'Chart width' });
           state.toggled = true;
           await this.toggleCharts({
             show:      true,
@@ -166,8 +166,8 @@
           class: 'fas fa-chart-bar',
           hint:  'Show Chart',
           state,
-          cbk: async () => {
-            // Ignore repeated clicks while loading or after the relation is destroyed.
+          async cbk() {
+            // Ignore clicks while loading and callbacks after this action has been cleared.
             if (state.disabled || disposed) {
               return;
             }
@@ -185,12 +185,14 @@
               await close();
               throw e;
             } finally {
-              pending = null;
+              pending        = null;
               state.disabled = false;
             }
           },
-          clear: async () => {
-            // Let an in-flight chart mount finish before destroying its panel.
+          //called when relation component is cleared or the action is disposed
+          // Ensures that any in-flight chart operations are completed and the chart is properly closed.
+          async clear() {
+            // Block future callbacks before waiting for an in-flight chart mount to finish.
             disposed = true;
             await pending;
             await close();
