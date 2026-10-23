@@ -50,7 +50,7 @@ msgstr "Aus Projekt"
 
 #: qplotly/static/qplotly/js/widget.js:113
 msgid "Linked"
-msgstr "Verkn?pft"
+msgstr "Verknüpft"
 
 #: qplotly/static/qplotly/js/widget.js:130
 msgid "Edit"
@@ -58,7 +58,7 @@ msgstr "Bearbeiten"
 
 #: qplotly/static/qplotly/js/widget.js:131
 msgid "Delete"
-msgstr "L?schen"
+msgstr "Löschen"
 
 #: qplotly/static/qplotly/js/widget.js:132
 msgid "Download"

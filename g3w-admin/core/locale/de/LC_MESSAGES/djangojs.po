@@ -26,15 +26,15 @@ msgstr "Inhalt"
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:19
 #: core/static/js/g3wadmin/widget.js:166 core/static/js/g3wadmin/widget.js:872
 msgid "Close"
-msgstr "Schlie?en"
+msgstr "Schließen"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:107
 msgid "Delete item"
-msgstr "Element l?schen"
+msgstr "Element löschen"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:108
 msgid "Are you sure to delete this Item"
-msgstr "M?chten Sie dieses Element wirklich l?schen"
+msgstr "Möchten Sie dieses Element wirklich löschen"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:163
 msgid "Detail object"

@@ -22,7 +22,7 @@ msgstr "Lis??"
 
 #: br_service/static/br_service/js/widget.js:115
 msgid "BR Service field settings"
-msgstr "BR-palvelun kentt?asetukset"
+msgstr "BR-palvelun kenttäasetukset"
 
 #: br_service/static/br_service/js/widget.js:127
 msgid "Field"
@@ -34,7 +34,7 @@ msgstr "Palvelun p??tepiste"
 
 #: br_service/static/br_service/js/widget.js:139
 msgid "Fields value to send"
-msgstr "L?hetett?vien kenttien arvot"
+msgstr "Lähetettävien kenttien arvot"
 
 #: openrouteservice/static/openrouteservice/js/plugin.js:3
 msgid "&"

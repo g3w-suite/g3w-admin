@@ -18,7 +18,7 @@ msgstr ""
 
 #: br_service/static/br_service/js/widget.js:74
 msgid "Add"
-msgstr "Hinzuf?gen"
+msgstr "Hinzufügen"
 
 #: br_service/static/br_service/js/widget.js:115
 msgid "BR Service field settings"

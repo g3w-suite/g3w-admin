@@ -35,7 +35,7 @@ msgstr "Actions"
 
 #: qplotly/static/qplotly/js/widget.js:109
 msgid "Active at startup"
-msgstr "Actif au d?marrage"
+msgstr "Actif au démarrage"
 
 #: qplotly/static/qplotly/js/widget.js:110
 msgid "Title"
@@ -63,7 +63,7 @@ msgstr "Supprimer"
 
 #: qplotly/static/qplotly/js/widget.js:132
 msgid "Download"
-msgstr "T?l?charger"
+msgstr "Télécharger"
 
 #: qplotly/static/qplotly/js/widget.js:152
 msgid "Update widget"
@@ -91,7 +91,7 @@ msgstr "uirevision"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bgcolor"
-msgstr "Couleur d?arri?re-plan"
+msgstr "Couleur d'arrière-plan"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bordercolor"
@@ -115,15 +115,15 @@ msgstr "Espacement des groupes de traces"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemsizing"
-msgstr "Dimensionnement des ?l?ments"
+msgstr "Dimensionnement des éléments"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemclick"
-msgstr "Clic sur un ?l?ment"
+msgstr "Clic sur un élément"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemdoubleclick"
-msgstr "Double-clic sur un ?l?ment"
+msgstr "Double-clic sur un élément"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "x"
@@ -151,7 +151,7 @@ msgstr "Texte du titre"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "title.side"
-msgstr "C?t? du titre"
+msgstr "Côté du titre"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "visible"
@@ -171,7 +171,7 @@ msgstr "Plage"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bingroup"
-msgstr "Groupe d?histogrammes"
+msgstr "Groupe d'histogrammes"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "label"
@@ -203,7 +203,7 @@ msgstr "Informations au survol"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "hovertemplate"
-msgstr "Mod?le de survol"
+msgstr "Modèle de survol"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "color"

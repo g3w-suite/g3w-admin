@@ -444,19 +444,19 @@ msgstr "Info"
 
 #: core/models.py:470
 msgid "Warning"
-msgstr "Warning"
+msgstr "Avertissement"
 
 #: core/models.py:471
 msgid "Debug"
-msgstr "Debug"
+msgstr "Débogage"
 
 #: core/models.py:472
 msgid "Error"
-msgstr "Error"
+msgstr "Erreur"
 
 #: core/models.py:473
 msgid "Fatal"
-msgstr "Fatal"
+msgstr "Erreur fatale"
 
 #: core/models.py:479
 msgid "Logger name"

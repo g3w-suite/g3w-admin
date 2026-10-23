@@ -18,8 +18,7 @@ msgstr ""
 "2:1));\n"
 #: qdjango/static/qdjango/js/widget.js:212
 msgid "General configuration for search widget and results"
-msgstr ""
-"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20) ? 1 : 2));\n"
+msgstr "Configurația generală a widgetului de căutare și a rezultatelor"
 
 #: qdjango/static/qdjango/js/widget.js:220
 msgid "Search title"

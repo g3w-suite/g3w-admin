@@ -18,8 +18,7 @@ msgstr ""
 "2:1));\n"
 #: client/static/client/js/vendor.29c355dd3bd2b752f102c0e94298fa39.min.js:13
 msgid "'"
-msgstr ""
-"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20) ? 1 : 2));\n"
+msgstr "'"
 
 #: client/static/client/js/vendor.29c355dd3bd2b752f102c0e94298fa39.min.js:28313
 msgid "utf-8"

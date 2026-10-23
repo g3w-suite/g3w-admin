@@ -21,7 +21,7 @@ msgstr "Benutzer"
 
 #: editing/static/editing/js/widget.js:113
 msgid "Add"
-msgstr "Hinzuf?gen"
+msgstr "Hinzufügen"
 
 #: editing/static/editing/js/widget.js:114
 msgid "Update geometry"
@@ -29,7 +29,7 @@ msgstr "Geometrie aktualisieren"
 
 #: editing/static/editing/js/widget.js:115
 msgid "Delete"
-msgstr "L?schen"
+msgstr "Löschen"
 
 #: editing/static/editing/js/widget.js:116
 msgid "Update attributes"

@@ -682,7 +682,7 @@ msgstr "Oracle"
 
 #: qdjango/models/projects.py:732 qdjango/models/projects.py:734
 msgid "Vector Tile"
-msgstr "Vector Tile"
+msgstr "Bloco vetorial"
 
 #: qdjango/models/projects.py:733
 msgid "WCS"

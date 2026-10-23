@@ -113,7 +113,7 @@ msgstr "L'estensione massima è inferiore all'estensione della mappa init"
 
 #: qdjango/forms/projects.py:203
 msgid "URL alias"
-msgstr "URL alias"
+msgstr "Alias URL"
 
 #: qdjango/forms/projects.py:204
 msgid ""
@@ -129,12 +129,12 @@ msgstr "ID autenticazione QGIS"
 
 #: qdjango/forms/projects.py:214 qdjango/models/qgisauth.py:97
 msgid "7 alphanumeric ASCII chars"
-msgstr "7 alphanumeric ASCII chars"
+msgstr "7 caratteri alfanumerici ASCII"
 
 #: qdjango/forms/projects.py:219
 #: qdjango/templates/qdjango/ajax/project_detail.html:118
 msgid "Username"
-msgstr "Username"
+msgstr "Nome utente"
 
 #: qdjango/forms/projects.py:224
 msgid "Password"

@@ -95,19 +95,19 @@ msgstr "Vergleichsoperator"
 
 #: qdjango/static/qdjango/js/widget.js:431
 msgid "Dependency"
-msgstr "Abh?ngigkeit"
+msgstr "Abhängigkeit"
 
 #: qdjango/static/qdjango/js/widget.js:438
 msgid "Strictly dependent"
-msgstr "Strikt abh?ngig"
+msgstr "Strikt abhängig"
 
 #: qdjango/static/qdjango/js/widget.js:458
 msgid "Logical join"
-msgstr "Logische Verkn?pfung"
+msgstr "Logische Verknüpfung"
 
 #: qdjango/static/qdjango/js/widget.js:477
 msgid "Alias field name for client search input"
-msgstr "Aliasname des Feldes f?r die clientseitige Sucheingabe"
+msgstr "Aliasname des Feldes für die clientseitige Sucheingabe"
 
 #: qdjango/static/qdjango/js/widget.js:771
 #: qdjango/static/qdjango/js/widget.js:891
@@ -117,7 +117,7 @@ msgstr "Weitere Suchebenen"
 #: qdjango/static/qdjango/js/widget.js:775
 #: qdjango/static/qdjango/js/widget.js:895
 msgid "Select one or more additional layers to search on"
-msgstr "W?hlen Sie eine oder mehrere zus?tzliche Ebenen f?r die Suche aus"
+msgstr "Wählen Sie eine oder mehrere zusätzliche Ebenen für die Suche aus"
 
 #: qdjango/static/qdjango/js/widget.js:788
 #: qdjango/static/qdjango/js/widget.js:921
@@ -129,14 +129,14 @@ msgstr "Relationen"
 msgid ""
 "This layer is a child in a relation, if you want to excute the search on "
 "father layer of relation, select the relative relation"
-msgstr "Diese Ebene ist in einer Relation eine untergeordnete Ebene. Um die Suche auf der ?bergeordneten Ebene auszuf?hren, w?hlen Sie die entsprechende Relation aus"
+msgstr "Diese Ebene ist in einer Relation eine untergeordnete Ebene. Um die Suche auf der übergeordneten Ebene auszuführen, wählen Sie die entsprechende Relation aus"
 
 #: qdjango/static/qdjango/js/widget.js:823
 #: qdjango/static/qdjango/js/widget.js:948
 #: qdjango/static/qdjango/js/widget.js:1475
 #: qdjango/static/qdjango/js/widget.js:1681
 msgid "Add"
-msgstr "Hinzuf?gen"
+msgstr "Hinzufügen"
 
 #: qdjango/static/qdjango/js/widget.js:1043
 msgid "QGIS Expression"
@@ -157,18 +157,18 @@ msgstr "Formulartitel"
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the QGIS expressions."
-msgstr "Legen Sie f?r jeden Benutzer und/oder jede Benutzergruppe Anzeige- und Bearbeitungsregeln auf Grundlage von QGIS-Ausdr?cken fest."
+msgstr "Legen Sie für jeden Benutzer und/oder jede Benutzergruppe Anzeige- und Bearbeitungsregeln auf Grundlage von QGIS-Ausdrücken fest."
 
 #: qdjango/static/qdjango/js/widget.js:1221
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the language or SQL dialect of the associated provider."
-msgstr "Legen Sie f?r jeden Benutzer und/oder jede Benutzergruppe Anzeige- und Bearbeitungsregeln auf Grundlage der Sprache oder des SQL-Dialekts des zugeh?rigen Datenanbieters fest."
+msgstr "Legen Sie für jeden Benutzer und/oder jede Benutzergruppe Anzeige- und Bearbeitungsregeln auf Grundlage der Sprache oder des SQL-Dialekts des zugehörigen Datenanbieters fest."
 
 #: qdjango/static/qdjango/js/widget.js:1293
 #: qdjango/static/qdjango/js/widget.js:1296
 msgid "New alphanumeric constraints"
-msgstr "Neue alphanumerische Einschr?nkungen"
+msgstr "Neue alphanumerische Einschränkungen"
 
 #: qdjango/static/qdjango/js/widget.js:1311
 #: qdjango/static/qdjango/js/widget.js:2113
@@ -185,12 +185,12 @@ msgstr "Name"
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For visualization"
-msgstr "F?r die Anzeige"
+msgstr "Für die Anzeige"
 
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For editing"
-msgstr "F?r die Bearbeitung"
+msgstr "Für die Bearbeitung"
 
 #: qdjango/static/qdjango/js/widget.js:1326
 msgid "Subset rules count"
@@ -202,15 +202,15 @@ msgstr "Anzahl der Ausdrucksregeln"
 
 #: qdjango/static/qdjango/js/widget.js:1375
 msgid "Update alphanumeric constraint"
-msgstr "Alphanumerische Einschr?nkung aktualisieren"
+msgstr "Alphanumerische Einschränkung aktualisieren"
 
 #: qdjango/static/qdjango/js/widget.js:1385
 msgid "Constraint Rules based on provider's language / SQL dialect"
-msgstr "Einschr?nkungsregeln auf Grundlage der Sprache / des SQL-Dialekts des Datenanbieters"
+msgstr "Einschränkungsregeln auf Grundlage der Sprache / des SQL-Dialekts des Datenanbieters"
 
 #: qdjango/static/qdjango/js/widget.js:1396
 msgid "Constraint Rules based on QGIS Expression"
-msgstr "Einschr?nkungsregeln auf Grundlage von QGIS-Ausdr?cken"
+msgstr "Einschränkungsregeln auf Grundlage von QGIS-Ausdrücken"
 
 #: qdjango/static/qdjango/js/widget.js:1538
 #: qdjango/static/qdjango/js/widget.js:1744
@@ -220,21 +220,21 @@ msgstr "Speichern"
 #: qdjango/static/qdjango/js/widget.js:1543
 #: qdjango/static/qdjango/js/widget.js:1749
 msgid "Delete"
-msgstr "L?schen"
+msgstr "Löschen"
 
 #: qdjango/static/qdjango/js/widget.js:1560
 msgid "Set a name and a possible description for the alphanumeric constraint"
-msgstr "Geben Sie einen Namen und optional eine Beschreibung f?r die alphanumerische Einschr?nkung ein"
+msgstr "Geben Sie einen Namen und optional eine Beschreibung für die alphanumerische Einschränkung ein"
 
 #: qdjango/static/qdjango/js/widget.js:1583
 #: qdjango/static/qdjango/js/widget.js:1785
 msgid "Active for visualization"
-msgstr "F?r die Anzeige aktiviert"
+msgstr "Für die Anzeige aktiviert"
 
 #: qdjango/static/qdjango/js/widget.js:1594
 #: qdjango/static/qdjango/js/widget.js:1796
 msgid "Active for editing"
-msgstr "F?r die Bearbeitung aktiviert"
+msgstr "Für die Bearbeitung aktiviert"
 
 #: qdjango/static/qdjango/js/widget.js:1609
 msgid "Provider's language / SQL dialect Rules"
@@ -246,27 +246,27 @@ msgstr "QGIS-Ausdrucksregeln"
 
 #: qdjango/static/qdjango/js/widget.js:1764
 msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
-msgstr "W?hlen Sie die Einschr?nkungsebene aus. Als Geometrietyp ist nur Polygon oder MultiPolygon zul?ssig"
+msgstr "Wählen Sie die Einschränkungsebene aus. Als Geometrietyp ist nur Polygon oder MultiPolygon zulässig"
 
 #: qdjango/static/qdjango/js/widget.js:1768
 msgid "Constraint layer"
-msgstr "Einschr?nkungsebene"
+msgstr "Einschränkungsebene"
 
 #: qdjango/static/qdjango/js/widget.js:1809
 msgid "Manage geo-constaints"
-msgstr "Geometrische Einschr?nkungen verwalten"
+msgstr "Geometrische Einschränkungen verwalten"
 
 #: qdjango/static/qdjango/js/widget.js:2095
 msgid "New geo constraint"
-msgstr "Neue geometrische Einschr?nkung"
+msgstr "Neue geometrische Einschränkung"
 
 #: qdjango/static/qdjango/js/widget.js:2098
 msgid "New constraint"
-msgstr "Neue Einschr?nkung"
+msgstr "Neue Einschränkung"
 
 #: qdjango/static/qdjango/js/widget.js:2116
 msgid "Layer constraint"
-msgstr "Ebeneneinschr?nkung"
+msgstr "Ebeneneinschränkung"
 
 #: qdjango/static/qdjango/js/widget.js:2124
 msgid "Rules count"
@@ -274,19 +274,19 @@ msgstr "Anzahl der Regeln"
 
 #: qdjango/static/qdjango/js/widget.js:2166
 msgid "Update constraint"
-msgstr "Einschr?nkung aktualisieren"
+msgstr "Einschränkung aktualisieren"
 
 #: qdjango/static/qdjango/js/widget.js:2177
 msgid "Geo Constraint Rules"
-msgstr "Regeln f?r geometrische Einschr?nkungen"
+msgstr "Regeln für geometrische Einschränkungen"
 
 #: qdjango/static/qdjango/js/widget.js:2268
 msgid "Create New Column Level Constraint"
-msgstr "Neue Spalteneinschr?nkung erstellen"
+msgstr "Neue Spalteneinschränkung erstellen"
 
 #: qdjango/static/qdjango/js/widget.js:2271
 msgid "New Column Level Constraint"
-msgstr "Neue Spalteneinschr?nkung"
+msgstr "Neue Spalteneinschränkung"
 
 #: qdjango/static/qdjango/js/widget.js:2284
 msgid "Group"
@@ -294,19 +294,19 @@ msgstr "Gruppe"
 
 #: qdjango/static/qdjango/js/widget.js:2353
 msgid "Delete Column Level Constraint"
-msgstr "Spalteneinschr?nkung l?schen"
+msgstr "Spalteneinschränkung löschen"
 
 #: qdjango/static/qdjango/js/widget.js:2354
 msgid "Are you sure to delete column constraint"
-msgstr "M?chten Sie die Spalteneinschr?nkung wirklich l?schen"
+msgstr "Möchten Sie die Spalteneinschränkung wirklich löschen"
 
 #: qdjango/static/qdjango/js/widget.js:2447
 msgid "Edit Column Level Constraint."
-msgstr "Spalteneinschr?nkung bearbeiten."
+msgstr "Spalteneinschränkung bearbeiten."
 
 #: qdjango/static/qdjango/js/widget.js:2551
 msgid "You must select a 'group' or a 'user'!"
-msgstr "Sie m?ssen eine 'Gruppe' oder einen 'Benutzer' ausw?hlen!"
+msgstr "Sie müssen eine 'Gruppe' oder einen 'Benutzer' auswählen!"
 
 #: qdjango/static/qdjango/js/widget.js:2573
 msgid "Hidden Fields is required!"
@@ -334,11 +334,11 @@ msgstr "Aktuell"
 
 #: qdjango/static/qdjango/js/widget.js:2738
 msgid "Delete Style"
-msgstr "Stil l?schen"
+msgstr "Stil löschen"
 
 #: qdjango/static/qdjango/js/widget.js:2739
 msgid "Are you sure to delete style"
-msgstr "M?chten Sie den Stil wirklich l?schen"
+msgstr "Möchten Sie den Stil wirklich löschen"
 
 #: qdjango/static/qdjango/js/widget.js:2797
 msgid "Create a new style from an uploaded QML file."

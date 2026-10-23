@@ -423,7 +423,7 @@ msgstr "Link Youtube"
 
 #: core/models.py:452
 msgid "Instagram link"
-msgstr "Instagram link"
+msgstr "Link către Instagram"
 
 #: core/models.py:453
 msgid "Flickr link"

@@ -168,7 +168,7 @@ msgstr "Qdjango2-modul"
 
 #: core/models.py:31
 msgid "Type header"
-msgstr "Type header"
+msgstr "Rubriktyp"
 
 #: core/models.py:32
 msgid "Icon CSS class"

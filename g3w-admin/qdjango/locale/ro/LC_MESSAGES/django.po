@@ -424,7 +424,7 @@ msgstr "S-a prăbușit"
 
 #: qdjango/models/projects.py:172 qdjango/models/projects.py:177
 msgid "Not collapsed"
-msgstr "Not collapsed"
+msgstr "Extins"
 
 #: qdjango/models/projects.py:181
 msgid "In a separate TAB"
@@ -554,7 +554,7 @@ msgstr "Afișați doar simbolurile elementelor aflate în zona solicitată"
 
 #: qdjango/models/projects.py:337
 msgid "Tab's TOC active as default"
-msgstr "Tab's TOC active as default"
+msgstr "Fila TOC activ? implicit"
 
 #: qdjango/models/projects.py:341
 msgid "Set tab's TOC open by default on init client"
@@ -946,7 +946,7 @@ msgstr "Versiune"
 
 #: qdjango/models/qgisauth.py:103
 msgid "Config"
-msgstr "Config"
+msgstr "Configurație"
 
 #: qdjango/models/qgisauth.py:104
 msgid ""
@@ -1377,7 +1377,7 @@ msgstr "Descarcă"
 
 #: qdjango/templates/qdjango/layers_list.html:407
 msgid "Download as shp/geotiff"
-msgstr "Download as shp/geotiff"
+msgstr "Descarc? ?n format SHP/GeoTIFF"
 
 #: qdjango/templates/qdjango/layers_list.html:414
 msgid "Download as gpkg"

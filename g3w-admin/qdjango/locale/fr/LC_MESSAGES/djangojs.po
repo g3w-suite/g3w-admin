@@ -185,7 +185,7 @@ msgstr "Utiliser une couche unique alternative"
 #: static/qdjango/js/widget.js:529
 msgid ""
 "Is possibile to select an alternative layer to use for get unique values"
-msgstr "Est-il possible de s?lectionner une couche alternative pour r?cup?rer des valeurs uniques ?"
+msgstr "Est-il possible de sélectionner une couche alternative pour récupérer des valeurs uniques ?"
 
 #: static/qdjango/js/widget.js:536
 msgid "Dependency"

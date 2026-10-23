@@ -873,7 +873,7 @@ msgstr "Text"
 
 #: qdjango/models/projects.py:1635
 msgid "datasource"
-msgstr "datasource"
+msgstr "Datenquelle"
 
 #: qdjango/models/projects.py:1691
 msgid "Theme name"

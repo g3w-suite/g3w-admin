@@ -643,13 +643,13 @@ msgstr "Geográfico"
 
 #| msgid "General suite data"
 msgid "General suite settings"
-msgstr "Configuraci?n general de la suite"
+msgstr "Configuración general de la suite"
 
 #: core/templates/core/generalsuitedata_form.html:18
 msgid ""
 "Branding, default texts and global preferences for the whole G3W-Suite "
 "installation."
-msgstr "Identidad visual, textos predeterminados y preferencias globales de toda la instalaci?n de G3W-Suite."
+msgstr "Identidad visual, textos predeterminados y preferencias globales de toda la instalación de G3W-Suite."
 
 #: core/templates/core/generalsuitedata_form.html:23
 msgid "Back to dashboard"
@@ -671,13 +671,13 @@ msgstr "Revisa los campos resaltados y vuelve a enviar el formulario."
 
 #| msgid "Macro cartographic group"
 msgid "Deactivated cartographic groups"
-msgstr "Grupos cartogr?ficos desactivados"
+msgstr "Grupos cartográficos desactivados"
 
 #: core/templates/core/group_deactive_list.html:18
 msgid ""
 "Groups currently in the bin. Restore them to bring projects back online, or "
 "delete permanently to free up space."
-msgstr "Grupos que est?n actualmente en la papelera. Rest?uralos para volver a poner los proyectos en l?nea o elim?nalos definitivamente para liberar espacio."
+msgstr "Grupos que están actualmente en la papelera. Restáuralos para volver a poner los proyectos en línea o elimínalos definitivamente para liberar espacio."
 
 #: core/templates/core/group_deactive_list.html:23
 #: core/templates/core/group_deactive_list.html:108
@@ -729,29 +729,29 @@ msgstr "¡Advertencia: eliminar el grupo eliminará los proyectos que contiene!"
 
 #: core/templates/core/group_deactive_list.html:105
 msgid "The bin is empty"
-msgstr "La papelera est? vac?a"
+msgstr "La papelera está vacía"
 
 #: core/templates/core/group_deactive_list.html:106
 msgid "There are no deactivated cartographic groups to show."
-msgstr "No hay grupos cartogr?ficos desactivados para mostrar."
+msgstr "No hay grupos cartográficos desactivados para mostrar."
 
 #: core/templates/core/group_form.html:15
 
 #| msgid "Cartographic groups"
 msgid "Edit cartographic group"
-msgstr "Editar grupo cartogr?fico"
+msgstr "Editar grupo cartográfico"
 
 #: core/templates/core/group_form.html:15
 
 #| msgid "Cartographic groups"
 msgid "New cartographic group"
-msgstr "Nuevo grupo cartogr?fico"
+msgstr "Nuevo grupo cartográfico"
 
 #: core/templates/core/group_form.html:21
 msgid ""
 "Configure name, geographic data, base layers and branding for a new map "
 "group."
-msgstr "Configura el nombre, los datos geogr?ficos, las capas base y la identidad visual de un nuevo grupo cartogr?fico."
+msgstr "Configura el nombre, los datos geográficos, las capas base y la identidad visual de un nuevo grupo cartográfico."
 
 #: core/templates/core/group_form.html:27
 #: core/templates/core/project_list.html:18
@@ -779,7 +779,7 @@ msgstr "Grupos cartográficos"
 
 #: core/templates/core/group_list.html:14
 msgid "Browse, organize and manage the map groups you have access to."
-msgstr "Explora, organiza y gestiona los grupos cartogr?ficos a los que tienes acceso."
+msgstr "Explora, organiza y gestiona los grupos cartográficos a los que tienes acceso."
 
 #: core/templates/core/group_list.html:17
 #: core/templates/core/macrogroup_list.html:112
@@ -797,12 +797,12 @@ msgstr "Filtrar grupos"
 #: core/templates/core/group_list.html:92
 #: core/templates/core/macrogroup_list.html:82
 msgid "View mode"
-msgstr "Modo de visualizaci?n"
+msgstr "Modo de visualización"
 
 #: core/templates/core/group_list.html:94
 #: core/templates/core/macrogroup_list.html:84
 msgid "Grid view"
-msgstr "Vista de cuadr?cula"
+msgstr "Vista de cuadrícula"
 
 #: core/templates/core/group_list.html:98
 #: core/templates/core/macrogroup_list.html:88
@@ -849,7 +849,7 @@ msgstr ""
 
 #| msgid "Add new project"
 msgid "Add new group"
-msgstr "A?adir nuevo grupo"
+msgstr "Añadir nuevo grupo"
 
 #: core/templates/core/group_list.html:193
 
@@ -859,11 +859,11 @@ msgstr "No se encontraron grupos"
 
 #: core/templates/core/group_list.html:196
 msgid "Create your first cartographic group to start organizing projects."
-msgstr "Crea tu primer grupo cartogr?fico para empezar a organizar proyectos."
+msgstr "Crea tu primer grupo cartográfico para empezar a organizar proyectos."
 
 #: core/templates/core/group_list.html:198
 msgid "No groups match your filter, or none have been shared with you yet."
-msgstr "Ning?n grupo coincide con el filtro o todav?a no se ha compartido ninguno contigo."
+msgstr "Ningún grupo coincide con el filtro o todavía no se ha compartido ninguno contigo."
 
 #: core/templates/core/include/add_project.html:4
 msgid "Add project"
@@ -909,7 +909,7 @@ msgstr "Nuevo macrogrupo"
 
 #: core/templates/core/macrogroup_form.html:20
 msgid "Group cartographic groups together under a shared label and branding."
-msgstr "Agrupa los grupos cartogr?ficos bajo una etiqueta y una identidad visual comunes."
+msgstr "Agrupa los grupos cartográficos bajo una etiqueta y una identidad visual comunes."
 
 #: core/templates/core/macrogroup_form.html:26
 
@@ -925,7 +925,7 @@ msgstr "Grupos vinculados:"
 
 #| msgid "Macro cartographic group"
 msgid "No cartographic groups linked yet."
-msgstr "Todav?a no hay grupos cartogr?ficos vinculados."
+msgstr "Todavía no hay grupos cartográficos vinculados."
 
 #: core/templates/core/macrogroup_list.html:13
 #: core/templates/core/macrogroup_list_table.html:10
@@ -935,7 +935,7 @@ msgstr "Macrogrupos cartográficos"
 
 #: core/templates/core/macrogroup_list.html:14
 msgid "Group together cartographic groups under shared identities and logos."
-msgstr "Agrupa los grupos cartogr?ficos con identidades visuales y logotipos comunes."
+msgstr "Agrupa los grupos cartográficos con identidades visuales y logotipos comunes."
 
 #: core/templates/core/macrogroup_list.html:17
 
@@ -964,7 +964,7 @@ msgstr "Eliminar"
 
 #| msgid "Macro group"
 msgid "Add new macro group"
-msgstr "A?adir un macrogrupo"
+msgstr "Añadir un macrogrupo"
 
 #: core/templates/core/macrogroup_list.html:165
 
@@ -976,11 +976,11 @@ msgstr "No se encontraron macrogrupos"
 msgid ""
 "Create your first macro group to organize cartographic groups under a shared "
 "identity."
-msgstr "Crea tu primer macrogrupo para organizar grupos cartogr?ficos bajo una identidad visual com?n."
+msgstr "Crea tu primer macrogrupo para organizar grupos cartográficos bajo una identidad visual común."
 
 #: core/templates/core/macrogroup_list.html:170
 msgid "No macro groups have been shared with you yet."
-msgstr "Todav?a no se ha compartido ning?n macrogrupo contigo."
+msgstr "Todavía no se ha compartido ningún macrogrupo contigo."
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
@@ -990,7 +990,7 @@ msgstr "Macrogrupo"
 
 #| msgid "Macro cartographic group"
 msgid "Projects available in this cartographic group."
-msgstr "Proyectos disponibles en este grupo cartogr?fico."
+msgstr "Proyectos disponibles en este grupo cartográfico."
 
 #: core/templates/core/project_list.html:74
 msgid "Detail"

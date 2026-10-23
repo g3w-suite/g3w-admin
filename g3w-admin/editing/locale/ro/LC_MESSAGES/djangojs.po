@@ -18,8 +18,7 @@ msgstr ""
 "2:1));\n"
 #: editing/static/editing/js/widget.js:112
 msgid "User"
-msgstr ""
-"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20) ? 1 : 2));\n"
+msgstr "Utilizator"
 
 #: editing/static/editing/js/widget.js:113
 msgid "Add"

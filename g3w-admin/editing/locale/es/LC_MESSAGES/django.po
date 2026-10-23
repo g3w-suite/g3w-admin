@@ -40,11 +40,11 @@ msgstr "Lo sentimos, tu usuario no tiene el permiso 'Change or Change Attributes
 #: editing/api/base/views.py:408 editing/api/base/views.py:411
 #, python-format
 msgid "Error adding feature: %s"
-msgstr "Error al a?adir la entidad: %s"
+msgstr "Error al añadir la entidad: %s"
 
 #: editing/api/base/views.py:418
 msgid "Error adding feature on Spatialite provider: "
-msgstr "Error al a?adir la entidad en el proveedor Spatialite: "
+msgstr "Error al añadir la entidad en el proveedor Spatialite: "
 
 #: editing/api/base/views.py:438 editing/api/base/views.py:449
 #, python-format
@@ -54,7 +54,7 @@ msgstr "Error al cambiar los valores de los atributos: %s"
 #: editing/api/base/views.py:444 editing/api/base/views.py:452
 #, python-format
 msgid "Error changing geometry: %s"
-msgstr "Error al cambiar la geometr?a: %s"
+msgstr "Error al cambiar la geometría: %s"
 
 #: editing/api/base/views.py:564 editing/api/base/views.py:568
 #, python-format
@@ -248,7 +248,7 @@ msgstr "Usuarios individuales"
 
 #: editing/forms.py:358
 msgid "Copy editing permissions from one user to one or more recipients."
-msgstr "Copia los permisos de edici?n de un usuario a uno o varios destinatarios."
+msgstr "Copia los permisos de edición de un usuario a uno o varios destinatarios."
 
 #: editing/forms.py:374
 msgid "User groups"
@@ -258,12 +258,12 @@ msgstr "Grupos de usuarios"
 msgid ""
 "Copy editing permissions from one group of users to one or more recipient "
 "groups."
-msgstr "Copia los permisos de edici?n de un grupo de usuarios a uno o varios grupos destinatarios."
+msgstr "Copia los permisos de edición de un grupo de usuarios a uno o varios grupos destinatarios."
 
 #: editing/receivers.py:308
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
-msgstr "No se pudo validar la geometr?a con las restricciones: %s"
+msgstr "No se pudo validar la geometría con las restricciones: %s"
 
 #: editing/templates/editing/copy_editing_permission_form.html:7
 msgid "Alert"
@@ -302,7 +302,7 @@ msgstr "Revisa los campos resaltados y vuelve a enviar el formulario."
 msgid ""
 "The following settings will be applied to all the layers indicated and will "
 "overwrite the settings set at the single layer level."
-msgstr "La siguiente configuraci?n se aplicar? a todas las capas indicadas y sobrescribir? la configuraci?n establecida para cada capa individual."
+msgstr "La siguiente configuración se aplicará a todas las capas indicadas y sobrescribirá la configuración establecida para cada capa individual."
 
 #: editing/templates/editing/layer_action.html:5
 #: editing/templates/editing/project_layers_action.html:6

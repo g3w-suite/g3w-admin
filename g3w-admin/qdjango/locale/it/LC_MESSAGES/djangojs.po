@@ -370,7 +370,7 @@ msgstr "Layer"
 
 #: static/qdjango/js/widget.js:1961
 msgid "Autozoom on map bootstrap"
-msgstr "Zoom automatico all?avvio della mappa"
+msgstr "Zoom automatico all'avvio della mappa"
 
 #: static/qdjango/js/widget.js:1974
 msgid "Manage geo-constaints"
