@@ -643,20 +643,25 @@
           
           this.#CHARTS.push(component);
 
-          // Block execution until the 'loading' state in the sidebar becomes false
-          await new Promise(res => component.$watch(() => this.state.loading, loading => !loading && res(), { immediate: true }));
+          // Wait until the sidebar has finished drawing its charts and setting up observers.
+          await component.mountPromise;
         }
 
         if (false === show) {
           // Find the chart instance associated with the provided container selector
           const index = this.#CHARTS.findIndex(component => (container?.[0] ?? container) === (component.container?.[0] ?? component.container));
           if (index !== -1) {
-            // Properly destroy the Vue instance and remove it from the tracking array
-            this.#CHARTS[index].$destroy();
-            this.#CHARTS.splice(index, 1);
-            
-            // Cleanup plot data after closing the sidebar
-            plots.forEach(p => p.loaded && this.clearData(p));
+            const component = this.#CHARTS[index];
+            try {
+              await component.mountPromise;
+            } finally {
+              // Properly destroy the Vue instance and remove it from the tracking array
+              component.$destroy();
+              this.#CHARTS.splice(index, 1);
+
+              // Cleanup plot data after closing the sidebar
+              plots.forEach(p => p.loaded && this.clearData(p));
+            }
           }
         }
 
