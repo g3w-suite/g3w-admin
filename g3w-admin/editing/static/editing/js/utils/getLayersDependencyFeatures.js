@@ -6,14 +6,10 @@ const ApplicationState = g3w.state;
 const GUI              = g3w.app;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
- * 
  * @param { string } layerId
  * @param opts
  *
  * @returns { Promise<Awaited<unknown>[]> }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export async function getLayersDependencyFeatures(layerId, opts = {}) {
 
@@ -53,12 +49,12 @@ export async function getLayersDependencyFeatures(layerId, opts = {}) {
       opts.operator = undefined !== opts.operator ? opts.operator : 'eq'; 
 
       const { ownField, relationField } = getRelationFieldsFromRelation({ layerId: id, relation });
-      const features                    = GUI.getPlugin('editing').getLayerById(id).getEditor().readEditingFeatures();
+      const features                    = GUI.getPlugin('editing').getToolBoxById(id).readEditingFeatures();
       const featureValues               = relationField.map(field => opts.feature.get(field));
 
       // try to get feature from source without a server request
       const find = (
-        (!ApplicationState.online || !toolbox.getSession() || toolbox.isSessionStarted())
+        (!ApplicationState.online || toolbox.isSessionStarted())
         && 'eq' === opts.operator
         && ownField.every((field, i) => features.find(f => featureValues[i] == f.get(field)))
       );
@@ -66,10 +62,10 @@ export async function getLayersDependencyFeatures(layerId, opts = {}) {
       toolbox.startLoading();
 
       try {
-        if (ApplicationState.online && toolbox.getSession() && !toolbox.isSessionStarted()) {
-          await toolbox.getSession().start({ filter, registerEvents: true, editing: true });       // start session and get features
-        } else if (ApplicationState.online && toolbox.getSession() && !find) {
-          await toolbox.getSession().getFeatures({ filter, registerEvents: true, editing: true }); // request features from server
+        if (ApplicationState.online && !toolbox.isSessionStarted()) {
+          await toolbox.startSession({ filter, registerEvents: true, editing: true });       // start session and get features
+        } else if (ApplicationState.online && !find) {
+          await toolbox.getFeatures({ filter, registerEvents: true, editing: true }); // request features from server
         }
       } catch(promise) {
         try { await promise } catch (e) { console.warn(e, promise); }
@@ -77,9 +73,9 @@ export async function getLayersDependencyFeatures(layerId, opts = {}) {
 
       toolbox.stopLoading();
 
-      return { [id] : GUI.getPlugin('editing').getLayerById(id).getEditor().readEditingFeatures().filter(f => ownField.every((field, i) => featureValues[i] == f.get(field)))};
+      return { [id] : GUI.getPlugin('editing').getToolBoxById(id).readEditingFeatures().filter(f => ownField.every((field, i) => featureValues[i] == f.get(field)))};
     }));
-  } catch (e) {
+  } catch(e) {
     console.warn(e);
   }
 

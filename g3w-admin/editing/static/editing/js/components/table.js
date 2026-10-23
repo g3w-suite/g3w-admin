@@ -1,11 +1,9 @@
 /**
  * @file Editing table (form editor)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
 import { Step }                      from '../g3w-step.js';
-import { Workflow }                  from '../g3w-workflow.js';
+import { Tool }                      from '../g3w-tool.js';
 import { OpenFormStep }              from '../actions/open-form.js';
 import { cloneFeature }              from '../utils/cloneFeature.js';
 import { getRelationsInEditing }     from '../utils/getRelationsInEditing.js';
@@ -31,20 +29,21 @@ export default ({
   <div style = "display: flex;">
 
     <!-- TOTAL ELEMENTS -->
-    <span style = "margin-left: .5ch;">{{ rows.length }} {{ $t('entries') }}</span>
+    <span style = "margin-left: .5ch;">{{ count }} {{ $t('entries') }}</span>
 
     <!-- GLOBAL SEARCH -->
     <input
       type         = "search"
       class        = "form-control search"
       :placeholder = "$t('dosearch')"
-      style        = "margin-left: auto !important; margin-right: 1ch;"
-      @keyup       = "globalSearch"
+      style        = "margin-left: auto !important;"
+      @input       = "globalSearch"
+      @search      = "onSearch"
     />
   </div>
 
   <!-- TABLE CONTENT -->
-  <table v-if = "show">
+  <table>
     <thead>
 
       <tr>
@@ -68,18 +67,14 @@ export default ({
         :key    = "feature.__g3w_uid"
         :id     = "feature.__g3w_uid"
         :index  = "index"
-        :hidden = "isRowHidden(index)"
       >
-
-        <td v-if = "!isrelation">
+        <td v-if = "!isrelation" class = "tools" :class = "{ 'locked': feature.__g3w_locked }" data-placement = "top" :title = "feature.__g3w_locked && 'plugins.editing.featureslockbyotheruser' || ''" :data-i18n-title = "feature.__g3w_locked && 'plugins.editing.featureslockbyotheruser' || ''">
           <div style = "display:flex;justify-content: space-between;">
-
             <!-- EDIT FEATURE -->
-            <span v-t-tooltip:right = "'plugins.editing.table.edit'">
+            <span class = "tool" data-placement = "right" title = "plugins.editing.edit_feature">
               <i
                 v-if             = "showTool('change_attr_feature')"
-                :class           = "g3wtemplate.font['pencil']"
-                class            = "g3w-icon"
+                class            = "g3w-icon fas fa-pencil-alt"
                 style            = "color:#30cce7;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "editFeature(feature.__g3w_uid)"
@@ -87,11 +82,10 @@ export default ({
             </span>
 
             <!-- COPY FEATURE -->
-            <span v-t-tooltip:right = "'plugins.editing.table.copy'">
+            <span class = "tool" data-placement = "right" title = "plugins.editing.create_a_copy">
               <i
                 v-if             = "showTool('add_feature')"
-                :class           = "g3wtemplate.font['copy-paste']"
-                class            = "g3w-icon"
+                class            = "g3w-icon far fa-copy"
                 style            = "color:#d98b14;margin: 5px;padding: 5px 7px 5px 7px;"
                 aria-hidden      = "true"
                 @click.stop      = "copyFeature(feature.__g3w_uid)"
@@ -99,11 +93,10 @@ export default ({
             </span>
 
             <!-- DELETE FEATURE -->
-            <span v-t-tooltip:right = "'plugins.editing.table.delete'">
+            <span class = "tool" data-placement = "right" title = "plugins.editing.delete_feature">
               <i
                 v-if             = "showTool('delete_feature')"
-                :class           = "g3wtemplate.font['trash-o']"
-                class            = "g3w-icon"
+                class            = "g3w-icon far fa-trash-alt"
                 style            = "color:red;margin: 5px;"
                 aria-hidden      = "true"
                 @click.stop      = "deleteFeature(feature.__g3w_uid)"
@@ -154,7 +147,8 @@ export default ({
       <select
         v-model         = "search.page"
         style           = "padding: 5px 12px; appearance: none; border: 0; text-align: center; border-radius: 3px; cursor: pointer;"
-        v-t-tooltip:top = "search.page + $t(' of ') + pages"
+        :title          = "search.page + $t(' of ') + pages"
+        :data-i18n-title = "search.page + $t(' of ') + pages"
         data-placement  = "top"
       >
         <option v-for = "p in pages" :selected = "p == search.page">{{ p }}</option>
@@ -193,7 +187,7 @@ export default ({
       <!-- SAVE CHANGES -->
       <button
         v-if        = "!isrelation"
-        v-t-plugin  = "'editing.form.buttons.save_and_back'"
+        v-t-plugin  = "'editing.save_and_back'"
         class       = "btn btn-success" 
         style       = "margin-right: 10px; font-weight: bold;"
         @click.stop = "save">
@@ -201,7 +195,7 @@ export default ({
 
       <!-- DISCARD CHANGES -->
       <button
-        v-t-plugin  = "'editing.form.buttons.cancel'"
+        v-t-plugin  = "'editing.ignore_changes'"
         class       = "btn btn-danger"
         style       = "font-weight: bold;"
         @click.stop = "cancel">
@@ -226,39 +220,27 @@ export default ({
       isrelation,
       promise
     }              = this.$options;
-    const features = (inputs.layer.getEditor().readEditingFeatures() || []);
-    const headers  = (inputs.layer.state.editing.fields || []).filter(h => features.length ? Object.keys(features[0].getProperties()).includes(h.name) : true);
-    const excluded = isrelation ? (context.excludeFields || []) : [];
+     
     return {
-      show: true,
+      excluded: isrelation ? (context.excludeFields || []) : [],
       inputs,
       context,
       isrelation,
       promise,
-      headers, // column names
-      features,
-      rows: features.length > 0
-        // ordered properties
-        ? (
-          excluded.length > 0
-            ? features.filter(feat => !excluded.reduce((a, f, i) => a && context.fatherValue[i] === `${feat.get(f)}` , true))
-            : features
-        )
-          .map(f => headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
-            [header]: getFeatureTableFieldValue({ layerId: inputs.layer.getId(), feature: f, property: header }),
-            '__g3w_uid': f.getUid(), // private attribute unique value
-          }), {}))
-        // features already bind to parent feature
-        : features,
+      headers:  [], // column names
+      features: [],
+      rows:     [],
       title:     `${inputs.layer.getName()}` || 'Link relation',
       layerId:   inputs.layer.getId(),
-      workflow:  null,
+      tool:  null,
       linked:    [],
       ordering:  [0, 'asc'],
       PAGELENGTHS,
+      count: 0,
       search: {
         page:      1,              // current page
         page_size: PAGELENGTHS[1],
+        text:    '',             // global search
       }
     };
 
@@ -266,23 +248,37 @@ export default ({
 
   computed: {
     pages() {
-      return Math.ceil(this.rows.length / this.search.page_size);
+      return Math.ceil(this.count / this.search.page_size);
     },
   },
 
   watch: {
-    async 'search.page_size'(page_size) {
-      this.reload({ page_size });
+    async 'search.page_size'() {
+      this.search.page = 1;
+      this.getData();
     },
-    async 'search.page'(page) {
-      this.reload({ page });
+    async 'search.page'() {
+      this.getData();
     },
+    async 'search.text'() {
+      this.search.page = 1;
+      this.getData();
+    }
   },
 
   methods: {
 
+    /**
+     * Handle native search event (Enter key and clear button on search inputs).
+     */
+    onSearch(e) {
+      if ('' === e.target.value) {
+        this.search.text = '';
+      }
+    },
+
     showTool(type) {
-      return undefined !== this.inputs.layer.state.editing.capabilities.find(c => type === c);
+      return GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).state.capabilities.includes(type);
     },
 
     isMediaField(name) {
@@ -307,19 +303,9 @@ export default ({
         this.ordering[0] = index;
         this.ordering[1] = 'asc';
       }
-      this.reload({ ordering: index });
+      this.getData();
     },
 
-    isRowHidden(index) {
-      if (this.search.search) {
-        return Object.keys(this.rows[index]).every(key => -1 === `${this.rows[index][key]}`.toLowerCase().indexOf(this.search.search.toLowerCase()));
-      }
-      const page      = Number(this.search.page);
-      const page_size = Number(this.search.page_size);
-      return !(index >= ((page-1) * page_size) && index < (page * page_size));
-    },
-
-    
     save() {
       this.state.isrelation
         // link features (by indexes)
@@ -335,7 +321,7 @@ export default ({
       if (this.isrelation && !this.linked.length) {
         this.promise.reject();
       } else {
-        const ok = await GUI.confirm(_('plugins.editing.messages.link_relations'));
+        const ok = await GUI.confirm(_('plugins.editing.link_relations'));
         if (ok) {
           this.promise.resolve(this.isrelation ? { features: this.linked.map(i => this.features[i]) } : undefined);
         } else {
@@ -353,18 +339,18 @@ export default ({
         relations: this.inputs.layer.getRelations().getArray()
       }).length;
       const ok = await GUI.confirm(/* html */`
-        <h4>${_('plugins.editing.messages.delete_feature')}</h4>
+        <h4>${_('plugins.editing.confirm_delete_feature')}</h4>
         <div style = "font-size:1.2em;">${
           has_child_relation
-            ? _('plugins.editing.messages.delete_feature_relations')
+            ? _('plugins.editing.delete_feature_relations')
             : ''
         }</div>
       `);
       if (ok) {
-        const i    = this.features.findIndex(f => f.getUid() === uid);
+        const i    = this.features.findIndex(f => uid === f.getUid());
         const feat = this.features[i];
-        this.inputs.layer.getEditor().getEditingSource().removeFeature(feat);
-        this.context.session.pushDelete(this.inputs.layer.getId(), feat);
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).removeFeature(feat);
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).pushDelete(this.inputs.layer.getId(), feat);
         this.rows.splice(i, 1);
       }
     },
@@ -378,11 +364,10 @@ export default ({
         getEditingLayer(this.inputs.layer)
       );
 
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/addtablefeatureworkflow.js@v3.7.1 */
-      this.workflow = new Workflow({
+      this.tool = new Tool({
         type: 'addtablefeature',
         steps: [
-          new Step({ help: 'editing.steps.help.new', run: addTableFeature }),
+          new Step({ help: 'editing.new_feature', run: addTableFeature }),
           new OpenFormStep(),
         ],
       });
@@ -390,7 +375,7 @@ export default ({
       this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
+        const outputs = await this.tool.start({ context: this.context, inputs: this.inputs });
         const feature = outputs.features.at(-1);
         const newFeat = {};
         Object.entries(this.rows[0]).forEach(([ key, _ ]) => {
@@ -402,7 +387,7 @@ export default ({
         console.warn(e);
       }
 
-      this.workflow.stop();
+      await this.tool.stop();
     },
 
     /**
@@ -411,14 +396,13 @@ export default ({
     async editFeature(uid) {
       const index   = this.features.findIndex(f => uid === f.getUid());
       const feature = this.features[index];
-  
-      /** ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/edittablefeatureworkflow.js@v3.7.1 */
-      this.workflow = new Workflow({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
+
+      this.tool = new Tool({ type: 'edittablefeature', steps: [ new OpenFormStep() ] });
     
       this.inputs.features.push(feature);
 
       try {
-        const outputs = await this.workflow.start({ context: this.context, inputs: this.inputs });
+        const outputs = await this.tool.start({ context: this.context, inputs: this.inputs });
         
         const feature = outputs.features.at(-1);
         Object
@@ -428,11 +412,11 @@ export default ({
           });
       } catch(e) {
         //Force roolback
-        this.context.session.rollback();
+        GUI.getPlugin('editing').getToolBoxById(this.context.id).rollback();
         console.warn(e);
       }
 
-      this.workflow.stop();
+      await this.tool.stop();
     },
 
     /**
@@ -455,29 +439,67 @@ export default ({
       return value;
     },
 
-    async reload(opts = {}) {
-      this.show = false;
-      await this.$nextTick();
-      if (undefined !== opts.page_size) {
-        this.search.page      = 1;
-        this.search.page_size = opts.page_size;
+    /**
+     * Get data features from server based on current pagination table information (page, page_size, ordering and search text)
+     * 
+     * @returns {Promise<void>}
+     */
+    async getData() {
+
+      GUI.setLoadingContent(true); // loading content
+      GUI.disableContent(true); //disable content table interaction
+      try {
+        //Get feature from server based on current pagination table information (page, page_size, ordering and search text)
+        //using editor getFeatures method to ge features from server and trasform it and add it to original and editing layer source
+        this.features  = await GUI.getPlugin('editing').getToolBoxById(this.context.id).getFeatures({
+          filter: {
+            pagination: {
+              page:      this.search.page,
+              page_size: this.search.page_size,
+              ordering:  this.headers.length ? `${'asc' === this.ordering[1] ? '' : '-'}${this.headers[this.ordering[0]]?.name}` : undefined,
+              search:    this.search.text?.trim() || undefined,
+              }
+          }
+        });
+        this.count    = GUI.getPlugin('editing').getToolBoxById(this.context.id).getCount(); // get total count of features from server
+        //set headers
+        this.headers  = (GUI.getPlugin('editing').getToolBoxById(this.inputs.layer.getId()).state.fields || []).filter(h => this.features.length ? Object.keys(this.features[0].getProperties()).includes(h.name) : true);
+        //set up table rows from features
+        this.rows = this.features.length > 0
+          // ordered properties
+          ? (
+            this.excluded.length > 0
+              ? this.features.filter(feat => !this.excluded.reduce((a, f, i) => a && this.context.fatherValue[i] === `${feat.get(f)}` , true))
+              : this.features
+          )
+            .map(f => this.headers.map(h => h.name).reduce((props, header) => Object.assign(props, {
+              [header]: getFeatureTableFieldValue({ layerId: this.inputs.layer.getId(), feature: f, property: header }),
+              '__g3w_uid':    f.getUid(),     // private attribute unique value
+              '__g3w_locked': f.state.locked, // private attribute locked value
+            }), {}))
+          // features already bind to parent feature
+          : this.features;
+        await this.$nextTick();
       }
-      if (undefined !== opts.ordering) {
-        const attr = this.headers[this.ordering[0]].name;
-        const dir  = ('asc' === this.ordering[1] ? 1 : -1);
-        this.rows.sort((a, b) => dir * `${a[attr]}`.localeCompare(`${b[attr]}`, undefined, { numeric: true }));
+      catch(e) {
+        console.warn(e);
       }
-      if (undefined !== opts.search) {
-        this.search.search = opts.search;
-      }
-      this.show = true;
+      finally {
+        GUI.setLoadingContent(false); //set loading content data to false
+        GUI.disableContent(false); //enable interaction with table content
+      }  
+     
     },
 
   },
 
   beforeCreate() {
-    this.globalSearch = debounce(e => this.reload({ search: e.target.value }));
+    this.globalSearch = debounce(e => this.search.text = e.target.value, 600);
   },
+
+  async mounted() {
+    await this.getData();
+  }, 
 
   beforeDestroy() {
     this.promise.reject();
@@ -535,6 +557,12 @@ document.head.insertAdjacentHTML(
 
   .g3w-editing-table th.desc::after {
     content: "▾";
+  }
+
+  td.tools.locked .tool {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    opacity: .5 !important;
   }
 </style>`
 );

@@ -156,8 +156,13 @@ class QdjangoMetaLayer(CoreMetaLayer):
         self.countLayer += 1
         layerType = layer['source']['type']
 
+        # The layer gets its own metalayer (breaking the grouping with adjacent layers) if it is:
+        # - an external WMS layer with a url, or
+        # - a cached layer (has 'cache_url'), or
+        # - exposed as WMTS ('wmts' in 'ows', case-insensitive) with non-empty WMTS capabilities.
         if layerType in self.layerTypesSingleLayer and 'url' in layer['source'] and layer['source']['external']\
-                or 'cache_url' in layer:
+                or 'cache_url' in layer\
+                or ('wmts' in [o.lower() for o in layer.get('ows', [])] and layer.get('wmtscapabilities') != {}):
             if self.countLayer > 1:
                 self.increment()
             self.toIncrement = True

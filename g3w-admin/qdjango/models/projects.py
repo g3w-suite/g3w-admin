@@ -248,6 +248,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         blank=True,
     )
 
+    # srid
+    srid = models.IntegerField(
+        _('Project SRID'),
+        blank=True,
+        null=True,
+    )
+
     # Qgis version project
     qgis_version = models.CharField(
         _('Qgis project version'),
@@ -422,6 +429,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     )
     geocoding_providers = models.TextField(_('Geocoding providers'), blank=True, null=True)
 
+    wmts_grids = models.JSONField(
+        _('WMTS grids'), 
+        blank=True, 
+        null=True
+    )
+
     class Meta:
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')
@@ -498,15 +511,15 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
             setPermissionUserObject(user, self, permissions='view_project', mode=mode)
 
-            layerAction = (
-                'addPermissionsToViewers'
-                if mode == 'add'
-                else 'removePermissionsToViewers'
-            )
+        layerAction = (
+            'addPermissionsToViewers'
+            if mode == 'add'
+            else 'removePermissionsToViewers'
+        )
 
-            layers = self.layer_set.all()
-            for layer in layers:
-                getattr(layer, layerAction)(users_id)
+        layers = self.layer_set.all()
+        for layer in layers:
+            getattr(layer, layerAction)(users_id)
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
         for group_id in groups_id:
@@ -528,16 +541,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                     mode=mode,
                 )
 
-            layerAction = (
-                'add_permissions_to_editor_user_groups'
-                if mode == 'add'
-                else 'remove_permissions_to_editor_user_groups'
-            )
+        layerAction = (
+            'add_permissions_to_editor_user_groups'
+            if mode == 'add'
+            else 'remove_permissions_to_editor_user_groups'
+        )
 
-            layers = self.layer_set.all()
+        layers = self.layer_set.all()
 
-            for layer in layers:
-                getattr(layer, layerAction)(groups_id)
+        for layer in layers:
+            getattr(layer, layerAction)(groups_id)
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
         for group_id in groups_id:
@@ -549,16 +562,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 mode=mode,
             )
 
-            layerAction = (
-                'add_permissions_to_viewer_user_groups'
-                if mode == 'add'
-                else 'remove_permissions_to_viewer_user_groups'
-            )
+        layerAction = (
+            'add_permissions_to_viewer_user_groups'
+            if mode == 'add'
+            else 'remove_permissions_to_viewer_user_groups'
+        )
 
-            layers = self.layer_set.all()
+        layers = self.layer_set.all()
 
-            for layer in layers:
-                getattr(layer, layerAction)(groups_id)
+        for layer in layers:
+            getattr(layer, layerAction)(groups_id)
 
     def tree(self):
         def readLeaf(layer, layers):
@@ -884,6 +897,12 @@ class Layer(G3WACLModelMixins, models.Model):
         null=True,
     )
 
+    wmtscapabilities = models.JSONField(
+        _('Dict wmts options'),
+        blank=True,
+        null=True,
+    )
+
     # geometryType
     geometrytype = models.CharField(
         _('Geometry type'),
@@ -1001,6 +1020,15 @@ class Layer(G3WACLModelMixins, models.Model):
     external = models.BooleanField(
         _('Get WMS/WMS externally'),
         default=False,
+        blank=True,
+    )
+
+    # admin-selected format to render this layer as WMTS, must also be available in wmtscapabilities
+    wmts_format = models.CharField(
+        _('Render layer as WMTS'),
+        max_length=10,
+        choices=(('png', 'PNG'), ('jpeg', 'JPEG')),
+        null=True,
         blank=True,
     )
 

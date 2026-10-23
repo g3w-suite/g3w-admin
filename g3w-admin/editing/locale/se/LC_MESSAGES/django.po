@@ -1,157 +1,289 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Swedish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# Walter Lorenzetti <lorenzetti@gis3w.it>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: se <info@g3wsuite.it>\n"
+"Language: se\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: editing/api/base/views.py:64
+#: editing/api/base/views.py:88
+#, python-brace-format
 msgid ""
 "The feature id {} of layer {} cannot be modified because it is not locked "
 "anymore"
-msgstr ""
+msgstr "Objektet med id {} i lagret {} kan inte ändras eftersom det inte längre är låst"
 
-#: editing/api/base/views.py:146
+#: editing/api/base/views.py:171
 msgid "Sorry but your user doesn't has 'Add Feature' capability"
-msgstr ""
+msgstr "Du saknar behörigheten 'Lägg till objekt'"
 
-#: editing/api/base/views.py:150
+#: editing/api/base/views.py:175
 msgid "Sorry but your user doesn't has 'Delete Feature' capability"
-msgstr ""
+msgstr "Du saknar behörigheten 'Ta bort objekt'"
 
-#: editing/api/base/views.py:156
+#: editing/api/base/views.py:181
 msgid ""
 "Sorry but your user doesn't has 'Change or Change Attributes Features' "
 "capability"
-msgstr ""
+msgstr "Du saknar behörigheten 'Ändra objekt eller objektattribut'"
 
-#: editing/api/base/views.py:300 editing/api/base/views.py:303
+#: editing/api/base/views.py:408 editing/api/base/views.py:411
 #, python-format
 msgid "Error adding feature: %s"
-msgstr ""
+msgstr "Fel när objektet skulle läggas till: %s"
 
-#: editing/api/base/views.py:310
+#: editing/api/base/views.py:418
 msgid "Error adding feature on Spatialite provider: "
-msgstr ""
+msgstr "Fel när objektet skulle läggas till med SpatiaLite-leverantören: "
 
-#: editing/api/base/views.py:327 editing/api/base/views.py:338
+#: editing/api/base/views.py:438 editing/api/base/views.py:449
 #, python-format
 msgid "Error changing attribute values: %s"
-msgstr ""
+msgstr "Fel när attributvärdena skulle ändras: %s"
 
-#: editing/api/base/views.py:333 editing/api/base/views.py:341
+#: editing/api/base/views.py:444 editing/api/base/views.py:452
 #, python-format
 msgid "Error changing geometry: %s"
-msgstr ""
+msgstr "Fel när geometrin skulle ändras: %s"
 
-#: editing/api/base/views.py:429 editing/api/base/views.py:433
+#: editing/api/base/views.py:564 editing/api/base/views.py:568
 #, python-format
 msgid "Cannot delete feature: %s"
-msgstr ""
+msgstr "Det går inte att ta bort objektet: %s"
 
-#: editing/api/base/views.py:474
+#: editing/api/base/views.py:609
 #, python-format
 msgid "Layer %s is not editable!"
-msgstr ""
+msgstr "Lagret %s kan inte redigeras!"
 
-#: editing/api/base/views.py:529
+#: editing/api/base/views.py:686
 #, python-format
 msgid "Backend error saving layer %s: %s"
-msgstr ""
+msgstr "Serverfel när lagret %s skulle sparas: %s"
 
-#: editing/forms.py:21
+#: editing/forms.py:70 editing/forms.py:235
 msgid "Active"
-msgstr ""
+msgstr "Aktiv"
 
-#: editing/forms.py:22
+#: editing/forms.py:71 editing/forms.py:233
 msgid "Scale"
-msgstr ""
+msgstr "Skala"
 
-#: editing/forms.py:22
+#: editing/forms.py:71 editing/forms.py:233
 msgid "Scale after that editing mode is active"
-msgstr ""
+msgstr "Skala efter vilken redigeringsläget aktiveras"
 
-#: editing/forms.py:23
+#: editing/forms.py:72 editing/forms.py:237
+msgid "Visible"
+msgstr "Synlig"
+
+#: editing/forms.py:73 editing/forms.py:239
 msgid "Viewers"
-msgstr ""
+msgstr "Visningsbehöriga"
 
-#: editing/forms.py:24
+#: editing/forms.py:74 editing/forms.py:240
 msgid "Select user with viewer role can do editing on layer"
-msgstr ""
+msgstr "Välj användare med visningsrollen som för redigera lagret"
 
-#: editing/forms.py:26
+#: editing/forms.py:77 editing/forms.py:242
 msgid "Select VIEWER groups can do editing on layer"
-msgstr ""
+msgstr "Välj VISNINGSGRUPPER som för redigera lagret"
 
-#: editing/forms.py:27
+#: editing/forms.py:78 editing/forms.py:243
 msgid "User viewer groups"
-msgstr ""
+msgstr "Användarens visningsgrupper"
 
-#: editing/forms.py:29
+#: editing/forms.py:81
 msgid "User adding data field"
-msgstr ""
+msgstr "Fält för användaren som lade till data"
 
-#: editing/forms.py:30
+#: editing/forms.py:82
 msgid ""
 "Optional: select layer field to store username that entered the data. Showed "
 "only string field. <br>Value stored into the field it will be so structured: "
 "<i>[username]</i>"
-msgstr ""
+msgstr "Valfritt: välj ett lagerfält där användarnamnet för den som lade till data lagras. Endast textfält visas. <br>Värdet lagras i fältet så här: <i>[användarnamn]</i>"
 
-#: editing/forms.py:36
+#: editing/forms.py:88
 msgid "User editing data field"
-msgstr ""
+msgstr "Fält för användaren som ändrade data"
 
-#: editing/forms.py:37
+#: editing/forms.py:89
 msgid ""
 "Optional: select layer field to store username that updated the data. Showed "
 "only string field. <br>Value stored into the field it will be so structured: "
 "<i>[username]</i>"
-msgstr ""
+msgstr "Valfritt: välj ett lagerfält där användarnamnet för den som ändrade data lagras. Endast textfält visas. <br>Värdet lagras i fältet så här: <i>[användarnamn]</i>"
 
-#: editing/forms.py:61
-msgid "Check on uncheck to attive/deactive editing layer capabilities:"
-msgstr ""
+#: editing/forms.py:95
+msgid "User Groups adding data field"
+msgstr "Fält för användargrupper som lade till data"
 
-#: editing/forms.py:66
-msgid "Select viewers with 'view permission' on project that can edit layer:"
-msgstr ""
-
-#: editing/forms.py:77
+#: editing/forms.py:96
 msgid ""
-"'User adding data field' and 'User editing data field' cannot assume the "
-"same value."
-msgstr ""
+"Optional: select layer field to store user groups name that entered the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr "Valfritt: välj ett lagerfält där namnen på användargrupperna som lade till data lagras. Endast textfält visas. <br>Värdena lagras i fältet så här: <i>[användargrupp 1, användargrupp 2, ...]</i>"
 
-#: editing/receivers.py:244
+#: editing/forms.py:102
+msgid "User Groups editing data field"
+msgstr "Fält för användargrupper som ändrade data"
+
+#: editing/forms.py:103
+msgid ""
+"Optional: select layer field to store user groups name that updated the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr "Valfritt: välj ett lagerfält där namnen på användargrupperna som ändrade data lagras. Endast textfält visas. <br>Värdena lagras i fältet så här: <i>[användargrupp 1, användargrupp 2, ...]</i>"
+
+#: editing/forms.py:110
+msgid "Layer'style to use"
+msgstr "Lagerstil att använda"
+
+#: editing/forms.py:111
+msgid "Select layer style to use for editing. "
+msgstr "Välj lagerstil att använda vid redigering. "
+
+#: editing/forms.py:132
+msgid "Check on uncheck to active/deactive editing layer capabilities:"
+msgstr "Markera eller avmarkera för att aktivera/inaktivera redigeringsfunktioner för lagret:"
+
+#: editing/forms.py:134 editing/forms.py:262
+msgid "Check on uncheck to show layer inside the list of layers to edit:"
+msgstr "Markera eller avmarkera för att visa lagret i listan över lager som kan redigeras:"
+
+#: editing/forms.py:149 editing/forms.py:270
+msgid "Select viewers with 'view permission' on project that can edit layer:"
+msgstr "Välj användare med visningsbehörighet för projektet som för redigera lagret:"
+
+#: editing/forms.py:161
+msgid ""
+"'User adding data field' and 'User editing data field' and 'User group "
+"adding data field' and 'User group editing data field' must be unique."
+msgstr "Fälten\"Fält för användaren som lade till data\",\"Fält för användaren som ändrade data\",\"Fält för användargrupper som lade till data\"och\"Fält för användargrupper som ändrade data\"måste vara unika."
+
+#: editing/forms.py:230
+msgid "Layers"
+msgstr "Lager"
+
+#: editing/forms.py:231
+msgid "Select layers on which to activate editing"
+msgstr "Välj vilka lager som ska kunna redigeras"
+
+#: editing/forms.py:260
+msgid "Check on uncheck to attive/deactive editing layers capabilities:"
+msgstr "Markera eller avmarkera för att aktivera/inaktivera redigeringsfunktioner för lagren:"
+
+#: editing/forms.py:300
+msgid "From User"
+msgstr "Från användare"
+
+#: editing/forms.py:301
+msgid "Select the user from which to take the permissions to copy"
+msgstr "Välj användaren vars behörigheter ska kopieras"
+
+#: editing/forms.py:303
+msgid "To users"
+msgstr "Till användare"
+
+#: editing/forms.py:304
+msgid "Select the users who will receive permissions"
+msgstr "Välj vilka användare som ska få behörigheterna"
+
+#: editing/forms.py:306
+msgid "From Group of User"
+msgstr "Från användargrupp"
+
+#: editing/forms.py:307
+msgid "Select the group df user from which to take the permissions to copy"
+msgstr "Välj användargruppen vars behörigheter ska kopieras"
+
+#: editing/forms.py:309
+msgid "To Groups of Users"
+msgstr "Till användargrupper"
+
+#: editing/forms.py:310
+msgid "Select the groups of users who will receive permissions"
+msgstr "Välj vilka användargrupper som ska få behörigheterna"
+
+#: editing/forms.py:357
+msgid "Single users"
+msgstr "Enskilda användare"
+
+#: editing/forms.py:358
+msgid "Copy editing permissions from one user to one or more recipients."
+msgstr "Kopiera redigeringsbehörigheter från en användare till en eller flera mottagare."
+
+#: editing/forms.py:374
+msgid "User groups"
+msgstr "Användargrupper"
+
+#: editing/forms.py:375
+msgid ""
+"Copy editing permissions from one group of users to one or more recipient "
+"groups."
+msgstr "Kopiera redigeringsbehörigheter från en användargrupp till en eller flera mottagargrupper."
+
+#: editing/receivers.py:308
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
-msgstr ""
+msgstr "Geometrivalideringen misslyckades för begränsningen: %s"
 
-#: editing/templates/editing/editing_layer_active_form.html:7
+#: editing/templates/editing/copy_editing_permission_form.html:7
 msgid "Alert"
-msgstr ""
+msgstr "Varning"
 
-#: editing/templates/editing/editing_layer_active_form.html:8
+#: editing/templates/editing/copy_editing_permission_form.html:8
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Det finns fel i formuläret. Kontrollera det och skicka igen."
+
+#: editing/templates/editing/copy_editing_permission_form.html:14
+#: editing/templates/editing/editing_layer_active_form.html:20
+msgid "Important"
+msgstr "Viktigt"
+
+#: editing/templates/editing/copy_editing_permission_form.html:15
+msgid ""
+"The following actions will change the permissions of the selected users who "
+"will lose their previous settings."
+msgstr "Följande åtgärder ändrar behörigheterna för de valda användarna, som förlorar sina tidigare inställningar."
+
+#: editing/templates/editing/editing_layer_active_form.html:10
+msgid "Some errors on form"
+msgstr "Det finns fel i formuläret"
+
+#: editing/templates/editing/editing_layer_active_form.html:11
+msgid "Check the highlighted fields and submit again."
+msgstr "Kontrollera de markerade fälten och skicka igen."
+
+#: editing/templates/editing/editing_layer_active_form.html:21
+msgid ""
+"The following settings will be applied to all the layers indicated and will "
+"overwrite the settings set at the single layer level."
+msgstr "Följande inställningar tillämpas på alla angivna lager och skriver över inställningar för enskilda lager."
 
 #: editing/templates/editing/layer_action.html:5
+#: editing/templates/editing/project_layers_action.html:6
 msgid "Editing layer"
-msgstr ""
+msgstr "Redigeringslager"
 
-#: editing/templates/editing/layer_action.html:7
+#: editing/templates/editing/layer_action.html:8
+#: editing/templates/editing/project_layers_action.html:9
 msgid "Activation layer_editing"
-msgstr ""
+msgstr "Aktivera lagerredigering"
+
+#: editing/templates/editing/project_layers_action.html:15
+#: editing/templates/editing/project_layers_action.html:18
+msgid "Copy permissions"
+msgstr "Kopiera behörigheter"

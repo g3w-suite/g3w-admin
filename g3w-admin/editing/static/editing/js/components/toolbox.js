@@ -1,10 +1,7 @@
 /**
  * @file Editing toolbox (left menu)
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { setVertexStyle }      from '../utils/setVertexStyle.js';
 import { getCatalogLayerById } from '../utils/getCatalogLayerById.js';
 
 const ApplicationState           = g3w.state;
@@ -30,7 +27,7 @@ export default ({
     :class      = "{
       'mobile':          isMobile(),
       'toolboxselected': state.selected,
-      'toolboxactive':   state.editing.on && canEdit,
+      'toolboxactive':   state.on && canEdit,
       'geolayer':        state.layer.isGeoLayer(),
     }"
   >
@@ -48,9 +45,10 @@ export default ({
       <!-- TOGGLE RELATION LAYERS (LAYERS FILTER) -->
       <i
         v-if              = "father"
-        :class            = "'filter-by-relation ' + g3wtemplate.font['relation']"
+        class             = "filter-by-relation fas fa-sitemap"
         @click            = "toggleFilterByRelation"
-        v-t-tooltip:right = "'plugins.editing.tooltip.filter_by_relation'"
+        data-placement    = "right"
+        title             = "plugins.editing.filter_by_relation"
       ></i>
 
       <!-- PANEL TITLE -->
@@ -59,7 +57,7 @@ export default ({
       <!-- TOGGLE EDITING -->
       <span
         style            = "margin-left: auto"
-        :data-i18n-title = "editDisabled ? '⚠️ Stop active editing tool': 'plugins.editing.tooltip.edit_layer'"
+        :data-i18n-title = "editDisabled ? '⚠️ Stop active editing tool': 'plugins.editing.edit_layer'"
       > 
         <i
           v-disabled              = "editDisabled"
@@ -68,18 +66,19 @@ export default ({
           :class                  = "{
             'pull-right':       !isMobile(),
             'enabled':          isLayerReady,
-            'g3w-icon-toggled': state.editing.on,
-            [g3wtemplate.font[(state.editing.on || toggled.layer) ? 'checkmark' : 'pencil']]: true
+            'g3w-icon-toggled': state.on,
+            ['fa fa-check']:      state.on || toggled.layer,
+            ['fas fa-pencil-alt']: !(state.on || toggled.layer)
           }"
         ></i>
       </span>
 
     </div>
 
-    <bar-loader :loading = "loading" />
+    <div v-if = "loading" class = "bar-loader" style = "border: 0"></div>
 
     <div
-      v-if       = "!state.changingtools && (state.editing.on || toggled.layer)"
+      v-if       = "!state.changingtools && (state.on || toggled.layer)"
       :class     = "{ 'panel-body':true, disabled: (loading || !isLayerReady || !canEdit) }"
       :style     = "{ cursor: toolboxCursor, padding: '15px' }"
       @click     = "fitZoomToScale"
@@ -87,15 +86,15 @@ export default ({
 
       <!-- HAS NO GEOMETRY -->
       <div v-if = "!state.layer.isGeoLayer()" class = "info">
-        <i :class = "g3wtemplate.font['info']"></i>
-        <span v-t = "'plugins.editing.messages.toolbox_has_no_geometry'"></span>
+        <i class = "fas fa-info-circle"></i>
+        <span v-t = "'plugins.editing.toolbox_has_no_geometry'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
       <!-- HAS RELATION -->
       <div v-if = "hasRelations" class = "info">
-        <i :class = "g3wtemplate.font['info']"></i>
-        <span v-t = "'plugins.editing.messages.toolbox_has_relation'"></span>
+        <i class = "fas fa-info-circle"></i>
+        <span v-t = "'plugins.editing.toolbox_has_relation'"></span>
         <span style = "display: block;position: relative;padding: 0;margin-bottom: 5px;height: 0;width: 100%;max-height: 0;font-size: 1px;line-height: 0;clear: both;border: none;border-bottom: 2px solid #eee;"></span>
       </div>
 
@@ -106,7 +105,6 @@ export default ({
       </div>
 
       <!-- TOOLS -->
-      <!-- ORIGINAL SOURCE: components/Tool.vue@v3.7.1 -->
       <div class = "tools-content">
         <div
           v-for               = "tool in state.tools"
@@ -130,13 +128,10 @@ export default ({
         class = "message"
       >
         <transition name = "fade">
-          <!-- ORIGINAL SOURCE: components/ToolsOfTool.vue@v3.7.1 -->
           <div
             v-if = "showtoolsoftool"
             id   = "toolsoftoolcontainer"
           >
-            <!-- ORIGINAL SOURCE: components\ToolsOfToolMeasure.vue@v3.7.1 -->
-            <!-- ORIGINAL SOURCE: components\ToolsOfToolSnap.vue@v3.7.1 -->
             <template v-for = "tool in state.toolsoftool">
 
               <!-- MEASURE TOOL -->
@@ -151,8 +146,8 @@ export default ({
                   v-model = "tool.options.checked"
                   @change = "() => tool.options.onChange(tool.options.checked)"
                 />
-                <label for = "g3w_editing_show_measure_tool" v-t-tooltip:right = "'plugins.editing.toolsoftool.measure'">
-                  <b :class = "g3wtemplate.font['measure']"></b>
+                <label for = "g3w_editing_show_measure_tool" data-placement = "right" title = "plugins.editing.show_measure_tool">
+                  <b class = "fas fa-ruler-combined"></b>
                 </label>
               </div>
 
@@ -169,8 +164,8 @@ export default ({
                     :id     = "'snap_' + state.id"
                     v-model = "tool.options.checked"
                   />
-                  <label :for = "'snap_' + state.id" v-t-tooltip:right.create= " 'plugins.editing.toolsoftool.snap'">
-                    <span :class = "g3wtemplate.font['magnete']"></span>
+                  <label :for = "'snap_' + state.id" data-placement = "right" title = "plugins.editing.snap">
+                    <span class = "fas fa-magnet"></span>
                   </label>
                 </div>
               
@@ -186,10 +181,11 @@ export default ({
                   <label
                     v-if             = "snapAll"
                     :for             = "'snap_all_' + state.id + '_all'"
-                    v-t-tooltip:left = "'plugins.editing.toolsoftool.snapall'"
+                    data-placement   = "left"
+                    title            = "plugins.editing.snapall"
                   >
-                    <span :class = "g3wtemplate.font['magnete']"></span>
-                    <b    :class = "g3wtemplate.font['layers']" style = "margin-left: 3px;"></b>
+                    <span class = "fas fa-magnet"></span>
+                    <b    class = "fas fa-layer-group" style = "margin-left: 3px;"></b>
                   </label>
                 </div> 
                 
@@ -232,8 +228,6 @@ export default ({
   data() {
     return {
       active:      false,
-      helpmessage: null,
-      //@since 3.8.0
       toggled:     {
         relation: false, //click on relation icon
         layer:    false, //click on pencil icon
@@ -244,20 +238,21 @@ export default ({
 
   computed: {
 
-    /**
-     * @since g3w-client-plugin-editing@v3.7.0
-     */
+    /** @TODO add description */
+    helpmessage() {
+      return this.state.activetool?.helpMessage ?? this.state.activetool?.name;
+    },
+
+    /** @TODO add description */
     editDisabled() {
-      return this.state.loading && !this.state.startstopediting || (this.state.editing.on && !!this.state.activetool?.disableEdit);
+      return this.state.loading && !this.state.startstopediting || (this.state.on && !!this.state.activetool?.disableEdit);
     },
 
     /**
      * @returns { boolean } whether current has related layer(s) (aka. layer relations / joins)
-     *
-     * @since g3w-client-plugin-editing@v3.7.0
      */
     hasRelations() {
-      return this.state.editing.dependencies.length > 0;
+      return this.state.dependencies.length > 0;
     },
 
     /**
@@ -271,14 +266,14 @@ export default ({
      * @returns { boolean }
      */
     canEdit() {
-      return this.state.editing.canEdit;
+      return this.state.canEdit;
     },
 
     /**
      * @returns { boolean }
      */
     father() {
-      return this.state.editing.father && this.hasRelations;
+      return this.state.father && this.hasRelations;
     },
 
     /**
@@ -292,16 +287,14 @@ export default ({
      * @returns { Promise }
      */
     isLayerReady() {
-      return this.state.layer.state.editing.ready;
+      return this.state.ready;
     },
 
     toolboxCursor() {
       return (!this.isLayerReady || !this.canEdit) ? `url(${this.resourcesurl}cursors/mZoomIn.svg), zoom-in` : undefined;
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.9.0
-     */
+    /** @TODO add description */
     get_tool_title() {
       return title => ApplicationState.language && _(`plugins.${title}`);
     },
@@ -321,14 +314,12 @@ export default ({
 
     /**
      * Handle click to fit zoom scale
-     * 
-     * @since g3w-client-plugin-editing@v3.9.0 
      */
     fitZoomToScale() {
       if (this.state.selected && !this.canEdit) {
         GUI.getMap().getView().animate(
           { duration: 200, center: GUI.getCenter() },
-          { duration: 200, resolution: getResolutionFromScale(this.state._constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
+          { duration: 200, resolution: getResolutionFromScale(this.state.constraints.scale, GUI.getMapUnits()) || GUI.getMap().getView().getResolution() }
         );
       }
     },
@@ -338,9 +329,9 @@ export default ({
      * @fires starttoolbox
      */
     async toggleEditing() {
-      this.toggled.layer = !(this.state.editing.on || this.toggled.layer);
-      if (this.toggled.layer && this.state.layer.state.editing.ready && !this.state.loading) {
-        this.$emit(this.state.editing.on ? 'stoptoolbox' : 'starttoolbox', this.state.id);
+      this.toggled.layer = !(this.state.on || this.toggled.layer);
+      if (this.toggled.layer && this.state.ready && !this.state.loading) {
+        this.$emit(this.state.on ? 'stoptoolbox' : 'starttoolbox', this.state.id);
       }
       if (!this.toggled.layer) {
         this.$emit('stoptoolbox', this.state.id);
@@ -351,8 +342,6 @@ export default ({
     /**
      * @fires setactivetool
      * @fires stopactivetool
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
      */
     toggleTool(toolId) {
       if (undefined === toolId) {
@@ -363,22 +352,16 @@ export default ({
       this.select();
     },
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     toggleFilterByRelation() {
       this.toggled.relation = !this.toggled.relation;
-      this.$emit('update-filter-layers', this.toggled.relation ? [this.state.id, ...this.state.editing.dependencies] : []);
+      this.$emit('update-filter-layers', this.toggled.relation ? [this.state.id, ...this.state.dependencies] : []);
     },
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     _initSnap(tool) {
 
-      //@since 4.1.0 store current selected features uid and relative style
+      // store current selected features uid and relative style
       this.uidsstyles    = []
 
       /**
@@ -407,7 +390,7 @@ export default ({
         .filter(l => tool.options.layerId !== l.getId())
         .forEach(l => {
           // SNAP TO ALL: check if the current editing layer is not equal to `layerId`
-          const editing = GUI.getPlugin('editing').getToolBoxById(l.getId()).getState().editing;
+          const editing = GUI.getPlugin('editing').getToolBoxById(l.getId()).getState();
           this.snapUnwatches.push(this.$watch(() => editing.on, this.setShowSnapAll));
           this.snapToolboxes.push(editing);
         })
@@ -435,36 +418,36 @@ export default ({
 
     },
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     addSnapFeatures(features = []) {
       //get current uid and style of selected features
-      this.uidsstyles = this.state.activetool.getOperator().getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
-      features
-        .forEach(f => {       
-          setVertexStyle({
-            feature: f,
-            ...(this.uidsstyles.find(({ uid }) => uid === f._uid) //in case of current selected feature add just vertex
-              ? {} 
-              : {
-                vertexColor: 'black',
-                fillVertex:  true,
-                lineColor:   'black',
-              }
-            )
-          });
-          snapFeatures.push(f);
-        });
+      this.uidsstyles = this.state.activetool.getInputs().features.map(f => ({ uid: f._uid, style: f.getStyle() }));
+      features.forEach(f => {
+        const isSelected = this.uidsstyles.find(({ uid }) => uid === f._uid);
+        // set vertex style
+        f.setStyle(() => [
+          new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 4,
+              fill: !isSelected  ? new ol.style.Fill({ color: 'black' })           : undefined,
+              stroke: isSelected ? new ol.style.Stroke({ color: 'red', width: 3 }) : undefined,
+            }),
+            geometry: feature => new ol.geom.MultiPoint([feature.getGeometry().getCoordinates()].flat({
+              Point:           0,
+              MultiPoint:      1,
+              LineString:      1,
+              Polygon:         2,
+              MultiLineString: 2,
+              MultiPolygon:    3,
+            }[feature.getGeometry().getType()])),
+          }),
+          new ol.style.Style({ stroke: new ol.style.Stroke({ color: isSelected ? 'yellow' : 'black', width: 3 })})
+        ]);
+        snapFeatures.push(f);
+      });
     },
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     setShowSnapAll(tool) {
       this.snapAll            = !!this.snapToolboxes.find(editing => editing.on);
       tool.options.checkedAll = tool.options.showSnapAll ? tool.options.checkedAll : false;
@@ -486,12 +469,7 @@ export default ({
       }
     },
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/components/ToolsOfToolSnap.vue@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     *
-     */
+    /** @TODO add description */
     handleSnapInteractionFeatures({ tool, active, all } = {}) {
       // snap = true
       if (active) {
@@ -499,21 +477,18 @@ export default ({
         this.clearSnap();
         GUI.getPlugin('editing')
           .getLayers()
-          .filter(l => l.isInEditing() && 'vector' === l.getType()) // skip not in editing, raster, alphanumerical..
+          .filter(l => 'vector' === l.getType()) // skip not in editing, raster, alphanumerical..
           .filter(l => all || tool.options.layerId === l.getId())
           .forEach(l => {
-            const source  = GUI.getPlugin('editing').getToolBoxById(l.getId()).getEditor().getEditingSource();
+            const toolbox    = GUI.getPlugin('editing').getToolBoxById(l.getId());
+            const collection = toolbox.getFeaturesCollection();
             //add snap features
-            this.addSnapFeatures(source.readFeatures());
+            this.addSnapFeatures(toolbox.readEditingFeatures());
             this.snapEvents.push({
-              source,
-              // OL event key
-              olKey:           source.getFeaturesCollection().on('add', evt => this.addSnapFeatures([evt.element])),
-              // G3WObject event keys
-              settersAndKeys: {
-                'addFeature':  source.onbefore('addFeature',  this.addSnapFeatures),
-                'clear':       source.onbefore('clear', () => source.readFeatures().forEach(f => snapFeatures.remove(f)))
-              },
+              olKeys: [
+                collection.on('add',    evt => this.addSnapFeatures([evt.element])),
+                collection.on('remove', evt => snapFeatures.remove(evt.element)),
+              ],
             });
 
           });
@@ -529,11 +504,6 @@ export default ({
 
   watch: {
 
-    async 'state.activetool'(tool) {
-      await this.$nextTick();
-      this.helpmessage = tool?.messages?.help || tool?.name;
-    },
-    
     'state.toolsoftool'(nts = [], ots = []) {
       //no tools
       if (nts.length === ots.length) { return; }
@@ -544,12 +514,7 @@ export default ({
           // stops event listeners
           this
             .snapEvents
-            .forEach(d => {
-              Object
-                .keys(d.settersAndKeys)
-                .forEach(e => d.source.un(e, d.settersAndKeys[e]));
-              ol.Observable.unByKey(d.olKey)
-            });
+            .forEach(d => d.olKeys.forEach(key => ol.Observable.unByKey(key)));
 
           this.snapUnwatches.forEach(uw => uw());
 

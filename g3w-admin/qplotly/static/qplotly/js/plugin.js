@@ -100,7 +100,7 @@
             actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
               id:       'show-plots-relations',
               opened:   true,
-              class:    GUI.getFontClass('chart'),
+              class:    'fas fa-chart-bar',
               state:    Vue.observable({ toggled: layer.features.reduce((a, _ , i ) => { a[i] = null; return a; }, {}) }),
               hint:     'Show relations chart',
               cbk: throttle(async (layer, feature, action, index, container) => {

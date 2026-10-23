@@ -1,6 +1,4 @@
 /**
- * ORIGINAL SOURCE: g3w-client/src/map/layers/layer.js@v4.0.0
- *  
  * @returns {*} editing version of layer
  */
 export function getEditingLayer(layer) {

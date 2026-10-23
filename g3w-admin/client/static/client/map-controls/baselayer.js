@@ -10,7 +10,7 @@ const { XHR, debounce } = g3w.utils;
 // wait for map ready
 GUI.on('after:setupControls', () => {
   if (ApplicationState.project.state.baselayers.length) {
-    new BaseLayerControl(ApplicationState.project.state.baselayers);
+    new BaseLayerControl();
   }
 });
 
@@ -21,14 +21,11 @@ class BaseLayerControl extends ol.control.Control {
   
   #activeLayer = null;
 
-  constructor(layers) {
+  constructor() {
     super({
       element: Object.assign(document.createElement('div'), { className: 'ol-baselayer-control ol-unselectable ol-control ol-control-tl' }),
       target:  document.querySelector('.g3w-map-controls-left-bottom'),
     });
-
-    // retrieve global map instance (open layers)
-    const map   = GUI.getService('map').getMap();
 
     // base layers
     this.layers = GUI.getBaseLayers();
@@ -109,7 +106,7 @@ class BaseLayerControl extends ol.control.Control {
     });
 
     // automatically attach current control to map
-    map.addControl(this);
+    GUI.getMap().addControl(this);
 
     //Check if base layer is active
     if (this.#activeLayer) {
@@ -120,20 +117,20 @@ class BaseLayerControl extends ol.control.Control {
 
   #getImgURL(layerId) {
     const baseLayer = this.layers.find(l => layerId === l.getId())?.state;
-    let image;
-    if ('OSM' === baseLayer?.servertype) {
-      image = 'osm.png';
-    }
-    if ('Bing' === baseLayer?.servertype) {
-      image = `bing${baseLayer.source.subtype}.png`;
-    }
+    // NB: custom icons are stored in media url (by django)
     if (baseLayer?.icon) {
-      image = baseLayer.icon;
+      return `${baseLayer.icon}`;
     }
     if (!baseLayer) {
       return `${GUI.getResourcesUrl()}images/nobaselayer.png`;
     }
-    return `${GUI.getResourcesUrl()}images/${image || 'no-image.svg'}`;
+    if ('OSM' === baseLayer?.servertype) {
+      return `${GUI.getResourcesUrl()}images/osm.png`;
+    }
+    if ('Bing' === baseLayer?.servertype) {
+      return `${GUI.getResourcesUrl()}images/bing${baseLayer.source.subtype}.png`;
+    }
+    return `${GUI.getResourcesUrl()}images/no-image.svg`;
   }
 
   /** Keep layer visibility/checked status in sync */

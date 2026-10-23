@@ -1,12 +1,7 @@
 const GUI = g3w.app;
 const _   = g3w.gettext;
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/g3w-editing-components/choosefeaturetoedit.js@v3.6
- * 
- * @since g3w-client-plugin-editing@v3.5.13
- */
+/** @TODO add description */
 export function chooseFeatureFromFeatures({
   features = [],
   inputs
@@ -14,7 +9,7 @@ export function chooseFeatureFromFeatures({
   return new Promise((resolve, reject) => {
     const feature = [];
     const dialog  = GUI.dialog({
-      title:       _('plugins.editing.modal.tools.copyfeaturefromprojectlayer.title'),
+      title:       _('plugins.editing.select_feature'),
       className:   'modal-left',
       closeButton: false,
       buttons: {
@@ -45,8 +40,7 @@ export function chooseFeatureFromFeatures({
                 <!-- ZOOM TO FEATURE -->
                 <div
                   @click.stop = "zoomToFeature(feature)"
-                  :class      = "g3wtemplate.font['marker']"
-                  class       = "skin-color"
+                  class       = "skin-color fas fa-map-marker-alt"
                   style       = "padding-left: 3px; font-size: 1.3em; cursor: pointer; margin-top: 10px;"
                 ></div>
 
@@ -77,7 +71,7 @@ export function chooseFeatureFromFeatures({
       }))({
         features:   Array.isArray(features) ? features : [],
         feature,
-        attributes: (inputs.layer.state.editing.fields || []).map(({ name, label }) => ({ name, label })),
+        attributes: (GUI.getPlugin('editing').getToolBoxById(inputs.layer.getId()).state.fields || []).map(({ name, label }) => ({ name, label })),
       })).$mount().$el,
     });
   })

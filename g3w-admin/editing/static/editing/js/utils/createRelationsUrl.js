@@ -1,8 +1,5 @@
 const ApplicationState = g3w.state;
 
-/**
- * ORIGINAL SOURCE: g3w-client/src/utils/createRelationsUrl.js@v4.0.0
- */
 export function createRelationsUrl({
   layer          = {},
   relation       = {},

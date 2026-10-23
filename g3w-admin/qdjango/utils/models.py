@@ -112,6 +112,19 @@ def get_capabilities4layer(qgs_maplayer=None, **kwargs):
     return capabilities
 
 
+def get_public_project_ids(projects):
+    """
+    Return the ids of the projects visible to the anonymous user.
+    """
+    from qdjango.models import Project
+
+    return set(
+        get_objects_for_user(get_anonymous_user(), 'qdjango.view_project', Project)
+        .filter(pk__in=[project.pk for project in projects])
+        .values_list('pk', flat=True)
+    )
+
+
 
 class temp_disconnect_signal():
     """ Temporarily disconnect a model from a signal """

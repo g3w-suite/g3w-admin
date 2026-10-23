@@ -10,7 +10,14 @@
             <i class="ion ion-folder"></i>
             {% trans 'Cartographic groups' %}
         </h3>
-        <span class="badge result-section-badge pull-right">{{ results|length }}</span>
+        <div class="box-tools pull-right">
+            <span class="badge result-section-badge">{{ results|length }}</span>
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"
+                    data-toggle="tooltip" data-placement="top"
+                    title="{% trans 'Collapse / expand' %}">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
     </div>
     <div class="box-body">
     {% for r in results %}

@@ -3,8 +3,6 @@ import { Feature } from '../g3w-feature.js';
 const { cloneDeep } = g3wsdk.core.utils;
 
 /**
- * ORIGINAL SOURCE: g3w-client/src/map/layers/tablelayer.js@v4.0.0
- * 
  * @param obj
  * @param opts
  */
@@ -14,7 +12,8 @@ export function getFieldsWithValues(layer, obj, opts = {}) {
     get_default_value = true
   }  = opts;
 
-  let fields = cloneDeep((layer.state.editing.fields || []));
+  const toolbox = g3w.app.getPlugin('editing').getToolBoxById(layer.getId());
+  let fields = cloneDeep((toolbox.state.fields || []));
   let feature;
 
   if (obj instanceof Feature) {
@@ -31,18 +30,18 @@ export function getFieldsWithValues(layer, obj, opts = {}) {
 
   fields.forEach(field => {
 
-    field.value  = attributes[field.name];
-    field._value = attributes[field.name];     // store original value
-    field.update = false;                      // at beginning set update false. Used to form
+    field.value   = attributes[field.name];
+    field._value  = attributes[field.name];     // store original value
+    field.update  = false;                      // at beginning set update false. Used to form
 
-    field.visible = exclude.indexOf(field.name) === -1; // exclude contain field to set visible false
+    field.visible = !exclude.includes(field.name); // Fields in exclude are hidden.
 
     // for editing purpose
     if (undefined === field.validate) {
       field.validate = {};
     }
 
-    field.nullOption               = undefined === field.nullOption || field.nullOption ; //@since 3.11.0 used in InputSelect.vue component.
+    field.nullOption               = undefined === field.nullOption || field.nullOption ; // used in InputSelect.vue component.
     field.forceNull                = false;
     field.validate.valid           = true;
     field.validate._valid          = true;                            // useful to get previous value in certain case
@@ -56,7 +55,7 @@ export function getFieldsWithValues(layer, obj, opts = {}) {
     field.validate.message         = null;
 
     if (field.input) {
-      const options = (layer.state.editing.fields || []).find(f => f.name === field.name).input.options;
+      const options = toolbox.state.fields.find(f => f.name === field.name).input.options;
       field.input.options.loading = options.loading || { state: null };
       //check if value is defined otherwise set empty array (e.g., required for field.validate unique)
       field.input.options.values  = options.values || [];

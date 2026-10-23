@@ -1,246 +1,50 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+# Translation of G3W-ADMIN to Bulgarian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-05 20:40+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: bg <info@g3wsuite.it>\n"
+"Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: OWS/utils/data.py:125
+#, python-brace-format
 msgid "The GetFeatureResponse response is malformed: {}"
 msgstr "Отговорът на GetFeatureResponse е невалиден: {}"
 
-#: openrouteservice/api/views.py:138
-msgid "Input layer is not a point or multipoint layer."
-msgstr "Входният слой не е слой от тип точка или мултиточка."
-
-#: openrouteservice/api/views.py:156
-msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
-msgstr "Липсва \"qgis_layer_id\", \"new_layer_name\" или \"connection_id\"."
-
-#: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
-msgid ""
-"Wrong color parameter, color must be a list of three integers (red, green, "
-"blue)."
-msgstr ""
-"Грешен параметър за цвят — цветът трябва да е списък от три цели числа "
-"(червено, зелено, синьо)."
-
-#: openrouteservice/api/views.py:182
-msgid ""
-"Missing tranparency parameter, because color was specified transparency is "
-"required."
-msgstr ""
-"Липсва параметър за прозрачност — щом е зададен цвят, прозрачността е "
-"задължителна."
-
-#: openrouteservice/api/views.py:190
-msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
-msgstr "Грешен параметър за прозрачност — стойността трябва да е между 0 и 1."
-
-#: openrouteservice/api/views.py:196
-msgid "Missing stroke_width from style definition."
-msgstr "Липсва stroke_width в дефиницията на стила."
-
-#: openrouteservice/api/views.py:212
-msgid "Layer is not compatible with ORS data."
-msgstr "Слойът не е съвместим с ORS данни."
-
-#: openrouteservice/api/views.py:225
-msgid "Wrong connection_id."
-msgstr "Грешен connection_id."
-
-#: openrouteservice/api/views.py:229
-msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
-msgstr ""
-"Трябва да има стойност или за qgis_layer_id, или за connection_id и "
-"layer_name."
-
-#: openrouteservice/api/views.py:236
-#, python-format
-msgid "Profile not found, available profiles: %s"
-msgstr "Профилът не е намерен, налични профили: %s"
-
-#: openrouteservice/api/views.py:246
-msgid "Missing \"locations\" array."
-msgstr "Липсва масив \"locations\"."
-
-#: openrouteservice/api/views.py:250
-#, python-format
-msgid "Max allowed locations: %s"
-msgstr "Максимално позволени локации: %s"
-
-#: openrouteservice/api/views.py:254
-msgid "Malformed locations array."
-msgstr "Невалиден масив от локации."
-
-#: openrouteservice/api/views.py:259
-msgid "Missing \"range\" array."
-msgstr "Липсва масив \"range\"."
-
-#: openrouteservice/api/views.py:263
-#, python-format
-msgid "Max allowed ranges: %s"
-msgstr "Максимално позволени диапазони: %s"
-
-#: openrouteservice/api/views.py:271
-msgid "Malformed range array."
-msgstr "Невалиден масив от диапазони."
-
-#: openrouteservice/api/views.py:398
-msgid "Task not found!"
-msgstr "Задачата не е намерена!"
-
-#: openrouteservice/forms.py:41
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
-msgid "Project"
-msgstr "Проект"
-
-#: openrouteservice/models.py:38
-msgid "Isochrones"
-msgstr "Изохрони"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
-msgid "Openrouteservice Project"
-msgstr "Openrouteservice проект"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
-msgid "Alert"
-msgstr "Известие"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
-msgid "Some errors on form. Check it and send again."
-msgstr "Има грешки във формата. Проверете и изпратете отново."
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
-msgid "Openrouteservice Projects"
-msgstr "Openrouteservice проекти"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
-msgid "Actions"
-msgstr "Действия"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
-msgid "Services"
-msgstr "Услуги"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
-msgid "Edit"
-msgstr "Редактиране"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
-msgid "Delete"
-msgstr "Изтриване"
-
-#: openrouteservice/utils.py:494
-msgid "Cannot create temporary layer for isochrone result."
-msgstr "Не може да се създаде временен слой за изохронния резултат."
-
-#: openrouteservice/utils.py:512
-msgid ""
-"Cannot save isochrone result to destination layer: layer already exists (use "
-"\"qgis_layer_id\" instead)!"
-msgstr ""
-"Не може да се запише изохронният резултат в целевия слой: слоят вече "
-"съществува (използвайте \"qgis_layer_id\")!"
-
-#: openrouteservice/utils.py:525
-msgid "Cannot save isochrone result to destination layer: "
-msgstr "Не може да се запише изохронният резултат в целевия слой: "
-
-#: openrouteservice/utils.py:553
-msgid "Wrong connection id."
-msgstr "Грешен connection id."
-
-#: openrouteservice/utils.py:585
-msgid "Error creating destination layer connection."
-msgstr "Грешка при създаване на връзка към целевия слой."
-
-#: openrouteservice/utils.py:592
-msgid "Error creating destination layer: "
-msgstr "Грешка при създаване на целевия слой: "
-
-#: openrouteservice/utils.py:606
-msgid "Error creating destination layer: layer is not valid!"
-msgstr "Грешка при създаване на целевия слой: слоят не е валиден!"
-
-#: openrouteservice/utils.py:619
-msgid "Error saving the destination layer: could not write project!"
-msgstr "Грешка при запис на целевия слой: проектът не може да бъде записан!"
-
-#: openrouteservice/utils.py:643
-msgid "Error adding destination Layer to the project: layer already exists."
-msgstr ""
-"Грешка при добавяне на целевия слой към проекта: слоят вече съществува."
-
-#: openrouteservice/utils.py:653
-#, python-format
-msgid "Error opening destination layer %s: layer not found in QGIS project!"
-msgstr ""
-"Грешка при отваряне на целевия слой %s: слоят не е намерен в QGIS проекта!"
-
-#: openrouteservice/utils.py:670
-msgid "Error transforming geometry from 4326 to destination layer CRS."
-msgstr ""
-"Грешка при трансформиране на геометрията от 4326 към CRS на целевия слой."
-
-#: openrouteservice/utils.py:674
-msgid "No compatible features returned from isochrone."
-msgstr "Няма върнати съвместими обекти от изохроната."
-
-#: openrouteservice/utils.py:677
-msgid "Destination layer is not editable."
-msgstr "Целевият слой не може да се редактира."
-
-#: openrouteservice/utils.py:681
-msgid "Error adding features to the destination layer."
-msgstr "Грешка при добавяне на обекти към целевия слой."
-
-#: openrouteservice/utils.py:685
-msgid "Error committing features to the destination layer."
-msgstr "Грешка при запис на обекти в целевия слой."
-
-#: openrouteservice/utils.py:794
-#, python-format
-msgid "Error generating isochrone: %s."
-msgstr "Грешка при генериране на изохрона: %s."
-
-#: openrouteservice/utils.py:823
-msgid "Unknown error adding results to the destination layer."
-msgstr "Неизвестна грешка при добавяне на резултатите към целевия слой."
-
-#: templates/403.html:7
-msgid "error page"
-msgstr "страница за грешка"
-
-#: templates/403.html:15
+#: templates/403.html:6
 msgid "Access denied"
 msgstr "Достъпът е отказан"
 
-#: templates/403.html:17
-msgid "You don't have grant to access this section"
-msgstr "Нямате права за достъп до този раздел"
+#: templates/403.html:9
+#| msgid "You don't have grant to access this section"
+msgid "You do not have permission to access this page."
+msgstr "Нямате права за достъп до тази страница."
 
-#: templates/404.html:11
+#: templates/404.html:6
 msgid "Oops! Page not found."
 msgstr "Упс! Страницата не е намерена."
 
-#: templates/404.html:13
+#: templates/404.html:9
 msgid "We could not find the page you were looking for."
 msgstr "Не успяхме да намерим страницата, която търсите."
+
+#: templates/500.html:6
+msgid "Oops! Something went wrong."
+msgstr "Опа! Нещо се обърка."
+
+#: templates/500.html:9
+msgid "An unexpected error has occurred on the server."
+msgstr "Възникна неочаквана грешка на сървъра."
 
 #: templates/admin/base.html:7
 msgid "G3W-ADMIN"
@@ -258,7 +62,7 @@ msgstr "Смяна на паролата"
 msgid "Log out"
 msgstr "Изход"
 
-#: templates/base.html:190 templates/index.html:6
+#: templates/base.html:183
 msgid "Dashboard"
 msgstr "Табло"
 
@@ -274,11 +78,11 @@ msgstr ""
 #: templates/base.html:236
 #, python-format
 msgid ""
-"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://www.gis3w."
-"it\">GIS3W</a>.</strong> All rights reserved."
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://"
+"www.gis3w.it\">GIS3W</a>.</strong> All rights reserved."
 msgstr ""
-"<strong>Авторско право &copy; 2015 - %(year)s <a href=\"http://www.gis3w."
-"it\">GIS3W</a>.</strong> Всички права запазени."
+"<strong>Авторско право &copy; 2015 - %(year)s <a href=\"http://"
+"www.gis3w.it\">GIS3W</a>.</strong> Всички права запазени."
 
 #: templates/base.html:254
 msgid ""
@@ -288,30 +92,34 @@ msgstr ""
 "Този уебсайт използва бисквитки, за да гарантира, че ще получите най-доброто "
 "изживяване на нашия сайт"
 
-#: templates/base_login.html:25 templates/login.html:18
+#: templates/base_login.html:25 templates/login.html:20
 msgid "Sign in to start your session"
 msgstr "Влезте, за да започнете сесията си"
 
-#: templates/base_login.html:29 templates/login.html:22
+#: templates/base_login.html:29 templates/login.html:24
 #: templates/registration/password_reset_form.html:10
 #: templates/registration/username_recovery_form.html:10
 msgid "LOGIN ERROR"
 msgstr "ГРЕШКА ПРИ ВХОД"
 
-#: templates/base_login.html:30 templates/login.html:23
+#: templates/base_login.html:30 templates/login.html:28
+#: templates/login.html:34
 msgid "Username and/or password uncorrect"
 msgstr "Потребителско име и/или парола са грешни"
 
-#: templates/base_login.html:45 templates/login.html:39
+#: templates/base_login.html:45 templates/login.html:92
+#: templates/two_factor/_wizard_actions.html:17
+#: templates/two_factor/_wizard_actions.html:25
+#: templates/two_factor/_wizard_actions_login.html:9
 msgid "Sign In"
 msgstr "Вход"
 
-#: templates/base_login.html:51 templates/login.html:50
+#: templates/base_login.html:51 templates/login.html:120
 #: templates/registration/password_reset_form.html:22
 msgid "Forgot your password?"
 msgstr "Забравена парола?"
 
-#: templates/base_login.html:58 templates/login.html:62
+#: templates/base_login.html:58 templates/login.html:132
 msgid "Sign up"
 msgstr "Регистрация"
 
@@ -319,7 +127,8 @@ msgstr "Регистрация"
 msgid " Version"
 msgstr " Версия"
 
-#: templates/include/navbar_right_menu.html:11
+#: templates/include/navbar_right_menu.html:11 templates/index.html:21
+#: templates/search.html:8 templates/search.html:33
 msgid "Search"
 msgstr "Търсене"
 
@@ -376,26 +185,137 @@ msgstr "Django администрация"
 msgid "Go to staff administration section"
 msgstr "Отидете в секцията за администрация"
 
-#: templates/index.html:7
-msgid "Current situation"
-msgstr "Текущо състояние"
+#: templates/index.html:11
+#, python-format
+msgid "Welcome back, %(name)s"
+msgstr "Добре дошли отново, %(name)s"
 
-#: templates/index.html:19
-msgid "Groups"
-msgstr "Групи"
+#: templates/index.html:13
+msgid "Here is an overview of your geospatial workspaces."
+msgstr "Ето общ преглед на вашите работни пространства с геопространствени данни."
 
-#: templates/index.html:26
-msgid "Show"
-msgstr "Показване"
+#: templates/index.html:20
+msgid "Search groups, projects, layers…"
+msgstr "Търсене на групи, проекти, слоеве…"
 
-#: templates/index.html:32
+#: templates/index.html:35
+#| msgid "Groups"
+msgid "Map groups"
+msgstr "Картографски групи"
+
+#: templates/index.html:46
+#| msgid "Project"
+msgid "Projects"
+msgstr "Проекти"
+
+#: templates/index.html:55 templates/index.html:119
+#: templates/index.html:120
+msgid "Layers"
+msgstr "Слоеве"
+
+#: templates/index.html:64
+msgid "Bookmarked projects"
+msgstr "Проекти в отметките"
+
+#: templates/index.html:71
+#| msgid "Actions"
+msgid "Quick actions"
+msgstr "Бързи действия"
+
+#: templates/index.html:73
+msgid "Browse groups"
+msgstr "Разглеждане на групи"
+
+#: templates/index.html:75
+msgid "New group"
+msgstr "Нова група"
+
+#: templates/index.html:77
+msgid "Advanced search"
+msgstr "Разширено търсене"
+
+#: templates/index.html:81
+msgid "Projects bookmarked"
+msgstr "Проекти, добавени в отметките"
+
+#: templates/index.html:94
+msgid "Project not accessible to anonymous users"
+msgstr "Проектът не е достъпен за анонимни потребители"
+
+#: templates/index.html:104
+msgid "Remove bookmark"
+msgstr "Премахване на отметката"
+
+#: templates/index.html:113
+#| msgid "Show"
+msgid "Show map"
+msgstr "Покажи карта"
+
+#: templates/index.html:114
+msgid "Map"
+msgstr "Карта"
+
+#: templates/index.html:123 templates/index.html:124
+msgid "Edit"
+msgstr "Редактиране"
+
+#: templates/index.html:136
+msgid "No bookmarked projects yet"
+msgstr "Все още няма проекти в отметките"
+
+#: templates/index.html:137
+msgid "Open any project map and click the bookmark icon to pin it here."
+msgstr "Отворете картата на който и да е проект и щракнете върху иконата за отметка, за да го добавите тук."
+
+#: templates/index.html:143
+msgid "Recent activity"
+msgstr "Последна активност"
+
+#: templates/index.html:160
+msgid "ago"
+msgstr "преди"
+
+#: templates/index.html:169
 msgid "Module widgets"
 msgstr "Модулни джаджи"
 
-#: templates/login.html:55
+#: templates/login.html:42 templates/two_factor/core/_login.html:17
+msgid ""
+"Use this form for entering backup tokens for logging in. These tokens have "
+"been generated for you to print and keep safe. Please enter one of these "
+"backup tokens to login to your account."
+msgstr "Използвайте този формуляр, за да въведете резервен код за вход. Тези кодове са генерирани за вас, за да ги разпечатате и съхранявате на сигурно място. Въведете един от резервните кодове, за да влезете в профила си."
+
+#: templates/login.html:64 templates/two_factor/core/_login.html:31
+msgid "Or, alternatively, use one of your other authentication methods:"
+msgstr "Или използвайте някой от другите си методи за удостоверяване:"
+
+#: templates/login.html:103 templates/two_factor/core/_login.html:51
+msgid "As a last resort, you can use a backup token:"
+msgstr "В краен случай можете да използвате резервен код:"
+
+#: templates/login.html:106 templates/two_factor/core/_login.html:54
+msgid "Use Backup Token"
+msgstr "Използване на резервен код"
+
+#: templates/login.html:125
 #: templates/registration/username_recovery_form.html:22
 msgid "Forgot your username?"
 msgstr "Забравено потребителско име?"
+
+#: templates/otp/email/token.txt:1
+#, python-format
+msgid "This email was sent by %(domain)s for two-factor authentication (2FA)."
+msgstr "Това имейл съобщение е изпратено от %(domain)s за двуфакторно удостоверяване (2FA)."
+
+#: templates/otp/email/token.txt:1
+msgid "This email was sent by G3W-SUITE for two-factor authentication (2FA)."
+msgstr "Това имейл съобщение е изпратено от G3W-SUITE за двуфакторно удостоверяване (2FA)."
+
+#: templates/otp/email/token.txt:3
+#, python-format
+msgid "Your one-time password (OTP) token is: %(token)s"
+msgstr "Вашият код за еднократна парола (OTP) е: %(token)s"
 
 #: templates/registration/password_reset_complete.html:8
 msgid "Password reset complete"
@@ -522,21 +442,438 @@ msgstr "Изпрати потребителско име"
 msgid "Username recovery on %(site_name)s"
 msgstr "Възстановяване на потребителско име в %(site_name)s"
 
-#: templates/search.html:6
-msgid "Search results for"
-msgstr "Резултати от търсенето за"
+#: templates/search.html:8
+#| msgid "Search results for"
+msgid "Search results"
+msgstr "Резултати от търсенето"
 
-#: templates/search.html:14
-msgid "Not results found!"
-msgstr "Няма намерени резултати!"
+#: templates/search.html:11
+msgid "for"
+msgstr "за"
 
-#: templates/search.html:16
-msgid "Found "
-msgstr "Намерени "
+#: templates/search.html:19
+#, python-format
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] "%(counter)s резултат"
+msgstr[1] "%(counter)s резултата"
 
-#: templates/search.html:16
-msgid " results."
-msgstr " Резултати."
+#: templates/search.html:22
+#| msgid " results."
+msgid "No results"
+msgstr "Няма резултати"
+
+#: templates/search.html:31
+msgid "Search groups, macro groups, projects..."
+msgstr "Търсене на групи, макрогрупи, проекти..."
+
+#: templates/search.html:44
+#| msgid "Not results found!"
+msgid "No results found"
+msgstr "Не са намерени резултати"
+
+#: templates/search.html:45
+msgid "No item matches your query. Try a different keyword or check spelling."
+msgstr "Няма елементи, които отговарят на заявката ви. Опитайте с друга ключова дума или проверете правописа."
+
+#: templates/socialaccount/authentication_error.html:5
+#: templates/socialaccount/authentication_error.html:8
+msgid "Social Network Login Failure"
+msgstr "Неуспешен вход чрез социална мрежа"
+
+#: templates/socialaccount/authentication_error.html:10
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr "Възникна грешка при опит за вход чрез профила ви в социална мрежа."
+
+#: templates/socialaccount/authentication_error.html:12
+msgid "Code"
+msgstr "Код"
+
+#: templates/socialaccount/authentication_error.html:13
+#| msgid "Actions"
+msgid "Exception"
+msgstr "Изключение"
+
+#: templates/two_factor/_wizard_actions.html:11
+#: templates/two_factor/_wizard_actions_login.html:23
+msgid "Back"
+msgstr "Назад"
+
+#: templates/two_factor/_wizard_actions.html:16
+#: templates/two_factor/_wizard_actions.html:24
+#: templates/two_factor/_wizard_actions_login.html:7
+msgid "Verify"
+msgstr "Проверка"
+
+#: templates/two_factor/_wizard_actions.html:18
+#: templates/two_factor/_wizard_actions.html:26
+#: templates/two_factor/_wizard_actions_login.html:11
+msgid "Next"
+msgstr "Напред"
+
+#: templates/two_factor/_wizard_actions.html:35
+#: templates/two_factor/_wizard_actions_login.html:32
+msgid "Cancel"
+msgstr "Отказ"
+
+#: templates/two_factor/core/_login.html:10
+#| msgid "Last login"
+msgid "Login"
+msgstr "Вход"
+
+#: templates/two_factor/core/_login.html:13
+msgid "Enter your credentials."
+msgstr "Въведете данните си за вход."
+
+#: templates/two_factor/core/backup_tokens.html:5
+#: templates/two_factor/profile/profile.html:37
+msgid "Backup Tokens"
+msgstr "Резервни кодове"
+
+#: templates/two_factor/core/backup_tokens.html:10
+msgid ""
+"Backup tokens can be used when your primary and backup phone numbers aren't "
+"available. The backup tokens below can be used for login verification. If "
+"you've used up all your backup tokens, you can generate a new set of backup "
+"tokens. Only the backup tokens shown below will be valid."
+msgstr "Резервните кодове могат да се използват, когато основният и резервните ви телефонни номера са недостъпни. Резервните кодове по-долу могат да се използват за потвърждаване на входа. Ако сте използвали всички резервни кодове, можете да генерирате нов набор. Валидни ще бъдат само показаните по-долу резервни кодове."
+
+#: templates/two_factor/core/backup_tokens.html:22
+msgid "Print these tokens and keep them somewhere safe."
+msgstr "Разпечатайте тези кодове и ги съхранявайте на сигурно място."
+
+#: templates/two_factor/core/backup_tokens.html:24
+#| msgid "You don't have grant to access this section"
+msgid "You don't have any backup codes yet."
+msgstr "Все още нямате резервни кодове."
+
+#: templates/two_factor/core/backup_tokens.html:29
+#: templates/two_factor/core/setup_complete.html:16
+#: templates/two_factor/core/setup_complete.html:23
+msgid "Back to Account Security"
+msgstr "Назад към сигурността на профила"
+
+#: templates/two_factor/core/backup_tokens.html:30
+msgid "Generate Tokens"
+msgstr "Генериране на кодове"
+
+#: templates/two_factor/core/setup.html:9
+#: templates/two_factor/core/setup_complete.html:5
+#: templates/two_factor/profile/profile.html:60
+msgid "Enable Two-Factor Authentication"
+msgstr "Активиране на двуфакторно удостоверяване"
+
+#: templates/two_factor/core/setup.html:14
+msgid ""
+"You are about to take your account security to the next level. Follow the "
+"steps in this wizard to enable two-factor authentication."
+msgstr "Предстои да повишите сигурността на профила си. Следвайте стъпките в този помощник, за да активирате двуфакторното удостоверяване."
+
+#: templates/two_factor/core/setup.html:18
+msgid "Please select which authentication method you would like to use."
+msgstr "Изберете кой метод за удостоверяване искате да използвате."
+
+#: templates/two_factor/core/setup.html:21
+msgid ""
+"To start using a token generator, please use your smartphone to scan the QR "
+"code below. For example, use Google Authenticator."
+msgstr "За да започнете да използвате генератор на кодове, сканирайте QR кода по-долу със смартфона си. Например можете да използвате Google Authenticator."
+
+#: templates/two_factor/core/setup.html:25
+msgid ""
+"Alternatively you can use the following secret to setup TOTP in your "
+"authenticator or password manager manually."
+msgstr "Можете също да използвате следния таен ключ, за да настроите ръчно TOTP в приложението си за удостоверяване или в мениджъра си на пароли."
+
+#: templates/two_factor/core/setup.html:27
+msgid "TOTP Secret:"
+msgstr "Таен ключ за TOTP:"
+
+#: templates/two_factor/core/setup.html:28
+msgid "Then, enter the token generated by the app."
+msgstr "След това въведете кода, генериран от приложението."
+
+#: templates/two_factor/core/setup.html:31
+msgid ""
+"Please enter the phone number you wish to receive the text messages on. This "
+"number will be validated in the next step."
+msgstr "Въведете телефонния номер, на който искате да получавате текстови съобщения. Номерът ще бъде проверен в следващата стъпка."
+
+#: templates/two_factor/core/setup.html:35
+msgid ""
+"Please enter the phone number you wish to be called on. This number will be "
+"validated in the next step."
+msgstr "Въведете телефонния номер, на който искате да получавате обаждания. Номерът ще бъде проверен в следващата стъпка."
+
+#: templates/two_factor/core/setup.html:40
+msgid "We are calling your phone right now, please enter the digits you hear."
+msgstr "В момента ви се обаждаме. Въведете цифрите, които чувате."
+
+#: templates/two_factor/core/setup.html:43
+msgid "We sent you a text message, please enter the tokens we sent."
+msgstr "Изпратихме ви текстово съобщение. Въведете изпратените кодове."
+
+#: templates/two_factor/core/setup.html:47
+msgid ""
+"We've encountered an issue with the selected authentication method. Please "
+"go back and verify that you entered your information correctly, try again, "
+"or use a different authentication method instead. If the issue persists, "
+"contact the site administrator."
+msgstr "Възникна проблем с избрания метод за удостоверяване. Върнете се назад и проверете дали сте въвели правилно данните си, опитайте отново или използвайте друг метод за удостоверяване. Ако проблемът продължава, свържете се с администратора на сайта."
+
+#: templates/two_factor/core/setup.html:54
+msgid ""
+"To identify and verify your YubiKey, please insert a token in the field "
+"below. Your YubiKey will be linked to your account."
+msgstr "За да идентифицирате и потвърдите своя YubiKey, въведете код в полето по-долу. Вашият YubiKey ще бъде свързан с профила ви."
+
+#: templates/two_factor/core/setup_complete.html:11
+msgid "Congratulations, you've successfully enabled two-factor authentication."
+msgstr "Поздравления! Успешно активирахте двуфакторното удостоверяване."
+
+#: templates/two_factor/core/setup_complete.html:18
+msgid ""
+"However, it might happen that you don't have access to your primary token "
+"device. To enable account recovery, add a phone number."
+msgstr "Възможно е обаче да нямате достъп до основното си устройство за генериране на кодове. Добавете телефонен номер, за да можете да възстановите достъпа до профила си."
+
+#: templates/two_factor/core/setup_complete.html:25
+#: templates/two_factor/profile/profile.html:34
+msgid "Add Phone Number"
+msgstr "Добавяне на телефонен номер"
+
+#: templates/two_factor/profile/disable.html:5
+msgid "Disable Two-factor Authentication"
+msgstr "Деактивиране на двуфакторно удостоверяване"
+
+#: templates/two_factor/profile/disable.html:9
+msgid ""
+"You are about to disable two-factor authentication. This weakens your "
+"account security, are you sure?"
+msgstr "Предстои да деактивирате двуфакторното удостоверяване. Това намалява сигурността на профила ви. Сигурни ли сте?"
+
+#: templates/two_factor/profile/disable.html:15
+msgid "Disable"
+msgstr "Деактивиране"
+
+#: templates/two_factor/profile/profile.html:6
+msgid "Account Security"
+msgstr "Сигурност на профила"
+
+#: templates/two_factor/profile/profile.html:12
+#, python-format
+msgid "Primary method: %(primary)s"
+msgstr "Основен метод: %(primary)s"
+
+#: templates/two_factor/profile/profile.html:15
+msgid "Backup Phone Numbers"
+msgstr "Резервни телефонни номера"
+
+#: templates/two_factor/profile/profile.html:16
+msgid ""
+"If your primary method is not available, we are able to send backup tokens "
+"to the phone numbers listed below."
+msgstr "Ако основният ви метод е недостъпен, можем да изпратим резервни кодове на посочените по-долу телефонни номера."
+
+#: templates/two_factor/profile/profile.html:24
+msgid "Are you sure?"
+msgstr "Сигурни ли сте?"
+
+#: templates/two_factor/profile/profile.html:27
+#| msgid "Registered on"
+msgid "Unregister"
+msgstr "Премахване на регистрацията"
+
+#: templates/two_factor/profile/profile.html:39
+msgid ""
+"If you don't have any device with you, you can access your account using "
+"backup tokens."
+msgstr "Ако нямате устройство подръка, можете да влезете в профила си с резервни кодове."
+
+#: templates/two_factor/profile/profile.html:41
+#, python-format
+msgid "You have only one backup token remaining."
+msgid_plural "You have %(counter)s backup tokens remaining."
+msgstr[0] "Остава ви само един резервен код."
+msgstr[1] "Остават ви %(counter)s резервни кода."
+
+#: templates/two_factor/profile/profile.html:48
+msgid "Show Codes"
+msgstr "Показване на кодовете"
+
+#: templates/two_factor/profile/profile.html:50
+#: templates/two_factor/profile/profile.html:54
+msgid "Disable Two-Factor Authentication"
+msgstr "Деактивиране на двуфакторно удостоверяване"
+
+#: templates/two_factor/profile/profile.html:51
+msgid ""
+"However we strongly discourage you to do so, you can also disable two-factor "
+"authentication for your account."
+msgstr "Можете също да деактивирате двуфакторното удостоверяване за профила си, но настоятелно ви препоръчваме да не го правите."
+
+#: templates/two_factor/profile/profile.html:56
+msgid ""
+"Two-factor authentication is not enabled for your account. Enable two-factor "
+"authentication for enhanced account security."
+msgstr "Двуфакторното удостоверяване не е активирано за профила ви. Активирайте го, за да повишите сигурността на профила си."
+
+#~ msgid "Input layer is not a point or multipoint layer."
+#~ msgstr "Входният слой не е слой от тип точка или мултиточка."
+
+#~ msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
+#~ msgstr "Липсва \"qgis_layer_id\", \"new_layer_name\" или \"connection_id\"."
+
+#~ msgid ""
+#~ "Wrong color parameter, color must be a list of three integers (red, "
+#~ "green, blue)."
+#~ msgstr ""
+#~ "Грешен параметър за цвят — цветът трябва да е списък от три цели числа "
+#~ "(червено, зелено, синьо)."
+
+#~ msgid ""
+#~ "Missing tranparency parameter, because color was specified transparency "
+#~ "is required."
+#~ msgstr ""
+#~ "Липсва параметър за прозрачност — щом е зададен цвят, прозрачността е "
+#~ "задължителна."
+
+#~ msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
+#~ msgstr ""
+#~ "Грешен параметър за прозрачност — стойността трябва да е между 0 и 1."
+
+#~ msgid "Missing stroke_width from style definition."
+#~ msgstr "Липсва stroke_width в дефиницията на стила."
+
+#~ msgid "Layer is not compatible with ORS data."
+#~ msgstr "Слойът не е съвместим с ORS данни."
+
+#~ msgid "Wrong connection_id."
+#~ msgstr "Грешен connection_id."
+
+#~ msgid ""
+#~ "Either qgis_layer_id or connection_id + layer_name must have a value."
+#~ msgstr ""
+#~ "Трябва да има стойност или за qgis_layer_id, или за connection_id и "
+#~ "layer_name."
+
+#, python-format
+#~ msgid "Profile not found, available profiles: %s"
+#~ msgstr "Профилът не е намерен, налични профили: %s"
+
+#~ msgid "Missing \"locations\" array."
+#~ msgstr "Липсва масив \"locations\"."
+
+#, python-format
+#~ msgid "Max allowed locations: %s"
+#~ msgstr "Максимално позволени локации: %s"
+
+#~ msgid "Malformed locations array."
+#~ msgstr "Невалиден масив от локации."
+
+#~ msgid "Missing \"range\" array."
+#~ msgstr "Липсва масив \"range\"."
+
+#, python-format
+#~ msgid "Max allowed ranges: %s"
+#~ msgstr "Максимално позволени диапазони: %s"
+
+#~ msgid "Malformed range array."
+#~ msgstr "Невалиден масив от диапазони."
+
+#~ msgid "Task not found!"
+#~ msgstr "Задачата не е намерена!"
+
+#~ msgid "Isochrones"
+#~ msgstr "Изохрони"
+
+#~ msgid "Openrouteservice Project"
+#~ msgstr "Openrouteservice проект"
+
+#~ msgid "Alert"
+#~ msgstr "Известие"
+
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Има грешки във формата. Проверете и изпратете отново."
+
+#~ msgid "Openrouteservice Projects"
+#~ msgstr "Openrouteservice проекти"
+
+#~ msgid "Services"
+#~ msgstr "Услуги"
+
+#~ msgid "Delete"
+#~ msgstr "Изтриване"
+
+#~ msgid "Cannot create temporary layer for isochrone result."
+#~ msgstr "Не може да се създаде временен слой за изохронния резултат."
+
+#~ msgid ""
+#~ "Cannot save isochrone result to destination layer: layer already exists "
+#~ "(use \"qgis_layer_id\" instead)!"
+#~ msgstr ""
+#~ "Не може да се запише изохронният резултат в целевия слой: слоят вече "
+#~ "съществува (използвайте \"qgis_layer_id\")!"
+
+#~ msgid "Cannot save isochrone result to destination layer: "
+#~ msgstr "Не може да се запише изохронният резултат в целевия слой: "
+
+#~ msgid "Wrong connection id."
+#~ msgstr "Грешен connection id."
+
+#~ msgid "Error creating destination layer connection."
+#~ msgstr "Грешка при създаване на връзка към целевия слой."
+
+#~ msgid "Error creating destination layer: "
+#~ msgstr "Грешка при създаване на целевия слой: "
+
+#~ msgid "Error creating destination layer: layer is not valid!"
+#~ msgstr "Грешка при създаване на целевия слой: слоят не е валиден!"
+
+#~ msgid "Error saving the destination layer: could not write project!"
+#~ msgstr "Грешка при запис на целевия слой: проектът не може да бъде записан!"
+
+#~ msgid "Error adding destination Layer to the project: layer already exists."
+#~ msgstr ""
+#~ "Грешка при добавяне на целевия слой към проекта: слоят вече съществува."
+
+#, python-format
+#~ msgid "Error opening destination layer %s: layer not found in QGIS project!"
+#~ msgstr ""
+#~ "Грешка при отваряне на целевия слой %s: слоят не е намерен в QGIS проекта!"
+
+#~ msgid "Error transforming geometry from 4326 to destination layer CRS."
+#~ msgstr ""
+#~ "Грешка при трансформиране на геометрията от 4326 към CRS на целевия слой."
+
+#~ msgid "No compatible features returned from isochrone."
+#~ msgstr "Няма върнати съвместими обекти от изохроната."
+
+#~ msgid "Destination layer is not editable."
+#~ msgstr "Целевият слой не може да се редактира."
+
+#~ msgid "Error adding features to the destination layer."
+#~ msgstr "Грешка при добавяне на обекти към целевия слой."
+
+#~ msgid "Error committing features to the destination layer."
+#~ msgstr "Грешка при запис на обекти в целевия слой."
+
+#, python-format
+#~ msgid "Error generating isochrone: %s."
+#~ msgstr "Грешка при генериране на изохрона: %s."
+
+#~ msgid "Unknown error adding results to the destination layer."
+#~ msgstr "Неизвестна грешка при добавяне на резултатите към целевия слой."
+
+#~ msgid "error page"
+#~ msgstr "страница за грешка"
+
+#~ msgid "Current situation"
+#~ msgstr "Текущо състояние"
+
+#~ msgid "Found "
+#~ msgstr "Намерени "
 
 #~ msgid "Version"
 #~ msgstr "Версия"

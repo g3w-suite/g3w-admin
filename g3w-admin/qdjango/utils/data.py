@@ -15,7 +15,6 @@ from lxml import etree
 from qgis.core import (
     QgsProject, QgsMapLayer,
     QgsUnitTypes,
-    QgsProjectVersion,
     QgsWkbTypes,
     QgsEditFormConfig,
     QgsAttributeEditorElement,
@@ -31,19 +30,29 @@ from qgis.gui import QgsMapCanvas
 
 from qgis.server import QgsServerProjectUtils, QgsConfigCache
 
-from qgis.PyQt.QtCore import QVariant, Qt
+from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
-from core.utils.qgisapi import count_qgis_features
+from core.utils.qgisapi import count_qgis_features, qvariant_type_name
 from qdjango.models import Project, buildLayerTreeNodeObject
-from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
+from qdjango.signals import (
+    load_qdjango_project_file, 
+    post_save_qdjango_project_file
+)
 
 from .exceptions import QgisProjectException
 from .structure import *
-from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
-                         IsGroupCompatibleValidator, ProjectTitleExists,
-                         UniqueLayername, EmbeddedLayersValidator)
+from .validators import (
+    CheckMaxExtent, 
+    ColumnName, 
+    DatasourceExists, 
+    ProjectExists,
+    IsGroupCompatibleValidator, 
+    ProjectTitleExists,
+    UniqueLayername, 
+    EmbeddedLayersValidator
+)
 from .qgis import get_aliases
 
 from qdjango.apps import get_qgs_project
@@ -171,6 +180,7 @@ class QgisProjectLayer(XmlData):
         'scaleBasedVisibility',
         'srid',
         'wfsCapabilities',
+        'wmtsCapabilities',
         'editOptions',
         'datasource',
         'origname',
@@ -565,13 +575,21 @@ class QgisProjectLayer(XmlData):
         :rtype: int
         """
 
-        # TODO: ask to elpaso
         wfsCapabilities = 0
         for wfslayer in self.qgisProject.wfsLayers:
             if self.layerId in wfslayer:
                 wfsCapabilities = settings.QUERYABLE
 
         return None if wfsCapabilities == 0 else wfsCapabilities
+
+    def _getDataWmtsCapabilities(self):
+        """
+        Set WMTS capability for layer.
+        :return: dict of WMTS layer capabilities.
+        :rtype: dict
+        """
+
+        return self.qgisProject.wmtsLayers.get(self.layerId)
 
     def _getDataDatasource(self):
         """
@@ -584,8 +602,6 @@ class QgisProjectLayer(XmlData):
 
         new_datasource = serverDatasource if serverDatasource is not None else datasource
 
-        pre_err_msg = ""
-
         if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return new_datasource
 
@@ -596,8 +612,7 @@ class QgisProjectLayer(XmlData):
         if not self.qgs_layer.isValid():
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
                 self.layerId, self.qgisProject.qgisProjectFile.name))
-            msg = _("Current datasource is {}").format(new_datasource)
-            raise Exception(f'{pre_err_msg}: {msg}')
+            raise Exception(_("Current datasource is {}").format(new_datasource))
 
         return new_datasource
 
@@ -639,9 +654,10 @@ class QgisProjectLayer(XmlData):
             fidx = qfields.indexFromName(ac.name)
             if fidx != -1:
                 f = qfields.field(fidx)
+                type_name = qvariant_type_name(f.type())
                 columns.append({
                     'name': f.name(),
-                    'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
+                    'type': type_name.upper() if type_name else None,
                     'label': f.displayName(),
                 })
 
@@ -1016,8 +1032,14 @@ class QgisProjectLayer(XmlData):
         return json.dumps(toret)
 
     def clean(self):
+        errors = []
         for validator in self.validators:
-            validator.clean()
+            try:
+                validator.clean()
+            except Exception as e:
+                errors.extend(getattr(e, 'errors', None) or [str(e)])
+        if errors:
+            raise QgisProjectLayerException('; '.join(map(str, errors)), errors=[str(error) for error in errors])
 
     def save(self):
         """
@@ -1052,6 +1074,7 @@ class QgisProjectLayer(XmlData):
                 'order': self.order,
                 'edit_options': self.editOptions,
                 'wfscapabilities': self.wfsCapabilities,
+                'wmtscapabilities': self.wmtsCapabilities,
                 'exclude_attribute_wms': excludeAttributesWMS,
                 'exclude_attribute_wfs': excludeAttributesWFS,
                 'geometrytype': self.geometrytype,
@@ -1081,6 +1104,12 @@ class QgisProjectLayer(XmlData):
             self.instance.order = self.order
             self.instance.edit_options = self.editOptions
             self.instance.wfscapabilities = self.wfsCapabilities
+            self.instance.wmtscapabilities = self.wmtsCapabilities
+
+            # clear a previously chosen WMTS format no longer available after reimport
+            if self.instance.wmts_format and not (self.wmtsCapabilities or {}).get(self.instance.wmts_format):
+                self.instance.wmts_format = None
+
             self.instance.exclude_attribute_wms = excludeAttributesWMS
             self.instance.exclude_attribute_wfs = excludeAttributesWFS
             self.instance.geometrytype = self.geometrytype
@@ -1111,11 +1140,13 @@ class QgisProject(XmlData):
         'wmsuselayerids',
         'wfsLayers',
         'wfstLayers',
+        'wmtsGrids', # Used for WMTS grids in the project at level of QgisProjectLayer. Must call before loading WMTS layers
+        'wmtsLayers', # Used for WMTS layers in the project at level fo QgisProjectLayer
         'layersTree',
         'layers',
         'layerRelations',
         'layouts',
-        'contextbaselegend'
+        'contextbaselegend',
     ]
 
     _defaultValidators = [
@@ -1152,6 +1183,8 @@ class QgisProject(XmlData):
     def __init__(self, qgis_file, **kwargs):
         self.qgisProjectFile = qgis_file
         self.validators = []
+        # error messages for layers that failed to build, collected instead of aborting
+        self.layer_errors = []
         self.instance = None
 
         # istance of a model Project
@@ -1236,8 +1269,13 @@ class QgisProject(XmlData):
                 raise QgisProjectException(
                     _('Could not read QGIS project file: {}').format(project_file))
 
+            # NOTE: in PyQt6 (QGIS 4.2) enum values are only accessible via
+            # their fully-qualified name (Qt.ConnectionType.DirectConnection).
+            # PyQt5 (QGIS 3.44) supports both the flattened `Qt.DirectConnection`
+            # and the namespaced form, so use the namespaced form for
+            # cross-version compatibility.
             self.qgs_project.readProject.connect(
-                _readCanvasSettings, Qt.DirectConnection)
+                _readCanvasSettings, Qt.ConnectionType.DirectConnection)
 
             # Re-read to get map canvas settings (extent)
             self.qgs_project.read(project_file)
@@ -1358,7 +1396,17 @@ class QgisProject(XmlData):
 
         for layerid, layer in self.qgs_project.mapLayers().items():
             if self.qgs_project.layerIsEmbedded(layerid) == '' and layer.name() not in restricted_layers:
-                layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
+                try:
+                    layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
+                except Exception as e:
+                    # keep building the other layers, report this one later via clean();
+                    # drop the generic "[Layer error on field(id)]--" wrapper noise and
+                    # replace it with a clear layer-scoped label using the real layer name
+                    reason = str(e).rsplit(']-- ', 1)[-1].strip(': ').strip()
+                    self.layer_errors.append(
+                        _('Layer "%(name)s" could not be loaded: %(reason)s') % {
+                            'name': layer.name(), 'reason': reason
+                        })
 
         # For layers with join 1to1 reload fields(columns)
         for layerid in self.relation_1to1_layers:
@@ -1589,17 +1637,92 @@ class QgisProject(XmlData):
         else:
             return False
 
+    def _getDataWmtsGrids(self):
+        """
+        Return WMTS grids defined in the project.
+        :return: a list of WMTS grids
+        :rtype: list
+        """
+
+        wmts_grids, _ = self.qgs_project.readListEntry("WMTSGrids", "Config")
+        grids = []
+        for grid in wmts_grids:
+            parts = grid.split(',')
+            if len(parts) != 5:
+                continue
+            crs, top, left, min_scale, levels = parts
+            grids.append({
+                'crs': crs,
+                'top': float(top),
+                'left': float(left),
+                'min_scale': float(min_scale),
+                'levels': int(levels),
+            })
+
+        return grids
+
+    def _getDataWmtsLayers(self):
+        """
+        Return WMTS layers by format.
+        For every layer id enabled as WMTS PNG and/or JPEG, set the corresponding
+        'png'/'jpeg' flags.
+        :return: {'<layer_id>': {'png': True, 'jpeg': True}, ...}
+        :rtype: dict
+        """
+
+        png_layers, _ = self.qgs_project.readListEntry("WMTSPngLayers", "Layer")
+        jpeg_layers, _ = self.qgs_project.readListEntry("WMTSJpegLayers", "Layer")
+        wmts_grids, _ = self.qgs_project.readListEntry("WMTSGrids", "Grid")
+
+        wmts_layers = {}
+        # Only if wmts_grids are defined
+        if not self.wmtsGrids:
+            return wmts_layers
+        for layer_id in set(png_layers) | set(jpeg_layers):
+            wmts_layers[layer_id] = {}
+            if layer_id in png_layers:
+                wmts_layers[layer_id]['png'] = True
+            if layer_id in jpeg_layers:
+                wmts_layers[layer_id]['jpeg'] = True
+
+        return wmts_layers
+
+
     def setDataThirdParts(self):
         """ Load data from project using third part module functions/signal-receiver"""
 
         load_qdjango_project_file.send(self)
 
     def clean(self):
+        # already labeled "Layer ... could not be loaded" when collected in _getDataLayers()
+        layer_errors = list(self.layer_errors)
+        project_errors = []
+
         for validator in self.validators:
-            validator.clean()
+            try:
+                validator.clean()
+            except Exception as e:
+                sub_errors = getattr(e, 'errors', None) or [str(e)]
+                project_errors.extend(sub_errors)
 
         for layer in self.layers:
-            layer.clean()
+            try:
+                layer.clean()
+            except Exception as e:
+                sub_errors = getattr(e, 'errors', None) or [str(e)]
+                layer_errors.extend(_('Layer "%s": %s') % (layer.name, m) for m in sub_errors)
+
+        project_errors = [_('Project: %s') % m for m in project_errors]
+
+        # group by scope (all layer errors, then all project errors) instead of interleaving them
+        errors = layer_errors + project_errors
+
+        if errors:
+            exc = QgisProjectException('; '.join(errors), errors=errors)
+            # kept separate (not just counts) so callers can render a grouped, scope-labeled report
+            exc.layer_error_messages = layer_errors
+            exc.project_error_messages = project_errors
+            raise exc
 
     def save(self, instance=None, **kwargs):
         """
@@ -1608,10 +1731,23 @@ class QgisProject(XmlData):
         :param instance: Project instance
         """
 
+        # Validate project before saving
+        # At the moment, the validation is commented out and not enforced before saving.
+        #self.clean()
+
         with transaction.atomic():
 
             if not instance and not self.instance:
-                
+
+                # ClearableFileInput can set thumbnail to False when the
+                # "clear" checkbox is checked or when no file is uploaded.
+                # Django 5.2 on Python 3.14 no longer normalizes this to
+                # None, so File/ImageField.pre_save() fails with
+                # AttributeError: 'bool' object has no attribute 'name'.
+                thumbnail = kwargs.get('thumbnail')
+                if not thumbnail:
+                    thumbnail = None
+
                 data = {
                     'qgis_file': self.qgisProjectFile,
                     'original_name': self.original_name,
@@ -1620,7 +1756,7 @@ class QgisProject(XmlData):
                     'initial_extent': self.initialExtent,
                     'max_extent': self.maxExtent,
                     'wms_use_layer_ids': self.wmsuselayerids,
-                    'thumbnail': kwargs.get('thumbnail'),
+                    'thumbnail': thumbnail,
                     'description': kwargs.get('description'),
                     'baselayer': kwargs.get('baselayer'),
                     'qgis_version': self.qgisVersion,
@@ -1628,7 +1764,9 @@ class QgisProject(XmlData):
                     'relations': self.layerRelations,
                     'layouts': self.layouts,
                     'title_ur': kwargs.get('title_ur'),
-                    'context_base_legend': self.contextbaselegend
+                    'context_base_legend': self.contextbaselegend,
+                    'wmts_grids': self.wmtsGrids,
+                    'srid': self.srid
                 }
 
                 for p in (
@@ -1666,7 +1804,9 @@ class QgisProject(XmlData):
                 self.instance.layouts = self.layouts
                 self.instance.context_base_legend = self.contextbaselegend
                 self.instance.wms_use_layer_ids = self.wmsuselayerids
+                self.instance.wmts_grids = self.wmtsGrids
                 self.instance.is_dirty = False
+                self.instance.srid = self.srid
 
                 self.instance.save()
 
@@ -1845,7 +1985,7 @@ class QgisProject(XmlData):
             self.intialExtent = None
 
     def updateQgisFileDatasource(self):
-        """Update qgis file datasource for SpatiaLite, OGR and embedded layers.
+        r"""Update qgis file datasource for SpatiaLite, OGR and embedded layers.
 
         SpatiaLite and OGR layers need their datasource string to be
         modified at import time so that the original path is replaced with
@@ -2311,4 +2451,3 @@ class QgisProjectSettingsWMS(XmlData):
             })
 
         return self._composerTemplatesData
-

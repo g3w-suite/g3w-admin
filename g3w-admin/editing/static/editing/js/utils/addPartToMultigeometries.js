@@ -1,12 +1,9 @@
 import { evaluateExpressionFields } from '../utils/evaluateExpressionFields.js';
 import { getEditingLayer }          from '../utils/getEditingLayer.js';
 
-/**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addparttomultigeometriestask.js@v3.7.1
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addparttomultigeometriesstep.js@v3.7.1
- * 
- * @since g3w-client-plugin-editing@v3.8.0
- */
+const GUI = g3w.app;
+
+/** @TODO add description */
 export async function addPartToMultigeometries(inputs, context) {
 
   let feature;
@@ -28,7 +25,7 @@ export async function addPartToMultigeometries(inputs, context) {
   try { await evaluateExpressionFields({ inputs, context, feature });}
   catch(e) { console.warn(e); }
 
-  context.session.pushUpdate(inputs.layer.getId(), feature, originalFeature);
+  GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(inputs.layer.getId(), feature, originalFeature);
 
   inputs.features = [feature];
   return inputs;

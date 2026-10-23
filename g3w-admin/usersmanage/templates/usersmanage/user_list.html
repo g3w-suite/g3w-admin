@@ -6,135 +6,166 @@
 {% load i18n %}
 
 {% block page_header %}
-    <h1>
-        {% trans 'Users' %}
-      </h1>
+<div class="dash-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1><i class="fa fa-users"></i> {% trans 'Users' %}</h1>
+      <p>{% trans 'Manage accounts, roles and access permissions across the suite.' %}</p>
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      <i class="fa fa-user"></i> {{ object_list|length }} {% trans 'users' %}
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block main_content %}
-<div class="row">
-<div class="col-md-12 col-xs-12">
-    <div class="box">
-        <div class="box-header">
-            {% if perms.auth.add_user %}
-            <a href="{% url 'user-add' %}" class="btn btn-info"><i class="ion ion-plus-circled"></i> {% trans 'User' %}</a>
-            {% endif %}
-        </div>
-        <div class="box-body">
-            <table id="users_table" class="table table-hover table-striped" data-widget-type="dataTable">
-                <thead>
-                    <tr>
-                        <th style="width:120px">{% trans 'Actions' %}</th>
-                        <th>{% trans 'Username' %}</th>
-                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
-                        <th>{% trans 'Roles' %}</th>
-                        <th>{% trans 'User groups' %}</th>
-                        {% if user.is_superuser %}
-                        <th>{% trans 'Macro groups' %}</th>
-                        {% endif %}
-                        {% endif %}
-                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
-                        <th>{% trans 'Active' %}</th>
-                        {% endif %}
-                        {% if user.is_staff and user.is_superuser %}
-                        <th>{% trans 'Superuser' %}</th>
-                        <th>{% trans 'Staff' %}</th>
-                        {% endif %}
-                        <th class="hidden-sm hidden-xs">Email</th>
-                        <th class="hidden-sm hidden-xs">{% trans 'First name' %}</th>
-                        <th class="hidden-sm hidden-xs">{% trans 'Last name' %}</th>
-                        <th class="hidden-sm hidden-xs">{% trans 'Created' %}</th>
-                        {% if user.is_staff %}
-                        <th class="hidden-sm hidden-xs">{% trans 'Backend' %}</th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                {% for object in object_list %}
-                    {% get_obj_perms user for object as "userObj_perms" %}
-                    {% get_user_perms_by_userbackend user for object as "userObj_perms_by_backend" %}
-                    <tr id="user_{{ object.pk }}">
-                        <td>
-                            <!-- to check if necessary
-                            <span class="col-xs-4 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'user-detail' object.id %}"><i class="ion ion-eye"></i></a>
-                            </span>
-                            -->
-                            <span class="col-xs-4 icon">
-                                {% if "change_user" in userObj_perms and "change_user" in userObj_perms_by_backend %}
-                                <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                                {% endif %}
-                            </span>
-                            <span class="col-xs-4 icon">
-                                {% if "delete_user" in userObj_perms and "delete_user" in userObj_perms_by_backend %}
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-delete' object.pk %}" data-item-selector="#user_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
-                                {% endif %}
-                            </span>
-                        </td>
-                        <td>{{ object.username }}</td>
 
-                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
-                        <td>
-                        {% get_roles4user object as group_roles %}
-                        {% for group in group_roles %}
-                            {% if group.name == G3W_EDITOR1 %}
-                                <span class="label label-danger">{{ group }}</span>
-                            {% elif group.name == G3W_EDITOR2 %}
-                                <span class="label bg-purple">{{ group }}</span>
-                            {% else %}
-                                <span class="label label-success">{{ group }}</span>
-                            {% endif %}
-                        {% endfor %}
-                        </td>
-                        <td>
-                        {% get_groups4user object as user_groups %}
-                        {% for user_group in user_groups %}
-                            <span class="label label-warning">{{ user_group }}</span>
-                        {% endfor %}
-                        </td>
-                        {% if user.is_superuser %}
-                        <td>
-                        {% get_macrogroup4user object as macrogroups %}
-                            {% for m in macrogroups %}
-                            <a href="{% url 'macrogroup-update' m.slug %}">{{ m.title }}</a> {% if not forloop.last %} | {% endif %}
-                            {% endfor %}
-                        </td>
-                        {% endif %}
-                        {% endif %}
-                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
-                        <td>
-                        {% if object.is_active %}
-                            <span class="fa fa-check-circle" style="color: green"></span>
-                        {% endif %}
-                        </td>
-                        {% endif %}
-
-                        {% if user.is_staff and user.is_superuser %}
-                        <td>
-                        {% if object.is_superuser %}
-                            <span class="fa fa-check-circle" style="color: orange"></span>
-                        {% endif %}
-                        </td>
-                        <td>
-                        {% if object.is_staff %}
-                            <span class="fa fa-check-circle" style="color: orange"></span>
-                        {% endif %}
-                        </td>
-                        {% endif %}
-                        <td class="hidden-sm hidden-xs">{{ object.email }}</td>
-                        <td class="hidden-sm hidden-xs">{{ object.first_name }}</td>
-                        <td class="hidden-sm hidden-xs">{{ object.last_name }}</td>
-                        <td class="hidden-sm hidden-xs" data-order="{{ object.date_joined.timestamp|floatformat:"0" }}">{{ object.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
-                        {% if user.is_staff %}
-                        <td class="hidden-sm hidden-xs">{{ object.userbackend.backend }}</td>
-                        {% endif %}
-                    </tr>
-
-                {% endfor %}
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
+{# ---- Toolbar ---- #}
+<div class="filter-toolbar">
+    <span class="filter-toolbar-title">
+        <i class="fa fa-id-card-o"></i> {% trans 'All registered users' %}
+    </span>
+    {% if perms.auth.add_user %}
+    <a class="qa-btn" href="{% url 'user-add' %}">
+        <i class="fa fa-plus-circle"></i> {% trans 'New user' %}
+    </a>
+    {% endif %}
 </div>
 
+{# ---- Users table card ---- #}
+<div class="users-panel">
+    <table id="users_table" class="table users-table" data-widget-type="dataTable">
+        <thead>
+            <tr>
+                <th style="width:120px">{% trans 'Actions' %}</th>
+                <th>{% trans 'Username' %}</th>
+                {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+                <th>{% trans 'Roles' %}</th>
+                <th>{% trans 'User groups' %}</th>
+                {% if user.is_superuser %}
+                <th>{% trans 'Macro groups' %}</th>
+                {% endif %}
+                {% endif %}
+                {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+                <th>{% trans 'Active' %}</th>
+                {% endif %}
+                {% if user.is_staff and user.is_superuser %}
+                <th>{% trans 'Superuser' %}</th>
+                <th>{% trans 'Staff' %}</th>
+                {% endif %}
+                <th class="hidden-sm hidden-xs">Email</th>
+                <th class="hidden-sm hidden-xs">{% trans 'First name' %}</th>
+                <th class="hidden-sm hidden-xs">{% trans 'Last name' %}</th>
+                <th class="hidden-sm hidden-xs">{% trans 'Created' %}</th>
+                {% if user.is_staff %}
+                <th class="hidden-sm hidden-xs">{% trans 'Backend' %}</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+            {% get_obj_perms user for object as "userObj_perms" %}
+            {% get_user_perms_by_userbackend user for object as "userObj_perms_by_backend" %}
+            <tr id="user_{{ object.pk }}">
+                <td data-label="{% trans 'Actions' %}">
+                    <div class="user-actions">
+                        {% if "change_user" in userObj_perms and "change_user" in userObj_perms_by_backend %}
+                        <a class="user-action" href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}">
+                            <i class="ion ion-edit"></i>
+                        </a>
+                        {% endif %}
+                        {% if "delete_user" in userObj_perms and "delete_user" in userObj_perms_by_backend %}
+                        <a class="user-action danger" href="#"
+                           data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"
+                           data-widget-type="deleteItem"
+                           data-delete-url="{% url 'user-delete' object.pk %}"
+                           data-item-selector="#user_{{ object.pk }}">
+                            <i class="ion ion-trash-b"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+                <td data-label="{% trans 'Username' %}">
+                    <span class="user-username">
+                        <i class="fa fa-user-circle-o"></i>
+                        {{ object.username }}
+                    </span>
+                </td>
+
+                {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+                <td data-label="{% trans 'Roles' %}">
+                    {% get_roles4user object as group_roles %}
+                    <div class="role-badges">
+                    {% for group in group_roles %}
+                        {% if group.name == G3W_EDITOR1 %}
+                            <span class="role-badge role-editor1">{{ group }}</span>
+                        {% elif group.name == G3W_EDITOR2 %}
+                            <span class="role-badge role-editor2">{{ group }}</span>
+                        {% else %}
+                            <span class="role-badge role-viewer">{{ group }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </td>
+                <td data-label="{% trans 'User groups' %}">
+                    {% get_groups4user object as user_groups %}
+                    <div class="role-badges">
+                    {% for user_group in user_groups %}
+                        <span class="role-badge role-usergroup">{{ user_group }}</span>
+                    {% endfor %}
+                    </div>
+                </td>
+                {% if user.is_superuser %}
+                <td data-label="{% trans 'Macro groups' %}">
+                    {% get_macrogroup4user object as macrogroups %}
+                    <div class="role-badges">
+                    {% for m in macrogroups %}
+                        <a class="role-badge role-macrogroup" href="{% url 'macrogroup-update' m.slug %}">{{ m.title }}</a>
+                    {% endfor %}
+                    </div>
+                </td>
+                {% endif %}
+                {% endif %}
+                {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+                <td data-label="{% trans 'Active' %}" data-order="{% if object.is_active %}1{% else %}0{% endif %}">
+                    {% if object.is_active %}
+                        <span class="bool-pill bool-yes" title="{% trans 'Active' %}"><i class="fa fa-check"></i></span>
+                    {% else %}
+                        <span class="bool-pill bool-no" title="{% trans 'Inactive' %}"><i class="fa fa-times"></i></span>
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                {% if user.is_staff and user.is_superuser %}
+                <td data-label="{% trans 'Superuser' %}" data-order="{% if object.is_superuser %}1{% else %}0{% endif %}">
+                    {% if object.is_superuser %}
+                        <span class="bool-pill bool-flag" title="{% trans 'Superuser' %}"><i class="fa fa-shield"></i></span>
+                    {% endif %}
+                </td>
+                <td data-label="{% trans 'Staff' %}" data-order="{% if object.is_staff %}1{% else %}0{% endif %}">
+                    {% if object.is_staff %}
+                        <span class="bool-pill bool-flag" title="{% trans 'Staff' %}"><i class="fa fa-star"></i></span>
+                    {% endif %}
+                </td>
+                {% endif %}
+                <td class="hidden-sm hidden-xs" data-label="Email">
+                    {% if object.email %}<a class="user-email" href="mailto:{{ object.email }}">{{ object.email }}</a>{% endif %}
+                </td>
+                <td class="hidden-sm hidden-xs" data-label="{% trans 'First name' %}">{{ object.first_name }}</td>
+                <td class="hidden-sm hidden-xs" data-label="{% trans 'Last name' %}">{{ object.last_name }}</td>
+                <td class="hidden-sm hidden-xs" data-label="{% trans 'Created' %}" data-order="{{ object.date_joined.timestamp|floatformat:"0" }}">
+                    <span class="user-date">{{ object.date_joined|date:"SHORT_DATE_FORMAT" }}</span>
+                </td>
+                {% if user.is_staff %}
+                <td class="hidden-sm hidden-xs" data-label="{% trans 'Backend' %}">
+                    <span class="user-backend">{{ object.userbackend.backend }}</span>
+                </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
+
 {% endblock %}

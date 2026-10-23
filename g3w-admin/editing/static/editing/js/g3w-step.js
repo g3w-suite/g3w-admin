@@ -1,211 +1,208 @@
 /**
  * @file
- * 
- * ORIGINAL SOURCE: g3w-client-plugin-editing/g3wsdk/workflow/step.js@v4.0.0
- * 
- * @since g3w-client-plugin-editing@v4.1.0
  */
 
-import { getEditingLayer } from './utils/getEditingLayer.js';
+import { getEditingLayer }             from './utils/getEditingLayer.js';
 
-const { Emitter }             = g3w;
-const GUI                     = g3w.app;
 
-const { isPointGeometryType } = g3wsdk.core.geoutils.Geometry;
+
+const { Emitter } = g3w;
+const GUI         = g3w.app;
 
 export class Step extends Emitter {
-
+  
   /**
-   * @param {Object} options
-   * @param options.input
-   * @param options.context
-   * @param options.task
-   * @param options.outputs
-   * @param options.escKeyPressEventHandler
-   * @param options.id
-   * @param options.name
-   * @param options.help
-   * @param options.message
+   * Private field storing the bound function that executes the step task.
+   */
+  #run;
+  /**
+  * Private field storing the bound function that stops the step task.
+  */
+  #stop;
+  /**
+   * Private field storing the shared context for the step execution.
+   */
+  #context;
+  /**
+   * Private field storing the inputs for the step execution.
+   */
+  #inputs;  
+  /**
+   * Private field storing the outputs for the step execution.
+   */
+  #outputs;
+  /**
+   * Private field storing the currently selected tool.
+   */
+  #tool;
+  /**
+   * Private field storing the tools exposed by the step.
+   */
+  #tools;
+  
+  /**
+   * @param {Object} [options={}] Step configuration.
+   * @param {Object} [options.inputs] Initial values passed to the step.
+   * @param {Object} [options.context] Shared context available during execution.
+   * @param {Object} [options.outputs] Initial step outputs.
+   * @param {Function} [options.run] Function executed by {@link Step#__run}.
+   * @param {Function} [options.stop] Function executed by {@link Step#__stop}.
+   * @param {string} [options.id] Step identifier.
+   * @param {string} [options.name] Step name or translation key.
+   * @param {string} [options.help] Help message or translation key.
+   * @param {string} [options.message] Current step message.
+   * @param {Object[]} [options.steps] Nested steps in this flow.
+   * @param {Function} [options.onRun] Listener registered for the `run` event.
+   * @param {Function} [options.onStop] Listener registered for the `stop` event.
+   * @param {string[]} [options.tools] Tool-of-tools names exposed by the step.
    */
   constructor(options = {}) {
 
     super();
 
+    /**
+     * Original configuration passed to the step.
+     * 
+     * @type {Object}
+     */
     this._options = options;
 
-    //store promise of current running step when call run
-    this._run    = (options.run  || this.run  || (async () => true)).bind(this);
-    //store promise of current running step when call stop
-    this._stop   = (options.stop || this.stop || (async () => true)).bind(this);
-
     /**
-     * @FIXME add description
+     * Bound function that executes the step task.
+     * 
+     * @type {Function}
      */
-    this._inputs = options.inputs || null;
+    this.#run    = (options.run  || this.run  || (async () => true)).bind(this);
 
     /**
-     * @FIXME add description
+     * Bound function that stops the step task.
+     * 
+     * @type {Function}
      */
-    this._context = options.context || null;
+    this.#stop   = (options.stop || this.stop || (async () => true)).bind(this);
 
     /**
-     * @FIXME add description
+     * Inputs consumed by the step, such as features or layer.
+     *
+     * @type {Object|null}
      */
-    this._outputs = options.outputs || null;
+    this.#inputs = options.inputs || null;
 
     /**
-     * Dynamic state of a step
+     * Shared context, such as the current editing options.
+     *
+     * @type {Object|null}
+     */
+    this.#context = options.context || null;
+
+    /**
+     * Outputs produced by the step task.
+     *
+     * @type {Object|null}
+     */
+    this.#outputs = options.outputs || null;
+
+    /**
+     * Mutable state exposed while the step is running.
+     *
+     * @type {{id: (string|null), name: (string|null), help: (string|null), running: boolean, error: (Error|null), message: (string|null), usermessagesteps: Object}}
      */
     this.state = {
-      id:      options.id   || null,
-      name:    options.name || null,
-      help:    options.help || null,    // help to show what the user has to do
-      running: false,                   // running
-      error:   null,                    // error
-      message: options.message || null, // message
-      /**
-       * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-       * 
-       * @since g3w-client-plugin-editing@v3.8.0
-       */
+      id:               options.id      ?? null,
+      name:             options.name    ?? null,
+      help:             options.help    ?? null,    // help to show what the user has to do
+      message:          options.message ?? null, // message
+      running:          false,                   // running
+      error:            null,                    // error
       usermessagesteps: {}
     };
 
-    this.registerEscKeyEvent(options.escKeyPressEventHandler)
-
-    /**
-     * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
-    this.selectStyle = options.selectStyle;
-
-    /**
-     * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** check if there are nested steps */
     if (options.steps) {
       this.setSteps(options.steps);
     }
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addfeaturestep.js@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (options.onRun) {
       this.on('run', options.onRun);
     }
 
-    /**
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/tasks/addfeaturetask.js@v3.7.1
-     * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/steps/addfeaturestep.js@v3.7.1
-     * 
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (options.onStop) {
       this.on('stop', options.onStop);
     }
 
-    /**
-     * @since g3w-client-plugin-editing@v3.8.0
-     */
+    /** @TODO add description */
     if (options.tools) {
-      this._tools = options.tools;
+      this.#tools = options.tools;
     }
 
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
+   * Replace the inputs used by the current step execution.
+   *
+   * @param {Object|null} inputs Values passed to the step task.
    * 
-   * Set and get task usefult properties used to run
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {void}
    */
   setInputs(inputs) {
-    this._inputs = this.inputs = inputs;
+    this.#inputs = this.inputs = inputs;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Return the inputs currently assigned to the step.
+   *
+   * @returns {Object|null} Current step inputs.
    */
   getInputs() {
-    return this._inputs;
+    return this.#inputs;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
+   * Replace the context used by the current step execution.
+   *
+   * @param {Object|null} context Shared execution context.
    * 
-   * @param context
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Object|null} The assigned context.
    */
   setContext(context) {
-    return this._context = this.context = context;
+    return this.#context = this.context = context;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Return the context currently assigned to the step.
+   *
+   * @returns {Object|null} Current execution context.
    */
   getContext() {
-    return this.context;
+    return this.#context;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  panic() {
-    console.log('Panic to implement ..');
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
-   * @param task
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  setRoot(task) {
-    this.state.root = task;
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * 
-   * @returns { Object }
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Object} Progress entries shown for this step.
    */
   getUserMessageSteps() {
     return this.state.usermessagesteps;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
+   * Replace the progress entries shown for this step.
+   *
+   * @param {Object} steps Progress entries keyed by their type.
    * 
-   * @param steps
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {void}
    */
   setUserMessageSteps(steps = {}) {
     this.state.usermessagesteps = steps;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
+   * Mark one progress entry as completed.
+   *
+   * @param {string} type Progress-entry key.
    * 
-   * @param type
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {void}
    */
   setUserMessageStepDone(type) {
     if (type) {
@@ -214,9 +211,14 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
+   * Add an interaction to the map and remove it when the step stops.
+   *
+   * @param {Object} interaction Map interaction to register.
+   * @param {Object<string, Function>} [events={}] Event handlers to bind.
    * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Object} The registered interaction.
+   * 
+   * @listens stop
    */
   addInteraction(interaction, events = {}) {
     GUI.addInteraction(interaction);
@@ -226,60 +228,22 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
+   * Remove an interaction after the current event cycle.
+   *
+   * @param {Object} interaction Map interaction to remove.
    * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {void}
    */
   removeInteraction(interaction) {
-    setTimeout(() => GUI.removeInteraction(interaction)) // timeout needed to work around an Openlayers issue
+    setTimeout(() => GUI.removeInteraction(interaction)); // timeout needed to work around an Openlayers issue
   }
 
   /**
-   * @TODO code implementation
+   * Replace the nested step flow and its user-message entries.
    *
-   * Get editing type from editing config
-   *
-   * @returns { null }
-   */
-  getEditingType() {
-    return null;
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
+   * @param {Object[]} [steps=[]] Steps in the nested flow.
    * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  registerPointerMoveCursor() {
-    GUI.getMap().on("pointermove", this._pointerMoveCursor)
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  unregisterPointerMoveCursor() {
-    GUI.getMap().un("pointermove", this._pointerMoveCursor)
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
-   * @param evt
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  _pointerMoveCursor(evt) {
-    this.getTargetElement().style.cursor = (this.forEachFeatureAtPixel(evt.pixel, () => true) ? 'pointer' : '');
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
-   * @param steps
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {void}
    */
   setSteps(steps = {}) {
     this._steps = steps;
@@ -287,90 +251,81 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
-   * @returns { Object }
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * @returns {Object[]} Configured nested steps.
    */
   getSteps() {
     return this._steps;
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
-   * @since g3w-client-plugin-editing@v3.8.0
+   * Return the application map instance.
+   *
+   * @returns {Object} Current map.
    */
   getMap() {
     return GUI.getMap();
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
+   * Apply the selected style to features involved in the current step.
    *
-   * Disable sidebar
+  * @param {Object} [options] Selection options.
    *
-   * @param {Boolean} bool
+   * @returns {ol.style.Style|void} The original style for synchronous calls.
+   */
+  highlightInputs(options = {}) {
+    const features = options.features || this.getInputs()?.features || [];
+
+    if (0 === features.length || (options.promise && 'vector' !== this.getInputs()?.layer?.getType?.()) || features.flat().some(f => !f?.getGeometry?.())) {
+      return;
+    }
+
+    const applyStyle = () => {
+      const feats  = features.flat();
+      const ostyle = feats[0].getStyle();
+      const gtype = feats[0].getGeometry().getType();
+      const style = new ol.style.Style({
+        ...(['LineString', 'MultiLineString', 'Polygon', 'MultiPolygon'].includes(gtype) && {
+          stroke: new ol.style.Stroke({ color: 'rgb(255,255,0)', width: 4 })
+        }),
+        ...(['Polygon', 'MultiPolygon'].includes(gtype) && {
+          fill: new ol.style.Fill({ color: 'rgba(255,255,0,0.25)' })
+        }),
+        ...(['Point', 'MultiPoint'].includes(gtype) && {
+          image: new ol.style.Circle({ radius: 6, fill: new ol.style.Fill({ color: 'rgb(255,255,0)' }) }),
+          zIndex: Infinity
+        })
+      });
+      feats.forEach(f => f.setStyle(style));
+      return ostyle;
+    };
+
+    if (!options.promise) {
+      return applyStyle();
+    }
+
+    setTimeout(async () => {
+      const originalStyle = applyStyle();
+      try {
+        await options.promise;
+      } catch(e) {
+        console.warn(e);
+      } finally {
+        features.flat().forEach(f => f.setStyle(originalStyle));
+      }
+    });
+  }
+
+  /**
+   * Execute the configured task and manage its running state.
    *
-   * @since g3w-client-plugin-editing@v3.8.0
-   */
-  disableSidebar(bool = true) {
-    if (!this._isContentChild) {
-      GUI.disableSideBar(bool);
-    }
-  }
-
-  /**
-   * Bind interrupt event on keys escape pressed
+   * @param {Object} inputs Inputs passed to the task.
+   * @param {Object} context Context passed to the task.
    * 
-   * @param evt.key
-   * @param evt.data.callback
-   * @param evt.data.task
-   */
-  escKeyUpHandler(evt) {
-    if ('Escape' === evt.key) {
-      evt.data.callback({ task: evt.data.task });
-    }
-  }
-
-  /**
-   * @FIXME add description
-   */
-  unbindEscKeyUp() {
-    $(document).unbind('keyup', this.escKeyUpHandler);
-  }
-
-  /**
-   * @FIXME add description
-   */
-  bindEscKeyUp(callback = () => {}) {
-    $(document).on('keyup', { callback, task: this }, this.escKeyUpHandler);
-  }
-
-  /**
-   * @listens run
-   * @listens stop
-   */
-  registerEscKeyEvent(callback) {
-    if (callback) {
-      this.on('run',  () => this.bindEscKeyUp(callback));
-      this.on('stop', () => this.unbindEscKeyUp());
-    }
-  }
-
-  /**
-   * 
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
-   * 
-   * Start task
-   * 
-   * @param inputs
-   * @param context
-   * 
+   * @returns {Promise<*>} Outputs returned by the task.
+   *
    * @fires run
-   */ 
+   */
   async __run(inputs, context) {
   
     //set step inputs
@@ -380,7 +335,7 @@ export class Step extends Emitter {
 
     const step         = this;
     const toolsOfTools = {
-
+      // use snap interaction to snap to features during drawing or change feature geometry
       snap: {
         type: 'snap',
         options: {
@@ -397,7 +352,7 @@ export class Step extends Emitter {
           }
         }
       },
-
+      // show measure interaction during drawing or change feature geometry
       measure: {
         type: 'measure',
         options: {
@@ -419,24 +374,24 @@ export class Step extends Emitter {
 
     };
 
-    if (this._tools && 0 === this._workflow._toolsoftool.length) {
-      this._workflow._toolsoftool.push(...(
-        this._tools
-          .filter(tool => ('measure' !== tool || ('vector' === inputs.layer.getType() && !isPointGeometryType(inputs.layer.getGeometryType()))))
+    if (this.#tools && 0 === this.#tool._toolsoftool.length) {
+      this.#tool._toolsoftool.push(...(
+        this.#tools
+          .filter(tool => ('measure' !== tool || ('vector' === inputs.layer.getType() && !(/^(Multi)?Point/i.test(inputs.layer.getGeometryType())))))
           .map(tool => toolsOfTools[tool])
       ));
     }
 
-    if (this._tools) {
-      this._workflow._toolsoftool.forEach(t => t.options.run({ layer: inputs.layer }));
-      this._workflow.emit('settoolsoftool', this._workflow._toolsoftool);
+    if (this.#tools) {
+      this.#tool._toolsoftool.forEach(t => t.options.run({ layer: inputs.layer }));
+      this.#tool.emit('settoolsoftool', this.#tool._toolsoftool);
     }
 
     this.emit('run', { inputs, context });
 
     try {
       this.state.running = true;                // change state to running
-      return await this._run(inputs, context);
+      return await this.#run(inputs, context);
     } catch(e) {
       console.warn(e);
       this.state.error = e;
@@ -449,101 +404,96 @@ export class Step extends Emitter {
   }
 
   /**
-   * ORIGINAL SOURCE: g3w-client/src/core/workflow/task.js@v3.9.1
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
+   * Stop the configured task and emit the stop event.
    *
-   * Stop step
-   *
+   * @returns {Promise<void>}
    * @fires stop
    */
   async __stop() {
-    this._workflow?._toolsoftool?.forEach?.(t => t.options.stop());
-    await this._stop(this._inputs, this._context);   // stop task
+    this.#tool?._toolsoftool?.forEach?.(t => t.options.stop());
+    await this.#stop(this._inputs, this._context);   // stop task
     this.state.running = false;                // remove running state
     this.emit('stop');
   }
 
   /**
-   * @FIXME add description
+   * Return the step identifier.
+   *
+   * @returns {string|null} Step identifier.
    */
   getId() {
     return this.state.id;
   }
 
   /**
-   * @FIXME add description
+   * Return the step name or label.
+   *
+   * @returns {string|null} Step name.
    */
   getName() {
     return this.state.name;
   }
 
   /**
-   * @FIXME add description
+   * Return the current help message or translation key.
+   *
+   * @returns {string|null} Step help.
    */
   getHelp() {
     return this.state.help;
   }
 
   /**
-   * @FIXME add description
+   * Return the error produced by the task, if any.
+   *
+   * @returns {Error|null} Step error.
    */
   getError() {
     return this.state.error;
   }
 
   /**
-   * @FIXME add description
+   * Return the current user-facing message.
+   *
+   * @returns {string|null} Step message.
    */
   getMessage() {
     return this.state.message;
   }
 
   /**
-   * @FIXME add description
+   * Return whether the step task is currently running.
+   *
+   * @returns {boolean} Running state.
    */
   isRunning() {
     return this.state.running;
   }
 
   /**
-   * @FIXME add description
+   * Return this step instance for task-oriented APIs.
+   *
+   * @returns {Step} This step.
    */
   getTask() {
     return this;
   }
 
-  /**
-   * @FIXME add description
-   */
-  setOutputs(outputs) {
-    this._outputs = outputs;
+  setTool(tool) {
+    this.#tool = tool;
   }
 
   /**
-   * @FIXME add description
-   */
-  getOutputs() {
-    return this._outputs;
-  }
-
-  /**
-   * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/editingworkflow.js@v3.7.1
+   * Associate this step with its parent tool and exposed tools.
+   *
+   * @param {Object} tool Parent tool.
+   * @param {string[]} [tools=[]] Tool-of-tools names.
    * 
-   * @param workflow
-   * @param tools
-   * 
-   * @since g3w-client-editing@v3.8.0
+   * @returns {void}
    */
-  setToolsOfTools(workflow, tools = [] ) {
-    this._workflow = workflow;
-    this._tools    = tools;
+  setToolsOfTools(tool, tools = [] ) {
+    this.#tool     = tool;
+    this.#tools    = tools;
   }
 
 }
-
-/**
- * @FIXME add description
- */
-Step.MESSAGES = {
-  help: null,
-};
