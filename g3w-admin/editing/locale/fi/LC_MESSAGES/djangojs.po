@@ -22,7 +22,7 @@ msgstr "Käyttäjä"
 
 #: editing/static/editing/js/widget.js:113
 msgid "Add"
-msgstr "Lis??"
+msgstr "Lisää"
 
 #: editing/static/editing/js/widget.js:114
 msgid "Update geometry"

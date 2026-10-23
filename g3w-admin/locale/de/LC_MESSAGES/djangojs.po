@@ -34,7 +34,7 @@ msgstr "Dienst-Endpunkt"
 
 #: br_service/static/br_service/js/widget.js:139
 msgid "Fields value to send"
-msgstr "Zu ?bermittelnde Feldwerte"
+msgstr "Zu übermittelnde Feldwerte"
 
 #: openrouteservice/static/openrouteservice/js/plugin.js:3
 msgid "&"

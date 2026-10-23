@@ -222,7 +222,7 @@ msgstr "Usa un layer alternativo per i valori univoci"
 #: static/qdjango/js/widget.js:529
 msgid ""
 "Is possibile to select an alternative layer to use for get unique values"
-msgstr "? possibile selezionare un layer alternativo per ottenere valori univoci"
+msgstr "È possibile selezionare un layer alternativo per ottenere valori univoci"
 
 #: static/qdjango/js/widget.js:536
 msgid "Dependency"

@@ -18,7 +18,7 @@ msgstr ""
 
 #: br_service/static/br_service/js/widget.js:74
 msgid "Add"
-msgstr "Lis??"
+msgstr "Lisää"
 
 #: br_service/static/br_service/js/widget.js:115
 msgid "BR Service field settings"
@@ -26,11 +26,11 @@ msgstr "BR-palvelun kenttäasetukset"
 
 #: br_service/static/br_service/js/widget.js:127
 msgid "Field"
-msgstr "Kentt?"
+msgstr "Kenttä"
 
 #: br_service/static/br_service/js/widget.js:132
 msgid "Service endpoint"
-msgstr "Palvelun p??tepiste"
+msgstr "Palvelun päätepiste"
 
 #: br_service/static/br_service/js/widget.js:139
 msgid "Fields value to send"

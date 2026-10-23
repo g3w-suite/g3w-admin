@@ -29,7 +29,7 @@ msgid "Actions"
 msgstr "Akcje"
 
 #: qplotly/static/qplotly/js/widget.js:109
-msgid "Active on startup"
+msgid "Active at startup"
 msgstr "Aktywny po uruchomieniu"
 
 #: qplotly/static/qplotly/js/widget.js:110
