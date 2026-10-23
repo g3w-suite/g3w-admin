@@ -17,8 +17,10 @@
     {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
     {% endif %}
+
     <!-- Pace must start before the page and other scripts load. -->
     <script data-pace-options='{ "eventLag": false }'>
+
 /*! Library: pace | Version: 1.2.4
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2013 HubSpot, Inc.
@@ -240,7 +242,7 @@
 
 
     <!-- g3wadmin.css -->
-    <link rel="stylesheet" href="{% static "css/g3wadmin.css"%}">
+    <link rel="stylesheet" href="{% static "g3wadmin.css"%}">
 
     {% block custom_css_links_page %}{% endblock %}
 
@@ -383,15 +385,13 @@
       const STATIC_BASE_URL       = SETTINGS.STATIC_BASE_URL;
     </script>
 
-    <script src="{% static "js/vendors.js" %}"></script>
-    <!-- Django-file-form -->
+    <script src="{% static "vendors.js" %}"></script>
     <script src="{% static "file_form/file_form.js" %}"></script>
     <!--<script src="{% static "file_form/file_form.debug.js" %}"></script>-->
-    <!-- g3wadmin javascript catalog -->
+
     <script src="{% url 'javascript-catalog' %}"></script>
 
-    <!-- g3wadmin.js -->
-    <script src="{% static "js/g3wadmin.js" %}"></script>
+    <script src="{% static "g3wadmin.js" %}"></script>
 
     {# Extend `g3wadmin` global variable  #}
     <script>_.extend(g3wadmin,{ 'settings': {

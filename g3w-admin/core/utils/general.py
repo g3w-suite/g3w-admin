@@ -36,7 +36,7 @@ def get_adminlte_skin_by_user(user):
     Return css adminLte skin class.
 
     The g3w-admin restyle uses a single, role-independent palette (teal),
-    applied via overrides in ``core/static/css/g3wadmin.css``. We therefore
+    applied via overrides in ``core/static/g3wadmin.css``. We therefore
     return the same neutral AdminLTE skin (``blue``) for every user, which
     guarantees a single skin CSS file is loaded and that the ``.skin-*`` body
     class is consistent. The visual identity is fully controlled by our own
