@@ -18,27 +18,17 @@
     {{ SETTINGS.SENTRY_JS | safe }}
     {% endif %}
     <!-- Pace must start before the page and other scripts load. -->
-    <script src="{% static "vendors/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
-    <link rel="stylesheet" href="{% static "vendors/pace.css" %}">
-    <link rel="stylesheet" href="{% static "vendors/vendors.css" %}">
+    <script src="{% static "js/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
+    <link rel="stylesheet" href="{% static "css/pace.css" %}">
+    <link rel="stylesheet" href="{% static "css/vendors.css" %}">
 
-    {# TODO: deprecate Shim and Respond.js #}
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
+    <link rel="stylesheet" href="{% static "css/skins/"%}{{ adminlte_skin }}.min.css">
     <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
     {% block custom_css_links_page %}{% endblock %}
 
     <!-- g3wadmin.css -->
     <link rel="stylesheet" href="{% static "css/g3wadmin.css"%}">
-    <link rel="stylesheet" href="{% static "css/g3wadmin_dashboard_widget.css"%}">
-    <link rel="stylesheet" href="{% static "css/g3wadmin_placeholder.css" %}">
 
     {% for css in css_modules %}
     <link rel="stylesheet" type="text/css" href="{% static css %}" />
@@ -179,7 +169,7 @@
       const STATIC_BASE_URL       = SETTINGS.STATIC_BASE_URL;
     </script>
 
-    <script src="{% static "vendors/vendors.js" %}"></script>
+    <script src="{% static "js/vendors.js" %}"></script>
     <!-- Django-file-form -->
     <script src="{% static "file_form/file_form.js" %}"></script>
     <!--<script src="{% static "file_form/file_form.debug.js" %}"></script>-->

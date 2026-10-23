@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block custom_js_links_page %}
-<script type="text/javascript" src="{% static "js/dropzone.js" %}"></script>
+<script type="text/javascript" src="{% static "js/_dropzone.js" %}"></script>
 {% endblock %}
 
 {% block main_content %}
@@ -26,8 +26,8 @@
     </div>
 
     <div>
-    {% svg_icon 'svg/sprite.svg' 'business-color_chart' %}
-    <svg role="img" title="award"><use xlink:href="{% static 'svg/sprite.svg' %}#business-color_award-74"></use></svg>
+    {% svg_icon 'img/sprite.svg' 'business-color_chart' %}
+    <svg role="img" title="award"><use xlink:href="{% static 'img/sprite.svg' %}#business-color_award-74"></use></svg>
     </div>
 
 {% endblock %}
