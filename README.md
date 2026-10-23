@@ -251,8 +251,8 @@ Depending on the component you want to translate you can start by consulting one
 ---
 
 **Compatibile with:**
-[![Django version](https://img.shields.io/badge/Django-4.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.34-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![Django version](https://img.shields.io/badge/Django-5.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-4.2-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 
