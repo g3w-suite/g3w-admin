@@ -236,14 +236,13 @@
   display: none;
 }
     </style>
-    <link rel="stylesheet" href="{% static "css/vendors.css" %}">
-
     <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
-    {% block custom_css_links_page %}{% endblock %}
 
     <!-- g3wadmin.css -->
     <link rel="stylesheet" href="{% static "css/g3wadmin.css"%}">
+
+    {% block custom_css_links_page %}{% endblock %}
 
     {% for css in css_modules %}
     <link rel="stylesheet" type="text/css" href="{% static css %}" />
