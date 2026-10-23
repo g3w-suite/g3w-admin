@@ -3,9 +3,9 @@
 
 # G3W-ADMIN
 
-Admin server for G3W-SUITE written in Python, based on **Django** LTS (v4.2) and **QGIS Server** LTR (v3.40)
+Admin server for G3W-SUITE written in Python, based on **Django** LTS (v5.2) and **QGIS Server** LTR (v4.2.4)
 
-![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
+![Admin GUI](https://github.com/user-attachments/assets/98ae5bd2-160c-4f82-8c8a-d32979ed161e)
 
 ---
 
@@ -15,10 +15,11 @@ Software releases follow theese main branches as described in the compatibility 
 
 | Branch     | Python | Django         | QGIS          | [client]     | First release | Status         |
 |------------|--------|----------------|---------------|--------------|---------------|----------------|
-| [dev]      | 3.12   | 5.2            | 3.44          | dev          | Unreleased    | ⚠️️ Unstable    |
-| [v.3.11.x] | 3.12   | 4.2            | 3.44          | 4.1.2        | Jun 2026      | New release    |
-| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.11       | Jun 2026      | 🪲️ Bug fixing  |
-| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🪲️ Bug fixing  |
+| [dev]      | 3.14   | 5.2            | 4.2           | dev          | Unreleased    | ⚠️️ Unstable    |
+| [v.4.0.x]  | 3.14   | 5.2            | 4.2           | dev          | Oct 2026      | 🪲️ Bug fixing  |
+| [v.3.11.x] | 3.12   | 4.2            | 3.44          | 4.1.2        | Jun 2026      | 🪲️ Bug fixing  |
+| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.11       | Jun 2026      | 🚨 End of Life |
+| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🚨 End of Life |
 | [v.3.8.x]  | 3.10   | 3.2            | 3.34          | 3.10.3       | Sep 2024      | 🚨 End of Life |
 | [v.3.7.x]  | 3.10   | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🚨 End of Life |
 | [v.3.6.x]  | 3.10   | 3.2            | 3.28          | 3.8.15       | May 2023      | 🚨 End of Life |
@@ -242,7 +243,7 @@ Depending on the component you want to translate you can start by consulting one
 - Bulgarian: [suricactus](https://github.com/suricactus)
 - French: [democracy essentials](https://www.democracy-essentials.eu), [sig-echirolles](https://github.com/sig-echirolles)
 - German: [r3gis](https://www.r3gis.com)
-- Italian: [wlorenzetti](https://github.com/wlorenzetti)
+- Italian: [wlorenzetti](https://github.com/wlorenzetti), [elpaso](https://github.com/elpaso), [volterra79](https://github.com/volterra79), [leolami](https://github.com/leolami), [Raruto](https://github.com/Raruto).
 - Portuguese: [SrNetoChan](https://github.com/SrNetoChan)
 - Romanian: [tudorbarascu](https://github.com/tudorbarascu)
 - Spanish: [samtux](https://github.com/samtux)
@@ -250,8 +251,8 @@ Depending on the component you want to translate you can start by consulting one
 ---
 
 **Compatibile with:**
-[![Django version](https://img.shields.io/badge/Django-4.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.34-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![Django version](https://img.shields.io/badge/Django-5.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-4.2-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 

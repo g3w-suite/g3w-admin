@@ -37,7 +37,8 @@ from core.utils.structure import RELATIONS_ONE_TO_MANY
 from core.utils.qgisapi import (
     get_qgis_layer,
     count_qgis_features,
-    get_qgis_featurecount, 
+    get_qgis_featurecount,
+    qvariant_type_name,
 )
 from core.utils.general import clean_for_json
 from core.utils.geo import get_crs_bbox
@@ -837,7 +838,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     attribute['comment'] = f.comment()
                     attribute['length'] = f.length()
                     attribute['precision'] = f.precision()
-                    attribute['type'] = QVariant.typeToName(f.type())
+                    attribute['type'] = qvariant_type_name(f.type())
                     attribute['alias'] = f.alias()
 
                     metadata['attributes'].append(attribute)

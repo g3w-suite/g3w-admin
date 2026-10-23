@@ -426,8 +426,11 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
             """
 
             fields = layer.qgis_layer.fields()
+            # NOTE: the `encoding` parameter of QgsJsonUtils.stringToFeatureList
+            # was removed in QGIS 4.2. Calling with 2 args is compatible with
+            # both QGIS 3.44 (encoding defaults to None) and QGIS 4.2.
             form_feature = QgsJsonUtils.stringToFeatureList(
-                json.dumps(form_data), fields, None)[0]
+                json.dumps(form_data), fields)[0]
             for k, v in form_data['properties'].items():
                 form_feature.setAttribute(k, v)
 

@@ -251,7 +251,10 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
         if field.name() not in fieldsToExclude and field.name() in kwargs['fields']:
 
             editor_widget_setup = field.editorWidgetSetup()
-            internal_typename = QVariant.typeToName(field.type()).upper()
+            # Local import to avoid circular import at Django startup
+            # (core.models -> core.utils.structure -> core.utils.qgisapi -> qdjango.models)
+            from core.utils.qgisapi import qvariant_type_name
+            internal_typename = (qvariant_type_name(field.type()) or '').upper()
             if internal_typename in FIELD_TYPES_MAPPING:
 
                 # Get constraints and default clause to define if the field is editable

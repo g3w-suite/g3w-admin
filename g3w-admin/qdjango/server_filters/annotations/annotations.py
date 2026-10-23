@@ -354,6 +354,8 @@ class AnnotationsPrintFilter(QgsServerFilter):
                     self.error(handler, 'Invalid layer: {}'.format(layer.name()))
                     return True
                 qgs_project.addMapLayer(layer, False)
+                # Add to the project tree root
+                qgs_project.layerTreeRoot().addLayer(layer)
 
             qgs_project.write()
 

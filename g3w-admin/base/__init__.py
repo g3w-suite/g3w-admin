@@ -12,4 +12,4 @@ try:
 except ImportError:
     logger.warning('Celery could not be imported, this might be ok if there are no custom suite modules that require Celery')
 
-__version__ = (3, 11, 0, 'unstable', 0)
+__version__ = (4, 0, 0, 'unstable', 0)

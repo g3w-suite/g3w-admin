@@ -28,8 +28,12 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
-if 'editing' in settings.INSTALLED_APPS:
-    from qplotly.utils.models import get_qplotlywidgets4layer
+get_qplotlywidgets4layer = None
+if 'qplotly' in settings.INSTALLED_APPS:
+    try:
+        from qplotly.utils.models import get_qplotlywidgets4layer
+    except ImportError:
+        get_qplotlywidgets4layer = None
 
 from qdjango.signals import load_qdjango_widgets_data
 from qdjango.mixins.views import *
@@ -461,18 +465,22 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     ctx['widgets'] = widgets
 
                 # QPlotly widgets
-                if 'qplotly' in settings.INSTALLED_APPS:
-                    
-                    qp = {
-                        'layer': l,
-                        'plots': get_qplotlywidgets4layer(l),
-                    }
 
-                    if qp['plots']:
-                            if 'plots' not in ctx:
-                                ctx['plots'] = [qp]
-                            else:
-                                ctx['plots'].append(qp)
+                if 'qplotly' in settings.INSTALLED_APPS and get_qplotlywidgets4layer:
+                    import logging
+                    try:
+                        plots = get_qplotlywidgets4layer(l)
+                    except Exception:
+                        logging.getLogger("g3wadmin.debug").exception(
+                            "Qdjango project /api/config error in get_qplotlywidgets4layer"
+                        )
+                    else:
+                        if plots:
+                            qp = {
+                                'layer': l,
+                                'plots': plots,
+                            }
+                            ctx.setdefault('plots', []).append(qp)
 
 
             if dl_capabilities:
