@@ -880,7 +880,6 @@ export class ToolBox extends Emitter {
             name: "editing.pastefeaturesfromotherlayers",
             icon: "mActionEditPaste.svg",
             enable: (function() {
-              const catalogService      = GUI.getService('catalog');
               const layerId             = SELF.#layer.getId();
               const geometryType        = SELF.#layer.getGeometryType();
               const data = {
@@ -907,7 +906,9 @@ export class ToolBox extends Emitter {
                   ...getCatalogLayers({ GEOLAYER: true, BASELAYER: false })
                     .filter(l => (layerId !== l.getId()) && checkGeometry(l.getGeometryType())),
                   //external layer
-                  ...catalogService.getExternalLayers({type:'vector'}).filter(l => checkGeometry(l.geometryType))
+                  ...GUI.getExternalLayers({type:'vector'})
+                    .map(l => l._externalLayer)
+                    .filter(l => checkGeometry(l.geometryType))
                 ].map((l, i) => ({
                   id:       (l.state || {id: l.id}).id,
                   name:     (l.state || {name: l.name}).name,
@@ -919,8 +920,8 @@ export class ToolBox extends Emitter {
               return ({ bool, tool = {} }) => {
                 data.tool = tool;
                 data.bool = bool;
-                catalogService.onafter('addExternalLayer',    updatelayers);
-                catalogService.onafter('removeExternalLayer', updatelayers);
+                GUI.onafter('loadExternalLayer',   updatelayers);
+                GUI.onafter('unloadExternalLayer', updatelayers);
                 return updatelayers()
               }
             }()),
@@ -988,8 +989,8 @@ export class ToolBox extends Emitter {
                             this.setUserMessageStepDone('chooselayer');
                             try {
                               const feature = await (async () => {
-                              //get selected layer
-                              const layer   = layers.find(l => l.selected);
+                                //get selected layer
+                                const layer   = layers.find(l => l.selected);
                                 const features = await (new Promise(async resolve => {
                                   this.addInteraction(
                                     layer.external
@@ -1054,13 +1055,16 @@ export class ToolBox extends Emitter {
                               // property are lost
                               attributes.forEach(({ name }) => {
                                 if (undefined === feature.get(name)) { feature.set(name, null) }
-                              })
+                              });
 
                               (GUI.getPlugin('editing').getToolBoxById(originalLayer.getId()).state.fields || [])
                                 .filter(f => !f.editable) // un-editable fields
                                 .map(f => f.name)
                                 .find(field => {
-                                  if (isPkField(originalLayer, field)) { feature.set(field, null) }
+                                  if (isPkField(originalLayer, field)) { 
+                                    feature.set(field, null);
+                                    return true; 
+                                  }
                                 });
                               //remove eventually Z Values
                               removeZValue({ feature });
