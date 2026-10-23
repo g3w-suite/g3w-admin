@@ -1,0 +1,50 @@
+{
+    "name": "bootswatch-dist",
+    "version": "v3.3.7-flatly",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dbtek/bootswatch-dist.git",
+        "rawUrl": "https://raw.githubusercontent.com/dbtek/bootswatch-dist"
+    },
+    "author": {
+        "name": "İsmail Demirbilek"
+    },
+    "keywords": [
+        "bootstwatch",
+        "dist",
+        "package",
+        "amelia",
+        "cerulean",
+        "cosmo",
+        "cyborg",
+        "darkly",
+        "flatly",
+        "journal",
+        "lumen",
+        "paper",
+        "readable",
+        "sandstone",
+        "simplex",
+        "slate",
+        "solar",
+        "spacelab",
+        "superhero",
+        "united",
+        "yeti"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "chalk": "^2.0.1",
+        "download": "^6.2.5",
+        "fs-extra": "^3.0.1",
+        "glob": "^7.1.2",
+        "ncp": "^2.0.0",
+        "node-fetch": "^1.7.1",
+        "semver": "^5.3.0",
+        "simple-git": "^1.73.0"
+    },
+    "engines": {
+        "node": ">=0.10.0"
+    },
+    "dependencies": {}
+}

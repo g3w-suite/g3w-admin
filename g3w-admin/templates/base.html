@@ -13,17 +13,13 @@
     <title>{{ admin_page_title }}</title>
 
     <link rel="icon" href="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}{{ SETTINGS.G3WSUITE_FAVICON }}{% else %}{% static '/img/favicon.ico' %}{% endif %}">
-   
+
     {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
     {% endif %}
     <!-- Pace -->
     <script src="{% static "bower_components/pace/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
     <!-- vendor.css -->
-    {% if not SETTINGS.DEBUG %}
-    <link rel="stylesheet" href="{% static "dist/css/vendor.min.css"%}">
-    {% else %}
-    <!-- build:css css/vendor.min.css -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/font-awesome/css/font-awesome.min.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/ionicons/css/ionicons.min.css" %}">
@@ -41,8 +37,6 @@
     <link rel="stylesheet" href="{% static "bower_components/jstree/dist/themes/default/style.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/jstree-bootstrap-theme/dist/themes/proton/style.min.css" %}">
     <link rel="stylesheet" href="{% static "modules/summernote/summernote.css" %}">
-    <!-- endbuild -->
-    {% endif %}
 
     {# TODO: deprecate Shim and Respond.js #}
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -57,20 +51,14 @@
     <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
     {% block custom_css_links_page %}{% endblock %}
-    
+
     <!-- g3wadmin.css -->
-    {% if not SETTINGS.DEBUG %}
-    <link rel="stylesheet" href="{% static "dist/css/g3wadmin.min.css"%}">
-    {% else %}
-    <!-- build:css css/g3wadmin.min.css -->
     <link rel="stylesheet" href="{% static "css/g3wadmin.css"%}">
     <link rel="stylesheet" href="{% static "css/g3wadmin_dashboard_widget.css"%}">
     <link rel="stylesheet" href="{% static "css/g3wadmin_placeholder.css" %}">
-    <!-- endbuild -->
-    {% endif %}
-    
+
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/cookieconsent/build/cookieconsent.min.css' %}" />
-    
+
     {% for css in css_modules %}
     <link rel="stylesheet" type="text/css" href="{% static css %}" />
     {% endfor %}
@@ -211,10 +199,6 @@
     </script>
 
     <!-- vendor.js -->
-    {% if not SETTINGS.DEBUG %}
-    <script src="{% static "dist/js/vendor.min.js" %}"></script>
-    {% else %}
-    <!-- build:js js/vendor.min.js -->
     <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
     <script src="{% static "bower_components/jquery-ui/jquery-ui.min.js" %}"></script>
     <script src="{% static "bower_components/jquery-cookie/jquery.cookie.js" %}"></script>
@@ -235,8 +219,6 @@
     <script src="{% static "bower_components/jstree/dist/jstree.min.js" %}"></script>
     <script src="{% static "modules/summernote/summernote.min.js" %}"></script>
     <script src="{% static "modules/summernote/lang/summernote-it-IT.min.js" %}"></script>
-    <!-- endbuild -->
-    {% endif %}
     <!-- Bootstrap-datepicker-locals -->
     {% for l in SETTINGS.LANGUAGES %}
       {% if l.0 == 'se' %}
@@ -254,10 +236,6 @@
     <script src="{% url 'javascript-catalog' %}"></script>
 
     <!-- g3wadmin.js -->
-    {% if not SETTINGS.DEBUG %}
-    <script src="{% static "dist/js/g3wadmin.min.js" %}"></script>
-    {% else %}
-    <!-- build:js  js/g3wadmin.min.js -->
     <script src="{% static "js/g3wadmin/main.js" %}"></script>
     <script src="{% static "js/g3wadmin/tpl.js" %}"></script>
     <script src="{% static "js/g3wadmin/ui.js" %}"></script>
@@ -265,8 +243,6 @@
     <script src="{% static "js/g3wadmin/utils.js" %}"></script>
     <script src="{% static "js/g3wadmin/forms.js" %}"></script>
     <script src="{% static "js/g3wadmin.js" %}"></script>
-    <!-- endbuild -->
-    {% endif %}
 
     {# Extend `g3wadmin` global variable  #}
     <script>_.extend(g3wadmin,{ 'settings': {

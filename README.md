@@ -73,25 +73,9 @@ To figure out which to choose, see also: [deploying django](https://docs.djangop
 
 Then in your development environment:
 
-1. download and install [**Node.js**](https://nodejs.org/en/download/) and [**Yarn**](https://yarnpkg.com/en/docs/install)
-2. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
-3. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
-4. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
-
-##### For Ubuntu 24.04
-
-Installa *nvm* for install node at version 8.x:
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-source ~/.bashrc
-
-# Installa Node.js 8.x
-nvm install 8.17.0
-nvm use 8.17.0
-
-# Installa Gulp
-npm install -g gulp-cli@2.3.0
-```
+1. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
+2. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
+3. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
 
 
 After that you can clone this repository:
@@ -142,7 +126,7 @@ DATABASES           = {
 }
 ```
 
-Complete installation process by download all python and javascript dependencies and finalizing the django database setup:
+Complete installation by downloading the Python dependencies and finalizing the Django database setup:
 
 ```sh
 paver install
@@ -169,6 +153,8 @@ If everything went fine, you can now visit your local development server URL to 
 ```sh
 http://localhost:8000
 ```
+
+JavaScript and CSS are served directly from the static files; no Node.js build step is required.
 
 If you don't want to use Paver, see also: [run g3w-suite](https://g3w-suite.readthedocs.io/en/latest/install.html#run-g3w-suite)
 
@@ -205,7 +191,7 @@ The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
-More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [build_suite.sh](./ci_scripts/build_suite.sh)
+More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [setup_suite.sh](./ci_scripts/setup_suite.sh)
 
 ---
 
