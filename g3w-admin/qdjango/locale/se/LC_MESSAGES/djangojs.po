@@ -1,83 +1,82 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Swedish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: se <info@g3wsuite.it>\n"
+"Language: se\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: qdjango/static/qdjango/js/widget.js:212
 msgid "General configuration for search widget and results"
-msgstr ""
+msgstr "Allmän konfiguration för sökwidget och resultat"
 
 #: qdjango/static/qdjango/js/widget.js:220
 msgid "Search title"
-msgstr ""
+msgstr "Söktitel"
 
 #: qdjango/static/qdjango/js/widget.js:264
 msgid "Client search title identification"
-msgstr ""
+msgstr "Identifiering av klientsöktitel"
 
 #: qdjango/static/qdjango/js/widget.js:303
 msgid "equal"
-msgstr ""
+msgstr "lika med"
 
 #: qdjango/static/qdjango/js/widget.js:306
 msgid "greater than"
-msgstr ""
+msgstr "större än"
 
 #: qdjango/static/qdjango/js/widget.js:309
 msgid "lower than"
-msgstr ""
+msgstr "mindre än"
 
 #: qdjango/static/qdjango/js/widget.js:312
 msgid "not equal"
-msgstr ""
+msgstr "inte lika med"
 
 #: qdjango/static/qdjango/js/widget.js:315
 msgid "greater than equal"
-msgstr ""
+msgstr "större än eller lika med"
 
 #: qdjango/static/qdjango/js/widget.js:318
 msgid "lower than equal"
-msgstr ""
+msgstr "mindre än eller lika med"
 
 #: qdjango/static/qdjango/js/widget.js:321
 #: qdjango/static/qdjango/js/widget.js:356
 msgid "like case sensitive"
-msgstr ""
+msgstr "liknar (skiftlägeskänsligt)"
 
 #: qdjango/static/qdjango/js/widget.js:340
 #: qdjango/static/qdjango/js/widget.js:357
 msgid "like not case sensitive"
-msgstr ""
+msgstr "liknar (inte skiftlägeskänsligt)"
 
 #: qdjango/static/qdjango/js/widget.js:368
 msgid "Search field settings"
-msgstr ""
+msgstr "Inställningar för sökfält"
 
 #: qdjango/static/qdjango/js/widget.js:383
 msgid "Field"
-msgstr ""
+msgstr "Fält"
 
 #: qdjango/static/qdjango/js/widget.js:390
 msgid "Widget"
-msgstr ""
+msgstr "Widget"
 
 #: qdjango/static/qdjango/js/widget.js:397
 msgid "Alias"
-msgstr ""
+msgstr "Alias"
 
 #: qdjango/static/qdjango/js/widget.js:404
 #: qdjango/static/qdjango/js/widget.js:1317
@@ -85,283 +84,283 @@ msgstr ""
 #: qdjango/static/qdjango/js/widget.js:1774
 #: qdjango/static/qdjango/js/widget.js:2119
 msgid "Description"
-msgstr ""
+msgstr "Beskrivning"
 
 #: qdjango/static/qdjango/js/widget.js:413
 msgid "Number of digits"
-msgstr ""
+msgstr "Antal siffror"
 
 #: qdjango/static/qdjango/js/widget.js:422
 msgid "Comparison operator"
-msgstr ""
+msgstr "Jämförelseoperator"
 
 #: qdjango/static/qdjango/js/widget.js:431
 msgid "Dependency"
-msgstr ""
+msgstr "Beroende"
 
 #: qdjango/static/qdjango/js/widget.js:438
 msgid "Strictly dependent"
-msgstr ""
+msgstr "Strikt beroende"
 
 #: qdjango/static/qdjango/js/widget.js:458
 msgid "Logical join"
-msgstr ""
+msgstr "Logisk koppling"
 
 #: qdjango/static/qdjango/js/widget.js:477
 msgid "Alias field name for client search input"
-msgstr ""
+msgstr "Aliasnamn för fältet i klientsökningen"
 
 #: qdjango/static/qdjango/js/widget.js:771
 #: qdjango/static/qdjango/js/widget.js:891
 msgid "Other searching layers"
-msgstr ""
+msgstr "Andra söklager"
 
 #: qdjango/static/qdjango/js/widget.js:775
 #: qdjango/static/qdjango/js/widget.js:895
 msgid "Select one or more additional layers to search on"
-msgstr ""
+msgstr "Välj ett eller flera ytterligare lager att söka i"
 
 #: qdjango/static/qdjango/js/widget.js:788
 #: qdjango/static/qdjango/js/widget.js:921
 msgid "Relations"
-msgstr ""
+msgstr "Relationer"
 
 #: qdjango/static/qdjango/js/widget.js:792
 #: qdjango/static/qdjango/js/widget.js:925
 msgid ""
 "This layer is a child in a relation, if you want to excute the search on "
 "father layer of relation, select the relative relation"
-msgstr ""
+msgstr "Det här lagret är underordnat i en relation. Välj den aktuella relationen om du vill söka i relationens överordnade lager"
 
 #: qdjango/static/qdjango/js/widget.js:823
 #: qdjango/static/qdjango/js/widget.js:948
 #: qdjango/static/qdjango/js/widget.js:1475
 #: qdjango/static/qdjango/js/widget.js:1681
 msgid "Add"
-msgstr ""
+msgstr "Lägg till"
 
 #: qdjango/static/qdjango/js/widget.js:1043
 msgid "QGIS Expression"
-msgstr ""
+msgstr "QGIS-uttryck"
 
 #: qdjango/static/qdjango/js/widget.js:1058
 #: qdjango/static/qdjango/js/widget.js:1859
 msgid "Saved"
-msgstr ""
+msgstr "Sparat"
 
 #: qdjango/static/qdjango/js/widget.js:1141
 #: qdjango/static/qdjango/js/widget.js:2009
 #: qdjango/static/qdjango/js/widget.js:2803
 msgid "Form title"
-msgstr ""
+msgstr "Formulärrubrik"
 
 #: qdjango/static/qdjango/js/widget.js:1217
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the QGIS expressions."
-msgstr ""
+msgstr "Definiera visnings-/redigeringsregler baserade på QGIS-uttryck för varje användare och/eller användargrupp."
 
 #: qdjango/static/qdjango/js/widget.js:1221
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the language or SQL dialect of the associated provider."
-msgstr ""
+msgstr "Definiera visnings-/redigeringsregler baserade på språket eller SQL-dialekten för den associerade leverantören för varje användare och/eller användargrupp."
 
 #: qdjango/static/qdjango/js/widget.js:1293
 #: qdjango/static/qdjango/js/widget.js:1296
 msgid "New alphanumeric constraints"
-msgstr ""
+msgstr "Nya alfanumeriska begränsningar"
 
 #: qdjango/static/qdjango/js/widget.js:1311
 #: qdjango/static/qdjango/js/widget.js:2113
 #: qdjango/static/qdjango/js/widget.js:2282
 #: qdjango/static/qdjango/js/widget.js:2667
 msgid "Actions"
-msgstr ""
+msgstr "Åtgärder"
 
 #: qdjango/static/qdjango/js/widget.js:1314
 #: qdjango/static/qdjango/js/widget.js:1564
 msgid "Name"
-msgstr ""
+msgstr "Namn"
 
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For visualization"
-msgstr ""
+msgstr "För visualisering"
 
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For editing"
-msgstr ""
+msgstr "För redigering"
 
 #: qdjango/static/qdjango/js/widget.js:1326
 msgid "Subset rules count"
-msgstr ""
+msgstr "Antal delmängdsregler"
 
 #: qdjango/static/qdjango/js/widget.js:1329
 msgid "Expression rules count"
-msgstr ""
+msgstr "Antal uttrycksregler"
 
 #: qdjango/static/qdjango/js/widget.js:1375
 msgid "Update alphanumeric constraint"
-msgstr ""
+msgstr "Uppdatera alfanumerisk begränsning"
 
 #: qdjango/static/qdjango/js/widget.js:1385
 msgid "Constraint Rules based on provider's language / SQL dialect"
-msgstr ""
+msgstr "Begränsningsregler baserade på leverantörens språk/SQL-dialekt"
 
 #: qdjango/static/qdjango/js/widget.js:1396
 msgid "Constraint Rules based on QGIS Expression"
-msgstr ""
+msgstr "Begränsningsregler baserade på QGIS-uttryck"
 
 #: qdjango/static/qdjango/js/widget.js:1538
 #: qdjango/static/qdjango/js/widget.js:1744
 msgid "Save"
-msgstr ""
+msgstr "Spara"
 
 #: qdjango/static/qdjango/js/widget.js:1543
 #: qdjango/static/qdjango/js/widget.js:1749
 msgid "Delete"
-msgstr ""
+msgstr "Ta bort"
 
 #: qdjango/static/qdjango/js/widget.js:1560
 msgid "Set a name and a possible description for the alphanumeric constraint"
-msgstr ""
+msgstr "Ange ett namn och eventuellt en beskrivning av den alfanumeriska begränsningen"
 
 #: qdjango/static/qdjango/js/widget.js:1583
 #: qdjango/static/qdjango/js/widget.js:1785
 msgid "Active for visualization"
-msgstr ""
+msgstr "Aktiv för visualisering"
 
 #: qdjango/static/qdjango/js/widget.js:1594
 #: qdjango/static/qdjango/js/widget.js:1796
 msgid "Active for editing"
-msgstr ""
+msgstr "Aktiv för redigering"
 
 #: qdjango/static/qdjango/js/widget.js:1609
 msgid "Provider's language / SQL dialect Rules"
-msgstr ""
+msgstr "Regler för leverantörens språk/SQL-dialekt"
 
 #: qdjango/static/qdjango/js/widget.js:1614
 msgid "QGIS Expression Rules"
-msgstr ""
+msgstr "Regler för QGIS-uttryck"
 
 #: qdjango/static/qdjango/js/widget.js:1764
 msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
-msgstr ""
+msgstr "Välj begränsningslagret; endast geometrityperna Polygon eller MultiPolygon stöds"
 
 #: qdjango/static/qdjango/js/widget.js:1768
 msgid "Constraint layer"
-msgstr ""
+msgstr "Begränsningslager"
 
 #: qdjango/static/qdjango/js/widget.js:1809
 msgid "Manage geo-constaints"
-msgstr ""
+msgstr "Hantera geografiska begränsningar"
 
 #: qdjango/static/qdjango/js/widget.js:2095
 msgid "New geo constraint"
-msgstr ""
+msgstr "Ny geografisk begränsning"
 
 #: qdjango/static/qdjango/js/widget.js:2098
 msgid "New constraint"
-msgstr ""
+msgstr "Ny begränsning"
 
 #: qdjango/static/qdjango/js/widget.js:2116
 msgid "Layer constraint"
-msgstr ""
+msgstr "Lagerbegränsning"
 
 #: qdjango/static/qdjango/js/widget.js:2124
 msgid "Rules count"
-msgstr ""
+msgstr "Antal regler"
 
 #: qdjango/static/qdjango/js/widget.js:2166
 msgid "Update constraint"
-msgstr ""
+msgstr "Uppdatera begränsningen"
 
 #: qdjango/static/qdjango/js/widget.js:2177
 msgid "Geo Constraint Rules"
-msgstr ""
+msgstr "Regler för geografiska begränsningar"
 
 #: qdjango/static/qdjango/js/widget.js:2268
 msgid "Create New Column Level Constraint"
-msgstr ""
+msgstr "Skapa ny kolumnivåbegränsning"
 
 #: qdjango/static/qdjango/js/widget.js:2271
 msgid "New Column Level Constraint"
-msgstr ""
+msgstr "Ny kolumnivåbegränsning"
 
 #: qdjango/static/qdjango/js/widget.js:2284
 msgid "Group"
-msgstr ""
+msgstr "Grupp"
 
 #: qdjango/static/qdjango/js/widget.js:2353
 msgid "Delete Column Level Constraint"
-msgstr ""
+msgstr "Ta bort kolumnivåbegränsning"
 
 #: qdjango/static/qdjango/js/widget.js:2354
 msgid "Are you sure to delete column constraint"
-msgstr ""
+msgstr "Är du säker på att du vill ta bort kolumnbegränsningen"
 
 #: qdjango/static/qdjango/js/widget.js:2447
 msgid "Edit Column Level Constraint."
-msgstr ""
+msgstr "Redigera kolumnivåbegränsningen."
 
 #: qdjango/static/qdjango/js/widget.js:2551
 msgid "You must select a 'group' or a 'user'!"
-msgstr ""
+msgstr "Du måste välja en ”grupp” eller en ”användare”!"
 
 #: qdjango/static/qdjango/js/widget.js:2573
 msgid "Hidden Fields is required!"
-msgstr ""
+msgstr "Fältet ”Dolda fält” är obligatoriskt!"
 
 #: qdjango/static/qdjango/js/widget.js:2606
 msgid "User (required if group is not set)"
-msgstr ""
+msgstr "Användare (obligatoriskt om grupp inte har angetts)"
 
 #: qdjango/static/qdjango/js/widget.js:2613
 msgid "Group (required if user is not set)"
-msgstr ""
+msgstr "Grupp (obligatoriskt om användare inte har angetts)"
 
 #: qdjango/static/qdjango/js/widget.js:2620
 msgid "Hidden Fields (required)"
-msgstr ""
+msgstr "Dolda fält (obligatoriskt)"
 
 #: qdjango/static/qdjango/js/widget.js:2652
 msgid "New Style From QML"
-msgstr ""
+msgstr "Ny stil från QML"
 
 #: qdjango/static/qdjango/js/widget.js:2669
 msgid "Current"
-msgstr ""
+msgstr "Aktuell"
 
 #: qdjango/static/qdjango/js/widget.js:2738
 msgid "Delete Style"
-msgstr ""
+msgstr "Ta bort stil"
 
 #: qdjango/static/qdjango/js/widget.js:2739
 msgid "Are you sure to delete style"
-msgstr ""
+msgstr "Är du säker på att du vill ta bort stilen"
 
 #: qdjango/static/qdjango/js/widget.js:2797
 msgid "Create a new style from an uploaded QML file."
-msgstr ""
+msgstr "Skapa en ny stil från en uppladdad QML-fil."
 
 #: qdjango/static/qdjango/js/widget.js:2799
 msgid "Edit style name or replace the style from an uploaded QML file."
-msgstr ""
+msgstr "Redigera stilnamnet eller ersätt stilen med en uppladdad QML-fil."
 
 #: qdjango/static/qdjango/js/widget.js:2833
 msgid "Style name is required!"
-msgstr ""
+msgstr "Stilnamn krävs!"
 
 #: qdjango/static/qdjango/js/widget.js:2847
 msgid "A style with this name already exists!"
-msgstr ""
+msgstr "En stil med det här namnet finns redan!"
 
 #: qdjango/static/qdjango/js/widget.js:2948
 msgid "Style name (required)"
-msgstr ""
+msgstr "Stilnamn (obligatoriskt)"
 
 #: qdjango/static/qdjango/js/widget.js:2957
 msgid "Upload layer style QML file"
-msgstr ""
+msgstr "Ladda upp lagrets QML-stilfil"

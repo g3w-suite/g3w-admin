@@ -1,18 +1,16 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+# Translation of G3W-ADMIN to Bulgarian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# Ivan Ivanov <suricactus@users.noreply.github.com>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-05 20:40+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: bg <info@g3wsuite.it>\n"
+"Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -34,19 +32,19 @@ msgstr "Настройки за визуализация"
 msgid "Additional settings"
 msgstr "Допълнителни настройки"
 
-#: core/api/base/views.py:148
+#: core/api/base/views.py:154
 msgid "Data are not correct or insufficent!"
 msgstr "Данните са неправилни или недостатъчни!"
 
-#: core/api/base/views.py:154
+#: core/api/base/views.py:160
 msgid "A error server is occured!"
 msgstr "Възникна грешка на сървъра!"
 
-#: core/api/base/views.py:162
+#: core/api/base/views.py:168
 msgid "Not found"
 msgstr "Не е намерено"
 
-#: core/api/base/views.py:168
+#: core/api/base/views.py:174
 msgid "Permission denied"
 msgstr "Достъпът е отказан"
 
@@ -78,11 +76,11 @@ msgstr "Търсене"
 msgid "Law"
 msgstr "Закон"
 
-#: core/forms.py:55 core/forms.py:425
+#: core/forms.py:55 core/forms.py:430
 msgid "General data"
 msgstr "Общи данни"
 
-#: core/forms.py:60 core/forms.py:240 core/forms.py:430
+#: core/forms.py:60 core/forms.py:245 core/forms.py:435
 msgid "Translatable fields"
 msgstr "Полета за превеждане"
 
@@ -102,50 +100,43 @@ msgstr "Лого/Изображение"
 msgid "Copyright"
 msgstr "Авторски права"
 
-#: core/forms.py:201
-#, python-brace-format
-msgid ""
-"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
-msgstr ""
-"SRID EPSG:{srid} не е равен на SRID на текущия проект EPSG:{layer_srid}"
-
-#: core/forms.py:236
+#: core/forms.py:241
 msgid "Frontend home data"
 msgstr "Начални данни на потребителския интерфейс"
 
-#: core/forms.py:261
+#: core/forms.py:266
 msgid "Frontend about data"
 msgstr "Данни за секция \"Относно\""
 
-#: core/forms.py:282
+#: core/forms.py:287
 msgid "Frontend groups map data"
 msgstr "Данни за картата на групите"
 
-#: core/forms.py:298
+#: core/forms.py:303
 msgid "Frontend login data"
 msgstr "Данни за вход"
 
-#: core/forms.py:316
+#: core/forms.py:321
 msgid "Frontend social data"
 msgstr "Данни за социални мрежи"
 
-#: core/forms.py:338
+#: core/forms.py:343
 msgid "Map client data"
 msgstr "Данни за картовия клиент"
 
-#: core/forms.py:356
+#: core/forms.py:361
 msgid "Registration"
 msgstr "Регистрация"
 
-#: core/forms.py:382
+#: core/forms.py:387
 msgid "Editor users"
 msgstr "Редактори"
 
-#: core/forms.py:402
+#: core/forms.py:407
 msgid "ACL Users"
 msgstr "ACL потребители"
 
-#: core/forms.py:434
+#: core/forms.py:439
 msgid ""
 "<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
@@ -153,23 +144,23 @@ msgstr ""
 "<b>Внимание!</b> Тези настройки са валидни само за картографски групи с една "
 "макрогрупа"
 
-#: core/forms.py:475
+#: core/forms.py:480
 msgid "Macro cartographic group"
 msgstr "Макро картографска група"
 
-#: core/forms.py:477
+#: core/forms.py:482
 msgid "Editor level 1"
 msgstr "Редактор ниво 1"
 
-#: core/forms.py:478
+#: core/forms.py:483
 msgid "Editor level 2"
 msgstr "Редактор ниво 2"
 
-#: core/forms.py:479
+#: core/forms.py:484
 msgid "User editor group"
 msgstr "Група потребители редактори"
 
-#: core/forms.py:480
+#: core/forms.py:485
 msgid "User viewer group"
 msgstr "Група потребители зрители"
 
@@ -186,7 +177,7 @@ msgid "Icon CSS class"
 msgstr "CSS клас за икона"
 
 #: core/models.py:39 core/models.py:151
-#: core/templates/core/ajax/group_detail.html:8
+#: core/templates/core/ajax/group_detail.html:9
 msgid "SRID"
 msgstr "SRID"
 
@@ -210,8 +201,8 @@ msgstr "PROJ координатна дефиниция"
 msgid "Name"
 msgstr "Име"
 
-#: core/models.py:61 core/models.py:96 core/models.py:137 core/models.py:425
-#: core/templates/core/ajax/macrogroup_detail.html:7
+#: core/models.py:61 core/models.py:96 core/models.py:137
+#: core/models.py:425 core/templates/core/ajax/macrogroup_detail.html:8
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
 msgstr "Заглавие"
@@ -220,8 +211,8 @@ msgstr "Заглавие"
 msgid "Icon"
 msgstr "Икона"
 
-#: core/models.py:63 core/models.py:79 core/models.py:97 core/models.py:138
-#: core/templates/core/ajax/macrogroup_detail.html:9
+#: core/models.py:63 core/models.py:79 core/models.py:97
+#: core/models.py:138 core/templates/core/ajax/macrogroup_detail.html:10
 msgid "Description"
 msgstr "Описание"
 
@@ -317,11 +308,11 @@ msgstr ""
 "За опциите на макрогрупата може да се използва текущото лого на групата като "
 "клиентско лого; ако е активирана опцията за макрогрупа, тя има предимство"
 
-#: core/models.py:178 core/models.py:416 core/templates/core/group_form.html:11
+#: core/models.py:178 core/models.py:416
 msgid "Group"
 msgstr "Група"
 
-#: core/models.py:179 core/templates/core/ajax/macrogroup_detail.html:11
+#: core/models.py:179 core/templates/core/ajax/macrogroup_detail.html:12
 #: core/templates/core/macrogroup_list_table.html:29
 msgid "Groups"
 msgstr "Групи"
@@ -498,7 +489,7 @@ msgstr "Оригинален URL"
 msgid "Short code"
 msgstr "Кратък код"
 
-#: core/models.py:523 core/templates/core/ajax/macrogroup_detail.html:5
+#: core/models.py:523 core/templates/core/ajax/macrogroup_detail.html:6
 msgid "Data"
 msgstr "Данни"
 
@@ -522,227 +513,340 @@ msgstr "Не можете да добавите нова група"
 msgid "You can't add new Project"
 msgstr "Не можете да добавите нов проект"
 
-#: core/templates/core/ajax/group_detail.html:5
+#: core/templates/core/ajax/group_detail.html:6
 msgid "Geografic component"
 msgstr "Географски компонент"
 
-#: core/templates/core/ajax/group_detail.html:7
+#: core/templates/core/ajax/group_detail.html:8
 msgid "Geographic coordinate system"
 msgstr "Географска координатна система"
 
-#: core/templates/core/ajax/group_detail.html:9
+#: core/templates/core/ajax/group_detail.html:10
 msgid "Units"
 msgstr "Единици"
 
-#: core/templates/core/ajax/group_detail.html:10
+#: core/templates/core/ajax/group_detail.html:11
 msgid "Principal map"
 msgstr "Основна карта"
 
-#: core/templates/core/ajax/group_detail.html:11
+#: core/templates/core/ajax/group_detail.html:12
 msgid "Max scale"
 msgstr "Максимален мащаб"
 
-#: core/templates/core/ajax/group_detail.html:12
+#: core/templates/core/ajax/group_detail.html:13
 msgid "Min scale"
 msgstr "Минимален мащаб"
 
-#: core/templates/core/ajax/group_detail.html:13
+#: core/templates/core/ajax/group_detail.html:14
 msgid "Overview Map"
 msgstr "Общ преглед на карта"
 
-#: core/templates/core/ajax/group_detail.html:14
+#: core/templates/core/ajax/group_detail.html:15
 msgid "Panoramic max scale"
 msgstr "Панорамен максимален мащаб"
 
-#: core/templates/core/ajax/group_detail.html:15
+#: core/templates/core/ajax/group_detail.html:16
 msgid "Panoramic min scale"
 msgstr "Панорамен минимален мащаб"
 
-#: core/templates/core/ajax/group_detail.html:18
+#: core/templates/core/ajax/group_detail.html:19
 msgid "Users"
 msgstr "Потребители"
 
-#: core/templates/core/ajax/group_detail.html:21
+#: core/templates/core/ajax/group_detail.html:22
 msgid "Editor level 1 user"
 msgstr "Потребител редактор ниво 1"
 
-#: core/templates/core/ajax/group_detail.html:25
+#: core/templates/core/ajax/group_detail.html:26
 msgid "Editor level 2 user"
 msgstr "Потребител редактор ниво 2"
 
-#: core/templates/core/ajax/group_detail.html:26
+#: core/templates/core/ajax/group_detail.html:27
 msgid "Viewer users"
 msgstr "Потребители прегледачи"
 
-#: core/templates/core/ajax/group_detail.html:27
+#: core/templates/core/ajax/group_detail.html:28
 msgid "Editor user groups"
 msgstr "Групи редактори"
 
-#: core/templates/core/ajax/group_detail.html:28
+#: core/templates/core/ajax/group_detail.html:29
 msgid "Viewer user groups"
 msgstr "Групи прегледачи"
 
-#: core/templates/core/ajax/group_detail.html:35
+#: core/templates/core/ajax/group_detail.html:36
 msgid "Interface component"
 msgstr "Интерфейс компонент"
 
-#: core/templates/core/ajax/group_detail.html:37
+#: core/templates/core/ajax/group_detail.html:38
 msgid "Interface language"
 msgstr "Език на интерфейса"
 
-#: core/templates/core/ajax/group_detail.html:38
+#: core/templates/core/ajax/group_detail.html:39
 msgid "Language"
 msgstr "Език"
 
-#: core/templates/core/ajax/group_detail.html:39
+#: core/templates/core/ajax/group_detail.html:40
 msgid "Associated logo"
 msgstr "Свързано лого"
 
-#: core/templates/core/ajax/group_detail.html:40
+#: core/templates/core/ajax/group_detail.html:41
 msgid "HeaderLogoImg"
 msgstr "Лого на заглавката"
 
-#: core/templates/core/ajax/group_detail.html:48
+#: core/templates/core/ajax/group_detail.html:49
 msgid "HeaderLogoHeight"
 msgstr "Височина на логото"
 
-#: core/templates/core/ajax/group_detail.html:49
+#: core/templates/core/ajax/group_detail.html:50
 msgid "HeaderLogoLink"
 msgstr "Линк на логото"
 
-#: core/templates/core/ajax/group_detail.html:50
+#: core/templates/core/ajax/group_detail.html:51
 msgid "Terms of use"
 msgstr "Условия за ползване"
 
-#: core/templates/core/ajax/group_detail.html:51
+#: core/templates/core/ajax/group_detail.html:52
 msgid "HeaderTermsOfUseText"
 msgstr "Текст за условия за ползване"
 
-#: core/templates/core/ajax/group_detail.html:52
+#: core/templates/core/ajax/group_detail.html:53
 msgid "HeaderTermsOfUseLink"
 msgstr "Линк за условия за ползване"
 
-#: core/templates/core/ajax/system_info.html:4
-#: core/templates/core/ajax/system_info.html:17
+#: core/templates/core/ajax/system_info.html:9
+#: core/templates/core/ajax/system_info.html:52
 msgid "General"
 msgstr "Общи"
 
-#: core/templates/core/ajax/system_info.html:10
-msgid "DataBase"
-msgstr "База данни"
+#: core/templates/core/ajax/system_info.html:31
+#| msgid "DataBase"
+msgid "Databases"
+msgstr "Бази данни"
 
-#: core/templates/core/ajax/system_info.html:16
+#: core/templates/core/ajax/system_info.html:42
+msgid "No database connections detected."
+msgstr "Не са открити връзки с бази данни."
+
+#: core/templates/core/ajax/system_info.html:52
+#: core/templates/core/ajax/system_info.html:66
+#: core/templates/core/ajax/system_info.html:88
 msgid "Libraries"
 msgstr "Библиотеки"
 
-#: core/templates/core/ajax/system_info.html:21
+#: core/templates/core/ajax/system_info.html:66
 msgid "Geographic"
 msgstr "Географски"
 
-#: core/templates/core/ajax/system_info.html:27
-msgid "Python"
-msgstr "Python"
+#: core/templates/core/generalsuitedata_form.html:15
+#| msgid "General suite data"
+msgid "General suite settings"
+msgstr "Общи настройки на пакета"
 
-#: core/templates/core/generalsuitedata_form.html:11
-msgid "General suite data"
-msgstr "Общи данни за пакета"
+#: core/templates/core/generalsuitedata_form.html:18
+msgid ""
+"Branding, default texts and global preferences for the whole G3W-Suite "
+"installation."
+msgstr "Брандиране, текстове по подразбиране и глобални предпочитания за цялата инсталация на G3W-Suite."
 
-#: core/templates/core/generalsuitedata_form.html:24
-#: core/templates/core/group_form.html:45
-#: core/templates/core/macrogroup_form.html:54
-msgid "Alert"
-msgstr "Предупреждение"
+#: core/templates/core/generalsuitedata_form.html:23
+msgid "Back to dashboard"
+msgstr "Назад към таблото"
 
-#: core/templates/core/generalsuitedata_form.html:25
-#: core/templates/core/group_form.html:46
-#: core/templates/core/macrogroup_form.html:55
-msgid "Some errors on form. Check it and send again."
-msgstr "Има грешки във формата. Проверете и изпратете отново."
+#: core/templates/core/generalsuitedata_form.html:40
+#: core/templates/core/group_form.html:68
+#: core/templates/core/macrogroup_form.html:67
+msgid "Some errors on form"
+msgstr "Във формуляра има грешки"
 
-#: core/templates/core/group_deactive_list.html:10
-msgid "Cartographic groups deactivated"
+#: core/templates/core/generalsuitedata_form.html:41
+#: core/templates/core/group_form.html:69
+#: core/templates/core/macrogroup_form.html:68
+msgid "Check the highlighted fields and submit again."
+msgstr "Проверете маркираните полета и изпратете отново."
+
+#: core/templates/core/group_deactive_list.html:15
+#| msgid "Macro cartographic group"
+msgid "Deactivated cartographic groups"
 msgstr "Деактивирани картографски групи"
 
-#: core/templates/core/group_deactive_list.html:34
-#: core/templates/core/group_list.html:97
-#: core/templates/core/search/group.html:25
-msgid "Group projects"
-msgstr "Проекти на групата"
+#: core/templates/core/group_deactive_list.html:18
+msgid ""
+"Groups currently in the bin. Restore them to bring projects back online, or "
+"delete permanently to free up space."
+msgstr "Групи, които в момента са в кошчето. Възстановете ги, за да направите проектите отново достъпни, или ги изтрийте окончателно, за да освободите място."
 
-#: core/templates/core/group_deactive_list.html:34
-#: core/templates/core/group_form.html:33
-#: core/templates/core/group_list.html:97
-#: core/templates/core/project_list.html:11
+#: core/templates/core/group_deactive_list.html:23
+#: core/templates/core/group_deactive_list.html:108
+#| msgid "Cartographic groups"
+msgid "Back to active groups"
+msgstr "Назад към активните групи"
+
+#: core/templates/core/group_deactive_list.html:38
+msgid "deactivated group"
+msgid_plural "deactivated groups"
+msgstr[0] "деактивирана група"
+msgstr[1] "деактивирани групи"
+
+#: core/templates/core/group_deactive_list.html:52
+#| msgid "Delete/Deactivate"
+msgid "Deactivated"
+msgstr "Деактивирани"
+
+#: core/templates/core/group_deactive_list.html:62
+#: core/templates/core/group_list.html:136
 msgid "Projects"
 msgstr "Проекти"
 
-#: core/templates/core/group_deactive_list.html:41
-#: core/templates/core/group_list.html:104
-#: core/templates/core/macrogroup_list.html:66
+#: core/templates/core/group_deactive_list.html:67
+#: core/templates/core/group_list.html:149
+#: core/templates/core/macrogroup_list.html:128
 #: core/templates/core/macrogroup_list_table.html:37
-#: core/templates/core/project_list.html:75
-#: core/templates/core/project_list.html:77
-#: core/templates/core/search/group.html:24
-#: core/templates/core/search/macrogroup.html:22
+#: core/templates/core/project_list.html:71
+#: core/templates/core/search/group.html:40
+#: core/templates/core/search/macrogroup.html:38
 msgid "Show detail"
 msgstr "Покажи детайли"
 
-#: core/templates/core/group_deactive_list.html:50
-msgid "Redo/Active"
-msgstr "Възстанови/Активирай"
+#: core/templates/core/group_deactive_list.html:76
+#| msgid "Redo/Active"
+msgid "Restore / Activate"
+msgstr "Възстановяване / Активиране"
 
-#: core/templates/core/group_deactive_list.html:59
-#: core/templates/core/macrogroup_list.html:83
-#: core/templates/core/macrogroup_list_table.html:43
-msgid "Delete"
-msgstr "Изтрий"
+#: core/templates/core/group_deactive_list.html:86
+msgid "Delete permanently"
+msgstr "Окончателно изтриване"
 
-#: core/templates/core/group_deactive_list.html:62
+#: core/templates/core/group_deactive_list.html:92
 msgid "Warning: deleting the group will delete the projects it contains!"
 msgstr "Внимание: изтриването на групата ще изтрие и проектите в нея!"
 
-#: core/templates/core/group_form.html:33
-msgid "Current"
-msgstr "Текущи"
+#: core/templates/core/group_deactive_list.html:105
+msgid "The bin is empty"
+msgstr "Кошчето е празно"
 
-#: core/templates/core/group_list.html:10
-#: core/templates/core/search/group.html:9
+#: core/templates/core/group_deactive_list.html:106
+msgid "There are no deactivated cartographic groups to show."
+msgstr "Няма деактивирани картографски групи за показване."
+
+#: core/templates/core/group_form.html:15
+#| msgid "Cartographic groups"
+msgid "Edit cartographic group"
+msgstr "Редактиране на картографска група"
+
+#: core/templates/core/group_form.html:15
+#| msgid "Cartographic groups"
+msgid "New cartographic group"
+msgstr "Нова картографска група"
+
+#: core/templates/core/group_form.html:21
+msgid ""
+"Configure name, geographic data, base layers and branding for a new map "
+"group."
+msgstr "Задайте име, географски данни, базови слоеве и брандиране за нова картографска група."
+
+#: core/templates/core/group_form.html:27
+#: core/templates/core/project_list.html:18
+#| msgid "Macro group"
+msgid "Back to groups"
+msgstr "Назад към групите"
+
+#: core/templates/core/group_form.html:48
+#| msgid "Current"
+msgid "Currently"
+msgstr "В момента"
+
+#: core/templates/core/group_form.html:50
+#| msgid "Projects"
+msgid "projects"
+msgstr "проекти"
+
+#: core/templates/core/group_list.html:13
+#: core/templates/core/search/group.html:11
 msgid "Cartographic groups"
 msgstr "Картографски групи"
 
-#: core/templates/core/group_list.html:51
-msgid "Filter by"
-msgstr "Филтрирай по"
+#: core/templates/core/group_list.html:14
+msgid "Browse, organize and manage the map groups you have access to."
+msgstr "Разглеждайте, организирайте и управлявайте картографските групи, до които имате достъп."
 
-#: core/templates/core/group_list.html:60
-msgid "Filter"
-msgstr "Филтрирай"
+#: core/templates/core/group_list.html:17
+#: core/templates/core/macrogroup_list.html:112
+#| msgid "Groups"
+msgid "groups"
+msgstr "групи"
 
-#: core/templates/core/group_list.html:85
+#: core/templates/core/group_list.html:90
+#| msgid "Editor user groups"
+msgid "Filter groups"
+msgstr "Филтриране на групи"
+
+#: core/templates/core/group_list.html:92
+#: core/templates/core/macrogroup_list.html:82
+msgid "View mode"
+msgstr "Режим на преглед"
+
+#: core/templates/core/group_list.html:94
+#: core/templates/core/macrogroup_list.html:84
+msgid "Grid view"
+msgstr "Изглед в мрежа"
+
+#: core/templates/core/group_list.html:98
+#: core/templates/core/macrogroup_list.html:88
+msgid "List view"
+msgstr "Изглед като списък"
+
+#: core/templates/core/group_list.html:104
+#: core/templates/core/group_list.html:203
+#| msgid "User viewer group"
+msgid "New group"
+msgstr "Нова група"
+
+#: core/templates/core/group_list.html:114
+msgid "Apply filter"
+msgstr "Прилагане на филтъра"
+
+#: core/templates/core/group_list.html:140
 msgid "Add new project"
 msgstr "Добави нов проект"
 
-#: core/templates/core/group_list.html:113
-#: core/templates/core/macrogroup_list.html:74
+#: core/templates/core/group_list.html:156
+#: core/templates/core/macrogroup_list.html:134
 #: core/templates/core/macrogroup_list_table.html:40
-#: core/templates/core/project_list.html:82
-#: core/templates/core/project_list.html:84
-#: core/templates/core/search/group.html:28
-#: core/templates/core/search/macrogroup.html:24
+#: core/templates/core/project_list.html:79
+#: core/templates/core/search/group.html:44
+#: core/templates/core/search/macrogroup.html:40
 msgid "Edit"
 msgstr "Редактирай"
 
-#: core/templates/core/group_list.html:125
+#: core/templates/core/group_list.html:163
 msgid "Delete/Deactivate"
 msgstr "Изтрий/Деактивирай"
 
-#: core/templates/core/group_list.html:134
+#: core/templates/core/group_list.html:171
 msgid ""
 "<strong>Warning</strong>: deleting the group (move to bucket) will delete "
 "the projects it contains (move to the bucket)!"
 msgstr ""
 "<strong>Внимание</strong>: изтриването на групата (преместване в коша) ще "
 "изтрие и проектите в нея (също ще се преместят в коша)!"
+
+#: core/templates/core/group_list.html:185
+#| msgid "Add new project"
+msgid "Add new group"
+msgstr "Добавяне на нова група"
+
+#: core/templates/core/group_list.html:193
+#| msgid "Not found"
+msgid "No groups found"
+msgstr "Не са намерени групи"
+
+#: core/templates/core/group_list.html:196
+msgid "Create your first cartographic group to start organizing projects."
+msgstr "Създайте първата си картографска група, за да започнете да организирате проекти."
+
+#: core/templates/core/group_list.html:198
+msgid "No groups match your filter, or none have been shared with you yet."
+msgstr "Няма групи, които отговарят на филтъра ви, или все още няма споделени с вас групи."
 
 #: core/templates/core/include/add_project.html:4
 msgid "Add project"
@@ -772,23 +876,112 @@ msgstr "Запази"
 msgid "Redo/Back"
 msgstr "Върни се/Назад"
 
-#: core/templates/core/macrogroup_form.html:10
-msgid "Macro Group"
-msgstr "Макро група"
+#: core/templates/core/macrogroup_form.html:14
+#| msgid "Macro group"
+msgid "Edit macro group"
+msgstr "Редактиране на макрогрупа"
 
-#: core/templates/core/macrogroup_form.html:27
-msgid "Current groups"
-msgstr "Текущи групи"
+#: core/templates/core/macrogroup_form.html:14
+#: core/templates/core/macrogroup_list.html:94
+#: core/templates/core/macrogroup_list.html:175
+#| msgid "Macro group"
+msgid "New macro group"
+msgstr "Нова макрогрупа"
 
-#: core/templates/core/macrogroup_list.html:10
+#: core/templates/core/macrogroup_form.html:20
+msgid "Group cartographic groups together under a shared label and branding."
+msgstr "Обединете картографски групи с общо име и брандиране."
+
+#: core/templates/core/macrogroup_form.html:26
+#| msgid "Cartographic macro groups"
+msgid "Back to macro groups"
+msgstr "Назад към макрогрупите"
+
+#: core/templates/core/macrogroup_form.html:48
+msgid "Linked groups:"
+msgstr "Свързани групи:"
+
+#: core/templates/core/macrogroup_form.html:53
+#| msgid "Macro cartographic group"
+msgid "No cartographic groups linked yet."
+msgstr "Все още няма свързани картографски групи."
+
+#: core/templates/core/macrogroup_list.html:13
 #: core/templates/core/macrogroup_list_table.html:10
-#: core/templates/core/search/macrogroup.html:8
+#: core/templates/core/search/macrogroup.html:10
 msgid "Cartographic macro groups"
 msgstr "Картографски макро групи"
+
+#: core/templates/core/macrogroup_list.html:14
+msgid "Group together cartographic groups under shared identities and logos."
+msgstr "Обединявайте картографски групи с обща идентичност и лога."
+
+#: core/templates/core/macrogroup_list.html:17
+#| msgid "Macro group"
+msgid "macro groups"
+msgstr "макрогрупи"
+
+#: core/templates/core/macrogroup_list.html:80
+#| msgid "Macro group"
+msgid "All macro groups"
+msgstr "Всички макрогрупи"
+
+#: core/templates/core/macrogroup_list.html:121
+#| msgid "Logo link"
+msgid "No groups linked"
+msgstr "Няма свързани групи"
+
+#: core/templates/core/macrogroup_list.html:140
+#: core/templates/core/macrogroup_list_table.html:43
+msgid "Delete"
+msgstr "Изтрий"
+
+#: core/templates/core/macrogroup_list.html:157
+#| msgid "Macro group"
+msgid "Add new macro group"
+msgstr "Добавяне на нова макрогрупа"
+
+#: core/templates/core/macrogroup_list.html:165
+#| msgid "Macro group"
+msgid "No macro groups found"
+msgstr "Не са намерени макрогрупи"
+
+#: core/templates/core/macrogroup_list.html:168
+msgid ""
+"Create your first macro group to organize cartographic groups under a shared "
+"identity."
+msgstr "Създайте първата си макрогрупа, за да организирате картографски групи с обща идентичност."
+
+#: core/templates/core/macrogroup_list.html:170
+msgid "No macro groups have been shared with you yet."
+msgstr "Все още няма споделени с вас макрогрупи."
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
 msgstr "Макро група"
+
+#: core/templates/core/project_list.html:14
+#| msgid "Macro cartographic group"
+msgid "Projects available in this cartographic group."
+msgstr "Проекти, налични в тази картографска група."
+
+#: core/templates/core/project_list.html:74
+msgid "Detail"
+msgstr "Подробности"
+
+#: core/templates/core/project_list.html:80
+#| msgid "Editor user groups"
+msgid "Edit group"
+msgstr "Редактиране на група"
+
+#: core/templates/core/search/group.html:17
+#: core/templates/core/search/macrogroup.html:16
+msgid "Collapse / expand"
+msgstr "Свиване / разгъване"
+
+#: core/templates/core/search/group.html:41
+msgid "Group projects"
+msgstr "Проекти на групата"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
@@ -799,6 +992,7 @@ msgid "Project"
 msgstr "Проект"
 
 #: core/utils/data.py:24
+#, python-brace-format
 msgid "[{} error on {}({})]-- {}"
 msgstr "[{} грешка при {}({})]-- {}"
 
@@ -806,32 +1000,66 @@ msgstr "[{} грешка при {}({})]-- {}"
 msgid "Default base layer"
 msgstr "Основен базов слой"
 
-#: core/utils/qgisapi.py:511
+#: core/utils/qgisapi.py:548
+#, python-brace-format
 msgid "Function \"{}\" is not allowed for security reasons!"
 msgstr "Функцията \"{}\" не е разрешена поради съображения за сигурност!"
 
-#: core/utils/qgisapi.py:516
+#: core/utils/qgisapi.py:553
+#, python-brace-format
 msgid "Variable \"{}\" is not allowed for security reasons!"
 msgstr "Променливата \"{}\" не е разрешена поради съображения за сигурност!"
 
-#: core/utils/qgisapi.py:528 core/utils/qgisapi.py:545
+#: core/utils/qgisapi.py:565 core/utils/qgisapi.py:582
+#, python-brace-format
 msgid "QGIS layer with id \"{}\" could not be found!"
 msgstr "QGIS слой с id \"{}\" не може да бъде намерен!"
 
-#: core/utils/qgisapi.py:551
+#: core/utils/qgisapi.py:588
+#, python-brace-format
 msgid "QDjango project with id \"{}\" could not be found!"
 msgstr "QDjango проект с id \"{}\" не може да бъде намерен!"
 
-#: core/utils/qgisapi.py:561
+#: core/utils/qgisapi.py:598
 msgid "A valid QGIS layer is required to process form data!"
 msgstr "Изисква се валиден QGIS слой за обработка на данните от формата!"
 
-#: core/utils/qgisapi.py:575
+#: core/utils/qgisapi.py:612
 msgid "A valid QGIS layer (parent layer) is required to process form data!"
 msgstr ""
 "Изисква се валиден QGIS слой (родителски слой) за обработка на данните от "
 "формата!"
 
-#: core/utils/structure.py:187
+#: core/utils/structure.py:190
 msgid "Yes"
 msgstr "Да"
+
+#, python-brace-format
+#~ msgid ""
+#~ "SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
+#~ msgstr ""
+#~ "SRID EPSG:{srid} не е равен на SRID на текущия проект EPSG:{layer_srid}"
+
+#~ msgid "Python"
+#~ msgstr "Python"
+
+#~ msgid "Alert"
+#~ msgstr "Предупреждение"
+
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Има грешки във формата. Проверете и изпратете отново."
+
+#~ msgid "Cartographic groups deactivated"
+#~ msgstr "Деактивирани картографски групи"
+
+#~ msgid "Filter by"
+#~ msgstr "Филтрирай по"
+
+#~ msgid "Filter"
+#~ msgstr "Филтрирай"
+
+#~ msgid "Macro Group"
+#~ msgstr "Макро група"
+
+#~ msgid "Current groups"
+#~ msgstr "Текущи групи"

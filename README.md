@@ -243,7 +243,7 @@ Depending on the component you want to translate you can start by consulting one
 - Bulgarian: [suricactus](https://github.com/suricactus)
 - French: [democracy essentials](https://www.democracy-essentials.eu), [sig-echirolles](https://github.com/sig-echirolles)
 - German: [r3gis](https://www.r3gis.com)
-- Italian: [wlorenzetti](https://github.com/wlorenzetti)
+- Italian: [wlorenzetti](https://github.com/wlorenzetti), [elpaso](https://github.com/elpaso), [volterra79](https://github.com/volterra79), [leolami](https://github.com/leolami), [Raruto](https://github.com/Raruto).
 - Portuguese: [SrNetoChan](https://github.com/SrNetoChan)
 - Romanian: [tudorbarascu](https://github.com/tudorbarascu)
 - Spanish: [samtux](https://github.com/samtux)
@@ -251,8 +251,8 @@ Depending on the component you want to translate you can start by consulting one
 ---
 
 **Compatibile with:**
-[![Django version](https://img.shields.io/badge/Django-4.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.34-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![Django version](https://img.shields.io/badge/Django-5.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-4.2-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 
