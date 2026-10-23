@@ -1,1114 +1,1693 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Finnish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: fi <info@g3wsuite.it>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: qdjango/admin.py:75 qdjango/models/projects.py:275
-#: qdjango/models/projects.py:495 qdjango/templates/qdjango/layers_list.html:73
+#: qdjango/admin.py:83 qdjango/models/projects.py:439
+#: qdjango/models/projects.py:784
 msgid "Project"
-msgstr ""
+msgstr "Projekti"
 
-#: qdjango/admin.py:149
+#: qdjango/admin.py:167
+#, python-brace-format
 msgid "{} can not be deleted because: {}"
-msgstr ""
+msgstr "Kohdetta {} ei voi poistaa, koska: {}"
 
-#: qdjango/admin.py:164
+#: qdjango/admin.py:182
 #, python-format
 msgid "This object can not be deleted because: %s."
-msgstr ""
+msgstr "Tätä kohdetta ei voi poistaa, koska: %s."
 
-#: qdjango/admin.py:176
+#: qdjango/admin.py:194
+#, python-brace-format
 msgid ""
 "Authentication configuration {} can not be deleted because one or more "
 "layers are using it: {}"
-msgstr ""
+msgstr "Tunnistautumisasetusta {} ei voi poistaa, koska yksi tai useampi taso käyttää sitä: {}"
 
 #: qdjango/api/layers/views.py:39 qdjango/api/layers/views.py:154
 msgid "Style not found."
-msgstr ""
+msgstr "Tyyliä ei löytynyt."
 
 #: qdjango/api/layers/views.py:45
 msgid "A style with this name already exists."
-msgstr ""
+msgstr "Tämänniminen tyyli on jo olemassa."
 
 #: qdjango/api/layers/views.py:207 qdjango/api/layers/views.py:304
 msgid "Error parsing QML"
-msgstr ""
+msgstr "Virhe QML:n jäsentämisessä"
 
 #: qdjango/api/layers/views.py:212
 msgid "Error parsing style name"
-msgstr ""
+msgstr "Virhe tyylin nimen jäsentämisessä"
 
 #: qdjango/api/layers/views.py:220
 msgid "Error creating new style"
-msgstr ""
+msgstr "Virhe uuden tyylin luomisessa"
 
 #: qdjango/api/layers/views.py:288
 msgid "Error renaming the style"
-msgstr ""
+msgstr "Virhe tyylin uudelleennimeämisessä"
 
 #: qdjango/api/layers/views.py:310
 msgid "Either \"name\" or \"current\" or \"qml\" needs to be specified."
-msgstr ""
+msgstr "Jokin parametreista \"name\", \"current\" tai \"qml\" on määritettävä."
 
 #: qdjango/api/layers/views.py:336 qdjango/api/layers/views.py:358
 msgid "Unknown error while modifying the style."
-msgstr ""
+msgstr "Tuntematon virhe tyylin muokkaamisessa."
 
-#: qdjango/forms.py:51
+#: qdjango/forms/messages.py:41
+msgid "General data"
+msgstr "Yleiset tiedot"
+
+#: qdjango/forms/messages.py:59
+msgid "Validity"
+msgstr "Voimassaolo"
+
+#: qdjango/forms/messages.py:83
+msgid "Date from from must be less than Date to"
+msgstr "Alkupäivän on oltava ennen loppupäivää"
+
+#: qdjango/forms/messages.py:84
+msgid "Date to must be more than Date from"
+msgstr "Loppupäivän on oltava alkupäivän jälkeen"
+
+#: qdjango/forms/projects.py:40 qdjango/forms/projects.py:131
+#, python-format
+msgid "%(count)d error found:"
+msgid_plural "%(count)d errors found:"
+msgstr[0] "Löytyi %(count)d virhe:"
+msgstr[1] "Löytyi %(count)d virhettä:"
+
+#: qdjango/forms/projects.py:75
 msgid "File must have 'qgs' or 'qgz' extension"
-msgstr ""
+msgstr "Tiedoston päätteen on oltava 'qgs' tai 'qgz'"
 
-#: qdjango/forms.py:91
+#: qdjango/forms/projects.py:144
 msgid "Url alias can contains only numbers, letters, - or _"
-msgstr ""
+msgstr "URL-tunniste saa sisältää vain numeroita, kirjaimia sekä merkkejä - ja _"
 
-#: qdjango/forms.py:96
+#: qdjango/forms/projects.py:153
 msgid "This alias is used by another project/map"
-msgstr ""
+msgstr "Tämä tunniste on jo käytössä toisessa projektissa tai kartassa"
 
-#: qdjango/forms.py:109
+#: qdjango/forms/projects.py:169
 msgid "Max extent is smaller than init map extent"
-msgstr ""
+msgstr "Enimmäislaajuus on pienempi kuin kartan aloituslaajuus"
 
-#: qdjango/forms.py:118
-msgid ""
-"Is not possible set Legend position rendering to \"{Project."
-"CLIENT_LEGEND_POSITION['toc']}\" "
-msgstr ""
-
-#: qdjango/forms.py:138 qdjango/templates/qdjango/project_list.html:25
+#: qdjango/forms/projects.py:203
 msgid "URL alias"
-msgstr ""
+msgstr "URL-tunniste"
 
-#: qdjango/forms.py:139
+#: qdjango/forms/projects.py:204
 msgid ""
 "You can set a human readable URL for the map. Only alphanumeric characters, "
 "not white space or special characters"
-msgstr ""
+msgstr "Voit määrittää kartalle helposti luettavan URL-osoitteen. Käytä vain kirjaimia ja numeroita, älä välilyöntejä tai erikoismerkkejä"
 
-#: qdjango/forms.py:144
+#: qdjango/forms/projects.py:210
 msgid "QGIS Authentication ID"
-msgstr ""
+msgstr "QGIS-tunnistautumistunnus"
 
-#: qdjango/forms.py:145 qdjango/models/qgisauth.py:97
+#: qdjango/forms/projects.py:214 qdjango/models/qgisauth.py:97
 msgid "7 alphanumeric ASCII chars"
-msgstr ""
+msgstr "7 kirjainta tai numeroa ASCII-merkistöstä"
 
-#: qdjango/forms.py:147
+#: qdjango/forms/projects.py:219
+#: qdjango/templates/qdjango/ajax/project_detail.html:118
 msgid "Username"
-msgstr ""
+msgstr "Käyttäjätunnus"
 
-#: qdjango/forms.py:149
+#: qdjango/forms/projects.py:224
 msgid "Password"
-msgstr ""
+msgstr "Salasana"
 
-#: qdjango/forms.py:181
+#: qdjango/forms/projects.py:264
 #, python-brace-format
 msgid ""
 "Warning: an invalid layer is using an existing authentication configuration "
 "({authentication_id}). Ask an administrator to check if the configuration is "
 "correct by browinsg the URL<a target=_new href=\"{admin_url}\">{admin_url}</"
 "a>"
-msgstr ""
+msgstr "Varoitus: virheellinen taso käyttää olemassa olevaa tunnistautumisasetusta ({authentication_id}). Pyydä ylläpitäjää tarkistamaan asetukset osoitteessa <a target=_new href=\"{admin_url}\">{admin_url}</a>"
 
-#: qdjango/forms.py:193
+#: qdjango/forms/projects.py:277
 msgid "Qgis Project"
-msgstr ""
+msgstr "QGIS-projekti"
 
-#: qdjango/forms.py:219
+#: qdjango/forms/projects.py:284
+msgid "Translatable fields"
+msgstr "Käännettävät kentät"
+
+#: qdjango/forms/projects.py:309
 msgid "Description data"
-msgstr ""
+msgstr "Kuvaustiedot"
 
-#: qdjango/forms.py:243
+#: qdjango/forms/projects.py:341
 msgid "Options and actions"
-msgstr ""
+msgstr "Asetukset ja toiminnot"
 
-#: qdjango/forms.py:276 qdjango/models/qgisauth.py:115
+#: qdjango/forms/projects.py:383 qdjango/models/qgisauth.py:115
 msgid "QGIS Authentication"
-msgstr ""
+msgstr "QGIS-tunnistautuminen"
 
-#: qdjango/forms.py:432
+#: qdjango/forms/projects.py:559
 msgid "Viewers"
-msgstr ""
+msgstr "Katselijat"
 
-#: qdjango/forms.py:433
+#: qdjango/forms/projects.py:561
 msgid "Select/Unselect user with viewer role can view the layer"
-msgstr ""
+msgstr "Valitse katselijan roolissa olevat käyttäjät, jotka saavat katsella tasoa, tai poista valinta"
 
-#: qdjango/forms.py:435
+#: qdjango/forms/projects.py:567
 msgid "Select/Unselect viewer groups can view the layer"
-msgstr ""
+msgstr "Valitse katselijaryhmät, jotka saavat katsella tasoa, tai poista valinta"
 
-#: qdjango/forms.py:436
+#: qdjango/forms/projects.py:568
 msgid "User viewer groups"
-msgstr ""
+msgstr "Käyttäjän katselijaryhmät"
 
-#: qdjango/forms.py:451
+#: qdjango/forms/projects.py:583
 msgid "Select viewers with 'view permission' on project that can view layer:"
-msgstr ""
+msgstr "Valitse tason katseluun oikeutetut katselijat, joilla on projektin katseluoikeus:"
 
 #: qdjango/models/column_acl.py:40
 #, python-format
 msgid "%(value)s is not a vector layer"
-msgstr ""
+msgstr "%(value)s ei ole vektoritaso"
+
+#: qdjango/models/column_acl.py:51
+#: qdjango/templates/qdjango/ajax/project_detail.html:17
+#: qdjango/templates/qdjango/ajax/project_detail.html:308
+msgid "Users"
+msgstr "Käyttäjät"
+
+#: qdjango/models/column_acl.py:53
+msgid "User groups"
+msgstr "Käyttäjäryhmät"
 
 #: qdjango/models/column_acl.py:56
 msgid "Restricted fields"
-msgstr ""
+msgstr "Rajoitetut kentät"
 
-#: qdjango/models/column_acl.py:70
+#: qdjango/models/column_acl.py:63
 msgid "Column level constraint"
-msgstr ""
+msgstr "Saraketason rajoite"
 
-#: qdjango/models/column_acl.py:72
+#: qdjango/models/column_acl.py:65
 msgid "Column level constraints"
-msgstr ""
+msgstr "Saraketason rajoitteet"
 
-#: qdjango/models/column_acl.py:83
+#: qdjango/models/column_acl.py:76
+#, python-brace-format
 msgid "Field \"{}\" is not available in layer {}."
-msgstr ""
+msgstr "Kenttää \"{}\" ei ole tasolla {}."
 
-#: qdjango/models/constraints.py:45 qdjango/models/projects.py:482
-#: qdjango/models/projects.py:978 qdjango/models/qgisauth.py:98
-#: qdjango/templates/qdjango/ajax/layer_detail.html:11
+#: qdjango/models/constraints.py:45 qdjango/models/projects.py:741
+#: qdjango/models/projects.py:1626 qdjango/models/qgisauth.py:98
+#: qdjango/templates/qdjango/ajax/layer_detail.html:23
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:9
-#: qdjango/templates/qdjango/layers_list.html:109
+#: qdjango/templates/qdjango/layers_list.html:255
+#: qdjango/templates/qdjango/layers_list.html:275
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 #: qdjango/models/constraints.py:46 qdjango/models/geoconstraints.py:54
-#: qdjango/models/projects.py:182 qdjango/models/projects.py:488
+#: qdjango/models/projects.py:214 qdjango/models/projects.py:765
+#: qdjango/templates/qdjango/ajax/project_detail.html:174
+#: qdjango/templates/qdjango/ajax/project_detail.html:220
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
 #: qdjango/models/constraints.py:48 qdjango/models/geoconstraints.py:58
 msgid "Active for visualization"
-msgstr ""
+msgstr "Käytössä katselussa"
 
 #: qdjango/models/constraints.py:50 qdjango/models/geoconstraints.py:60
 msgid "Active this constraint for users have viewing grant on layer/project"
-msgstr ""
+msgstr "Käytä tätä rajoitetta käyttäjiin, joilla on tason tai projektin katseluoikeus"
 
 #: qdjango/models/constraints.py:51 qdjango/models/geoconstraints.py:61
 msgid "Active for editing"
-msgstr ""
+msgstr "Käytössä muokkauksessa"
 
 #: qdjango/models/constraints.py:53 qdjango/models/geoconstraints.py:63
 msgid "Active this constraint for users have editing grant on layer/project"
-msgstr ""
+msgstr "Käytä tätä rajoitetta käyttäjiin, joilla on tason tai projektin muokkausoikeus"
 
-#: qdjango/models/constraints.py:89 qdjango/models/geoconstraints.py:106
+#: qdjango/models/constraints.py:89 qdjango/models/geoconstraints.py:111
 msgid "Almonst one of fields for_view and for_editing it must be True"
-msgstr ""
+msgstr "Vähintään toisen kentistä for_view ja for_editing on oltava True"
 
 #: qdjango/models/constraints.py:96
 msgid "Layer constraint"
-msgstr ""
+msgstr "Tason rajoite"
 
 #: qdjango/models/constraints.py:97
 msgid "Layer constraints"
-msgstr ""
+msgstr "Tason rajoitteet"
 
 #: qdjango/models/constraints.py:111
 msgid "Rule definition"
-msgstr ""
+msgstr "Säännön määritelmä"
 
 #: qdjango/models/constraints.py:112
 msgid ""
 "Definition of the rule, either an SQL WHERE condition or a QgsExpression "
 "definition depending on the rule type"
-msgstr ""
+msgstr "Säännön määritelmä: säännön tyypin mukaan joko SQL:n WHERE-ehto tai QgsExpression-määritelmä"
 
-#: qdjango/models/constraints.py:143 qdjango/models/geoconstraints.py:161
+#: qdjango/models/constraints.py:143 qdjango/models/geoconstraints.py:166
 msgid "You cannot define a user and a group at the same time"
-msgstr ""
+msgstr "Et voi määrittää käyttäjää ja ryhmää samanaikaisesti"
 
-#: qdjango/models/constraints.py:147 qdjango/models/geoconstraints.py:165
+#: qdjango/models/constraints.py:147 qdjango/models/geoconstraints.py:170
 msgid "You must define a user OR a group"
-msgstr ""
+msgstr "Sinun on määritettävä käyttäjä TAI ryhmä"
 
-#: qdjango/models/constraints.py:152 qdjango/models/geoconstraints.py:170
+#: qdjango/models/constraints.py:152 qdjango/models/geoconstraints.py:175
 #, python-format
 msgid "There is an error in the SQL rule where condition: %s"
-msgstr ""
+msgstr "SQL-säännön WHERE-ehdossa on virhe: %s"
 
 #: qdjango/models/constraints.py:296
 msgid "Constraint subset string rule"
-msgstr ""
+msgstr "Osajoukkolausekkeen rajoitesääntö"
 
 #: qdjango/models/constraints.py:297
 msgid "Constraint subset string rules"
-msgstr ""
+msgstr "Osajoukkolausekkeen rajoitesäännöt"
 
 #: qdjango/models/constraints.py:346
 msgid "Constraint expression rule"
-msgstr ""
+msgstr "Lausekerajoitteen sääntö"
 
 #: qdjango/models/constraints.py:347
 msgid "Constraint expression rules"
-msgstr ""
+msgstr "Lausekerajoitteen säännöt"
 
-#: qdjango/models/geoconstraints.py:94
+#: qdjango/models/geoconstraints.py:64
+msgid "Autozoom on map boostrap"
+msgstr "Automaattinen zoomaus karttaa avattaessa"
+
+#: qdjango/models/geoconstraints.py:66
+msgid ""
+"Active this to make possible auto zoom on geometric constraint (combining "
+"every rule) for user on map boostrap"
+msgstr "Ota käyttöön automaattinen zoomaus käyttäjän geometriarajoitteeseen (kaikki säännöt yhdistäen) karttaa avattaessa"
+
+#: qdjango/models/geoconstraints.py:99
 msgid "Layers types must be spatialite or postgres"
-msgstr ""
+msgstr "Tasojen tyyppien on oltava spatialite tai postgres"
 
-#: qdjango/models/geoconstraints.py:98
+#: qdjango/models/geoconstraints.py:103
 msgid "Constraint layer geometry type must be Polygon or MultiPolygon"
-msgstr ""
+msgstr "Rajoitetason geometriatyypin on oltava Polygon tai MultiPolygon"
 
-#: qdjango/models/geoconstraints.py:102
+#: qdjango/models/geoconstraints.py:107
 msgid "Editing and constraints layer cannot be the same layer"
-msgstr ""
+msgstr "Muokkaustaso ja rajoitetaso eivät voi olla sama taso"
 
-#: qdjango/models/geoconstraints.py:113
+#: qdjango/models/geoconstraints.py:118
 msgid "Layer geoconstraint"
-msgstr ""
+msgstr "Tason aluerajoite"
 
-#: qdjango/models/geoconstraints.py:114
+#: qdjango/models/geoconstraints.py:119
 msgid "Layer geoconstraints"
-msgstr ""
+msgstr "Tason aluerajoitteet"
 
-#: qdjango/models/geoconstraints.py:129
+#: qdjango/models/geoconstraints.py:134
 msgid "SQL WHERE clause for the constraint layer"
-msgstr ""
+msgstr "Rajoitetason SQL:n WHERE-ehto"
 
-#: qdjango/models/geoconstraints.py:142
+#: qdjango/models/geoconstraints.py:147
 msgid "Geoconstraint rule"
-msgstr ""
+msgstr "Aluerajoitteen sääntö"
 
-#: qdjango/models/geoconstraints.py:143
+#: qdjango/models/geoconstraints.py:148
 msgid "Geoconstraint rules"
-msgstr ""
+msgstr "Aluerajoitteen säännöt"
 
-#: qdjango/models/projects.py:145
+#: qdjango/models/layerscaleconstraints.py:34
+msgid "Scale visibility layer constraint"
+msgstr "Tason mittakaavanäkyvyyden rajoite"
+
+#: qdjango/models/layerscaleconstraints.py:35
+msgid "Scale visibility layer constraints"
+msgstr "Tason mittakaavanäkyvyyden rajoitteet"
+
+#: qdjango/models/messages.py:32
+msgid "Set the main title of the message"
+msgstr "Aseta viestin pääotsikko"
+
+#: qdjango/models/messages.py:33
+msgid "Set the body of the message"
+msgstr "Aseta viestin sisältö"
+
+#: qdjango/models/messages.py:35
+msgid "Select level of message"
+msgstr "Valitse viestin taso"
+
+#: qdjango/models/messages.py:36
+msgid "Starting date of message display"
+msgstr "Viestin näyttämisen alkupäivä"
+
+#: qdjango/models/messages.py:37
+msgid "Ending date of message display"
+msgstr "Viestin näyttämisen loppupäivä"
+
+#: qdjango/models/projects.py:161
 msgid "Single"
-msgstr ""
+msgstr "Yksittäinen"
 
-#: qdjango/models/projects.py:146
+#: qdjango/models/projects.py:162
 msgid "Multiple"
-msgstr ""
+msgstr "Useita"
 
-#: qdjango/models/projects.py:150 qdjango/models/projects.py:870
-#: qdjango/templates/qdjango/project_form.html:44
-#: qdjango/templates/qdjango/project_list.html:48
-#: qdjango/templates/qdjango/search/project.html:38
+#: qdjango/models/projects.py:166 qdjango/models/projects.py:1445
+#: qdjango/templates/qdjango/project_form.html:82
+#: qdjango/templates/qdjango/project_form.html:84
+#: qdjango/templates/qdjango/project_list.html:146
+#: qdjango/templates/qdjango/search/project.html:52
 msgid "Layers"
-msgstr ""
-
-#: qdjango/models/projects.py:151
-msgid "Base layers"
-msgstr ""
-
-#: qdjango/models/projects.py:152
-msgid "Legend"
-msgstr ""
-
-#: qdjango/models/projects.py:156 qdjango/models/projects.py:161
-msgid "Collapsed"
-msgstr ""
-
-#: qdjango/models/projects.py:157 qdjango/models/projects.py:162
-msgid "Not collapsed"
-msgstr ""
-
-#: qdjango/models/projects.py:166
-msgid "In a separate TAB"
-msgstr ""
+msgstr "Tasot"
 
 #: qdjango/models/projects.py:167
-msgid "Into TOC layers"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:499
+msgid "Legend"
+msgstr "Selite"
 
-#: qdjango/models/projects.py:172
-msgid "QGIS project file"
-msgstr ""
+#: qdjango/models/projects.py:171 qdjango/models/projects.py:176
+msgid "Collapsed"
+msgstr "Pienennetty"
 
-#: qdjango/models/projects.py:179 qdjango/models/projects.py:483
-#: qdjango/templates/qdjango/ajax/layer_detail.html:7
-msgid "Title"
-msgstr ""
+#: qdjango/models/projects.py:172 qdjango/models/projects.py:177
+msgid "Not collapsed"
+msgstr "Ei pienennetty"
 
 #: qdjango/models/projects.py:181
-#: qdjango/templates/qdjango/project_list.html:24
-msgid "Public title"
-msgstr ""
+msgid "In a separate TAB"
+msgstr "Erillisessä VÄLILEHDESSÄ"
 
-#: qdjango/models/projects.py:184 qdjango/models/projects.py:490
-#: qdjango/models/projects.py:983
-msgid "Slug"
-msgstr ""
+#: qdjango/models/projects.py:181
+msgid "Into TOC layers"
+msgstr "Tasoluettelossa"
 
-#: qdjango/models/projects.py:186 qdjango/models/projects.py:492
-msgid "Is active"
-msgstr ""
+#: qdjango/models/projects.py:184
+msgid "PNG 1bit"
+msgstr "PNG 1-bittinen"
+
+#: qdjango/models/projects.py:185
+msgid "PNG 8bit"
+msgstr "PNG 8-bittinen"
+
+#: qdjango/models/projects.py:186
+msgid "PNG 16bit"
+msgstr "PNG 16-bittinen"
+
+#: qdjango/models/projects.py:187
+msgid "PNG"
+msgstr "PNG"
+
+#: qdjango/models/projects.py:188
+msgid "JPEG"
+msgstr "JPEG"
 
 #: qdjango/models/projects.py:189
-#: qdjango/templates/qdjango/ajax/project_detail.html:30
-msgid "Thumbnail"
-msgstr ""
+msgid "WEBP"
+msgstr "WEBP"
 
-#: qdjango/models/projects.py:192
-msgid "Group"
-msgstr ""
+#: qdjango/models/projects.py:194
+msgid "QGIS project file"
+msgstr "QGIS-projektitiedosto"
 
-#: qdjango/models/projects.py:196
-#: qdjango/templates/qdjango/ajax/project_detail.html:7
-msgid "Initial extent"
-msgstr ""
+#: qdjango/models/projects.py:202 qdjango/models/projects.py:746
+#: qdjango/templates/qdjango/ajax/layer_detail.html:19
+#: qdjango/templates/qdjango/ajax/project_detail.html:417
+#: qdjango/templates/qdjango/message/list.html:75
+msgid "Title"
+msgstr "Otsikko"
 
-#: qdjango/models/projects.py:198
-msgid "Max extent"
-msgstr ""
+#: qdjango/models/projects.py:207
+msgid "Public title"
+msgstr "Julkinen otsikko"
 
-#: qdjango/models/projects.py:202
-msgid "Qgis project version"
-msgstr ""
+#: qdjango/models/projects.py:220 qdjango/models/projects.py:770
+#: qdjango/models/projects.py:1645
+msgid "Slug"
+msgstr "URL-tunniste"
 
-#: qdjango/models/projects.py:206
-msgid "Layers tree structure"
-msgstr ""
-
-#: qdjango/models/projects.py:209
-msgid "Base Layer"
-msgstr ""
-
-#: qdjango/models/projects.py:212 qdjango/models/projects.py:548
-msgid "Layer relations"
-msgstr ""
-
-#: qdjango/models/projects.py:216
-msgid "WMS use layer ids"
-msgstr ""
-
-#: qdjango/models/projects.py:219
-msgid "Qgis project original name"
-msgstr ""
-
-#: qdjango/models/projects.py:225
-msgid "Max feature to get for query"
-msgstr ""
+#: qdjango/models/projects.py:225 qdjango/models/projects.py:777
+msgid "Is active"
+msgstr "Aktiivinen"
 
 #: qdjango/models/projects.py:228
-msgid "Query control mode"
-msgstr ""
+#: qdjango/templates/qdjango/ajax/project_detail.html:35
+msgid "Thumbnail"
+msgstr "Pikkukuva"
 
-#: qdjango/models/projects.py:230
-msgid "Query by bbox control mode"
-msgstr ""
+#: qdjango/models/projects.py:234
+msgid "Group"
+msgstr "Ryhmä"
 
-#: qdjango/models/projects.py:233
-msgid "Query by polygon control mode"
-msgstr ""
+#: qdjango/models/projects.py:240
+msgid "Initial extent"
+msgstr "Aloituslaajuus"
 
-#: qdjango/models/projects.py:236
-msgid "Context base legend"
-msgstr ""
+#: qdjango/models/projects.py:245
+msgid "Max extent"
+msgstr "Enimmäislaajuus"
 
-#: qdjango/models/projects.py:239
-msgid "Tab's TOC active as default"
-msgstr ""
-
-#: qdjango/models/projects.py:242
-msgid "Tab's TOC layer initial status"
-msgstr ""
-
-#: qdjango/models/projects.py:248
-msgid "Map themes list initial status"
-msgstr ""
-
-#: qdjango/models/projects.py:254
-msgid "Legend position rendering"
-msgstr ""
-
-#: qdjango/models/projects.py:257
-msgid "Automatic zoom to query result features"
-msgstr ""
+#: qdjango/models/projects.py:253
+msgid "Project SRID"
+msgstr "Projektin SRID"
 
 #: qdjango/models/projects.py:260
+msgid "Qgis project version"
+msgstr "QGIS-projektin versio"
+
+#: qdjango/models/projects.py:267
+msgid "Layers tree structure"
+msgstr "Tasopuun rakenne"
+
+#: qdjango/models/projects.py:275
+msgid "Base Layer"
+msgstr "Taustakartta"
+
+#: qdjango/models/projects.py:284 qdjango/models/projects.py:928
+msgid "Layer relations"
+msgstr "Tasojen väliset suhteet"
+
+#: qdjango/models/projects.py:291
+msgid "WMS use layer ids"
+msgstr "WMS käyttää tasotunnuksia"
+
+#: qdjango/models/projects.py:294
+msgid "Qgis project original name"
+msgstr "QGIS-projektin alkuperäinen nimi"
+
+#: qdjango/models/projects.py:304
+msgid "Max feature to get for query"
+msgstr "Kyselyssä haettavien kohteiden enimmäismäärä"
+
+#: qdjango/models/projects.py:308
+msgid "Query control mode"
+msgstr "Kyselytyökalun tila"
+
+#: qdjango/models/projects.py:315
+msgid "Query by bbox control mode"
+msgstr "Rajauslaatikkokyselyn työkalutila"
+
+#: qdjango/models/projects.py:322
+msgid "Query by polygon control mode"
+msgstr "Monikulmiokyselyn työkalutila"
+
+#: qdjango/models/projects.py:329
+msgid "Context base legend"
+msgstr "Aluekohtainen selite"
+
+#: qdjango/models/projects.py:332
+msgid "Show only the symbols for the features falling into the requested area"
+msgstr "Näytä vain pyydetylle alueelle osuvien kohteiden symbolit"
+
+#: qdjango/models/projects.py:337
+msgid "Tab's TOC active as default"
+msgstr "Oletusarvoisesti aktiivinen sisällysluettelon välilehti"
+
+#: qdjango/models/projects.py:341
+msgid "Set tab's TOC open by default on init client"
+msgstr "Aseta sisällysluettelon välilehti oletusarvoisesti avoimeksi karttakäyttöliittymää avattaessa"
+
+#: qdjango/models/projects.py:345
+msgid "Tab's TOC layer initial status"
+msgstr "Sisällysluettelon tasojen alkutila"
+
+#: qdjango/models/projects.py:350
+msgid ""
+"Set tab's TOC layers initials state: 'Collapsed (close)' or 'Not collapsed "
+"(open)'"
+msgstr "Aseta sisällysluettelon tasojen alkutilaksi 'Pienennetty (suljettu)' tai 'Ei pienennetty (avoin)'"
+
+#: qdjango/models/projects.py:355
+msgid "Map themes list initial status"
+msgstr "Karttateemaluettelon alkutila"
+
+#: qdjango/models/projects.py:360
+msgid ""
+"Set map themes list initials state: 'Collapsed (close)' or 'Not collapsed "
+"(open)'"
+msgstr "Aseta karttateemaluettelon alkutilaksi 'Pienennetty (suljettu)' tai 'Ei pienennetty (avoin)'"
+
+#: qdjango/models/projects.py:365
+msgid "Legend position rendering"
+msgstr "Selitteen näyttösijainti"
+
+#: qdjango/models/projects.py:369
+msgid "Set legend position rendering"
+msgstr "Aseta selitteen näyttösijainti"
+
+#: qdjango/models/projects.py:373
+msgid "Automatic zoom to query result features"
+msgstr "Zoomaa automaattisesti kyselyn tuloskohteisiin"
+
+#: qdjango/models/projects.py:375
+msgid "Automatic zoom on query result features for only one layer"
+msgstr "Zoomaa automaattisesti kyselyn tuloskohteisiin vain yhden tason tapauksessa"
+
+#: qdjango/models/projects.py:379
+msgid "Show the 'Metadata' section on left bar"
+msgstr "Näytä metatieto-osio vasemmassa palkissa"
+
+#: qdjango/models/projects.py:381
+msgid ""
+"It is possible choose if show or hide the 'Metadata' section on left bar"
+msgstr "Voit valita, näytetäänkö metatieto-osio vasemmassa palkissa"
+
+#: qdjango/models/projects.py:385
+msgid "Start left sidebar collapsed"
+msgstr "Aloita vasen sivupalkki pienennettynä"
+
+#: qdjango/models/projects.py:387
+msgid "Choose if the left sidebar is collapsed on start of webgis"
+msgstr "Valitse, onko vasen sivupalkki pienennetty verkkokartan käynnistyessä"
+
+#: qdjango/models/projects.py:390
 msgid "Project layouts"
-msgstr ""
+msgstr "Projektin tulosteasettelut"
 
-#: qdjango/models/projects.py:262
-msgid "User QGIS project map start extent as webgis init extent"
-msgstr ""
+#: qdjango/models/projects.py:396
+msgid "Use QGIS project map start extent as webgis init extent"
+msgstr "Käytä QGIS-projektin kartan aloituslaajuutta verkkokartan aloituslaajuutena"
 
-#: qdjango/models/projects.py:265
+#: qdjango/models/projects.py:402
 msgid ""
 "The project has been modified by the G3W-Suite application after it was "
 "uploaded."
-msgstr ""
+msgstr "G3W-Suite-sovellus on muuttanut projektia sen lataamisen jälkeen."
 
-#: qdjango/models/projects.py:268
+#: qdjango/models/projects.py:410
 msgid ""
 "Mutex to lock the project when it is being written by the G3W-Suite "
 "application. This field is used internally by the suite through a context "
 "manager"
-msgstr ""
+msgstr "Keskinäisen poissulkemisen lukko, joka lukitsee projektin G3W-Suite-sovelluksen kirjoittaessa siihen. Sovelluskokonaisuus käyttää tätä kenttää sisäisesti kontekstinhallinnan kautta"
 
-#: qdjango/models/projects.py:271
+#: qdjango/models/projects.py:417
 msgid "Fields to se order"
-msgstr ""
+msgstr "Järjestettävät kentät"
 
-#: qdjango/models/projects.py:276
-#: qdjango/templates/qdjango/search/project.html:8
+#: qdjango/models/projects.py:424
+msgid "WMS GetMap image format"
+msgstr "WMS GetMap -kuvamuoto"
+
+#: qdjango/models/projects.py:430
+msgid "Geocoding providers"
+msgstr "Geokoodauspalvelut"
+
+#: qdjango/models/projects.py:433
+msgid "WMTS grids"
+msgstr "WMTS-ruudukot"
+
+#: qdjango/models/projects.py:440
+#: qdjango/templates/qdjango/project_list.html:53
+#: qdjango/templates/qdjango/search/project.html:10
 msgid "Projects"
-msgstr ""
+msgstr "Projektit"
 
-#: qdjango/models/projects.py:464
+#: qdjango/models/projects.py:719
 msgid "Postgres"
-msgstr ""
+msgstr "Postgres"
 
-#: qdjango/models/projects.py:465
+#: qdjango/models/projects.py:720
 msgid "SpatiaLite"
-msgstr ""
+msgstr "SpatiaLite"
 
-#: qdjango/models/projects.py:466
+#: qdjango/models/projects.py:721
 msgid "Raster"
-msgstr ""
+msgstr "Rasteri"
 
-#: qdjango/models/projects.py:467
+#: qdjango/models/projects.py:722
 msgid "WFS"
-msgstr ""
+msgstr "WFS"
 
-#: qdjango/models/projects.py:468
+#: qdjango/models/projects.py:723
 msgid "WMS"
-msgstr ""
+msgstr "WMS"
 
-#: qdjango/models/projects.py:469
+#: qdjango/models/projects.py:724
 msgid "OGR"
-msgstr ""
+msgstr "OGR"
 
-#: qdjango/models/projects.py:470
+#: qdjango/models/projects.py:725
 msgid "GDAL"
-msgstr ""
+msgstr "GDAL"
 
-#: qdjango/models/projects.py:471
+#: qdjango/models/projects.py:726
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
-#: qdjango/models/projects.py:472
+#: qdjango/models/projects.py:727
 msgid "ArcGisMapServer"
-msgstr ""
+msgstr "ArcGisMapServer"
 
-#: qdjango/models/projects.py:473
+#: qdjango/models/projects.py:728
 msgid "ArcGisFeatureServer"
-msgstr ""
+msgstr "ArcGisFeatureServer"
 
-#: qdjango/models/projects.py:474
+#: qdjango/models/projects.py:729
 msgid "MSSQL"
-msgstr ""
+msgstr "MSSQL"
 
-#: qdjango/models/projects.py:475
+#: qdjango/models/projects.py:730
 msgid "VirtualLayer"
-msgstr ""
+msgstr "VirtualLayer"
 
-#: qdjango/models/projects.py:476
+#: qdjango/models/projects.py:731
 msgid "Oracle"
-msgstr ""
+msgstr "Oracle"
 
-#: qdjango/models/projects.py:477
+#: qdjango/models/projects.py:732 qdjango/models/projects.py:734
 msgid "Vector Tile"
-msgstr ""
+msgstr "Vektoritiili"
 
-#: qdjango/models/projects.py:478
+#: qdjango/models/projects.py:733
 msgid "WCS"
-msgstr ""
+msgstr "WCS"
 
-#: qdjango/models/projects.py:485
+#: qdjango/models/projects.py:735
+msgid "Mesh layer"
+msgstr "Verkkotaso"
+
+#: qdjango/models/projects.py:736
+msgid "PostGis raster"
+msgstr "PostGis-rasteri"
+
+#: qdjango/models/projects.py:751
 msgid "Original Name"
-msgstr ""
+msgstr "Alkuperäinen nimi"
 
-#: qdjango/models/projects.py:487
+#: qdjango/models/projects.py:758
 msgid "Qgis Layer Project ID"
-msgstr ""
+msgstr "QGIS-tason projektitunnus"
 
-#: qdjango/models/projects.py:498
+#: qdjango/models/projects.py:790
 msgid "Parent Project for Embedded layers"
-msgstr ""
+msgstr "Upotettujen tasojen pääprojekti"
 
-#: qdjango/models/projects.py:502 qdjango/models/projects.py:981
+#: qdjango/models/projects.py:800 qdjango/models/projects.py:1639
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:10
-#: qdjango/templates/qdjango/layers_list.html:110
+#: qdjango/templates/qdjango/ajax/project_detail.html:228
+#: qdjango/templates/qdjango/ajax/project_detail.html:418
+#: qdjango/templates/qdjango/layers_list.html:256
+#: qdjango/templates/qdjango/layers_list.html:280
 msgid "Type"
-msgstr ""
+msgstr "Tyyppi"
 
-#: qdjango/models/projects.py:503
+#: qdjango/models/projects.py:806
+#: qdjango/templates/qdjango/ajax/layer_detail.html:31
 msgid "Datasource"
-msgstr ""
+msgstr "Tietolähde"
 
-#: qdjango/models/projects.py:504
+#: qdjango/models/projects.py:810
 msgid "Is visible"
-msgstr ""
+msgstr "Näkyvä"
 
-#: qdjango/models/projects.py:505
+#: qdjango/models/projects.py:815
 msgid "Order"
-msgstr ""
+msgstr "Järjestys"
 
-#: qdjango/models/projects.py:508
+#: qdjango/models/projects.py:821
 msgid "Associated data file"
-msgstr ""
+msgstr "Liitetty datatiedosto"
 
-#: qdjango/models/projects.py:517
+#: qdjango/models/projects.py:830
 msgid "Database columns"
-msgstr ""
+msgstr "Tietokannan sarakkeet"
 
-#: qdjango/models/projects.py:521
+#: qdjango/models/projects.py:838
 msgid "Layer Min Scale visibility"
-msgstr ""
+msgstr "Tason näkyvyyden pienin mittakaava"
 
-#: qdjango/models/projects.py:523
+#: qdjango/models/projects.py:844 qdjango/models/projects.py:858
+msgid "Layer Max Scale visibility for layer styel"
+msgstr "Tason tyylin näkyvyyden suurin mittakaava"
+
+#: qdjango/models/projects.py:852
 msgid "Layer Max Scale visibility"
-msgstr ""
+msgstr "Tason näkyvyyden suurin mittakaava"
 
-#: qdjango/models/projects.py:525
+#: qdjango/models/projects.py:864
 msgid "Layer scale based visibility"
-msgstr ""
-
-#: qdjango/models/projects.py:528
-msgid "Layer SRID"
-msgstr ""
-
-#: qdjango/models/projects.py:532
-msgid "Bitwise capabilities"
-msgstr ""
-
-#: qdjango/models/projects.py:534
-msgid "Bitwise edit options"
-msgstr ""
-
-#: qdjango/models/projects.py:536
-msgid "Bitwise wfs options"
-msgstr ""
-
-#: qdjango/models/projects.py:540
-msgid "Geometry type"
-msgstr ""
-
-#: qdjango/models/projects.py:543
-msgid "Attributes excluded from wms"
-msgstr ""
-
-#: qdjango/models/projects.py:545
-msgid "Attributes excluded from wfs"
-msgstr ""
-
-#: qdjango/models/projects.py:552
-msgid "Columns layer widgets"
-msgstr ""
-
-#: qdjango/models/projects.py:556
-#: qdjango/templates/qdjango/layers_list.html:117
-msgid "Not show attributes table"
-msgstr ""
-
-#: qdjango/models/projects.py:560
-msgid "Exclude to legend"
-msgstr ""
-
-#: qdjango/models/projects.py:564
-msgid "Form editor layout"
-msgstr ""
-
-#: qdjango/models/projects.py:566
-msgid "Editor form structure"
-msgstr ""
-
-#: qdjango/models/projects.py:569
-msgid "Download data"
-msgstr ""
-
-#: qdjango/models/projects.py:571
-msgid "Download data in xls format"
-msgstr ""
-
-#: qdjango/models/projects.py:573
-msgid "Download data in gpx format"
-msgstr ""
-
-#: qdjango/models/projects.py:575
-msgid "Download data in csv format"
-msgstr ""
-
-#: qdjango/models/projects.py:577
-msgid "Download data in gpkg format"
-msgstr ""
-
-#: qdjango/models/projects.py:580
-msgid "Layer extension"
-msgstr ""
-
-#: qdjango/models/projects.py:584
-msgid "Get WMS/WMS externally"
-msgstr ""
-
-#: qdjango/models/projects.py:588
-msgid "Temporal properties"
-msgstr ""
-
-#: qdjango/models/projects.py:591
-msgid "Has column ACL constraints"
-msgstr ""
+msgstr "Tason mittakaavaperusteinen näkyvyys"
 
 #: qdjango/models/projects.py:869
+msgid "Scale based visibility for layer style"
+msgstr "Tason tyylin mittakaavaperusteinen näkyvyys"
+
+#: qdjango/models/projects.py:876
+msgid "Layer SRID"
+msgstr "Tason SRID"
+
+#: qdjango/models/projects.py:883
+msgid "Bitwise capabilities"
+msgstr "Toiminnot bittikenttänä"
+
+#: qdjango/models/projects.py:889
+msgid "Bitwise edit options"
+msgstr "Muokkausasetukset bittikenttänä"
+
+#: qdjango/models/projects.py:895
+msgid "Bitwise wfs options"
+msgstr "WFS-asetukset bittikenttänä"
+
+#: qdjango/models/projects.py:901
+msgid "Dict wmts options"
+msgstr "WMTS-asetusten sanakirja"
+
+#: qdjango/models/projects.py:908
+msgid "Geometry type"
+msgstr "Geometriatyyppi"
+
+#: qdjango/models/projects.py:915
+msgid "Attributes excluded from wms"
+msgstr "WMS:stä pois jätetyt ominaisuustiedot"
+
+#: qdjango/models/projects.py:921
+msgid "Attributes excluded from wfs"
+msgstr "WFS:stä pois jätetyt ominaisuustiedot"
+
+#: qdjango/models/projects.py:935
+msgid "Columns layer widgets"
+msgstr "Tason sarakkeiden pienoisohjelmat"
+
+#: qdjango/models/projects.py:942
+msgid "Not show attributes table"
+msgstr "Älä näytä ominaisuustietotaulukkoa"
+
+#: qdjango/models/projects.py:949
+msgid "Exclude to legend"
+msgstr "Jätä pois selitteestä"
+
+#: qdjango/models/projects.py:956
+msgid "Exclude to TOC"
+msgstr "Jätä pois tasoluettelosta"
+
+#: qdjango/models/projects.py:964
+msgid "Form editor layout"
+msgstr "Lomake-editorin asettelu"
+
+#: qdjango/models/projects.py:971
+msgid "Editor form structure"
+msgstr "Muokkauslomakkeen rakenne"
+
+#: qdjango/models/projects.py:977
+msgid "Download data"
+msgstr "Lataa tiedot"
+
+#: qdjango/models/projects.py:983
+msgid "Download data in xls format"
+msgstr "Lataa tiedot XLS-muodossa"
+
+#: qdjango/models/projects.py:989
+msgid "Download data in gpx format"
+msgstr "Lataa tiedot GPX-muodossa"
+
+#: qdjango/models/projects.py:995
+msgid "Download data in csv format"
+msgstr "Lataa tiedot CSV-muodossa"
+
+#: qdjango/models/projects.py:1001
+msgid "Download data in gpkg format"
+msgstr "Lataa tiedot GPKG-muodossa"
+
+#: qdjango/models/projects.py:1007
+msgid "Download single attributes row in pdf format"
+msgstr "Lataa yksittäinen ominaisuustietorivi PDF-muodossa"
+
+#: qdjango/models/projects.py:1014
+msgid "Layer extension"
+msgstr "Tason laajuus"
+
+#: qdjango/models/projects.py:1021
+msgid "Get WMS/WMS externally"
+msgstr "Hae WMS/WMS ulkoisesti"
+
+#: qdjango/models/projects.py:1028
+msgid "Render layer as WMTS"
+msgstr "Esitä taso WMTS:nä"
+
+#: qdjango/models/projects.py:1037
+msgid "Temporal properties"
+msgstr "Ajalliset ominaisuudet"
+
+#: qdjango/models/projects.py:1043
+msgid "Has column ACL constraints"
+msgstr "Sisältää sarakkeiden käyttöoikeusrajoitteita"
+
+#: qdjango/models/projects.py:1049
+msgid "Number of fields to show in info result"
+msgstr "Tietotuloksessa näytettävien kenttien määrä"
+
+#: qdjango/models/projects.py:1444
+#: qdjango/templates/qdjango/ajax/project_detail.html:307
 msgid "Layer"
-msgstr ""
+msgstr "Taso"
 
-#: qdjango/models/projects.py:979
+#: qdjango/models/projects.py:1631
 msgid "Body"
-msgstr ""
+msgstr "Sisältö"
 
-#: qdjango/models/projects.py:980
+#: qdjango/models/projects.py:1635
 msgid "datasource"
-msgstr ""
+msgstr "tietolähde"
+
+#: qdjango/models/projects.py:1691
+msgid "Theme name"
+msgstr "Teeman nimi"
+
+#: qdjango/models/projects.py:1692
+msgid "JSON theme structure"
+msgstr "Teeman JSON-rakenne"
 
 #: qdjango/models/qgisauth.py:96
 msgid "Auth ID"
-msgstr ""
+msgstr "Tunnistautumistunnus"
 
 #: qdjango/models/qgisauth.py:99
 msgid "URI"
-msgstr ""
+msgstr "URI"
 
 #: qdjango/models/qgisauth.py:100
 msgid "Currently not implemented"
-msgstr ""
+msgstr "Ei vielä toteutettu"
 
 #: qdjango/models/qgisauth.py:101
 msgid "Method"
-msgstr ""
+msgstr "Menetelmä"
 
 #: qdjango/models/qgisauth.py:102
 msgid "Version"
-msgstr ""
+msgstr "Versio"
 
 #: qdjango/models/qgisauth.py:103
 msgid "Config"
-msgstr ""
+msgstr "Asetukset"
 
 #: qdjango/models/qgisauth.py:104
 msgid ""
 "Fill in username and passwword, realm is not implemented and it can be left "
 "blank"
-msgstr ""
+msgstr "Täytä käyttäjätunnus ja salasana. realm ei ole käytössä, joten sen voi jättää tyhjäksi"
 
 #: qdjango/models/qgisauth.py:116
 msgid "QGIS Authentications"
-msgstr ""
+msgstr "QGIS-tunnistautumiset"
 
 #: qdjango/models/qgisauth.py:157
 #, python-format
 msgid ""
 "QGIS Auth %s cannot be deleted because it is used by the following layers: %s"
-msgstr ""
+msgstr "QGIS-tunnistautumisasetusta %s ei voi poistaa, koska seuraavat tasot käyttävät sitä: %s"
 
-#: qdjango/templates/qdjango/ajax/layer_detail.html:15
+#: qdjango/templates/qdjango/ajax/layer_detail.html:27
 msgid "QGIS layer ID"
-msgstr ""
+msgstr "QGIS-tason tunnus"
 
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:4
 msgid "Add new widget"
-msgstr ""
+msgstr "Lisää uusi pienoisohjelma"
 
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:8
-#: qdjango/templates/qdjango/project_list.html:21
+#: qdjango/templates/qdjango/layers_list.html:262
+#: qdjango/templates/qdjango/layers_list.html:302
+#: qdjango/templates/qdjango/message/list.html:74
 msgid "Actions"
-msgstr ""
+msgstr "Toiminnot"
 
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:11
 msgid "Linked"
-msgstr ""
+msgstr "Liitetty"
 
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:22
-#: qdjango/templates/qdjango/project_list.html:71
+#: qdjango/templates/qdjango/message/list.html:90
+#: qdjango/templates/qdjango/project_list.html:264
 msgid "Delete"
-msgstr ""
+msgstr "Poista"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:11
-msgid "Users"
-msgstr ""
-
-#: qdjango/templates/qdjango/ajax/project_detail.html:14
-msgid "Editor level 1 user"
-msgstr ""
-
-#: qdjango/templates/qdjango/ajax/project_detail.html:17
-msgid "Editor level 2 user"
-msgstr ""
-
-#: qdjango/templates/qdjango/ajax/project_detail.html:18
-msgid "Viewer users"
-msgstr ""
-
-#: qdjango/templates/qdjango/ajax/project_detail.html:19
-msgid "Editor user groups"
-msgstr ""
+#: qdjango/templates/qdjango/ajax/project_detail.html:8
+msgid "General"
+msgstr "Yleiset"
 
 #: qdjango/templates/qdjango/ajax/project_detail.html:20
-msgid "Viewer user groups"
-msgstr ""
+msgid "Editor level 1 user"
+msgstr "Tason 1 muokkaaja"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:38
+#: qdjango/templates/qdjango/ajax/project_detail.html:23
+msgid "Editor level 2 user"
+msgstr "Tason 2 muokkaaja"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:24
+msgid "Viewer users"
+msgstr "Katselijat"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:25
+msgid "Editor user groups"
+msgstr "Muokkaajien käyttäjäryhmät"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:26
+msgid "Viewer user groups"
+msgstr "Katselijoiden käyttäjäryhmät"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:43
 msgid "Qgis project Version:"
-msgstr ""
+msgstr "QGIS-projektin versio:"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:48
+msgid "URL alias:"
+msgstr "URL-tunniste:"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:65
+msgid "Widgets"
+msgstr "Pienoisohjelmat"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:75
+#: qdjango/templates/qdjango/ajax/project_detail.html:380
+msgid "Layer name"
+msgstr "Tason nimi"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:76
+msgid "Search name"
+msgstr "Haun nimi"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:98
+msgid "Editing properties"
+msgstr "Muokkausominaisuudet"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:109
+msgid "Scale"
+msgstr "Mittakaava"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:110
+msgid "User adding data field"
+msgstr "Tietojen lisääjän käyttäjätunnuskenttä"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:111
+msgid "User editing data field "
+msgstr "Tietojen muokkaajan käyttäjätunnuskenttä "
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:112
+msgid "User group adding data field"
+msgstr "Tietojen lisääjän käyttäjäryhmäkenttä"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:113
+msgid "User group editing data field "
+msgstr "Tietojen muokkaajan käyttäjäryhmäkenttä "
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:119
+#: qdjango/templates/qdjango/ajax/project_detail.html:137
+msgid "Permissions"
+msgstr "Käyttöoikeudet"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:136
+msgid "User Group Name"
+msgstr "Käyttäjäryhmän nimi"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:161
+msgid "Geo-constraints"
+msgstr "Aluerajoitteet"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:173
+msgid "Constraint Layer"
+msgstr "Rajoitetaso"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:175
+#: qdjango/templates/qdjango/ajax/project_detail.html:221
+msgid "For view"
+msgstr "Katselussa"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:175
+#: qdjango/templates/qdjango/ajax/project_detail.html:176
+#: qdjango/templates/qdjango/ajax/project_detail.html:177
+#: qdjango/templates/qdjango/ajax/project_detail.html:221
+#: qdjango/templates/qdjango/ajax/project_detail.html:222
+msgid "Yes"
+msgstr "Kyllä"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:175
+#: qdjango/templates/qdjango/ajax/project_detail.html:176
+#: qdjango/templates/qdjango/ajax/project_detail.html:177
+#: qdjango/templates/qdjango/ajax/project_detail.html:221
+#: qdjango/templates/qdjango/ajax/project_detail.html:222
+msgid "No"
+msgstr "Ei"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:176
+#: qdjango/templates/qdjango/ajax/project_detail.html:222
+msgid "For editing"
+msgstr "Muokkauksessa"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:177
+msgid "Autozoom"
+msgstr "Automaattinen zoomaus"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:182
+#: qdjango/templates/qdjango/ajax/project_detail.html:227
+#: qdjango/templates/qdjango/ajax/project_detail.html:346
+msgid "User / User Group"
+msgstr "Käyttäjä / käyttäjäryhmä"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:183
+#: qdjango/templates/qdjango/ajax/project_detail.html:229
+msgid "Rule"
+msgstr "Sääntö"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:208
+msgid "Expression constraints"
+msgstr "Lausekerajoitteet"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:255
+msgid "Scale user/group layer constraints"
+msgstr "Käyttäjän tai ryhmän tason mittakaavarajoitteet"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:269
+msgid "User"
+msgstr "Käyttäjä"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:270
+msgid "User Group"
+msgstr "Käyttäjäryhmä"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:271
+msgid "Min Scale"
+msgstr "Pienin mittakaava"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:272
+msgid "Max Scale"
+msgstr "Suurin mittakaava"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:297
+msgid "Hidden layers"
+msgstr "Piilotetut tasot"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:309
+msgid "User Groups"
+msgstr "Käyttäjäryhmät"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:332
+#: qdjango/templates/qdjango/ajax/project_detail.html:347
+msgid "Hidden fields"
+msgstr "Piilotetut kentät"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:370
+#: qdjango/templates/qdjango/ajax/project_detail.html:381
+#: qdjango/templates/qdjango/layers_list.html:265
+#: qdjango/templates/qdjango/layers_list.html:391
+msgid "Download capabilities"
+msgstr "Lataustoiminnot"
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:403
+msgid "Plots"
+msgstr "Kaaviot"
 
 #: qdjango/templates/qdjango/check_embedded_layer_on_delete.html:3
 msgid "contains layer"
-msgstr ""
+msgstr "sisältää tason"
 
 #: qdjango/templates/qdjango/check_embedded_layer_on_delete.html:3
 msgid "which is embedded from project"
-msgstr ""
+msgstr "joka on upotettu projektista"
 
 #: qdjango/templates/qdjango/check_embedded_layer_on_delete.html:4
 msgid "Deleting this project all embedded layer will also be deleted!"
-msgstr ""
+msgstr "Tämän projektin poistaminen poistaa myös kaikki upotetut tasot!"
 
 #: qdjango/templates/qdjango/check_embedded_layer_on_update.html:3
 msgid ""
 "This project contains layers embedded from other projects. Be careful when "
 "updating this project: if the embedded layers are removed from the project "
 "they will be also deleted from the projects that embed them!"
-msgstr ""
+msgstr "Tämä projekti sisältää muista projekteista upotettuja tasoja. Ole varovainen päivittäessäsi projektia: jos upotetut tasot poistetaan projektista, ne poistetaan myös projekteista, joihin ne on upotettu!"
 
 #: qdjango/templates/qdjango/check_embedded_layer_on_update.html:4
 msgid "Embedded layers"
-msgstr ""
+msgstr "Upotetut tasot"
 
 #: qdjango/templates/qdjango/check_embedded_layer_on_update.html:7
 msgid "is embedded by project"
-msgstr ""
+msgstr "on upotettu projektiin"
 
 #: qdjango/templates/qdjango/layer_actions/filter_by_user.html:5
 msgid "Hide layer by Users/Groups"
-msgstr ""
+msgstr "Piilota taso käyttäjiltä tai ryhmiltä"
 
 #: qdjango/templates/qdjango/layer_actions/filter_by_user.html:7
 msgid "Hide layer by User/Groups"
-msgstr ""
+msgstr "Piilota taso käyttäjältä tai ryhmiltä"
 
-#: qdjango/templates/qdjango/layer_actions/fitler_by_user_layer_form.html:7
-#: qdjango/templates/qdjango/project_form.html:57
-msgid "Alert"
-msgstr ""
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:10
+#: qdjango/templates/qdjango/message/form.html:47
+#: qdjango/templates/qdjango/project_form.html:95
+msgid "Some errors on form"
+msgstr "Lomakkeessa on virheitä"
 
-#: qdjango/templates/qdjango/layer_actions/fitler_by_user_layer_form.html:8
-#: qdjango/templates/qdjango/project_form.html:58
-msgid "Some errors on form. Check it and send again."
-msgstr ""
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:11
+#: qdjango/templates/qdjango/message/form.html:48
+#: qdjango/templates/qdjango/project_form.html:96
+msgid "Check the highlighted fields and submit again."
+msgstr "Tarkista korostetut kentät ja lähetä uudelleen."
 
-#: qdjango/templates/qdjango/layers_list.html:62
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:19
+msgid "Filter layer visibility"
+msgstr "Suodata tason näkyvyyttä"
+
+#: qdjango/templates/qdjango/layer_actions/filter_by_user_layer_form.html:20
+msgid ""
+"Pick which viewer users and viewer groups are allowed to see this layer."
+msgstr "Valitse katselijat ja katselijaryhmät, jotka saavat nähdä tämän tason."
+
+#: qdjango/templates/qdjango/layers_list.html:188
 msgid "QGIS Project Layers"
-msgstr ""
+msgstr "QGIS-projektin tasot"
 
-#: qdjango/templates/qdjango/layers_list.html:78
-#: qdjango/templates/qdjango/project_form.html:42
-#: qdjango/templates/qdjango/project_list.html:43
-#: qdjango/templates/qdjango/project_list.html:97
-#: qdjango/templates/qdjango/search/project.html:17
-#: qdjango/templates/qdjango/search/project.html:33
+#: qdjango/templates/qdjango/layers_list.html:193
+#: qdjango/templates/qdjango/message/list.html:20
+#: qdjango/templates/qdjango/project_form.html:35
+msgid "Back to projects"
+msgstr "Takaisin projekteihin"
+
+#: qdjango/templates/qdjango/layers_list.html:213
+#: qdjango/templates/qdjango/message/list.html:40
+#: qdjango/templates/qdjango/project_form.html:67
+#: qdjango/templates/qdjango/project_form.html:69
+#: qdjango/templates/qdjango/project_list.html:113
+#: qdjango/templates/qdjango/project_list.html:140
+#: qdjango/templates/qdjango/search/project.html:28
+#: qdjango/templates/qdjango/search/project.html:47
 msgid "Show map"
-msgstr ""
+msgstr "Näytä kartta"
 
-#: qdjango/templates/qdjango/layers_list.html:81
-#: qdjango/templates/qdjango/layers_list.html:145
-#: qdjango/templates/qdjango/project_form.html:43
-#: qdjango/templates/qdjango/project_list.html:53
-#: qdjango/templates/qdjango/search/project.html:34
+#: qdjango/templates/qdjango/layers_list.html:214
+#: qdjango/templates/qdjango/message/list.html:41
+msgid "Map"
+msgstr "Kartta"
+
+#: qdjango/templates/qdjango/layers_list.html:218
+#: qdjango/templates/qdjango/layers_list.html:277
+#: qdjango/templates/qdjango/message/list.html:45
+#: qdjango/templates/qdjango/project_form.html:73
+#: qdjango/templates/qdjango/project_form.html:77
+#: qdjango/templates/qdjango/project_list.html:152
+#: qdjango/templates/qdjango/project_list.html:251
+#: qdjango/templates/qdjango/search/project.html:48
 msgid "Show detail"
-msgstr ""
+msgstr "Näytä tiedot"
 
-#: qdjango/templates/qdjango/layers_list.html:84
-#: qdjango/templates/qdjango/project_list.html:65
-#: qdjango/templates/qdjango/search/project.html:37
+#: qdjango/templates/qdjango/layers_list.html:219
+#: qdjango/templates/qdjango/message/list.html:46
+msgid "Detail"
+msgstr "Tiedot"
+
+#: qdjango/templates/qdjango/layers_list.html:223
+#: qdjango/templates/qdjango/layers_list.html:224
+#: qdjango/templates/qdjango/message/list.html:50
+#: qdjango/templates/qdjango/message/list.html:51
+#: qdjango/templates/qdjango/message/list.html:87
+#: qdjango/templates/qdjango/project_list.html:167
+#: qdjango/templates/qdjango/search/project.html:51
 msgid "Edit"
-msgstr ""
+msgstr "Muokkaa"
 
-#: qdjango/templates/qdjango/layers_list.html:99
+#: qdjango/templates/qdjango/layers_list.html:233
 msgid "Data"
-msgstr ""
+msgstr "Tiedot"
 
-#: qdjango/templates/qdjango/layers_list.html:100
+#: qdjango/templates/qdjango/layers_list.html:234
 msgid "Structure"
-msgstr ""
+msgstr "Rakenne"
 
-#: qdjango/templates/qdjango/layers_list.html:108
+#: qdjango/templates/qdjango/layers_list.html:241
+msgid "Project layers actions"
+msgstr "Projektin tasojen toiminnot"
+
+#: qdjango/templates/qdjango/layers_list.html:254
+#: qdjango/templates/qdjango/layers_list.html:274
 msgid "Label"
-msgstr ""
+msgstr "Nimiö"
 
-#: qdjango/templates/qdjango/layers_list.html:112
+#: qdjango/templates/qdjango/layers_list.html:257
+msgid "Embedded"
+msgstr "Upotettu"
+
+#: qdjango/templates/qdjango/layers_list.html:259
+#: qdjango/templates/qdjango/layers_list.html:291
 msgid "WMS External"
-msgstr ""
+msgstr "Ulkoinen WMS"
 
-#: qdjango/templates/qdjango/layers_list.html:118
-msgid "No legend"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:264
+#: qdjango/templates/qdjango/layers_list.html:375
+msgid "Preview fields (max.)"
+msgstr "Esikatselukentät (enintään)"
 
-#: qdjango/templates/qdjango/layers_list.html:120
-msgid "Download as shp/geotiff"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:267
+#: qdjango/templates/qdjango/layers_list.html:479
+msgid "Visibility capabilities"
+msgstr "Näkyvyystoiminnot"
 
-#: qdjango/templates/qdjango/layers_list.html:123
-msgid "Download as gpkg"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:285
+msgid ""
+"This layer is embedded from another project. Click to go to source project "
+"layers"
+msgstr "Tämä taso on upotettu toisesta projektista. Siirry lähdeprojektin tasoihin napsauttamalla"
 
-#: qdjango/templates/qdjango/layers_list.html:126
-msgid "Download as xls"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:129
-msgid "Download as csv"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:132
-msgid "Download as gpx"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:175
+#: qdjango/templates/qdjango/layers_list.html:314
 msgid "Geo-constraints by Users/Groups"
-msgstr ""
+msgstr "Käyttäjien tai ryhmien aluerajoitteet"
 
-#: qdjango/templates/qdjango/layers_list.html:183
+#: qdjango/templates/qdjango/layers_list.html:322
 msgid "Alphanumeric and QGIS expressions constraints by Users/Groups"
-msgstr ""
+msgstr "Käyttäjien tai ryhmien aakkosnumeeriset ja QGIS-lausekerajoitteet"
 
-#: qdjango/templates/qdjango/layers_list.html:191
+#: qdjango/templates/qdjango/layers_list.html:330
 msgid "Hide columns by Users/Groups"
-msgstr ""
+msgstr "Piilota sarakkeet käyttäjiltä tai ryhmiltä"
 
-#: qdjango/templates/qdjango/layers_list.html:202
+#: qdjango/templates/qdjango/layers_list.html:341
 msgid "Widgets list"
-msgstr ""
+msgstr "Pienoisohjelmien luettelo"
 
-#: qdjango/templates/qdjango/layers_list.html:208
+#: qdjango/templates/qdjango/layers_list.html:347
 msgid "Manage layer styles"
-msgstr ""
+msgstr "Hallitse tason tyylejä"
 
-#: qdjango/templates/qdjango/project_form.html:15
-msgid "QGIS project"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:360
+msgid "Scale visibility layer by Users/Groups"
+msgstr "Tason mittakaavanäkyvyys käyttäjille tai ryhmille"
 
-#: qdjango/templates/qdjango/project_form.html:17
-msgid "New QGIS project"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_form.html:18
-msgid "Create a new QGIS project for current group"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_form.html:38
-msgid "Shortcuts"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_list.html:11
-msgid "Qgis project type"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_list.html:19
-msgid "Panoramic"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_list.html:23
-msgid "QGIS project title"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_list.html:26
-msgid "Created/Modified"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_list.html:59
-msgid "Test WMS capabilities"
-msgstr ""
-
-#: qdjango/templates/qdjango/project_list.html:81
+#: qdjango/templates/qdjango/layers_list.html:397
+#: qdjango/templates/qdjango/project_list.html:173
+#: qdjango/templates/qdjango/project_list.html:259
 msgid "Download"
-msgstr ""
+msgstr "Lataa"
 
-#: qdjango/templates/qdjango/project_list.html:86
-msgid "Upload"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:407
+msgid "Download as shp/geotiff"
+msgstr "Lataa SHP-/GeoTIFF-muodossa"
 
-#: qdjango/templates/qdjango/project_list.html:86
-msgid "Upload qgis project file"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:414
+msgid "Download as gpkg"
+msgstr "Lataa GPKG-muodossa"
 
-#: qdjango/templates/qdjango/project_list.html:92
-msgid "WEB services available"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:420
+msgid "Download as xls"
+msgstr "Lataa XLS-muodossa"
 
-#: qdjango/templates/qdjango/project_list.html:119
-msgid "created"
-msgstr ""
+#: qdjango/templates/qdjango/layers_list.html:426
+msgid "Download as csv"
+msgstr "Lataa CSV-muodossa"
 
-#: qdjango/templates/qdjango/project_list.html:122
+#: qdjango/templates/qdjango/layers_list.html:434
+msgid "Download as gpx"
+msgstr "Lataa GPX-muodossa"
+
+#: qdjango/templates/qdjango/layers_list.html:441
+msgid "Download as pdf"
+msgstr "Lataa PDF-muodossa"
+
+#: qdjango/templates/qdjango/layers_list.html:456
+#: qdjango/templates/qdjango/layers_list.html:461
+msgid "Not active"
+msgstr "Ei käytössä"
+
+#: qdjango/templates/qdjango/layers_list.html:483
+msgid "Hide"
+msgstr "Piilota"
+
+#: qdjango/templates/qdjango/layers_list.html:493
+msgid "Attributes table"
+msgstr "Ominaisuustietotaulukko"
+
+#: qdjango/templates/qdjango/layers_list.html:504
+msgid "Layer TOC"
+msgstr "Tasoluettelo"
+
+#: qdjango/templates/qdjango/message/form.html:15
+msgid "Edit project message"
+msgstr "Muokkaa projektin viestiä"
+
+#: qdjango/templates/qdjango/message/form.html:17
+msgid "New project message"
+msgstr "Uusi projektin viesti"
+
+#: qdjango/templates/qdjango/message/form.html:23
+msgid "project"
+msgstr "projekti"
+
+#: qdjango/templates/qdjango/message/form.html:25
+#, python-format
+msgid ""
+"Compose a notification message for the project <strong>%(name)s</strong>."
+msgstr "Laadi ilmoitusviesti projektille <strong>%(name)s</strong>."
+
+#: qdjango/templates/qdjango/message/form.html:31
+msgid "Back to messages"
+msgstr "Takaisin viesteihin"
+
+#: qdjango/templates/qdjango/message/list.html:15
+msgid "QGIS Project Messages"
+msgstr "QGIS-projektin viestit"
+
+#: qdjango/templates/qdjango/message/list.html:62
+msgid "Project messages"
+msgstr "Projektin viestit"
+
+#: qdjango/templates/qdjango/message/list.html:63
+msgid "Notifications shown to users when they open this project."
+msgstr "Ilmoitukset, jotka näytetään käyttäjille projektia avattaessa."
+
+#: qdjango/templates/qdjango/message/list.html:67
+msgid "Message"
+msgstr "Viesti"
+
+#: qdjango/templates/qdjango/message/list.html:76
+msgid "Level"
+msgstr "Taso"
+
+#: qdjango/templates/qdjango/message/list.html:77
+msgid "Available from"
+msgstr "Saatavilla alkaen"
+
+#: qdjango/templates/qdjango/message/list.html:78
+msgid "Available to"
+msgstr "Saatavilla asti"
+
+#: qdjango/templates/qdjango/project_form.html:19
+msgid "Edit QGIS project"
+msgstr "Muokkaa QGIS-projektia"
+
+#: qdjango/templates/qdjango/project_form.html:21
+msgid "New QGIS project"
+msgstr "Uusi QGIS-projekti"
+
+#: qdjango/templates/qdjango/project_form.html:27
+msgid "in group"
+msgstr "ryhmässä"
+
+#: qdjango/templates/qdjango/project_form.html:29
+#, python-format
+msgid ""
+"Upload a QGIS project for the cartographic group <strong>%(name)s</strong>."
+msgstr "Lataa QGIS-projekti karttaryhmään <strong>%(name)s</strong>."
+
+#: qdjango/templates/qdjango/project_form.html:59
+msgid "Project shortcuts"
+msgstr "Projektin pikavalinnat"
+
+#: qdjango/templates/qdjango/project_form.html:60
+msgid "Quick access to map view, detail and layers list for this project."
+msgstr "Nopea pääsy tämän projektin karttanäkymään, tietoihin ja tasoluetteloon."
+
+#: qdjango/templates/qdjango/project_list.html:57
+msgid "Trash"
+msgstr "Roskakori"
+
+#: qdjango/templates/qdjango/project_list.html:61
+msgid "View mode"
+msgstr "Näkymä"
+
+#: qdjango/templates/qdjango/project_list.html:63
+msgid "Grid view"
+msgstr "Ruudukkonäkymä"
+
+#: qdjango/templates/qdjango/project_list.html:67
+msgid "List view"
+msgstr "Luettelonäkymä"
+
+#: qdjango/templates/qdjango/project_list.html:88
+msgid "Project not accessible to anonymous users"
+msgstr "Projekti ei ole anonyymien käyttäjien käytettävissä"
+
+#: qdjango/templates/qdjango/project_list.html:93
+msgid "Panoramic map"
+msgstr "Yleiskatsauskartta"
+
+#: qdjango/templates/qdjango/project_list.html:99
+msgid "Panoramic"
+msgstr "Yleiskatsaus"
+
+#: qdjango/templates/qdjango/project_list.html:107
+msgid "Set bookmark"
+msgstr "Lisää kirjanmerkki"
+
+#: qdjango/templates/qdjango/project_list.html:107
+msgid "Remove bookmark"
+msgstr "Poista kirjanmerkki"
+
+#: qdjango/templates/qdjango/project_list.html:116
+msgid "Drag to reorder"
+msgstr "Muuta järjestystä vetämällä"
+
+#: qdjango/templates/qdjango/project_list.html:127
+msgid "Open via alias"
+msgstr "Avaa URL-tunnisteella"
+
+#: qdjango/templates/qdjango/project_list.html:132
+#: qdjango/templates/qdjango/project_list.html:238
 msgid "modified"
-msgstr ""
+msgstr "muokattu"
 
-#: qdjango/templates/qdjango/project_list.html:139
+#: qdjango/templates/qdjango/project_list.html:161
+msgid "Test WMS capabilities"
+msgstr "Testaa WMS-toiminnot"
+
+#: qdjango/templates/qdjango/project_list.html:180
+msgid "WEB services available"
+msgstr "Käytettävissä olevat verkkopalvelut"
+
+#: qdjango/templates/qdjango/project_list.html:185
+msgid "Messages"
+msgstr "Viestit"
+
+#: qdjango/templates/qdjango/project_list.html:191
+msgid "Delete/Deactivate"
+msgstr "Poista / poista käytöstä"
+
+#: qdjango/templates/qdjango/project_list.html:212
 msgid "No projects available."
-msgstr ""
+msgstr "Projekteja ei ole käytettävissä."
 
-#: qdjango/templates/qdjango/search/project.html:29
+#: qdjango/templates/qdjango/project_list.html:215
+msgid "Add your first QGIS project to start mapping."
+msgstr "Lisää ensimmäinen QGIS-projektisi aloittaaksesi kartoituksen."
+
+#: qdjango/templates/qdjango/project_list.html:217
+msgid "There are no projects shared with you in this group yet."
+msgstr "Sinulle ei ole vielä jaettu projekteja tässä ryhmässä."
+
+#: qdjango/templates/qdjango/project_list.html:237
+msgid "created"
+msgstr "luotu"
+
+#: qdjango/templates/qdjango/project_list.html:243
+msgid "Redo/Active"
+msgstr "Palauta / aktivoi"
+
+#: qdjango/templates/qdjango/project_list.html:283
+msgid "The trash is empty."
+msgstr "Roskakori on tyhjä."
+
+#: qdjango/templates/qdjango/search/project.html:16
+msgid "Collapse / expand"
+msgstr "Pienennä / laajenna"
+
+#: qdjango/templates/qdjango/search/project.html:42
 msgid "group:"
-msgstr ""
+msgstr "ryhmä:"
 
-#: qdjango/utils/data.py:313
+#: qdjango/utils/data.py:366
 msgid "Missing or invalid type for layer"
-msgstr ""
+msgstr "Tason tyyppi puuttuu tai on virheellinen"
 
-#: qdjango/utils/data.py:453
+#: qdjango/utils/data.py:615
+#, python-brace-format
 msgid "Current datasource is {}"
-msgstr ""
+msgstr "Nykyinen tietolähde on {}"
 
-#: qdjango/utils/data.py:902
+#: qdjango/utils/data.py:1233
+#, python-brace-format
 msgid "The project file is malformed: {}"
-msgstr ""
+msgstr "Projektitiedosto on virheellinen: {}"
 
-#: qdjango/utils/data.py:923 qdjango/utils/data.py:939
+#: qdjango/utils/data.py:1254 qdjango/utils/data.py:1270
+#, python-brace-format
 msgid "Could not read QGIS project file: {}"
-msgstr ""
+msgstr "QGIS-projektitiedostoa ei voitu lukea: {}"
 
-#: qdjango/utils/data.py:1097 qdjango/utils/data.py:1490
+#: qdjango/utils/data.py:1407
+#, python-format
+msgid "Layer \"%(name)s\" could not be loaded: %(reason)s"
+msgstr "Tasoa \"%(name)s\" ei voitu ladata: %(reason)s"
+
+#: qdjango/utils/data.py:1447 qdjango/utils/data.py:2067
+#, python-brace-format
 msgid ""
 "The project contains an embedded group {} from a project that could not be "
 "found {}"
-msgstr ""
+msgstr "Projekti sisältää upotetun ryhmän {} projektista, jota ei löytynyt: {}"
 
-#: qdjango/utils/data.py:1467
+#: qdjango/utils/data.py:1713
+#, python-format
+msgid "Layer \"%s\": %s"
+msgstr "Taso \"%s\": %s"
+
+#: qdjango/utils/data.py:1715
+#, python-format
+msgid "Project: %s"
+msgstr "Projekti: %s"
+
+#: qdjango/utils/data.py:2042
+#, python-brace-format
 msgid ""
 "The project contains an embedded layer {} from a project that could not be "
 "found {}"
-msgstr ""
+msgstr "Projekti sisältää upotetun tason {} projektista, jota ei löytynyt: {}"
 
-#: qdjango/utils/data.py:1544
+#: qdjango/utils/data.py:2121
+#, python-brace-format
 msgid "The project settings is malformed: {} ----- {}"
-msgstr ""
+msgstr "Projektin asetukset ovat virheelliset: {} ----- {}"
 
 #: qdjango/utils/exceptions.py:5
 msgid "Qgis Exceptions errors"
-msgstr ""
+msgstr "QGIS-poikkeusvirheet"
 
-#: qdjango/utils/exceptions.py:10
+#: qdjango/utils/exceptions.py:15
 msgid "Project error"
-msgstr ""
+msgstr "Projektivirhe"
 
-#: qdjango/utils/exceptions.py:18
+#: qdjango/utils/exceptions.py:23
 msgid "Layer error"
-msgstr ""
+msgstr "Tasovirhe"
 
-#: qdjango/utils/validators.py:80
+#: qdjango/utils/validators.py:83
 #, python-format
 msgid "Feature geometry type %s does not match layer type: %s"
-msgstr ""
+msgstr "Kohteen geometriatyyppi %s ei vastaa tason tyyppiä: %s"
 
-#: qdjango/utils/validators.py:108
+#: qdjango/utils/validators.py:111
 msgid "Field value must be NOT NULL"
-msgstr ""
+msgstr "Kentän arvon on täytettävä NOT NULL -ehto"
 
-#: qdjango/utils/validators.py:119
+#: qdjango/utils/validators.py:129
 #, python-format
 msgid "Field value '%s' cannot be converted to %s"
-msgstr ""
+msgstr "Kentän arvoa '%s' ei voi muuntaa tyyppiin %s"
 
-#: qdjango/utils/validators.py:156
+#: qdjango/utils/validators.py:166
 msgid "Field value must be UNIQUE"
-msgstr ""
+msgstr "Kentän arvon on täytettävä UNIQUE-ehto"
 
-#: qdjango/utils/validators.py:175
+#: qdjango/utils/validators.py:185
 msgid "Expression check violation"
-msgstr ""
+msgstr "Lauseketarkistuksen ehto ei täyty"
 
-#: qdjango/utils/validators.py:176
+#: qdjango/utils/validators.py:186
 #, python-format
 msgid "%s Expression: %s"
-msgstr ""
+msgstr "%s Lauseke: %s"
 
-#: qdjango/utils/validators.py:210
+#: qdjango/utils/validators.py:220
 #, python-format
 msgid "Project SRID (%s) and group SRID (%s) must be the same"
-msgstr ""
+msgstr "Projektin SRID:n (%s) ja ryhmän SRID:n (%s) on oltava samat"
 
-#: qdjango/utils/validators.py:230
+#: qdjango/utils/validators.py:240
 #, python-format
 msgid ""
 "Layer \"%s\" is embedded from project \"%s\" but the project does not exist"
-msgstr ""
-
-#: qdjango/utils/validators.py:234
-#, python-format
-msgid ""
-"Layer \"%s\" is embedded from project \"%s\" but the project does not "
-"contain this layer"
-msgstr ""
+msgstr "Taso \"%s\" on upotettu projektista \"%s\", mutta projektia ei ole olemassa"
 
 #: qdjango/utils/validators.py:244
 #, python-format
 msgid ""
-"Layer \"%s\" is embedded by the project \"%s\" but the uploaded project file "
-"does not contain this layer anymore"
-msgstr ""
+"Layer \"%s\" is embedded from project \"%s\" but the project does not "
+"contain this layer"
+msgstr "Taso \"%s\" on upotettu projektista \"%s\", mutta projekti ei sisällä tätä tasoa"
 
-#: qdjango/utils/validators.py:266
+#: qdjango/utils/validators.py:278
 msgid "A project with the same title already exists"
-msgstr ""
+msgstr "Samanniminen projekti on jo olemassa"
 
-#: qdjango/utils/validators.py:280
+#: qdjango/utils/validators.py:302
 msgid "Title project not empty"
-msgstr ""
+msgstr "Projektin otsikko ei saa olla tyhjä"
 
-#: qdjango/utils/validators.py:293
+#: qdjango/utils/validators.py:315
+#, python-brace-format
 msgid "More than one layer with same name/shortname: {}"
-msgstr ""
+msgstr "Usealla tasolla on sama nimi tai lyhytnimi: {}"
 
-#: qdjango/utils/validators.py:319
+#: qdjango/utils/validators.py:341
+#, python-brace-format
 msgid "Check WMS start extent project property: {} didn't set"
-msgstr ""
+msgstr "Tarkista projektin WMS-aloituslaajuusasetus: {} ei ole asetettu"
 
-#: qdjango/utils/validators.py:324
+#: qdjango/utils/validators.py:346
 msgid "xmax smaller then xmin "
-msgstr ""
+msgstr "xmax on pienempi kuin xmin "
 
-#: qdjango/utils/validators.py:326
+#: qdjango/utils/validators.py:348
 msgid "ymax smaller then ymin "
-msgstr ""
+msgstr "ymax on pienempi kuin ymin "
 
-#: qdjango/utils/validators.py:362
+#: qdjango/utils/validators.py:387
+#, python-brace-format
 msgid "Cannot connect to Postgis raster layer {} "
-msgstr ""
+msgstr "Yhteyttä Postgis-rasteritasoon {} ei voi muodostaa "
 
-#: qdjango/utils/validators.py:368
-msgid "Missing data file for layer {} "
-msgstr ""
+#: qdjango/utils/validators.py:397
+#, python-brace-format
+msgid "Missing data file for MESH layer {} "
+msgstr "MESH-tason {} datatiedosto puuttuu "
 
-#: qdjango/utils/validators.py:370
+#: qdjango/utils/validators.py:399 qdjango/utils/validators.py:407
+#, python-brace-format
 msgid "which should be located at {}"
-msgstr ""
+msgstr "jonka pitäisi sijaita polussa {}"
 
-#: qdjango/utils/validators.py:390
+#: qdjango/utils/validators.py:405
+#, python-brace-format
+msgid "Missing data file for layer {} "
+msgstr "Tason {} datatiedosto puuttuu "
+
+#: qdjango/utils/validators.py:434
+#, python-brace-format
 msgid ""
 "The follow fields name of layer {} contains white spaces and/or special "
 "characters: {}"
-msgstr ""
+msgstr "Tason {} seuraavat kenttänimet sisältävät välilyöntejä tai erikoismerkkejä: {}"
 
-#: qdjango/utils/validators.py:393
+#: qdjango/utils/validators.py:437
 msgid "Please use 'Alias' fields in QGIS project"
-msgstr ""
+msgstr "Käytä QGIS-projektin 'Alias'-kenttiä"
 
-#: qdjango/views.py:106
+#: qdjango/views/projects.py:152
 msgid "The project has been modified by G3W-Suite after it was uploaded."
-msgstr ""
+msgstr "G3W-Suite on muuttanut projektia sen lataamisen jälkeen."
+
+#: qdjango/views/projects.py:733
+msgid "same datasource"
+msgstr "sama tietolähde"

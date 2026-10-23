@@ -1,90 +1,126 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Finnish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: fi <info@g3wsuite.it>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: qplotly/api/widgets/serializers.py:44
-#, python-brace-format
-msgid ""
-"Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
-"source_layer_id}"
-msgstr ""
-
 #: qplotly/models.py:12
 msgid "XML original settings"
-msgstr ""
+msgstr "Alkuperäiset XML-asetukset"
 
 #: qplotly/models.py:13
 msgid "Layer datasource"
-msgstr ""
+msgstr "Tason tietolähde"
 
 #: qplotly/models.py:14
 msgid "Use selected features only"
-msgstr ""
+msgstr "Käytä vain valittuja kohteita"
 
 #: qplotly/models.py:15
 msgid "Use visible features only"
-msgstr ""
+msgstr "Käytä vain näkyviä kohteita"
 
 #: qplotly/models.py:16
 msgid "Plot type"
-msgstr ""
+msgstr "Kaavion tyyppi"
 
 #: qplotly/models.py:17
 msgid "Plot title"
-msgstr ""
+msgstr "Kaavion otsikko"
 
-#: qplotly/models.py:19
+#: qplotly/models.py:18
 msgid "Set as default plot on starting map"
-msgstr ""
+msgstr "Aseta oletuskaavioksi karttaa avattaessa"
 
-#: qplotly/models.py:33
-msgid "XML is not a DataPlotly settings."
-msgstr ""
+#: qplotly/models.py:28
+msgid "Related widgets"
+msgstr "Liittyvät pienoisohjelmat"
+
+#: qplotly/models.py:32 qplotly/models.py:127
+msgid "Order"
+msgstr "Järjestys"
 
 #: qplotly/models.py:39
-#, python-brace-format
-msgid ""
-"Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
-msgstr ""
+msgid "SChart show position"
+msgstr "SChart-kaavion näyttösijainti"
 
-#: qplotly/models.py:43
+#: qplotly/models.py:57
+msgid "XML is not a DataPlotly settings."
+msgstr "XML ei sisällä DataPlotly-asetuksia."
+
+#: qplotly/models.py:68
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
 "values."
-msgstr ""
+msgstr "DataPlotly-asetusten tason tietolähde ei vastaa arvoissa määritettyä tietolähdettä."
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:9
-msgid "Actions"
-msgstr ""
+#: qplotly/models.py:83
+msgid "Order must be \"asc\" or \"desc\"."
+msgstr "Järjestyksen on oltava \"asc\" tai \"desc\"."
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:10
-msgid "Name"
-msgstr ""
+#: qplotly/models.py:110
+msgid "Source widget"
+msgstr "Lähdepienoisohjelma"
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:11
-msgid "Type"
-msgstr ""
+#: qplotly/models.py:116
+msgid "Target widget"
+msgstr "Kohdepienoisohjelma"
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:12
-msgid "Linked"
-msgstr ""
+#: qplotly/models.py:122
+msgid "Project"
+msgstr "Projekti"
+
+#: qplotly/models.py:135
+msgid "QPlotly Widget relation"
+msgstr "QPlotly-pienoisohjelmien välinen yhteys"
+
+#: qplotly/models.py:136
+msgid "QPlotly Widget relations"
+msgstr "QPlotly-pienoisohjelmien väliset yhteydet"
 
 #: qplotly/templates/qplotly/layer_action.html:8
 msgid "Qplotly widgets"
-msgstr ""
+msgstr "Qplotly-pienoisohjelmat"
+
+#: qplotly/templates/qplotly/plots_list_order.html:9
+msgid "Reorder widgets"
+msgstr "Järjestä pienoisohjelmat uudelleen"
+
+#: qplotly/templates/qplotly/plots_list_order.html:10
+msgid ""
+"Drag and drop the rows to change the order in which the Qplotly widgets will "
+"appear."
+msgstr "Muuta Qplotly-pienoisohjelmien näyttöjärjestystä vetämällä ja pudottamalla rivejä."
+
+#: qplotly/templates/qplotly/plots_list_order.html:18
+msgid "Title"
+msgstr "Otsikko"
+
+#: qplotly/templates/qplotly/plots_list_order.html:19
+msgid "Type"
+msgstr "Tyyppi"
+
+#: qplotly/templates/qplotly/plots_list_order.html:25
+msgid "Drag to reorder"
+msgstr "Muuta järjestystä vetämällä"
+
+#: qplotly/templates/qplotly/plots_list_order.html:29
+msgid "Has related widgets"
+msgstr "Sisältää liittyviä pienoisohjelmia"
+
+#: qplotly/templates/qplotly/plots_list_order_action.html:5
+#: qplotly/templates/qplotly/plots_list_order_action.html:8
+msgid "Project's Qploty Widgets order"
+msgstr "Projektin Qploty-pienoisohjelmien järjestys"

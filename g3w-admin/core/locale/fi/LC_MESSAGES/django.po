@@ -1,621 +1,998 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Finnish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: fi <info@g3wsuite.it>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/admin.py:16
+#: core/admin.py:29
 msgid "Basic settings"
-msgstr ""
+msgstr "Perusasetukset"
 
-#: core/admin.py:19
+#: core/admin.py:32
 msgid "Access settings"
-msgstr ""
+msgstr "Käyttöoikeusasetukset"
 
-#: core/admin.py:23
+#: core/admin.py:36
 msgid "Display settings"
-msgstr ""
+msgstr "Näyttöasetukset"
 
-#: core/admin.py:27
+#: core/admin.py:40
 msgid "Additional settings"
-msgstr ""
+msgstr "Lisäasetukset"
 
-#: core/api/base/views.py:143
+#: core/api/base/views.py:154
 msgid "Data are not correct or insufficent!"
-msgstr ""
+msgstr "Tiedot ovat virheellisiä tai puutteellisia!"
 
-#: core/api/base/views.py:149
+#: core/api/base/views.py:160
 msgid "A error server is occured!"
-msgstr ""
+msgstr "Palvelimella tapahtui virhe!"
 
-#: core/api/base/views.py:157
+#: core/api/base/views.py:168
 msgid "Not found"
-msgstr ""
+msgstr "Ei löytynyt"
 
-#: core/api/base/views.py:163
+#: core/api/base/views.py:174
 msgid "Permission denied"
-msgstr ""
+msgstr "Käyttö estetty"
 
-#: core/api/views.py:39
+#: core/api/views.py:36
 msgid "Expression evaluation error."
-msgstr ""
+msgstr "Virhe lausekkeen arvioinnissa."
 
-#: core/api/views.py:44
+#: core/api/views.py:41
 msgid "Expression parse error."
-msgstr ""
+msgstr "Virhe lausekkeen jäsentämisessä."
 
-#: core/api/views.py:50
+#: core/api/views.py:47
 msgid "Expression empty error."
-msgstr ""
+msgstr "Lauseke on tyhjä."
 
-#: core/api/views.py:56
+#: core/api/views.py:53
 msgid "Expression form data error."
-msgstr ""
+msgstr "Virhe lausekkeen lomaketiedoissa."
 
-#: core/api/views.py:62
+#: core/api/views.py:59
 msgid "Layer error."
-msgstr ""
+msgstr "Tasovirhe."
 
 #: core/configs.py:11
 msgid "Search"
-msgstr ""
+msgstr "Haku"
 
 #: core/configs.py:28
 msgid "Law"
-msgstr ""
+msgstr "Lainsäädäntö"
 
-#: core/forms.py:42 core/forms.py:364
+#: core/forms.py:55 core/forms.py:430
 msgid "General data"
-msgstr ""
+msgstr "Yleiset tiedot"
 
-#: core/forms.py:65
+#: core/forms.py:60 core/forms.py:245 core/forms.py:435
+msgid "Translatable fields"
+msgstr "Käännettävät kentät"
+
+#: core/forms.py:80
 msgid "GEO data"
-msgstr ""
+msgstr "Paikkatiedot"
 
-#: core/forms.py:86
+#: core/forms.py:101
 msgid "Base Layers and Map default features"
-msgstr ""
+msgstr "Taustakartat ja kartan oletustoiminnot"
 
-#: core/forms.py:113
+#: core/forms.py:128
 msgid "Logo/Picture"
-msgstr ""
+msgstr "Logo/kuva"
 
-#: core/forms.py:141
+#: core/forms.py:155
 msgid "Copyright"
-msgstr ""
-
-#: core/forms.py:195
-msgid "Frontend home data"
-msgstr ""
-
-#: core/forms.py:220
-msgid "Frontend about data"
-msgstr ""
+msgstr "Tekijänoikeudet"
 
 #: core/forms.py:241
+msgid "Frontend home data"
+msgstr "Käyttöliittymän etusivun tiedot"
+
+#: core/forms.py:266
+msgid "Frontend about data"
+msgstr "Käyttöliittymän tietosivun tiedot"
+
+#: core/forms.py:287
 msgid "Frontend groups map data"
-msgstr ""
+msgstr "Käyttöliittymän karttaryhmien tiedot"
 
-#: core/forms.py:257
+#: core/forms.py:303
 msgid "Frontend login data"
-msgstr ""
+msgstr "Käyttöliittymän kirjautumissivun tiedot"
 
-#: core/forms.py:275
+#: core/forms.py:321
 msgid "Frontend social data"
-msgstr ""
+msgstr "Käyttöliittymän sosiaalisen median tiedot"
 
-#: core/forms.py:297
+#: core/forms.py:343
 msgid "Map client data"
-msgstr ""
+msgstr "Karttakäyttöliittymän tiedot"
 
-#: core/forms.py:323
+#: core/forms.py:361
+msgid "Registration"
+msgstr "Rekisteröityminen"
+
+#: core/forms.py:387
 msgid "Editor users"
-msgstr ""
+msgstr "Muokkaajat"
 
-#: core/forms.py:341
+#: core/forms.py:407
 msgid "ACL Users"
-msgstr ""
+msgstr "Käyttöoikeuksien käyttäjät"
 
-#: core/forms.py:371
+#: core/forms.py:439
 msgid ""
-"<b>Attention!</b> This settigns are valid only for map groups with only one "
+"<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
-msgstr ""
+msgstr "<b>Huomio!</b> Nämä asetukset koskevat vain karttaryhmiä, jotka kuuluvat yhteen pääryhmään"
 
-#: core/models.py:84
-msgid "Map control"
-msgstr ""
+#: core/forms.py:480
+msgid "Macro cartographic group"
+msgstr "Karttojen pääryhmä"
 
-#: core/models.py:85
-msgid "Map controls"
-msgstr ""
+#: core/forms.py:482
+msgid "Editor level 1"
+msgstr "Tason 1 muokkaaja"
 
-#: core/models.py:93
-msgid "Identification name"
-msgstr ""
+#: core/forms.py:483
+msgid "Editor level 2"
+msgstr "Tason 2 muokkaaja"
 
-#: core/models.py:94
-msgid "Internal identification Macrogroup name"
-msgstr ""
+#: core/forms.py:484
+msgid "User editor group"
+msgstr "Muokkaajien käyttäjäryhmä"
 
-#: core/models.py:95 core/models.py:132 core/models.py:409
-#: core/templates/core/ajax/macrogroup_detail.html:7
+#: core/forms.py:485
+msgid "User viewer group"
+msgstr "Katselijoiden käyttäjäryhmä"
+
+#: core/models.py:27
+msgid "Qdjango2 module"
+msgstr "Qdjango2-moduuli"
+
+#: core/models.py:31
+msgid "Type header"
+msgstr "Otsakkeen tyyppi"
+
+#: core/models.py:32
+msgid "Icon CSS class"
+msgstr "Kuvakkeen CSS-luokka"
+
+#: core/models.py:39 core/models.py:151
+#: core/templates/core/ajax/group_detail.html:9
+msgid "SRID"
+msgstr "SRID"
+
+#: core/models.py:40
+msgid "SRS name"
+msgstr "SRS-nimi"
+
+#: core/models.py:41
+msgid "SRS ID"
+msgstr "SRS-tunnus"
+
+#: core/models.py:42
+msgid "WKT SRS"
+msgstr "SRS:n WKT-esitys"
+
+#: core/models.py:43
+msgid "PROJ coordinate definition"
+msgstr "PROJ-koordinaatistomäärittely"
+
+#: core/models.py:60 core/models.py:78 core/models.py:136
+msgid "Name"
+msgstr "Nimi"
+
+#: core/models.py:61 core/models.py:96 core/models.py:137
+#: core/models.py:425 core/templates/core/ajax/macrogroup_detail.html:8
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
-msgstr ""
+msgstr "Otsikko"
 
-#: core/models.py:96 core/models.py:133
-#: core/templates/core/ajax/macrogroup_detail.html:9
+#: core/models.py:62
+msgid "Icon"
+msgstr "Kuvake"
+
+#: core/models.py:63 core/models.py:79 core/models.py:97
+#: core/models.py:138 core/templates/core/ajax/macrogroup_detail.html:10
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
-#: core/models.py:97 core/models.py:140
+#: core/models.py:64
+msgid "Property"
+msgstr "Ominaisuus"
+
+#: core/models.py:70
+msgid "Base Layer"
+msgstr "Taustakartta"
+
+#: core/models.py:71
+msgid "Base Layers"
+msgstr "Taustakartat"
+
+#: core/models.py:85
+msgid "Map control"
+msgstr "Karttatyökalu"
+
+#: core/models.py:86 core/models.py:157
+msgid "Map controls"
+msgstr "Karttatyökalut"
+
+#: core/models.py:94
+msgid "Identification name"
+msgstr "Tunnistenimi"
+
+#: core/models.py:95
+msgid "Internal identification Macrogroup name"
+msgstr "Pääryhmän sisäinen tunnistenimi"
+
+#: core/models.py:98 core/models.py:145
 msgid "Logo image"
-msgstr ""
+msgstr "Logokuva"
 
-#: core/models.py:98 core/models.py:141
+#: core/models.py:99 core/models.py:147
 msgid "Logo link"
-msgstr ""
+msgstr "Logon linkki"
 
-#: core/models.py:99 core/models.py:142
+#: core/models.py:100 core/models.py:148
 msgid "Enter link with http:// or https//"
-msgstr ""
+msgstr "Anna linkki, joka alkaa merkkijonolla http:// tai https//"
 
-#: core/models.py:100
+#: core/models.py:101
 msgid "Use title for client"
-msgstr ""
+msgstr "Käytä otsikkoa karttakäyttöliittymässä"
 
-#: core/models.py:101 core/models.py:166
+#: core/models.py:102 core/models.py:172
 msgid "Use logo image for client"
-msgstr ""
+msgstr "Käytä logokuvaa karttakäyttöliittymässä"
 
-#: core/models.py:104 core/models.py:135
+#: core/models.py:105 core/models.py:140
 msgid "Slug"
-msgstr ""
+msgstr "URL-tunniste"
 
-#: core/models.py:131
-msgid "Name"
-msgstr ""
+#: core/models.py:128
+msgid "MACRO Group"
+msgstr "PÄÄRYHMÄ"
 
-#: core/models.py:137
+#: core/models.py:129 core/utils/forms.py:48
+msgid "MACRO Groups"
+msgstr "PÄÄRYHMÄT"
+
+#: core/models.py:142
 msgid "Is active"
-msgstr ""
+msgstr "Aktiivinen"
 
-#: core/models.py:158
+#: core/models.py:154
+msgid "Base layers"
+msgstr "Taustakartat"
+
+#: core/models.py:160
+msgid "Background color"
+msgstr "Taustaväri"
+
+#: core/models.py:164
 msgid "Terms of use text"
-msgstr ""
-
-#: core/models.py:161
-msgid "Terms of use link"
-msgstr ""
+msgstr "Käyttöehtojen teksti"
 
 #: core/models.py:167
+msgid "Terms of use link"
+msgstr "Käyttöehtojen linkki"
+
+#: core/models.py:170
+msgid "MACRO groups"
+msgstr "PÄÄRYHMÄT"
+
+#: core/models.py:173
 msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
-msgstr ""
+msgstr "Nykyisen ryhmän logoa voi käyttää karttakäyttöliittymän logona kuten pääryhmän asetuksissa. Jos pääryhmän asetus on käytössä, se ohittaa tämän asetuksen"
 
-#: core/models.py:400 core/templates/core/group_form.html:11
+#: core/models.py:178 core/models.py:416
 msgid "Group"
-msgstr ""
+msgstr "Ryhmä"
 
-#: core/models.py:401
-msgid "Project type"
-msgstr ""
-
-#: core/models.py:402
-msgid "Project type id"
-msgstr ""
-
-#: core/models.py:410
-msgid "Subtitle"
-msgstr ""
-
-#: core/models.py:411
-msgid "Home description"
-msgstr ""
-
-#: core/models.py:412
-msgid "About title"
-msgstr ""
-
-#: core/models.py:413
-msgid "About description"
-msgstr ""
-
-#: core/models.py:414
-msgid "About name"
-msgstr ""
-
-#: core/models.py:415
-msgid "About phone"
-msgstr ""
-
-#: core/models.py:416
-msgid "About email"
-msgstr ""
+#: core/models.py:179 core/templates/core/ajax/macrogroup_detail.html:12
+#: core/templates/core/macrogroup_list_table.html:29
+msgid "Groups"
+msgstr "Ryhmät"
 
 #: core/models.py:417
-msgid "About address"
-msgstr ""
+msgid "Project type"
+msgstr "Projektin tyyppi"
 
 #: core/models.py:418
-msgid "Groups title"
-msgstr ""
-
-#: core/models.py:419
-msgid "Groups map description"
-msgstr ""
-
-#: core/models.py:420
-msgid "Login title"
-msgstr ""
-
-#: core/models.py:421
-msgid "Login description"
-msgstr ""
-
-#: core/models.py:422
-msgid "Suite logo"
-msgstr ""
-
-#: core/models.py:423
-msgid "Suite logo URL"
-msgstr ""
+msgid "Project type id"
+msgstr "Projektityypin tunnus"
 
 #: core/models.py:426
-msgid "Credits"
-msgstr ""
+msgid "Subtitle"
+msgstr "Alaotsikko"
+
+#: core/models.py:427
+msgid "Home description"
+msgstr "Etusivun kuvaus"
+
+#: core/models.py:428
+msgid "About title"
+msgstr "Tietosivun otsikko"
 
 #: core/models.py:429
-msgid "Main map title"
-msgstr ""
+msgid "About description"
+msgstr "Tietosivun kuvaus"
+
+#: core/models.py:430
+msgid "About name"
+msgstr "Tietosivun nimi"
 
 #: core/models.py:431
-msgid "Facebook link"
-msgstr ""
+msgid "About phone"
+msgstr "Tietosivun puhelinnumero"
 
 #: core/models.py:432
-msgid "Twitter link"
-msgstr ""
+msgid "About email"
+msgstr "Tietosivun sähköpostiosoite"
 
 #: core/models.py:433
-msgid "Google+ link"
-msgstr ""
+msgid "About address"
+msgstr "Tietosivun osoite"
 
 #: core/models.py:434
-msgid "Youtube link"
-msgstr ""
+msgid "Groups title"
+msgstr "Ryhmien otsikko"
 
 #: core/models.py:435
-msgid "Instagram link"
-msgstr ""
+msgid "Groups map description"
+msgstr "Karttaryhmien kuvaus"
 
 #: core/models.py:436
-msgid "Flickr link"
-msgstr ""
+msgid "Login title"
+msgstr "Kirjautumissivun otsikko"
 
 #: core/models.py:437
+msgid "Login description"
+msgstr "Kirjautumissivun kuvaus"
+
+#: core/models.py:438
+msgid "Suite logo"
+msgstr "Sovelluskokonaisuuden logo"
+
+#: core/models.py:439
+msgid "Suite logo URL"
+msgstr "Sovelluskokonaisuuden logon URL"
+
+#: core/models.py:440
+msgid "Registration introductory message"
+msgstr "Rekisteröitymisen aloitusviesti"
+
+#: core/models.py:443
+msgid "Credits"
+msgstr "Tekijät"
+
+#: core/models.py:446
+msgid "Main map title"
+msgstr "Pääkartan otsikko"
+
+#: core/models.py:448
+msgid "Facebook link"
+msgstr "Facebook-linkki"
+
+#: core/models.py:449
+msgid "Twitter link"
+msgstr "Twitter-linkki"
+
+#: core/models.py:450
+msgid "Google+ link"
+msgstr "Google+-linkki"
+
+#: core/models.py:451
+msgid "Youtube link"
+msgstr "Youtube-linkki"
+
+#: core/models.py:452
+msgid "Instagram link"
+msgstr "Instagram-linkki"
+
+#: core/models.py:453
+msgid "Flickr link"
+msgstr "Flickr-linkki"
+
+#: core/models.py:454
 msgid "Tripadvisor link"
-msgstr ""
+msgstr "Tripadvisor-linkki"
+
+#: core/models.py:462
+msgid "App name"
+msgstr "Sovelluksen nimi"
+
+#: core/models.py:463
+msgid "Project ID"
+msgstr "Projektin tunnus"
+
+#: core/models.py:464
+msgid "Alias"
+msgstr "Vaihtoehtoinen nimi"
+
+#: core/models.py:468
+msgid "NotSet"
+msgstr "NotSet"
+
+#: core/models.py:469
+msgid "Info"
+msgstr "Tieto"
+
+#: core/models.py:470
+msgid "Warning"
+msgstr "Varoitus"
+
+#: core/models.py:471
+msgid "Debug"
+msgstr "Virheenjäljitys"
+
+#: core/models.py:472
+msgid "Error"
+msgstr "Virhe"
+
+#: core/models.py:473
+msgid "Fatal"
+msgstr "Vakava virhe"
+
+#: core/models.py:479
+msgid "Logger name"
+msgstr "Lokikirjaajan nimi"
+
+#: core/models.py:480
+msgid "Level"
+msgstr "Taso"
+
+#: core/models.py:481
+msgid "Message"
+msgstr "Viesti"
+
+#: core/models.py:482
+msgid "Trace"
+msgstr "Jäljitys"
+
+#: core/models.py:483
+msgid "Created at"
+msgstr "Luontiaika"
+
+#: core/models.py:490 core/models.py:491
+msgid "Logging"
+msgstr "Lokitus"
+
+#: core/models.py:500
+msgid "Original URL"
+msgstr "Alkuperäinen URL"
+
+#: core/models.py:501
+msgid "Short code"
+msgstr "Lyhytkoodi"
+
+#: core/models.py:523 core/templates/core/ajax/macrogroup_detail.html:6
+msgid "Data"
+msgstr "Tiedot"
+
+#: core/models.py:524
+msgid "Permalink code"
+msgstr "Pysyvän linkin koodi"
 
 #: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
 msgid "error page"
-msgstr ""
+msgstr "virhesivu"
 
 #: core/templates/core/403_MGC.html:15 core/templates/core/403_MPC.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Pääsy estetty"
 
 #: core/templates/core/403_MGC.html:17
 msgid "You can't add new Group"
-msgstr ""
+msgstr "Et voi lisätä uutta ryhmää"
 
 #: core/templates/core/403_MPC.html:17
 msgid "You can't add new Project"
-msgstr ""
+msgstr "Et voi lisätä uutta projektia"
 
-#: core/templates/core/ajax/group_detail.html:5
+#: core/templates/core/ajax/group_detail.html:6
 msgid "Geografic component"
-msgstr ""
-
-#: core/templates/core/ajax/group_detail.html:7
-msgid "Geographic coordinate system"
-msgstr ""
+msgstr "Maantieteellinen osa"
 
 #: core/templates/core/ajax/group_detail.html:8
-msgid "SRID"
-msgstr ""
-
-#: core/templates/core/ajax/group_detail.html:9
-msgid "Units"
-msgstr ""
+msgid "Geographic coordinate system"
+msgstr "Maantieteellinen koordinaatisto"
 
 #: core/templates/core/ajax/group_detail.html:10
-msgid "Principal map"
-msgstr ""
+msgid "Units"
+msgstr "Yksiköt"
 
 #: core/templates/core/ajax/group_detail.html:11
-msgid "Max scale"
-msgstr ""
+msgid "Principal map"
+msgstr "Pääkartta"
 
 #: core/templates/core/ajax/group_detail.html:12
-msgid "Min scale"
-msgstr ""
+msgid "Max scale"
+msgstr "Suurin mittakaava"
 
 #: core/templates/core/ajax/group_detail.html:13
-msgid "Overview Map"
-msgstr ""
+msgid "Min scale"
+msgstr "Pienin mittakaava"
 
 #: core/templates/core/ajax/group_detail.html:14
-msgid "Panoramic max scale"
-msgstr ""
+msgid "Overview Map"
+msgstr "Yleiskatsauskartta"
 
 #: core/templates/core/ajax/group_detail.html:15
+msgid "Panoramic max scale"
+msgstr "Yleiskatsauskartan suurin mittakaava"
+
+#: core/templates/core/ajax/group_detail.html:16
 msgid "Panoramic min scale"
-msgstr ""
+msgstr "Yleiskatsauskartan pienin mittakaava"
 
-#: core/templates/core/ajax/group_detail.html:18
+#: core/templates/core/ajax/group_detail.html:19
 msgid "Users"
-msgstr ""
+msgstr "Käyttäjät"
 
-#: core/templates/core/ajax/group_detail.html:21
+#: core/templates/core/ajax/group_detail.html:22
 msgid "Editor level 1 user"
-msgstr ""
-
-#: core/templates/core/ajax/group_detail.html:25
-msgid "Editor level 2 user"
-msgstr ""
+msgstr "Tason 1 muokkaaja"
 
 #: core/templates/core/ajax/group_detail.html:26
-msgid "Viewer users"
-msgstr ""
+msgid "Editor level 2 user"
+msgstr "Tason 2 muokkaaja"
 
 #: core/templates/core/ajax/group_detail.html:27
-msgid "Editor user groups"
-msgstr ""
+msgid "Viewer users"
+msgstr "Katselijat"
 
 #: core/templates/core/ajax/group_detail.html:28
+msgid "Editor user groups"
+msgstr "Muokkaajien käyttäjäryhmät"
+
+#: core/templates/core/ajax/group_detail.html:29
 msgid "Viewer user groups"
-msgstr ""
+msgstr "Katselijoiden käyttäjäryhmät"
 
-#: core/templates/core/ajax/group_detail.html:35
+#: core/templates/core/ajax/group_detail.html:36
 msgid "Interface component"
-msgstr ""
-
-#: core/templates/core/ajax/group_detail.html:37
-msgid "Interface language"
-msgstr ""
+msgstr "Käyttöliittymän osa"
 
 #: core/templates/core/ajax/group_detail.html:38
-msgid "Language"
-msgstr ""
+msgid "Interface language"
+msgstr "Käyttöliittymän kieli"
 
 #: core/templates/core/ajax/group_detail.html:39
-msgid "Associated logo"
-msgstr ""
+msgid "Language"
+msgstr "Kieli"
 
 #: core/templates/core/ajax/group_detail.html:40
-msgid "HeaderLogoImg"
-msgstr ""
+msgid "Associated logo"
+msgstr "Liitetty logo"
 
-#: core/templates/core/ajax/group_detail.html:48
-msgid "HeaderLogoHeight"
-msgstr ""
+#: core/templates/core/ajax/group_detail.html:41
+msgid "HeaderLogoImg"
+msgstr "HeaderLogoImg"
 
 #: core/templates/core/ajax/group_detail.html:49
-msgid "HeaderLogoLink"
-msgstr ""
+msgid "HeaderLogoHeight"
+msgstr "HeaderLogoHeight"
 
 #: core/templates/core/ajax/group_detail.html:50
-msgid "Terms of use"
-msgstr ""
+msgid "HeaderLogoLink"
+msgstr "HeaderLogoLink"
 
 #: core/templates/core/ajax/group_detail.html:51
-msgid "HeaderTermsOfUseText"
-msgstr ""
+msgid "Terms of use"
+msgstr "Käyttöehdot"
 
 #: core/templates/core/ajax/group_detail.html:52
+msgid "HeaderTermsOfUseText"
+msgstr "HeaderTermsOfUseText"
+
+#: core/templates/core/ajax/group_detail.html:53
 msgid "HeaderTermsOfUseLink"
-msgstr ""
+msgstr "HeaderTermsOfUseLink"
 
-#: core/templates/core/ajax/macrogroup_detail.html:5
-msgid "Data"
-msgstr ""
+#: core/templates/core/ajax/system_info.html:9
+#: core/templates/core/ajax/system_info.html:52
+msgid "General"
+msgstr "Yleiset"
 
-#: core/templates/core/ajax/macrogroup_detail.html:11
-#: core/templates/core/macrogroup_list_table.html:29
-msgid "Groups"
-msgstr ""
+#: core/templates/core/ajax/system_info.html:31
+msgid "Databases"
+msgstr "Tietokannat"
 
-#: core/templates/core/django_file_form/upload_template.html:5
-msgid "Drop files here to upload"
-msgstr ""
+#: core/templates/core/ajax/system_info.html:42
+msgid "No database connections detected."
+msgstr "Tietokantayhteyksiä ei havaittu."
 
-#: core/templates/core/django_file_form/upload_template.html:8
-msgid "Click or Drag file to Upload"
-msgstr ""
+#: core/templates/core/ajax/system_info.html:52
+#: core/templates/core/ajax/system_info.html:66
+#: core/templates/core/ajax/system_info.html:88
+msgid "Libraries"
+msgstr "Kirjastot"
 
-#: core/templates/core/django_file_form/upload_template.html:11
-msgid "Processing dropped files..."
-msgstr ""
+#: core/templates/core/ajax/system_info.html:66
+msgid "Geographic"
+msgstr "Maantieteelliset"
 
-#: core/templates/core/django_file_form/upload_template.html:24
-msgid "Cancel"
-msgstr ""
+#: core/templates/core/generalsuitedata_form.html:15
+msgid "General suite settings"
+msgstr "Sovelluskokonaisuuden yleiset asetukset"
 
-#: core/templates/core/django_file_form/upload_template.html:25
-msgid "Retry"
-msgstr ""
+#: core/templates/core/generalsuitedata_form.html:18
+msgid ""
+"Branding, default texts and global preferences for the whole G3W-Suite "
+"installation."
+msgstr "Koko G3W-Suite-asennuksen ilme, oletustekstit ja yleiset asetukset."
 
-#: core/templates/core/django_file_form/upload_template.html:26
-#: core/templates/core/group_list.html:103
-#: core/templates/core/macrogroup_list.html:83
-#: core/templates/core/macrogroup_list_table.html:43
-#: core/templates/core/project_list.html:71
-msgid "Delete"
-msgstr ""
+#: core/templates/core/generalsuitedata_form.html:23
+msgid "Back to dashboard"
+msgstr "Takaisin hallintapaneeliin"
 
-#: core/templates/core/generalsuitedata_form.html:11
-msgid "General suite data"
-msgstr ""
+#: core/templates/core/generalsuitedata_form.html:40
+#: core/templates/core/group_form.html:68
+#: core/templates/core/macrogroup_form.html:67
+msgid "Some errors on form"
+msgstr "Lomakkeessa on virheitä"
 
-#: core/templates/core/generalsuitedata_form.html:24
-#: core/templates/core/group_form.html:45
-#: core/templates/core/macrogroup_form.html:51
-msgid "Alert"
-msgstr ""
+#: core/templates/core/generalsuitedata_form.html:41
+#: core/templates/core/group_form.html:69
+#: core/templates/core/macrogroup_form.html:68
+msgid "Check the highlighted fields and submit again."
+msgstr "Tarkista korostetut kentät ja lähetä uudelleen."
 
-#: core/templates/core/generalsuitedata_form.html:25
-#: core/templates/core/group_form.html:46
-#: core/templates/core/macrogroup_form.html:52
-msgid "Some errors on form. Check it and send again."
-msgstr ""
+#: core/templates/core/group_deactive_list.html:15
+msgid "Deactivated cartographic groups"
+msgstr "Käytöstä poistetut karttaryhmät"
 
-#: core/templates/core/group_form.html:33
-msgid "Current"
-msgstr ""
+#: core/templates/core/group_deactive_list.html:18
+msgid ""
+"Groups currently in the bin. Restore them to bring projects back online, or "
+"delete permanently to free up space."
+msgstr "Roskakorissa olevat ryhmät. Palauta ne tuodaksesi projektit takaisin verkkoon tai poista ne pysyvästi vapauttaaksesi tilaa."
 
-#: core/templates/core/group_form.html:33
-#: core/templates/core/group_list.html:78
-#: core/templates/core/project_list.html:11
+#: core/templates/core/group_deactive_list.html:23
+#: core/templates/core/group_deactive_list.html:108
+msgid "Back to active groups"
+msgstr "Takaisin aktiivisiin ryhmiin"
+
+#: core/templates/core/group_deactive_list.html:38
+msgid "deactivated group"
+msgid_plural "deactivated groups"
+msgstr[0] "käytöstä poistettu ryhmä"
+msgstr[1] "käytöstä poistettua ryhmää"
+
+#: core/templates/core/group_deactive_list.html:52
+msgid "Deactivated"
+msgstr "Poistettu käytöstä"
+
+#: core/templates/core/group_deactive_list.html:62
+#: core/templates/core/group_list.html:136
 msgid "Projects"
-msgstr ""
+msgstr "Projektit"
 
-#: core/templates/core/group_list.html:10
-#: core/templates/core/search/group.html:9
-msgid "Cartographic groups"
-msgstr ""
-
-#: core/templates/core/group_list.html:66
-msgid "Add new project"
-msgstr ""
-
-#: core/templates/core/group_list.html:78
-#: core/templates/core/search/group.html:25
-msgid "Group projects"
-msgstr ""
-
-#: core/templates/core/group_list.html:85
-#: core/templates/core/macrogroup_list.html:66
+#: core/templates/core/group_deactive_list.html:67
+#: core/templates/core/group_list.html:149
+#: core/templates/core/macrogroup_list.html:128
 #: core/templates/core/macrogroup_list_table.html:37
-#: core/templates/core/project_list.html:65
-#: core/templates/core/search/group.html:24
-#: core/templates/core/search/macrogroup.html:22
+#: core/templates/core/project_list.html:71
+#: core/templates/core/search/group.html:40
+#: core/templates/core/search/macrogroup.html:38
 msgid "Show detail"
-msgstr ""
+msgstr "Näytä tiedot"
+
+#: core/templates/core/group_deactive_list.html:76
+msgid "Restore / Activate"
+msgstr "Palauta / ota käyttöön"
+
+#: core/templates/core/group_deactive_list.html:86
+msgid "Delete permanently"
+msgstr "Poista pysyvästi"
+
+#: core/templates/core/group_deactive_list.html:92
+msgid "Warning: deleting the group will delete the projects it contains!"
+msgstr "Varoitus: ryhmän poistaminen poistaa myös sen sisältämät projektit!"
+
+#: core/templates/core/group_deactive_list.html:105
+msgid "The bin is empty"
+msgstr "Roskakori on tyhjä"
+
+#: core/templates/core/group_deactive_list.html:106
+msgid "There are no deactivated cartographic groups to show."
+msgstr "Näytettäviä käytöstä poistettuja karttaryhmiä ei ole."
+
+#: core/templates/core/group_form.html:15
+msgid "Edit cartographic group"
+msgstr "Muokkaa karttaryhmää"
+
+#: core/templates/core/group_form.html:15
+msgid "New cartographic group"
+msgstr "Uusi karttaryhmä"
+
+#: core/templates/core/group_form.html:21
+msgid ""
+"Configure name, geographic data, base layers and branding for a new map "
+"group."
+msgstr "Määritä uuden karttaryhmän nimi, paikkatiedot, taustakartat ja ilme."
+
+#: core/templates/core/group_form.html:27
+#: core/templates/core/project_list.html:18
+msgid "Back to groups"
+msgstr "Takaisin ryhmiin"
+
+#: core/templates/core/group_form.html:48
+msgid "Currently"
+msgstr "Tällä hetkellä"
+
+#: core/templates/core/group_form.html:50
+msgid "projects"
+msgstr "projektia"
+
+#: core/templates/core/group_list.html:13
+#: core/templates/core/search/group.html:11
+msgid "Cartographic groups"
+msgstr "Karttaryhmät"
+
+#: core/templates/core/group_list.html:14
+msgid "Browse, organize and manage the map groups you have access to."
+msgstr "Selaa, järjestä ja hallitse karttaryhmiä, joihin sinulla on käyttöoikeus."
+
+#: core/templates/core/group_list.html:17
+#: core/templates/core/macrogroup_list.html:112
+msgid "groups"
+msgstr "ryhmää"
+
+#: core/templates/core/group_list.html:90
+msgid "Filter groups"
+msgstr "Suodata ryhmiä"
+
+#: core/templates/core/group_list.html:92
+#: core/templates/core/macrogroup_list.html:82
+msgid "View mode"
+msgstr "Näkymä"
 
 #: core/templates/core/group_list.html:94
-#: core/templates/core/macrogroup_list.html:74
-#: core/templates/core/macrogroup_list_table.html:40
-#: core/templates/core/project_list.html:68
-#: core/templates/core/search/group.html:28
-#: core/templates/core/search/macrogroup.html:24
-msgid "Edit"
-msgstr ""
+#: core/templates/core/macrogroup_list.html:84
+msgid "Grid view"
+msgstr "Ruudukkonäkymä"
 
-#: core/templates/core/group_list.html:106
-msgid "Warning: deleting the group will delete the projects it contains!"
-msgstr ""
+#: core/templates/core/group_list.html:98
+#: core/templates/core/macrogroup_list.html:88
+msgid "List view"
+msgstr "Luettelonäkymä"
+
+#: core/templates/core/group_list.html:104
+#: core/templates/core/group_list.html:203
+msgid "New group"
+msgstr "Uusi ryhmä"
+
+#: core/templates/core/group_list.html:114
+msgid "Apply filter"
+msgstr "Käytä suodatinta"
+
+#: core/templates/core/group_list.html:140
+msgid "Add new project"
+msgstr "Lisää uusi projekti"
+
+#: core/templates/core/group_list.html:156
+#: core/templates/core/macrogroup_list.html:134
+#: core/templates/core/macrogroup_list_table.html:40
+#: core/templates/core/project_list.html:79
+#: core/templates/core/search/group.html:44
+#: core/templates/core/search/macrogroup.html:40
+msgid "Edit"
+msgstr "Muokkaa"
+
+#: core/templates/core/group_list.html:163
+msgid "Delete/Deactivate"
+msgstr "Poista / poista käytöstä"
+
+#: core/templates/core/group_list.html:171
+msgid ""
+"<strong>Warning</strong>: deleting the group (move to bucket) will delete "
+"the projects it contains (move to the bucket)!"
+msgstr "<strong>Varoitus</strong>: ryhmän poistaminen (siirtäminen roskakoriin) poistaa myös sen sisältämät projektit (siirtää ne roskakoriin)!"
+
+#: core/templates/core/group_list.html:185
+msgid "Add new group"
+msgstr "Lisää uusi ryhmä"
+
+#: core/templates/core/group_list.html:193
+msgid "No groups found"
+msgstr "Ryhmiä ei löytynyt"
+
+#: core/templates/core/group_list.html:196
+msgid "Create your first cartographic group to start organizing projects."
+msgstr "Luo ensimmäinen karttaryhmäsi aloittaaksesi projektien järjestämisen."
+
+#: core/templates/core/group_list.html:198
+msgid "No groups match your filter, or none have been shared with you yet."
+msgstr "Mikään ryhmä ei vastaa suodatustasi tai sinulle ei ole vielä jaettu ryhmiä."
 
 #: core/templates/core/include/add_project.html:4
 msgid "Add project"
-msgstr ""
+msgstr "Lisää projekti"
 
 #: core/templates/core/include/add_project.html:10
-msgid "Select project type do add:"
-msgstr ""
+msgid "Select project type to add:"
+msgstr "Valitse lisättävän projektin tyyppi:"
 
 #: core/templates/core/include/cookieconsent.html:11
 msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
-msgstr ""
+msgstr "Tämä sivusto käyttää evästeitä varmistaakseen parhaan käyttökokemuksen"
 
 #: core/templates/core/include/cookieconsent.html:12
 msgid "Got it"
-msgstr ""
+msgstr "Selvä"
 
 #: core/templates/core/include/form_buttons.html:7
 msgid "Save"
-msgstr ""
+msgstr "Tallenna"
 
 #: core/templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
-msgstr ""
+msgstr "Tee uudelleen / takaisin"
 
-#: core/templates/core/macrogroup_form.html:10
-msgid "Macro Group"
-msgstr ""
+#: core/templates/core/macrogroup_form.html:14
+msgid "Edit macro group"
+msgstr "Muokkaa pääryhmää"
 
-#: core/templates/core/macrogroup_form.html:24
-msgid "Current groups"
-msgstr ""
+#: core/templates/core/macrogroup_form.html:14
+#: core/templates/core/macrogroup_list.html:94
+#: core/templates/core/macrogroup_list.html:175
+msgid "New macro group"
+msgstr "Uusi pääryhmä"
 
-#: core/templates/core/macrogroup_list.html:10
+#: core/templates/core/macrogroup_form.html:20
+msgid "Group cartographic groups together under a shared label and branding."
+msgstr "Kokoa karttaryhmiä yhteisen nimen ja ilmeen alle."
+
+#: core/templates/core/macrogroup_form.html:26
+msgid "Back to macro groups"
+msgstr "Takaisin pääryhmiin"
+
+#: core/templates/core/macrogroup_form.html:48
+msgid "Linked groups:"
+msgstr "Liitetyt ryhmät:"
+
+#: core/templates/core/macrogroup_form.html:53
+msgid "No cartographic groups linked yet."
+msgstr "Karttaryhmiä ei ole vielä liitetty."
+
+#: core/templates/core/macrogroup_list.html:13
 #: core/templates/core/macrogroup_list_table.html:10
-#: core/templates/core/search/macrogroup.html:8
+#: core/templates/core/search/macrogroup.html:10
 msgid "Cartographic macro groups"
-msgstr ""
+msgstr "Karttojen pääryhmät"
+
+#: core/templates/core/macrogroup_list.html:14
+msgid "Group together cartographic groups under shared identities and logos."
+msgstr "Kokoa karttaryhmiä yhteisten tunnusten ja logojen alle."
+
+#: core/templates/core/macrogroup_list.html:17
+msgid "macro groups"
+msgstr "pääryhmää"
+
+#: core/templates/core/macrogroup_list.html:80
+msgid "All macro groups"
+msgstr "Kaikki pääryhmät"
+
+#: core/templates/core/macrogroup_list.html:121
+msgid "No groups linked"
+msgstr "Ei liitettyjä ryhmiä"
+
+#: core/templates/core/macrogroup_list.html:140
+#: core/templates/core/macrogroup_list_table.html:43
+msgid "Delete"
+msgstr "Poista"
+
+#: core/templates/core/macrogroup_list.html:157
+msgid "Add new macro group"
+msgstr "Lisää uusi pääryhmä"
+
+#: core/templates/core/macrogroup_list.html:165
+msgid "No macro groups found"
+msgstr "Pääryhmiä ei löytynyt"
+
+#: core/templates/core/macrogroup_list.html:168
+msgid ""
+"Create your first macro group to organize cartographic groups under a shared "
+"identity."
+msgstr "Luo ensimmäinen pääryhmäsi järjestääksesi karttaryhmät yhteisen tunnuksen alle."
+
+#: core/templates/core/macrogroup_list.html:170
+msgid "No macro groups have been shared with you yet."
+msgstr "Sinulle ei ole vielä jaettu pääryhmiä."
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
-msgstr ""
+msgstr "Pääryhmä"
+
+#: core/templates/core/project_list.html:14
+msgid "Projects available in this cartographic group."
+msgstr "Tässä karttaryhmässä käytettävissä olevat projektit."
+
+#: core/templates/core/project_list.html:74
+msgid "Detail"
+msgstr "Tiedot"
+
+#: core/templates/core/project_list.html:80
+msgid "Edit group"
+msgstr "Muokkaa ryhmää"
+
+#: core/templates/core/search/group.html:17
+#: core/templates/core/search/macrogroup.html:16
+msgid "Collapse / expand"
+msgstr "Pienennä / laajenna"
+
+#: core/templates/core/search/group.html:41
+msgid "Group projects"
+msgstr "Ryhmän projektit"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
-msgstr ""
+msgstr "Taso"
 
 #: core/templates/core/tags/add_project.html:7
 msgid "Project"
-msgstr ""
+msgstr "Projekti"
 
 #: core/utils/data.py:24
+#, python-brace-format
 msgid "[{} error on {}({})]-- {}"
-msgstr ""
+msgstr "[{} virhe kohteessa {}({})]-- {}"
 
-#: core/utils/forms.py:23
+#: core/utils/forms.py:21
 msgid "Default base layer"
-msgstr ""
+msgstr "Oletustaustakartta"
 
-#: core/utils/forms.py:50
-msgid "MACRO Groups"
-msgstr ""
-
-#: core/utils/qgisapi.py:458
+#: core/utils/qgisapi.py:548
+#, python-brace-format
 msgid "Function \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "Funktiota \"{}\" ei sallita turvallisuussyistä!"
 
-#: core/utils/qgisapi.py:463
+#: core/utils/qgisapi.py:553
+#, python-brace-format
 msgid "Variable \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "Muuttujaa \"{}\" ei sallita turvallisuussyistä!"
 
-#: core/utils/qgisapi.py:475
+#: core/utils/qgisapi.py:565 core/utils/qgisapi.py:582
+#, python-brace-format
 msgid "QGIS layer with id \"{}\" could not be found!"
-msgstr ""
+msgstr "QGIS-tasoa, jonka tunnus on \"{}\", ei löytynyt!"
 
-#: core/utils/qgisapi.py:487
+#: core/utils/qgisapi.py:588
+#, python-brace-format
 msgid "QDjango project with id \"{}\" could not be found!"
-msgstr ""
+msgstr "QDjango-projektia, jonka tunnus on \"{}\", ei löytynyt!"
 
-#: core/utils/qgisapi.py:497
+#: core/utils/qgisapi.py:598
 msgid "A valid QGIS layer is required to process form data!"
-msgstr ""
+msgstr "Lomaketietojen käsittely edellyttää kelvollista QGIS-tasoa!"
 
-#: core/utils/structure.py:183
+#: core/utils/qgisapi.py:612
+msgid "A valid QGIS layer (parent layer) is required to process form data!"
+msgstr "Lomaketietojen käsittely edellyttää kelvollista QGIS-tasoa (ylätasoa)!"
+
+#: core/utils/structure.py:190
 msgid "Yes"
-msgstr ""
+msgstr "Kyllä"

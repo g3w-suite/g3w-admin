@@ -1,31 +1,20 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Spanish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# Samuel Mesa <samuelmesa@linuxmail.org>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-18 17:01+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: es <info@g3wsuite.it>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: qplotly/api/widgets/serializers.py:45
-#, python-brace-format
-msgid ""
-"Layer with id {layer.qgs_layer_id} is no equal to setting "
-"{settings.source_layer_id}"
-msgstr ""
-"La capa con id {layer.qgs_layer_id} no es igual a la configuración "
-"{settings.source_layer_id}"
 
 #: qplotly/models.py:12
 msgid "XML original settings"
@@ -71,14 +60,6 @@ msgstr "Posición de visualización de SChart"
 msgid "XML is not a DataPlotly settings."
 msgstr "XML no es una configuración de DataPlotly."
 
-#: qplotly/models.py:64
-#, python-brace-format
-msgid ""
-"Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
-msgstr ""
-"La capa con qgs_layer_id={settings.source_layer_id} no está presente en la "
-"BD"
-
 #: qplotly/models.py:68
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
@@ -115,23 +96,30 @@ msgstr "Relaciones de widgets QPlotly"
 msgid "Qplotly widgets"
 msgstr "Widgets Qplotly"
 
-#: qplotly/templates/qplotly/plots_list_order.html:5
-msgid ""
-"<b>Drag</b> and <b>drop</b> the following table's rows to change the widget "
-"list order"
-msgstr ""
-"<b>Arrastre</b> y <b>suelte</b> las filas de la siguiente tabla para cambiar"
-" el orden de la lista de widgets"
+#: qplotly/templates/qplotly/plots_list_order.html:9
+#| msgid "Related widgets"
+msgid "Reorder widgets"
+msgstr "Reordenar widgets"
 
-#: qplotly/templates/qplotly/plots_list_order.html:12
+#: qplotly/templates/qplotly/plots_list_order.html:10
+msgid ""
+"Drag and drop the rows to change the order in which the Qplotly widgets will "
+"appear."
+msgstr "Arrastra y suelta las filas para cambiar el orden en que aparecerán los widgets de Qplotly."
+
+#: qplotly/templates/qplotly/plots_list_order.html:18
 msgid "Title"
 msgstr "Título"
 
-#: qplotly/templates/qplotly/plots_list_order.html:13
+#: qplotly/templates/qplotly/plots_list_order.html:19
 msgid "Type"
 msgstr "Tipo"
 
-#: qplotly/templates/qplotly/plots_list_order.html:23
+#: qplotly/templates/qplotly/plots_list_order.html:25
+msgid "Drag to reorder"
+msgstr "Arrastra para reordenar"
+
+#: qplotly/templates/qplotly/plots_list_order.html:29
 msgid "Has related widgets"
 msgstr "Tiene widgets relacionados"
 
@@ -139,3 +127,25 @@ msgstr "Tiene widgets relacionados"
 #: qplotly/templates/qplotly/plots_list_order_action.html:8
 msgid "Project's Qploty Widgets order"
 msgstr "Orden de widgets Qplotly del proyecto"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Layer with id {layer.qgs_layer_id} is no equal to setting "
+#~ "{settings.source_layer_id}"
+#~ msgstr ""
+#~ "La capa con id {layer.qgs_layer_id} no es igual a la configuración "
+#~ "{settings.source_layer_id}"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
+#~ msgstr ""
+#~ "La capa con qgs_layer_id={settings.source_layer_id} no está presente en "
+#~ "la BD"
+
+#~ msgid ""
+#~ "<b>Drag</b> and <b>drop</b> the following table's rows to change the "
+#~ "widget list order"
+#~ msgstr ""
+#~ "<b>Arrastre</b> y <b>suelte</b> las filas de la siguiente tabla para "
+#~ "cambiar el orden de la lista de widgets"

@@ -1,72 +1,72 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Romanian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:58+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: ro <info@g3wsuite.it>\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
 "2:1));\n"
-#: core/admin.py:16
+"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20) ? 1 : 2));\n"
+
+#: core/admin.py:29
 msgid "Basic settings"
 msgstr "Setări de bază"
 
-#: core/admin.py:19
+#: core/admin.py:32
 msgid "Access settings"
 msgstr "Setări acces"
 
-#: core/admin.py:23
+#: core/admin.py:36
 msgid "Display settings"
 msgstr "Setări afișare"
 
-#: core/admin.py:27
+#: core/admin.py:40
 msgid "Additional settings"
 msgstr "Setări adiționale"
 
-#: core/api/base/views.py:143
+#: core/api/base/views.py:154
 msgid "Data are not correct or insufficent!"
 msgstr "Datele nu sunt corecte sau insuficiente"
 
-#: core/api/base/views.py:149
+#: core/api/base/views.py:160
 msgid "A error server is occured!"
 msgstr "Avem o eroare de server"
 
-#: core/api/base/views.py:157
+#: core/api/base/views.py:168
 msgid "Not found"
 msgstr "Negăsit"
 
-#: core/api/base/views.py:163
+#: core/api/base/views.py:174
 msgid "Permission denied"
 msgstr "Nepermis"
 
-#: core/api/views.py:39
+#: core/api/views.py:36
 msgid "Expression evaluation error."
 msgstr "Eroare în evaluarea expresiei."
 
-#: core/api/views.py:44
+#: core/api/views.py:41
 msgid "Expression parse error."
 msgstr "Eroare în parsarea expresiei."
 
-#: core/api/views.py:50
+#: core/api/views.py:47
 msgid "Expression empty error."
 msgstr "Eroare de expresie goală"
 
-#: core/api/views.py:56
+#: core/api/views.py:53
 msgid "Expression form data error."
 msgstr "Eroare de expresie formular date"
 
-#: core/api/views.py:62
+#: core/api/views.py:59
 msgid "Layer error."
 msgstr "Eroare de strat"
 
@@ -78,240 +78,438 @@ msgstr "Căutare"
 msgid "Law"
 msgstr "Lege"
 
-#: core/forms.py:42 core/forms.py:364
+#: core/forms.py:55 core/forms.py:430
 msgid "General data"
 msgstr "Date generale"
 
-#: core/forms.py:65
+#: core/forms.py:60 core/forms.py:245 core/forms.py:435
+msgid "Translatable fields"
+msgstr "Câmpuri traductibile"
+
+#: core/forms.py:80
 msgid "GEO data"
 msgstr "Date GEO"
 
-#: core/forms.py:86
+#: core/forms.py:101
 msgid "Base Layers and Map default features"
 msgstr "Straturi de bază și caracteristici implicite ale hărții"
 
-#: core/forms.py:113
+#: core/forms.py:128
 msgid "Logo/Picture"
 msgstr "Logo/Imagine"
 
-#: core/forms.py:141
+#: core/forms.py:155
 msgid "Copyright"
 msgstr "Drepturi de autor"
 
-#: core/forms.py:195
+#: core/forms.py:241
 msgid "Frontend home data"
 msgstr "Frontend Locație date"
 
-#: core/forms.py:220
+#: core/forms.py:266
 msgid "Frontend about data"
 msgstr "Frontend Date despre"
 
-#: core/forms.py:241
+#: core/forms.py:287
 msgid "Frontend groups map data"
 msgstr "Frontend date grupuri de hărți"
 
-#: core/forms.py:257
+#: core/forms.py:303
 msgid "Frontend login data"
 msgstr "Frontend date login"
 
-#: core/forms.py:275
+#: core/forms.py:321
 msgid "Frontend social data"
 msgstr "Frontend date sociale"
 
-#: core/forms.py:297
+#: core/forms.py:343
 msgid "Map client data"
 msgstr "Date client hartă"
 
-#: core/forms.py:323
+#: core/forms.py:361
+#| msgid "Description"
+msgid "Registration"
+msgstr "Înregistrare"
+
+#: core/forms.py:387
 msgid "Editor users"
 msgstr "Editori"
 
-#: core/forms.py:341
+#: core/forms.py:407
 msgid "ACL Users"
 msgstr "Utilizatori ACL"
 
-#: core/forms.py:371
+#: core/forms.py:439
 msgid ""
 "<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
-msgstr "<b>Atenție!</b> Aceste setări sunt valide doar pentru grupuri de hartă cu doar un/o "
+msgstr ""
+"<b>Atenție!</b> Aceste setări sunt valide doar pentru grupuri de hartă cu "
+"doar un/o "
 
-#: core/models.py:84
-msgid "Map control"
-msgstr "Control hartă"
+#: core/forms.py:480
+#| msgid "Cartographic groups"
+msgid "Macro cartographic group"
+msgstr "Macrogrup cartografic"
 
-#: core/models.py:85
-msgid "Map controls"
-msgstr "Controluri hartă"
+#: core/forms.py:482
+#| msgid "Editor level 1 user"
+msgid "Editor level 1"
+msgstr "Editor de nivel 1"
 
-#: core/models.py:93
-msgid "Identification name"
-msgstr "Nume identificare"
+#: core/forms.py:483
+#| msgid "Editor level 2 user"
+msgid "Editor level 2"
+msgstr "Editor de nivel 2"
 
-#: core/models.py:94
-msgid "Internal identification Macrogroup name"
-msgstr "Nume identificare internă Macrogrup"
+#: core/forms.py:484
+#| msgid "Editor user groups"
+msgid "User editor group"
+msgstr "Grup de utilizatori editori"
 
-#: core/models.py:95 core/models.py:132 core/models.py:409
-#: core/templates/core/ajax/macrogroup_detail.html:7
+#: core/forms.py:485
+#| msgid "Viewer user groups"
+msgid "User viewer group"
+msgstr "Grup de utilizatori vizualizatori"
+
+#: core/models.py:27
+msgid "Qdjango2 module"
+msgstr "Modulul Qdjango2"
+
+#: core/models.py:31
+msgid "Type header"
+msgstr "Tip de antet"
+
+#: core/models.py:32
+msgid "Icon CSS class"
+msgstr "Clasa CSS a pictogramei"
+
+#: core/models.py:39 core/models.py:151
+#: core/templates/core/ajax/group_detail.html:9
+msgid "SRID"
+msgstr "SRID"
+
+#: core/models.py:40
+msgid "SRS name"
+msgstr "Numele SRS"
+
+#: core/models.py:41
+msgid "SRS ID"
+msgstr "ID-ul SRS"
+
+#: core/models.py:42
+msgid "WKT SRS"
+msgstr "SRS în format WKT"
+
+#: core/models.py:43
+msgid "PROJ coordinate definition"
+msgstr "Definiția coordonatelor PROJ"
+
+#: core/models.py:60 core/models.py:78 core/models.py:136
+msgid "Name"
+msgstr "Nume"
+
+#: core/models.py:61 core/models.py:96 core/models.py:137
+#: core/models.py:425 core/templates/core/ajax/macrogroup_detail.html:8
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
 msgstr "Titlu"
 
-#: core/models.py:96 core/models.py:133
-#: core/templates/core/ajax/macrogroup_detail.html:9
+#: core/models.py:62
+msgid "Icon"
+msgstr "Pictogramă"
+
+#: core/models.py:63 core/models.py:79 core/models.py:97
+#: core/models.py:138 core/templates/core/ajax/macrogroup_detail.html:10
 msgid "Description"
 msgstr "Descriere"
 
-#: core/models.py:97 core/models.py:140
+#: core/models.py:64
+msgid "Property"
+msgstr "Proprietate"
+
+#: core/models.py:70
+#| msgid "Layer"
+msgid "Base Layer"
+msgstr "Strat de baza"
+
+#: core/models.py:71
+#| msgid "Layer"
+msgid "Base Layers"
+msgstr "Straturi de bază"
+
+#: core/models.py:85
+msgid "Map control"
+msgstr "Control hartă"
+
+#: core/models.py:86 core/models.py:157
+msgid "Map controls"
+msgstr "Controluri hartă"
+
+#: core/models.py:94
+msgid "Identification name"
+msgstr "Nume identificare"
+
+#: core/models.py:95
+msgid "Internal identification Macrogroup name"
+msgstr "Nume identificare internă Macrogrup"
+
+#: core/models.py:98 core/models.py:145
 msgid "Logo image"
 msgstr "Imagine Logo"
 
-#: core/models.py:98 core/models.py:141
+#: core/models.py:99 core/models.py:147
 msgid "Logo link"
 msgstr "Link Logo"
 
-#: core/models.py:99 core/models.py:142
+#: core/models.py:100 core/models.py:148
 msgid "Enter link with http:// or https//"
 msgstr "Introdu link cu http:// or https//"
 
-#: core/models.py:100
+#: core/models.py:101
 msgid "Use title for client"
 msgstr "Folosește titlu pentru client"
 
-#: core/models.py:101 core/models.py:166
+#: core/models.py:102 core/models.py:172
 msgid "Use logo image for client"
 msgstr "Folosește imagine logo pentru client"
 
-#: core/models.py:104 core/models.py:135
+#: core/models.py:105 core/models.py:140
 msgid "Slug"
 msgstr "Terminația/Slug"
 
-#: core/models.py:131
-msgid "Name"
-msgstr "Nume"
+#: core/models.py:128
+#| msgid "MACRO Groups"
+msgid "MACRO Group"
+msgstr "Grup MACRO"
 
-#: core/models.py:137
+#: core/models.py:129 core/utils/forms.py:48
+msgid "MACRO Groups"
+msgstr "Grupuri MACRO"
+
+#: core/models.py:142
 msgid "Is active"
 msgstr "Activ"
 
-#: core/models.py:158
+#: core/models.py:154
+#| msgid "Default base layer"
+msgid "Base layers"
+msgstr "Straturi de bază"
+
+#: core/models.py:160
+msgid "Background color"
+msgstr "Culoare de fundal"
+
+#: core/models.py:164
 msgid "Terms of use text"
 msgstr "Termeni de utilizare"
 
-#: core/models.py:161
+#: core/models.py:167
 msgid "Terms of use link"
 msgstr "Termeni de utilizare link"
 
-#: core/models.py:167
+#: core/models.py:170
+#| msgid "MACRO Groups"
+msgid "MACRO groups"
+msgstr "Grupuri MACRO"
+
+#: core/models.py:173
 msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
-msgstr "Pentru opțiuni Macrogrup se poate folosi logoul de grup ca logo de client"
+msgstr ""
+"Pentru opțiuni Macrogrup se poate folosi logoul de grup ca logo de client"
 
-#: core/models.py:400 core/templates/core/group_form.html:11
+#: core/models.py:178 core/models.py:416
 msgid "Group"
 msgstr "Grup"
 
-#: core/models.py:401b
+#: core/models.py:179 core/templates/core/ajax/macrogroup_detail.html:12
+#: core/templates/core/macrogroup_list_table.html:29
+msgid "Groups"
+msgstr "Grupuri"
+
+#: core/models.py:417
 msgid "Project type"
 msgstr "Tip proiect"
 
-#: core/models.py:402
+#: core/models.py:418
 msgid "Project type id"
 msgstr "id tip proiect"
 
-#: core/models.py:410
+#: core/models.py:426
 msgid "Subtitle"
 msgstr "Subtitlu"
 
-#: core/models.py:411
+#: core/models.py:427
 msgid "Home description"
 msgstr "Descriere Acasă"
 
-#: core/models.py:412
+#: core/models.py:428
 msgid "About title"
 msgstr "Titlu Despre"
 
-#: core/models.py:413
+#: core/models.py:429
 msgid "About description"
 msgstr "Descriere Despre"
 
-#: core/models.py:414
+#: core/models.py:430
 msgid "About name"
 msgstr "Nume Despre"
 
-#: core/models.py:415
+#: core/models.py:431
 msgid "About phone"
 msgstr "Telefon Despre"
 
-#: core/models.py:416
+#: core/models.py:432
 msgid "About email"
 msgstr "email Despre"
 
-#: core/models.py:417
+#: core/models.py:433
 msgid "About address"
 msgstr "Adresă Despre"
 
-#: core/models.py:418
+#: core/models.py:434
 msgid "Groups title"
 msgstr "Titlu Grupuri"
 
-#: core/models.py:419
+#: core/models.py:435
 msgid "Groups map description"
 msgstr "Descriere hartă Grupuri"
 
-#: core/models.py:420
+#: core/models.py:436
 msgid "Login title"
 msgstr "Titlu autentificare"
 
-#: core/models.py:421
+#: core/models.py:437
 msgid "Login description"
 msgstr "Descriere autentificare"
 
-#: core/models.py:422
+#: core/models.py:438
 msgid "Suite logo"
 msgstr "Logo suită"
 
-#: core/models.py:423
+#: core/models.py:439
 msgid "Suite logo URL"
 msgstr "URL logo suită"
 
-#: core/models.py:426
+#: core/models.py:440
+msgid "Registration introductory message"
+msgstr "Mesaj introductiv pentru înregistrare"
+
+#: core/models.py:443
 msgid "Credits"
 msgstr "Creditare"
 
-#: core/models.py:429
+#: core/models.py:446
 msgid "Main map title"
 msgstr "Titlu hartă principală"
 
-#: core/models.py:431
+#: core/models.py:448
 msgid "Facebook link"
 msgstr "Link Facebook"
 
-#: core/models.py:432
+#: core/models.py:449
 msgid "Twitter link"
 msgstr "Link Twitter"
 
-#: core/models.py:433
+#: core/models.py:450
 msgid "Google+ link"
 msgstr "Link Google+"
 
-#: core/models.py:434
+#: core/models.py:451
 msgid "Youtube link"
 msgstr "Link Youtube"
 
-#: core/models.py:435
+#: core/models.py:452
 msgid "Instagram link"
-msgstr "Instagram link"
+msgstr "Link către Instagram"
 
-#: core/models.py:436
+#: core/models.py:453
 msgid "Flickr link"
 msgstr "Link Flickr"
 
-#: core/models.py:437
+#: core/models.py:454
 msgid "Tripadvisor link"
 msgstr "Link Tripadvisor"
+
+#: core/models.py:462
+#| msgid "About name"
+msgid "App name"
+msgstr "Numele aplicației"
+
+#: core/models.py:463
+#| msgid "Project"
+msgid "Project ID"
+msgstr "ID-ul proiectului"
+
+#: core/models.py:464
+msgid "Alias"
+msgstr "Alias"
+
+#: core/models.py:468
+msgid "NotSet"
+msgstr "Nesetat"
+
+#: core/models.py:469
+msgid "Info"
+msgstr "Informații"
+
+#: core/models.py:470
+msgid "Warning"
+msgstr "Avertisment"
+
+#: core/models.py:471
+msgid "Debug"
+msgstr "Depanare"
+
+#: core/models.py:472
+msgid "Error"
+msgstr "Eroare"
+
+#: core/models.py:473
+msgid "Fatal"
+msgstr "Eroare fatală"
+
+#: core/models.py:479
+msgid "Logger name"
+msgstr "Numele jurnalizatorului"
+
+#: core/models.py:480
+msgid "Level"
+msgstr "Nivel"
+
+#: core/models.py:481
+msgid "Message"
+msgstr "Mesaj"
+
+#: core/models.py:482
+msgid "Trace"
+msgstr "Urmă de execuție"
+
+#: core/models.py:483
+msgid "Created at"
+msgstr "Creat la"
+
+#: core/models.py:490 core/models.py:491
+msgid "Logging"
+msgstr "Jurnalizare"
+
+#: core/models.py:500
+msgid "Original URL"
+msgstr "URL original"
+
+#: core/models.py:501
+msgid "Short code"
+msgstr "Cod scurt"
+
+#: core/models.py:523 core/templates/core/ajax/macrogroup_detail.html:6
+msgid "Data"
+msgstr "Date"
+
+#: core/models.py:524
+msgid "Permalink code"
+msgstr "Cod de legătură permanentă"
 
 #: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
 msgid "error page"
@@ -329,208 +527,340 @@ msgstr "Nu poți adăuga grup nou"
 msgid "You can't add new Project"
 msgstr "Nu poți adăuga proiect nou"
 
-#: core/templates/core/ajax/group_detail.html:5
+#: core/templates/core/ajax/group_detail.html:6
 msgid "Geografic component"
 msgstr "Componentă geografică"
 
-#: core/templates/core/ajax/group_detail.html:7
+#: core/templates/core/ajax/group_detail.html:8
 msgid "Geographic coordinate system"
 msgstr "Sistem de coordonate"
 
-#: core/templates/core/ajax/group_detail.html:8
-msgid "SRID"
-msgstr "SRID"
-
-#: core/templates/core/ajax/group_detail.html:9
+#: core/templates/core/ajax/group_detail.html:10
 msgid "Units"
 msgstr "Unități"
 
-#: core/templates/core/ajax/group_detail.html:10
+#: core/templates/core/ajax/group_detail.html:11
 msgid "Principal map"
 msgstr "Hartă principală"
 
-#: core/templates/core/ajax/group_detail.html:11
+#: core/templates/core/ajax/group_detail.html:12
 msgid "Max scale"
 msgstr "Scară maximă"
 
-#: core/templates/core/ajax/group_detail.html:12
+#: core/templates/core/ajax/group_detail.html:13
 msgid "Min scale"
 msgstr "Scară minimă"
 
-#: core/templates/core/ajax/group_detail.html:13
+#: core/templates/core/ajax/group_detail.html:14
 msgid "Overview Map"
 msgstr "Hartă de ansamblu"
 
-#: core/templates/core/ajax/group_detail.html:14
+#: core/templates/core/ajax/group_detail.html:15
 msgid "Panoramic max scale"
 msgstr "Scară maximă hartă ansamblu"
 
-#: core/templates/core/ajax/group_detail.html:15
+#: core/templates/core/ajax/group_detail.html:16
 msgid "Panoramic min scale"
 msgstr "Scara minimă hartă ansamblu"
 
-#: core/templates/core/ajax/group_detail.html:18
+#: core/templates/core/ajax/group_detail.html:19
 msgid "Users"
 msgstr "Utilizatori"
 
-#: core/templates/core/ajax/group_detail.html:21
+#: core/templates/core/ajax/group_detail.html:22
 msgid "Editor level 1 user"
 msgstr "utilizator 'Editor nivelul 1'"
 
-#: core/templates/core/ajax/group_detail.html:25
+#: core/templates/core/ajax/group_detail.html:26
 msgid "Editor level 2 user"
 msgstr "utilizator 'Editor nivelul 2'"
 
-#: core/templates/core/ajax/group_detail.html:26
+#: core/templates/core/ajax/group_detail.html:27
 msgid "Viewer users"
 msgstr "Utilizatori de vizualizare"
 
-#: core/templates/core/ajax/group_detail.html:27
+#: core/templates/core/ajax/group_detail.html:28
 msgid "Editor user groups"
 msgstr "Grupuri de utilizatori Editori"
 
-#: core/templates/core/ajax/group_detail.html:28
+#: core/templates/core/ajax/group_detail.html:29
 msgid "Viewer user groups"
 msgstr "Grupuri de utilizatori de Vizualizare"
 
-#: core/templates/core/ajax/group_detail.html:35
+#: core/templates/core/ajax/group_detail.html:36
 msgid "Interface component"
 msgstr "Componentă interfață"
 
-#: core/templates/core/ajax/group_detail.html:37
+#: core/templates/core/ajax/group_detail.html:38
 msgid "Interface language"
 msgstr "Limbaj interfață"
 
-#: core/templates/core/ajax/group_detail.html:38
+#: core/templates/core/ajax/group_detail.html:39
 msgid "Language"
 msgstr "Limbă"
 
-#: core/templates/core/ajax/group_detail.html:39
+#: core/templates/core/ajax/group_detail.html:40
 msgid "Associated logo"
 msgstr "Logo asociat"
 
-#: core/templates/core/ajax/group_detail.html:40
+#: core/templates/core/ajax/group_detail.html:41
 msgid "HeaderLogoImg"
 msgstr "Imagine Logo Header"
 
-#: core/templates/core/ajax/group_detail.html:48
+#: core/templates/core/ajax/group_detail.html:49
 msgid "HeaderLogoHeight"
 msgstr "Înălțime Logo Header"
 
-#: core/templates/core/ajax/group_detail.html:49
+#: core/templates/core/ajax/group_detail.html:50
 msgid "HeaderLogoLink"
 msgstr "Link Logo Header"
 
-#: core/templates/core/ajax/group_detail.html:50
+#: core/templates/core/ajax/group_detail.html:51
 msgid "Terms of use"
 msgstr "Termeni de utilizare"
 
-#: core/templates/core/ajax/group_detail.html:51
+#: core/templates/core/ajax/group_detail.html:52
 msgid "HeaderTermsOfUseText"
 msgstr "Header Text Termeni de Utilizare"
 
-#: core/templates/core/ajax/group_detail.html:52
+#: core/templates/core/ajax/group_detail.html:53
 msgid "HeaderTermsOfUseLink"
 msgstr "Header link termeni de utilizare"
 
-#: core/templates/core/ajax/macrogroup_detail.html:5
-msgid "Data"
-msgstr "Date"
+#: core/templates/core/ajax/system_info.html:9
+#: core/templates/core/ajax/system_info.html:52
+#| msgid "General data"
+msgid "General"
+msgstr "General"
 
-#: core/templates/core/ajax/macrogroup_detail.html:11
-#: core/templates/core/macrogroup_list_table.html:29
-msgid "Groups"
-msgstr "Grupuri"
+#: core/templates/core/ajax/system_info.html:31
+#| msgid "Data"
+msgid "Databases"
+msgstr "Baze de date"
 
-#: core/templates/core/django_file_form/upload_template.html:5
-msgid "Drop files here to upload"
-msgstr "Lasă fișierele aici pentru Încărcare"
+#: core/templates/core/ajax/system_info.html:42
+msgid "No database connections detected."
+msgstr "Nu au fost detectate conexiuni la baze de date."
 
-#: core/templates/core/django_file_form/upload_template.html:8
-msgid "Click or Drag file to Upload"
-msgstr "Click sau Lasă fșierele aici pentru Încărcare"
+#: core/templates/core/ajax/system_info.html:52
+#: core/templates/core/ajax/system_info.html:66
+#: core/templates/core/ajax/system_info.html:88
+msgid "Libraries"
+msgstr "Biblioteci"
 
-#: core/templates/core/django_file_form/upload_template.html:11
-msgid "Processing dropped files..."
-msgstr "Procesăm fișierele de încărcat..."
+#: core/templates/core/ajax/system_info.html:66
+msgid "Geographic"
+msgstr "Geografic"
 
-#: core/templates/core/django_file_form/upload_template.html:24
-msgid "Cancel"
-msgstr "Anulare"
+#: core/templates/core/generalsuitedata_form.html:15
+#| msgid "General suite data"
+msgid "General suite settings"
+msgstr "Setări generale ale suitei"
 
-#: core/templates/core/django_file_form/upload_template.html:25
-msgid "Retry"
-msgstr "Reîncercați"
+#: core/templates/core/generalsuitedata_form.html:18
+msgid ""
+"Branding, default texts and global preferences for the whole G3W-Suite "
+"installation."
+msgstr "Identitate vizuală, texte implicite și preferințe globale pentru întreaga instalare G3W-Suite."
 
-#: core/templates/core/django_file_form/upload_template.html:26
-#: core/templates/core/group_list.html:103
-#: core/templates/core/macrogroup_list.html:83
-#: core/templates/core/macrogroup_list_table.html:43
-#: core/templates/core/project_list.html:71
-msgid "Delete"
-msgstr "Elimină"
+#: core/templates/core/generalsuitedata_form.html:23
+msgid "Back to dashboard"
+msgstr "Înapoi la tabloul de bord"
 
-#: core/templates/core/generalsuitedata_form.html:11
-msgid "General suite data"
-msgstr "Date generale"
+#: core/templates/core/generalsuitedata_form.html:40
+#: core/templates/core/group_form.html:68
+#: core/templates/core/macrogroup_form.html:67
+msgid "Some errors on form"
+msgstr "Formularul conține erori"
 
-#: core/templates/core/generalsuitedata_form.html:24
-#: core/templates/core/group_form.html:45
-#: core/templates/core/macrogroup_form.html:51
-msgid "Alert"
-msgstr "Alertă"
+#: core/templates/core/generalsuitedata_form.html:41
+#: core/templates/core/group_form.html:69
+#: core/templates/core/macrogroup_form.html:68
+msgid "Check the highlighted fields and submit again."
+msgstr "Verificați câmpurile evidențiate și trimiteți din nou."
 
-#: core/templates/core/generalsuitedata_form.html:25
-#: core/templates/core/group_form.html:46
-#: core/templates/core/macrogroup_form.html:52
-msgid "Some errors on form. Check it and send again."
-msgstr "Erori în formular. Reverifică și retrimite."
+#: core/templates/core/group_deactive_list.html:15
+#| msgid "Cartographic groups"
+msgid "Deactivated cartographic groups"
+msgstr "Grupuri cartografice dezactivate"
 
-#: core/templates/core/group_form.html:33
-msgid "Current"
-msgstr "Curent"
+#: core/templates/core/group_deactive_list.html:18
+msgid ""
+"Groups currently in the bin. Restore them to bring projects back online, or "
+"delete permanently to free up space."
+msgstr "Grupuri aflate în coșul de gunoi. Restaurați-le pentru a readuce proiectele online sau ștergeți-le definitiv pentru a elibera spațiu."
 
-#: core/templates/core/group_form.html:33
-#: core/templates/core/group_list.html:78
-#: core/templates/core/project_list.html:11
+#: core/templates/core/group_deactive_list.html:23
+#: core/templates/core/group_deactive_list.html:108
+#| msgid "Cartographic groups"
+msgid "Back to active groups"
+msgstr "Înapoi la grupurile active"
+
+#: core/templates/core/group_deactive_list.html:38
+msgid "deactivated group"
+msgid_plural "deactivated groups"
+msgstr[0] "grup dezactivat"
+msgstr[1] "grupuri dezactivate"
+msgstr[2] "de grupuri dezactivate"
+
+#: core/templates/core/group_deactive_list.html:52
+#| msgid "Is active"
+msgid "Deactivated"
+msgstr "Dezactivat"
+
+#: core/templates/core/group_deactive_list.html:62
+#: core/templates/core/group_list.html:136
 msgid "Projects"
 msgstr "Proiecte"
 
-#: core/templates/core/group_list.html:10
-#: core/templates/core/search/group.html:9
-msgid "Cartographic groups"
-msgstr "Grupuri cartografice"
-
-#: core/templates/core/group_list.html:66
-msgid "Add new project"
-msgstr "Adaugă proiect nou"
-
-#: core/templates/core/group_list.html:78
-#: core/templates/core/search/group.html:25
-msgid "Group projects"
-msgstr "Proiecte grup"
-
-#: core/templates/core/group_list.html:85
-#: core/templates/core/macrogroup_list.html:66
+#: core/templates/core/group_deactive_list.html:67
+#: core/templates/core/group_list.html:149
+#: core/templates/core/macrogroup_list.html:128
 #: core/templates/core/macrogroup_list_table.html:37
-#: core/templates/core/project_list.html:65
-#: core/templates/core/search/group.html:24
-#: core/templates/core/search/macrogroup.html:22
+#: core/templates/core/project_list.html:71
+#: core/templates/core/search/group.html:40
+#: core/templates/core/search/macrogroup.html:38
 msgid "Show detail"
 msgstr "Arată detalii"
 
+#: core/templates/core/group_deactive_list.html:76
+msgid "Restore / Activate"
+msgstr "Restaurare / Activare"
+
+#: core/templates/core/group_deactive_list.html:86
+msgid "Delete permanently"
+msgstr "Ștergere definitivă"
+
+#: core/templates/core/group_deactive_list.html:92
+msgid "Warning: deleting the group will delete the projects it contains!"
+msgstr "Atenție: eliminarea grupului va elimina proiectele conținute"
+
+#: core/templates/core/group_deactive_list.html:105
+msgid "The bin is empty"
+msgstr "Coșul de gunoi este gol"
+
+#: core/templates/core/group_deactive_list.html:106
+msgid "There are no deactivated cartographic groups to show."
+msgstr "Nu există grupuri cartografice dezactivate de afișat."
+
+#: core/templates/core/group_form.html:15
+#| msgid "Cartographic groups"
+msgid "Edit cartographic group"
+msgstr "Editare grup cartografic"
+
+#: core/templates/core/group_form.html:15
+#| msgid "Cartographic groups"
+msgid "New cartographic group"
+msgstr "Grup cartografic nou"
+
+#: core/templates/core/group_form.html:21
+msgid ""
+"Configure name, geographic data, base layers and branding for a new map "
+"group."
+msgstr "Configurați numele, datele geografice, straturile de bază și identitatea vizuală pentru un grup de hărți nou."
+
+#: core/templates/core/group_form.html:27
+#: core/templates/core/project_list.html:18
+#| msgid "Macro group"
+msgid "Back to groups"
+msgstr "Înapoi la grupuri"
+
+#: core/templates/core/group_form.html:48
+#| msgid "Current"
+msgid "Currently"
+msgstr "În prezent"
+
+#: core/templates/core/group_form.html:50
+#| msgid "Projects"
+msgid "projects"
+msgstr "proiecte"
+
+#: core/templates/core/group_list.html:13
+#: core/templates/core/search/group.html:11
+msgid "Cartographic groups"
+msgstr "Grupuri cartografice"
+
+#: core/templates/core/group_list.html:14
+msgid "Browse, organize and manage the map groups you have access to."
+msgstr "Explorați, organizați și gestionați grupurile de hărți la care aveți acces."
+
+#: core/templates/core/group_list.html:17
+#: core/templates/core/macrogroup_list.html:112
+#| msgid "Groups"
+msgid "groups"
+msgstr "grupuri"
+
+#: core/templates/core/group_list.html:90
+#| msgid "Editor user groups"
+msgid "Filter groups"
+msgstr "Filtrare grupuri"
+
+#: core/templates/core/group_list.html:92
+#: core/templates/core/macrogroup_list.html:82
+msgid "View mode"
+msgstr "Mod de vizualizare"
+
 #: core/templates/core/group_list.html:94
-#: core/templates/core/macrogroup_list.html:74
+#: core/templates/core/macrogroup_list.html:84
+msgid "Grid view"
+msgstr "Vizualizare grilă"
+
+#: core/templates/core/group_list.html:98
+#: core/templates/core/macrogroup_list.html:88
+msgid "List view"
+msgstr "Vizualizare listă"
+
+#: core/templates/core/group_list.html:104
+#: core/templates/core/group_list.html:203
+#| msgid "Current groups"
+msgid "New group"
+msgstr "Grup nou"
+
+#: core/templates/core/group_list.html:114
+msgid "Apply filter"
+msgstr "Aplicare filtru"
+
+#: core/templates/core/group_list.html:140
+msgid "Add new project"
+msgstr "Adaugă proiect nou"
+
+#: core/templates/core/group_list.html:156
+#: core/templates/core/macrogroup_list.html:134
 #: core/templates/core/macrogroup_list_table.html:40
-#: core/templates/core/project_list.html:68
-#: core/templates/core/search/group.html:28
-#: core/templates/core/search/macrogroup.html:24
+#: core/templates/core/project_list.html:79
+#: core/templates/core/search/group.html:44
+#: core/templates/core/search/macrogroup.html:40
 msgid "Edit"
 msgstr "Modifică"
 
-#: core/templates/core/group_list.html:106
-msgid "Warning: deleting the group will delete the projects it contains!"
-msgstr "Atenție: eliminarea grupului va elimina proiectele conținute"
+#: core/templates/core/group_list.html:163
+msgid "Delete/Deactivate"
+msgstr "Ștergere/Dezactivare"
+
+#: core/templates/core/group_list.html:171
+#| msgid "Warning: deleting the group will delete the projects it contains!"
+msgid ""
+"<strong>Warning</strong>: deleting the group (move to bucket) will delete "
+"the projects it contains (move to the bucket)!"
+msgstr "<strong>Avertisment</strong>: ștergerea grupului (mutarea în coșul de gunoi) va șterge proiectele pe care le conține (mutându-le în coșul de gunoi)!"
+
+#: core/templates/core/group_list.html:185
+#| msgid "Add new project"
+msgid "Add new group"
+msgstr "Adăugare grup nou"
+
+#: core/templates/core/group_list.html:193
+#| msgid "Not found"
+msgid "No groups found"
+msgstr "Nu s-au găsit grupuri"
+
+#: core/templates/core/group_list.html:196
+msgid "Create your first cartographic group to start organizing projects."
+msgstr "Creați primul grup cartografic pentru a începe organizarea proiectelor."
+
+#: core/templates/core/group_list.html:198
+msgid "No groups match your filter, or none have been shared with you yet."
+msgstr "Niciun grup nu corespunde filtrului sau niciunul nu v-a fost partajat încă."
 
 #: core/templates/core/include/add_project.html:4
 msgid "Add project"
@@ -558,23 +888,111 @@ msgstr "Salvează"
 msgid "Redo/Back"
 msgstr "Refă/Înapoi"
 
-#: core/templates/core/macrogroup_form.html:10
-msgid "Macro Group"
-msgstr "Grup Macro"
+#: core/templates/core/macrogroup_form.html:14
+#| msgid "Macro group"
+msgid "Edit macro group"
+msgstr "Editare macrogrup"
 
-#: core/templates/core/macrogroup_form.html:24
-msgid "Current groups"
-msgstr "Grupuri curente"
+#: core/templates/core/macrogroup_form.html:14
+#: core/templates/core/macrogroup_list.html:94
+#: core/templates/core/macrogroup_list.html:175
+#| msgid "Macro group"
+msgid "New macro group"
+msgstr "Macrogrup nou"
 
-#: core/templates/core/macrogroup_list.html:10
+#: core/templates/core/macrogroup_form.html:20
+msgid "Group cartographic groups together under a shared label and branding."
+msgstr "Reuniți grupurile cartografice sub o etichetă și o identitate vizuală comune."
+
+#: core/templates/core/macrogroup_form.html:26
+#| msgid "Cartographic macro groups"
+msgid "Back to macro groups"
+msgstr "Înapoi la macrogrupuri"
+
+#: core/templates/core/macrogroup_form.html:48
+msgid "Linked groups:"
+msgstr "Grupuri asociate:"
+
+#: core/templates/core/macrogroup_form.html:53
+#| msgid "Cartographic groups"
+msgid "No cartographic groups linked yet."
+msgstr "Nu există încă grupuri cartografice asociate."
+
+#: core/templates/core/macrogroup_list.html:13
 #: core/templates/core/macrogroup_list_table.html:10
-#: core/templates/core/search/macrogroup.html:8
+#: core/templates/core/search/macrogroup.html:10
 msgid "Cartographic macro groups"
 msgstr "Grupuri Macro Cartografice"
+
+#: core/templates/core/macrogroup_list.html:14
+msgid "Group together cartographic groups under shared identities and logos."
+msgstr "Reuniți grupurile cartografice sub identități și sigle comune."
+
+#: core/templates/core/macrogroup_list.html:17
+#| msgid "Macro group"
+msgid "macro groups"
+msgstr "macrogrupuri"
+
+#: core/templates/core/macrogroup_list.html:80
+#| msgid "Macro group"
+msgid "All macro groups"
+msgstr "Toate macrogrupurile"
+
+#: core/templates/core/macrogroup_list.html:121
+#| msgid "Logo link"
+msgid "No groups linked"
+msgstr "Niciun grup asociat"
+
+#: core/templates/core/macrogroup_list.html:140
+#: core/templates/core/macrogroup_list_table.html:43
+msgid "Delete"
+msgstr "Elimină"
+
+#: core/templates/core/macrogroup_list.html:157
+#| msgid "Macro group"
+msgid "Add new macro group"
+msgstr "Adăugare macrogrup nou"
+
+#: core/templates/core/macrogroup_list.html:165
+#| msgid "Macro group"
+msgid "No macro groups found"
+msgstr "Nu s-au găsit macrogrupuri"
+
+#: core/templates/core/macrogroup_list.html:168
+msgid ""
+"Create your first macro group to organize cartographic groups under a shared "
+"identity."
+msgstr "Creați primul macrogrup pentru a organiza grupurile cartografice sub o identitate comună."
+
+#: core/templates/core/macrogroup_list.html:170
+msgid "No macro groups have been shared with you yet."
+msgstr "Nu v-a fost partajat încă niciun macrogrup."
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
 msgstr "Grup macro"
+
+#: core/templates/core/project_list.html:14
+msgid "Projects available in this cartographic group."
+msgstr "Proiectele disponibile în acest grup cartografic."
+
+#: core/templates/core/project_list.html:74
+msgid "Detail"
+msgstr "Detalii"
+
+#: core/templates/core/project_list.html:80
+#| msgid "Editor user groups"
+msgid "Edit group"
+msgstr "Editare grup"
+
+#: core/templates/core/search/group.html:17
+#: core/templates/core/search/macrogroup.html:16
+msgid "Collapse / expand"
+msgstr "Restrângere / extindere"
+
+#: core/templates/core/search/group.html:41
+msgid "Group projects"
+msgstr "Proiecte grup"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
@@ -585,37 +1003,68 @@ msgid "Project"
 msgstr "Proiect"
 
 #: core/utils/data.py:24
+#, python-brace-format
 msgid "[{} error on {}({})]-- {}"
 msgstr "[{} eroare la {}({})]-- {}"
 
-#: core/utils/forms.py:23
+#: core/utils/forms.py:21
 msgid "Default base layer"
 msgstr "Stratul bază implicit"
 
-#: core/utils/forms.py:50
-msgid "MACRO Groups"
-msgstr "Grupuri MACRO"
-
-#: core/utils/qgisapi.py:458
+#: core/utils/qgisapi.py:548
+#, python-brace-format
 msgid "Function \"{}\" is not allowed for security reasons!"
 msgstr "Funcția \"{}\" e nepermisă din motive de securitate!"
 
-#: core/utils/qgisapi.py:463
+#: core/utils/qgisapi.py:553
+#, python-brace-format
 msgid "Variable \"{}\" is not allowed for security reasons!"
 msgstr "Variabila \"{}\" e nepermisă din motive de securitate!"
 
-#: core/utils/qgisapi.py:475
+#: core/utils/qgisapi.py:565 core/utils/qgisapi.py:582
+#, python-brace-format
 msgid "QGIS layer with id \"{}\" could not be found!"
 msgstr "Stratul QGIS cu id \"{}\" e negăsit!"
 
-#: core/utils/qgisapi.py:487
+#: core/utils/qgisapi.py:588
+#, python-brace-format
 msgid "QDjango project with id \"{}\" could not be found!"
 msgstr "Proiectul QDjango cu id \"{}\" e negăsit!"
 
-#: core/utils/qgisapi.py:497
+#: core/utils/qgisapi.py:598
 msgid "A valid QGIS layer is required to process form data!"
-msgstr "Un strat de QGIS valid este necesar pentru a procesa datele din formular!"
+msgstr ""
+"Un strat de QGIS valid este necesar pentru a procesa datele din formular!"
 
-#: core/utils/structure.py:183
+#: core/utils/qgisapi.py:612
+#| msgid "A valid QGIS layer is required to process form data!"
+msgid "A valid QGIS layer (parent layer) is required to process form data!"
+msgstr "Pentru procesarea datelor din formular este necesar un strat QGIS valid (stratul părinte)!"
+
+#: core/utils/structure.py:190
 msgid "Yes"
 msgstr "Da"
+
+#~ msgid "Drop files here to upload"
+#~ msgstr "Lasă fișierele aici pentru Încărcare"
+
+#~ msgid "Click or Drag file to Upload"
+#~ msgstr "Click sau Lasă fșierele aici pentru Încărcare"
+
+#~ msgid "Processing dropped files..."
+#~ msgstr "Procesăm fișierele de încărcat..."
+
+#~ msgid "Cancel"
+#~ msgstr "Anulare"
+
+#~ msgid "Retry"
+#~ msgstr "Reîncercați"
+
+#~ msgid "Alert"
+#~ msgstr "Alertă"
+
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Erori în formular. Reverifică și retrimite."
+
+#~ msgid "Macro Group"
+#~ msgstr "Grup Macro"
