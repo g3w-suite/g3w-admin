@@ -15,6 +15,11 @@ docs/locales/**/*.mo
 # PyCharms project file
 /.idea/
 
+# vscode project file
+/.vscode/
+venv*/
+g3w-admin.code-workspace
+
 # temp_uploads for jqupload
 /temp_uploads/
 
@@ -23,8 +28,16 @@ docs/locales/**/*.mo
 /g3w-admin/base/settings/local_settings.py.*
 /g3w-admin/base/settings/local_ldap_settings.py
 
+# Docker ovverides
+/g3w-admin/base/wsgi_docker.py
+
 # Node modules
 /node_modules
+
+# Addons
+/g3w-admin/addons
+/g3w-admin/plugins
+/plugins
 
 # Bower components
 /g3w-admin/core/static/bower_components/
@@ -71,8 +84,14 @@ run_local*.sh
 /g3w-admin/politowps/
 /g3w-admin/eleprofile/
 /g3w-admin/simplereporting/
+/g3w-admin/ws_trento/
+/g3w-admin/idrogeo/
 .gitmodules
 
 /pymast
 
 /shared-volume
+
+# For Vcode
+.vscode/
+venv/

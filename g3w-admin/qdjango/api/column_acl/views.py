@@ -64,12 +64,12 @@ class ColumnAclList(generics.ListCreateAPIView):
             user = User.objects.get(pk=self.kwargs['user_id'])
             user_groups = user.groups.all()
             if user_groups.count():
-                qs = qs.filter(Q(user=user) | Q(group__in=user_groups))
+                qs = qs.filter(Q(users=user) | Q(groups__in=user_groups)).distinct()
             else:
-                qs = qs.filter(user=user)
+                qs = qs.filter(users=user)
         if 'group_id' in self.kwargs:
             user_group = AuthGroup.objects.get(pk=self.kwargs['group_id'])
-            qs = qs.filter(group=user_group)
+            qs = qs.filter(groups=user_group)
         return qs
 
     def create(self, request, *args, **kwargs):

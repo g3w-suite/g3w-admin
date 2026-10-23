@@ -53,7 +53,21 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         # set picture to MEDIA_URL
         media_url = getattr(settings, 'MEDIA_URL', '/media/')
-        feature['thumbnail'] = '%s%s' % (media_url, instance.thumbnail)
+
+        # Set thumbnail
+        thumbnail = instance.thumbnail
+        try:
+            if instance.group.use_logo_client:
+                thumbnail = instance.group.header_logo_img
+            else:
+                macrogroup = instance.group.macrogroups.get(
+                    use_logo_client=True)
+                thumbnail = macrogroup.logo_img
+        except:
+            pass
+        feature['thumbnail'] = '%s%s' % (media_url, thumbnail)
+
+
 
         return feature
 
@@ -176,7 +190,7 @@ class GenericSuiteDataSerializer(GetUnlanguageFieldsMixin, serializers.ModelSeri
         login_url = getattr(settings, 'LOGIN_URL')
         if login_url:
             ret['login_url'] = settings.LOGIN_URL
-            ret['logout_url'] = reverse('logout')
+            ret['logout_url'] = getattr(settings, 'LOGOUT_URL', 'logout')
 
         return ret
 

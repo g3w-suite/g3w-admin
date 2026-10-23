@@ -17,9 +17,8 @@
     {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
     {% endif %}
-
-    <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
-
+    <!-- Pace -->
+    <script src="{% static "bower_components/pace/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
     <!-- vendor.css -->
     {% if not SETTINGS.DEBUG %}
     <link rel="stylesheet" href="{% static "dist/css/vendor.min.css"%}">
@@ -126,13 +125,13 @@
         {% for module in SETTINGS.G3WADMIN_PROJECT_APPS %}
         {% sitetree_menu from module include "trunk" template "sitetree/sidebar.html" %}
         {% endfor %}
+        {% sitetree_menu from "client" include "trunk" template "sitetree/sidebar.html" %}
         </section>
       </aside>
 
       <div class="content-wrapper">
-
+        <!-- Content Header (Page header) -->
         <section class="content-header">
-          {% block page_header %}<h1>Page Header <small>Optional description</small></h1>{% endblock %}
           {% block breadcrumb %}
           <ol class="breadcrumb">
             <li><i class="fa fa-dashboard"></i> <a href="{% url 'home' %}">{% trans 'Dashboard' %}</a></li>
@@ -142,6 +141,13 @@
             {% sitetree_breadcrumbs from module template "sitetree/breadcrumbs_bootstrap3.html" %}
             {% endfor %}
           </ol>
+          {% endblock %}
+
+          {% block page_header %}
+          <h1>
+            Page Header
+            <small>Optional description</small>
+          </h1>
           {% endblock %}
         </section>
 
@@ -167,9 +173,17 @@
       <footer class="main-footer">
         {% if powerd_by %}
         <div class="pull-right hidden-xs">
-          {% block footer-right %}<strong>G3W-SUITE {% trans 'Version' %} {{ VERSION }}</strong>: administration GIS application.{% endblock %}
+        {% block footer-right %}
+          {% blocktrans trimmed with version=VERSION %}
+            <strong>G3W-SUITE Version {{ version }}</strong>:
+            administration GIS application.
+          {% endblocktrans %}
+        {% endblock %}
         </div>
-        <strong>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        <!-- Default to the left -->
+        {% blocktrans trimmed with year=today.year %}
+          <strong>Copyright &copy; 2015 - {{ year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        {% endblocktrans %}
         {% endif %}
       </footer>
 
@@ -180,10 +194,20 @@
 
     <!-- REQUIRED JS SCRIPTS -->
     <script>
-      const CURRENT_LANGUAGE_CODE = '{{ lang }}';
-      const FRONTEND              = {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %};
-      const SITE_PREFIX_URL       = {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %}
-      const STATIC_BASE_URL       = '{% static "" %}';
+      SETTINGS = {
+        CURRENT_LANGUAGE_CODE:     '{{ lang }}',
+        FRONTEND:                  {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %},
+        SITE_PREFIX_URL:           {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %},
+        STATIC_BASE_URL:           '{% static "" %}',
+        G3WADMIN_LOCAL_MORE_APPS:  ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+        FILE_FORM_UPLOAD_TEMP_URL: '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/',
+        PRIVACY_MSG:               "{% if SETTINGS.PRIVACY_MSG %} {{ SETTINGS.PRIVACY_MSG|safe }} {% else %}{% trans 'This website uses cookies to ensure you get the best experience on our website' %}.{% endif %}",
+      };
+      // DEPRECATED: since v3.10.x
+      const CURRENT_LANGUAGE_CODE = SETTINGS.CURRENT_LANGUAGE_CODE;
+      const FRONTEND              = SETTINGS.FRONTEND;
+      const SITE_PREFIX_URL       = SETTINGS.SITE_PREFIX_URL;
+      const STATIC_BASE_URL       = SETTINGS.STATIC_BASE_URL;
     </script>
 
     <!-- vendor.js -->
@@ -213,14 +237,20 @@
     <script src="{% static "modules/summernote/lang/summernote-it-IT.min.js" %}"></script>
     <!-- endbuild -->
     {% endif %}
-
-    <script src="{% static "file_form/file_form.debug.js" %}"></script>
+    <!-- Bootstrap-datepicker-locals -->
     {% for l in SETTINGS.LANGUAGES %}
-    <script src="{% if l.0 == 'se' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}{% elif not l.0 == 'en' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}{% endif %}"></script>
+      {% if l.0 == 'se' %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}"></script>
+      {% elif not l.0 == 'en' %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}"></script>
+      {% endif %}
     {% endfor %}
-
+    <!-- AdminLTE App -->
     <script src="{% static "adminlte/js/app.min.js" %}"></script>
-    <!-- <script src="{% static "file_form/file_form.js" %}"></script> -->
+    <!-- Django-file-form -->
+    <script src="{% static "file_form/file_form.js" %}"></script>
+    <!--<script src="{% static "file_form/file_form.debug.js" %}"></script>-->
+    <!-- g3wadmin javascript catalog -->
     <script src="{% url 'javascript-catalog' %}"></script>
 
     <!-- g3wadmin.js -->

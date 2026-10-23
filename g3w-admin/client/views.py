@@ -21,6 +21,10 @@ from copy import deepcopy
 import json
 import secrets
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
 
 def client_map_alias_view(request, map_name_alias, *args, **kwargs):
     """
@@ -76,6 +80,11 @@ class ClientView(TemplateView):
             else:
                 raise PermissionDenied()
 
+        # Set in session permalink_code if exists
+        if 'permalink_code' in request.GET and request.GET['permalink_code']:
+            request.session['permalink_code'] = request.GET.get('permalink_code')
+
+
         return super(ClientView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -86,10 +95,13 @@ class ClientView(TemplateView):
             group = self.project.group
         except:
             group = get_object_or_404(Group, slug=kwargs['group_slug'])
-        groupSerializer = GroupSerializer(group, projectId=str(self.project.pk), projectType=kwargs['project_type'],
-                                          request=self.request)
 
-        groupData = deepcopy(groupSerializer.data)
+        groupSerializer = GroupSerializer(
+            group,
+            projectId=str(self.project.pk),
+            projectType=kwargs['project_type'],
+            request=self.request
+        )
 
         # choose client by querystring paramenters
         contextData['client_default'] = self.get_client_name()
@@ -108,7 +120,7 @@ class ClientView(TemplateView):
         # logout_url
         logout_url = None
         try:
-            logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
+            logout_url = resolve_url(settings.LOGOUT_URL) + '?next={}'.format(reverse('group-project-map', kwargs={
                 'group_slug': kwargs['group_slug'],
                 'project_type': kwargs['project_type'],
                 'project_id': self.project.pk
@@ -116,88 +128,80 @@ class ClientView(TemplateView):
         except:
             pass
 
-
-        # add user login data
+        # user data
         u = self.request.user
 
-        # admin_url
-        change_grant_users = get_users_for_object(self.project, "change_project", with_group_users=True)
-        if u in change_grant_users or u.is_superuser:
-            admin_url = reverse('home')
-        else:
-            admin_url = None
-
-        user_data = {
-            'i18n': get_language(),
-            'login_url': login_url
-        }
-        if not u.is_anonymous:
-            user_data.update({
-                'id': u.pk,
-                'username': u.username,
-                'first_name': u.first_name,
-                'last_name': u.last_name,
-                'is_superuser': u.is_superuser,
-                'is_staff': u.is_staff,
-                'groups': [g.name for g in u.groups.all()],
-                'logout_url': logout_url
-
-            })
-
-        if admin_url:
-            user_data.update({
-                'admin_url': admin_url
-            })
-
-        user_data = JSONRenderer().render(user_data)
-
-        serializedGroup = JSONRenderer().render(groupData)
-        serializedGroup = str(serializedGroup, 'utf-8')
-
-        baseurl = "{}/{}".format(
-            settings.SITE_DOMAIN if hasattr(settings, 'SITE_DOMAIN') else '',
-            settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''
-        )
-
-        frontendurl = ',"frontendurl":"{}"'.format(baseurl) if settings.FRONTEND else ''
-
-        generaldata = GeneralSuiteData.objects.get()
+        baseurl = "{}/{}".format(getattr(settings, 'SITE_DOMAIN', ''), getattr(settings, 'SITE_PREFIX_URL') or '')
+        baseurl = self.request.build_absolute_uri(baseurl) if baseurl.startswith('/') else baseurl
 
         # add baseUrl property
-        contextData['group_config'] = 'var initConfig ={{ "i18n": {}, "staticurl":"{}", "client":"{}", ' \
-                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}", ' \
-                                      '"proxyurl": "{}", "rasterurl":"{}", "interfaceowsurl":"{}", "main_map_title":{}, ' \
-                                      '"g3wsuite_logo_img": "{}", "credits": "{}", ' \
-                                      '"version": "{}" {} }}'.\
-            format(json.dumps(settings.LANGUAGES),
-                   settings.STATIC_URL,
-                   "{}/".format(settings.CLIENT_DEFAULT),
-                   settings.MEDIA_URL,
-                   user_data.decode('UTF-8'),
-                   serializedGroup, baseurl,
-                   settings.VECTOR_URL,
-                   reverse('interface-proxy'),
-                   settings.RASTER_URL,
-                   reverse('interface-ows'),
-                   '"' + generaldata.main_map_title + '"' if generaldata.main_map_title else 'null',
-                   settings.CLIENT_G3WSUITE_LOGO,
-                   reverse('client-credits'),
-                   get_version(),
-                   frontendurl)
+        contextData['group_config'] = 'var initConfig = ' + JSONRenderer().render({
+            "i18n": settings.LANGUAGES,
+            "staticurl": settings.STATIC_URL,
+            "client": "{}/".format(settings.CLIENT_DEFAULT),
+            "mediaurl": settings.MEDIA_URL,
+            "user": {
+                'i18n': get_language(),
+                'login_url': login_url,
+                # logged user
+                **({
+                    'id': u.pk,
+                    'username': u.username,
+                    'first_name': u.first_name,
+                    'last_name': u.last_name,
+                    'is_superuser': u.is_superuser,
+                    'is_staff': u.is_staff,
+                    'groups': [g.name for g in u.groups.all()],
+                    'logout_url': logout_url
+                } if not u.is_anonymous else {}),
+                # admin user
+                **({
+                    'admin_url': reverse('home')
+                } if (u in get_users_for_object(self.project, "change_project", with_group_users=True) or u.is_superuser) and reverse('home') else {})
+            },
+            "baseurl": baseurl,
+            "vectorurl": settings.VECTOR_URL,
+            "proxyurl": reverse('interface-proxy'),
+            "rasterurl": settings.RASTER_URL,
+            "interfaceowsurl": reverse('interface-ows'),
+            "main_map_title": getattr(GeneralSuiteData.objects.get(), 'main_map_title', None),
+            "g3wsuite_logo_img": settings.CLIENT_G3WSUITE_LOGO,
+            "credits": reverse('client-credits'),
+            "version": get_version(),
+            "frontendurl": baseurl if settings.FRONTEND else '',
+            # project data
+            **deepcopy(groupSerializer.data)
+        }).decode('UTF-8') + ';'
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in list(groupSerializer.projects.keys()):
             raise Http404('No project type and/or project id present in group')
 
         # page title
-
         contextData['page_title'] = '{} | {}'.format(
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'),
-            self.project.title_ur if self.project.title_ur else self.project.title)
+            self.project.title_ur if self.project.title_ur else self.project.title
+        )
+
+        # server side styles (inline css)
+        contextData['CLIENT_CUSTOM_CSS'] = ''
+
+        # Conditionally show sidebar items
+        elements_to_hide = []
+
+        if not getattr(self.project, 'show_metadata_section', True):
+            elements_to_hide.append('#metadata')
+
+        if elements_to_hide:
+            contextData['CLIENT_CUSTOM_CSS'] += f".sidebar-menu > li:is({', '.join(elements_to_hide)}) {{ display: none; }}"
 
         # choosen skin by user main role
         contextData['skin_class'] = get_adminlte_skin_by_user(self.request.user)
-        return contextData
+
+        # Sidebar collapse setting
+        contextData['sidebar_collapse'] = self.project.sidebar_collapse if hasattr(self.project, 'sidebar_collapse') else False
+        
+        return contextData  
         
     def get_template_names(self):
         return '{}/index.html'.format(self.get_client_name())
@@ -216,28 +220,34 @@ class ClientView(TemplateView):
 
         # Add G3W_CLIENT_COOKIE_SESSION_TOKEN cookie to response
         response = super().render_to_response(context)
-        response.set_cookie(settings.G3W_CLIENT_COOKIE_SESSION_TOKEN, secrets.token_hex(16))
+
+        # Only with https set samesite='None' for cross-site requests, i.e. for cross-site iframe
+        kwargs = {'samesite': 'None', 'secure': True} if self.request.is_secure() else {'samesite': 'Strict'}
+        response.set_cookie(settings.G3W_CLIENT_COOKIE_SESSION_TOKEN, secrets.token_hex(16), **kwargs)
 
         return response
 
 
-def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs):
+def user_media_view(request, project_type, ds_layer_id, file_name, *args, **kwargs):
     """
     View to return media checking user project permissions
     :param request: Django request object.
     :param project_type: G3W-USITE map project, default 'qdjango'.
-    :param layer_id: Django model Layer pk value.
+    :param ds_layer_id: Django model Layer pk value or md5 key.
     :param file_name: File name to render.
     :return: HttpRensponse or a HttpResponseForbidden instance.
     """
 
     # get model by project_type
-    Layer = apps.get_app_config(project_type).get_model('layer')
-    layer = Layer.objects.get(pk=layer_id)
+    try:
+        Layer = apps.get_app_config(project_type).get_model('layer')
+        layer = Layer.objects.get(pk=ds_layer_id)
+    except Exception:
+        layer = None
 
 
     # check permission
-    return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name).send_file()
+    return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name, ds_md5=ds_layer_id).send_file()
 
 
 def credits(request, * args, **kwargs):

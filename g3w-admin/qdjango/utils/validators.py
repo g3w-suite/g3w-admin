@@ -5,16 +5,12 @@
           it under the terms of the Mozilla Public License 2.0.
 
 """
-
-import os
-import re
-
-from django.utils.translation import ugettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 from osgeo import gdal
 
 from core.utils.data import isXML
+from core.utils.qgisapi import qvariant_type_name
 from qdjango.models import Layer, Project
 
 from .exceptions import (
@@ -31,8 +27,14 @@ from qgis.core import (
     QgsFields
 )
 
-from qgis.PyQt.QtCore import QVariant, Qt
-import string, random
+from qgis.PyQt.QtCore import QVariant, QMetaType, Qt
+# NOTE: use typing_extensions.deprecated (PEP 702 backport) because
+# warnings.deprecated is only available from Python 3.13+.
+from typing_extensions import deprecated
+import string
+import random
+import os
+import re
 
 
 def feature_validator(feature, layer):
@@ -118,9 +120,13 @@ def feature_validator(feature, layer):
             if value != data_provider.defaultValueClause(field_index) and \
                 value != data_provider.defaultValue(field_index):
 
-                if not QVariant(value).convert(field.type()):
+                # NOTE: in Qt6 (QGIS 4.2) QVariant.convert() expects a QMetaType
+                # instance, while in Qt5 (QGIS 3.44) it accepted an int enum.
+                # Wrapping field.type() in QMetaType(int(...)) is compatible with
+                # both Qt5 and Qt6.
+                if not QVariant(value).convert(QMetaType(int(field.type()))):
                     _set_error(field.name(), _(
-                        'Field value \'%s\' cannot be converted to %s') % (value, QVariant.typeToName(field.type())))
+                        'Field value \'%s\' cannot be converted to %s') % (value, qvariant_type_name(field.type())))
 
             unique = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintUnique) != QgsFieldConstraints.ConstraintOriginNotSet and
@@ -141,10 +147,10 @@ def feature_validator(feature, layer):
                         field.name().replace('"', '\\"'), value.replace("'", "\\'")))
                 elif field.type() == QVariant.Date:
                     request.setFilterExpression('to_date("%s") = \'%s\'' % (
-                        field.name().replace('"', '\\"'), value.toString(Qt.ISODate)))
+                        field.name().replace('"', '\\"'), value.toString(Qt.DateFormat.ISODate)))
                 elif field.type() == QVariant.DateTime:
                     request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string_ms}\''.format(
-                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate), date_time_string_ms=value.toString(Qt.ISODateWithMs)))
+                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.DateFormat.ISODate), date_time_string_ms=value.toString(Qt.DateFormat.ISODateWithMs)))
                 elif field.type() == QVariant.Bool:  # This does not make any sense, but still
                     request.setFilterExpression('"%s" = %s' % (
                         field.name().replace('"', '\\"'), 'true' if value else 'false'))
@@ -378,7 +384,7 @@ class DatasourceExists(QgisProjectLayerValidator):
                 # try to open postgis raster with gdal
                 raster = gdal.Open(self.qgisProjectLayer.datasource)
                 if raster is None:
-                    err = ugettext('Cannot connect to Postgis raster layer {} '.format(
+                    err = _('Cannot connect to Postgis raster layer {} '.format(
                         self.qgisProjectLayer.name))
                     raise QgisProjectLayerException(err)
 
@@ -388,21 +394,27 @@ class DatasourceExists(QgisProjectLayerValidator):
                 pre = subdt[0] + ':"'
                 datasource = subdt[1][1:-1]
                 if not os.path.exists(datasource):
-                    err = ugettext('Missing data file for MESH layer {} '.format(
+                    err = _('Missing data file for MESH layer {} '.format(
                         self.qgisProjectLayer.name))
-                    err += ugettext('which should be located at {}'.format(
+                    err += _('which should be located at {}'.format(
                         self.qgisProjectLayer.datasource))
                     raise QgisProjectLayerException(err)
 
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
-                    err = ugettext('Missing data file for layer {} '.format(
+                    err = _('Missing data file for layer {} '.format(
                         self.qgisProjectLayer.name))
-                    err += ugettext('which should be located at {}'.format(
+                    err += _('which should be located at {}'.format(
                         self.qgisProjectLayer.datasource))
                     raise QgisProjectLayerException(err)
 
 
+@deprecated(
+    "ColumnName validator is no longer used: it is not registered in "
+    "QgisProjectLayer._defaultValidators (see qdjango/utils/data.py, where "
+    "the reference is commented out) and has no other consumers in the "
+    "codebase. Kept in case it needs to be re-enabled in the future."
+)
 class ColumnName(QgisProjectLayerValidator):
     """
     Check column data name: no whitespace, no special chars.
@@ -414,12 +426,13 @@ class ColumnName(QgisProjectLayerValidator):
             for column in self.qgisProjectLayer.columns:
                 # search
                 # rex = '[^A-Za-z0-9]+'
-                rex = '[;:,%@$^&*!#()\[\]\{\}\\n\\r\\s]+'
+
+                rex = r'[;:,%@$^&*!#()\[\]\{\}\\n\\r\\s]+'
                 if re.search(rex, column['name']):
                     columns_err.append(column['name'])
             if columns_err:
-                err = ugettext('The follow fields name of layer {} contains '
+                err = _('The follow fields name of layer {} contains '
                                'white spaces and/or special characters: {}')\
                     .format(self.qgisProjectLayer.name, ', '.join(columns_err))
-                err += ugettext('Please use \'Alias\' fields in QGIS project')
+                err += _('Please use \'Alias\' fields in QGIS project')
                 raise QgisProjectLayerException(err)

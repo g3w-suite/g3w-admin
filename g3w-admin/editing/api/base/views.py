@@ -6,7 +6,7 @@ from django.core.files import File
 from django.core.files.images import ImageFile
 from django.db import IntegrityError, transaction
 from django.db.models import AutoField, FileField, ImageField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qgis.core import \
     QgsDataSourceUri, \
     QgsFeature, \
@@ -20,19 +20,41 @@ from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import BaseVectorApiView
-from core.signals import (post_save_maplayer, pre_delete_maplayer,
-                          pre_save_maplayer)
-from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids
-from editing.models import (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED,
-                            EDITING_POST_DATA_UPDATED)
-from editing.utils import LayerLock
+from core.signals import (
+    post_save_maplayer, 
+    pre_delete_maplayer,
+    pre_save_maplayer
+    )
+from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids, qvariant_type_name
+from editing.models import (
+    EDITING_POST_DATA_ADDED, 
+    EDITING_POST_DATA_DELETED,
+    EDITING_POST_DATA_UPDATED
+)
+from editing.utils import (
+    LayerLock, 
+    enable_feature_lock, 
+    get_sessionid_from_request
+)
 from editing.utils.data import clear_session_for_uploaded_files
-from qdjango.apps import get_qgs_project
+from qdjango.apps import (
+    get_qgs_project, 
+    remove_project_from_cache
+)
 from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
 
-from qgis.PyQt.QtCore import QDateTime, QDate, QTime, QVariant, NULL
+from qgis.PyQt.QtCore import (
+    QDateTime, 
+    QDate, 
+    QTime, 
+    QVariant, 
+    NULL
+)
+
+# For html and css sanitize
+import nh3
 
 import re
 import logging
@@ -75,9 +97,17 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
     def initial(self, request, *args, **kwargs):
         super(BaseEditingVectorOnModelApiView, self).initial(
             request, *args, **kwargs)
+        
+        self.sessionid = get_sessionid_from_request(request)
 
-        self.sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
-            if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
+        # try:
+        #     self.sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
+        #         if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
+        # except:
+        #     pass
+
+        # Enable/disable feature lock
+        self.enable_feature_lock = enable_feature_lock(request)
 
         # instance lock object
         # set lock object
@@ -90,19 +120,20 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
     def response_editing_mode(self, request):
         """
-        Perform editing operation, returns features data and features locked.
+        Perform editing operation, returns features data and features locked (optional).
         :param request: API request object
         """
         super().response_data_mode(request)
 
-        # lock features and get:
-        feature_ids = [str(server_fid(f, self.metadata_layer.qgis_layer.dataProvider())) for f in self.features]
-        features_locked = self.metadata_layer.lock.lockFeatures(feature_ids)
+        # Lock features and get:
+        if self.enable_feature_lock:
+            feature_ids = [str(server_fid(f, self.metadata_layer.qgis_layer.dataProvider())) for f in self.features]
+            features_locked = self.metadata_layer.lock.lockFeatures(feature_ids)
 
-        # update response
-        self.results.update({
-            'featurelocks': features_locked
-        })
+            # update response
+            self.results.update({
+                'featurelocks': features_locked
+            })
 
     def add_media_property(self, geojson_feature, metadata_layer):
         """
@@ -110,18 +141,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         if layer model has a media filefield or a imagefield
         :param geojson_feature: geojson object feature
         """
-        if self.layer_name in self.media_properties.keys():
-            for gproperty in self.media_properties[self.layer_name].keys():
-                if gproperty in geojson_feature['properties'] and \
-                        geojson_feature['properties'][gproperty]:
-                    media_property = self.media_properties[self.layer_name][gproperty]
-                    gproperty_path = geojson_feature['properties'][gproperty] \
-                        .replace(settings.MEDIA_URL, '')
-                    media_file = open('{}{}'.format(
-                        settings.MEDIA_ROOT, gproperty_path), 'r')
-                    geojson_feature['properties'][gproperty] = \
-                        MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT[type(
-                            media_property)](media_file)
+
+        # To be implemented in subclasses
+        # -------------------------------
+        pass
 
     def save_vector_data(self, metadata_layer, post_layer_data, has_transactions, post_save_signal=True, **kwargs):
         """Save vector editing data
@@ -157,16 +180,18 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 raise ValidationError(
                     _('Sorry but your user doesn\'t has \'Change or Change Attributes Features\' capability'))
 
-        # get initial featurelocked
-        metadata_layer.lock.getInitialFeatureLockedIds()
+        if self.enable_feature_lock:
+            # get initial featurelocked
+            metadata_layer.lock.getInitialFeatureLockedIds()
 
-        # get lockids from client
-        metadata_layer.lock.setLockeFeaturesFromClient(
-            post_layer_data['lockids'])
+            # get lockids from client
+            metadata_layer.lock.setLockeFeaturesFromClient(
+                post_layer_data['lockids'])
 
         # data for response
         insert_ids = list()
         lock_ids = list()
+        update_ids = list()
 
         # FIXME: check this out
         # for add check if is a metadata_layer and referenced field is a pk
@@ -182,7 +207,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
             if mode_editing in post_layer_data:
 
                 for geojson_feature in post_layer_data[mode_editing]:
-                    data_extra_fields = {'feature': geojson_feature}
+                    data_extra_fields = {'feature': geojson_feature}            
 
                     # Clear any old error
                     qgis_layer.dataProvider().clearErrors()
@@ -202,10 +227,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                     # case relation data ADD, if father referenced field is pk
                     if is_referenced_field_is_pk:
                         for newid in kwargs['referenced_layer_insert_ids']:
-                            if geojson_feature['properties'][metadata_layer.referencing_field] == newid['clientid']:
-                                geojson_feature['properties'][metadata_layer.referencing_field] = newid['id']
+                            for referencing_field in metadata_layer.referencing_field:
+                                if geojson_feature['properties'][referencing_field] == newid['clientid']:
+                                    geojson_feature['properties'][referencing_field] = newid['id']
 
-                    if mode_editing == EDITING_POST_DATA_UPDATED:
+                    if mode_editing == EDITING_POST_DATA_UPDATED and self.enable_feature_lock:
                         # control feature locked
                         if not metadata_layer.lock.checkFeatureLocked(str(geojson_feature['id'])):
                             raise Exception(self.no_more_lock_feature_msg.format(geojson_feature['id'],
@@ -235,10 +261,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             original_feature = qgis_layer.getFeature(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
+                        # NOTE: the `encoding` parameter of
+                        # QgsJsonUtils.stringToFeatureList was removed in QGIS 4.2.
+                        # Calling with 2 args is compatible with both QGIS 3.44
+                        # (encoding defaults to None) and QGIS 4.2.
                         imported_feature = QgsJsonUtils.stringToFeatureList(
                             json.dumps(geojson_feature),
                             qgis_layer.fields(),
-                            None  # UTF8 codec
                         )[0]
 
                         feature.setGeometry(imported_feature.geometry())
@@ -260,6 +289,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
+                            options = qgis_layer.editorWidgetSetup(field_idx).config()
                             # Look for dataprovider default clause/value:
                             # only for fields no pk with defaultValueClause by provider
                             # and NULL value into feature on new add feature
@@ -271,6 +301,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
+                            #
+                            elif qgis_field.typeName().lower() in ('geometry', ):
+                                if geojson_feature['properties'][qgis_field.name()] == '':
+                                    geojson_feature['properties'][qgis_field.name()] = None
+
                             # Formatting data if field's type is date, datetime or time
                             # ----------------------------------------------------------
                             elif qgis_field.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
@@ -281,8 +316,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     qtype = QDateTime
                                 else:
                                     qtype = QTime
-
-                                options = qgis_layer.editorWidgetSetup(field_idx).config()
 
                                 if 'field_iso_format' in options and not options['field_iso_format']:
                                     if qgis_field.name() in geojson_feature['properties'] and \
@@ -312,7 +345,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For PostGis provider or oder provider with type int or double and with field can be null
                             # ----------------------------------------------------------------------------------------
-                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double') and \
+                            elif (qvariant_type_name(qgis_field.type()) or '').lower() in ('int', 'double', 'qlonglong') and \
+                                    qgis_field.name() in geojson_feature['properties'] and \
                                     geojson_feature['properties'][qgis_field.name()] == '':
 
                                 # Check for not_null constraint
@@ -323,6 +357,37 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     feature.setAttribute(qgis_field.name(), NULL)
                                     numeric_nullable_field_values[qgis_field.name()] = NULL
 
+                            # For fields with UseHtml options, filter content with nh3
+                            # -----------------------------------------------------------
+                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] is True):
+
+                                attr_value = geojson_feature['properties'][qgis_field.name()]
+
+                                # Optional: filter style properties via attribute_filter
+                                allowed_css = set(getattr(settings, 'NH3_ALLOWED_STYLES', []))
+
+                                def _style_filter(tag, attr, value, _allowed_css=allowed_css):
+                                    if attr != 'style':
+                                        return value
+                                    cleaned = []
+                                    for decl in value.split(';'):
+                                        if ':' not in decl:
+                                            continue
+                                        prop, val = decl.split(':', 1)
+                                        if prop.strip().lower() in _allowed_css:
+                                            cleaned.append(f"{prop.strip()}:{val.strip()}")
+                                    return ';'.join(cleaned) if cleaned else None
+
+                                feature.setAttribute(
+                                    qgis_field.name(),
+                                    nh3.clean(
+                                        attr_value if attr_value else '',
+                                        tags=set(getattr(settings, 'NH3_ALLOWED_TAGS')),
+                                        attributes=getattr(settings, 'NH3_ALLOWED_ATTRIBUTES'),
+                                        attribute_filter=_style_filter,
+                                        strip_comments=getattr(settings, 'NH3_STRIP_COMMENTS', True),
+                                    )
+                                )
 
 
                         # Call validator!
@@ -330,6 +395,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             feature, metadata_layer.qgis_layer)
                         if errors:
                             raise ValidationError(errors)
+
+                        to_res = {}
+                        to_res_lock = {}
+                        to_res_update = {}
 
                         # Save the feature
                         if mode_editing == EDITING_POST_DATA_ADDED:
@@ -383,10 +452,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     raise Exception(_('Error changing geometry: %s') % ', '.join(
                                         qgis_layer.dataProvider().errors()))
 
-                        to_res = {}
-                        to_res_lock = {}
 
-                        if mode_editing == EDITING_POST_DATA_ADDED:
+
+                        if mode_editing in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
 
                             # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
                             ex = QgsJsonExporter(qgis_layer)
@@ -394,6 +462,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+
+                            self.change_media([jfeature])
 
                             # For date and datetime and time fields:
                             if field_datetime_values:
@@ -404,24 +474,35 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     except:
                                         pass
 
+                            if mode_editing == EDITING_POST_DATA_ADDED:
+                                to_res.update({
+                                    'clientid': geojson_feature['id'],
+                                    # This might be the internal QGIS feature id (< 0)
+                                    'id': server_fid(feature, metadata_layer.qgis_layer.dataProvider()),
+                                    'properties': jfeature['properties']
+                                })
 
-                            to_res.update({
-                                'clientid': geojson_feature['id'],
-                                # This might be the internal QGIS feature id (< 0)
-                                'id': server_fid(feature, metadata_layer.qgis_layer.dataProvider()),
-                                'properties': jfeature['properties']
-                            })
+                                # Locking features new:
+                                if self.enable_feature_lock:
+                                    to_res_lock = metadata_layer.lock.modelLock2dict(
+                                        metadata_layer.lock.lockFeature(
+                                            str(server_fid(feature, metadata_layer.qgis_layer.dataProvider())), save=True)
+                                    )
+                            else:
+                                to_res_update.update({
+                                    # This might be the internal QGIS feature id (< 0)
+                                    'id': server_fid(feature, metadata_layer.qgis_layer.dataProvider()),
+                                    'properties': jfeature['properties']
+                                })
 
-                            # lock news:
-                            to_res_lock = metadata_layer.lock.modelLock2dict(
-                                metadata_layer.lock.lockFeature(
-                                    str(server_fid(feature, metadata_layer.qgis_layer.dataProvider())), save=True)
-                            )
+
 
                         if bool(to_res):
                             insert_ids.append(to_res)
-                        if bool(to_res_lock):
+                        if self.enable_feature_lock and bool(to_res_lock):
                             lock_ids.append(to_res_lock)
+                        if bool(to_res_update):
+                            update_ids.append(to_res_update)
 
                         # Send post vase signal
                         post_save_maplayer.send(
@@ -458,7 +539,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
             for feature_id in fids:
 
                 # control feature locked
-                if not metadata_layer.lock.checkFeatureLocked(str(feature_id)):
+                if self.enable_feature_lock and not metadata_layer.lock.checkFeatureLocked(str(feature_id)):
                     raise Exception(self.no_more_lock_feature_msg.format(
                         feature_id, metadata_layer.client_var))
 
@@ -487,7 +568,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         raise Exception(_('Cannot delete feature: %s') %
                                         ', '.join(qgis_layer.dataProvider().errors()))
 
-        return insert_ids, lock_ids
+        return insert_ids, lock_ids, update_ids
 
     def response_commit_mode(self, request):
         """
@@ -501,7 +582,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         # post_layer_data = data[self.layer_name]
         post_layer_data = request.data
 
-        new_relations = dict()
+        relations = dict()
 
         # Store references to all layers that have been made editable,
         # used to commit/rollback at the end of the loop and on errors
@@ -511,8 +592,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         qgis_layer = self.metadata_layer.qgis_layer
 
         # Get the project
-        qgis_project = get_qgs_project(Layer.objects.get(
-            pk=self.metadata_layer.layer_id).project.qgis_file.path)
+        project = Layer.objects.get(pk=self.metadata_layer.layer_id).project
+        qgis_project = get_qgs_project(project.qgis_file.path)
 
         # Check if we have transaction groups activated
         # Performs all operations in the editing buffer if we have transactions
@@ -530,11 +611,60 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                 editing_layers.append(self.metadata_layer.qgis_layer)
 
-
-            ref_insert_ids, ref_lock_ids = self.save_vector_data(
+            # Save main layer
+            ref_insert_ids, ref_lock_ids, ref_update_ids = self.save_vector_data(
                 self.metadata_layer, post_layer_data, has_transactions, reproject=self.reproject)
 
-            # get every relationsedits
+            # Save relations
+
+            def save_relation(post_relation_data, referencing_layer, ref_insert_ids) -> None:
+                """
+                Save relation data
+                :param post_relation_data: Post data
+                :param referencing_layer: Referencing layer
+                :return: None
+                """
+                if has_transactions:
+                    # Editing on related layers has already started because
+                    # it's part of a transaction group
+                    editing_layers.append(
+                        self.metadata_relations[referencing_layer].qgis_layer)
+
+                # instance lock for relation
+                self.metadata_relations[referencing_layer].lock = LayerLock(
+                    appName=self.app_name,
+                    layer=self.metadata_relations[referencing_layer].layer,
+                    user=request.user,
+                    sessionid=self.sessionid
+                )
+
+                # Check reproject status of referencing layer
+                reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[
+                    referencing_layer].layer.srid
+
+                insert_ids, lock_ids, update_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
+                                                             post_relation_data, has_transactions,
+                                                             referenced_layer_insert_ids=ref_insert_ids,
+                                                             reproject=reproject)
+                relations[referencing_layer] = {
+                    'new': insert_ids,
+                    'new_lockids': lock_ids,
+                    'update': update_ids
+                }
+
+                # Check for cascading relations
+                if self.relations_data_key in post_relation_data and bool(post_relation_data[self.relations_data_key]):
+                    sub_post_relations_data = post_relation_data[self.relations_data_key]
+
+                    # Check in metadata_relations for referenced layer as referencing_layer
+                    for sub_referencing_layer, sub_metadata_relation in self.metadata_relations.items():
+                        if (hasattr(sub_metadata_relation, 'referenced_layer') and
+                                sub_metadata_relation.referenced_layer == referencing_layer and
+                                sub_referencing_layer in sub_post_relations_data):
+                            sub_post_relation_data = sub_post_relations_data[sub_referencing_layer]
+                            save_relation(sub_post_relation_data, sub_referencing_layer, insert_ids)
+
+
             post_relations_data = dict()
             if self.relations_data_key in post_layer_data and bool(post_layer_data[self.relations_data_key]):
                 post_relations_data = post_layer_data[self.relations_data_key]
@@ -543,35 +673,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
             for referencing_layer in self.metadata_relations.keys():
 
                 if referencing_layer in post_relations_data:
-
                     post_relation_data = post_relations_data[referencing_layer]
-
-                    if has_transactions:
-                        # Editing on related layers has already started because
-                        # it's part of a transaction group
-                        editing_layers.append(
-                            self.metadata_relations[referencing_layer].qgis_layer)
-
-                    # instance lock for relation
-                    self.metadata_relations[referencing_layer].lock = LayerLock(
-                        appName=self.app_name,
-                        layer=self.metadata_relations[referencing_layer].layer,
-                        user=request.user,
-                        sessionid=self.sessionid
-                    )
-
-                    # Check reproject status of referencing layer
-                    reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[referencing_layer].layer.srid
-
-
-                    insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
-                                                                 post_relation_data, has_transactions,
-                                                                 referenced_layer_insert_ids=ref_insert_ids,
-                                                                 reproject=reproject)
-                    new_relations[referencing_layer] = {
-                        'new': insert_ids,
-                        'new_lockids': lock_ids
-                    }
+                    save_relation(post_relation_data, referencing_layer, ref_insert_ids)
 
             if has_transactions:
                 # Commit changes on all editable layers
@@ -610,14 +713,22 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 'response': {
                     'new': ref_insert_ids,
                     'new_lockids': ref_lock_ids,
-                    'new_relations': new_relations
+                    'relations': relations,
+                    'update': ref_update_ids,
+
                 }
             })
         except:
             pass
 
-        # clear file uploaded and reset session
+        # Clear file uploaded and reset session
         clear_session_for_uploaded_files(request)
+
+        # Invalidate /api/config cache e invalidate QGIS project cache
+        project.invalidate_cache()
+
+        # Refresh QGIS cache
+        qgis_project.read(project.qgis_file.path)
 
 
     def response_unlock_mode(self, request):

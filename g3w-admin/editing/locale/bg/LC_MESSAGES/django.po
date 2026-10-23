@@ -1,0 +1,266 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-05 19:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: editing/api/base/views.py:68
+msgid ""
+"The feature id {} of layer {} cannot be modified because it is not locked "
+"anymore"
+msgstr "Обект с ID {} от слой {} не може да бъде променян, защото вече не е заключен"
+
+#: editing/api/base/views.py:142
+msgid "Sorry but your user doesn't has 'Add Feature' capability"
+msgstr "Съжаляваме, но вашият потребител няма право за \"Добавяне на обект\""
+
+#: editing/api/base/views.py:146
+msgid "Sorry but your user doesn't has 'Delete Feature' capability"
+msgstr "Съжаляваме, но вашият потребител няма право за \"Изтриване на обект\""
+
+#: editing/api/base/views.py:152
+msgid ""
+"Sorry but your user doesn't has 'Change or Change Attributes Features' "
+"capability"
+msgstr "Съжаляваме, но вашият потребител няма право за \"Промяна или промяна на атрибути на обекти\""
+
+#: editing/api/base/views.py:359 editing/api/base/views.py:362
+#, python-format
+msgid "Error adding feature: %s"
+msgstr "Грешка при добавяне на обект: %s"
+
+#: editing/api/base/views.py:369
+msgid "Error adding feature on Spatialite provider: "
+msgstr "Грешка при добавяне на обект със Spatialite доставчик: "
+
+#: editing/api/base/views.py:389 editing/api/base/views.py:400
+#, python-format
+msgid "Error changing attribute values: %s"
+msgstr "Грешка при промяна на стойности на атрибути: %s"
+
+#: editing/api/base/views.py:395 editing/api/base/views.py:403
+#, python-format
+msgid "Error changing geometry: %s"
+msgstr "Грешка при промяна на геометрия: %s"
+
+#: editing/api/base/views.py:514 editing/api/base/views.py:518
+#, python-format
+msgid "Cannot delete feature: %s"
+msgstr "Не може да се изтрие обект: %s"
+
+#: editing/api/base/views.py:559
+#, python-format
+msgid "Layer %s is not editable!"
+msgstr "Слой %s не може да се редактира!"
+
+#: editing/api/base/views.py:637
+#, python-format
+msgid "Backend error saving layer %s: %s"
+msgstr "Грешка в сървъра при запис на слой %s: %s"
+
+#: editing/forms.py:69 editing/forms.py:233
+msgid "Active"
+msgstr "Активен"
+
+#: editing/forms.py:70 editing/forms.py:231
+msgid "Scale"
+msgstr "Мащаб"
+
+#: editing/forms.py:70 editing/forms.py:231
+msgid "Scale after that editing mode is active"
+msgstr "Мащаб след който режимът за редактиране е активен"
+
+#: editing/forms.py:71 editing/forms.py:235
+msgid "Visible"
+msgstr "Видим"
+
+#: editing/forms.py:72 editing/forms.py:237
+msgid "Viewers"
+msgstr "Зрители"
+
+#: editing/forms.py:73 editing/forms.py:238
+msgid "Select user with viewer role can do editing on layer"
+msgstr "Изберете потребител с роля зрител, който може да редактира слоя"
+
+#: editing/forms.py:76 editing/forms.py:240
+msgid "Select VIEWER groups can do editing on layer"
+msgstr "Изберете групи ЗРИТЕЛИ, които могат да редактират слоя"
+
+#: editing/forms.py:77 editing/forms.py:241
+msgid "User viewer groups"
+msgstr "Групи зрители"
+
+#: editing/forms.py:80
+msgid "User adding data field"
+msgstr "Поле за данни за добавящ потребител"
+
+#: editing/forms.py:81
+msgid ""
+"Optional: select layer field to store username that entered the data. Showed "
+"only string field. <br>Value stored into the field it will be so structured: "
+"<i>[username]</i>"
+msgstr "По избор: изберете поле от слоя за съхранение на потребителското име, което е въвело данните. Показват се само текстови полета.<br>Стойността ще е във формат: <i>[username]</i>"
+
+#: editing/forms.py:87
+msgid "User editing data field"
+msgstr "Поле за данни за редактиращ потребител"
+
+#: editing/forms.py:88
+msgid ""
+"Optional: select layer field to store username that updated the data. Showed "
+"only string field. <br>Value stored into the field it will be so structured: "
+"<i>[username]</i>"
+msgstr "По избор: изберете поле от слоя за съхранение на потребителското име, което е редактирало данните. Показват се само текстови полета.<br>Стойността ще е във формат: <i>[username]</i>"
+
+#: editing/forms.py:94
+msgid "User Groups adding data field"
+msgstr "Поле за групи потребители, които добавят данни"
+
+#: editing/forms.py:95
+msgid ""
+"Optional: select layer field to store user groups name that entered the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr "По избор: изберете поле от слоя за съхранение на имената на групи потребители, които са въвели данните. Показват се само текстови полета.<br>Стойността ще е във формат: <i>[име на група 1, име на група 2, ...]</i>"
+
+#: editing/forms.py:101
+msgid "User Groups editing data field"
+msgstr "Поле за групи потребители, които редактират данни"
+
+#: editing/forms.py:102
+msgid ""
+"Optional: select layer field to store user groups name that updated the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr "По избор: изберете поле от слоя за съхранение на имената на групи потребители, които са редактирали данните. Показват се само текстови полета.<br>Стойността ще е във формат: <i>[име на група 1, име на група 2, ...]</i>"
+
+#: editing/forms.py:109
+msgid "Layer'style to use"
+msgstr "Стил на слоя за използване"
+
+#: editing/forms.py:110
+msgid "Select layer style to use for editing. "
+msgstr "Изберете стил на слоя, който да се използва за редактиране."
+
+#: editing/forms.py:131
+msgid "Check on uncheck to active/deactive editing layer capabilities:"
+msgstr "Маркирайте, за да активирате/деактивирате възможностите за редактиране на слоя:"
+
+#: editing/forms.py:133 editing/forms.py:260
+msgid "Check on uncheck to show layer inside the list of layers to edit:"
+msgstr "Маркирайте, за да показвате слоя в списъка със слоеве за редактиране:"
+
+#: editing/forms.py:147 editing/forms.py:268
+msgid "Select viewers with 'view permission' on project that can edit layer:"
+msgstr "Изберете зрители с \"разрешение за преглед\" на проекта, които могат да редактират слоя:"
+
+#: editing/forms.py:159
+msgid ""
+"'User adding data field' and 'User editing data field' and 'User group "
+"adding data field' and 'User group editing data field' must be unique."
+msgstr "\"Поле за потребител добавящ данни\", \"Поле за потребител редактиращ данни\" и полета за групи трябва да са уникални."
+
+#: editing/forms.py:228
+msgid "Layers"
+msgstr "Слоеве"
+
+#: editing/forms.py:229
+msgid "Select layers on which to activate editing"
+msgstr "Изберете слоеве, за които да се активира редактиране"
+
+#: editing/forms.py:258
+msgid "Check on uncheck to attive/deactive editing layers capabilities:"
+msgstr "Маркирайте, за да активирате/деактивирате възможностите за редактиране на слоевете:"
+
+#: editing/forms.py:298
+msgid "From User"
+msgstr "От потребител"
+
+#: editing/forms.py:299
+msgid "Select the user from which to take the permissions to copy"
+msgstr "Изберете потребител, от когото да се копират разрешенията"
+
+#: editing/forms.py:301
+msgid "To users"
+msgstr "Към потребители"
+
+#: editing/forms.py:302
+msgid "Select the users who will receive permissions"
+msgstr "Изберете потребителите, които ще получат разрешенията"
+
+#: editing/forms.py:304
+msgid "From Group of User"
+msgstr "От група потребители"
+
+#: editing/forms.py:305
+msgid "Select the group df user from which to take the permissions to copy"
+msgstr "Изберете групата потребители, от която да се копират разрешенията"
+
+#: editing/forms.py:307
+msgid "To Groups of Users"
+msgstr "Към групи потребители"
+
+#: editing/forms.py:308
+msgid "Select the groups of users who will receive permissions"
+msgstr "Изберете групите потребители, които ще получат разрешенията"
+
+#: editing/receivers.py:306
+#, python-format
+msgid "Constraint validation failed for geometry: %s"
+msgstr "Проверката на ограниченията за геометрията не бе успешна: %s"
+
+#: editing/templates/editing/copy_editing_permission_form.html:7
+#: editing/templates/editing/editing_layer_active_form.html:7
+msgid "Alert"
+msgstr "Внимание"
+
+#: editing/templates/editing/copy_editing_permission_form.html:8
+#: editing/templates/editing/editing_layer_active_form.html:8
+msgid "Some errors on form. Check it and send again."
+msgstr "Има грешки във формата. Проверете я и изпратете отново."
+
+#: editing/templates/editing/copy_editing_permission_form.html:13
+#: editing/templates/editing/editing_layer_active_form.html:14
+msgid "Important"
+msgstr "Важно"
+
+#: editing/templates/editing/copy_editing_permission_form.html:14
+msgid ""
+"The following actions will change the permissions of the selected users who "
+"will lose their previous settings."
+msgstr "Следните действия ще променят разрешенията на избраните потребители, които ще загубят предишните си настройки."
+
+#: editing/templates/editing/editing_layer_active_form.html:15
+msgid ""
+"The following settings will be applied to all the layers indicated and will "
+"overwrite the settings set at the single layer level"
+msgstr "Следните настройки ще се приложат за всички посочени слоеве и ще заместят настройките на отделните слоеве"
+
+#: editing/templates/editing/layer_action.html:5
+#: editing/templates/editing/project_layers_action.html:6
+msgid "Editing layer"
+msgstr "Редактиране на слой"
+
+#: editing/templates/editing/layer_action.html:8
+#: editing/templates/editing/project_layers_action.html:9
+msgid "Activation layer_editing"
+msgstr "Активиране на редактиране на слой"
+
+#: editing/templates/editing/project_layers_action.html:15
+#: editing/templates/editing/project_layers_action.html:18
+msgid "Copy permissions"
+msgstr "Копирай разрешения"

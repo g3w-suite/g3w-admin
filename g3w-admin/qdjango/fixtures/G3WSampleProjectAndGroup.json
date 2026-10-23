@@ -126,7 +126,7 @@
       "exclude_attribute_wms": null,
       "exclude_attribute_wfs": null,
       "vectorjoins": "[]",
-      "edittypes": "{'SOURCETHM': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'APPROX': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'AREA': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'NAME': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'CAPITAL': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}}",
+      "edittypes": "{'default': {'SOURCETHM': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'APPROX': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'AREA': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'NAME': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'CAPITAL': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}}}",
       "exclude_from_legend": false,
       "editor_layout": "generatedlayout",
       "editor_form_structure": null
@@ -161,7 +161,7 @@
       "exclude_attribute_wms": null,
       "exclude_attribute_wfs": null,
       "vectorjoins": "[]",
-      "edittypes": "{'name': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'pkuid': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}}",
+      "edittypes": "{'default': {'name': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'pkuid': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}}}",
       "exclude_from_legend": false,
       "editor_layout": "generatedlayout",
       "editor_form_structure": null,

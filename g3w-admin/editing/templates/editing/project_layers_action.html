@@ -1,0 +1,23 @@
+{% load i18n %}
+{% load static %}
+
+{# Multi layer editing active #}
+<span class="col-md-1 icon">
+<a class="project-layers-action" data-toggle="tooltip" title="{% trans 'Editing layer' %}"
+data-widget-type="ajaxForm"
+data-form-url="{% url 'editing-multi-layer-active' project.group.slug app_name project.slug %}"
+data-modal-title="{% trans 'Activation layer_editing' %}">
+    <i class="fa fa-pencil-square-o"></i>
+</a>
+</span>
+{# Copy permissions #}
+<span class="col-md-1 icon">
+<a class="project-layers-action" data-toggle="tooltip" title="{% trans 'Copy permissions' %}"
+data-widget-type="ajaxForm"
+data-form-url="{% url 'editing-copy-permission' project.group.slug app_name project.slug %}"
+data-modal-title="{% trans 'Copy permissions' %}">
+    <i class="fa fa-user-circle"></i>
+</a>
+</span>
+<span class="label label-info col-xs-1"></span>
+

@@ -1,13 +1,53 @@
 
+import re
+
 from django.conf import settings
 from django import template
 from django.apps import apps
 from django.conf.urls.static import static
-from core.signals import load_project_widgets, load_layer_actions
+from django.utils.html import conditional_escape
+from django.utils.safestring import mark_safe
+from core.signals import (
+    load_project_widgets,
+    load_layer_actions,
+    load_project_layers_actions
+)
 from core.models import GroupProjectPanoramic
+from core.utils.slugify import slugify as _slugify
 
 
 register = template.Library()
+
+
+@register.filter(name='highlight', needs_autoescape=True)
+def highlight(text, search_text, autoescape=True):
+    """
+    Wrap every case-insensitive occurrence of ``search_text`` inside ``text``
+    with a ``<mark>`` tag, preserving HTML escaping of the original content.
+    Returns a safe string ready for template output (no need for ``|safe``).
+    """
+    if text is None:
+        return ''
+
+    esc = conditional_escape if autoescape else (lambda x: x)
+    text_str = str(text)
+
+    if not search_text:
+        return mark_safe(esc(text_str))
+
+    pattern = re.compile(re.escape(str(search_text)), re.IGNORECASE)
+
+    result = []
+    last = 0
+    for m in pattern.finditer(text_str):
+        result.append(esc(text_str[last:m.start()]))
+        result.append('<mark>')
+        result.append(esc(m.group(0)))
+        result.append('</mark>')
+        last = m.end()
+    result.append(esc(text_str[last:]))
+
+    return mark_safe(''.join(result))
 
 
 @register.inclusion_tag('core/tags/add_project.html')
@@ -106,6 +146,19 @@ def g3wadmin_layer_actions(layer, app_name, user):
 
     return template_actions
 
+@register.simple_tag()
+def g3wadmin_project_layers_actions(project, app_name, user):
+    """
+    Template tag to get actions from load_project_layers_actions signal
+    """
+    actions = load_project_layers_actions.send(user, project=project, app_name=app_name)
+
+    template_actions = []
+    for action in actions:
+        if actions and action[1]:
+            template_actions.append(action[1])
+
+    return template_actions
 
 @register.filter
 def lookup(d, key):
@@ -130,3 +183,10 @@ def islist(o):
     """
 
     return isinstance(o, list)
+
+@register.filter(is_safe=True)
+def g3wadmin_slugify(content):
+    """
+    Slugify a given string. Complements the default Django slugify filter by allowing more complex slugify/transliteration behavior.
+    """
+    return _slugify(content)

@@ -1,0 +1,107 @@
+{% load i18n %}
+<div class="g3w-detail-overlay sysinfo-overlay">
+  <div class="sysinfo-grid">
+
+    {# General #}
+    <section class="sysinfo-card sysinfo-card-primary">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-server"></i>
+        <h3>{% trans 'General' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key"><i class="fa fa-desktop"></i> OS</span>
+          <span class="sysinfo-value">{{ sysinfo.OS.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key"><i class="fa fa-globe"></i> QGIS Server</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.QGIS.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key"><i class="fa fa-code"></i> Python</span>
+          <span class="sysinfo-value sysinfo-mono">{{ sysinfo.Python.v }}</span>
+        </li>
+      </ul>
+    </section>
+
+    {# Database #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-database"></i>
+        <h3>{% trans 'Databases' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        {% for db in sysinfo.DB.items %}
+          <li>
+            <span class="sysinfo-key"><i class="fa fa-hdd-o"></i> {{ db.db_name }}</span>
+            <span class="sysinfo-value sysinfo-mono">{{ db.v }}</span>
+          </li>
+        {% empty %}
+          <li class="sysinfo-empty">
+            <i class="fa fa-info-circle"></i>
+            {% trans 'No database connections detected.' %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    {# Libraries: General #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-cubes"></i>
+        <h3>{% trans 'Libraries' %} &middot; {% trans 'General' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key">Qt</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.General.Qt.v }}</span>
+        </li>
+      </ul>
+    </section>
+
+    {# Libraries: Geographic #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-map"></i>
+        <h3>{% trans 'Libraries' %} &middot; {% trans 'Geographic' %}</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key">GDAL/OGR</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Geo.GDAL_OGR.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">PROJ</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Geo.PROJ.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">GEOS</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Geo.GEOS.v }}</span>
+        </li>
+      </ul>
+    </section>
+
+    {# Libraries: Python #}
+    <section class="sysinfo-card">
+      <div class="sysinfo-card-header">
+        <i class="fa fa-code"></i>
+        <h3>{% trans 'Libraries' %} &middot; Python</h3>
+      </div>
+      <ul class="sysinfo-list">
+        <li>
+          <span class="sysinfo-key">Django</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Python.Django.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">GDAL/OGR</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Python.GDAL_OGR.v }}</span>
+        </li>
+        <li>
+          <span class="sysinfo-key">PyProj</span>
+          <span class="sysinfo-value sysinfo-pill">{{ sysinfo.Libraries.Python.PyProj.v }}</span>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</div>

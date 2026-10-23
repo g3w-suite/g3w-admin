@@ -1,5 +1,5 @@
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User, Group
 from django.db import models
 from model_utils.models import TimeStampedModel
@@ -19,6 +19,12 @@ class Userdata(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     department = models.OneToOneField(Department, null=True, blank=True, on_delete=models.DO_NOTHING)
     avatar = models.ImageField(_('Avatar'), upload_to='user_avatar', null=True, blank=True)
+    other_info = models.TextField(_('Other informations'), null=True, blank=True)
+    registered = models.BooleanField(_('Registered user'), default=False, blank=True, null=True)
+    activated_by_admin = models.BooleanField(_('User activated by administrator'), default=False, null=True,
+                                                       blank=True)
+    change_password_first_login = models.BooleanField(_('User changed password at first login'), default=False,
+                                                      null=True, blank=True)
 
 
 USER_BACKEND_TYPES = G3WChoices(

@@ -18,6 +18,7 @@ from core.signals import \
     after_serialized_project_layer, \
     initconfig_plugin_start
 from core.utils.qgisapi import get_qgis_layer
+from base.version import get_version
 
 from qgis.PyQt.QtCore import QDate, QDateTime, Qt
 from datetime import datetime
@@ -50,8 +51,32 @@ def set_initconfig_value(sender, **kwargs):
 
     toret = {
         'qtimeseries': {
+            'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
-            'layers': [] #TODO: to remove  and tell to g3w-client developers
+            'layers': [], #TODO: to remove  and tell to g3w-client developers
+            'sidebar': {
+                'id': 'qtimeseries',
+                'title': 'plugins.qtimeseries.title',
+                'open': False,
+                'collapsible': False,
+                'closewhenshowviewportcontent': False,
+                'icon': 'time',
+                'iconColor': '#25bce9',
+                'mobile': True,
+                'sidebarOptions': { 'position': 'catalog' },
+            },
+            'steps': [
+                { 'moment': '100:years', 'label': 'centuries', 'qgis': 'c' },
+                { 'moment': '10:years', 'label': 'decades', 'qgis': 'dec' },
+                { 'moment': 'years', 'label': 'years', 'qgis': 'y' },
+                { 'moment': 'months', 'label':  'months', 'qgis': 'mon' },
+                { 'moment': '7:days', 'label': 'weeks', 'qgis': 'wk' },
+                { 'moment': 'days', 'label': 'days', 'qgis': 'd' },
+                { 'moment': 'hours', 'label': 'hours', 'qgis': 'h' },
+                { 'moment': 'minutes', 'label': 'minutes', 'qgis': 'min' },
+                { 'moment': 'seconds', 'label': 'seconds', 'qgis': 's' },
+                { 'moment': 'milliseconds', 'label': 'milliseconds', 'qgis': 'ms' },
+            ],
         },
     }
 
@@ -82,10 +107,12 @@ def add_qtimeseries(sender, **kwargs):
             if isinstance(data['values']['qtimeseries']['start_date'], QDate) or isinstance(data['values']['qtimeseries']['start_date'],
                                                                                  QDateTime):
                 isdate = isinstance(data['values']['qtimeseries']['start_date'], QDate)
+                # NOTE: use the namespaced Qt.DateFormat.* for PyQt6 (QGIS 4.2)
+                # compatibility; PyQt5 (QGIS 3.44) supports it as well.
                 if not hasattr(QDate, 'isoformat'):
-                    QDate.isoformat = lambda d: d.toString(Qt.ISODate)
+                    QDate.isoformat = lambda d: d.toString(Qt.DateFormat.ISODate)
                 if not hasattr(QDateTime, 'isoformat'):
-                    QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
+                    QDateTime.isoformat = lambda d: d.toString(Qt.DateFormat.ISODateWithMs)
                 data['values']['qtimeseries']['start_date'] = data['values']['qtimeseries']['start_date'].isoformat()
                 data['values']['qtimeseries']['end_date'] = data['values']['qtimeseries']['end_date'].isoformat()
 

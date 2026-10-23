@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load g3wadmin_tags %}
+{% load i18n %}
+
+{% block main_content %}
+    {% block content_wrapper %}
+    <div class="box box-solid">
+        <div class="box-body border-radius-none">
+            {% block content %}{% endblock %}  
+        </div>
+    </div>
+    {% endblock %}
+{% endblock %}

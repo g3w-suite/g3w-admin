@@ -94,7 +94,7 @@
    "pk": 11,
    "fields": {
       "order": 13,
-      "name": "nominatim",
+      "name": "geocoding",
       "description": ""
    }
 },
@@ -176,6 +176,15 @@
    "fields": {
       "order": 3,
       "name": "zoomhistory",
+      "description": ""
+   }
+},
+{
+   "model": "core.mapcontrol",
+   "pk": 21,
+   "fields": {
+      "order": 21,
+      "name": "annotation",
       "description": ""
    }
 }

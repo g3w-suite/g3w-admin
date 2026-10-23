@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Plot creation
 
@@ -8,12 +7,14 @@ the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 """
 
+
 import tempfile
 import os
 import re
+import plotly
 import plotly.graph_objs as go
-import plotly.tools as tools
-import plotly.offline
+from copy import deepcopy
+from plotly import subplots
 
 from qgis.core import (
     QgsProject,
@@ -35,12 +36,12 @@ from qgis.PyQt.QtCore import (
     QObject,
     pyqtSignal,
     QDate,
-    QDateTime
-)
-from qgis.PyQt.Qt import (
+    QDateTime,
     Qt
 )
+
 from qgis.PyQt.QtGui import QColor
+# Change for original for g3w-suite
 from .plot_settings import PlotSettings
 from .plot_types.plot_type import PlotType
 from .plot_types import *  # pylint: disable=W0401,W0614
@@ -75,13 +76,10 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
     """
 
     # create fixed class variables as paths for local javascript files
-    # POLY_FILL_PATH = QUrl.fromLocalFile(
-    #     os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'jsscripts/polyfill.min.js'))).toString()
-    # PLOTLY_PATH = QUrl.fromLocalFile(
-    #     os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'jsscripts/plotly-1.52.2.min.js'))).toString()
-
-    POLY_FILL_PATH = 'http://localhost:8006/static/qplotly/polyfill.min.js'
-    PLOTLY_PATH = 'http://localhost:8006/static/qplotly/plotly-1.52.2.min.js'
+    POLY_FILL_PATH = QUrl.fromLocalFile(
+        os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'jsscripts/polyfill.min.js'))).toString()
+    PLOTLY_PATH = QUrl.fromLocalFile(
+        os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'jsscripts/plotly-1.52.2.min.js'))).toString()
 
     PLOT_TYPES = {
         t.type_name(): t for t in PlotType.__subclasses__()
@@ -90,29 +88,33 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
     plot_built = pyqtSignal()
 
     # Add function to QDate and QDateTime classes that the PlotlyJSONEncoder expects from date objects
+    # NOTE: use the namespaced Qt.DateFormat.ISODate for PyQt6 (QGIS 4.2)
+    # compatibility; PyQt5 (QGIS 3.44) supports the namespaced form as well.
     if not hasattr(QDate, 'isoformat'):
-        QDate.isoformat = lambda d: d.toString(Qt.ISODate)
+        QDate.isoformat = lambda d: d.toString(Qt.DateFormat.ISODate)
     if not hasattr(QDateTime, 'isoformat'):
-        QDateTime.isoformat = lambda d: d.toString(Qt.ISODate)
+        QDateTime.isoformat = lambda d: d.toString(Qt.DateFormat.ISODate)
 
     def __init__(self, settings: PlotSettings = None, context_generator: QgsExpressionContextGenerator = None,
                  visible_region: QgsReferencedRectangle = None, polygon_filter: FilterRegion = None):
         super().__init__()
         if settings is None:
-            settings = PlotSettings('scatter')
-
-        self.settings = settings
+            self.settings = PlotSettings('scatter')
+        else:
+            self.settings = deepcopy(settings)
         self.context_generator = context_generator
         self.raw_plot = None
         self.plot_path = None
         self.selected_features_only = self.settings.properties['selected_features_only']
-        self.visible_features_only = self.settings.properties.get('visible_features_only', False)
         self.visible_region = visible_region
         self.polygon_filter = polygon_filter
         self.trace = None
         self.layout = None
         self.source_layer = QgsProject.instance().mapLayer(
             self.settings.source_layer_id) if self.settings.source_layer_id else None
+        self.plot_path = os.path.join(
+            tempfile.gettempdir(),
+            f'temp_plot_name_{self.settings.dock_id}.html')
 
         self.rebuild()
 
@@ -130,13 +132,15 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
 
         if not self.context_generator:
             context = QgsExpressionContext()
-            context.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(self.source_layer))
+            context.appendScopes(
+                QgsExpressionContextUtils.globalProjectLayerScopes(self.source_layer))
         else:
             context = self.context_generator.createExpressionContext()
             # add a new scope corresponding to the source layer -- this will potentially overwrite any other
             # layer scopes which may be present in the context (e.g. from atlas layers), but we need to ensure
             # that source layer fields and attributes are present in the context
-            context.appendScope(self.source_layer.createExpressionContextScope())
+            context.appendScope(
+                self.source_layer.createExpressionContextScope())
 
         self.settings.data_defined_properties.prepare(context)
 
@@ -174,7 +178,8 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
         request = QgsFeatureRequest()
 
         if self.settings.data_defined_properties.property(PlotSettings.PROPERTY_FILTER).isActive():
-            expression = self.settings.data_defined_properties.property(PlotSettings.PROPERTY_FILTER).asExpression()
+            expression = self.settings.data_defined_properties.property(
+                PlotSettings.PROPERTY_FILTER).asExpression()
             request.setFilterExpression(expression)
             request.setExpressionContext(context)
 
@@ -184,7 +189,7 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
             request.setFlags(QgsFeatureRequest.NoGeometry)
 
         visible_geom_engine = None
-        if self.visible_features_only and self.visible_region is not None:
+        if self.settings.properties.get('visible_features_only', False) and self.visible_region is not None:
             ct = QgsCoordinateTransform(self.visible_region.crs(), self.source_layer.crs(),
                                         QgsProject.instance().transformContext())
             try:
@@ -192,16 +197,18 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
                 request.setFilterRect(rect)
             except QgsCsException:
                 pass
-        elif self.visible_features_only and self.polygon_filter is not None:
+        elif self.settings.properties.get('visible_features_only', False) and self.polygon_filter is not None:
             ct = QgsCoordinateTransform(self.polygon_filter.crs(), self.source_layer.crs(),
                                         QgsProject.instance().transformContext())
             try:
-                rect = ct.transformBoundingBox(self.polygon_filter.geometry.boundingBox())
+                rect = ct.transformBoundingBox(
+                    self.polygon_filter.geometry.boundingBox())
                 request.setFilterRect(rect)
                 g = self.polygon_filter.geometry
                 g.transform(ct)
 
-                visible_geom_engine = QgsGeometry.createGeometryEngine(g.constGet())
+                visible_geom_engine = QgsGeometry.createGeometryEngine(
+                    g.constGet())
                 visible_geom_engine.prepareGeometry()
             except QgsCsException:
                 pass
@@ -263,9 +270,11 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
                     continue
 
             if additional_info_expression:
-                additional_hover_text.append(additional_info_expression.evaluate(context))
+                additional_hover_text.append(
+                    additional_info_expression.evaluate(context))
             elif self.settings.layout['additional_info_expression']:
-                additional_hover_text.append(f[self.settings.layout['additional_info_expression']])
+                additional_hover_text.append(
+                    f[self.settings.layout['additional_info_expression']])
 
             if x is not None:
                 xx.append(x)
@@ -297,8 +306,10 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
                 else:
                     try:
                         # Attempt to interpret the value as a list of color specifications
-                        value_list = self.settings.data_defined_properties.value(PlotSettings.PROPERTY_COLOR, context)
-                        color_list = [QgsSymbolLayerUtils.decodeColor(item).name() for item in value_list]
+                        value_list = self.settings.data_defined_properties.value(
+                            PlotSettings.PROPERTY_COLOR, context)
+                        color_list = [QgsSymbolLayerUtils.decodeColor(
+                            item).name() for item in value_list]
                         colors.extend(color_list)
                     except TypeError:
                         # Not a list of color specifications, use the default color instead
@@ -314,8 +325,10 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
                 else:
                     try:
                         # Attempt to interpret the value as a list of color specifications
-                        value_list = self.settings.data_defined_properties.value(PlotSettings.PROPERTY_STROKE_COLOR, context)
-                        color_list = [QgsSymbolLayerUtils.decodeColor(item).name() for item in value_list]
+                        value_list = self.settings.data_defined_properties.value(
+                            PlotSettings.PROPERTY_STROKE_COLOR, context)
+                        color_list = [QgsSymbolLayerUtils.decodeColor(
+                            item).name() for item in value_list]
                         stroke_colors.extend(color_list)
                     except TypeError:
                         # Not a list of color specifications, use the default color instead
@@ -420,7 +433,7 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
         Sets the visible region associated with the factory, possibly triggering a rebuild
         of a filtered plot
         """
-        if self.visible_features_only:
+        if self.settings.properties.get('visible_features_only', False):
             self.visible_region = region
             self.rebuild()
 
@@ -643,7 +656,7 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}">' \
                    '</script><script src="{}"></script></head>'.format(
-            self.POLY_FILL_PATH, self.PLOTLY_PATH)
+                       self.POLY_FILL_PATH, self.PLOTLY_PATH)
         # set some configurations
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False,
@@ -680,14 +693,13 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
             path_to_output = factory.build_figure()
         """
 
-        self.plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         config = {
             'scrollZoom': True,
             'editable': True,
             'modeBarButtonsToRemove': ['toImage', 'sendDataToCloud', 'editInChartStudio']
         }
 
-        with open(self.plot_path, "w") as f:
+        with open(self.plot_path, "w", encoding="utf8") as f:
             f.write(self.build_html(config))
 
         return self.plot_path
@@ -725,9 +737,10 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
         # ptrace = kwargs['pl']
 
         # check if the plot type and render the correct figure
-        if plot_type == 'bar' or 'histogram':
+        if plot_type in ('bar', 'histogram'):
             del self.layout
-            self.layout = PlotFactory.PLOT_TYPES[plot_type].create_layout(self.settings)
+            self.layout = PlotFactory.PLOT_TYPES[plot_type].create_layout(
+                self.settings)
             figures = go.Figure(data=ptrace, layout=self.layout)
 
         else:
@@ -739,7 +752,7 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
         # first lines of additional html with the link to the local javascript
         self.raw_plot = '<head><meta charset="utf-8" /><script src="{}">' \
                         '</script><script src="{}"></script></head>'.format(
-            self.POLY_FILL_PATH, self.PLOTLY_PATH)
+                            self.POLY_FILL_PATH, self.PLOTLY_PATH)
         # call the plot method without all the javascript code
         self.raw_plot += plotly.offline.plot(figures, output_type='div', include_plotlyjs=False, show_link=False,
                                              config=config)
@@ -751,8 +764,7 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
         substr = match.group(1)
         self.raw_plot = self.raw_plot.replace('ReplaceTheDiv', substr)
 
-        self.plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
-        with open(self.plot_path, "w") as f:
+        with open(self.plot_path, "w", encoding="utf8") as f:
             f.write(self.raw_plot)
 
         return self.plot_path
@@ -781,24 +793,24 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
 
         if grid == 'row':
 
-            fig = tools.make_subplots(rows=row, cols=column)
+            fig = subplots.make_subplots(rows=row, cols=column)
 
             for i, itm in enumerate(ptrace):
-                fig.append_trace(itm, row, i + 1)
+                fig.add_trace(itm, row, i + 1)
 
         elif grid == 'col':
 
-            fig = tools.make_subplots(rows=row, cols=column)
+            fig = subplots.make_subplots(rows=row, cols=column)
 
             for i, itm in enumerate(ptrace):
-                fig.append_trace(itm, i + 1, column)
+                fig.add_trace(itm, i + 1, column)
 
         # set some configurations
         config = {'scrollZoom': True, 'editable': True}
         # first lines of additional html with the link to the local javascript
         self.raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script>' \
                         '<script src="{}"></script></head>'.format(
-            self.POLY_FILL_PATH, self.PLOTLY_PATH)
+                            self.POLY_FILL_PATH, self.PLOTLY_PATH)
         # call the plot method without all the javascript code
         self.raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False,
                                              config=config)
@@ -810,8 +822,22 @@ class PlotFactory(QObject):  # pylint:disable=too-many-instance-attributes
         substr = match.group(1)
         self.raw_plot = self.raw_plot.replace('ReplaceTheDiv', substr)
 
-        self.plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
-        with open(self.plot_path, "w") as f:
+        with open(self.plot_path, "w", encoding="utf8") as f:
             f.write(self.raw_plot)
 
         return self.plot_path
+
+    def build_plot_dict(self) -> dict:
+        """
+        Returns a python dictionary of the whole Figure object.
+
+        This method is not used in the plugin itself, but it is used in the
+        testing suite to avoid finding the Figure parameters with weird regex
+        from the html
+
+        :return: dictionary of the Figure object
+        """
+
+        fig = go.Figure(data=self.trace, layout=self.layout)
+
+        return fig.to_dict()

@@ -11,18 +11,25 @@ from django.conf import settings
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 from .views import(
     InterfaceProxy,
     GroupSetOrderView,
     MacroGroupSetOrderView,
 ) 
-from .api.views import(
+from .api.views import (
     layer_vector_view,
     G3WSUITEInfoAPIView,
     QgsExpressionLayerContextEvalView,
     layer_raster_view,
     InterfaceOws,
     CRSInfoAPIView,
+    HTML2PDFAPIView,
+    ShortURLView, PermaLinkView
 )
 
 
@@ -32,7 +39,7 @@ urlpatterns = [
     # Vector data API management
     #############################################################
     re_path(
-        r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken|featurecount)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
+        r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken|featurecount|editorformstructure)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_vector_view,
         name='core-vector-api'
@@ -86,7 +93,7 @@ urlpatterns = [
     #############################################################
     path(
         'api/expression_eval/<int:project_id>/',
-        login_required(QgsExpressionLayerContextEvalView.as_view()),
+        QgsExpressionLayerContextEvalView.as_view(),
         name='layer-expression-eval'
     ),
 
@@ -126,6 +133,51 @@ urlpatterns = [
         'crs/<int:epsg>/',
         CRSInfoAPIView.as_view(),
         name='core-crs-api'
-    )
+    ),
+
+    #############################################################
+    # html2pdf API info
+    #############################################################
+    path(
+        'html2pdf/',
+        HTML2PDFAPIView.as_view(),
+        name='core-html2pdf-api'
+    ),
+
+    #############################################################
+    # shorturl/permalink API info
+    #############################################################
+    path(
+        'api/su/',
+        ShortURLView.as_view(),
+        name='core-shorturl-api'
+    ),
+    path(
+        'api/embed/', 
+        PermaLinkView.as_view(), 
+        name='core-permalink-create'
+    ),
+    path(
+        'api/embed/<str:code>/',
+        PermaLinkView.redirect_url,
+        name='core-permalink-redirect'
+    ),
+
+    #############################################################
+    # ShortUrl
+    #############################################################
+
+    path(
+        'su/<str:code>/',
+        ShortURLView.redirect_url,
+        name='shorturl_redirect_url'
+    ),
+
+    #############################################################
+    # JWT authentication
+    #############################################################
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
 ]

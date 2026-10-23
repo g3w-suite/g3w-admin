@@ -9,6 +9,8 @@ from qdjango.models import Layer
 from caching.models import G3WCachingLayer
 from caching.utils import get_config
 
+import logging
+
 @receiver(load_layer_actions)
 def caching_layer_action(sender, **kwargs):
     """
@@ -126,3 +128,15 @@ def get_tms_services(sender, **kwargs):
                 'url': caching_url
             }
         }
+
+@receiver(post_save, sender=G3WCachingLayer)
+@receiver(pre_delete, sender=G3WCachingLayer)
+def invalid_prj_cache(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    layer = Layer.objects.get(pk=kwargs["instance"].layer_id)
+    layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Qdjango project /api/config invalidate on update/delete of a caching layer state: "
+        f"{layer.project}"
+    )

@@ -1,6 +1,9 @@
 from django.conf import settings
-from django.template.response import HttpResponse
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
+from django.http import (
+    JsonResponse,
+    HttpResponseBadRequest,
+    HttpResponse,
+)
 from django.views.generic import (
     CreateView,
     UpdateView,
@@ -15,46 +18,31 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from guardian.decorators import permission_required
-from guardian.shortcuts import get_objects_for_user, get_anonymous_user
+from guardian.shortcuts import (
+    get_objects_for_user,
+    get_anonymous_user,
+    get_objects_for_group
+)
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.decorators import user_passes_test_or_403
-from usersmanage.utils import get_users_for_object
-from usersmanage.configs import G3W_EDITOR1
-from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
-from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
+from usersmanage.utils import get_users_for_object, userHasGroups
+from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2
+from usersmanage.models import User, Group as AuthGroup
+from qdjango.models import ProjectBookmark
+from qdjango.utils.models import get_public_project_ids
+from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm, GroupFilterForm
+from .models import (
+    Group,
+    GroupProjectPanoramic,
+    MapControl,
+    GeneralSuiteData,
+    MacroGroup,
+)
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .signals import after_update_group, execute_search_on_models
+from .utils.general import get_system_info
 import requests
 import json
-
-
-#class NotFoundView(TemplateView):
-#
-#    template_name = '404.html'
-
-
-class TestView(View):
-
-    def get(self, request, *args, **kwargs):
-        from django.http.request import QueryDict
-        from qdjango.ows import OWSRequestHandler
-        q = QueryDict('', mutable=True)
-        q['SERVICE'] = 'WFS'
-        q['VERSION'] = '1.0.0'
-        q['REQUEST'] = 'GetFeature'
-        q['TYPENAME'] = 'sita:listacomunirtpoly'
-        q['PROPERTYNAME'] = 'ncom'
-        q['PROPERTYNAME'] = 'ncom=VOLTERRA'
-        q['OUTPUFORMAT'] = 'application/json'
-
-        class Object(object):
-            pass
-
-        request = Object()
-        request.method = 'GET'
-        request.body = ''
-        response = OWSRequestHandler.baseDoRequest(q, request)
-        return response
 
 
 class DashboardView(TemplateView):
@@ -62,39 +50,87 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
-        # add number groups
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
-             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        user = self.request.user
 
-        qs = qs.filter(is_active=1).order_by('order')
-        context['n_groups'] = len(qs)
+        # Map groups visible to the current user
+        groups_qs = get_objects_for_user(user, 'core.view_group', Group)\
+            .filter(is_active=1).order_by('order')
+        context['n_groups'] = groups_qs.count()
+
+        # Projects / layers counters scoped on permissions and visible groups
+        try:
+            from qdjango.models import Project, Layer
+            projects_qs = get_objects_for_user(user, 'qdjango.view_project', Project)\
+                .filter(group__in=groups_qs)
+            context['n_projects'] = projects_qs.count()
+            context['n_layers'] = Layer.objects.filter(project__in=projects_qs).count()
+        except Exception:
+            context['n_projects'] = 0
+            context['n_layers'] = 0
+
+        # Recent activity: only for staff/superuser since traces may be sensitive
+        context['recent_activity'] = []
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            from .models import StatusLog
+            context['recent_activity'] = list(
+                StatusLog.objects.all().order_by('-create_datetime')[:5]
+            )
+
+        # Module widgets
         context['widgets'] = []
-
         dashboard_widgets = load_dashboard_widgets.send(self)
         for widget in dashboard_widgets:
             if widget[1]:
                 context['widgets'].append(widget[1])
 
+        # Get bookmarked projects for user
+        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=user).select_related('project')
+        context['public_project_ids'] = get_public_project_ids(
+            [bookmark.project for bookmark in context['projects_bookmarked']]
+        )
+
         return context
 
 
 class SearchAdminView(TemplateView):
+    """
+    Admin-wide search view.
+
+    Renders the `search.html` template with the results of a textual search
+    executed against every module connected to the
+    :data:`core.signals.execute_search_on_models` signal.
+
+    The search term is read from the ``stext`` GET parameter and forwarded to
+    every signal receiver, which is expected to return a list of result
+    objects exposing an ``n_tot_results`` attribute.
+
+    Context variables:
+        - ``search_text``: the original query string (GET ``stext``).
+        - ``results``: flat list aggregating the results returned by all
+          signal receivers.
+        - ``n_tot_results``: sum of ``n_tot_results`` across all results,
+          used to display the global match count.
+    """
+
     template_name = "search.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Execute searches on modules
-        results = execute_search_on_models.send(self, request=self.request, search_text=self.request.GET['stext'])
-        context['search_text'] = self.request.GET['stext']
+        stext = self.request.GET.get('stext', '').strip()
+        context['search_text'] = stext
         context['results'] = []
-        for r in results:
-            context['results'] += r[1]
-
-        # Get _n_tot_results
         context['n_tot_results'] = 0
-        for r in context['results']:
-            context['n_tot_results'] += r.n_tot_results
+
+        # Execute searches on modules
+        if stext:
+            results = execute_search_on_models.send(self, request=self.request, search_text=stext)
+            for r in results:
+                context['results'] += r[1]
+
+            # Get _n_tot_results
+            for r in context['results']:
+                context['n_tot_results'] += r.n_tot_results
 
         return context
 
@@ -105,16 +141,100 @@ class SearchAdminView(TemplateView):
 class GroupListView(ListView):
     """List group view."""
 
+    def set_filters(self):
+        """ Set filters by URL GET parameters """
+
+        self.filter_parameters = {}
+        if 'macrogroup' in self.request.GET and self.request.GET['macrogroup']:
+            self.filter_parameters['macrogroup'] = {
+                'use': True,
+                'value': self.request.GET['macrogroup'],
+                'qs_filter': {'macrogroups__id': self.request.GET['macrogroup']}
+            }
+
+        if 'epsg' in self.request.GET and self.request.GET['epsg']:
+            self.filter_parameters['epsg'] = {
+                'use': True,
+                'value': self.request.GET['epsg'],
+                'qs_filter': {'srid_id': self.request.GET['epsg']}
+            }
+
+        # Filter for Users role
+        aclfparams = {
+            'editor1': (User, G3W_EDITOR1, 'change_group', get_objects_for_user),
+            'editor2': (User, G3W_EDITOR2, 'view_group', get_objects_for_user),
+            'editorgroup': (AuthGroup, 'editor', 'view_group', get_objects_for_group),
+            'viewergroup': (AuthGroup, 'viewer', 'view_group', get_objects_for_group),
+        }
+
+        gspk = set()
+        for fp, dt in aclfparams.items():
+            if fp in self.request.GET and self.request.GET[fp]:
+
+                # Add to self.fitler_params for to use after in initials form values
+                self.filter_parameters[fp] = {
+                    'use': False,
+                    'value': self.request.GET[fp]
+                }
+
+                try:
+                    eu = dt[0].objects.get(pk=self.request.GET[fp])
+
+                    if (dt[3] == get_objects_for_user and isinstance(eu, User) and userHasGroups(eu, [dt[1]]) or
+                            dt[3] == get_objects_for_group and isinstance(eu, AuthGroup) and eu.grouprole.role == dt[1]):
+                        gbeu = dt[3](eu, dt[2], Group)
+                        gspk = gspk.union(set([g.pk for g in gbeu]))
+                except Exception as e:
+                    print(e)
+                    pass
+
+
+        if gspk:
+            self.filter_parameters['users'] = {
+                'use': True,
+                'value': gspk,
+                'qs_filter': {'pk__in': list(gspk)}
+            }
+
+    def setup(self, request, *args, **kwargs):
+        super(GroupListView, self).setup(request, *args, **kwargs)
+
+        # Set filter parameters
+        self.set_filters()
+
     def _is_active(self, qs):
         """ Add a filter fo is_active property """
         return qs.filter(is_active=1)
+
     def get_queryset(self):
 
         qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
              #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
         qs = self._is_active(qs)
         qs = qs.order_by('order')
+
+        # Check for filter GET parameters
+        for k, f in self.filter_parameters.items():
+            if f['use']:
+                qs = qs.filter(**f['qs_filter'])
+
         return qs
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(GroupListView, self).get_context_data(object_list=object_list, **kwargs)
+
+        # Initial forms data
+        initials = {k: f['value'] for k, f in self.filter_parameters.items()}
+
+
+        # Set filter form
+        context['filter_form'] = GroupFilterForm(request=self.request,
+                                                 initial={k: f['value'] for k, f in self.filter_parameters.items()})
+
+        context['collapsed_filter_form'] = False if self.filter_parameters else True
+
+        return context
+
 
 class GroupDeactiveListView(GroupListView):
     """ ListView to show map groups with is_active=0"""
@@ -158,7 +278,7 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     def form_valid(self, form):
         res = super(GroupCreateView, self).form_valid(form)
 
-        # delete tempory file form files
+        # delete temporary file form files
         form.delete_temporary_files()
         return res
 
@@ -352,6 +472,14 @@ class GeneralSuiteDataUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('home')
 
+    def form_valid(self, form):
+        res = super().form_valid(form)
+
+        # Delete django-file-form temporary files
+        form.delete_temporary_files()
+
+        return res
+
 
 # for MACROGROUPS
 # ---------------------------------------------
@@ -524,15 +652,14 @@ class InterfaceProxy(View):
         return djres
 
 
+class SystemInfoView(TemplateView):
+    """
+    View class to show system information
+    """
 
+    template_name = 'core/ajax/system_info.html'
 
-
-
-
-
-
-
-
-
-
-
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['sysinfo'] = get_system_info()
+        return ctx

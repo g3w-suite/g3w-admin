@@ -1,3 +1,5 @@
+{% load g3wadmin_tags %}
+
 <!doctype html>
 
 <title>CodeMirror: Django template mode</title>
@@ -42,7 +44,7 @@
       {# traverse a list of items and produce links to their views. #}
       {% for item in items %}
       <li>
-        <a href="{% url 'item_view' item.name|slugify %}">
+        <a href="{% url 'item_view' item.name|g3wadmin_slugify %}">
           {{ item.name }}
         </a>
       </li>

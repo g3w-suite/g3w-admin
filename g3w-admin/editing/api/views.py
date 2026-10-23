@@ -4,7 +4,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.views.decorators.csrf import csrf_exempt
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
-from core.api.filters import IntersectsBBoxFilter, FieldFilterBackend
+from core.api.filters import (
+    IntersectsBBoxFilter, 
+    FieldFilterBackend, 
+    OrderingFilter, 
+    SearchFilter
+    )
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
@@ -25,7 +30,9 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
 
     # for editing apply only constraint and bbox filters
     filter_backends = (
+        OrderingFilter,
         GeoConstraintsFilter,
+        SearchFilter,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         IntersectsBBoxFilter,
@@ -41,7 +48,6 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         Custom media data based on ExternalResource qgis widget
         :param geojson_feature: geojson object feature
         """
-        #tocheck = '{}/{}'.format(self.request._request.META['HTTP_ORIGIN'], USER_MEDIA_PREFIX)
 
         # build new url to save into db
         user_media = USERMEDIAHANDLER_CLASSES['qdjango'](layer=self.layer, metadata_layer=metadata_layer,

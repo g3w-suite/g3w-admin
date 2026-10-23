@@ -80,6 +80,8 @@ class CachingAPITests(LiveServerTestCase):
         client = Client()
         layer = Layer.objects.get(project=self.project.instance, qgs_layer_id='spatialite_points20190604101052075')
         assign_perm('view_project', self.anonymoususer, self.project.instance)
+        for l in self.project.instance.layer_set.all():
+            assign_perm("view_layer", self.anonymoususer, l)
 
         # active caching for layer
         cachinglayer = G3WCachingLayer.objects.create(app_name='qdjango', layer_id=layer.pk)

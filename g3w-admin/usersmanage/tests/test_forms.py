@@ -10,10 +10,15 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-04-14'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
+import os.path
+
+from django.conf import settings
 from django.test.client import RequestFactory
 from django.core.exceptions import ObjectDoesNotExist
+
 from usersmanage.forms import G3WUserForm, User, USER_BACKEND_DEFAULT, G3WUserGroupForm, AuthGroup
 from usersmanage.utils import userHasGroups
+from usersmanage.models import Group as UserGroup
 from .utils import setup_testing_user_relations
 from .base import BaseUsermanageTestCase, \
     G3W_EDITOR1, \
@@ -46,6 +51,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'admin01_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk], # required also fro admin1 and admin2
@@ -60,6 +66,13 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         u = User.objects.get(username='admin01_test')
         self.assertTrue(u.is_superuser)
         self.assertTrue(u.is_staff)
+        self.assertTrue(u.is_active)
+
+        # Check password is not changed making a login
+        self.client.logout()
+        login = self.client.login(username='admin01_test', password=self.users_password)
+        self.assertTrue(login)
+        self.client.logout()
 
         u.delete()
         del(u)
@@ -69,6 +82,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'admin01_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk],  # required also for admin1 and admin2
@@ -83,6 +97,9 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         u = User.objects.get(username='admin01_test')
         self.assertTrue(u.is_superuser)
         self.assertTrue(u.is_staff)
+
+        # Check creation oh a sub directory inside settings.DATASOURCE_PATH
+        self.assertFalse(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
 
         # Update user
         initial_data = copy.copy(form_data)
@@ -100,6 +117,11 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         u = User.objects.get(username='admin01_test_updated')
         self.assertTrue(u.is_superuser)
         self.assertTrue(u.is_staff)
+
+        # Check password is not changed making a login
+        login = self.client.login(username='admin01_test_updated', password=self.users_password)
+        self.assertTrue(login)
+        self.client.logout()
 
         u.delete()
         del(u)
@@ -130,6 +152,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'admin02_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk],
@@ -152,6 +175,9 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertTrue(u.is_superuser)
         self.assertFalse(u.is_staff)
 
+        # Check creation oh a sub directory inside settings.DATASOURCE_PATH
+        self.assertFalse(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
+
         u.delete()
         del (u)
 
@@ -160,6 +186,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'editor1_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': False,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR1].pk, self.main_roles[G3W_VIEWER1].pk],  # required also for admin1 and admin2
@@ -181,6 +208,9 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertFalse(u.is_superuser)
         self.assertFalse(u.is_staff)
 
+        # Check creation oh a sub directory inside settings.DATASOURCE_PATH
+        self.assertTrue(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
+
         u.delete()
         del (u)
 
@@ -194,6 +224,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'username': 'editor2_test',
             'password1': self.users_password,
             'password2': self.users_password,
+            'is_active': True,
             'is_superuser': True,
             'is_staff': True,
             'groups': [self.main_roles[G3W_EDITOR2].pk],
@@ -239,6 +270,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': True,
             'is_superuser': False,
             'is_staff': False,
             'groups': [],
@@ -258,6 +290,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': 'on',
             'is_superuser': 'on',
             'is_staff': 'off',
             'groups': [],
@@ -272,6 +305,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': 'on',
             'is_superuser': 'off',
             'is_staff': 'on',
             'groups': [],
@@ -286,6 +320,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': 'on',
             'is_superuser': 'on',
             'is_staff': 'on',
             'groups': [],
@@ -305,6 +340,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
             'password1': self.users_password,
             'password2': self.users_password,
             'username': 'editor1_test_constraint',
+            'is_active': True,
             'is_superuser': False,
             'is_staff': False,
             'groups': [self.main_roles[G3W_EDITOR1].pk, self.main_roles[G3W_EDITOR2].pk],
@@ -393,6 +429,60 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertFalse(gform.is_valid())
         self.assertIn('name', gform.errors)
         self.assertEqual(gform.errors['name'].data[0].code, 'unique')
+
+        # Users management by Users Group form
+        # =====================================
+
+        # Create a newone User Group
+        gusers =  [self.test_viewer1, self.test_viewer1_3]
+        form_data = {
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [u.pk for u in gusers]
+        }
+
+        gform = G3WUserGroupForm(request=self.request, data=form_data)
+        self.assertTrue(gform.is_valid())
+        gform.save()
+
+        ug = UserGroup.objects.get(name='editor user group test with user management')
+        self.assertEqual([u.pk for u in gusers].sort(), [u.pk for u in ug.user_set.all()].sort())
+
+        # Update User Group
+        gusers2 = [self.test_viewer1_2, self.test_viewer1_3]
+        form_data = {
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [u.pk for u in gusers2]
+        }
+
+        gform = G3WUserGroupForm(request=self.request, data=form_data, instance=ug, initial={
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [str(u.pk) for u in gusers]
+        })
+        self.assertTrue(gform.is_valid())
+        gform.save()
+
+        self.assertEqual([gu.pk for gu in gusers2].sort(), [gu.pk for gu in ug.user_set.all()].sort())
+
+        # Update User Group with wrong user
+        gusers2 = [self.test_viewer1_2, self.test_viewer1_3, self.test_editor1]
+        form_data = {
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [u.pk for u in gusers2]
+        }
+
+        gform = G3WUserGroupForm(request=self.request, data=form_data, instance=ug, initial={
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [str(u.pk) for u in gusers]
+        })
+        self.assertFalse(gform.is_valid())
+
+
+
 
 
 

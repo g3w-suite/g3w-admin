@@ -17,4 +17,4 @@ after_init_user_form = django.dispatch.Signal()
 
 # Signal send after save user
 # Args: 'user' model User instance
-after_save_user_form = django.dispatch.Signal(providing_args=['user'])
+after_save_user_form = django.dispatch.Signal()

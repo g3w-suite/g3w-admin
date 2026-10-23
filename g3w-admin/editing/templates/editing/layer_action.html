@@ -2,7 +2,8 @@
 {% load static %}
 
 <span class="col-xs-1 icon">
-<a href="#" {% if active %}style="color: green;"{% endif %} data-toggle="tooltip" title="{% trans 'Editing layer' %}" data-widget-type="ajaxForm"
+<a class="layer-action" {% if active %}style="color: green;"{% endif %} data-toggle="tooltip" title="{% trans 'Editing layer' %}"
+   data-widget-type="ajaxForm"
    data-form-url="{% url 'editing-layer-active' layer.project.group.slug app_name layer.project.slug layer.id %}"
    data-modal-title="{% trans 'Activation layer_editing' %}">
     <i class="fa {% if active %}fa-pencil-square{% else %}fa-pencil-square-o{% endif %}"></i>

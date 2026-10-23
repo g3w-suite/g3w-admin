@@ -15,7 +15,8 @@ from .api.layers.views import (
     LayerAuthGroupInfoAPIView,
     LayerStyleListView,
     LayerStyleDetailView,
-    LayerPolygonView
+    LayerPolygonView,
+    LayerInfoView
 )
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
@@ -35,13 +36,23 @@ from .api.geoconstraints.views import (
 from .api.projects.views import (
     QdjangoWebServicesAPIview,
     QdjangoAsGeoTiffAPIview,
-    QdjangoPrjThemeAPIview
+    QdjangoPrjThemeAPIview,
+    QdjangoAlternativeUniqueLayerAPIView
 )
 from .api.column_acl.views import (
     ColumnAclList,
     ColumnAclDetail,
     ColumnAclFields,
 )
+from .api.layerscaleconstraints.views import (
+    ScaleVisibilityLayerConstraintList,
+    ScaleVisibilityLayerConstraintDetail
+)
+
+from .api.bookmarks.views import (
+    ProjectBookmarkCRUDAPIView,
+)
+
 from .views import ProjectSetOrderView
 
 
@@ -206,6 +217,44 @@ urlpatterns = [
         name='qdjango-column-acl-api-list'
     ),
 
+    #############################################################
+    # ScaleVisibilityLayerConstraint (Single layer)
+    #############################################################
+
+    # Detail of a ScaleVisibilityLayerConstraint
+    path(
+        'api/scalevisconstraint/detail/<int:pk>/',
+        login_required(ScaleVisibilityLayerConstraintDetail.as_view()),
+        name='qdjango-scalevisconstraint-api-detail'
+    ),
+
+    # All (s) ColumnAcl filtered by layer qdjango layer pk
+    path(
+        'api/scalevisconstraint/layer/<int:layer_id>/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-filter-by-layer-id'
+    ),
+
+    # All Constraint(s) filtered by user
+    path(
+        'api/scalevisconstraint/user/<int:user_id>/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-filter-by-user'
+    ),
+
+    # All Constraint(s) filtered by group
+    path(
+        'api/scalevisconstraint/group/<int:group_id>/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-filter-by-group'
+    ),
+
+    # All Constraint(s)
+    path(
+        'api/scalevisconstraint/',
+        login_required(ScaleVisibilityLayerConstraintList.as_view()),
+        name='qdjango-scalevisconstraint-api-list'
+    ),
 
     #############################################################
     # GeoConstraints (Single layer)
@@ -297,7 +346,7 @@ urlpatterns = [
         name='qdjango-asgeotiff-api'
     ),
     re_path(
-        r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s]+)/$',
+        r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s:.=,]+)/$',
         QdjangoPrjThemeAPIview.as_view(),
         name='qdjango-prjtheme-api'
     ),
@@ -355,4 +404,30 @@ urlpatterns = [
         name='qdjango-api-info-layer-authgroup'
     ),
 
+    path('api/info/layer/<int:pk>/',
+         login_required(LayerInfoView.as_view()),
+         name='qdjango-api-info-layer'
+     ),
+
+
+    #############################################################
+    # API for search widgets
+    #############################################################
+
+    # Only post
+    path(
+        'api/alternativeuniquelayer/<int:project_id>/<str:layer_id>/',
+        login_required(QdjangoAlternativeUniqueLayerAPIView.as_view()),
+        name='qdjango-api-alternative-unique-layer'
+    ),
+
+    #############################################################
+    # API for project bookmaprk
+    #############################################################
+
+    path(
+        'api/bookmark/',
+        login_required(ProjectBookmarkCRUDAPIView.as_view()),
+        name='qdjango-api-bookmark-project'
+    ),
 ]

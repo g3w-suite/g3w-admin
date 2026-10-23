@@ -1,0 +1,133 @@
+/**
+ * @file
+ */
+
+import { evaluateExpressionFields } from '../utils/evaluateExpressionFields.js';
+import { getEditingLayer }          from '../utils/getEditingLayer.js';
+import { Step }                     from '../g3w-step.js';
+
+const GUI                      = g3w.app;
+const { createMeasureTooltip } = g3w.utils;
+
+export class MoveVertexStep extends Step {
+
+  #originalStyle = null;
+
+  #feature = null;
+
+  #tooltip;
+
+  constructor(opts = {}) {
+    opts.snap =  opts?.snap ?? true;
+    opts.help = "editing.edit_feature_vertex";
+    super(opts);
+  }
+
+  run(inputs, context) {
+    let newFeature;
+    return new Promise((resolve, reject) => {
+      const layerId         = inputs.layer.getId();
+      const feature         = this.#feature = inputs.features[0];
+      const originalFeature = feature.clone();
+      this.#originalStyle   = getEditingLayer(inputs.layer).getStyle();
+      // set state to enable/disable save button changes
+      const state         = { modified: false, };
+
+      // set vertex style to editing feature
+      feature.setStyle(() => [
+        new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 4,
+            stroke: new ol.style.Stroke({ color: 'red', width: 3 })
+          }),
+          geometry: f => new ol.geom.MultiPoint([f.getGeometry().getCoordinates()].flat({
+            Point:           0,
+            MultiPoint:      1,
+            LineString:      1,
+            Polygon:         2,
+            MultiLineString: 2,
+            MultiPolygon:    3,
+          }[f.getGeometry().getType()])),
+        }),
+        new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'yellow', width: 3 })})
+      ]);
+
+      // Show user message to save or not vertex changes
+      GUI.showUserMessage({
+        type:     'tool',
+        title:    'plugins.editing.update_vertex',
+        closable: false,
+        hooks: {
+          body: {
+            template: /* html */`
+              <div style = "display: flex; justify-content: space-between; padding: 10px;"> 
+                <button v-disabled = "false === state.modified" @click.stop = "resolve" v-t = "'save'" class = "btn btn-success"></button>
+                <button @click.stop = "reject" v-t = "'cancel'" class = "btn btn-danger"></button>
+              </div>
+            `,
+            data() {
+              return { state };
+            },
+            methods: {
+              resolve() {
+                inputs.features.push(newFeature);
+                resolve(inputs);
+              },
+              reject()  { reject(); },
+            },
+            beforeDestroy() {
+              // only in case of changes
+              if (state.modified) {
+                // register temporary changes to save or rollback to current editing feature state
+                GUI.getPlugin('editing').getToolBoxById(context.id).pushUpdate(layerId, newFeature, originalFeature);
+              }
+            }
+          }
+        }
+      })
+
+      this.addInteraction(
+        new ol.interaction.Modify({
+          features:        new ol.Collection([feature]),
+          deleteCondition: this._options.deleteCondition || ol.events.condition.altKeyOnly,
+          condition:       e => {
+            const features = e.map.getFeaturesAtPixel(e.pixel, { hitTolerance: 10 });
+            //in a collections, the first element is a collection of features
+            //instead the second element and the others are features
+            //consider maybe other features very close to current editing feature
+            return features.length >= 2 && features.slice(1).find(f => feature._uid === f._uid);
+          },
+        }), {
+          'modifyend':   e => {
+            newFeature = e.features.getArray()[0].clone();
+            if (newFeature.getGeometry().getExtent() !== originalFeature.getGeometry().getExtent()) {
+              evaluateExpressionFields({ inputs, context, feature: newFeature })
+                .finally(() => {
+                  state.modified = true;
+                });
+            }
+          }
+        }
+      );
+    })
+  }
+
+  /**
+   * @param { boolean } enable whether to toggle measure tooltip
+   */
+  measureTooltip(enable) {
+    if (enable) {
+      this.#tooltip = createMeasureTooltip({ map: this.getMap(), feature: this.#feature });
+    } else {
+      this.#tooltip?.remove?.();
+      this.#tooltip = null;
+    }
+  }
+
+  stop() {
+    GUI.closeUserMessage();
+    this.#feature.setStyle(this.#originalStyle);
+    return true;
+  }
+
+}

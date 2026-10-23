@@ -1,0 +1,16 @@
+{% load allauth socialaccount %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Social Network Login Failure" %}{% endblock %}
+
+{% block body_outer %}
+<h1>{% trans "Social Network Login Failure" %}</h1>
+
+<p>{% trans "An error occurred while attempting to login via your social network account." %}</p>
+<ul>
+    <li><strong>{% trans "Code" %}:</strong> {{ auth_error.code }}</li>
+    <li><strong>{% trans "Exception" %}:</strong> {{ auth_error.exception }}</li>
+</ul>
+
+{% endblock %}

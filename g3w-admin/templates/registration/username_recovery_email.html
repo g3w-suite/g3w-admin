@@ -1,0 +1,10 @@
+{% load i18n %}{% autoescape off %}
+{% blocktranslate %}You're receiving this email because you requested a username recovery for your user account at {{ site_name }}.{% endblocktranslate %}
+
+{% translate "Your username is:" %}
+
+{{ user.get_username }}
+
+{{ SETTINGS.REGISTRATION_EMAIL_BODY_SIGN }}
+
+{% endautoescape %}

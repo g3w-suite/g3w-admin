@@ -11,7 +11,7 @@ __date__ = '2021-11-23'
 __copyright__ = 'Copyright 2015 - 2021, Gis3w'
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
 from core.mixins.forms import G3WRequestFormMixin, G3WProjectFormMixin

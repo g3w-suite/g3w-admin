@@ -1,0 +1,688 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-18 22:38+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: OWS/utils/data.py:125
+msgid "The GetFeatureResponse response is malformed: {}"
+msgstr "La respuesta GetFeatureResponse tiene un formato incorrecto: {}"
+
+#: templates/403.html:6
+msgid "Access denied"
+msgstr "Acceso denegado"
+
+#: templates/403.html:9
+msgid "You do not have permission to access this page."
+msgstr "No tiene permiso para acceder a esta página."
+
+#: templates/404.html:6
+msgid "Oops! Page not found."
+msgstr "¡Vaya! Página no encontrada."
+
+#: templates/404.html:9
+msgid "We could not find the page you were looking for."
+msgstr "No pudimos encontrar la página que buscaba."
+
+#: templates/500.html:6
+msgid "Oops! Something went wrong."
+msgstr "¡Vaya! Algo salió mal."
+
+#: templates/500.html:9
+msgid "An unexpected error has occurred on the server."
+msgstr "Se ha producido un error inesperado en el servidor."
+
+#: templates/admin/base.html:7
+msgid "G3W-ADMIN"
+msgstr "G3W-ADMIN"
+
+#: templates/admin/base.html:12
+msgid "Documentation"
+msgstr "Documentación"
+
+#: templates/admin/base.html:16
+msgid "Change password"
+msgstr "Cambiar contraseña"
+
+#: templates/admin/base.html:18
+msgid "Log out"
+msgstr "Cerrar sesión"
+
+#: templates/base.html:190 templates/index.html:7
+msgid "Dashboard"
+msgstr "Panel de control"
+
+#: templates/base.html:229
+#, python-format
+msgid ""
+"<strong>G3W-SUITE Version %(version)s</strong>: administration GIS "
+"application."
+msgstr ""
+
+#: templates/base.html:236
+#, python-format
+msgid ""
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://www.gis3w."
+"it\">GIS3W</a>.</strong> All rights reserved."
+msgstr ""
+
+#: templates/base.html:254
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr ""
+"Este sitio web utiliza cookies para garantizar la mejor experiencia de "
+"usuario"
+
+#: templates/base_login.html:25 templates/login.html:20
+msgid "Sign in to start your session"
+msgstr "Autenticarse para iniciar sesión"
+
+#: templates/base_login.html:29 templates/login.html:24
+#: templates/registration/password_reset_form.html:10
+#: templates/registration/username_recovery_form.html:10
+msgid "LOGIN ERROR"
+msgstr "ERROR DE INICIO DE SESIÓN"
+
+#: templates/base_login.html:30 templates/login.html:25
+msgid "Username and/or password uncorrect"
+msgstr "Nombre de usuario y/o contraseña incorrectos"
+
+#: templates/base_login.html:45 templates/login.html:82
+#: templates/two_factor/_wizard_actions.html:17
+#: templates/two_factor/_wizard_actions.html:25
+#: templates/two_factor/_wizard_actions_login.html:9
+msgid "Sign In"
+msgstr "Iniciar sesión"
+
+#: templates/base_login.html:51 templates/login.html:110
+#: templates/registration/password_reset_form.html:22
+msgid "Forgot your password?"
+msgstr "¿Olvidó su contraseña?"
+
+#: templates/base_login.html:58 templates/login.html:122
+msgid "Sign up"
+msgstr "Registrarse"
+
+#: templates/include/login_page_version.html:2
+msgid " Version"
+msgstr "Versión"
+
+#: templates/include/navbar_right_menu.html:11
+msgid "Search"
+msgstr "Buscar"
+
+#: templates/include/navbar_right_menu.html:25
+msgid "Frontend"
+msgstr "Frontend"
+
+#: templates/include/navbar_right_menu.html:46
+msgid "Registered on"
+msgstr "Registrado el"
+
+#: templates/include/navbar_right_menu.html:47
+msgid "Last login"
+msgstr "Último inicio de sesión"
+
+#: templates/include/navbar_right_menu.html:54
+msgid "Profile"
+msgstr "Perfil"
+
+#: templates/include/navbar_right_menu.html:57
+msgid "Logout"
+msgstr "Cerrar sesión"
+
+#: templates/include/sidebar_right.html:10
+msgid "Information"
+msgstr "Información"
+
+#: templates/include/sidebar_right.html:13
+#: templates/include/sidebar_right.html:16
+msgid "System information"
+msgstr "Información del sistema"
+
+#: templates/include/sidebar_right.html:17
+msgid "System information about QGIS-Server etc."
+msgstr "Información del sistema sobre QGIS-Server, etc."
+
+#: templates/include/sidebar_right.html:23
+msgid "Configurations"
+msgstr "Configuraciones"
+
+#: templates/include/sidebar_right.html:30
+msgid "Edit general data"
+msgstr "Editar datos generales"
+
+#: templates/include/sidebar_right.html:31
+msgid "Frontend data and other"
+msgstr "Datos del frontend y otros"
+
+#: templates/include/sidebar_right.html:39
+msgid "Django administration"
+msgstr "Administración de Django"
+
+#: templates/include/sidebar_right.html:40
+msgid "Go to staff administration section"
+msgstr "Ir a la sección de administración del personal"
+
+#: templates/index.html:8
+msgid "Current situation"
+msgstr "Situación actual"
+
+#: templates/index.html:20
+msgid "Groups"
+msgstr "Grupos"
+
+#: templates/index.html:27
+msgid "Show"
+msgstr "Mostrar"
+
+#: templates/index.html:33
+msgid "Projects bookmarked"
+msgstr "Proyectos marcados"
+
+#: templates/index.html:39 templates/index.html:52
+msgid "Show map"
+msgstr "Mostrar mapa"
+
+#: templates/index.html:57
+msgid "Layers"
+msgstr "Capas"
+
+#: templates/index.html:62
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/index.html:72
+msgid "Remove bookmark"
+msgstr "Eliminar marcador"
+
+#: templates/index.html:85
+msgid "Module widgets"
+msgstr "Widgets de módulo"
+
+#: templates/login.html:32 templates/two_factor/core/_login.html:17
+msgid ""
+"Use this form for entering backup tokens for logging in. These tokens have "
+"been generated for you to print and keep safe. Please enter one of these "
+"backup tokens to login to your account."
+msgstr ""
+"Use este formulario para introducir tokens de respaldo para iniciar sesión. "
+"Estos tokens han sido generados para que los imprima y los guarde de forma "
+"segura. Introduzca uno de estos tokens de respaldo para iniciar sesión en su "
+"cuenta."
+
+#: templates/login.html:54 templates/two_factor/core/_login.html:31
+msgid "Or, alternatively, use one of your other authentication methods:"
+msgstr "O, alternativamente, use uno de sus otros métodos de autenticación:"
+
+#: templates/login.html:72
+msgid "Username"
+msgstr ""
+
+#: templates/login.html:76
+#, fuzzy
+#| msgid "New password"
+msgid "Password"
+msgstr "Nueva contraseña"
+
+#: templates/login.html:93 templates/two_factor/core/_login.html:51
+msgid "As a last resort, you can use a backup token:"
+msgstr "Como último recurso, puede usar un token de respaldo:"
+
+#: templates/login.html:96 templates/two_factor/core/_login.html:54
+msgid "Use Backup Token"
+msgstr "Usar token de respaldo"
+
+#: templates/login.html:115
+#: templates/registration/username_recovery_form.html:22
+msgid "Forgot your username?"
+msgstr "¿Olvidó su nombre de usuario?"
+
+#: templates/otp/email/token.txt:1
+#, python-format
+msgid "This email was sent by %(domain)s for two-factor authentication (2FA)."
+msgstr ""
+
+#: templates/otp/email/token.txt:1
+msgid "This email was sent by G3W-SUITE for two-factor authentication (2FA)."
+msgstr ""
+"Este correo fue enviado por G3W-SUITE para autenticación de dos factores "
+"(2FA)."
+
+#: templates/otp/email/token.txt:3
+#, python-format
+msgid "Your one-time password (OTP) token is: %(token)s"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:8
+msgid "Password reset complete"
+msgstr "Restablecimiento de contraseña completado"
+
+#: templates/registration/password_reset_complete.html:9
+msgid "Your new password has been set. You can log in now on the"
+msgstr "Su nueva contraseña ha sido establecida. Puede iniciar sesión ahora en"
+
+#: templates/registration/password_reset_complete.html:9
+msgid "log in page"
+msgstr "página de inicio de sesión"
+
+#: templates/registration/password_reset_confirm.html:9
+msgid "Enter new password"
+msgstr "Introducir nueva contraseña"
+
+#: templates/registration/password_reset_confirm.html:16
+msgid "New password"
+msgstr "Nueva contraseña"
+
+#: templates/registration/password_reset_confirm.html:21
+msgid "Repeat password"
+msgstr "Repetir contraseña"
+
+#: templates/registration/password_reset_confirm.html:26
+msgid "Change my password"
+msgstr "Cambiar mi contraseña"
+
+#: templates/registration/password_reset_confirm.html:31
+msgid ""
+"The password reset link <strong>was invalid</strong>, possibly because it "
+"has already been used.  Please request a new password reset."
+msgstr ""
+"El enlace de restablecimiento de contraseña <strong>no era válido</strong>, "
+"posiblemente porque ya se ha usado. Solicite un nuevo restablecimiento de "
+"contraseña."
+
+#: templates/registration/password_reset_done.html:8
+#: templates/registration/username_recovery_done.html:8
+msgid "Check your inbox."
+msgstr "Revise su bandeja de entrada."
+
+#: templates/registration/password_reset_done.html:9
+msgid ""
+"We've emailed you instructions for setting your password. You should receive "
+"the email shortly!"
+msgstr ""
+"Le hemos enviado por correo las instrucciones para establecer su contraseña. "
+"¡Debería recibir el correo en breve!"
+
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Por favor, vaya a la siguiente página y elija una nueva contraseña:"
+
+#: templates/registration/password_reset_email.html:8
+msgid "Your username, in case you’ve forgotten:"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:12
+#: templates/registration/username_recovery_form.html:12
+msgid "Email no present into database"
+msgstr "Correo no presente en la base de datos"
+
+#: templates/registration/password_reset_form.html:15
+#: templates/registration/username_recovery_form.html:15
+msgid "Checking the CAPTCHA is required"
+msgstr "Es necesario verificar el CAPTCHA"
+
+#: templates/registration/password_reset_form.html:23
+msgid ""
+"Enter your email address below, and we'll email instructions for setting a "
+"new one."
+msgstr ""
+"Introduzca su dirección de correo a continuación y le enviaremos "
+"instrucciones para establecer una nueva."
+
+#: templates/registration/password_reset_form.html:32
+msgid "Send me instruction"
+msgstr "Enviarme instrucciones"
+
+#: templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
+msgstr ""
+
+#: templates/registration/username_recovery_done.html:9
+msgid "We've emailed you your username. You should receive the email shortly!"
+msgstr ""
+"Le hemos enviado su nombre de usuario por correo. ¡Debería recibir el correo "
+"en breve!"
+
+#: templates/registration/username_recovery_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a username recovery for "
+"your user account at %(site_name)s."
+msgstr ""
+
+#: templates/registration/username_recovery_email.html:4
+msgid "Your username is:"
+msgstr "Su nombre de usuario es:"
+
+#: templates/registration/username_recovery_form.html:23
+msgid "Enter your email address below, and we'll email your username."
+msgstr ""
+"Introduzca su dirección de correo a continuación y le enviaremos su nombre "
+"de usuario."
+
+#: templates/registration/username_recovery_form.html:32
+msgid "Send me username"
+msgstr "Enviarme nombre de usuario"
+
+#: templates/registration/username_recovery_subject.txt:2
+#, python-format
+msgid "Username recovery on %(site_name)s"
+msgstr ""
+
+#: templates/search.html:6
+msgid "Search results for"
+msgstr "Resultados de búsqueda para"
+
+#: templates/search.html:14
+msgid "Not results found!"
+msgstr "¡No se encontraron resultados!"
+
+#: templates/search.html:16
+msgid "Found "
+msgstr "Encontrado "
+
+#: templates/search.html:16
+msgid " results."
+msgstr "resultados."
+
+#: templates/socialaccount/authentication_error.html:5
+#: templates/socialaccount/authentication_error.html:8
+msgid "Social Network Login Failure"
+msgstr "Error de inicio de sesión en red social"
+
+#: templates/socialaccount/authentication_error.html:10
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr ""
+"Se ha producido un error al intentar iniciar sesión a través de su cuenta de "
+"red social."
+
+#: templates/socialaccount/authentication_error.html:12
+msgid "Code"
+msgstr "Código"
+
+#: templates/socialaccount/authentication_error.html:13
+msgid "Exception"
+msgstr "Excepción"
+
+#: templates/two_factor/_wizard_actions.html:11
+#: templates/two_factor/_wizard_actions_login.html:23
+msgid "Back"
+msgstr "Atrás"
+
+#: templates/two_factor/_wizard_actions.html:16
+#: templates/two_factor/_wizard_actions.html:24
+#: templates/two_factor/_wizard_actions_login.html:7
+msgid "Verify"
+msgstr "Verificar"
+
+#: templates/two_factor/_wizard_actions.html:18
+#: templates/two_factor/_wizard_actions.html:26
+#: templates/two_factor/_wizard_actions_login.html:11
+msgid "Next"
+msgstr "Siguiente"
+
+#: templates/two_factor/_wizard_actions.html:35
+#: templates/two_factor/_wizard_actions_login.html:32
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/two_factor/core/_login.html:10
+msgid "Login"
+msgstr "Iniciar sesión"
+
+#: templates/two_factor/core/_login.html:13
+msgid "Enter your credentials."
+msgstr "Introduzca sus credenciales."
+
+#: templates/two_factor/core/backup_tokens.html:5
+#: templates/two_factor/profile/profile.html:37
+msgid "Backup Tokens"
+msgstr "Tokens de respaldo"
+
+#: templates/two_factor/core/backup_tokens.html:10
+msgid ""
+"Backup tokens can be used when your primary and backup phone numbers aren't "
+"available. The backup tokens below can be used for login verification. If "
+"you've used up all your backup tokens, you can generate a new set of backup "
+"tokens. Only the backup tokens shown below will be valid."
+msgstr ""
+"Los tokens de respaldo se pueden usar cuando sus números de teléfono "
+"principal y de respaldo no están disponibles. Los tokens de respaldo "
+"siguientes se pueden usar para la verificación de inicio de sesión. Si ha "
+"agotado todos sus tokens de respaldo, puede generar un nuevo conjunto. Solo "
+"serán válidos los tokens de respaldo que se muestran a continuación."
+
+#: templates/two_factor/core/backup_tokens.html:22
+msgid "Print these tokens and keep them somewhere safe."
+msgstr "Imprima estos tokens y guárdelos en un lugar seguro."
+
+#: templates/two_factor/core/backup_tokens.html:24
+msgid "You don't have any backup codes yet."
+msgstr "Aún no tiene códigos de respaldo."
+
+#: templates/two_factor/core/backup_tokens.html:29
+#: templates/two_factor/core/setup_complete.html:16
+#: templates/two_factor/core/setup_complete.html:23
+msgid "Back to Account Security"
+msgstr "Volver a Seguridad de la cuenta"
+
+#: templates/two_factor/core/backup_tokens.html:30
+msgid "Generate Tokens"
+msgstr "Generar tokens"
+
+#: templates/two_factor/core/setup.html:9
+#: templates/two_factor/core/setup_complete.html:5
+#: templates/two_factor/profile/profile.html:60
+msgid "Enable Two-Factor Authentication"
+msgstr "Activar autenticación de dos factores"
+
+#: templates/two_factor/core/setup.html:14
+msgid ""
+"You are about to take your account security to the next level. Follow the "
+"steps in this wizard to enable two-factor authentication."
+msgstr ""
+"Está a punto de llevar la seguridad de su cuenta al siguiente nivel. Siga "
+"los pasos de este asistente para activar la autenticación de dos factores."
+
+#: templates/two_factor/core/setup.html:18
+msgid "Please select which authentication method you would like to use."
+msgstr "Seleccione el método de autenticación que desea usar."
+
+#: templates/two_factor/core/setup.html:21
+msgid ""
+"To start using a token generator, please use your smartphone to scan the QR "
+"code below. For example, use Google Authenticator."
+msgstr ""
+"Para comenzar a usar un generador de tokens, use su teléfono inteligente "
+"para escanear el código QR siguiente. Por ejemplo, use Google Authenticator."
+
+#: templates/two_factor/core/setup.html:25
+msgid ""
+"Alternatively you can use the following secret to setup TOTP in your "
+"authenticator or password manager manually."
+msgstr ""
+"Alternativamente, puede usar el siguiente secreto para configurar TOTP en su "
+"autenticador o gestor de contraseñas manualmente."
+
+#: templates/two_factor/core/setup.html:27
+msgid "TOTP Secret:"
+msgstr "Secreto TOTP:"
+
+#: templates/two_factor/core/setup.html:28
+msgid "Then, enter the token generated by the app."
+msgstr "Luego, introduzca el token generado por la aplicación."
+
+#: templates/two_factor/core/setup.html:31
+msgid ""
+"Please enter the phone number you wish to receive the text messages on. This "
+"number will be validated in the next step."
+msgstr ""
+"Introduzca el número de teléfono al que desea recibir los mensajes de texto. "
+"Este número será validado en el siguiente paso."
+
+#: templates/two_factor/core/setup.html:35
+msgid ""
+"Please enter the phone number you wish to be called on. This number will be "
+"validated in the next step."
+msgstr ""
+"Introduzca el número de teléfono al que desea recibir la llamada. Este "
+"número será validado en el siguiente paso."
+
+#: templates/two_factor/core/setup.html:40
+msgid "We are calling your phone right now, please enter the digits you hear."
+msgstr ""
+"Estamos llamando a su teléfono ahora mismo, introduzca los dígitos que "
+"escuche."
+
+#: templates/two_factor/core/setup.html:43
+msgid "We sent you a text message, please enter the tokens we sent."
+msgstr "Le enviamos un mensaje de texto, introduzca los tokens que enviamos."
+
+#: templates/two_factor/core/setup.html:47
+msgid ""
+"We've encountered an issue with the selected authentication method. Please "
+"go back and verify that you entered your information correctly, try again, "
+"or use a different authentication method instead. If the issue persists, "
+"contact the site administrator."
+msgstr ""
+"Hemos encontrado un problema con el método de autenticación seleccionado. "
+"Vuelva atrás y verifique que ingresó correctamente su información, intente "
+"de nuevo o use un método de autenticación diferente. Si el problema "
+"persiste, contacte al administrador del sitio."
+
+#: templates/two_factor/core/setup.html:54
+msgid ""
+"To identify and verify your YubiKey, please insert a token in the field "
+"below. Your YubiKey will be linked to your account."
+msgstr ""
+"Para identificar y verificar su YubiKey, inserte un token en el campo "
+"siguiente. Su YubiKey se vinculará a su cuenta."
+
+#: templates/two_factor/core/setup_complete.html:11
+msgid "Congratulations, you've successfully enabled two-factor authentication."
+msgstr ""
+"Felicitaciones, ha activado exitosamente la autenticación de dos factores."
+
+#: templates/two_factor/core/setup_complete.html:18
+msgid ""
+"However, it might happen that you don't have access to your primary token "
+"device. To enable account recovery, add a phone number."
+msgstr ""
+"Sin embargo, puede ocurrir que no tenga acceso a su dispositivo de token "
+"principal. Para habilitar la recuperación de la cuenta, añada un número de "
+"teléfono."
+
+#: templates/two_factor/core/setup_complete.html:25
+#: templates/two_factor/profile/profile.html:34
+msgid "Add Phone Number"
+msgstr "Añadir número de teléfono"
+
+#: templates/two_factor/profile/disable.html:5
+msgid "Disable Two-factor Authentication"
+msgstr "Desactivar autenticación de dos factores"
+
+#: templates/two_factor/profile/disable.html:9
+msgid ""
+"You are about to disable two-factor authentication. This weakens your "
+"account security, are you sure?"
+msgstr ""
+"Está a punto de desactivar la autenticación de dos factores. Esto debilita "
+"la seguridad de su cuenta, ¿está seguro?"
+
+#: templates/two_factor/profile/disable.html:15
+msgid "Disable"
+msgstr "Desactivar"
+
+#: templates/two_factor/profile/profile.html:6
+msgid "Account Security"
+msgstr "Seguridad de la cuenta"
+
+#: templates/two_factor/profile/profile.html:12
+#, python-format
+msgid "Primary method: %(primary)s"
+msgstr ""
+
+#: templates/two_factor/profile/profile.html:15
+msgid "Backup Phone Numbers"
+msgstr "Teléfonos de respaldo"
+
+#: templates/two_factor/profile/profile.html:16
+msgid ""
+"If your primary method is not available, we are able to send backup tokens "
+"to the phone numbers listed below."
+msgstr ""
+"Si su método principal no está disponible, podemos enviar tokens de respaldo "
+"a los números de teléfono que se indican a continuación."
+
+#: templates/two_factor/profile/profile.html:24
+msgid "Are you sure?"
+msgstr "¿Está seguro?"
+
+#: templates/two_factor/profile/profile.html:27
+msgid "Unregister"
+msgstr "Dar de baja"
+
+#: templates/two_factor/profile/profile.html:39
+msgid ""
+"If you don't have any device with you, you can access your account using "
+"backup tokens."
+msgstr ""
+"Si no tiene ningún dispositivo consigo, puede acceder a su cuenta mediante "
+"tokens de respaldo."
+
+#: templates/two_factor/profile/profile.html:41
+#, python-format
+msgid "You have only one backup token remaining."
+msgid_plural "You have %(counter)s backup tokens remaining."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/two_factor/profile/profile.html:48
+msgid "Show Codes"
+msgstr "Mostrar códigos"
+
+#: templates/two_factor/profile/profile.html:50
+#: templates/two_factor/profile/profile.html:54
+msgid "Disable Two-Factor Authentication"
+msgstr "Desactivar autenticación de dos factores"
+
+#: templates/two_factor/profile/profile.html:51
+msgid ""
+"However we strongly discourage you to do so, you can also disable two-factor "
+"authentication for your account."
+msgstr ""
+"Aunque le recomendamos encarecidamente no hacerlo, también puede desactivar "
+"la autenticación de dos factores para su cuenta."
+
+#: templates/two_factor/profile/profile.html:56
+msgid ""
+"Two-factor authentication is not enabled for your account. Enable two-factor "
+"authentication for enhanced account security."
+msgstr ""
+"La autenticación de dos factores no está habilitada para su cuenta. Active "
+"la autenticación de dos factores para mejorar la seguridad de su cuenta."

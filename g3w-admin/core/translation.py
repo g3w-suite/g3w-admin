@@ -30,6 +30,7 @@ class GeneralSuiteDataTranslationOptions(TranslationOptions):
         'login_description',
         'credits',
         'main_map_title',
+        'registration_intro'
     )
 
 

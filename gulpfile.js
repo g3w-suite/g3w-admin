@@ -26,7 +26,8 @@ gulp.task('build', function () {
 
 gulp.task('icheck_png', function () {
   return gulp.src(['g3w-admin/core/static/bower_components/icheck/skins/flat/green*.png',
-                    'g3w-admin/core/static/bower_components/icheck/skins/flat/blue*.png'
+                    'g3w-admin/core/static/bower_components/icheck/skins/flat/blue*.png',
+                    'g3w-admin/core/static/bower_components/icheck/skins/flat/yellow*.png'
   ])
     .pipe(flatten())
     .pipe(gulp.dest('g3w-admin/core/static/dist/css/'))

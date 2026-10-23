@@ -1,0 +1,68 @@
+{% load i18n %}
+{% load static %}
+
+<div class="qplotly-order-modal">
+
+  <div class="qo-intro">
+    <span class="qo-intro-icon"><i class="fa fa-sort"></i></span>
+    <div>
+      <h4>{% trans 'Reorder widgets' %}</h4>
+      <p>{% trans 'Drag and drop the rows to change the order in which the Qplotly widgets will appear.' %}</p>
+    </div>
+  </div>
+
+  <table id="plots_list" class="qo-table">
+    <thead>
+      <tr>
+        <th class="qo-col-handle"></th>
+        <th>{% trans 'Title' %}</th>
+        <th class="qo-col-type">{% trans 'Type' %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for plot in plots %}
+        <tr id="qplotlywidget_{{ plot.0.pk }}">
+          <td class="qo-drag-handle" title="{% trans 'Drag to reorder' %}"><i class="fa fa-arrows-v"></i></td>
+          <td>
+            <span class="qo-title">{{ plot.0.title }}</span>
+            {% if plot.0.has_related %}
+              <span class="qo-related-badge" title="{% trans 'Has related widgets' %}">
+                <i class="fa fa-sitemap"></i>
+              </span>
+            {% endif %}
+          </td>
+          <td><span class="qo-type-chip">{{ plot.0.type }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+
+<!-- Sortable rows -->
+<script>
+  (function() {
+    let dragged = null;
+    document.querySelectorAll('#plots_list tbody tr').forEach(row => {
+      row.setAttribute('draggable', true);
+      row.addEventListener('dragstart',  () => { dragged = row; row.classList.add('qo-dragging'); });
+      row.addEventListener('dragend',    () => { dragged = null; row.classList.remove('qo-dragging'); });
+      row.addEventListener('dragover',   e => { e.preventDefault(); row.classList.add('qo-dragover'); });
+      row.addEventListener('dragleave',  () => { row.classList.remove('qo-dragover'); });
+      row.addEventListener('drop', e => {
+        row.classList.remove('qo-dragover');
+        if (dragged) {
+          dragged.parentNode.insertBefore(dragged, dragged == row.nextSibling ? row : row.nextSibling);
+          fetch(`/qplotly/jx/widgets/setorder/`, {
+            method: 'POST',
+            body: new URLSearchParams([
+              ...Array.from(row.parentNode.children).map(tr => tr.id).filter(Boolean).map(id => ["new_order[]", id]),
+              ["csrfmiddlewaretoken", $.cookie('csrftoken')],
+              ["project_id", {{ project.pk }}],
+            ]),
+          });
+        }
+      });
+    });
+  })();
+</script>

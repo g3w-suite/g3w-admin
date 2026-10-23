@@ -14,6 +14,17 @@ from core.utils.geo import get_crs_bbox
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsCoordinateTransformContext
 from copy import copy
+import json
+
+
+def _merge_dicts(current, updates):
+    merged = copy(current)
+    for key, value in updates.items():
+        if isinstance(merged.get(key), dict) and isinstance(value, dict):
+            merged[key] = _merge_dicts(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
 
 
 def update_serializer_data(serializer_data, data):
@@ -89,30 +100,32 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         try:
             macrogroup = instance.macrogroups.get(use_title_client=True)
-            ret['name'] = macrogroup.title
+            ret['title'] = macrogroup.title
         except:
-            # change groupData name with title for i18n app
-            ret['name'] = instance.title
+            pass
 
         # add crs:
         crs = QgsCoordinateReferenceSystem(f'EPSG:{self.instance.srid.srid}')
 
         # Patch for Proj4 > 4.9.3 version
         if self.instance.srid.srid in settings.G3W_PROJ4_EPSG.keys():
-            proj4 = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]
+            proj4 = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]['proj4']
+            extent = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]['extent']
+
         else:
             proj4 = crs.toProj4()
+            if crs.postgisSrid() in (4326, 3857):
+                extent = get_crs_bbox(crs)
+            else:
+                extent = [0,0,8388608,8388608]
 
         ret['crs'] = {
             'epsg': crs.postgisSrid(),
             'proj4': proj4,
             'geographic': crs.isGeographic(),
             'axisinverted': crs.hasAxisInverted(),
-            'extent': get_crs_bbox(crs)
+            'extent': extent
         }
-
-        # map controls
-        ret['mapcontrols'] = [mapcontrol.name for mapcontrol in instance.mapcontrols.all()]
 
         # add projects to group
         ret['projects'] = []
@@ -135,7 +148,18 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     self.project = project
 
                 # project thumbnail
-                project_thumb = project.thumbnail.name if bool(project.thumbnail.name) \
+                thumbnail = project.thumbnail
+                try:
+                    if project.group.use_logo_client:
+                        thumbnail = project.group.header_logo_img
+                    else:
+                        macrogroup = project.group.macrogroups.get(
+                            use_logo_client=True)
+                        thumbnail = macrogroup.logo_img
+                except:
+                    pass
+
+                project_thumb = thumbnail.name if bool(thumbnail.name) \
                     else '{}client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
 
                 # Get project url
@@ -199,11 +223,14 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         #     }
         # }
 
+        def update_plugins(plugin_data):
+            ret['plugins'] = _merge_dicts(ret['plugins'], plugin_data)
+
+
         plugins = initconfig_plugin_start.send(sender=self, project=self.projectId, projectType=self.projectType)
         for data_plugin in plugins:
             if data_plugin[1] and isinstance(data_plugin[1], dict):
-                ret['plugins'] = copy(ret['plugins'])
-                ret['plugins'].update(data_plugin[1])
+                update_plugins(data_plugin[1])
             elif data_plugin[1] and isinstance(data_plugin[1], list):
                 for dp in data_plugin[1]:
                     if dp['mode'] == 'delete':
@@ -214,8 +241,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                             except:
                                 pass
                     elif dp['mode'] == 'update':
-                        ret['plugins'] = copy(ret['plugins'])
-                        ret['plugins'].update(dp['data'])
+                        update_plugins(dp['data'])
 
 
         # powerd_by
@@ -237,9 +263,10 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['layout'] = {}
 
         # add legend settings if set to layout
-        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', None)
+        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', settings.BASE_G3W_CLIENT_LEGEND)
         if layout_legend:
-            ret['layout']['legend'] = layout_legend
+            settings.BASE_G3W_CLIENT_LEGEND.update(layout_legend)
+            ret['layout']['legend'] = settings.BASE_G3W_CLIENT_LEGEND
 
         # Check if G3W_CLIENT_LEGEND['layertitle'] set it tu false
         if self.project.legend_position == 'toc':
@@ -253,6 +280,38 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if layout_right_panel:
             ret['layout']['rightpanel'] = layout_right_panel
 
+        # Mapcontrols
+        ret['mapcontrols'] = {}
+        for mapcontrol in instance.mapcontrols.all():
+            options = {}
+            if mapcontrol.name in ('nominatim', 'geocoding'):
+                options = {'providers': {}}
+                if self.project.geocoding_providers:
+                    for gp in json.loads(self.project.geocoding_providers):
+                        if gp in settings.GEOCODING_PROVIDERS:
+                            options['providers'].update({
+                                gp: settings.GEOCODING_PROVIDERS[gp]
+                            })
+                    if "qes" in settings.INSTALLED_APPS and mapcontrol.name == 'geocoding':
+
+                        qes = {}
+                        
+                        # Check for settings
+                        if hasattr(settings, 'QES_RESULTS_OPTIONS'):
+                            qes.update(settings.QES_RESULTS_OPTIONS)
+                            
+                        options['providers'].update({
+                            'qes': qes
+                        })
+
+
+            ret['mapcontrols'].update({
+                mapcontrol.name: options
+            })
+
+        # Macrogroups
+        ret['macrogroup_id'] = [macrogroup.id for macrogroup in instance.macrogroups.all()]
+
         return ret
 
     class Meta:
@@ -260,6 +319,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+            'title',
             'slug',
             'minscale',
             'maxscale',

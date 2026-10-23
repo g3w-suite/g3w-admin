@@ -1,6 +1,6 @@
 import ast
 
-from django.contrib import admin, messages
+from django.contrib import admin, messages as django_messages
 from django.forms import CharField, ModelForm, TextInput, MultipleChoiceField, ChoiceField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -58,17 +58,24 @@ class ColumnAclAdminForm(ModelForm):
 class ColumnAclAdmin(GuardedModelAdmin):
 
     form = ColumnAclAdminForm
+    fields = ('layer', 'restricted_fields', 'users', 'groups')
 
     list_display = (
         'layer',
         'project',
-        'user',
-        'group',
+        'get_users',
+        'get_groups',
         'restricted_fields'
     )
 
     def project(self, obj):
         return obj.layer.project.title
+
+    def get_users(self, obj):
+        return ', '.join(obj.users.values_list('username', flat=True))
+
+    def get_groups(self, obj):
+        return ', '.join(obj.groups.values_list('name', flat=True))
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -100,6 +107,16 @@ class SessionTokenFilterAdmin(admin.ModelAdmin):
         SessionTokenFilterLayerAdminInline
     ]
 
+
+@admin.register(FilterLayerSaved)
+class FilterLayerSavedAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'layer',
+        'qgs_expr',
+        'created',
+        'modified',
+    )
 
 class QgisAuthAdminForm(ModelForm):
 
@@ -149,7 +166,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
         except LayerDependenciesError as ex:
             msg = _("{} can not be deleted because: {}").format(
                 self.model.objects.get(id=object_id).name, ex)
-            self.message_user(request, msg, messages.ERROR)
+            self.message_user(request, msg, django_messages.ERROR)
             opts = self.model._meta
             return_url = reverse(
                 'admin:{}_{}_change'.format(opts.app_label, opts.model_name),
@@ -163,7 +180,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
             return super().response_action(request, queryset)
         except LayerDependenciesError as ex:
             msg = _("This object can not be deleted because: %s.") % ex
-            self.message_user(request, msg, messages.ERROR)
+            self.message_user(request, msg, django_messages.ERROR)
             opts = self.model._meta
             return_url = reverse(
                 'admin:{}_{}_change'.format(opts.app_label, opts.model_name),
@@ -176,7 +193,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
                 datasource__contains=obj.id).count() > 0:
             msg = _("Authentication configuration {} can not be deleted because one or more layers are using it: {}").format(obj.id,
                                                                                                                              ', '.join([l.name for l in Layer.objects.filter(datasource__contains=obj.id)]))
-            self.message_user(request, msg, messages.WARNING)
+            self.message_user(request, msg, django_messages.WARNING)
         return super(QgisAuthAdmin, self).has_delete_permission(request, obj) and (
             not obj or Layer.objects.filter(
                 datasource__contains=obj.id).count() == 0
@@ -232,3 +249,20 @@ class MessageAdmin(OrderedModelAdmin):
     ordering = ('order',)
 
 admin.site.register(Message, MessageAdmin)
+
+class ScaleVisibilityLayerConstraintAdmin(admin.ModelAdmin):
+
+    model = ScaleVisibilityLayerConstraint
+
+    list_display = ('layer', 'user', 'group', 'minscale', 'maxscale')
+
+admin.site.register(ScaleVisibilityLayerConstraint, ScaleVisibilityLayerConstraintAdmin)
+
+
+class ProjectBookmarkAdmin(admin.ModelAdmin):
+
+    model = ProjectBookmark
+
+    list_display = ('user', 'project')
+
+admin.site.register(ProjectBookmark, ProjectBookmarkAdmin)

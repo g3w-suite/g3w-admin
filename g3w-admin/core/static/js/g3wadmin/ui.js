@@ -168,9 +168,15 @@ _.extend(g3wadmin.ui, {
     initBootstrapDatepicker: function(context) {
 
         // Fix dataformat form django i18n
-        $.fn.datepicker.dates['en']['format'] = 'yyyy-mm-dd';
-        $.fn.datepicker.dates['ro']['format'] = 'dd.mm.yyyy';
-        $.fn.datepicker.dates['se']           = $.fn.datepicker.dates['sv'];
+        if ('en' in $.fn.datepicker.dates) {
+            $.fn.datepicker.dates['en']['format'] = 'yyyy-mm-dd';
+        }
+        if ('ro' in $.fn.datepicker.dates) {
+            $.fn.datepicker.dates['ro']['format'] = 'dd.mm.yyyy';
+        }
+        if ('se' in $.fn.datepicker.dates) {
+            $.fn.datepicker.dates['se'] = $.fn.datepicker.dates['sv'];
+        }
 
         this.__$widgetItem(context, '.datepicker').datepicker({ language:CURRENT_LANGUAGE_CODE });
     },
@@ -265,7 +271,7 @@ _.extend(g3wadmin.ui, {
         }*/
 
         const $widgetItem = this.__$widgetItem(context, '[data-widget-type="dataTable"]');
-        const $dataTable  = $widgetItem.DataTable(options);
+
 
         // add widget for details
         // before init datatable because it will work only on first page
@@ -274,6 +280,8 @@ _.extend(g3wadmin.ui, {
         });
 
         _.each(ga.ui.before_datatable_callbacks, function(f) { f($widgetItem); })
+
+         const $dataTable  = $widgetItem.DataTable(options);
     },
 
     /**

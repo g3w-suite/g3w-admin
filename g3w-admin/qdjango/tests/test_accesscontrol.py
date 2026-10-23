@@ -22,11 +22,10 @@ from .base import QdjangoTestBase
 class AccessControlTest(QdjangoTestBase):
     """Test access control"""
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
-        cls.qdjango_project = Project.objects.all()[0]
+        super().setUp()
+        self.qdjango_project = Project.objects.all()[0]
 
 
     def test_filter_loading(self):

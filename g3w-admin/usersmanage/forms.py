@@ -7,13 +7,18 @@ from django.forms import (
     ModelMultipleChoiceField,
     ChoiceField,
     ModelForm,
-    ChoiceField
+    MultipleChoiceField,
+    CharField,
+    Textarea
 )
 from django.utils.datastructures import MultiValueDict
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
     ReadOnlyPasswordHashField,
+    AuthenticationForm,
+    PasswordResetForm,
+    SetPasswordForm
 )
 from django.contrib.auth import (
     password_validation,
@@ -21,18 +26,23 @@ from django.contrib.auth import (
 from django.contrib.auth.models import User, Group as AuthGroup, Permission
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.db.models import Q
-from django.utils.functional import lazy
 from django.contrib.contenttypes.models import ContentType
 from guardian.compat import get_user_model
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import (
+    get_objects_for_user, 
+    assign_perm
+)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from django_registration.forms import RegistrationForm
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha import widgets
 from PIL import Image
 from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_TYPES, GROUP_ROLES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
-from .utils import getUserGroups, userHasGroups
+from .utils import getUserGroups, userHasGroups, check_unique_email
 from .signals import after_init_user_form, after_save_user_form
 import logging
 
@@ -284,9 +294,10 @@ class G3WACLForm(forms.Form):
 
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):
 
-    department = ModelChoiceField(queryset=Department.objects.all(), required=False)
-    backend = ChoiceField(choices=USER_BACKEND_TYPES)
-    avatar = UploadedFileField(required=False)
+    department = ModelChoiceField(label=_('Department'), queryset=Department.objects.all(), required=False)
+    backend = ChoiceField(label=_('Backend'), choices=USER_BACKEND_TYPES)
+    avatar = UploadedFileField(label=_('Avatar'), required=False)
+    other_info = CharField(label=_('Other informations'), widget=Textarea(), required=False)
 
     groups = ModelMultipleChoiceField(
         queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1]),
@@ -334,6 +345,16 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         if 'user_groups' in self.initial and len(self.initial['user_groups']) > 0:
             self.initial['user_groups'] = self.initial['user_groups']
+
+        if settings.REGISTRATION_OPEN:
+            self.fields['email'].required = True
+
+        if (not self.request.user.is_superuser and
+            self.instance is not None and
+            self.instance.pk and
+            self.instance.pk == self.request.user.pk and
+            'username' in self.fields):
+            self.fields['username'].disabled = True
 
         # change queryset for editor1
         if G3W_EDITOR1 in getUserGroups(self.request.user):
@@ -408,13 +429,13 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                             css_class='box-header with-border'
                         ),
                         Div(
+                            'other_info',
                             'department',
                             'avatar',
                             HTML(
                                 """{% if form.avatar.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.avatar.value }}">{% endif %}""", ),
                             'form_id',
                             'upload_url',
-                            'delete_url',
                             css_class='box-body',
 
                         ),
@@ -455,7 +476,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     def __authrole_fields(self):
         """ Get fields for ACL box if they are into self.fields """
 
-        fields = []
+        fields = ['is_active']
         if 'is_superuser' in self.fields:
             fields.append(
                 Field('is_superuser', **{'data_icheck_skin': 'yellow'})
@@ -490,6 +511,11 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         return fields
 
     def filterFieldsByRoles(self, **kwargs):
+
+        # When a module that provides a new user backend (i.e. authldap module) is added to G3W-SUITE
+        # is necessary declare again the choices of 'backend' field
+        self.fields['backend'].choices = USER_BACKEND_TYPES
+
         if self.request.user.is_superuser:
             if not self.request.user.is_staff:
                 self.fields.pop('is_staff')
@@ -522,12 +548,32 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
 
     def save(self, commit=True):
-        user = super(UserCreationForm, self).save(commit=False)
+
+        # Not inherit from ancestor for new Django 4.2 UserCreationForm
+        if self.errors:
+            raise ValueError(
+                "The %s could not be %s because the data didn't validate."
+                % (
+                    self.instance._meta.object_name,
+                    "created" if self.instance._state.adding else "changed",
+                )
+            )
+        # If not committing, add a method to the form to allow deferred
+        # saving of m2m data.
+        self.save_m2m = self._save_m2m
+
+        user = self.instance
+
         # if editor maps groups user add viewer maps groups group to the user saved
         if commit:
+
+            user.save()
+            if hasattr(self, "save_m2m"):
+                self.save_m2m()
+
             if self.cleaned_data['password1']:
                 user.set_password(self.cleaned_data['password1'])
-            user.save()
+                user.save()
 
             # for save groups
             if 'groups' not in self.cleaned_data:
@@ -560,16 +606,25 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
             self.save_m2m()
 
+            # Manage avatar cleaned data for new django-file-form version
+            # -----------------------------------------------------------
+            avatar = self.cleaned_data['avatar'] if self.cleaned_data['avatar'] else None
+
             if hasattr(user, 'userdata'):
                 if 'department' in self.cleaned_data:
                     user.userdata.department = self.cleaned_data['department']
-                if self.cleaned_data['avatar']:
-                    user.userdata.avatar = self.cleaned_data['avatar']
-                else:
-                    user.userdata.avatar = None
+                if 'other_info' in self.cleaned_data:
+                    user.userdata.other_info = self.cleaned_data['other_info']
+        
+                user.userdata.avatar = avatar
                 user.userdata.save()
             else:
-                Userdata(user=user, department=self.cleaned_data['department'],avatar=self.cleaned_data['avatar']).save()
+                Userdata(
+                    user=user,
+                    department=self.cleaned_data['department'],
+                    other_info=self.cleaned_data['other_info'],
+                    avatar=avatar
+                ).save()
 
             # add backend
             if 'backend' in self.cleaned_data:
@@ -588,6 +643,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 user.user_permissions.add(add_group)
             else:
                 user.user_permissions.remove(add_group)
+
+            # Give grant change_user to oneself
+            assign_perm('auth.change_user', user, user)
 
             # To save extra data for user send signal
             after_save_user_form.send(self, user=user)
@@ -639,10 +697,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     def clean_avatar(self):
         """
         Check if upalod file is a valid image by pillow
-        :return: File object Cleaned data
+        :return: Cleaned data dict
         """
         avatar = self.cleaned_data['avatar']
-        if avatar is None:
+        if not avatar:
             return avatar
 
         try:
@@ -651,6 +709,20 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         except Exception:
             raise ValidationError(_('Avatar is no a valid image'), code='image_invalid')
         return avatar
+
+    def clean_email(self):
+        """
+        Unique email is required
+
+        :return: Cleaned data email
+        """
+
+        email = self.cleaned_data['email']
+
+        if not check_unique_email(email, self.instance):
+            raise  ValidationError(_('A user with that email already exists.'), code='email_invalid')
+
+        return email
 
 
     class Meta(UserCreationForm.Meta):
@@ -661,10 +733,12 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             'username',
             'password1',
             'password2',
+            'is_active',
             'is_superuser',
             'is_staff',
             'groups',
             'department',
+            'other_info',
             'avatar',
             'user_groups_editor',
             'user_groups_viewer',
@@ -683,10 +757,12 @@ class G3WUserUpdateForm(G3WUserForm):
                                 widget=forms.PasswordInput, required=False,
                                 help_text=_("Enter the same password as above, for verification."))
 
-    password = ReadOnlyPasswordHashField()
+    def clean_username(self):
+        """Reject usernames that differ only in case."""
+        username = self.cleaned_data.get("username")
 
-    def clean_password(self):
-        return self.initial['password']
+        return username
+
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -705,9 +781,39 @@ from django.forms.models import inlineformset_factory
 UserFormSet = inlineformset_factory(User, Userdata, fields ='__all__')
 
 
+class UserMultipleChoiceField(MultipleChoiceField):
+    """
+    Custom MultipleChoiceField for users.
+    When there are many users it is more useful to check the presence of only the users
+    sent to the form and not to load all the users of the system into the choices
+    """
+    def validate(self, value):
+        """Validate that the input is a list or tuple."""
+        if self.required and not value:
+            raise ValidationError(self.error_messages['required'], code='required')
+        # Validate that each value in the value list is in self.choices.
+
+        # Comparison with
+        users_exists = {str(u.pk): u for u in User.objects.filter(pk__in=value)}
+        users_diff = list(set(value) - set(users_exists.keys()))
+        if len(users_diff) > 0:
+            raise ValidationError(
+                self.error_messages['invalid_choice'],
+                code='invalid_choice',
+                params={'value': ', '.join(users_diff)},
+            )
+
+MAPPING_UG_ROLE_U_ROLE = {
+    'viewer' : G3W_VIEWER1,
+    'editor' : G3W_EDITOR2,
+}
+
 class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
     role = ChoiceField(choices=GROUP_ROLES, label=_('Role'), required=True)
+    gusers = UserMultipleChoiceField(choices=[], label=_('Users'), required=False)
+
+
 
     def __init__(self, *args, **kwargs):
         super(G3WUserGroupForm, self).__init__(*args, **kwargs)
@@ -727,6 +833,7 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
                         Div(
                             'name',
                             'role',
+                            'gusers',
                             css_class='box-body',
 
                         ),
@@ -748,6 +855,19 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
         fields='__all__'
         model=AuthGroup
 
+    def clean_gusers(self):
+        """
+        Check user role by user group role
+        """
+
+        for u in self.cleaned_data['gusers']:
+            user = User.objects.get(pk=u)
+            cop_role = MAPPING_UG_ROLE_U_ROLE[self.cleaned_data['role']]
+            if not userHasGroups(user, [MAPPING_UG_ROLE_U_ROLE[self.cleaned_data['role']]]):
+                raise ValidationError(_(f"User {user} has not role {cop_role}"))
+
+        return self.cleaned_data['gusers']
+
     def save(self, commit=True):
         instance = super(G3WUserGroupForm, self).save(commit=commit)
 
@@ -759,8 +879,116 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
             grouprole = GroupRole(group=instance, role=self.cleaned_data['role'])
         grouprole.save()
 
+        # Add gusers to the group
+        # -----------------------
+        gusers_to_remove = []
+        gusers_to_add = self.cleaned_data['gusers']
+        if 'gusers'in self.initial:
+            gusers_to_remove = list(set(self.initial['gusers']) - set(self.cleaned_data['gusers']))
+            gusers_to_add = list(set(self.cleaned_data['gusers']) - set(self.initial['gusers']))
+
+        for gu in gusers_to_add:
+            instance.user_set.add(User.objects.get(pk=gu))
+        for gu in gusers_to_remove:
+            instance.user_set.remove(User.objects.get(pk=gu))
+
         return instance
 
 
 class G3WUserGroupUpdateForm(G3WUserGroupForm):
     pass
+
+class G3WreCaptchaFormMixin():
+    """
+    Mixin to use for login, reset-password and registration forms
+    """
+
+    def __init__(self, *args, **kwargs):
+
+        super(G3WreCaptchaFormMixin, self).__init__(*args, **kwargs)
+
+        if settings.RECAPTCHA:
+            if settings.RECAPTCHA_VERSION == '3':
+                self.fields['captcha'] = ReCaptchaField(widget=widgets.ReCaptchaV3())
+            else:
+                if settings.RECAPTCHA_VERSION2_TYPE == 'checkbox':
+                    self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Checkbox())
+                else:
+                    self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Invisible())
+
+
+class G3WAuthenticationForm(G3WreCaptchaFormMixin, AuthenticationForm):
+    """
+    Form custom login form
+    """
+    pass
+
+class G3WResetPasswordForm(G3WreCaptchaFormMixin, PasswordResetForm):
+    """
+    Form custom reset password form
+    """
+    pass
+
+class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
+    """
+    Form custom for user registration form
+    """
+
+    other_info = CharField(label=_('Other informations'), widget=Textarea(), required=False)
+
+    # Add custom data: first and last name etc.
+    class Meta(RegistrationForm.Meta):
+        fields = RegistrationForm.Meta.fields + [
+            'first_name',
+            'last_name',
+            'other_info'
+        ]
+
+    def clean_email(self):
+        """
+        Unique email is required
+
+        :return: Cleaned data email
+        """
+
+        email = self.cleaned_data['email']
+
+        if not check_unique_email(email):
+            raise  ValidationError(_('A user with that email already exists.'), code='email_invalid')
+
+        return email
+
+
+
+class G3WUsernameRecoveryForm(G3WreCaptchaFormMixin, PasswordResetForm):
+
+    def clean_email(self):
+        """
+        Email exists into db
+
+        :return: Cleaned data email
+        """
+
+        if not User.objects.filter(email=self.cleaned_data['email']).exists():
+            raise ValidationError(_('No user is available with this email.'), code='email_invalid')
+
+        return self.cleaned_data['email']
+
+
+class G3WSetPasswordForm(SetPasswordForm):
+    """
+    Custom SetPasswordForm for G3W-SUITE
+    """
+
+    def save(self, commit=True):
+
+        if (settings.PASSWORD_CHANGE_FIRST_LOGIN and
+                not self.user.is_superuser and
+                not self.user.userdata.change_password_first_login and
+                not self.user.userdata.registered):
+            self.user.userdata.change_password_first_login = True
+            self.user.userdata.save()
+
+        return super().save(commit=commit)
+
+

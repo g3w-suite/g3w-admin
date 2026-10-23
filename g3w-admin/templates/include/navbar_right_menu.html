@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load static %}
+{% load auth_extras %}
 <div class="navbar-custom-menu">
     <ul class="nav navbar-nav">
 
@@ -53,7 +54,7 @@
                         <a href="{% url 'user-update' user.pk %}" class="btn btn-default btn-flat"><i class="fa fa-folder"></i> {% trans 'Profile' %}</a>
                     </div>
                     <div class="pull-right">
-                        <a href="{% url 'logout' %}{% if SETTINGS.FRONTEND %}?next={% url 'frontend' %}{% endif %}" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> {% trans 'Logout' %}</a>
+                        <a href="{% url SETTINGS.LOGOUT_URL %}{% if SETTINGS.FRONTEND %}?next={% url 'frontend' %}{% endif %}" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> {% trans 'Logout' %}</a>
                     </div>
                 </li>
             </ul>
@@ -77,12 +78,14 @@
         </form>
         </li>
         {% endif %}
-        {% if user.is_superuser %}
         <!-- Control Sidebar Toggle Button -->
         <li>
+        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
         <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-        </li>
+        {% else %}
+        <span style=" display:inline-block; width: 45px;"></span>
         {% endif %}
+        </li>
         {% endif %}
     </ul>
 </div>

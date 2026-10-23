@@ -1,0 +1,687 @@
+/**
+ * @file Editing panel (left menu)
+ */
+
+import ToolboxComponent             from '../components/toolbox.js';
+import { getCatalogLayers }         from '../utils/getCatalogLayers.js';
+import { getCatalogLayerById }      from '../utils/getCatalogLayerById.js';
+
+const { G3W_FID }            = g3w.constants;
+const GUI                    = g3w.app;
+const ApplicationState       = g3w.state;
+
+const { ApplicationService } = g3wsdk.core;
+
+export default ({
+
+  template: /*html*/`
+    <div class = "g3w-editing-panel">
+
+      <div v-if = "saving" class = "bar-loader" style = "border: 0"></div>
+
+      <!-- OFFLINE MESSAGE -->
+      <div
+        v-if  = "!ApplicationState.online"
+        id    = "onlineofflinemessage"
+      >
+        <div v-t = "'plugins.editing.offline'"></div>
+      </div>
+
+      <!-- COMMIT BAR -->
+      <div
+        v-if       = "showcommitbar"
+        v-disabled = "saving"
+        class      = "commitbar"
+      >
+
+        <!-- SAVE BUTTON -->
+        <div @click.stop = "commit" :class = "['editing-button', (canCommit ? 'enabled': '')]">
+          <span class = "editing-icon far fa-save"></span>
+        </div>
+
+        <!-- UNDO BUTTON -->
+        <div @click.stop = "undo" :class = "['editing-button', (canUndo ? 'enabled': '')]">
+          <span class = "editing-icon fas fa-chevron-left"></span>
+        </div>
+
+        <!-- REDO BUTTON -->
+        <div @click.stop = "redo" :class = "['editing-button', (canRedo ? 'enabled' : '')]">
+          <span class = "editing-icon fas fa-chevron-right"></span>
+        </div>
+
+      </div>
+
+      <div
+        v-else
+        style = "height: 10px;"
+      ></div>
+
+      <!-- LAYERS SELECT -->
+      <div
+        v-if  = "state.showselectlayers && editinglayers.length > 1"
+        id    = "g3w-select-editable-layers-content"
+        class = "skin-color"
+      >
+        <label for = "g3w-select-editable-layers-to-show" v-t = "'Layers'"></label>
+        <x-select
+          id         = "g3w-select-editable-layers-to-show"
+          multiple
+          searchable
+          ref        = "selectlayers"
+          :value     = "selectedlayers.join(',')"
+          @change    = "onSelectedLayersChange"
+        >
+          <x-option
+            v-for  = "editinglayer in editinglayers"
+            :value = "editinglayer.id"
+            :key   = "editinglayer.id"
+          >{{ editinglayer.name }}</x-option>
+        </x-select>
+      </div>
+
+      <!-- TOOLBOXES -->
+      <div id = "toolboxes">
+        <toolbox
+          v-for                 = "toolbox in state.toolboxes"
+          :key                  = "toolbox.state.id"
+          :state                = "toolbox.state"
+          :resourcesurl         = "resourcesurl"
+          @setselectedtoolbox   = "selectToolBox"
+          @starttoolbox         = "startToolBox"
+          @stoptoolbox          = "stopToolBox"
+          @setactivetool        = "startTool"
+          @stopactivetool       = "stopTool"
+          @update-filter-layers = "updateFilterLayers"
+        />
+      </div>
+
+      <p v-if = "django_admin_url"><a :href = "django_admin_url" target = "_blank">&#x1F512; {{ $t('Locked features') }}</a></p>
+      <p v-if = "filemanager_url"><a  :href = "filemanager_url"  target = "_blank">&#x1F4C2; {{ $t('File manager') }}</a></p>
+
+    </div>`,
+
+  name: 'Editing',
+
+  data() {
+    return {
+      state:                 this.$options.state,
+      resourcesurl:          this.$options.resourcesurl,
+      showcommitbar:         this.$options.showcommitbar,
+      saving:                false, // whether to show loading bar while committing to server (click on save disk icon)
+      layersInEditing:       0,     // Number of layers in editing
+      editingButtonsEnabled: true,
+      selectedlayers:        [],
+      editinglayers:         Object.entries(GUI.getPlugin('editing')
+                              .getEditableLayers())
+                              .filter(([id]) => GUI.getPlugin('editing').getToolBoxById(id).state.visible) //exclude layers that are set visible to false
+                              .map(([id, layer]) => ({ id, name: layer.getName(), title: layer.getTitle() })),
+      activetool:            null,
+    };
+  },
+
+  components: {
+    toolbox: ToolboxComponent,
+  },
+
+  transitions: {
+    'addremovetransition': 'showhide',
+  },
+
+  methods: {
+
+    /**
+     *
+      * @param layers
+      */
+    updateFilterLayers(layers = []) {
+      if (layers.length > 0) {
+        this._selectedlayers = this.selectedlayers;
+        this.selectedlayers  = layers;
+      } else {
+        this.selectedlayers  = this._selectedlayers;
+        this._selectedlayers = layers;
+      }
+
+      this.$nextTick(() => this.syncSelectedLayers());
+    },
+
+    onSelectedLayersChange(event) {
+      if (!event.target.isOpen && !this.selectedlayers.length) { return; }
+      this.selectedlayers = event.target.selected_options.map(option => option.value);
+    },
+
+    syncSelectedLayers() {
+      const select = this.$refs.selectlayers;
+      if (!select?.container) { return; }
+      select.selected_options = [];
+      select.container.querySelectorAll('x-option').forEach(option => {
+        option.removeAttribute('selected');
+        if (this.selectedlayers.includes(option.value)) {
+          select.select(option, { autoclose: false, emit: false });
+        }
+      });
+      select.select(null, { autoclose: false, emit: false });
+      select.setAttribute('value', this.selectedlayers.join(','));
+    },
+
+    undo() {
+      if (this.canUndo) { GUI.getPlugin('editing').undo(); }
+    },
+
+    redo() {
+      if (this.canRedo) { GUI.getPlugin('editing').redo(); }
+    },
+
+    /**
+     * @param toolboxId
+     */
+    async commit(toolboxId) {
+      if (this.canCommit) {
+        this.saving = true;
+        try {
+          await GUI.getPlugin('editing').commit({
+            toolbox: GUI.getPlugin('editing').getToolBoxById(toolboxId),
+            modal:   false,
+          })
+        } catch(e) {
+          console.warn(e);
+        } finally {
+          this.saving = false;
+        }
+      }
+    },
+
+    /**
+     * @param id
+     */
+    async startToolBox(id) {
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
+      // check if a dependency layer (in relation) has some changes not committed
+      const layerId = ApplicationState.online && toolbox.getDependencies().find(id => GUI.getPlugin('editing').getToolBoxById(id).isDirty());
+      if (layerId) {
+        await this.commit_dirty(layerId);
+      }
+      toolbox.start();
+    },
+
+    /**
+     * @param id
+     */
+    async stopToolBox(id) {
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
+
+      try {
+        if (toolbox.state.history.commit) {
+          await GUI.getPlugin('editing').commit();
+        }
+      } catch(e) {
+        console.warn(e);
+      }
+
+      //Take in account an error
+      try {
+        await toolbox.stop();
+      } catch(e) {
+        console.warn(e);
+      }
+      // re-enable query map control
+      const control = undefined === GUI.getPlugin('editing').getToolBoxes().find(t => t.state.on) && GUI.getMapControl('query');
+      if (control && !control.isToggled()) {
+        control.toggle();
+      }
+    },
+
+    /**
+     * Start tool of toolbox
+     * 
+     * @param toolId
+     * @param toolboxId
+     */
+    async startTool(toolId, toolboxId) {
+
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(toolboxId);
+      const enabled = toolboxId === this.activetool;
+
+      if (!enabled && GUI.getPlugin('editing').getToolBoxById(toolbox.getDependencies().find(id => id === this.activetool))) {
+        await this.commit_dirty(this.activetool);
+      }
+
+      if (!enabled) {
+        this.stopTool(this.activetool);
+      }
+
+      this.activetool = toolboxId;
+      toolbox.setActiveTool(toolbox.getToolById(toolId));
+    },
+
+    /**
+     * @param id
+     */
+    stopTool(id) {
+      GUI.getPlugin('editing').getToolBoxById(id)?.stopActiveTool?.();
+      this.activetool = null;
+    },
+
+    /**
+     * @param id toolbox id
+     */
+    async selectToolBox(id) {
+      // wait for DOM updates
+      await this.$nextTick();
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
+      toolbox.setSelected(true);
+      this.state.toolboxselected = toolbox;
+    },
+
+    /**
+     * Ensure pending (un-saved) changes are committed before start to edit another layer,
+     * which could be in relation with current level (eg. Join 1:1) in order to prevent an
+     * out-of-sync database state on remote QGIS server.
+     * 
+     * @param { string } id
+     *
+     * @returns { Promise<unknown> }
+     */
+    async commit_dirty(id) {
+      const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
+
+      // commit changes
+      try {
+        if (toolbox.isDirty() && toolbox.hasDependencies()) {
+          await GUI.getPlugin('editing').commit({ toolbox });
+          console.info('[EDITING] committed dirty');
+        }
+      } catch (e) {
+        // revert changes (clear history)
+        try {
+          [layerId]
+            .concat(toolbox.getDependencies())
+            .forEach(id => {
+              const toolbox = GUI.getPlugin('editing').getToolBoxById(id);
+              // set original features get from server without changes
+              toolbox.setFeatures((toolbox.readFeatures() || []).map(f => f.clone()));
+              toolbox.clearHistory();   // clear history of a layer (no changes)
+              toolbox.stopActiveTool(); // stop eventually active tool
+            });
+          console.info('[EDITING] reverted dirty');
+        } catch(e) {
+          console.warn(e);
+        }
+      }
+
+    },
+
+    /**
+     * @param bool
+     * 
+     * @private
+     */
+    _enableEditingButtons(bool) {
+      this.editingButtonsEnabled = !bool;
+    },
+
+    /**
+     * Check if already have off lines changes
+     *
+     * @param { Object }  opts
+     * @param { boolean } [opts.modal=true]
+     * @param { boolean } [opts.unlock=false]
+     *
+     * @returns { Promise<unknown> }
+     */
+    checkOfflineChanges({
+      modal  = true,
+      unlock = false,
+    } = {}) {
+      return new Promise((resolve, reject) => {
+        // get offline item
+        const changes = JSON.parse(window.localStorage.getItem('EDITING_CHANGES') || null);
+
+        // if you find changes offline previously
+        if (!changes) { return }
+
+        const promises = [];
+        const layerIds = [];
+        //FORCE TO WAIT OTHERWISE STILL OFF LINE
+        setTimeout(async () => {
+          for (const layerId in changes) {
+            layerIds.push(layerId);
+            const toolbox     = GUI.getPlugin('editing').getToolBoxById(layerId);
+            const commitItems = changes[layerId];
+            promises.push(GUI.getPlugin('editing').commit({ toolbox, commitItems, modal }));
+          }
+
+          try {
+            await Promise.allSettled(promises);
+            resolve();
+          } catch(e) {
+            console.warn(e);
+            reject(e);
+          } finally {
+            if (unlock) {
+              layerIds.forEach(id => XHR.post({ url: GUI.getPlugin('editing').getLayerById(id).getUrl('unlock') }));
+            }
+            // always reset items to null
+            try      { window.localStorage.setItem('EDITING_CHANGES', "{}"); }
+            catch(e) { console.warn(e); }
+          }
+        }, 1000)
+      })
+    },
+
+  },
+
+  computed: {
+    /**
+     * Listen changes of each layers
+     */
+    changes() {
+      return this.state.toolboxes.filter(t => t.state.history.commit).length > 0;
+    },
+
+    canCommit() {
+      
+      return (
+        'default' === this.state.saveConfig.mode
+        && this.state.toolboxselected
+        && !this.state.toolboxselected.state.activetool
+        && this.state.toolboxselected.state.history.commit
+        && this.editingButtonsEnabled
+      );
+    },
+
+    canUndo() {
+      const canUndo = (
+        this.state.toolboxselected
+        && !this.state.toolboxselected.state.activetool
+        && this.state.toolboxselected.state.history.undo
+        && this.editingButtonsEnabled
+      );
+
+      GUI.getPlugin('editing').emit('canUndo', canUndo);
+
+      return canUndo;
+    },
+
+    canRedo() {
+      const canRedo = (
+        this.state.toolboxselected
+        && !this.state.toolboxselected.state.activetool
+        && this.state.toolboxselected.state.history.redo
+        && this.editingButtonsEnabled
+      );
+
+      GUI.getPlugin('editing').emit('canRedo', canRedo);
+
+      return canRedo;
+    },
+
+    django_admin_url() {
+      return window.initConfig.user.is_superuser ? new URL('/django-admin/editing/g3weditingfeaturelock/', window.initConfig.baseurl) : false;
+    },
+
+    filemanager_url() {
+      return window.initConfig.user.is_superuser ? new URL('/filemanager/', window.initConfig.baseurl) : false;
+    },
+
+  },
+
+  watch:{
+
+    canCommit(bool) {
+      window.onbeforeunload = () => bool || undefined; // register leave page
+    },
+
+    /**
+     * @param { Boolean } bool true if at least one layer has changes. false if all layer haven't changes
+     */
+    changes(bool) {
+      ApplicationState.sidebar.btn_close     = !bool;
+      ApplicationState.sidebar.tooltip_close = bool ? '⚠️ Confirm changes (✅) on each level to close' : '';
+    },
+
+    /** @TODO add description */
+    selectedlayers(layers = []) {
+      const has_layers = layers.length > 0;
+
+      this.editinglayers.forEach(({ id }) => {
+        const toolbox     = GUI.getPlugin('editing').getToolBoxById(id);
+        const is_commit   = has_layers && toolbox.state.history.commit;
+        const is_selected = layers.includes(id);
+
+        toolbox.setShow(has_layers ? is_selected : true);
+
+        if (has_layers && !is_selected && is_commit) {
+          GUI.getPlugin('editing').commit({ toolbox }).finally(() => toolbox.stop());
+        }
+
+        if (has_layers && !is_selected && !is_commit) {
+          toolbox.stop();
+        }
+
+      });
+    },
+
+  },
+
+  created() {
+    this._selectedlayers   = []; //store previous selected layers
+
+    this.ApplicationState  = ApplicationState;
+
+    // Array of object setter(as a key), key to unby (as value)
+    this.unByKeys          = this.unByKeys || [];
+
+    // in case of starting panel editing check if there are some chenging pending
+    // if true, it has to commit changes on server and unlock all layers features temporarily locked
+    if (ApplicationState.online) {
+      this.checkOfflineChanges({ unlock: true });
+    }
+
+    // register "online" event
+    this.unByKeys.push({
+      owner :  ApplicationService,
+      setter: 'online',
+      key:     ApplicationService.onafter('online', () => this.checkOfflineChanges({ modal: false }).catch(e => GUI.showUserMessage({ type: 'alert', message: e })))
+    });
+
+    GUI.closeContent();
+
+    // open editing panel state
+    this.state.open = false;
+    getCatalogLayers({ EDITABLE: true }).forEach(l => GUI.getPlugin('editing').getToolBoxById(l.getId()).state.inediting = true);
+
+    GUI.on('opencontent',  this._enableEditingButtons);
+    GUI.on('closeform',    this._enableEditingButtons);
+    GUI.on('closecontent', this._enableEditingButtons);
+  },
+
+  /**
+   * 
+   */
+  async mounted() {
+    await this.$nextTick();
+    this.syncSelectedLayers();
+    //emit openeditingpanel event. Used by simplereporting plugin
+    GUI.getPlugin('editing').emit('openeditingpanel');
+  },
+
+  /**
+   * Called on a close editing panel panel
+   */
+  async beforeDestroy() {
+    GUI.getPlugin('editing').stop();
+
+    // reset editing panel state
+    this.state.open = false;
+    getCatalogLayers({ EDITABLE: true }).forEach(l => GUI.getPlugin('editing').getToolBoxById(l.getId()).state.inediting = false);
+
+    GUI.off('opencontent',  this._enableEditingButtons);
+    GUI.off('closeform',    this._enableEditingButtons);
+    GUI.off('closecontent', this._enableEditingButtons);
+
+    // unregister "online" and "offline" events
+    this.unByKeys.forEach(({ owner, setter, key }) => owner.un(setter, key));
+
+    GUI.getPlugin('editing').emit('closeeditingpanel');
+
+    // Show feature that is updated or created with editing on result content
+    const layerIdChanges = Object.keys(this.state.featuresOnClose);
+    const inputs = {
+      layers:    [],
+      fids:      [],
+      formatter: 1
+    };
+
+    if (layerIdChanges.length > 0) {
+      layerIdChanges
+        .forEach(id => {
+          const fids = [...this.state.featuresOnClose[id]];
+          if (fids.length > 0) {
+            const layer = getCatalogLayerById(id);
+            inputs.layers.push(layer);
+            inputs.fids.push(fids);
+          }
+        });
+
+      let promise = Promise.resolve();
+
+      // load many layers with each one with its fids
+      if (inputs.layers.length > 0) {
+        promise = new Promise(async (res, rej) => {
+          try {
+            let data = (await Promise.all(
+              inputs.layers.map(async (layer, i) => {
+                let features = [];
+                const fids   = []; 
+                try {
+                  // convert API response to Open Layer Features
+                  features = ((layer && await layer.getFeatureByFids({ fids: inputs.fids[i], formatter: inputs.formatter })) || []).map(f => {
+                    const properties    = f.properties ?? {};
+                    properties[G3W_FID] = f.id;
+                    const olFeat        = new ol.Feature(f.geometry && new ol.geom[f.geometry.type](f.geometry.coordinates));
+                    fids.push(f.id);
+                    olFeat.setProperties(properties);
+                    olFeat.setId(f.id);
+                    return olFeat;
+                  });
+                } catch(e) {
+                  console.warn(e);
+                }
+                return {
+                  data:  [{ layer, features }],
+                  query: { type: 'search', fids },
+                };
+            }))).map(r => r.data);
+            res({
+              data,
+              query: { type: 'search' }
+            });
+          } catch(e) {
+            rej(e);
+          }
+        });
+      }
+      try {
+        if (inputs.layers.length) {
+          GUI.showData(promise, {
+            title: 'plugins.editing.editing_changes',
+            show:  { loading: false }
+          });
+        }
+        await promise;
+      } catch(e) { console.warn(e); }
+    }
+
+    this.state.featuresOnClose = {};
+
+    GUI.getPlugin('editing').getToolBoxes().forEach(t => t.resetDefault());
+
+    // re-enable query map control
+    const control = GUI.getMapControl('query');
+    if (control && !control.isToggled()) {
+      control.toggle();
+    }
+
+    //set editing panel null
+    GUI.getPlugin('editing').state.panel = null;
+
+  },
+
+});
+
+document.head.insertAdjacentHTML(
+  'beforeend',
+  /* css */`
+<style>
+  .g3w-editing-panel .editing-button .editing-icon {
+    background-color: #3a4448;
+    color: #222d32; /*@sidebar-dark-bg;*/
+    font-size: 1.8em;
+    padding: 10px;
+    margin: 5px;
+    width: 45px;
+    height: 45px;
+    border-radius: 3px;
+    text-align: center;
+  }
+  .g3w-editing-panel .editing-button.enabled .editing-icon {
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0,0,0,0.7);
+  }
+  .g3w-editing-panel .editing-button {
+    cursor: not-allowed;
+  }
+  .g3w-editing-panel .editing-button.enabled {
+    cursor: pointer;
+  }
+  .g3w-editing-panel .editbtn {
+    border-radius: 3px;
+    padding: 10px;
+    display: inline-block;
+    opacity: 0.4;
+    box-shadow:
+      0 1px 1px 0 rgba(0, 0, 0, 0.1),
+      0 1px 4px 0 rgba(0, 0, 0, 0.3);
+  }
+  .g3w-editing-panel .editbtn.enabled {
+    opacity: 1;
+    cursor: pointer;
+  }
+  .g3w-editing-panel .editbtn.enabled.toggled {
+    box-shadow: 0 0;
+    background-color: #ddd;
+  }
+
+  .g3w-editing-panel {
+    margin-bottom: 50px;
+  }
+  .g3w-editing-panel #onlineofflinemessage {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: orange;
+    color:white;
+    font-weight: bold
+  }
+  .g3w-editing-panel .commitbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+  }
+  .g3w-editing-panel .commitbar > div:first-of-type {
+    margin-right: auto;
+  }
+  .g3w-editing-panel #g3w-select-editable-layers-content {
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  .g3w-editing-panel #g3w-select-editable-layers-content label {
+    color: #fff !important;
+  }
+  .g3w-editing-panel #g3w-select-editable-layers-to-show {
+    cursor: pointer;
+    color: #333;
+  }
+</style>`
+);

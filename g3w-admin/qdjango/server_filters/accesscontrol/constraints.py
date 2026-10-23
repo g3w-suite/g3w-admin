@@ -64,7 +64,9 @@ class SingleLayerExpressionAccessControlFilter(QgsAccessControlFilter):
         try:
             qdjango_layer = Layer.objects.get(project=QGS_SERVER.project, qgs_layer_id=layer.id())
         except Layer.DoesNotExist:
-            QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
+            # This is a special case for internal layers, we don't want to log this
+            if not layer.customProperty('g3w-suite-internal', False):
+                QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
             return ""
 
         rule = ConstraintExpressionRule.get_rule_definition_for_user(QGS_SERVER.user, qdjango_layer.pk)
@@ -99,7 +101,9 @@ class GeoConstraintAccessControlFilter(QgsAccessControlFilter):
         try:
             qdjango_layer = Layer.objects.get(project=QGS_SERVER.project, qgs_layer_id=layer.id())
         except Layer.DoesNotExist:
-            QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
+            # This is a special case for internal layers, we don't want to log this
+            if not layer.customProperty('g3w-suite-internal', False):
+                QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
             return ""
 
         rule = GeoConstraintRule.get_rule_definition_for_user(QGS_SERVER.user, qdjango_layer)

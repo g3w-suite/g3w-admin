@@ -5,7 +5,8 @@ from django.http.response import JsonResponse
 from django.core.files.storage import default_storage, FileSystemStorage
 from django.core.files.base import ContentFile
 from core.utils.response import send_file
-from qdjango.utils.storage import OverwriteStorage
+from core.utils.request import is_ajax
+from .utils.storage import FileManagerOverwriteStorage
 from .filemanagerresponse import FileManagerResponse
 import os
 import shutil
@@ -30,7 +31,7 @@ class FileManager:
         if root_folder:
             self.root = root_folder
 
-        self.storage = OverwriteStorage(location=root_folder)
+        self.storage = FileManagerOverwriteStorage(location=root_folder)
 
     def fileManagerError(self, title='FORBIDDEN_CHAR_SLASH', path='/'):
        return self.error(title, path)
@@ -309,7 +310,7 @@ class FileManager:
         parts    = file.split('/')
         filename = parts.pop()
         # Check for AJAX request
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             response = FileManagerResponse(path, root=self.root)
             response.set_response()
             return JsonResponse(response.response)

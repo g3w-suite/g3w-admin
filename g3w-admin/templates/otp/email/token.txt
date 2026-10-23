@@ -1,0 +1,3 @@
+{% load i18n %}{% if SETTINGS.SITE_DOMAIN %}{% with domain=SETTINGS.SITE_DOMAIN %}{% blocktrans %}This email was sent by {{ domain }} for two-factor authentication (2FA).{% endblocktrans %}{% endwith %}{% else %}{% blocktrans %}This email was sent by G3W-SUITE for two-factor authentication (2FA).{% endblocktrans %}{% endif %}
+
+{% blocktrans %}Your one-time password (OTP) token is: {{ token }}{% endblocktrans %}

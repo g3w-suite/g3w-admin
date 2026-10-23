@@ -10,18 +10,32 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-10-09'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
+import json
+
 from django.conf import settings
-from django.shortcuts import get_object_or_404, Http404
+from django.shortcuts import (
+    get_object_or_404,
+    Http404
+)
 from django.urls import reverse
+from django.db.models import Q
 from django.core.files.storage import default_storage
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.utils.response import send_file
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from guardian.shortcuts import get_anonymous_user
 from core.api.base.views import G3WAPIView
+from core.api.permissions import ProjectPermission
+from qdjango.api.projects.permissions import ProjectIsActivePermission
 from qdjango.apps import get_qgs_project
-from qdjango.models import Project
+from qdjango.models import (
+    Project, CustomerTheme
+)
 from qdjango.signals import reading_layer_model
+from qdjango.utils.models import get_view_layer_ids
+from .danticmodels import ThemeProjectPDModel
+
 
 from osgeo import gdal, osr
 import tempfile
@@ -29,7 +43,7 @@ import time
 
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('g3wadmin.debug')
 
 
 class QdjangoWebServicesAPIview(G3WAPIView):
@@ -57,12 +71,15 @@ class QdjangoWebServicesAPIview(G3WAPIView):
             if alias:
                 res['WMS']['alias'] = reverse('OWS:ows-alias', args=[alias])
 
-            # check if WFS layers is active
+            # check if WFS, WMTS, TMS layers is active
             wfs = False
+            wmts = False
             tms_layers = []
             for layer in layers:
                 if layer.wfscapabilities is not None:
                     wfs = True
+                if layer.wmtscapabilities is not None:
+                    wmts = True
 
                 # check for layer with TMS cache active and other service by signals
                 messages = reading_layer_model.send(layer)
@@ -75,8 +92,21 @@ class QdjangoWebServicesAPIview(G3WAPIView):
 
             if wfs:
                 res.update({
-                    'WFS': res['WMS']
+                    'WFS': res['WMS'],
+
+                    # Add OGC API - Features (WFS3)
+                    'OGC API - Feature (WFS3)': {
+                        'url': f"{res['WMS']['url']}wfs3/",
+                        'access': res['WMS']['access']
+                    }
+
                 })
+
+            if wmts:
+                res.update({
+                    'WMTS': res['WMS']
+                })
+
 
             if len(tms_layers) > 0:
                 res.update({
@@ -195,33 +225,127 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
     Give a project_id and a view/theme name.
     """
 
+    permission_classes = (
+        ProjectPermission,
+        ProjectIsActivePermission
+    )
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def _get_url_params(self, **kwargs):
+        self.project_id = kwargs['project_id']
+        self.theme_name = kwargs['theme_name']
+
     def get(self, request, **kwargs):
+        self._get_url_params(**kwargs)
         return self.layerstree(request, **kwargs)
 
     def post(self, request, **kwargs):
-        return self.layerstree(request, **kwargs)
+        """
+        Post action view for custom theme data
+        """
 
-    def layerstree(self, request, **kwargs):
+        # TODO: add theme data validation structure, use Pydantic?
+        self._get_url_params(**kwargs)
+
+        # Validate POST data
+
 
 
         try:
 
+            # Validate POST data
+            # ------------------
+            try:
+                ThemeProjectPDModel(**self.request.data)
+            except Exception as e:
+                logger.error(str(e))
+                raise ValidationError(str(e))
+
+            # CRUD
+            # ------------------------
+
+            data = json.dumps(self.request.data)
+
+            # Insert/get
+            c_theme, created = CustomerTheme.objects.get_or_create(
+                defaults={
+                    'theme': data
+                },
+                project_id=self.project_id,
+                user=self.request.user,
+                name=self.theme_name
+            )
+
+            # Update
+            if not created:
+                c_theme.theme = data
+                c_theme.save()
+
+            # Invalidate cache project
+            Project.objects.get(pk=self.project_id).invalidate_cache(user=self.request.user)
+
+        except Exception as e:
+            self.results.error = str(e)
+            self.results.result = False
+
+        return Response(self.results.results)
+
+    def delete(self, request, **kwargs):
+        self._get_url_params(**kwargs)
+
+        try:
+            CustomerTheme.objects.get(project_id=self.project_id, user=self.request.user, name=self.theme_name).delete()
+
+            # Invalidate cache project
+            Project.objects.get(pk=self.project_id).invalidate_cache(user=self.request.user)
+        except Exception as e:
+            self.results.error = str(e)
+            self.results.result = False
+
+        return Response(self.results.results)
+
+    def layerstree(self, request, **kwargs):
+
+        try:
+
             # Retrieve project qdjando instance and qgsproject instance
-            project = get_object_or_404(Project, pk=kwargs['project_id'])
+            project = get_object_or_404(Project, pk=self.project_id)
             qgs_project = get_qgs_project(project.qgis_file.path)
+
+            # First check for custom theme
+            try:
+                c_theme = CustomerTheme.objects.get(project=project, user=self.request.user, name=self.theme_name)
+                self.results.results.update({
+                    'data': c_theme.layerstree
+                })
+
+                return Response(self.results.results)
+
+            except:
+                logger.info(f'[CUSTOMER THEME]: The theme \'{self.theme_name}\' is not a custom theme '
+                            f'for user {self.request.user} in the project {self.project_id}')
+                pass
 
             # Validation theme name
             theme_collections = qgs_project.mapThemeCollection()
             map_themes = theme_collections.mapThemes()
-            theme_name = kwargs['theme_name']
+
 
             if len(map_themes) == 0:
                 raise Exception(f"Themes are not available for project {project.title}")
 
-            if theme_name not in map_themes:
-                raise Exception(f"Theme name '{theme_name}' is not available!")
+            if self.theme_name not in map_themes:
+                raise Exception(f"Theme name '{self.theme_name}' is not available!")
 
-            map_theme = theme_collections.mapThemeState(theme_name)
+            map_theme = theme_collections.mapThemeState(self.theme_name)
+
+            # Get layer to exclude from toc:
+            layers_to_exclude_from_toc = []
+            for layer in project.layer_set.filter(exclude_from_toc=True):
+                layers_to_exclude_from_toc.append(layer.qgs_layer_id)
 
             # Get node group expanded anche checked
             node_group_expanded = map_theme.expandedGroupNodes()
@@ -233,6 +357,9 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                 id = r.layer().id()
                 if id not in node_layerids_checked:
                     node_layerids_checked.append(id)
+
+            # Get layer which request.user can view:
+            view_layer_ids = get_view_layer_ids(self.request.user, project)
 
 
             def build_group_name_by_parents(node):
@@ -253,10 +380,16 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                     }
 
                     try:
+
+                        # Check if layer is visible by user
+                        if self.request and not node.layerId() in view_layer_ids:
+                            continue
+
                         # try for layer node
                         toRetLayer.update({
                             'id': node.layerId(),
-                            'visible': True if node.layerId() in node_layerids_checked else False
+                            'visible': True if node.layerId() in node_layerids_checked else False,
+                            'toc': False if node.layerId() in layers_to_exclude_from_toc else True
                         })
 
                         # Add `showFeatureCount` custom property per Vector layer only
@@ -294,5 +427,54 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
         except Exception as e:
             self.results.error = str(e)
             self.results.result = False
+
+        return Response(self.results.results)
+
+
+    
+
+class QdjangoAlternativeUniqueLayerAPIView(G3WAPIView):
+    """
+    Class ti get a lista of layers to use as alternative for call on unique field value
+    """
+
+    permission_classes = (
+        ProjectPermission,
+        ProjectIsActivePermission
+    )
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+
+    def post(self, request, *args, **kwargs):
+        """
+        Return a list of layers to use as alternative for call on unique field value
+        """
+        project = Project.objects.get(pk=kwargs['project_id'])
+        layers = project.layer_set.filter(
+            ~Q(qgs_layer_id=kwargs['layer_id'])
+        )
+
+        # Get only layer with the same field and field type
+        data = []
+        for l in layers:
+            try:
+                cols = l.database_columns_by_name()
+
+                # Check if field is in columns and type is the same
+                if request.data.get('field') in cols and request.data.get('type') == cols[request.data['field']].get('type'):
+                    data.append({
+                        'id': l.qgs_layer_id,
+                        'name': l.name
+                })
+            except:
+                pass
+
+
+        self.results.results.update({
+                'data': data
+            })
 
         return Response(self.results.results)

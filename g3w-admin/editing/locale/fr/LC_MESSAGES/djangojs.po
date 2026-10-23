@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
+"POT-Creation-Date: 2025-10-09 21:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-#: editing/static/editing/js/widget.js:112
+
+#: static/editing/js/widget.js:140
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
-#: editing/static/editing/js/widget.js:113
+#: static/editing/js/widget.js:141
 msgid "Add"
-msgstr ""
+msgstr "Ajouter"
 
-#: editing/static/editing/js/widget.js:114
+#: static/editing/js/widget.js:142
 msgid "Update geometry"
-msgstr ""
+msgstr "Mettre à jour la géométrie"
 
-#: editing/static/editing/js/widget.js:115
+#: static/editing/js/widget.js:143
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
-#: editing/static/editing/js/widget.js:116
+#: static/editing/js/widget.js:144
 msgid "Update attributes"
-msgstr ""
+msgstr "Mettre à jour les attributs"
+
+#: static/editing/js/widget.js:213
+msgid "Layer"
+msgstr "Couche"
+
+#: static/editing/js/widget.js:214
+msgid "Add logging field"
+msgstr "Ajouter champ de journalisation"
+
+#: static/editing/js/widget.js:215
+msgid "Update logging field"
+msgstr "Mettre à jour champ de journalisation"

@@ -1,0 +1,12 @@
+{% extends "base_login.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block login_page_box_body %}
+<div class="login-box-body">
+<div class="login-box-msg">
+    <h3>{%  trans 'Check your inbox.' %}</h3>
+    <p>{%  trans "We've emailed you your username. You should receive the email shortly!" %}</p>
+</div>
+</div><!-- /.login-box-body -->
+{% endblock %}

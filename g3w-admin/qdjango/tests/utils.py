@@ -44,6 +44,30 @@ def create_dff_project(field_name, original_filename=None):
 
     return uf
 
+def create_dff_project_qgz(field_name, original_filename=None):
+    """
+    Create a fake record django_file_form qgis project (.qgz) for form using it
+    :param field_name:
+    :param original_filename:
+    :return: UploadedFile model object
+    """
+
+    project = open('{}test_qgz_project_328.qgz'.format(CURRENT_PATH + TEST_BASE_PATH), 'rb')
+
+    form_id = uuid.uuid4()
+    file_id=uuid.uuid4()
+
+    uf = UploadedFile(
+        form_id=form_id,
+        file_id=file_id,
+        field_name=field_name,
+        original_filename=original_filename if original_filename else 'test_qgz_project_328.qgz',
+        uploaded_file=File(project, name='test_qgz_project_328.qgz')
+    )
+    uf.save()
+
+    return uf
+
 
 def clear_dff_project():
     """

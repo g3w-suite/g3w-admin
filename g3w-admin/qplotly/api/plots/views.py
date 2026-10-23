@@ -22,8 +22,7 @@ from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
 from qplotly.utils.qplotly_factory import QplotlyFactoring, QplotlyFactoringRelation
 import plotly
-if plotly.__version__ != '2.5.1':
-    import plotly.graph_objects as go
+import plotly.graph_objects as go
 
 
 import logging
@@ -108,7 +107,7 @@ class QplotlyTraceAPIView(G3WAPIView):
                     'id': qplotly.pk,
                     'data': self._get_trace(factory)
                 })
-
+                
             if 'relations' not in res and relations:
                 res.update({'relations': relations})
 
@@ -136,7 +135,7 @@ class QplotlyTraceAPIView(G3WAPIView):
         factory = QplotlyFactoring(settings, visible_region=rect, request=request, layer=layer)
 
 
-        # is possible get the first layer
+        # If possible get the first layer
         factory.source_layer = get_qgis_layer(qplotly.layers.get(qgs_layer_id=settings.source_layer_id,
                                                                     project_id=kwargs['project_id']))
         factory.rebuild()
@@ -153,6 +152,7 @@ class QplotlyTraceAPIView(G3WAPIView):
             request_data = request.query_params
 
         with_relations = request_data.get(WITH_RELATIONS_PARAM)
+       
         if with_relations:
             self._get_relations(
                 with_relations=with_relations.split(','),
@@ -168,3 +168,44 @@ class QplotlyTraceAPIView(G3WAPIView):
 
 
 
+class QplotlyTraceConfigAPIView(G3WAPIView):
+    """API return plotly trace config data
+    .. note:: This is used to get the trace config data for a plotly widget.
+    """
+
+    def get(self, request, **kwargs):
+        """Get the trace config data for a plotly widget."""
+        qplotly = QplotlyWidget.objects.get(pk=kwargs['pk'])
+
+        # load settings from db
+        settings = QplotlySettings()
+        if not settings.read_from_model(qplotly):
+            raise Exception()
+
+        # instance a QplotlyFactory
+        factory = QplotlyFactoring(settings, request=request, layer=None)
+        #factory.build_layout()
+
+        fig = go.Figure(layout=factory.layout)
+        layout = fig.to_dict()['layout']
+
+        res = {
+            'data':{
+                'type': settings.plot_type,
+                'layout': layout,
+                'config': {
+                    'displaylogo': False,
+                    'displayModeBar': True,
+                    'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio'],
+                    'editable': True,
+                    'responsive': True,
+                    'scrollZoom': False,
+                    'toImageButtonOptions': {'filename': 'Plot - ' + layout.get('title', {}).get('text', f"[{qplotly.pk}]") },
+                    'autosize': True,
+                }
+            }   
+        }
+
+        self.results.results.update(res)
+
+        return Response(self.results.results)

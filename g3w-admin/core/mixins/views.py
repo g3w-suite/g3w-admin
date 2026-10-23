@@ -6,6 +6,7 @@ from django.apps import apps
 from django.shortcuts import get_object_or_404
 from core.models import Group
 from core.utils import file_path_mime
+from core.utils.request import is_ajax
 import os
 
 
@@ -112,7 +113,7 @@ class AjaxableFormResponseMixin(object):
     """
     def form_invalid(self, form):
         response = super(AjaxableFormResponseMixin, self).form_invalid(form)
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             return JsonResponse({'status':'error', 'errors_form': form.errors})
         else:
             return response
@@ -122,7 +123,7 @@ class AjaxableFormResponseMixin(object):
         # it might do some processing (in the case of CreateView, it will
         # call form.save() for example).
         response = super(AjaxableFormResponseMixin, self).form_valid(form)
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             return JsonResponse({'status': 'ok', 'message': 'Object saved!'})
         else:
             return response

@@ -21,6 +21,7 @@ from django.contrib.auth.models import Group as UserGroup
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
+from django.core.files import File
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
 from qgis.PyQt.QtCore import QTemporaryDir
@@ -35,10 +36,12 @@ from qdjango.models import (
     GeoConstraint,
     GeoConstraintRule,
     Layer,
-    Project
+    Project,
+    ScaleVisibilityLayerConstraint
 )
+from core.models import Group as CoreGroup, G3WSpatialRefSys
 from unittest import skipIf
-from .base import QdjangoTestBase
+from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QgisProject
 
 import os
 
@@ -48,36 +51,37 @@ logger = logging.getLogger(__name__)
 # Determine if we are using an old and bugged version of QGIS
 IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 
+QGIS_FILE_SCALEVISIBILITY = 'g3wsuite_project_test_qgis340_3857.qgs'
+
 
 class TestSingleLayerConstraintsBase(QdjangoTestBase):
     """Common code for subset string and expression rules"""
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
-        cls.qdjango_project = Project.objects.all()[0]
-        cls.world = cls.qdjango_project.layer_set.filter(
-            qgs_layer_id='world20181008111156525')[0]
-        cls.spatialite_points = cls.qdjango_project.layer_set.filter(
-            qgs_layer_id='spatialite_points20190604101052075')[0]
+        super().setUp()
+        
+        self.qdjango_project = self.project.instance
+        self.world = Layer.objects.get(qgs_layer_id='world20181008111156525', project=self.qdjango_project)
+        self.spatialite_points = Layer.objects.get(qgs_layer_id='spatialite_points20190604101052075',
+                                                   project=self.qdjango_project)
         # Make a cloned layer
-        cls.cloned_project = Project(
-            group=cls.qdjango_project.group, title='My Clone')
+        self.cloned_project = Project(
+            group=self.qdjango_project.group, title='My Clone')
 
-        cls.cloned_project.qgis_file = cls.qdjango_project.qgis_file
-        cls.cloned_project.save()
-        cls.cloned_layer = cls.qdjango_project.layer_set.filter(
+        self.cloned_project.qgis_file = self.qdjango_project.qgis_file
+        self.cloned_project.save()
+        self.cloned_layer = self.qdjango_project.layer_set.filter(
             qgs_layer_id='world20181008111156525')[0]
-        cls.cloned_layer.pk = None
-        cls.cloned_layer.project = cls.cloned_project
-        cls.cloned_layer.save()
+        self.cloned_layer.pk = None
+        self.cloned_layer.project = self.cloned_project
+        self.cloned_layer.save()
         assert Layer.objects.filter(
             qgs_layer_id='world20181008111156525').count() == 2
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        QdjangoTestBase.setUpClass()
 
         # Add admin01 to a group
         cls.viewer1_group = cls.main_roles['Viewer Level 1']
@@ -87,11 +91,11 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
         cls.viewer1_group.user_set.remove(cls.test_user1)
-        cls.cloned_project.delete()
 
     def tearDown(self):
         super().tearDown()
         SingleLayerConstraint.objects.all().delete()
+        self.cloned_project.delete()
 
     def _testApiCallAdmin01(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user, returns the response"""
@@ -164,6 +168,31 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
 
         return is_rome
 
+    def _check_wfs_getfeature(self, login=True):
+        """Check for ROME in the returned content"""
+
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
+
+        c = Client()
+        if login:
+            self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeature',
+            'SERVICE': 'WFS',
+            'VERSION': '1.1.0',
+            'TYPENAME': 'world'
+        })
+
+        is_rome = b"ROME" in response.content
+        # Now query another location to make sure the whole layer was not invalidated
+        assert b"BERLIN" in response.content
+
+        if login:
+            c.logout()
+
+        return is_rome
+
 
 class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
     """Test single layer subset string constraints"""
@@ -172,6 +201,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         """Test model with user constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         constraint = SingleLayerConstraint(layer=self.world, active=True)
@@ -196,6 +226,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
             admin01, self.world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -222,6 +253,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
             admin01, self.world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -252,12 +284,16 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
 
         # for OGC service only in v an ve context
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
     def test_anonymoususer_constraint(self):
         """Test for anonymous user"""
 
         # For AnonymousUser
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
+
         self.assertTrue(self._check_subset_string(login=False))
 
         constraint_anonymous = SingleLayerConstraint(layer=self.world, active=True)
@@ -267,11 +303,23 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         rule_anonymous.save()
 
         self.assertFalse(self._check_subset_string(login=False))
+        self.assertFalse(self._check_wfs_getfeature(login=False))
+
+        # Contraints on more than one layer
+        constraint_anonymous = SingleLayerConstraint(layer=self.spatialite_points, active=True)
+        constraint_anonymous.save()
+        rule_anonymous = ConstraintSubsetStringRule(
+            constraint=constraint_anonymous, user=get_anonymous_user(), rule="pkuid = 1", anonymoususer=True)
+        rule_anonymous.save()
+
+        self.assertFalse(self._check_subset_string(login=False))
+        self.assertFalse(self._check_wfs_getfeature(login=False))
 
     def test_group_constraint(self):
         """Test model with group constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
@@ -298,6 +346,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
     @skipIf(IS_QGIS_3_10, "In QGIS 3.10 setSubsetString() always returns True")
     def test_validate_sql(self):
@@ -395,6 +444,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         """Test model with user constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         world = self.world
@@ -420,6 +470,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -438,6 +489,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk, context='e'), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -458,6 +510,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk, context='e'), "(NAME != 'ITALY')")
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -468,7 +521,11 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # For AnonymousUser
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
+
         self.assertTrue(self._check_subset_string(login=False))
+        self.assertTrue(self._check_wfs_getfeature(login=False))
 
         constraint_anonymous = SingleLayerConstraint(layer=self.world, active=True)
         constraint_anonymous.save()
@@ -477,11 +534,13 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         rule_anonymous.save()
 
         self.assertFalse(self._check_subset_string(login=False))
+        self.assertFalse(self._check_wfs_getfeature(login=False))
 
     def test_group_constraint(self):
         """Test model with group constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
@@ -508,6 +567,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         # context view + editing ve
         # =========================
@@ -529,6 +589,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         # context editing e
         # =========================
@@ -554,6 +615,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # for OWS service only for context v and ve
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
 
     def test_validate_sql(self):
@@ -768,6 +830,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         # =============================
 
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
 
         rule = ConstraintExpressionRule(
             constraint=constraint, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
@@ -982,6 +1046,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         # -----------------
 
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
 
         rule = ConstraintExpressionRule(
             constraint=constraint, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
@@ -1614,6 +1680,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                                         rule="intersects_bbox( $geometry,  geom_from_wkt( 'POLYGON((8 51, 11 51, 11 52, 11 52, 8 51))') )")
         rule.save()
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         rule.delete()
 
@@ -1773,12 +1840,12 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         constraint.save()
 
         # assign permissions
-        assign_perm('view_project', self.test_viewer1, self.qdjango_project)
-        assign_perm('view_project', self.test_viewer1_3, self.qdjango_project)
-        assign_perm('view_project', self.test_gu_viewer1, self.qdjango_project)
-
         # also to Anonymous user
-        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for u in (self.test_viewer1, self.test_viewer1_3, self.test_gu_viewer1, get_anonymous_user()):
+            assign_perm('view_project', u, self.qdjango_project)
+            for l in self.qdjango_project.layer_set.all():
+                assign_perm("view_layer", u, l)
+
 
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
@@ -2225,3 +2292,237 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         })
 
         self.assertTrue(b'another point' in response.content)
+
+
+class TestVisibilityScaleLayerConstraintFilters(QdjangoTestBase):
+    """ For VisibilityScaleLayerConstraint filters """
+
+    def setUp(self):
+
+        # main project group
+        self.project_group = CoreGroup(name='Group3857', title='Group3857', header_logo_img='',
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+
+        self.project_group.save()
+
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_SCALEVISIBILITY), 'r'))
+        self.project = QgisProject(qgis_project_file)
+        self.project.title = 'A project 3857'
+        self.project.group = self.project_group
+        self.project.save()
+
+    def test_visibilityscalelayer_filter(self):
+
+        # assign permissions
+        # also to Anonymous user
+
+        self.world = self.project.instance.layer_set.get(qgs_layer_id='countries_simpl20171228095706310')
+
+        for u in (self.test_viewer1, self.test_viewer1_3, self.test_gu_viewer1, get_anonymous_user()):
+            assign_perm('view_project', u, self.project.instance)
+            for l in self.project.instance.layer_set.all():
+                assign_perm("view_layer", u, l)
+
+        # Build visibilitiscalelayercontraint
+        scvc = ScaleVisibilityLayerConstraint.objects.create(
+            user=self.test_viewer1,
+            maxscale=400000,
+            minscale=600000,
+            layer=self.world
+        )
+
+        # For user group test_gu_viewer1
+        scvc = ScaleVisibilityLayerConstraint.objects.create(
+            group=self.test_gu_viewer1,
+            maxscale=400000,
+            minscale=600000,
+            layer=self.world
+        )
+
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.project.instance.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.project.instance.id})
+
+        expected_1_feature = b'{"crs":{"properties":{"name":"urn:ogc:def:crs:EPSG::3857"},"type":"name"},"features":[{"featureType":"countries_simpl20171228095706310","geometry":null,"id":"countries_simpl20171228095706310.18","properties":{"AREA_KM2":301230,"CAPITAL_BR":"Roma","CAPITAL_DE":"Rom","CAPITAL_EN":"Rome","CAPITAL_ES":"Roma","CAPITAL_FR":"Rome","CAPITAL_IT":"Roma","ISOCODE":"IT","ISO_NUM":380,"NAME_BR":"It\xef\xbf\xbdlia","NAME_DE":"Italien","NAME_EN":"Italy","NAME_ES":"Italia","NAME_FR":"Italie","NAME_IT":"Italia","NAME_LOCAL":"Italia","POPULATION":58103033},"type":"Feature"}],"type":"FeatureCollection"}'
+        expected_no_feature = b'{"features":[],"type":"FeatureCollection"}'
+
+
+        # Make a request to the server
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+
+        # TEST SCALE 1:1000.000
+        # EXPECTED: 1 features
+        # ----------------------
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
+            # 'BBOX': '36.44,0.66,49.06,24.57',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        print(response.content)
+        self.assertEqual(response.content, expected_1_feature)
+
+        c.logout()
+
+        # TEST SCALE 1:1000.000
+        # EXPECTED: no features
+        # ----------------------
+
+
+
+        # Check for user and user group
+        for u in (self.test_viewer1, self.test_viewer1_2, self.test_viewer1_3):
+            
+            self.assertTrue(c.login(username=u.username, password=u.username))
+
+            response = c.get(ows_url, {
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'SERVICE': 'WMS',
+                'LAYERS': self.world.qgs_layer_id,
+                'CRS': 'EPSG:3857',
+                'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
+                #'BBOX': '36.44,0.66,49.06,24.57',
+                'FORMAT': 'image/png',
+                'INFO_FORMAT': 'application/json',
+                'WIDTH': '652',
+                'HEIGHT': '1243',
+                'QUERY_LAYERS': self.world.qgs_layer_id,
+                'FEATURE_COUNT': 1,
+                'FI_POINT_TOLERANCE': 10,
+                'I': '326',
+                'J': '621',
+            })
+
+            self.assertEqual(response.status_code, 200)
+            if u == self.test_viewer1_3:
+                self.assertEqual(response.content, expected_1_feature)
+            else:
+                self.assertEqual(response.content, expected_no_feature)
+
+            c.logout()
+
+        # TEST SCALE 1:1000.000
+        # EXPECTED: 1 features
+        # ----------------------
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1239987.8851049375,5168850.035923372,1412496.5634556278,5497727.777012187',
+            # 'BBOX': '36.44,0.66,49.06,24.57',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_1_feature)
+
+        c.logout()
+
+        self.assertTrue(c.login(username=self.test_viewer1.username, password=self.test_viewer1.username))
+
+        # TEST SCALE 1:500.000
+        # EXPECTED: 1 features
+        # ----------------------
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1282422.3031204767,5253651.691721216,1368980.1245507998,5418669.133497123',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_1_feature)
+
+        # TEST SCALE 1:200.000
+        # EXPECTED: 0 features
+        # ----------------------
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1309914.540790124,5295526.849377409,1344416.2764602622,5361302.397595171',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_no_feature)
+
+        c.logout()
+
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+
+        # TEST SCALE 1:200.000
+        # EXPECTED: 1 features
+        # ----------------------
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': self.world.qgs_layer_id,
+            'CRS': 'EPSG:3857',
+            'BBOX': '1309914.540790124,5295526.849377409,1344416.2764602622,5361302.397595171',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '652',
+            'HEIGHT': '1243',
+            'QUERY_LAYERS': self.world.qgs_layer_id,
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '326',
+            'J': '621',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_1_feature)

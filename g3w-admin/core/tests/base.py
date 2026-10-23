@@ -18,16 +18,6 @@ from .utils import clear_dff_image
 
 
 @override_settings(
-    CACHES={
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'some',
-        },
-        'qdjango': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'some',
-        }
-    },
     LANGUAGE_CODE='en',
     LANGUAGES=(
         ('en', 'English'),

@@ -25,7 +25,6 @@ class FilemanagerViewTest(BaseFilemanagerTestCase):
         url = reverse('filemanager-home')
         client = Client()
 
-        print(url)
         # TEST ACL
         # ====================================
         # not login: redirect to login page.
@@ -35,6 +34,12 @@ class FilemanagerViewTest(BaseFilemanagerTestCase):
 
         # as editor1
         client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        res = client.get(url)
+        self.assertEqual(res.status_code, 200)
+        client.logout()
+
+        # as viewer1
+        client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
         res = client.get(url)
         self.assertEqual(res.status_code, 403)
         client.logout()
@@ -52,7 +57,6 @@ class FilemanagerViewTest(BaseFilemanagerTestCase):
         url = reverse('filemanager-serve-file-config', args=['filemanager.config.json'])
         client = Client()
 
-        print (url)
         # TEST ACL
         # ====================================
         # not login: redirect to login page.
@@ -62,6 +66,12 @@ class FilemanagerViewTest(BaseFilemanagerTestCase):
 
         # as editor1
         client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        res = client.get(url)
+        self.assertEqual(res.status_code, 200)
+        client.logout()
+
+        # as viewer1
+        client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
         res = client.get(url)
         self.assertEqual(res.status_code, 403)
         client.logout()

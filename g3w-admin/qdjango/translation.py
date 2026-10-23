@@ -11,7 +11,7 @@ __copyright__ = 'Copyright 2020, GIS3W'
 
 
 from modeltranslation.translator import register, TranslationOptions
-from .models import Project
+from .models import Project, Message
 
 
 @register(Project)
@@ -20,5 +20,13 @@ class GeneralSuiteDataTranslationOptions(TranslationOptions):
     fields = (
         'title_ur',
         'description',
+    )
+
+@register(Message)
+class GeneralSuiteDataTranslationOptions(TranslationOptions):
+    """ Qdjango Message model translation """
+    fields = (
+        'title',
+        'body',
     )
 

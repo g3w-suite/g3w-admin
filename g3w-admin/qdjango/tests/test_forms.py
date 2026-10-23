@@ -19,7 +19,7 @@ from core.tests.utils import create_dff_image
 from core.models import MapControl, ProjectMapUrlAlias
 from core.forms import GroupForm
 from .base import QdjangoTestBase, G3W_VIEWER1
-from .utils import create_dff_project
+from .utils import create_dff_project, create_dff_project_qgz
 from editing.models import EDITING_ATOMIC_PERMISSIONS
 from copy import copy
 
@@ -61,7 +61,8 @@ class QdjangoFormsTest(QdjangoTestBase):
             'toc_layers_init_status': 'not_collapsed',
             'toc_themes_init_status': 'collapsed',
             'legend_position': 'tab',
-            'url_alias': 'test_url_alias_name'
+            'url_alias': 'test_url_alias_name',
+            'wms_getmap_format': 'image/png; mode=8bit'
         }
 
         form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data)
@@ -87,10 +88,13 @@ class QdjangoFormsTest(QdjangoTestBase):
 
         self.assertEqual(len(Project.objects.all()), 2)
 
-        # Toc_tab_default by base layers saved into parent group
-        self.assertEqual(len(form.fields['toc_tab_default'].choices), 2)
+        # Toc_tab_default saved into parent group
+        self.assertEqual(len(form.fields['toc_tab_default'].choices), 1)
 
         # Save project as into project CRUD views
+        # 2026-04-29: set 'thumbnail' cleaned_data to None for the new django-file-form version
+        form.cleaned_data['thumbnail'] = None
+        
         form.qgisProject.save(**form.cleaned_data)
         if not form.instance.pk:
             form.instance = form.qgisProject.instance
@@ -219,6 +223,7 @@ class QdjangoFormsTest(QdjangoTestBase):
         })
 
         form = GroupForm(request=self.request, data=form_data, instance=self.project_group, initial=initial_form_data)
+        print (form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -253,4 +258,30 @@ class QdjangoFormsTest(QdjangoTestBase):
 
         self.assertTrue(new_viewer.has_perm('qdjango.view_project', p))
 
+
+        # TEST UPLOAD QGZ PROJECT FILE
+        # =================================================
+
+        # upload qgis_file
+        uf = create_dff_project_qgz('qgis_file')
+
+        # Test Create
+        # =========================================
+
+        form_data = {
+            'form_id': uf.form_id,
+            'feature_count_wms': 10,
+            'multilayer_query': 'single',
+            'multilayer_querybybbox': 'single',
+            'multilayer_querybypolygon': 'single',
+            'toc_tab_default': 'layers',
+            'toc_layers_init_status': 'not_collapsed',
+            'toc_themes_init_status': 'collapsed',
+            'legend_position': 'tab',
+            'url_alias': 'test_url_alias_name_qgz',
+            'wms_getmap_format': 'image/png; mode=8bit'
+        }
+
+        form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data)
+        self.assertTrue(form.is_valid())
 

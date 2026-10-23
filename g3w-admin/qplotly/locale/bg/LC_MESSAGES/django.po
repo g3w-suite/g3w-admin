@@ -1,0 +1,115 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-05 19:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: qplotly/api/widgets/serializers.py:44
+#, python-brace-format
+msgid ""
+"Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
+"source_layer_id}"
+msgstr ""
+"Слой с id {layer.qgs_layer_id} не е равен на настройката {settings."
+"source_layer_id}"
+
+#: qplotly/models.py:12
+msgid "XML original settings"
+msgstr "Оригинални XML настройки"
+
+#: qplotly/models.py:13
+msgid "Layer datasource"
+msgstr "Източник на данни на слоя"
+
+#: qplotly/models.py:14
+msgid "Use selected features only"
+msgstr "Използвай само избрани обекти"
+
+#: qplotly/models.py:15
+msgid "Use visible features only"
+msgstr "Използвай само видими обекти"
+
+#: qplotly/models.py:16
+msgid "Plot type"
+msgstr "Тип графика"
+
+#: qplotly/models.py:17
+msgid "Plot title"
+msgstr "Заглавие на графика"
+
+#: qplotly/models.py:19
+msgid "Set as default plot on starting map"
+msgstr "Задай като графика по подразбиране при стартиране на картата"
+
+#: qplotly/models.py:24
+msgid "Order"
+msgstr "Ред"
+
+#: qplotly/models.py:31
+msgid "SChart show position"
+msgstr "Позиция на показване на SChart"
+
+#: qplotly/models.py:48
+msgid "XML is not a DataPlotly settings."
+msgstr "XML не е настройка на DataPlotly."
+
+#: qplotly/models.py:54
+#, python-brace-format
+msgid ""
+"Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
+msgstr ""
+"Слой с qgs_layer_id={settings.source_layer_id} не е наличен в базата данни"
+
+#: qplotly/models.py:58
+msgid ""
+"Layer DataPlotly settings layer datasource is not equal to datasource into "
+"values."
+msgstr ""
+"Източникът на данни на слоя в настройките DataPlotly не съвпада с източника "
+"на данни в стойностите."
+
+#: qplotly/templates/qplotly/layer_action.html:8
+msgid "Qplotly widgets"
+msgstr "Qplotly джаджи"
+
+#: qplotly/templates/qplotly/plots_list_order.html:5
+msgid ""
+"<b>Drag</b> and <b>drop</b> the following table's rows to change the widget "
+"list order"
+msgstr "<b>Плъзнете</b> и <b>пуснете</b> редовете в таблицата, за да промените реда на списъка с джаджите"
+
+#: qplotly/templates/qplotly/plots_list_order.html:10
+msgid "Title"
+msgstr "Заглавие"
+
+#: qplotly/templates/qplotly/plots_list_order.html:11
+msgid "Type"
+msgstr "Тип"
+
+#: qplotly/templates/qplotly/plots_list_order_action.html:6
+#: qplotly/templates/qplotly/plots_list_order_action.html:9
+msgid "Project's Qploty Widgets order"
+msgstr "Ред на Qploty джаджите на проекта"
+
+#~ msgid "Actions"
+#~ msgstr "Действия"
+
+#~ msgid "Name"
+#~ msgstr "Име"
+
+#~ msgid "Linked"
+#~ msgstr "Свързан"

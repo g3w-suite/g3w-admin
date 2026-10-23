@@ -1,0 +1,10 @@
+{% load i18n %}
+{% trans 'Dear' %} {{user.username}},
+
+{% trans 'your profile was activated by administrators' %}.
+
+{% trans 'Now you can make the login' %}!
+
+{{ scheme }}://{{ site }}{% url 'login' %}
+
+{{ SETTINGS.REGISTRATION_EMAIL_BODY_SIGN }}

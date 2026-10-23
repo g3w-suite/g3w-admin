@@ -1,14 +1,14 @@
 from django.conf import settings
 from django.apps import apps
 from django.urls import reverse
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qdjango.utils.qgis import explode_expression
 from collections import OrderedDict
 
 import copy
 
 from qgis.core import QgsFieldConstraints, Qgis, QgsExpression, QgsExpressionNode
-from qgis.PyQt.QtCore import QVariant, QDate, QDateTime
+from qgis.PyQt.QtCore import QVariant, QDate, QDateTime, NULL
 
 # relations data type
 RELATIONS_ONE_TO_ONE = 'ONE'
@@ -91,12 +91,14 @@ FIELD_TYPES_MAPPING = {
     'ULONG': FIELD_TYPE_FLOAT,
     'USHORT': FIELD_TYPE_FLOAT,
     'UCHAR': FIELD_TYPE_CHAR,
-    'FLOAT': FIELD_TYPE_FLOAT
+    'FLOAT': FIELD_TYPE_FLOAT,
+    'PYQT_PYOBJECT': FIELD_TYPE_VARCHAR, # For not main geometry field
 }
 
 
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
-                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='', pk=False, ** kwargs):
+                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='',
+                     pk=False, ** kwargs):
     """
     Build editing form field for client.
     """
@@ -126,7 +128,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
     if required:
         ret['validate']['required'] = True
 
-    if 'default' in kwargs and kwargs['default']:
+    if 'default' in kwargs and kwargs['default'] is not None:
         ret['input']['options']['default'] = kwargs['default']
 
     if inputType in (FORM_FIELD_TYPE_LAYERPICKER, ) and 'pickerdata' in kwargs:
@@ -140,12 +142,15 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
 
 def mapLayerAttributes(layer, formField=False, **kwargs):
     """
-    Map database columns data from layer by type for client editing
+    Map database columns data from layer by type for client
     """
 
     mappingData = FIELD_TYPES_MAPPING
 
-    fields = eval(layer.database_columns) if layer.database_columns else None
+    if 'style' in kwargs:
+        fields = layer.get_fields_style(kwargs['style'])
+    else:
+        fields = eval(layer.database_columns) if layer.database_columns else None
     fieldsMapped = copy.deepcopy(fields)
 
     # exclude if set:
@@ -222,6 +227,22 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
     pk_attributes = qgis_layer.primaryKeyAttributes()
 
+    # Get available Join's fields
+    join_fields = {}
+    for order, join in enumerate(qgis_layer.vectorJoins()):
+        join_id = f'{qgis_layer.id()}_vectorjoin_{order}'
+        joinlayer_pk_attributes = join.joinLayer().primaryKeyAttributes()
+        for i, f in enumerate(join.joinLayer().fields()):
+            editable = join.isEditable()
+
+            # Check if referencing field is PK
+            if i in joinlayer_pk_attributes:
+                editable = False
+            join_fields[join.prefixedFieldName(f)] = {
+                'editable': editable,
+                'join_id': join_id}
+
+
     # Determine if we are using an old and bugged version of QGIS
     IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 
@@ -230,7 +251,10 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
         if field.name() not in fieldsToExclude and field.name() in kwargs['fields']:
 
             editor_widget_setup = field.editorWidgetSetup()
-            internal_typename = QVariant.typeToName(field.type()).upper()
+            # Local import to avoid circular import at Django startup
+            # (core.models -> core.utils.structure -> core.utils.qgisapi -> qdjango.models)
+            from core.utils.qgisapi import qvariant_type_name
+            internal_typename = (qvariant_type_name(field.type()) or '').upper()
             if internal_typename in FIELD_TYPES_MAPPING:
 
                 # Get constraints and default clause to define if the field is editable
@@ -247,10 +271,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     field.constraints().constraintStrength(
                         QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
                 default_clause = data_provider.defaultValueClause(field_index)
+                default_clause = default_clause if default_clause != 'nextval(NULL)' else ''
 
                 # default value for editing from qgis_layer
                 if 'default' not in kwargs:
-                    default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) \
+                    default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) not in (None, NULL) \
                         else None
                 else:
                     default_value = kwargs['default']
@@ -282,8 +307,6 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 else:
                     is_pk = (field_index in pk_attributes)
 
-                #
-
                 toRes[field.name()] = editingFormField(
                     field.name(),
                     required=not_null,
@@ -314,7 +337,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     if default_value:
                         toRes[field.name()]['input']['options']['default'] = default_value
 
-                    if fieldType == FIELD_TYPE_BOOLEAN:
+                    if fieldType == FIELD_TYPE_BOOLEAN and toRes[field.name()]['input']['type'] in (FORM_FIELD_TYPE_RADIO, FORM_FIELD_TYPE_CHECK):
                         toRes[field.name()]['input']['options']['values'] = [
                                 {'checked': True, 'value': True},
                                 {'checked': False, 'value': False}
@@ -333,14 +356,29 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 has_default_value_expression = False
                 if field.defaultValueDefinition().expression() != '':
                     exp = QgsExpression(field.defaultValueDefinition().expression())
-                    if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral:
-                        toRes[field.name()]['input']['options']['default_expression'] = \
-                            explode_expression(field.defaultValueDefinition().expression())
 
-                        # Check update if expression default value has to run also on update e not
-                        # only on insert newone
-                        toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
-                            if field.defaultValueDefinition().applyOnUpdate() else False
+                    # Important: 
+                    # ---------------------------------------------------------------------------------------------
+                    # Check if expression is valid and not a literal value
+                    # Disabled for now  and open to every nodeType()
+                    # left commented for future check if we want to limit to some nodeType() only
+                    # 2026-02-19: re-enabled check for literal expression to avoid explode literal value as expression
+                    #if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral:
+                    toRes[field.name()]['input']['options']['default_expression'] = \
+                        explode_expression(field.defaultValueDefinition().expression())
+
+                    # Check update if expression default value has to run also on update e not
+                    # only on insert newone
+                    toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
+                        if field.defaultValueDefinition().applyOnUpdate() else False
+
+                # Check for Join's field.
+                # About joins in QGIS control the join settings for editing.
+                try:
+                    toRes[field.name()]['vectorjoin_id'] = join_fields[field.name()]['join_id']
+                    toRes[field.name()]["editable"] = join_fields[field.name()]["editable"]
+                except:
+                    pass
 
         field_index += 1
 
@@ -368,6 +406,7 @@ class APIVectorLayerStructure(object):
     _featureLocks = None
     _geometryType = None
     _fields = None
+    _editing = None
 
     def __init__(self, **kwargs):
 
@@ -377,6 +416,7 @@ class APIVectorLayerStructure(object):
         self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
         self.geometryType = kwargs.get('geometryType', self._geometryType)
         self.fields = kwargs.get('fields', self._fields)
+        self.editing = kwargs.get('editing', self._fields)
 
     def setPkField(self, pkField):
         self._pkField = pkField
@@ -390,6 +430,9 @@ class APIVectorLayerStructure(object):
     def setFields(self, fields):
         self.fields = fields
 
+    def setEditing(self, editing):
+        self.editing = editing
+
     def as_dict(self):
 
         res = {
@@ -402,6 +445,11 @@ class APIVectorLayerStructure(object):
             },
             'featurelocks': self.featureLocks,
         }
+
+        if self.editing:
+            res['vector'].update({
+                'editing': self.editing
+            })
 
         return res
 

@@ -3,52 +3,62 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2023-11-30 10:45+0000\n"
+"PO-Revision-Date: 2023-11-30 11:48+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.1\n"
 
-#: editing/static/editing/js/widget.js:112
+#: static/editing/js/widget.js:132
 msgid "User"
 msgstr ""
 
-#: editing/static/editing/js/widget.js:113
+#: static/editing/js/widget.js:133
 msgid "Add"
 msgstr "Aggiungi"
 
-#: editing/static/editing/js/widget.js:114
+#: static/editing/js/widget.js:134
 #, fuzzy
 #| msgid "Update constraint"
 msgid "Update geometry"
 msgstr "Aggiorna vincolo"
 
-#: editing/static/editing/js/widget.js:115
+#: static/editing/js/widget.js:135
 msgid "Delete"
 msgstr "Elimina"
 
-#: editing/static/editing/js/widget.js:116
+#: static/editing/js/widget.js:136
 #, fuzzy
 #| msgid "Update constraint"
 msgid "Update attributes"
 msgstr "Aggiorna vincolo"
 
+#: static/editing/js/widget.js:205
+msgid "Layer"
+msgstr ""
+
+#: static/editing/js/widget.js:206
+msgid "Add logging field"
+msgstr "Campo di log per le creazioni"
+
+#: static/editing/js/widget.js:207
+msgid "Update logging field"
+msgstr "Campo di log per le modifiche"
+
 #~ msgid "Save"
 #~ msgstr "Salva"
 
 #~ msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
-#~ msgstr ""
-#~ "Seleziona il layer da utilizzare come vincolo, solo geometrie Poligonali "
-#~ "o Multipoligonali"
+#~ msgstr "Seleziona il layer da utilizzare come vincolo, solo geometrie Poligonali o Multipoligonali"
 
 #~ msgid "Constraint layer"
 #~ msgstr "Layer vincolo"

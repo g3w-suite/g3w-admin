@@ -1,0 +1,427 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Ivan Ivanov <ivan.ivanov@suricactus.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-05 19:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: usersmanage/forms.py:103
+msgid "Editor1 user"
+msgstr "Потребител редактор ниво 1"
+
+#: usersmanage/forms.py:104
+msgid "Set Editor Level 1 owner"
+msgstr "Задай собственик редактор ниво 1"
+
+#: usersmanage/forms.py:107
+msgid "Editor2 user"
+msgstr "Потребител редактор ниво 2"
+
+#: usersmanage/forms.py:110
+msgid "Viewer users"
+msgstr "Потребители с преглед"
+
+#: usersmanage/forms.py:117
+msgid "Editor user groups"
+msgstr "Потребителски групи редактори"
+
+#: usersmanage/forms.py:124
+msgid "Viewer user groups"
+msgstr "Потребителски групи прегледачи"
+
+#: usersmanage/forms.py:130
+msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
+msgstr ""
+"Разпространи правата на <b>НОВИ</b> прегледачи и нови потребителски групи "
+"прегледачи"
+
+#: usersmanage/forms.py:294
+msgid "Department"
+msgstr "Отдел"
+
+#: usersmanage/forms.py:295 usersmanage/templates/usersmanage/user_list.html:48
+msgid "Backend"
+msgstr "Администрация"
+
+#: usersmanage/forms.py:296 usersmanage/models.py:21
+msgid "Avatar"
+msgstr "Аватар"
+
+#: usersmanage/forms.py:297 usersmanage/forms.py:922 usersmanage/models.py:22
+msgid "Other informations"
+msgstr "Друга информация"
+
+#: usersmanage/forms.py:302
+msgid "Select roles for this user"
+msgstr "Избери роли за този потребител"
+
+#: usersmanage/forms.py:303
+msgid "Main roles"
+msgstr "Основни роли"
+
+#: usersmanage/forms.py:310
+msgid ""
+"Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
+msgstr ""
+"Избери <b>редакторски групи</b> за този потребител, може да се добавят само "
+"редактори ниво 2"
+
+#: usersmanage/forms.py:311
+msgid "User editor groups"
+msgstr "Редакторски групи на потребителя"
+
+#: usersmanage/forms.py:318
+msgid ""
+"Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
+msgstr ""
+"Избери <b>групи прегледачи</b> за този потребител, може да се добавят само "
+"прегледачи ниво 1"
+
+#: usersmanage/forms.py:319
+msgid "User viewer groups"
+msgstr "Групи прегледачи на потребителя"
+
+#: usersmanage/forms.py:362
+msgid "Anagraphic"
+msgstr "Данни за потребител"
+
+#: usersmanage/forms.py:381
+msgid "ACL/Roles"
+msgstr "ACL/Роли"
+
+#: usersmanage/forms.py:400
+msgid "Login data"
+msgstr "Данни за вход"
+
+#: usersmanage/forms.py:418
+msgid "User data"
+msgstr "Данни за потребителя"
+
+#: usersmanage/forms.py:446
+msgid "User backend"
+msgstr "Потребителска администрация"
+
+#: usersmanage/forms.py:649
+msgid "User can't be Editor level 1 and at same time Editor level 2"
+msgstr ""
+"Потребителят не може да е редактор ниво 1 и същевременно редактор ниво 2"
+
+#: usersmanage/forms.py:663
+msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
+msgstr ""
+"Потребителят не може да принадлежи към **редакторски групи**, ако не е "
+"редактор ниво 2"
+
+#: usersmanage/forms.py:677
+msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
+msgstr ""
+"Потребителят не може да принадлежи към **групи прегледачи**, ако не е "
+"прегледач ниво 1"
+
+#: usersmanage/forms.py:695
+msgid "Avatar is no a valid image"
+msgstr "Аватарът не е валидно изображение"
+
+#: usersmanage/forms.py:708 usersmanage/forms.py:942
+msgid "A user with that email already exists."
+msgstr "Потребител с този имейл вече съществува."
+
+#: usersmanage/forms.py:739
+msgid "Password"
+msgstr "Парола"
+
+#: usersmanage/forms.py:741
+msgid "Password confirmation"
+msgstr "Потвърждение на паролата"
+
+#: usersmanage/forms.py:743
+msgid "Enter the same password as above, for verification."
+msgstr "Въведете същата парола като горната за потвърждение."
+
+#: usersmanage/forms.py:798
+#: usersmanage/templates/usersmanage/user_group_list.html:29
+msgid "Role"
+msgstr "Роля"
+
+#: usersmanage/forms.py:799
+#: usersmanage/templates/usersmanage/user_group_list.html:30
+#: usersmanage/templates/usersmanage/user_list.html:10
+msgid "Users"
+msgstr "Потребители"
+
+#: usersmanage/forms.py:815
+#: usersmanage/templates/usersmanage/ajax/user_group_detail.html:5
+msgid "Group"
+msgstr "Група"
+
+#: usersmanage/forms.py:852
+#, python-brace-format
+msgid "User {user} has not role {cop_role}"
+msgstr "Потребителят {user} няма роля {cop_role}"
+
+#: usersmanage/forms.py:958
+msgid "No user is available with this email."
+msgstr "Няма потребител с този имейл."
+
+#: usersmanage/models.py:23
+msgid "Registered user"
+msgstr "Регистриран потребител"
+
+#: usersmanage/models.py:24
+msgid "User activated by administrator"
+msgstr "Потребител активиран от администратор"
+
+#: usersmanage/models.py:26
+msgid "User changed password at first login"
+msgstr "Потребителят е сменил паролата при първо влизане"
+
+#: usersmanage/models.py:59
+msgid "Group role"
+msgstr "Роля на групата"
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:2
+#: usersmanage/templates/django_registration/activation_email_body.txt:2
+msgid "Dear"
+msgstr "Уважаеми"
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:4
+msgid "your profile was activated by administrators"
+msgstr "профилът Ви беше активиран от администраторите"
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:6
+msgid "Now you can make the login"
+msgstr "Сега можете да влезете в системата"
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_subject.txt:2
+msgid "your account is active"
+msgstr "Вашият акаунт е активен"
+
+#: usersmanage/templates/django_registration/activation_admin_email_body.txt:2
+msgid "Dear administrator"
+msgstr "Уважаеми администратор"
+
+#: usersmanage/templates/django_registration/activation_admin_email_body.txt:4
+msgid ""
+"a new user has registered, to activate the new user, follow or copy the link "
+"in your browser"
+msgstr ""
+"регистриран е нов потребител, за да активирате новия потребител, следвайте "
+"или копирайте линка в браузъра си"
+
+#: usersmanage/templates/django_registration/activation_admin_email_subject.txt:2
+msgid "New registration by"
+msgstr "Нова регистрация от"
+
+#: usersmanage/templates/django_registration/activation_complete.html:7
+msgid "Activation Complete!"
+msgstr "Активирането е успешно!"
+
+#: usersmanage/templates/django_registration/activation_complete.html:9
+msgid "Your account is active"
+msgstr "Вашият акаунт е активен"
+
+#: usersmanage/templates/django_registration/activation_complete.html:12
+msgid "Now you can make the"
+msgstr "Сега можете да извършите"
+
+#: usersmanage/templates/django_registration/activation_email_body.txt:4
+msgid ""
+"please got to the following link or copy it and paste in you browser to "
+"activate your account and validate your email"
+msgstr ""
+"моля, посетете следния линк или го копирайте и поставете в браузъра си, за "
+"да активирате акаунта си и потвърдите имейла"
+
+#: usersmanage/templates/django_registration/activation_email_body.txt:8
+msgid "The link will be active for"
+msgstr "Линкът ще бъде активен за"
+
+#: usersmanage/templates/django_registration/activation_email_body.txt:8
+msgid "days"
+msgstr "дни"
+
+#: usersmanage/templates/django_registration/activation_email_subject.txt:2
+msgid "active your account"
+msgstr "активирайте акаунта си"
+
+#: usersmanage/templates/django_registration/activation_failed.html:7
+msgid "Activation Failed!"
+msgstr "Активирането неуспешно!"
+
+#: usersmanage/templates/django_registration/activation_failed.html:9
+msgid "An error occurred activation of your account"
+msgstr "Възникна грешка при активирането на акаунта ви"
+
+#: usersmanage/templates/django_registration/registration_closed.html:7
+msgid "Sorry but the registration is closed!"
+msgstr "Съжаляваме, но регистрацията е затворена!"
+
+#: usersmanage/templates/django_registration/registration_complete.html:7
+msgid "Registration complete!"
+msgstr "Регистрацията е успешна!"
+
+#: usersmanage/templates/django_registration/registration_complete.html:10
+msgid ""
+"\n"
+"            Your registration is being examined by the administrators, once "
+"your account\n"
+"            is activated you will receive an activation confirmation email.\n"
+"        "
+msgstr ""
+"\n"
+"            Регистрацията ви се преглежда от администраторите, след като "
+"вашият акаунт\n"
+"            бъде активиран, ще получите потвърдителен имейл.\n"
+"        "
+
+#: usersmanage/templates/django_registration/registration_complete.html:17
+msgid ""
+"\n"
+"            You will receive a mail with a link to activate you account and "
+"validate your email.\n"
+"        "
+msgstr ""
+"\n"
+"            Ще получите имейл с линк за активиране на акаунта ви и "
+"потвърждение на имейла.\n"
+"        "
+
+#: usersmanage/templates/django_registration/registration_form.html:17
+msgid "ERROR"
+msgstr "ГРЕШКА"
+
+#: usersmanage/templates/django_registration/registration_form.html:78
+msgid "Sign Up"
+msgstr "Регистрация"
+
+#: usersmanage/templates/socialaccount/provider_list.html:6
+msgid "OR"
+msgstr "ИЛИ"
+
+#: usersmanage/templates/usersmanage/ajax/user_detail.html:5
+#: usersmanage/templates/usersmanage/user_list.html:20
+msgid "User"
+msgstr "Потребител"
+
+#: usersmanage/templates/usersmanage/user_form.html:85
+msgid "System users"
+msgstr "Потребители на системата"
+
+#: usersmanage/templates/usersmanage/user_form.html:86
+#: usersmanage/templates/usersmanage/user_group_form.html:57
+msgid "System users list and property"
+msgstr "Списък системни потребители и свойства"
+
+#: usersmanage/templates/usersmanage/user_form.html:96
+#: usersmanage/templates/usersmanage/user_group_form.html:67
+msgid "Alert"
+msgstr "Предупреждение"
+
+#: usersmanage/templates/usersmanage/user_form.html:97
+#: usersmanage/templates/usersmanage/user_group_form.html:68
+msgid "Some errors on form. Check it and send again."
+msgstr "Има грешки във формата. Проверете и изпратете отново."
+
+#: usersmanage/templates/usersmanage/user_group_form.html:56
+msgid "System user groups"
+msgstr "Потребителски групи на системата"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:10
+#: usersmanage/templates/usersmanage/user_list.html:31
+msgid "User groups"
+msgstr "Потребителски групи"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:20
+msgid "User group"
+msgstr "Потребителска група"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:27
+#: usersmanage/templates/usersmanage/user_list.html:27
+msgid "Actions"
+msgstr "Действия"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:28
+msgid "Name"
+msgstr "Име"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:31
+#: usersmanage/templates/usersmanage/user_list.html:46
+msgid "Created"
+msgstr "Създадено"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:39
+#: usersmanage/templates/usersmanage/user_list.html:59
+msgid "Show detail"
+msgstr "Покажи подробности"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:43
+#: usersmanage/templates/usersmanage/user_list.html:64
+msgid "Edit"
+msgstr "Редактирай"
+
+#: usersmanage/templates/usersmanage/user_group_list.html:48
+#: usersmanage/templates/usersmanage/user_list.html:69
+msgid "Delete"
+msgstr "Изтрий"
+
+#: usersmanage/templates/usersmanage/user_list.html:28
+msgid "Username"
+msgstr "Потребителско име"
+
+#: usersmanage/templates/usersmanage/user_list.html:30
+msgid "Roles"
+msgstr "Роли"
+
+#: usersmanage/templates/usersmanage/user_list.html:33
+msgid "Macro groups"
+msgstr "Макро групи"
+
+#: usersmanage/templates/usersmanage/user_list.html:37
+msgid "Active"
+msgstr "Активен"
+
+#: usersmanage/templates/usersmanage/user_list.html:40
+msgid "Superuser"
+msgstr "Суперпотребител"
+
+#: usersmanage/templates/usersmanage/user_list.html:41
+msgid "Staff"
+msgstr "Персонал"
+
+#: usersmanage/templates/usersmanage/user_list.html:44
+msgid "First name"
+msgstr "Име"
+
+#: usersmanage/templates/usersmanage/user_list.html:45
+msgid "Last name"
+msgstr "Фамилия"
+
+#: usersmanage/utils.py:236
+msgid "ACL Users"
+msgstr "ACL Потребители"
+
+#: usersmanage/views.py:262
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr "Не е намерен %(verbose_name)s, съответстващ на заявката"
+
+#: usersmanage/views.py:411
+msgid "Username recovery"
+msgstr "Възстановяване на потребителско име"
+
+#: usersmanage/views.py:418
+msgid "Username sent"
+msgstr "Потребителското име е изпратено"

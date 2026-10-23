@@ -4,7 +4,7 @@ from django.views.generic import FormView, View
 from django.http import HttpResponse, JsonResponse
 from django.db import transaction
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
 import TileStache
 from rest_framework.views import APIView
@@ -121,7 +121,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                         "proj4": crs.toProj4(),
                         "geographic": crs.isGeographic(),
                         "axisinverted": crs.hasAxisInverted(),
-                        "extent": get_crs_bbox(crs)
+                        "extent": [0, 0, 8388608, 8388608] #get_crs_bbox(crs)
                     },
                     "url": f"/caching/api/{self.layer._meta.app_label}{self.layer.pk}/"+"{z}/{x}/{y}.png",
                     "servertype": "TMS",
@@ -153,8 +153,6 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
     @transaction.atomic
     def form_valid(self, form):
-
-        #tilestache_cfg = get_config()
 
         if form.cleaned_data['active']:
             if not self.activated:

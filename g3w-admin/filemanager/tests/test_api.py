@@ -38,6 +38,12 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
         # as editor1
         client.login(username=self.test_editor1.username, password=self.test_editor1.username)
         res = client.get(url)
+        self.assertEqual(res.status_code, 200)
+        client.logout()
+
+        # as viewer1
+        client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        res = client.get(url)
         self.assertEqual(res.status_code, 403)
         client.logout()
 

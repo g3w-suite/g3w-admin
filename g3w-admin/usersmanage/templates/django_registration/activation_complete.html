@@ -1,0 +1,16 @@
+{% extends "base_login.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block login_page_box_body %}
+  <div class="register-box-body">
+    <h4 style="text-align: center">{% trans 'Activation Complete!' %}</h4>
+    <p class="register-box-msg">
+        {% trans 'Your account is active' %}!
+    </p>
+    <p class="register-box-msg">
+        {% trans 'Now you can make the' %} <a href="{% url 'login' %}">login</a>.
+    </p>
+
+  </div><!-- /.login-box-body -->
+{% endblock %}
