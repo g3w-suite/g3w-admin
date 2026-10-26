@@ -4,15 +4,12 @@ Dockerfile.deps is the base docker image with deb packages required to build and
 
 # build_suite.sh
 
-The script takes care of:
-- installing requirements
-- building js code
-
+Kept as a no-op for compatibility with existing deployments. Frontend assets are served directly.
 
 # setup_suite.sh
 
 - preparing directories (media, static etc.)
-- setting up django (migration, collect static etc.)
+- setting up Django (migration, collect static etc.)
 
 # For local development
 
