@@ -3,6 +3,7 @@ G3WADMIN_PROJECT_APPS = []
 
 G3WADMIN_LOCAL_MORE_APPS = [
     'editing',
+    'caching',
     'filemanager',
     'qplotly',
     'qtimeseries',
@@ -44,6 +45,14 @@ QGIS_AUTH_PASSWORD = 'my_secret_password'
 
 #FRONTEND = False
 #FRONTEND_APP = None
+
+# LAYER CACHING SETTINGS
+# ===============================
+# follow settings work if 'caching' module is in 'G3WADMIN_LOCAL_MORE_APPS'
+TILESTACHE_CACHE_NAME = 'default'
+TILESTACHE_CACHE_TYPE = 'Disk'  # or 'Memcache'
+TILESTACHE_CACHE_DISK_PATH = '/tmp/'
+TILESTACHE_CACHE_TOKEN = '1234567'
 
 # FILEMANAGER SETTINGS
 # ===============================
