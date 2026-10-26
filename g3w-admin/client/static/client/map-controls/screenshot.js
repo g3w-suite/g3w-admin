@@ -506,6 +506,21 @@ const vueComp = ({
 
   methods: {
 
+    createMapImage() {
+      return new Promise((resolve) => {
+        const canvas  = GUI.getMap().getViewport().querySelector('canvas');
+        const dpr     = window.devicePixelRatio || 1;
+        const sidebar = document.querySelector('.main-sidebar');
+        const padding = (GUI.isSidebarVisible() && sidebar) ? Math.round(sidebar.getBoundingClientRect().width * dpr) : 0;
+        const w       = Math.max(canvas.width - padding, 0);
+        const h       = canvas.height;
+        const cropped = Object.assign(document.createElement('canvas'), { width: w, height: h });
+
+        cropped.getContext('2d').drawImage(canvas, padding, 0, w, h, 0, 0, w, h);
+        cropped.toBlob(resolve);
+      });
+    },
+
     /**
      * On scale change set print area
      */
@@ -658,11 +673,11 @@ const vueComp = ({
         // SCREENSHOT
         if (this.is_screenshot) {
           const blob = 'screenshot' === this.screenshot_type
-            ? await GUI.createMapImage()                                                              // PNG
+            ? await this.createMapImage()                                                             // PNG
             : await (await fetch(`/${GUI.project.getType()}/api/asgeotiff/${GUI.project.getId()}/`, { // GeoTIFF
                 method: 'POST',
                 body: Object.entries({
-                  image:               await GUI.createMapImage(),
+                  image:               await this.createMapImage(),
                   csrfmiddlewaretoken: GUI.getCookie('csrftoken'),
                   bbox:                GUI.getMapBBOX().toString(),
                 }).reduce((a, k) => { a.append(k[0], k[1]); return a; }, new FormData())
