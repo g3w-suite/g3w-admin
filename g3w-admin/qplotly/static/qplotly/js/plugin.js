@@ -129,44 +129,22 @@
       });
 
       // Listen for the 'addActionsForRelation' event to add chart actions for relations.
-      GUI.onafter('addActionsForRelation', (actions, { relation, fid, addPanel, removePanel }) => {
+      GUI.onafter('addActionsForRelation', (actions, { relation, fid, container }) => {
         if (!Array.from(this.#QUERY_RELATIONS_LAYERS).some(layer => layer.getId() === relation.referencingLayer)) {
           return;
         }
 
-        let chart, pending;
+        let chart, panel, pending;
 
         let disposed = false; // Becomes true when clear starts; this action cannot be reused.
         const state  = Vue.observable({ toggled: false, disabled: false });
-        const open   = async () => {
-          chart         = await addPanel({ id: 'qplotly', label: 'Chart width' });
-          state.toggled = true;
-          await this.toggleCharts({
-            show:      true,
-            ids:       [relation.referencingLayer],
-            container: chart,
-            rel:       { relations: [relation], fid },
-          });
-        };
-        const close  = async () => {
-          try {
-            if (chart) {
-              await this.toggleCharts({ show: false, container: chart });
-            }
-          } finally {
-            // Always remove the panel, even if chart cleanup fails.
-            removePanel('qplotly');
-            chart         = null;
-            state.toggled = false;
-          }
-        };
 
         actions.push({
           id:    'qplotly-relation-chart',
           class: 'fas fa-chart-bar',
           hint:  'Show Chart',
           state,
-          async cbk() {
+          cbk: async () => {
             // Ignore clicks while loading and callbacks after this action has been cleared.
             if (state.disabled || disposed) {
               return;
@@ -174,15 +152,91 @@
             state.disabled = true;
             try {
               if (state.toggled) {
-                await close();
+                try {
+                  if (chart) {
+                    await this.toggleCharts({ show: false, container: chart });
+                  }
+                } finally {
+                  panel?.remove();
+                  panel         = null;
+                  chart         = null;
+                  state.toggled = false;
+                }
                 return;
               }
 
-              // Track panel creation as well as chart loading before allowing cleanup.
-              pending = open();
+              let width = 30;
+              panel     = document.createElement('div');
+              panel.innerHTML = /* html */`
+                <div
+                  role             = "separator"
+                  tabindex         = "0"
+                  aria-label       = "Chart width"
+                  aria-orientation = "vertical"
+                  aria-valuemin    = "10"
+                  aria-valuemax    = "90"
+                  aria-valuenow    = "${width}"
+                  style            = "border-inline: 1px solid var(--skin-color); flex: 0 0 5px; background: #ddd; cursor: col-resize; margin: 0 8px; user-select: none; touch-action: none;"
+                ></div>
+                <div style="flex: 1; min-width: 0; min-height: 0;"></div>
+              `;
+              panel.style.cssText = `display: flex; flex: 0 0 ${width}%; min-width: 0;`;
+              const divider = panel.firstElementChild;
+              chart         = panel.lastElementChild;
+
+              divider.addEventListener('pointerdown', event => {
+                event.stopPropagation();
+                if (event.button === 0) {
+                  divider.setPointerCapture(event.pointerId);
+                }
+              });
+              divider.addEventListener('pointermove', event => {
+                if (divider.hasPointerCapture(event.pointerId)) {
+                  const right = panel.getBoundingClientRect().right;
+                  width = Math.min(90, Math.max(10, (right - event.clientX) * 100 / container.clientWidth));
+                  panel.style.flexBasis = `${width}%`;
+                  divider.setAttribute('aria-valuenow', String(width));
+                }
+              });
+              divider.addEventListener('lostpointercapture', () => Vue.nextTick(() => GUI.emit('resize')));
+              divider.addEventListener('keydown', event => {
+                const nextWidth = {
+                  ArrowLeft:  width + 5,
+                  ArrowRight: width - 5,
+                  Home:       10,
+                  End:        90,
+                }[event.key];
+                if (undefined === nextWidth) {
+                  return;
+                }
+                event.preventDefault();
+                width = Math.min(90, Math.max(10, nextWidth));
+                panel.style.flexBasis = `${width}%`;
+                divider.setAttribute('aria-valuenow', String(width));
+                Vue.nextTick(() => GUI.emit('resize'));
+              });
+              container.append(panel);
+              state.toggled = true;
+
+              // Track chart mounting so cleanup waits for in-flight work.
+              pending = this.toggleCharts({
+                show:      true,
+                ids:       [relation.referencingLayer],
+                container: chart,
+                rel:       { relations: [relation], fid },
+              });
               await pending;
             } catch(e) {
-              await close();
+              try {
+                if (chart) {
+                  await this.toggleCharts({ show: false, container: chart });
+                }
+              } finally {
+                panel?.remove();
+                panel         = null;
+                chart         = null;
+                state.toggled = false;
+              }
               throw e;
             } finally {
               pending        = null;
@@ -191,11 +245,20 @@
           },
           //called when relation component is cleared or the action is disposed
           // Ensures that any in-flight chart operations are completed and the chart is properly closed.
-          async clear() {
+          clear: async () => {
             // Block future callbacks before waiting for an in-flight chart mount to finish.
             disposed = true;
             await pending;
-            await close();
+            try {
+              if (chart) {
+                await this.toggleCharts({ show: false, container: chart });
+              }
+            } finally {
+              panel?.remove();
+              panel         = null;
+              chart         = null;
+              state.toggled = false;
+            }
           },
         });
       });
