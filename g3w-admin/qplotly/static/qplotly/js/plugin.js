@@ -129,7 +129,7 @@
       });
 
       // Listen for the 'addActionsForRelation' event to add chart actions for relations.
-      GUI.onafter('addActionsForRelation', (actions, { relation, fid, container }) => {
+      GUI.onafter('addActionsForRelation', (actions, { relation, fid }) => {
         if (!Array.from(this.#QUERY_RELATIONS_LAYERS).some(layer => layer.getId() === relation.referencingLayer)) {
           return;
         }
@@ -165,6 +165,7 @@
                 return;
               }
 
+              const container = document.querySelector('.layer-relation .relation-table');
               let width = 30;
               panel     = document.createElement('div');
               panel.innerHTML = /* html */`
