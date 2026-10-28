@@ -227,14 +227,11 @@ new (class extends Plugin {
 
       comp.onbefore('setOpen', async bool => { 
         if (bool) {
-          //get editing panel
           const panel = await this.showEditingPanel();
-          //listen for panel destroyed event
+          // close component when panel is destroyed
           panel?.internalPanel?.$on?.('hook:destroyed',  () => {
-            //set sidebar component to closed when panel is destroyed
             comp.setOpen(false);
           });
-
         }; 
       });
     }
