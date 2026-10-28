@@ -45,6 +45,7 @@ from .tasks import (
 )
 
 from .utils import get_users
+from .utils.config import is_project_indexing_enabled
 
 import json
 import logging
@@ -55,7 +56,7 @@ logger = logging.getLogger("django.request")
 def create_update_es_documents(sender, **kwargs):
     """ Create or update ES documents for project """
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(sender.instance):
         users = get_users(sender.instance)
 
         # Execute task in background
@@ -67,7 +68,7 @@ def create_update_es_documents_from_model(sender, **kwargs):
     """ Create or update ES documents for project """
 
     # Is necessary check if the project has layers to indexing
-    if settings.QES_INDEXING_PROJECT and kwargs['instance'].layer_set.count() > 0:
+    if is_project_indexing_enabled(kwargs['instance']) and kwargs['instance'].layer_set.count() > 0:
         users = get_users(kwargs['instance'])
 
         # Execute task in background
@@ -77,7 +78,7 @@ def create_update_es_documents_from_model(sender, **kwargs):
 def delete_es_documents(sender, **kwargs):
     """ Delete ES documents for project """
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(kwargs['instance']):
         users = get_users(kwargs['instance'])
 
         # Execute task in background
@@ -92,8 +93,8 @@ def update_es_document(sender, **kwargs):
     On editing actions
     """
 
-    # Only if indexing for QGIS feature is enabled
-    if not settings.QES_INDEXING_PROJECT:
+    # Only if indexing for QGIS feature is enabled for this specific project
+    if not is_project_indexing_enabled(sender.layer.project):
         return
 
     if "mode" not in kwargs:
@@ -124,7 +125,7 @@ def update_es_document(sender, **kwargs):
 def re_indexing_es_columnacl(**kwargs):
     """Re-indexing project when column ACL is changed"""
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(kwargs['instance'].layer.project):
         users = []
         if kwargs['instance'].user:
             users.append(kwargs['instance'].user)
@@ -145,7 +146,7 @@ def re_indexing_es_columnacl(**kwargs):
 def re_indexing_es_constraint(**kwargs):
     """Re-indexing project when constraints are changed"""
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(kwargs['instance'].constraint.layer.project):
         users = []
         if kwargs['instance'].user:
             users.append(kwargs['instance'].user)
@@ -161,7 +162,7 @@ def re_indexing_es_constraint(**kwargs):
 def re_indexing_es_layeracl(**kwargs):
     """Re-indexing project when Layer ACL is changed"""
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(kwargs['instance'].layer.project):
         users = []
         if kwargs['instance'].user:
             users.append(kwargs['instance'].user)
