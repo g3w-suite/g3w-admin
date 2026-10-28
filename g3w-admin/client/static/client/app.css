@@ -546,6 +546,17 @@ fieldset[disabled] .btn-warning:is(:hover, :focus, .focus)           { backgroun
 .sidebar-panel                                                     { position: relative; color: #FFF; padding: 10px 15px 10px 15px; }
 .sidebar-panel .g3w-panel .g3w-panel-form button.run_button        { margin-top: 5px; font-weight: bold; }
 .sidebar-panel-placeholder h3                                      { margin-top: 0; }
+/* With a panel open, the collapsed menu shows only icons and highlights its owner. */
+.sidebar-menu.has-panel > #catalog > a                             { display: block !important; }
+.sidebar-menu.has-panel > li > :not(a),
+.sidebar-menu.has-panel > li > a > div + div,
+.sidebar-menu.has-panel > li > a > i ~ i,
+.sidebar-menu.has-panel > .sidebar-footer                          { display: none !important; }
+/* Keep icon labels available to screen readers without occupying visual space. */
+.sidebar-menu.has-panel > li > a .treeview-label                   { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.sidebar-menu.has-panel > li[inert]                                { opacity: 0.60; cursor: not-allowed; }
+.sidebar-menu.has-panel > li[inert] > a                            { background: transparent; border-left-color: transparent; }
+.sidebar-menu.has-panel > li.panel-active > a                      { color: #fff; background: hsl(from var(--bgcolor) h s calc(l - 2)); border-left-color: var(--skin-color); }
 .main-sidebar .treeview-label                                      { font-size: 1.1em; font-weight: bold; margin-left: 5px; }
 .main-sidebar .menu-items                                          { padding: 10px 15px; }
 .main-sidebar .menu-items li                                       { border-radius: .25rem; padding: 2px; margin-bottom: 2px; color: #FFF; cursor: pointer; }
