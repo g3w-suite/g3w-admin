@@ -26329,6 +26329,19 @@ table.users-table > tbody > tr:first-child > td {
     margin-bottom: 18px;
 }
 
+/* Wizard progress (e.g. CDU config) */
+.form-shell .progress {
+    height: 8px;
+    border-radius: 999px;
+    background: #e0f5f5;
+    box-shadow: none;
+    margin-bottom: 18px;
+}
+.form-shell .progress-bar {
+    background: #149ea0;
+    border-radius: 999px;
+}
+
 /* Object summary banner (edit mode only) */
 .form-summary {
     display: flex;
@@ -31696,6 +31709,12 @@ form input[type="file"],
     cursor: pointer;
     max-width: 100%;
     transition: border-color .15s ease, box-shadow .15s ease;
+}
+/* crispy/bootstrap3 adds .form-control (height: 34px) to file inputs,
+   which clips the padded "Browse" pill. */
+form input[type="file"].form-control,
+.form-shell input[type="file"].form-control {
+    height: auto;
 }
 form input[type="file"]:hover,
 .form-shell input[type="file"]:hover {
