@@ -107,7 +107,7 @@ def catalog_provider(groups=[]):
                             and not geom_from_layer.isNull()
                             and not geom_from_layer.isEmpty()):
                         geometry = geom_from_layer
-                        from_srid = QgsCoordinateReferenceSystem(f'EPSG:{layer.srid}')
+                        from_srid = QgsCoordinateReferenceSystem(f'POSTGIS:{layer.srid}')
 
                 if geometry is None:
                     # Fallback: build from serializer bbox dict
@@ -116,7 +116,7 @@ def catalog_provider(groups=[]):
                     geometry = QgsGeometry.fromWkt(
                         f"MULTIPOINT({b['minx']} {b['miny']}, {b['maxx']} {b['maxy']})"
                     )
-                    from_srid = QgsCoordinateReferenceSystem(f'EPSG:{crs}')
+                    from_srid = QgsCoordinateReferenceSystem(f'POSTGIS:{crs}')
 
                 if from_srid is not None and from_srid != to_srid:
                     ct = QgsCoordinateTransform(

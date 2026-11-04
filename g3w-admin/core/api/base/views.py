@@ -336,16 +336,14 @@ class BaseVectorApiView(G3WAPIView):
         """
 
         if to_layer:
-            from_srid = self.layer.project.group.srid.auth_srid
-            to_srid = self.layer.srid
+            from_crs = QgsCoordinateReferenceSystem(self.layer.project.group.srid.authid)
+            to_crs = QgsCoordinateReferenceSystem(f'POSTGIS:{self.layer.srid}')
         else:
-            from_srid = self.layer.srid
-            to_srid = self.layer.project.group.srid.auth_srid
+            from_crs = QgsCoordinateReferenceSystem(f'POSTGIS:{self.layer.srid}')
+            to_crs = QgsCoordinateReferenceSystem(self.layer.project.group.srid.authid)
 
-        to_srid = QgsCoordinateReferenceSystem(f'EPSG:{to_srid}')
-        from_srid = QgsCoordinateReferenceSystem(f'EPSG:{from_srid}')
         ct = QgsCoordinateTransform(
-            from_srid, to_srid, QgsCoordinateTransformContext())
+            from_crs, to_crs, QgsCoordinateTransformContext())
 
         # Use QGIS APi for QgsFeature instance
         if isinstance(feature, QgsFeature):
@@ -834,7 +832,7 @@ class BaseVectorApiView(G3WAPIView):
         # check if data to reproject
         # FIXME: use QgsProject crs(), can be (in a try/except block):
         # self.layer.project.qgis_project.crs() != self.layer.qgis_layer.crs()
-        self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
+        self.reproject = self.layer.project.group.srid.srid != self.layer.srid
 
     def instance_qgsfeaturerequest(self):
         """

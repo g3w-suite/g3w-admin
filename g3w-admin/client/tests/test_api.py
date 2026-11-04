@@ -132,6 +132,7 @@ class ClientApiTest(CoreTestBase):
         resp = json.loads(response.content)
         self.assertEqual(resp["vectorurl"], "/vector/api/")
         self.assertEqual(resp["crs"], {
+            'authid': 'EPSG:4326',
             'epsg': 4326,
             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
             'geographic': True,
@@ -146,7 +147,12 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["initproject"], "qdjango:1")
         self.assertEqual(resp["header_terms_of_use_link"], "")
         self.assertTrue(resp["powered_by"])
-        self.assertEqual(resp["baselayers"], [{'crs': {'epsg': 3857, 'proj4': '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs', 'geographic': False, 'axisinverted': False}, 'servertype': 'OSM', 'attribution': "<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>", 'name': 'OpenStreetMap', 'title': 'OSM', 'scalebasedvisibility': False, 'maxscale': 0, 'minscale': 100000000, 'id': 3, 'icon': None}])
+        baselayer = resp["baselayers"][0]
+        self.assertEqual(baselayer["crs"]["authid"], "EPSG:3857")
+        self.assertEqual(baselayer["crs"]["epsg"], 3857)
+        self.assertTrue(baselayer["crs"]["proj4"].startswith("+proj=merc"))
+        self.assertEqual(len(baselayer["crs"]["extent"]), 4)
+        self.assertEqual(baselayer["servertype"], "OSM")
         self.assertEqual(resp["header_terms_of_use_text"], "")
         self.assertEqual(resp["header_custom_links"], [])
         self.assertEqual(resp["background_color"], "#ffffff")
@@ -338,6 +344,7 @@ class ClientApiTest(CoreTestBase):
 
                 # crs
                 self.assertEqual(l['crs'], {
+                            'authid': 'EPSG:4326',
                             'epsg': 4326,
                             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                             'geographic': True,
@@ -396,6 +403,7 @@ class ClientApiTest(CoreTestBase):
 
                 # crs
                 self.assertEqual(l['crs'], {
+                    'authid': 'EPSG:4326',
                     'epsg': 4326,
                     'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                     'geographic': True,
@@ -417,6 +425,7 @@ class ClientApiTest(CoreTestBase):
 
                 # crs
                 self.assertEqual(l['crs'], {
+                    'authid': 'EPSG:4326',
                     'epsg': 4326,
                     'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                     'geographic': True,

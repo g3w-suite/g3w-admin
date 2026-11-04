@@ -44,6 +44,6 @@ if 'caching' in settings.G3WADMIN_LOCAL_MORE_APPS:
                     'name': 'url template',
                     'template': '{}{}?{}'.format(settings.QDJANGO_SERVER_URL, ows_url, self.q.urlencode(safe='$'))
                 },
-                'projection': 'caching.utils.projections:CustomXYZGridProjection(\'EPSG:{}\')'.
-                    format(layer.project.group.srid.auth_srid)
+                'projection': 'caching.utils.projections:CustomXYZGridProjection(\'{}\')'.
+                    format(layer.project.group.srid.authid)
             }
