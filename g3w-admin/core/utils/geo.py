@@ -28,6 +28,34 @@ def get_crs_epsg(crs):
     return crs.postgisSrid() if crs.authid().startswith('EPSG:') else None
 
 
+def get_crs_srid(crs):
+    srid = crs.postgisSrid()
+    if srid:
+        return srid
+
+    from core.models import G3WSpatialRefSys
+
+    spatial_ref = G3WSpatialRefSys.objects.filter(
+        auth_id=crs.authid()
+    ).values_list('srid', flat=True).first()
+    if spatial_ref is None:
+        auth_name, separator, auth_code = crs.authid().partition(':')
+        if not separator:
+            return srid
+        try:
+            auth_srid = int(auth_code)
+        except ValueError:
+            return srid
+
+        # Older catalog rows may not have auth_id populated.
+        spatial_ref = G3WSpatialRefSys.objects.filter(
+            auth_name=auth_name,
+            auth_srid=auth_srid
+        ).values_list('srid', flat=True).first()
+
+    return spatial_ref if spatial_ref is not None else srid
+
+
 def get_crs_proj4(crs):
     """Return a Proj4js-compatible definition for a QGIS CRS."""
     proj4 = crs.toProj()

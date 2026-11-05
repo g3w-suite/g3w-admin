@@ -34,6 +34,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
+from core.utils.geo import get_crs_srid
 from core.utils.qgisapi import count_qgis_features, qvariant_type_name
 from qdjango.models import Project, buildLayerTreeNodeObject
 from qdjango.signals import (
@@ -472,7 +473,7 @@ class QgisProjectLayer(XmlData):
         :return: ESPG srid code
         :rtype: int, None
         """
-        return self.qgs_layer.crs().postgisSrid()
+        return get_crs_srid(self.qgs_layer.crs())
 
     def _getDataVectorjoins(self):
         """
@@ -1349,7 +1350,16 @@ class QgisProject(XmlData):
         :return: Map SRID
         :rtype: int
         """
-        return self.qgs_project.crs().postgisSrid()
+        srid = get_crs_srid(self.qgs_project.crs())
+        if srid:
+            return srid
+
+        try:
+            return int(self.qgisProjectTree.xpath(
+                'string(/qgis/projectCrs/spatialrefsys/srid)'
+            ))
+        except (TypeError, ValueError):
+            return srid
 
     def _getDataUnits(self):
         """

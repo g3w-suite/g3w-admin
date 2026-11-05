@@ -13,6 +13,7 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 
 import json
+from unittest.mock import Mock
 
 from django.conf import settings
 from django.http import SimpleCookie
@@ -40,6 +41,7 @@ from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer, FilterLa
 from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
+from core.utils.geo import get_crs_srid
 
 from .base import (
     QdjangoTestBase,
@@ -325,6 +327,35 @@ class TestExpressionRules(BaseConstraintsApiTests, QdjangoTestBase):
 
 class TestQdjangoProjectsAPI(QdjangoTestBase):
     """ Test qdjango project API """
+
+    def test_project_srid_falls_back_to_registered_crs_authid(self):
+        spatial_ref, _ = G3WSpatialRefSys.objects.get_or_create(
+            srid=520002044,
+            defaults={
+                'auth_name': 'ESRI',
+                'auth_srid': 104016,
+                'auth_id': None,
+                'srtext': '',
+                'proj4text': ''
+            }
+        )
+        spatial_ref.auth_name = 'ESRI'
+        spatial_ref.auth_srid = 104016
+        spatial_ref.auth_id = None
+        spatial_ref.save(update_fields=['auth_name', 'auth_srid', 'auth_id'])
+        crs = Mock()
+        crs.postgisSrid.return_value = 0
+        crs.authid.return_value = 'ESRI:104016'
+
+        self.assertEqual(get_crs_srid(crs), spatial_ref.srid)
+
+    def test_project_srid_falls_back_to_project_xml(self):
+        project = Mock()
+        project.qgs_project.crs.return_value.postgisSrid.return_value = 0
+        project.qgs_project.crs.return_value.authid.return_value = ''
+        project.qgisProjectTree.xpath.return_value = '520002044'
+
+        self.assertEqual(QgisProject._getDataSrid(project), 520002044)
 
 
     def setUp(self):
