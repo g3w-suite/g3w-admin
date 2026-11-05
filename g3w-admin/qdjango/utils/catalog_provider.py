@@ -116,7 +116,7 @@ def catalog_provider(groups=[]):
                     geometry = QgsGeometry.fromWkt(
                         f"MULTIPOINT({b['minx']} {b['miny']}, {b['maxx']} {b['maxy']})"
                     )
-                    from_srid = QgsCoordinateReferenceSystem(f'POSTGIS:{crs}')
+                    from_srid = QgsCoordinateReferenceSystem(layer_metadata['crs']['authid'])
 
                 if from_srid is not None and from_srid != to_srid:
                     ct = QgsCoordinateTransform(
