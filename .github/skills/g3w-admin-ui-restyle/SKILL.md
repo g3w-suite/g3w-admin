@@ -124,7 +124,7 @@ modal.show();
 `.geoconstraints-list` / `.singlelayer-constraints-list` recipe, css:28809-29421):
 ```html
 <div class="my-plugin-sublist">  <!-- give it its own class + matching scoped CSS -->
-  <a class="btn btn-default btn-sm"><i class="fa fa-plus"></i> New …</a>
+  <button type="button" class="btn btn-default btn-sm"><i class="fa fa-plus" aria-hidden="true"></i> New …</button>
   <table class="table"> ... </table>  <!-- icon-only action links auto-chip-styled -->
 </div>
 ```
