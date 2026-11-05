@@ -41,7 +41,7 @@ from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer, FilterLa
 from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
-from core.utils.geo import get_crs_srid
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4, get_crs_srid
 
 from .base import (
     QdjangoTestBase,
@@ -58,7 +58,7 @@ from .base import (
     QGS328_RELATION_REFERENCE,
     QGS340_THEME_FILE
 )
-from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
+from qgis.core import QgsCoordinateReferenceSystem, QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
 import time
@@ -584,6 +584,16 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         resp = json.loads(response.content)
 
+        bookmark_crs = QgsCoordinateReferenceSystem('EPSG:3003')
+        expected_crs = {
+            "authid": bookmark_crs.authid(),
+            "epsg": get_crs_epsg(bookmark_crs),
+            "proj4": get_crs_proj4(bookmark_crs),
+            "geographic": bookmark_crs.isGeographic(),
+            "axisinverted": bookmark_crs.hasAxisInverted(),
+            "extent": get_crs_bbox(bookmark_crs)
+        }
+
         self.assertEqual(resp['bookmarks'], [
    {
       "name":"Gbook1",
@@ -592,9 +602,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
          {
             "id":"{dfe1c3a0-1ed8-4042-943c-0f820f10429a}",
             "name":"Book1",
-            "crs":{
-               "epsg":3003
-            },
+            "crs": expected_crs,
             "extent":[
                1727644.7707,
                4856430.948,
@@ -605,9 +613,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
          {
             "id":"{49513492-609b-41e1-87c5-e99b13d359a5}",
             "name":"Book3",
-            "crs":{
-               "epsg":3003
-            },
+            "crs": expected_crs,
             "extent":[
                1718435.4312,
                4847184.3237,
@@ -624,9 +630,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
          {
             "id":"{46764496-faa9-4d9f-bfef-594c097ab6f6}",
             "name":"Book4",
-            "crs":{
-               "epsg":3003
-            },
+            "crs": expected_crs,
             "extent":[
                1718435.4312,
                4847184.3237,
@@ -639,9 +643,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
    {
       "id":"{4f63af2b-cbb0-4673-a319-f05f9939b89e}",
       "name":"Book2",
-      "crs":{
-         "epsg":3003
-      },
+      "crs": expected_crs,
       "extent":[
          1727178.711,
          4859059.5247,
