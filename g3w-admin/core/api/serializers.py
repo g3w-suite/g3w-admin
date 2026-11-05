@@ -10,7 +10,7 @@ from rest_framework.fields import empty
 from core.models import Group, BaseLayer
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
-from core.utils.geo import get_crs_bbox, get_crs_proj4
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsCoordinateTransformContext
 from copy import copy
@@ -72,12 +72,12 @@ class BaseLayerSerializer(serializers.ModelSerializer):
                 if crs.isValid():
                     crs_data.update({
                         'authid': crs.authid(),
-                        'epsg': crs_data.get('epsg', crs.postgisSrid()),
+                        'epsg': get_crs_epsg(crs),
                         'proj4': get_crs_proj4(crs),
                         'geographic': crs.isGeographic(),
-                        'axisinverted': crs.hasAxisInverted()
+                        'axisinverted': crs.hasAxisInverted(),
+                        'extent': get_crs_bbox(crs)
                     })
-                    crs_data.setdefault('extent', get_crs_bbox(crs))
         return ret
 
     class Meta:
@@ -132,7 +132,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['crs'] = {
             'authid': crs.authid(),
-            'epsg': crs.postgisSrid(),
+            'epsg': get_crs_epsg(crs),
             'proj4': proj4,
             'geographic': crs.isGeographic(),
             'axisinverted': crs.hasAxisInverted(),

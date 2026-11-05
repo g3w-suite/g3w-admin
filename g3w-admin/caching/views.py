@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
 from core.utils.decorators import project_type_permission_required
-from core.utils.geo import get_crs_bbox, get_crs_proj4
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4
 from core.models import BaseLayer
 from .forms import ActiveCachingLayerForm
 from .models import G3WCachingLayer
@@ -118,7 +118,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 property = {
                     "crs": {
                         "authid": crs.authid(),
-                        "epsg": self.layer.project.group.srid.srid,
+                        "epsg": get_crs_epsg(crs),
                         "proj4": get_crs_proj4(crs),
                         "geographic": crs.isGeographic(),
                         "axisinverted": crs.hasAxisInverted(),

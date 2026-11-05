@@ -41,7 +41,7 @@ from core.utils.qgisapi import (
     qvariant_type_name,
 )
 from core.utils.general import clean_for_json
-from core.utils.geo import get_crs_bbox, get_crs_proj4
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4
 
 from qgis.core import (
     QgsJsonUtils,
@@ -326,7 +326,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 "id": bmark.id(),
                 "name": bmark.name(),
                 "crs": {
-                    "epsg": bbox.crs().postgisSrid()
+                    "authid": bbox.crs().authid(),
+                    "epsg": get_crs_epsg(bbox.crs()),
+                    "proj4": get_crs_proj4(bbox.crs()),
+                    "geographic": bbox.crs().isGeographic(),
+                    "axisinverted": bbox.crs().hasAxisInverted(),
+                    "extent": get_crs_bbox(bbox.crs())
                 },
                 "extent": [
                     bbox.xMinimum(),
@@ -982,7 +987,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
             ret['crs'] = {
                 'authid': crs.authid(),
-                'epsg': crs.postgisSrid(),
+                'epsg': get_crs_epsg(crs),
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
                 'axisinverted': crs.hasAxisInverted(),

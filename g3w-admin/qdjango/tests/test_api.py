@@ -533,6 +533,16 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertTrue('NAME' in metas)
         self.assertFalse('CAPITAL' in metas)
 
+    def test_layer_crs_proj4_includes_crs_type(self):
+        response = self._testApiCall(
+            'group-project-map-config', [self.project322.instance.group.slug, 'qdjango', self.project322.instance.pk])
+        layers = json.loads(response.content)['layers']
+        layer_crss = [layer['crs'] for layer in layers if isinstance(layer.get('crs'), dict)]
+
+        self.assertTrue(layer_crss)
+        for crs in layer_crss:
+            self.assertIn('+type=crs', crs['proj4'])
+
     def test_bookmarks_project(self):
         """
         Test project bookmarks into /api/config API REST

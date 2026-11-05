@@ -21,7 +21,8 @@ from guardian.shortcuts import remove_perm, assign_perm, get_anonymous_user
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject
 from core.tests.base import CoreTestBase
-from core.models import MacroGroup, Group, G3WSpatialRefSys
+from core.models import BaseLayer, MacroGroup, Group, G3WSpatialRefSys
+from core.api.serializers import BaseLayerSerializer
 from core.utils.structure import FIELD_TYPES_MAPPING
 from qdjango.models import Widget, WIDGET_TYPES
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
@@ -124,6 +125,26 @@ class ClientApiTest(CoreTestBase):
         cls.project_extent316_2.save()
         qgis_project_file_4.close()
 
+    def test_baselayer_crs_matches_crs_api(self):
+        for authid in ('EPSG:3003', 'EPSG:3004', 'EPSG:4326', 'EPSG:3857', 'EPSG:32633', 'ESRI:102100', 'ESRI:104016'):
+            with self.subTest(authid=authid):
+                response = self.client.get(reverse('core-crs-authid-api'), {'authid': authid})
+                self.assertEqual(response.status_code, 200)
+                self.assertIn('+type=crs', response.json()['data']['proj4'])
+                if authid.startswith('EPSG:'):
+                    self.assertEqual(response.json()['data']['epsg'], int(authid.split(':')[1]))
+                else:
+                    self.assertIsNone(response.json()['data']['epsg'])
+                baselayer = BaseLayer(name='crs-test', title='CRS test', property=str({
+                    'crs': {
+                        'authid': authid,
+                        'epsg': -1,
+                        'extent': [0, 0, 8388608, 8388608],
+                        'proj4': 'stale-definition'
+                    }
+                }))
+                self.assertEqual(BaseLayerSerializer(baselayer).data['crs'], response.json()['data'])
+
     @override_settings(VENDOR_KEYS={'google': '123456789'})
     def testGroupConfigApiView(self):
         """Test call to config"""
@@ -152,6 +173,9 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(baselayer["crs"]["epsg"], 3857)
         self.assertTrue(baselayer["crs"]["proj4"].startswith("+proj=merc"))
         self.assertEqual(len(baselayer["crs"]["extent"]), 4)
+        crs_response = self.client.get(reverse('core-crs-api', args=[3857]))
+        self.assertEqual(crs_response.status_code, 200)
+        self.assertEqual(baselayer['crs'], crs_response.json()['data'])
         self.assertEqual(baselayer["servertype"], "OSM")
         self.assertEqual(resp["header_terms_of_use_text"], "")
         self.assertEqual(resp["header_custom_links"], [])

@@ -17,7 +17,7 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.permissions import ProjectPermission
 from core.api.base.views import G3WAPIView, APIException
 from core.models import ShortURL, PermaLinkURL
-from core.utils.geo import get_crs_bbox, get_crs_proj4
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4
 from core.utils.qgisapi import (
     expression_eval,
     ExpressionEvalError,
@@ -319,7 +319,7 @@ class InterfaceOws(G3WAPIView):
 
                 crss.append({
                     'authid': crs.authid(),
-                    'epsg': crs.postgisSrid(),
+                    'epsg': get_crs_epsg(crs),
                     'proj4': proj4,
                     'geographic': crs.isGeographic(),
                     'axisinverted': crs.hasAxisInverted(),
@@ -370,7 +370,7 @@ class CRSInfoAPIView(G3WAPIView):
         self.results.results.update({
             'data': {
                 'authid': crs.authid(),
-                'epsg': crs.postgisSrid(),
+                'epsg': get_crs_epsg(crs),
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
                 'axisinverted': crs.hasAxisInverted(),

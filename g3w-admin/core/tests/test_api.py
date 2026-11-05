@@ -704,7 +704,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data'], {
             'authid': 'EPSG:4326',
             'epsg': 4326,
-            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
             'geographic': True,
             'axisinverted': True,
             'extent': [-180.0, -90.0, 180.0, 90.0]
@@ -727,12 +727,13 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['epsg'], 3003)
         self.assertTrue(jres['data']['proj4'].startswith(crs_3003.toProj()))
         self.assertIn('+towgs84=', jres['data']['proj4'])
+        self.assertIn('+type=crs', jres['data']['proj4'])
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        # Original
-        # to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
-
+        self.assertNotEqual(jres['data']['extent'], [0, 0, 8388608, 8388608])
+        self.assertTrue(1000000 < jres['data']['extent'][0] < 2000000)
+        self.assertTrue(4000000 < jres['data']['extent'][1] < 5500000)
         to_compare = enumerate(get_crs_bbox(crs_3003))
 
         for c in to_compare:
@@ -744,7 +745,8 @@ class CoreApiTest(CoreTestBase):
         jres = json.loads(res.content)
         crs_esri = QgsCoordinateReferenceSystem('ESRI:102100')
         self.assertEqual(jres['data']['authid'], 'ESRI:102100')
-        self.assertEqual(jres['data']['proj4'], crs_esri.toProj())
+        self.assertIsNone(jres['data']['epsg'])
+        self.assertEqual(jres['data']['proj4'], f'{crs_esri.toProj()} +type=crs')
         self.assertEqual(len(jres['data']['extent']), 4)
 
 
@@ -760,11 +762,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        # Original
-        #to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
-
-        # Custom
-        to_compare = enumerate([0, 0, 8388608, 8388608])
+        to_compare = enumerate(get_crs_bbox(QgsCoordinateReferenceSystem('EPSG:32633')))
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
 
