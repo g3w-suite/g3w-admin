@@ -758,7 +758,7 @@ class CoreApiTest(CoreTestBase):
         jres = json.loads(res.content)
 
         self.assertEqual(jres['data']['epsg'], 32633)
-        self.assertEqual(jres['data']['proj4'], "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs")
+        self.assertEqual(jres['data']['proj4'], "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs")
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 

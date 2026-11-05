@@ -155,7 +155,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["crs"], {
             'authid': 'EPSG:4326',
             'epsg': 4326,
-            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
             'geographic': True,
             'axisinverted': True,
             'extent': [-180.0, -90.0, 180.0, 90.0]
@@ -370,7 +370,7 @@ class ClientApiTest(CoreTestBase):
                 self.assertEqual(l['crs'], {
                             'authid': 'EPSG:4326',
                             'epsg': 4326,
-                            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+                            'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
                             'geographic': True,
                             'axisinverted': True,
                             'extent': [-180.0, -90.0, 180.0, 90.0]
@@ -429,7 +429,7 @@ class ClientApiTest(CoreTestBase):
                 self.assertEqual(l['crs'], {
                     'authid': 'EPSG:4326',
                     'epsg': 4326,
-                    'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+                    'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
                     'geographic': True,
                     'axisinverted': True,
                     'extent': [-180.0, -90.0, 180.0, 90.0]
@@ -451,7 +451,7 @@ class ClientApiTest(CoreTestBase):
                 self.assertEqual(l['crs'], {
                     'authid': 'EPSG:4326',
                     'epsg': 4326,
-                    'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+                    'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
                     'geographic': True,
                     'axisinverted': True,
                     'extent': [-180.0, -90.0, 180.0, 90.0]
