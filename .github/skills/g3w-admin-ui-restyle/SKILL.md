@@ -65,9 +65,11 @@ Checklist — grep the plugin for these and fix:
 3. **Custom "Save/Cancel" button rows** — replace with
    `{% include 'core/include/form_buttons.html' %}` (requires a `save`/`redo` context
    flag, see the include's source).
-4. **Plain `<table>` list views without icon-only action links** — if the plugin's
-   table action cells mix icon + text or use real `.btn` elements, the auto-chip
-   rule (css:30235) won't match (`:not(.btn)`); switch to icon-only `<a>`/`<button>`.
+4. **Table action links/buttons** — auto-chip rules target specific direct-child icon
+   classes on `.table td a:not(.btn):not(.btn-app)` and only `ion-edit` / `ion-trash-b`
+   on `.table td button:not(.btn):not(.btn-app)` (css:30249–30266). Use supported
+   icon-only markup with an accessible name, or add scoped CSS for other combinations.
+   Text nodes do not affect `:only-child`, so icon + text links can also match.
 5. **Per-row expandable "sub-panel" content** (DataTables `row.child`, or an ajax-loaded
    details `<div>`) — reuse the shared sub-panel recipe (see snippet below) instead of
    plain unstyled HTML.
