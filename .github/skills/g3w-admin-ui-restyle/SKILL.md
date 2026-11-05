@@ -115,7 +115,9 @@ modal.setConfirmButtonAction(function () { /* ... */ });
 modal.show();
 ```
 
-**Form action buttons (template)**:
+**Form action buttons (template)** — include this inside the existing form and wrap
+its content in `.form-shell` (or reserve equivalent bottom padding). The action bar
+is fixed, and `.form-shell` supplies the space needed to keep the last fields visible:
 ```django
 {% include 'core/include/form_buttons.html' with save=True redo=True %}
 ```
