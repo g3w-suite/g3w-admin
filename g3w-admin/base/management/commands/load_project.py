@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 name=project.srid,
                 defaults={
                     'title': project.srid,
-                    'srid': G3WSpatialRefSys.objects.get(auth_srid=project.srid)
+                    'srid': G3WSpatialRefSys.objects.get(srid=project.srid)
                 }
             )
 

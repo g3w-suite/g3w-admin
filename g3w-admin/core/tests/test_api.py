@@ -20,12 +20,13 @@ from django.core.files import File
 from django.test import override_settings
 from django.test.client import JSON_CONTENT_TYPE_RE
 from django.urls import reverse
-from qgis.core import QgsFieldConstraints
+from qgis.core import QgsCoordinateReferenceSystem, QgsFieldConstraints
 from rest_framework.test import APIClient, APITestCase
 from guardian.shortcuts import assign_perm
 
 from qdjango.apps import get_qgs_project
 from core.models import Group, ShortURL, PermaLinkURL
+from core.utils.geo import get_crs_bbox
 from qdjango.models import Layer, Project
 from base.version import get_version
 from qdjango.utils.data import QgisProject
@@ -701,8 +702,9 @@ class CoreApiTest(CoreTestBase):
 
         jres = json.loads(res.content)
         self.assertEqual(jres['data'], {
+            'authid': 'EPSG:4326',
             'epsg': 4326,
-            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
             'geographic': True,
             'axisinverted': True,
             'extent': [-180.0, -90.0, 180.0, 90.0]
@@ -710,26 +712,42 @@ class CoreApiTest(CoreTestBase):
 
         url = reverse('core-crs-api', args=['3003'])
 
-        res = self.client.get(url)
+        crs_3003 = QgsCoordinateReferenceSystem('EPSG:3003')
+        proj4_settings = dict(settings.G3W_PROJ4_EPSG)
+        proj4_settings[3003] = {
+            **proj4_settings[3003],
+            'proj4': 'settings-definition-must-not-be-used'
+        }
+        with override_settings(G3W_PROJ4_EPSG=proj4_settings):
+            res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
 
         jres = json.loads(res.content)
 
         self.assertEqual(jres['data']['epsg'], 3003)
-        self.assertEqual(jres['data']['proj4'], "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 "
-                                                "+ellps=intl +towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 "
-                                                "+units=m +no_defs")
+        self.assertTrue(jres['data']['proj4'].startswith(crs_3003.toProj()))
+        self.assertIn('+towgs84=', jres['data']['proj4'])
+        self.assertIn('+type=crs', jres['data']['proj4'])
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        # Original
-        # to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
-
-        # Custom
-        to_compare = enumerate([0, 0, 8388608, 8388608])
+        self.assertNotEqual(jres['data']['extent'], [0, 0, 8388608, 8388608])
+        self.assertTrue(1000000 < jres['data']['extent'][0] < 2000000)
+        self.assertTrue(4000000 < jres['data']['extent'][1] < 5500000)
+        to_compare = enumerate(get_crs_bbox(crs_3003))
 
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
+
+        url = reverse('core-crs-authid-api')
+        res = self.client.get(url, {'authid': 'ESRI:102100'})
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+        crs_esri = QgsCoordinateReferenceSystem('ESRI:102100')
+        self.assertEqual(jres['data']['authid'], 'ESRI:102100')
+        self.assertIsNone(jres['data']['epsg'])
+        self.assertEqual(jres['data']['proj4'], f'{crs_esri.toProj()} +type=crs')
+        self.assertEqual(len(jres['data']['extent']), 4)
 
 
         url = reverse('core-crs-api', args=['32633'])
@@ -740,15 +758,11 @@ class CoreApiTest(CoreTestBase):
         jres = json.loads(res.content)
 
         self.assertEqual(jres['data']['epsg'], 32633)
-        self.assertEqual(jres['data']['proj4'], "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs")
+        self.assertEqual(jres['data']['proj4'], "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs")
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        # Original
-        #to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
-
-        # Custom
-        to_compare = enumerate([0, 0, 8388608, 8388608])
+        to_compare = enumerate(get_crs_bbox(QgsCoordinateReferenceSystem('EPSG:32633')))
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
 

@@ -85,7 +85,7 @@ class QGISLayerVectorViewMixin(object):
         """
         # check if data to reproject
         if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
-            self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
+            self.reproject = self.layer.project.group.srid.srid != self.layer.srid
         else:
             self.reproject = False
 
