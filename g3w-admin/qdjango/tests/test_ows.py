@@ -170,7 +170,8 @@ class OwsTest(QdjangoTestBase):
             'SERVICE': 'WMS'
         })
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response['WWW-Authenticate'], 'Basic realm="api"')
 
         self.assertTrue(c.login(username=self.test_viewer1.username,
                                 password=self.test_viewer1.username))
@@ -263,7 +264,8 @@ class OwsTest(QdjangoTestBase):
             'SERVICE': 'WMS'
         })
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response['WWW-Authenticate'], 'Basic realm="api"')
 
         # Give permission to Anonympus user
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)

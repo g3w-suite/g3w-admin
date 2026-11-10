@@ -1,7 +1,11 @@
 from django.conf import settings
 from guardian.shortcuts import get_anonymous_user
 from rest_framework.authentication import BasicAuthentication
-from OWS.auth import AuthForbiddenRequest
+from rest_framework.exceptions import AuthenticationFailed
+from OWS.auth import (
+    AuthForbiddenRequest,
+    UnauthorizedRequest
+)
 
 
 class QdjangoProjectAuthorizer(object):
@@ -11,6 +15,7 @@ class QdjangoProjectAuthorizer(object):
             setattr(self, k, v)
 
     def auth_request(self, **kwargs):
+        """Challenge unauthenticated requests; forbid authenticated users without permission."""
 
         anonymous_user = get_anonymous_user()
 
@@ -24,7 +29,8 @@ class QdjangoProjectAuthorizer(object):
 
         # Check for user != Anonymous user
         # User already authenticated (session, middleware, etc.)
-        if self.request.user != anonymous_user and self.request.user.has_perm('qdjango.view_project', self.project):
+        if (self.request.user.is_authenticated and self.request.user != anonymous_user
+                and self.request.user.has_perm('qdjango.view_project', self.project)):
             return True
         else:
 
@@ -32,19 +38,29 @@ class QdjangoProjectAuthorizer(object):
             # ------------------------------------------------
             try:
                 ba = BasicAuthentication()
-                user, other = ba.authenticate(self.request)
-                self.request.user = user
-                return user.has_perm('qdjango.view_project', self.project)
-            except Exception as e:
+                authentication = ba.authenticate(self.request)
+            except AuthenticationFailed:
 
                 # Check for Anonymous user
                 # -------------------------
                 if anonymous_user.has_perm('qdjango.view_project', self.project):
                     return True
 
-                pass
+                raise UnauthorizedRequest()
 
-            raise AuthForbiddenRequest()
+            if authentication is not None:
+                user, other = authentication
+                self.request.user = user
+                if user.has_perm('qdjango.view_project', self.project):
+                    return True
+                raise AuthForbiddenRequest()
+
+            if anonymous_user.has_perm('qdjango.view_project', self.project):
+                return True
+
+            if self.request.user.is_authenticated and self.request.user != anonymous_user:
+                raise AuthForbiddenRequest()
+            raise UnauthorizedRequest()
 
     def filter_request(self, request):
         return request
