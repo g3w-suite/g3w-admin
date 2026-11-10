@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.http.response import HttpResponseForbidden
-from .auth import AuthForbiddenRequest
+from .auth import AuthForbiddenRequest, UnauthorizedRequest
 
 import logging
 
@@ -20,6 +20,8 @@ class Proxy(object):
             """
             authorizer = OWSrh.authorizer
             authorizer.auth_request()
+        except UnauthorizedRequest:
+            return HttpResponse(status=401, headers={'WWW-Authenticate': 'Basic realm="api"'})
         except AuthForbiddenRequest:
             return HttpResponseForbidden()
         except Exception as e:
@@ -29,6 +31,8 @@ class Proxy(object):
                 """
                 authorizer = self.authorizer_class()
                 authorizer.auth_request(request)
+            except UnauthorizedRequest:
+                return HttpResponse(status=401, headers={'WWW-Authenticate': 'Basic realm="api"'})
             except AuthForbiddenRequest:
                 return HttpResponseForbidden()
             except:
