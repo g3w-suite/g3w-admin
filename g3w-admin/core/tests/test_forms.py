@@ -101,7 +101,8 @@ class CoreTestForm(CoreTestBase):
 
         # check ACL
         self.assertTrue(self.test_editor1.has_perm('core.change_group', mg))
-        self.assertFalse(self.test_editor2.has_perm('core.change_group', mg))
+        self.assertTrue(self.test_editor2.has_perm('core.change_group', mg))
+        self.assertTrue(self.test_editor2.has_perm('core.delete_group', mg))
         self.assertTrue(self.test_editor1.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_editor2.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_viewer1.has_perm('core.view_group', mg))
@@ -140,7 +141,9 @@ class CoreTestForm(CoreTestBase):
         self.assertFalse(self.test_editor1.has_perm('core.change_group', mg))
         self.assertTrue(self.test_editor1_2.has_perm('core.change_group', mg))
         self.assertFalse(self.test_editor2.has_perm('core.change_group', mg))
-        self.assertFalse(self.test_editor2_2.has_perm('core.change_group', mg))
+        self.assertFalse(self.test_editor2.has_perm('core.delete_group', mg))
+        self.assertTrue(self.test_editor2_2.has_perm('core.change_group', mg))
+        self.assertTrue(self.test_editor2_2.has_perm('core.delete_group', mg))
         self.assertTrue(self.test_editor1_2.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_editor2_2.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_viewer1_3.has_perm('core.view_group', mg))

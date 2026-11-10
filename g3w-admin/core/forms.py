@@ -213,8 +213,8 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         super(GroupForm, self).save()
         self._ACLPolicy()
 
-        # add permission to editor1 if current user is editor1
-        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+        # Give the current editor permissions on the group.
+        if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
             self.instance.addPermissionsToEditor(self.request.user)
 
 

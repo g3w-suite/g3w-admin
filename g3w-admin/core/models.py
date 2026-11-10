@@ -234,11 +234,10 @@ class Group(TimeStampedModel, OrderedModel):
         Give guardian permissions to Editor every level
         """
 
-        permissions = ['view_group', 'add_project_to_group'] # valid for editor2
+        permissions = ['view_group', 'add_project_to_group']
         user_groups = getUserGroups(user)
-        if G3W_EDITOR1 in user_groups:
+        if G3W_EDITOR1 in user_groups or G3W_EDITOR2 in user_groups:
             permissions += [
-                'add_project_to_group',
                 'change_group',
                 'delete_group'
             ]
