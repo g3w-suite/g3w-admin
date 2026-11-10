@@ -39,6 +39,9 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
         client.login(username=self.test_editor1.username, password=self.test_editor1.username)
         res = client.get(url)
         self.assertEqual(res.status_code, 200)
+        res = client.get(reverse('filemanager-logic'), {'mode': 'readfolder', 'path': '/'})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['data'], [])
         client.logout()
 
         # as viewer1
@@ -67,7 +70,8 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
 
         self.assertCountEqual(
             [item['id'] for item in jres['data']],
-            ['/file1_test.txt', '/file2_test.txt', '/folder_test/', '/folder_broken/']
+            ['/file1_test.txt', '/file2_test.txt', '/folder_test/', '/folder_broken/',
+             f'/{self.test_editor1.username}/']
         )
         for d in jres['data']:
             if d['id'] == '/file2_test.txt':
@@ -80,6 +84,8 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                 self.assertEqual(d['attributes']['path'], f"{self.root_path}/file2_test.txt")
             elif d['id'] == '/folder_test/':
                 self.assertEqual(d['id'], "/folder_test/")
+                self.assertEqual(d['type'], "folder")
+            elif d['id'] == f'/{self.test_editor1.username}/':
                 self.assertEqual(d['type'], "folder")
 
         client.logout()
@@ -128,5 +134,4 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                                  f"{self.root_path}/folder_broken/img_broken.jpg")
 
         client.logout()
-
 
