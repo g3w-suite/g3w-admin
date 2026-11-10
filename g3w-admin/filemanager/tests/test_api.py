@@ -13,7 +13,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.test import Client
 from django.urls import reverse
-from .base import BaseFilemanagerTestCase, CURRENT_PATH, TEST_BASE_PATH
+from .base import BaseFilemanagerTestCase
 import json
 
 
@@ -65,7 +65,10 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
 
-        self.assertEqual(len(jres['data']), 4)
+        self.assertCountEqual(
+            [item['id'] for item in jres['data']],
+            ['/file1_test.txt', '/file2_test.txt', '/folder_test/', '/folder_broken/']
+        )
         for d in jres['data']:
             if d['id'] == '/file2_test.txt':
                 self.assertEqual(d['id'], "/file2_test.txt")
@@ -74,7 +77,7 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                 self.assertEqual(d['attributes']['readable'], 1)
                 self.assertEqual(d['attributes']['writable'], 1)
                 self.assertEqual(d['attributes']['extension'], "txt")
-                self.assertEqual(d['attributes']['path'], f"{CURRENT_PATH}{TEST_BASE_PATH}file2_test.txt")
+                self.assertEqual(d['attributes']['path'], f"{self.root_path}/file2_test.txt")
             elif d['id'] == '/folder_test/':
                 self.assertEqual(d['id'], "/folder_test/")
                 self.assertEqual(d['type'], "folder")
@@ -110,7 +113,7 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                 self.assertEqual(d['attributes']["height"], 100)
                 self.assertEqual(d['attributes']["width"], 100)
                 self.assertEqual(d['attributes']["size"], 4536)
-                self.assertEqual(d['attributes']['path'], f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/g3wsuite_logo_rid.png")
+                self.assertEqual(d['attributes']['path'], f"{self.root_path}/folder_broken/g3wsuite_logo_rid.png")
             else:
                 self.assertEqual(d['id'], '/folder_broken/img_broken.jpg')
                 self.assertEqual(d['type'], "file")
@@ -122,9 +125,8 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                 self.assertEqual(d['attributes']["width"], 0)
                 self.assertEqual(d['attributes']["size"], 0)
                 self.assertEqual(d['attributes']['path'],
-                                 f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/img_broken.jpg")
+                                 f"{self.root_path}/folder_broken/img_broken.jpg")
 
         client.logout()
-
 
 
