@@ -243,7 +243,8 @@ class G3WACLForm(forms.Form):
         # check per and change situation
         if 'viewer_users' in self.cleaned_data:
             currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
-            toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
+            selectable_ids = set(self.fields['viewer_users'].queryset.values_list('pk', flat=True))
+            toRemove = list((set(self.initial_viewer_users) - set(currentViewerUsers)) & selectable_ids)
             #toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
 
             # add without remove initial viewers
@@ -262,7 +263,10 @@ class G3WACLForm(forms.Form):
         # for user_groups editor and viewer
         if 'editor_user_groups' in self.cleaned_data:
             current_editor_user_groups = [o.id for o in self.cleaned_data['editor_user_groups']]
-            to_remove = list(set(self.initial_editor_user_groups) - set(current_editor_user_groups))
+            selectable_ids = set(self.fields['editor_user_groups'].queryset.values_list('pk', flat=True))
+            to_remove = list(
+                (set(self.initial_editor_user_groups) - set(current_editor_user_groups)) & selectable_ids
+            )
             #to_add = list(set(current_editor_user_groups) - set(self.initial_editor_user_groups))
 
             # add without remove initial groups
@@ -275,7 +279,10 @@ class G3WACLForm(forms.Form):
 
         if 'viewer_user_groups' in self.cleaned_data:
             current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
-            to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
+            selectable_ids = set(self.fields['viewer_user_groups'].queryset.values_list('pk', flat=True))
+            to_remove = list(
+                (set(self.initial_viewer_user_groups) - set(current_viewer_user_groups)) & selectable_ids
+            )
             #to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
 
             # add without remove initial groups
@@ -990,5 +997,4 @@ class G3WSetPasswordForm(SetPasswordForm):
             self.user.userdata.save()
 
         return super().save(commit=commit)
-
 
