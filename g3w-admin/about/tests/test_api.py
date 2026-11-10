@@ -166,8 +166,12 @@ class PortalTestAPI(AboutTestsBase):
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(len(jcontent), 2)
-        feature = jcontent[0]
-        self.assertNotIn('edit_url', feature)
+        features = {feature['id']: feature for feature in jcontent}
+        self.assertEqual(
+            features[self.project_group.pk]['edit_url'],
+            reverse('group-update', kwargs={'slug': self.project_group.slug})
+        )
+        self.assertNotIn('edit_url', features[self.project_group2.pk])
 
         client.logout()
 
@@ -383,6 +387,5 @@ class PortalTestAPI(AboutTestsBase):
         self.assertEqual(len(jcontent), 2)
 
         client.logout()
-
 
 
