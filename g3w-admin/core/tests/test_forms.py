@@ -183,6 +183,42 @@ class CoreTestForm(CoreTestBase):
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 1)
 
+    def test_editor2_acl_choices_follow_editor1_owners(self):
+        self.request.user = self.test_editor2_2
+        form = GroupForm(request=self.request)
+        self.assertCountEqual(
+            form.fields['viewer_users'].queryset, [self.test_viewer1_3, self.anonymoususer]
+        )
+        self.assertCountEqual(
+            form.fields['viewer_user_groups'].queryset, [self.test_gu_viewer1_e1_2]
+        )
+        form = GroupForm(
+            request=self.request, data={'viewer_users': [self.test_viewer1.pk]}
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn('viewer_users', form.errors)
+
+        assign_perm('auth.change_user', self.test_editor1, self.test_editor2_2)
+        assign_perm('auth.change_user', self.test_editor1, self.test_viewer1)
+        assign_perm('auth.change_group', self.test_editor1, self.test_gu_viewer1)
+        form = GroupForm(request=self.request)
+        self.assertCountEqual(
+            form.fields['viewer_users'].queryset,
+            [self.test_viewer1, self.test_viewer1_3, self.anonymoususer]
+        )
+        self.assertCountEqual(
+            form.fields['viewer_user_groups'].queryset,
+            [self.test_gu_viewer1, self.test_gu_viewer1_e1_2]
+        )
+
+        self.request.user = self.test_editor2
+        form = GroupForm(request=self.request)
+        self.assertCountEqual(
+            form.fields['viewer_users'].queryset,
+            [self.test_viewer1, self.test_viewer1_2, self.test_viewer1_3, self.anonymoususer]
+        )
+        self.assertEqual(form.fields['viewer_user_groups'].queryset.count(), 3)
+
     def test_editor2_group_edit_preserves_macrogroups(self):
         group = Group.objects.create(
             name='macrogroup-preservation', title='Original title',
