@@ -82,6 +82,7 @@ def files_view(request):
     # Append user.username to the root_folder if user is an Editor level 1 or Editor level 2
     if userHasGroups(request.user, [G3W_EDITOR1, G3W_EDITOR2]):
         root_folder = os.path.join(root_folder, request.user.username)
+        os.makedirs(root_folder, exist_ok=True)
 
     fileManager = FileManager(request, root_folder=root_folder)
 
