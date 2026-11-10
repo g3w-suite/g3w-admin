@@ -13,6 +13,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.test.client import RequestFactory
 from django.forms.models import model_to_dict
+from guardian.shortcuts import assign_perm
 from usersmanage.tests.utils import setup_testing_user_relations
 from core.forms import GroupForm, MacroGroupForm, GeneralSuiteDataForm
 from core.models import G3WSpatialRefSys, MapControl, Group, MacroGroup, GeneralSuiteData
@@ -181,6 +182,39 @@ class CoreTestForm(CoreTestBase):
         # Only editor and viewer user groups for test_editor1_2
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 1)
+
+    def test_editor2_group_edit_preserves_macrogroups(self):
+        group = Group.objects.create(
+            name='macrogroup-preservation', title='Original title',
+            srid=self.epsg, header_logo_img=''
+        )
+        visible = MacroGroup.objects.create(name='visible', title='Visible', logo_img='')
+        hidden = MacroGroup.objects.create(name='hidden', title='Hidden', logo_img='')
+        other = MacroGroup.objects.create(name='other', title='Other', logo_img='')
+        group.macrogroups.set([visible, hidden])
+        assign_perm('view_macrogroup', self.test_editor2, visible)
+        assign_perm('view_macrogroup', self.test_editor2, other)
+        self.request.user = self.test_editor2
+        upload = create_dff_image(field_name='header_logo_img')
+        data = {
+            'name': group.name,
+            'title': 'Updated title',
+            'srid': self.epsg.pk,
+            'form_id': upload.form_id,
+            'lang': 'it',
+            'mapcontrols': [control.pk for control in self.map_controls],
+        }
+
+        for submitted in ({}, {'macrogroups': [other.pk]}):
+            with self.subTest(submitted=submitted):
+                form = GroupForm(request=self.request, instance=group, data={**data, **submitted})
+                self.assertIn(visible, form.fields['macrogroups'].queryset)
+                self.assertNotIn(hidden, form.fields['macrogroups'].queryset)
+                self.assertTrue(form.is_valid(), form.errors)
+                form.save()
+                group.refresh_from_db()
+                self.assertEqual(group.title, 'Updated title')
+                self.assertCountEqual(group.macrogroups.all(), [visible, hidden])
 
     def test_macrogroups_form(self):
         """ Test for Macrogroup map object form """

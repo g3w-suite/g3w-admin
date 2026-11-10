@@ -180,6 +180,12 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         )
 
     def clean_macrogroups(self):
+        if (
+            self.instance.pk
+            and not self.request.user.is_superuser
+            and not userHasGroups(self.request.user, [G3W_EDITOR1])
+        ):
+            return self.instance.macrogroups.all()
 
         # for case editor1 without permission on magrogroup
         if userHasGroups(self.request.user, [G3W_EDITOR1]) and self.instance.pk:
