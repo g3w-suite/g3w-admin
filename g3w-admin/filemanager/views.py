@@ -4,7 +4,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from usersmanage.decorators import user_passes_test_or_403
-from usersmanage.utils import userHasGroups, G3W_EDITOR1
+from usersmanage.utils import (
+    userHasGroups, 
+    G3W_EDITOR1, 
+    G3W_EDITOR2
+)
 from .filemanager import FileManager
 import json
 import os
@@ -14,7 +18,7 @@ class FilemanagerView(TemplateView):
     """Main templateview for fielmanager"""
     template_name = 'filemanager/filemanager.html'
 
-    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser or userHasGroups(u, [G3W_EDITOR1])))
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser or userHasGroups(u, [G3W_EDITOR1, G3W_EDITOR2])))
     def dispatch(self, *args, **kwargs):
         return super(FilemanagerView, self).dispatch(*args, **kwargs)
 
@@ -31,7 +35,7 @@ class FilemanagerServeConfigView(View):
     """ Filemanager main config view
         Return main RichFileManager json config settings.
     """
-    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser or userHasGroups(u, [G3W_EDITOR1])))
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser or userHasGroups(u, [G3W_EDITOR1, G3W_EDITOR2])))
     def dispatch(self, *args, **kwargs):
         return super(FilemanagerServeConfigView, self).dispatch(*args, **kwargs)
 
@@ -60,7 +64,7 @@ class FilemanagerServeConfigView(View):
 
 
 @csrf_exempt
-@user_passes_test_or_403(lambda u: u.is_superuser or userHasGroups(u, [G3W_EDITOR1]))
+@user_passes_test_or_403(lambda u: u.is_superuser or userHasGroups(u, [G3W_EDITOR1, G3W_EDITOR2]))
 def files_view(request):
     """File Manager API endpoint"""
 
@@ -75,8 +79,8 @@ def files_view(request):
         else:
             root_folder = settings.DATASOURCE_PATH
 
-    # Append user.username to the root_folder if user is an Editor level 1
-    if userHasGroups(request.user, [G3W_EDITOR1]):
+    # Append user.username to the root_folder if user is an Editor level 1 or Editor level 2
+    if userHasGroups(request.user, [G3W_EDITOR1, G3W_EDITOR2]):
         root_folder = os.path.join(root_folder, request.user.username)
 
     fileManager = FileManager(request, root_folder=root_folder)
