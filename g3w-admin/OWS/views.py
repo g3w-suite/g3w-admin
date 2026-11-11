@@ -36,7 +36,7 @@ class OWSView(View):
         return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
 
     def post(self, request, *args, **kwargs):
-            return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
+        return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
 
 
 def ows_alias_view(request, map_name_alias, *args, **kwargs):
