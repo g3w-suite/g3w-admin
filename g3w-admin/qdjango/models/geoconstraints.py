@@ -395,13 +395,12 @@ class GeoConstraintRule(models.Model):
                         continue
 
                     # Check if CRS layer != Project CRS
-                    if project.group.srid.auth_srid == layer.srid:
+                    if project.group.srid.srid == layer.srid:
                         rect = QgsRectangle.fromWkt(rule.get_constraint_geometry()[0].envelope.wkt)
                     else:
                         geom = QgsMultiPolygon.fromWkt(rule.get_constraint_geometry()[0].wkt)
-                        ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(f'EPSG:{layer.srid}'),
-                                                    QgsCoordinateReferenceSystem(
-                                                        f'EPSG:{project.group.srid.auth_srid}'),
+                        ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(f'POSTGIS:{layer.srid}'),
+                                                    QgsCoordinateReferenceSystem(project.group.srid.authid),
                                                     QgsCoordinateTransformContext())
                         geom.transform(ct)
                         rect = geom.caolculateBoundingBox()

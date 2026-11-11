@@ -10,7 +10,7 @@ from rest_framework.fields import empty
 from core.models import Group, BaseLayer
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
-from core.utils.geo import get_crs_bbox
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsCoordinateTransformContext
 from copy import copy
@@ -59,6 +59,25 @@ class BaseLayerSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super(BaseLayerSerializer, self).to_representation(instance)
         ret.update(eval(instance.property))
+        crs_data = ret.get('crs')
+        if isinstance(crs_data, dict):
+            authid = crs_data.get('authid')
+            if not authid and crs_data.get('epsg') is not None:
+                authid = f"EPSG:{crs_data['epsg']}"
+            if authid:
+                crs = QgsCoordinateReferenceSystem(authid)
+                if not crs.isValid():
+                    crs = QgsCoordinateReferenceSystem()
+                    crs.createFromOgcWmsCrs(authid)
+                if crs.isValid():
+                    crs_data.update({
+                        'authid': crs.authid(),
+                        'epsg': get_crs_epsg(crs),
+                        'proj4': get_crs_proj4(crs),
+                        'geographic': crs.isGeographic(),
+                        'axisinverted': crs.hasAxisInverted(),
+                        'extent': get_crs_bbox(crs)
+                    })
         return ret
 
     class Meta:
@@ -105,22 +124,15 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             pass
 
         # add crs:
-        crs = QgsCoordinateReferenceSystem(f'EPSG:{self.instance.srid.srid}')
-
-        # Patch for Proj4 > 4.9.3 version
-        if self.instance.srid.srid in settings.G3W_PROJ4_EPSG.keys():
-            proj4 = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]['proj4']
-            extent = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]['extent']
-
-        else:
-            proj4 = crs.toProj4()
-            if crs.postgisSrid() in (4326, 3857):
-                extent = get_crs_bbox(crs)
-            else:
-                extent = [0,0,8388608,8388608]
+        crs = QgsCoordinateReferenceSystem(self.instance.srid.authid)
+        if not crs.isValid():
+            crs = QgsCoordinateReferenceSystem(f'POSTGIS:{self.instance.srid.srid}')
+        proj4 = get_crs_proj4(crs)
+        extent = get_crs_bbox(crs)
 
         ret['crs'] = {
-            'epsg': crs.postgisSrid(),
+            'authid': crs.authid(),
+            'epsg': get_crs_epsg(crs),
             'proj4': proj4,
             'geographic': crs.isGeographic(),
             'axisinverted': crs.hasAxisInverted(),

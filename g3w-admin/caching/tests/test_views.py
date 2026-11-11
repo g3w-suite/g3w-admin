@@ -100,12 +100,12 @@ class CachingViewsTests(CachingTestBase):
 
         # crs poperty validation
         self.assertEqual(body['crs'], {
+            'authid': 'EPSG:4326',
             'epsg': 4326,
-            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
             'geographic': True,
             'axisinverted': True,
-            #'extent': [-180.0, -90.0, 180.0, 90.0]
-            'extent': [0, 0, 8388608, 8388608]
+            'extent': [-180.0, -90.0, 180.0, 90.0]
         })
 
         # update
@@ -129,12 +129,12 @@ class CachingViewsTests(CachingTestBase):
 
         # crs poperty validation
         self.assertEqual(body['crs'], {
+            'authid': 'EPSG:4326',
             'epsg': 4326,
-            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs +type=crs',
             'geographic': True,
             'axisinverted': True,
-            #'extent': [-180.0, -90.0, 180.0, 90.0]
-            'extent': [0, 0, 8388608, 8388608]
+            'extent': [-180.0, -90.0, 180.0, 90.0]
         })
 
         base_layer_pk = base_layer.pk
