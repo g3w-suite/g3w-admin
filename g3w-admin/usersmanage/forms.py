@@ -130,7 +130,7 @@ class G3WACLForm(forms.Form):
     )
 
     # add check for propagate viewers permissions
-    propagate_viewers = forms.BooleanField(label=_('Propagate <b>NEW</b> viewers and new viewers user groups permissions'),
+    propagate_viewers = forms.BooleanField(label=_('Propagate permissions for NEW VIEWER users and user groups to projects already published within the Group'),
                                            required=False)
 
     def __init__(self, *args, **kwargs):
