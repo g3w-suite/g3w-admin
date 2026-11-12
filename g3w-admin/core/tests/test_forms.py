@@ -183,6 +183,37 @@ class CoreTestForm(CoreTestBase):
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 1)
 
+    def test_editor2_group_creation_grants_editor1_owners(self):
+        owners = (self.test_editor1, self.test_editor1_2)
+        for owner in owners:
+            assign_perm('auth.change_user', owner, self.test_editor2_2)
+
+        for creator, expected_owners in (
+            (self.test_editor2_2, owners),
+            (self.test_editor2, ()),
+        ):
+            with self.subTest(creator=creator.username):
+                self.request.user = creator
+                upload = create_dff_image(field_name='header_logo_img')
+                form = GroupForm(request=self.request, data={
+                    'name': f'created-by-{creator.pk}',
+                    'title': 'Created by Editor 2',
+                    'srid': self.epsg.pk,
+                    'form_id': upload.form_id,
+                    'lang': 'it',
+                    'mapcontrols': [control.pk for control in self.map_controls],
+                })
+                self.assertTrue(form.is_valid(), form.errors)
+                form.save()
+                group = form.instance
+                for permission in ('view_group', 'change_group', 'delete_group'):
+                    self.assertTrue(creator.has_perm(f'core.{permission}', group))
+                    for owner in (*owners, self.test_editor1_3):
+                        self.assertEqual(
+                            owner.has_perm(f'core.{permission}', group),
+                            owner in expected_owners
+                        )
+
     def test_editor2_acl_choices_follow_editor1_owners(self):
         self.request.user = self.test_editor2_2
         form = GroupForm(request=self.request)

@@ -243,6 +243,9 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         # Give the current editor permissions on the group.
         if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
             self.instance.addPermissionsToEditor(self.request.user)
+            if userHasGroups(self.request.user, [G3W_EDITOR2]):
+                for owner in get_users_for_object(self.request.user, 'change_user', [G3W_EDITOR1]):
+                    self.instance.addPermissionsToEditor(owner)
 
 
 class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
