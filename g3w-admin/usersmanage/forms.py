@@ -241,7 +241,7 @@ class G3WACLForm(forms.Form):
 
         #add permission view_group to Viewer
         # check per and change situation
-        if 'viewer_users' in self.cleaned_data:
+        if 'viewer_users' in self.fields and 'viewer_users' in self.cleaned_data:
             currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
             selectable_ids = set(self.fields['viewer_users'].queryset.values_list('pk', flat=True))
             toRemove = list((set(self.initial_viewer_users) - set(currentViewerUsers)) & selectable_ids)
@@ -261,7 +261,7 @@ class G3WACLForm(forms.Form):
                 self.instance.removePermissionsToViewers(toRemove)
 
         # for user_groups editor and viewer
-        if 'editor_user_groups' in self.cleaned_data:
+        if 'editor_user_groups' in self.fields and 'editor_user_groups' in self.cleaned_data:
             current_editor_user_groups = [o.id for o in self.cleaned_data['editor_user_groups']]
             selectable_ids = set(self.fields['editor_user_groups'].queryset.values_list('pk', flat=True))
             to_remove = list(
@@ -277,7 +277,7 @@ class G3WACLForm(forms.Form):
             if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
                 self.instance.remove_permissions_to_editor_user_groups(to_remove)
 
-        if 'viewer_user_groups' in self.cleaned_data:
+        if 'viewer_user_groups' in self.fields and 'viewer_user_groups' in self.cleaned_data:
             current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
             selectable_ids = set(self.fields['viewer_user_groups'].queryset.values_list('pk', flat=True))
             to_remove = list(

@@ -18,6 +18,7 @@ from usersmanage.utils import (
     get_groups_for_object,
     get_user_groups_for_object,
     get_viewers_for_object,
+    setPermissionUserObject,
     userHasGroups,
 )
 from qdjango.models import *
@@ -507,6 +508,12 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
 
                 editor_users = get_users_for_object(
                     self.instance.group, 'view_group', [G3W_EDITOR1, G3W_EDITOR2])
+                owner_users = get_users_for_object(
+                    self.request.user, 'change_user', [G3W_EDITOR1])
+                for owner in owner_users:
+                    setPermissionUserObject(
+                        owner, self.instance.group, permissions=['change_group', 'delete_group'])
+                editor_users += owner_users
                 for eu in editor_users:
                     self.instance.addPermissionsToEditor(eu)
 

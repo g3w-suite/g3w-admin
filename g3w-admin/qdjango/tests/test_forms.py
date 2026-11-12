@@ -32,6 +32,50 @@ class QdjangoFormsTest(QdjangoTestBase):
         cls.request = RequestFactory()
         cls.map_controls = MapControl.objects.all()
 
+    def test_editor2_project_grants_permissions_to_editor1_owners(self):
+        creator = self.test_editor2
+        owners = (self.test_editor1, self.test_editor1_2)
+        for owner in owners:
+            assign_perm('auth.change_user', owner, creator)
+            self.assertFalse(owner.has_perm('core.view_group', self.project_group))
+        self.project_group.addPermissionsToEditor(creator)
+        self.request.user = creator
+        upload = create_dff_project('qgis_file')
+        form = QdjangoProjectForm(
+            request=self.request, group=self.project_group,
+            data={
+                'form_id': upload.form_id,
+                'feature_count_wms': 10,
+                'multilayer_query': 'single',
+                'multilayer_querybybbox': 'single',
+                'multilayer_querybypolygon': 'single',
+                'toc_tab_default': 'layers',
+                'toc_layers_init_status': 'not_collapsed',
+                'toc_themes_init_status': 'collapsed',
+                'legend_position': 'tab',
+                'wms_getmap_format': 'image/png; mode=8bit',
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.cleaned_data['thumbnail'] = None
+        form.qgisProject.save(**form.cleaned_data)
+        form.instance = form.qgisProject.instance
+        form.save()
+
+        project = form.instance
+        self.assertTrue(project.layer_set.exists())
+        for editor in (creator, *owners):
+            for permission in ('view_project', 'change_project', 'delete_project'):
+                self.assertTrue(editor.has_perm(f'qdjango.{permission}', project))
+            for permission in ('view_group', 'change_group', 'delete_group'):
+                self.assertTrue(editor.has_perm(f'core.{permission}', self.project_group))
+            for layer in project.layer_set.all():
+                for permission in ('view_layer', 'change_layer', 'delete_layer', *EDITING_ATOMIC_PERMISSIONS):
+                    self.assertTrue(editor.has_perm(f'qdjango.{permission}', layer))
+        self.assertFalse(self.test_editor1_3.has_perm('qdjango.view_project', project))
+        for permission in ('view_group', 'change_group', 'delete_group'):
+            self.assertFalse(self.test_editor1_3.has_perm(f'core.{permission}', self.project_group))
+
     def test_qdjango_project_form(self):
         """
         Test qdjango project form, particular attention to ACL
