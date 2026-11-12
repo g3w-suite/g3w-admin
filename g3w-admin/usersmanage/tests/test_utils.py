@@ -21,7 +21,8 @@ from usersmanage.configs import *
 from usersmanage.utils import *
 from usersmanage.forms import G3WACLForm
 from core.forms import GroupForm, G3WRequestFormMixin
-from core.models import Group, G3WSpatialRefSys
+from core.models import Group, G3WSpatialRefSys, MapControl
+from core.tests.utils import create_dff_image, clear_dff_image
 from core.signals import pre_show_user_data
 from qdjango.utils.data import QgisProject
 from pathlib import Path
@@ -93,6 +94,45 @@ class UsersManageTest(BaseUsermanageTestCase):
             self.assertNotIn(project_permission, get_perms(subjects[0], project.instance))
             self.assertIn(group_permission, get_perms(subjects[1], self.group_test))
             self.assertIn(project_permission, get_perms(subjects[1], project.instance))
+
+    def test_editor2_can_propagate_viewer_permissions_to_projects(self):
+        project_path = Path(__file__).resolve().parents[2] / 'qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs'
+        with project_path.open() as source, File(source) as project_file:
+            project = QgisProject(project_file)
+            project.group = self.group_test
+            project.save()
+
+        request = self.factory.request()
+        request.user = self.test_editor2
+        self.group_test.addPermissionsToEditor(request.user)
+        viewer = self.test_viewer1_3
+        viewer_group = self.test_gu_viewer2
+        upload = create_dff_image(field_name='header_logo_img')
+        self.addCleanup(clear_dff_image)
+        map_control = MapControl.objects.create(name='zoom')
+        for propagate in (False, True):
+            with self.subTest(propagate=propagate):
+                form = GroupForm(request=request, instance=self.group_test, data={
+                    'name': self.group_test.name,
+                    'title': self.group_test.title,
+                    'srid': self.group_test.srid_id,
+                    'form_id': upload.form_id,
+                    'mapcontrols': [map_control.pk],
+                    'viewer_users': [viewer.pk],
+                    'viewer_user_groups': [viewer_group.pk],
+                    'propagate_viewers': propagate,
+                })
+                self.assertIn(
+                    'propagate_viewers',
+                    [field.name for field in form.helper.layout.get_field_names()]
+                )
+                self.assertTrue(form.is_valid(), form.errors)
+                form.save()
+                for subject in (viewer, viewer_group):
+                    self.assertIn('view_group', get_perms(subject, self.group_test))
+                    self.assertEqual(
+                        'view_project' in get_perms(subject, project.instance), propagate
+                    )
 
     def test_user_groups(self):
         """ Test same util function """
@@ -251,7 +291,7 @@ class UsersManageTest(BaseUsermanageTestCase):
         # As Editor level 2
         request.user = self.test_editor2
 
-        expected_e2 = copy.copy(expected_e1)[1:-1]
+        expected_e2 = copy.copy(expected_e1)[1:]
         del(expected_e2[1])
 
         form = TestForm(request=request)
