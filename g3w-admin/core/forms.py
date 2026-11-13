@@ -568,20 +568,17 @@ class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
-        Div(
-                    Field('macrogroup', css_class='select2', style='width:100%;'),
-                    Field('epsg', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[0]}'
-                ),
-                Div(
-                    Field('editor1', css_class='select2', style='width:100%;'),
-                    Field('editor2', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[1]}'
-                ),
-                Div(
-                    Field('editorgroup', css_class='select2', style='width:100%;'),
-                    Field('viewergroup', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[2]}'
+                *(
+                    Div(
+                        *(Field(name, css_class='select2', style='width:100%;')
+                          for name in names if name in self.fields),
+                        css_class=f'col-md-{width}'
+                    )
+                    for names, width in zip(
+                        (('macrogroup', 'epsg'), ('editor1', 'editor2'), ('editorgroup', 'viewergroup')),
+                        ffc
+                    )
+                    if width
                 ),
                 css_class='row'
             )

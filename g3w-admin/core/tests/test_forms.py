@@ -12,10 +12,12 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.test.client import RequestFactory
+from django.test import override_settings
+from crispy_forms.utils import render_crispy_form
 from django.forms.models import model_to_dict
 from guardian.shortcuts import assign_perm
 from usersmanage.tests.utils import setup_testing_user_relations
-from core.forms import GroupForm, MacroGroupForm, GeneralSuiteDataForm
+from core.forms import GroupForm, MacroGroupForm, GeneralSuiteDataForm, GroupFilterForm
 from core.models import G3WSpatialRefSys, MapControl, Group, MacroGroup, GeneralSuiteData
 from .base import CoreTestBase
 from .utils import create_dff_image
@@ -38,6 +40,20 @@ class CoreTestForm(CoreTestBase):
         # get epsg test
         cls.epsg = G3WSpatialRefSys.objects.get(srid=4326)
         cls.map_controls = MapControl.objects.all()
+
+    @override_settings(CRISPY_FAIL_SILENTLY=False)
+    def test_group_filter_renders_only_available_fields(self):
+        for user in (
+            self.test_user1, self.test_editor1, self.test_editor2, self.test_viewer1
+        ):
+            with self.subTest(user=user.username):
+                self.request.user = user
+                form = GroupFilterForm(request=self.request)
+                rendered = render_crispy_form(form)
+                for name in form.fields:
+                    self.assertIn(f'name="{name}"', rendered)
+                for name in {'editor1', 'editor2', 'editorgroup', 'viewergroup'} - form.fields.keys():
+                    self.assertNotIn(f'name="{name}"', rendered)
 
     def test_groups_form(self):
 
