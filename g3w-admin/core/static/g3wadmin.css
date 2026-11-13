@@ -26494,6 +26494,7 @@ table.users-table > tbody > tr:first-child > td {
 /* Box body */
 .form-shell .box > .box-body {
     background: #fff;
+    color: #333;
     padding: 18px;
 }
 

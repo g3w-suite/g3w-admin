@@ -37,6 +37,27 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
 
+        if not self.request.user.is_superuser and userHasGroups(self.request.user, [G3W_EDITOR2]):
+            owners = get_users_for_object(self.request.user, 'change_user', [G3W_EDITOR1])
+            users = User.objects.none() if owners else User.objects.all()
+            groups = AuthGroup.objects.none() if owners else AuthGroup.objects.all()
+            for owner in owners:
+                users |= get_objects_for_user(owner, 'auth.change_user', User)
+                groups |= get_objects_for_user(owner, 'auth.change_group', AuthGroup)
+
+            for field, roles in (
+                ('editor_user', self.editor1_groups),
+                ('editor2_user', self.editor2_groups),
+                ('viewer_users', self.viewer_groups),
+            ):
+                queryset = User.objects.filter(pk__in=users.filter(groups__name__in=roles))
+                if field == 'viewer_users' and self.initial_editor_user:
+                    queryset = queryset.exclude(pk=self.initial_editor_user)
+                self.fields[field].queryset = queryset.order_by('last_name')
+            for field, role in (('editor_user_groups', 'editor'), ('viewer_user_groups', 'viewer')):
+                self.fields[field].queryset = groups.filter(grouprole__role=role).distinct().order_by('name')
+            self._add_anonymou_user()
+
         # add MacroGroups by users
         self.fields['macrogroups'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
                                                                         MacroGroup)
@@ -180,6 +201,12 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         )
 
     def clean_macrogroups(self):
+        if (
+            self.instance.pk
+            and not self.request.user.is_superuser
+            and not userHasGroups(self.request.user, [G3W_EDITOR1])
+        ):
+            return self.instance.macrogroups.all()
 
         # for case editor1 without permission on magrogroup
         if userHasGroups(self.request.user, [G3W_EDITOR1]) and self.instance.pk:
@@ -213,9 +240,12 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         super(GroupForm, self).save()
         self._ACLPolicy()
 
-        # add permission to editor1 if current user is editor1
-        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+        # Give the current editor permissions on the group.
+        if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
             self.instance.addPermissionsToEditor(self.request.user)
+            if userHasGroups(self.request.user, [G3W_EDITOR2]):
+                for owner in get_users_for_object(self.request.user, 'change_user', [G3W_EDITOR1]):
+                    self.instance.addPermissionsToEditor(owner)
 
 
 class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
@@ -538,20 +568,17 @@ class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
-        Div(
-                    Field('macrogroup', css_class='select2', style='width:100%;'),
-                    Field('epsg', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[0]}'
-                ),
-                Div(
-                    Field('editor1', css_class='select2', style='width:100%;'),
-                    Field('editor2', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[1]}'
-                ),
-                Div(
-                    Field('editorgroup', css_class='select2', style='width:100%;'),
-                    Field('viewergroup', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[2]}'
+                *(
+                    Div(
+                        *(Field(name, css_class='select2', style='width:100%;')
+                          for name in names if name in self.fields),
+                        css_class=f'col-md-{width}'
+                    )
+                    for names, width in zip(
+                        (('macrogroup', 'epsg'), ('editor1', 'editor2'), ('editorgroup', 'viewergroup')),
+                        ffc
+                    )
+                    if width
                 ),
                 css_class='row'
             )

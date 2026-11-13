@@ -84,7 +84,7 @@
         {% endif %}
         <!-- Control Sidebar Toggle Button -->
         <li>
-        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+        {% if user.is_superuser or user|has_group:G3W_EDITOR1 or user|has_group:G3W_EDITOR2  %}
         <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
         {% else %}
         <span style=" display:inline-block; width: 45px;"></span>

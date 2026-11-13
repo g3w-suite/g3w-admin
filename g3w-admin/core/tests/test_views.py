@@ -12,7 +12,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
 from core.models import Group, G3WSpatialRefSys, MacroGroup
-from core.views import DashboardView, SearchAdminView
+from core.views import DashboardView, SearchAdminView, GroupListView, GroupDeactiveListView
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from qdjango.models import ProjectBookmark
 from qdjango.utils.data import QgisProject
@@ -103,6 +103,41 @@ class CoreViewsTest(CoreTestBase):
         self.assertEqual(len(dbgroups), 0)
 
         client.logout()
+
+    def test_group_trash_lists_only_deletable_groups(self):
+        srid = G3WSpatialRefSys.objects.get(auth_srid=4326)
+        groups = {}
+        for name in ('view-only', 'delete-only', 'view-and-delete', 'active'):
+            groups[name] = Group.objects.create(
+                name=name, title=name, header_logo_img='', srid=srid,
+                is_active=int(name == 'active')
+            )
+
+        user = self.test_editor2
+        for name in ('view-only', 'view-and-delete', 'active'):
+            assign_perm('view_group', user, groups[name])
+        for name in ('delete-only', 'view-and-delete', 'active'):
+            assign_perm('delete_group', user, groups[name])
+
+        request = RequestFactory().get(reverse('group-deactive-list'))
+        request.user = user
+        view = GroupDeactiveListView()
+        view.setup(request)
+        self.assertCountEqual(
+            view.get_queryset(), [groups['delete-only'], groups['view-and-delete']]
+        )
+
+        request.user = self.test_admin1
+        view.setup(request)
+        self.assertCountEqual(
+            view.get_queryset(),
+            [groups['view-only'], groups['delete-only'], groups['view-and-delete']]
+        )
+
+        request.user = user
+        active_view = GroupListView()
+        active_view.setup(request)
+        self.assertCountEqual(active_view.get_queryset(), [groups['active']])
 
     def test_delete_macrogroup_view(self):
         """

@@ -130,7 +130,7 @@ class G3WACLForm(forms.Form):
     )
 
     # add check for propagate viewers permissions
-    propagate_viewers = forms.BooleanField(label=_('Propagate <b>NEW</b> viewers and new viewers user groups permissions'),
+    propagate_viewers = forms.BooleanField(label=_('Propagate permissions for NEW VIEWER users and user groups to projects already published within the Group'),
                                            required=False)
 
     def __init__(self, *args, **kwargs):
@@ -241,9 +241,10 @@ class G3WACLForm(forms.Form):
 
         #add permission view_group to Viewer
         # check per and change situation
-        if 'viewer_users' in self.cleaned_data:
+        if 'viewer_users' in self.fields and 'viewer_users' in self.cleaned_data:
             currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
-            toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
+            selectable_ids = set(self.fields['viewer_users'].queryset.values_list('pk', flat=True))
+            toRemove = list((set(self.initial_viewer_users) - set(currentViewerUsers)) & selectable_ids)
             #toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
 
             # add without remove initial viewers
@@ -260,9 +261,12 @@ class G3WACLForm(forms.Form):
                 self.instance.removePermissionsToViewers(toRemove)
 
         # for user_groups editor and viewer
-        if 'editor_user_groups' in self.cleaned_data:
+        if 'editor_user_groups' in self.fields and 'editor_user_groups' in self.cleaned_data:
             current_editor_user_groups = [o.id for o in self.cleaned_data['editor_user_groups']]
-            to_remove = list(set(self.initial_editor_user_groups) - set(current_editor_user_groups))
+            selectable_ids = set(self.fields['editor_user_groups'].queryset.values_list('pk', flat=True))
+            to_remove = list(
+                (set(self.initial_editor_user_groups) - set(current_editor_user_groups)) & selectable_ids
+            )
             #to_add = list(set(current_editor_user_groups) - set(self.initial_editor_user_groups))
 
             # add without remove initial groups
@@ -273,9 +277,12 @@ class G3WACLForm(forms.Form):
             if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
                 self.instance.remove_permissions_to_editor_user_groups(to_remove)
 
-        if 'viewer_user_groups' in self.cleaned_data:
+        if 'viewer_user_groups' in self.fields and 'viewer_user_groups' in self.cleaned_data:
             current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
-            to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
+            selectable_ids = set(self.fields['viewer_user_groups'].queryset.values_list('pk', flat=True))
+            to_remove = list(
+                (set(self.initial_viewer_user_groups) - set(current_viewer_user_groups)) & selectable_ids
+            )
             #to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
 
             # add without remove initial groups
@@ -990,5 +997,4 @@ class G3WSetPasswordForm(SetPasswordForm):
             self.user.userdata.save()
 
         return super().save(commit=commit)
-
 
