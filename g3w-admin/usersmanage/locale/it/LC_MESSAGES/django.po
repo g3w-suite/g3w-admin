@@ -41,10 +41,10 @@ msgid "Viewer user groups"
 msgstr "Gruppi di utenti Viewer"
 
 #: usersmanage/forms.py:133
-msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
+msgid "Propagate permissions for NEW VIEWER users and user groups to projects already published within the Group"
 msgstr ""
-"Propaga i permessi dei <b>NUOVI</b> utenti viewer e gruppi di utenti viewer "
-"aggiunti"
+"Propaga i permessi dei NUOVI utenti e gruppi di utenti VIEWER ai progetti "
+"già pubblicati all’interno del Gruppo"
 
 #: usersmanage/forms.py:297
 msgid "Department"

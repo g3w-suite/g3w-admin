@@ -12,9 +12,12 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.test.client import RequestFactory
+from django.test import override_settings
+from crispy_forms.utils import render_crispy_form
 from django.forms.models import model_to_dict
+from guardian.shortcuts import assign_perm
 from usersmanage.tests.utils import setup_testing_user_relations
-from core.forms import GroupForm, MacroGroupForm, GeneralSuiteDataForm
+from core.forms import GroupForm, MacroGroupForm, GeneralSuiteDataForm, GroupFilterForm
 from core.models import G3WSpatialRefSys, MapControl, Group, MacroGroup, GeneralSuiteData
 from .base import CoreTestBase
 from .utils import create_dff_image
@@ -37,6 +40,20 @@ class CoreTestForm(CoreTestBase):
         # get epsg test
         cls.epsg = G3WSpatialRefSys.objects.get(srid=4326)
         cls.map_controls = MapControl.objects.all()
+
+    @override_settings(CRISPY_FAIL_SILENTLY=False)
+    def test_group_filter_renders_only_available_fields(self):
+        for user in (
+            self.test_user1, self.test_editor1, self.test_editor2, self.test_viewer1
+        ):
+            with self.subTest(user=user.username):
+                self.request.user = user
+                form = GroupFilterForm(request=self.request)
+                rendered = render_crispy_form(form)
+                for name in form.fields:
+                    self.assertIn(f'name="{name}"', rendered)
+                for name in {'editor1', 'editor2', 'editorgroup', 'viewergroup'} - form.fields.keys():
+                    self.assertNotIn(f'name="{name}"', rendered)
 
     def test_groups_form(self):
 
@@ -101,7 +118,8 @@ class CoreTestForm(CoreTestBase):
 
         # check ACL
         self.assertTrue(self.test_editor1.has_perm('core.change_group', mg))
-        self.assertFalse(self.test_editor2.has_perm('core.change_group', mg))
+        self.assertTrue(self.test_editor2.has_perm('core.change_group', mg))
+        self.assertTrue(self.test_editor2.has_perm('core.delete_group', mg))
         self.assertTrue(self.test_editor1.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_editor2.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_viewer1.has_perm('core.view_group', mg))
@@ -140,7 +158,9 @@ class CoreTestForm(CoreTestBase):
         self.assertFalse(self.test_editor1.has_perm('core.change_group', mg))
         self.assertTrue(self.test_editor1_2.has_perm('core.change_group', mg))
         self.assertFalse(self.test_editor2.has_perm('core.change_group', mg))
-        self.assertFalse(self.test_editor2_2.has_perm('core.change_group', mg))
+        self.assertFalse(self.test_editor2.has_perm('core.delete_group', mg))
+        self.assertTrue(self.test_editor2_2.has_perm('core.change_group', mg))
+        self.assertTrue(self.test_editor2_2.has_perm('core.delete_group', mg))
         self.assertTrue(self.test_editor1_2.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_editor2_2.has_perm('core.add_project_to_group', mg))
         self.assertTrue(self.test_viewer1_3.has_perm('core.view_group', mg))
@@ -178,6 +198,106 @@ class CoreTestForm(CoreTestBase):
         # Only editor and viewer user groups for test_editor1_2
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 1)
+
+    def test_editor2_group_creation_grants_editor1_owners(self):
+        owners = (self.test_editor1, self.test_editor1_2)
+        for owner in owners:
+            assign_perm('auth.change_user', owner, self.test_editor2_2)
+
+        for creator, expected_owners in (
+            (self.test_editor2_2, owners),
+            (self.test_editor2, ()),
+        ):
+            with self.subTest(creator=creator.username):
+                self.request.user = creator
+                upload = create_dff_image(field_name='header_logo_img')
+                form = GroupForm(request=self.request, data={
+                    'name': f'created-by-{creator.pk}',
+                    'title': 'Created by Editor 2',
+                    'srid': self.epsg.pk,
+                    'form_id': upload.form_id,
+                    'lang': 'it',
+                    'mapcontrols': [control.pk for control in self.map_controls],
+                })
+                self.assertTrue(form.is_valid(), form.errors)
+                form.save()
+                group = form.instance
+                for permission in ('view_group', 'change_group', 'delete_group'):
+                    self.assertTrue(creator.has_perm(f'core.{permission}', group))
+                    for owner in (*owners, self.test_editor1_3):
+                        self.assertEqual(
+                            owner.has_perm(f'core.{permission}', group),
+                            owner in expected_owners
+                        )
+
+    def test_editor2_acl_choices_follow_editor1_owners(self):
+        self.request.user = self.test_editor2_2
+        form = GroupForm(request=self.request)
+        self.assertCountEqual(
+            form.fields['viewer_users'].queryset, [self.test_viewer1_3, self.anonymoususer]
+        )
+        self.assertCountEqual(
+            form.fields['viewer_user_groups'].queryset, [self.test_gu_viewer1_e1_2]
+        )
+        form = GroupForm(
+            request=self.request, data={'viewer_users': [self.test_viewer1.pk]}
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn('viewer_users', form.errors)
+
+        assign_perm('auth.change_user', self.test_editor1, self.test_editor2_2)
+        assign_perm('auth.change_user', self.test_editor1, self.test_viewer1)
+        assign_perm('auth.change_group', self.test_editor1, self.test_gu_viewer1)
+        form = GroupForm(request=self.request)
+        self.assertCountEqual(
+            form.fields['viewer_users'].queryset,
+            [self.test_viewer1, self.test_viewer1_3, self.anonymoususer]
+        )
+        self.assertCountEqual(
+            form.fields['viewer_user_groups'].queryset,
+            [self.test_gu_viewer1, self.test_gu_viewer1_e1_2]
+        )
+
+        self.request.user = self.test_editor2
+        form = GroupForm(request=self.request)
+        self.assertCountEqual(
+            form.fields['viewer_users'].queryset,
+            [self.test_viewer1, self.test_viewer1_2, self.test_viewer1_3, self.anonymoususer]
+        )
+        self.assertEqual(form.fields['viewer_user_groups'].queryset.count(), 3)
+
+    def test_editor2_group_edit_preserves_macrogroups(self):
+        group = Group.objects.create(
+            name='macrogroup-preservation', title='Original title',
+            srid=self.epsg, header_logo_img=''
+        )
+        visible = MacroGroup.objects.create(name='visible', title='Visible', logo_img='')
+        hidden = MacroGroup.objects.create(name='hidden', title='Hidden', logo_img='')
+        other = MacroGroup.objects.create(name='other', title='Other', logo_img='')
+        group.macrogroups.set([visible, hidden])
+        assign_perm('view_macrogroup', self.test_editor2, visible)
+        assign_perm('view_macrogroup', self.test_editor2, other)
+        self.request.user = self.test_editor2
+        upload = create_dff_image(field_name='header_logo_img')
+        data = {
+            'name': group.name,
+            'title': 'Updated title',
+            'srid': self.epsg.pk,
+            'form_id': upload.form_id,
+            'lang': 'it',
+            'mapcontrols': [control.pk for control in self.map_controls],
+        }
+
+        for submitted in ({}, {'macrogroups': [other.pk]}):
+            with self.subTest(submitted=submitted):
+                form = GroupForm(request=self.request, instance=group, data={**data, **submitted})
+                self.assertIn(visible, form.fields['macrogroups'].queryset)
+                self.assertNotIn(hidden, form.fields['macrogroups'].queryset)
+                self.assertTrue(form.is_valid(), form.errors)
+                form.save()
+                group.refresh_from_db()
+                self.assertEqual(group.title, 'Updated title')
+                self.assertCountEqual(group.macrogroups.all(), [visible, hidden])
 
     def test_macrogroups_form(self):
         """ Test for Macrogroup map object form """

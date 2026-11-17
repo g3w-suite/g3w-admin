@@ -20,18 +20,14 @@ def GiveBaseGrant(sender, **kwargs):
             agroup, created = AuthGroup.objects.get_or_create(name=gname)
             if not created:
                 pass
-                #print ("{} already in database".format(gname))
 
-        # give permissions to Editor Level 1
-        editorPermission = agroup.permissions.all()
-        permissionsToAdd = (
+        editor1_group = AuthGroup.objects.get(name=G3W_EDITOR1)
+        permissions_to_add = (
             Permission.objects.get(codename='add_user'),
             Permission.objects.get(codename='add_group', content_type=ContentType.objects.get_for_model(Group)),
-
         )
-        for perm in permissionsToAdd:
-            if perm not in editorPermission:
-                agroup.permissions.add(perm)
+        editor1_group.permissions.add(*permissions_to_add)
+        AuthGroup.objects.get(name=G3W_EDITOR2).permissions.add(permissions_to_add[1])
 
 
 class UsersmanageConfig(AppConfig):
