@@ -30,6 +30,7 @@ from qgis.core import (
     QgsVectorLayerSimpleLabeling,
     QgsMessageLog,
     QgsArrowSymbolLayer,
+    QgsLayoutItemMap,
 )
 
 from qgis.server import (
@@ -46,7 +47,7 @@ from qdjango.apps import QGS_SERVER, remove_project_from_cache
 
 class AnnotationsPrintFilter(QgsServerFilter):
     """
-    Filter to add a new request to print a specific atlas feature
+    Add temporary annotation layers to prints, preserving locked layers and themes.
     """
 
     def __init__(self, server_iface):
@@ -356,6 +357,23 @@ class AnnotationsPrintFilter(QgsServerFilter):
                 qgs_project.addMapLayer(layer, False)
                 # Add to the project tree root
                 qgs_project.layerTreeRoot().addLayer(layer)
+
+            layout = qgs_project.layoutManager().layoutByName(handler.parameter('TEMPLATE'))
+            if layout:
+                for item in layout.items():
+                    if not isinstance(item, QgsLayoutItemMap):
+                        continue
+                    if item.followVisibilityPreset():
+                        theme_layers = item.layersToRender()
+                        theme_styles = qgs_project.mapThemeCollection().mapThemeStyleOverrides(
+                            item.followVisibilityPresetName())
+                        item.setFollowVisibilityPreset(False)
+                        item.setLayers(layers + theme_layers)
+                        item.setKeepLayerSet(True)
+                        item.setLayerStyleOverrides(theme_styles)
+                        item.setKeepLayerStyles(True)
+                    elif item.keepLayerSet():
+                        item.setLayers(layers + item.layers())
 
             qgs_project.write()
 
