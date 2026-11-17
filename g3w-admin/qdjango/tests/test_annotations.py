@@ -23,7 +23,7 @@ from qdjango.models import Project
 from .base import CURRENT_PATH, TEST_BASE_PATH, QdjangoTestBase
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.PyQt.QtGui import QImage, QColor
-from qgis.core import QgsMultiRenderChecker
+from qgis.core import QgsLayoutItemMap, QgsMapThemeCollection, QgsMultiRenderChecker
 from urllib.parse import quote_plus, urlencode
 
 
@@ -94,6 +94,7 @@ class TestAnnotations(QdjangoTestBase):
             self.assertEqual(image.pixelColor(213, 114), QColor(244, 78, 59))
             self.assertEqual(image.pixelColor(252, 67), QColor(0, 0, 255))
             self.assertEqual(image.pixelColor(274, 122), QColor(194, 203, 99))
+            return image
 
 
     def test_annotations_get(self):
@@ -102,3 +103,48 @@ class TestAnnotations(QdjangoTestBase):
     def test_annotations_post(self):
         self.__test_annotations(method='post')
 
+    def test_annotations_locked_layers(self):
+        project = get_qgs_project(self.project310.instance.qgis_file.path)
+        layout = project.layoutManager().layoutByName('A4')
+        countries = project.mapLayersByName('Countries')[0]
+        for item in layout.items():
+            if isinstance(item, QgsLayoutItemMap):
+                item.setLayers([countries])
+                item.setKeepLayerSet(True)
+        self.assertTrue(project.write())
+
+        self.__test_annotations()
+
+    def test_annotations_map_theme(self):
+        project = get_qgs_project(self.project310.instance.qgis_file.path)
+        countries = project.mapLayersByName('Countries')[0]
+        symbol_layer = countries.renderer().symbol().symbolLayer(0)
+        original_color = symbol_layer.strokeColor()
+        original_width = symbol_layer.strokeWidth()
+        theme_color = QColor('#ff00ff')
+        symbol_layer.setStrokeColor(theme_color)
+        symbol_layer.setStrokeWidth(1)
+        countries.styleManager().addStyleFromLayer('annotation_print_theme')
+        symbol_layer.setStrokeColor(original_color)
+        symbol_layer.setStrokeWidth(original_width)
+
+        record = QgsMapThemeCollection.MapThemeLayerRecord(countries)
+        record.usingCurrentStyle = True
+        record.currentStyle = 'annotation_print_theme'
+        theme = QgsMapThemeCollection.MapThemeRecord()
+        theme.addLayerRecord(record)
+        project.mapThemeCollection().insert('annotations', theme)
+        layout = project.layoutManager().layoutByName('A4')
+        for item in layout.items():
+            if isinstance(item, QgsLayoutItemMap):
+                item.setKeepLayerSet(True)
+                item.setFollowVisibilityPresetName('annotations')
+                item.setFollowVisibilityPreset(True)
+        self.assertTrue(project.write())
+
+        image = self.__test_annotations()
+        self.assertTrue(any(
+            image.pixelColor(x, y) == theme_color
+            for y in range(image.height())
+            for x in range(image.width())
+        ))
