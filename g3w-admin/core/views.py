@@ -141,6 +141,8 @@ class SearchAdminView(TemplateView):
 class GroupListView(ListView):
     """List group view."""
 
+    queryset_permission = 'core.view_group'
+
     def set_filters(self):
         """ Set filters by URL GET parameters """
 
@@ -208,7 +210,7 @@ class GroupListView(ListView):
 
     def get_queryset(self):
 
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
+        qs = get_objects_for_user(self.request.user, self.queryset_permission, Group)
              #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
         qs = self._is_active(qs)
         qs = qs.order_by('order')
@@ -237,9 +239,11 @@ class GroupListView(ListView):
 
 
 class GroupDeactiveListView(GroupListView):
-    """ ListView to show map groups with is_active=0"""
+    """List inactive map groups the user can delete."""
 
     template_name = 'core/group_deactive_list.html'
+    queryset_permission = 'core.delete_group'
+
     def _is_active(self, qs):
         """ Add a filter fo is_active property """
         return qs.filter(is_active=0)
