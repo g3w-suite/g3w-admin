@@ -121,7 +121,7 @@ class TestAnnotations(QdjangoTestBase):
         symbol_layer = countries.renderer().symbol().symbolLayer(0)
         original_color = symbol_layer.strokeColor()
         original_width = symbol_layer.strokeWidth()
-        theme_color = QColor('#ff00ff')
+        theme_color = QColor('#00ff7f')
         symbol_layer.setStrokeColor(theme_color)
         symbol_layer.setStrokeWidth(1)
         countries.styleManager().addStyleFromLayer('annotation_print_theme')
