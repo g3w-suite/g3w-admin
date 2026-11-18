@@ -152,18 +152,30 @@ class TestQesUtilsAPI(QesTesBase):
                 mock.patch('qes.receivers.es_project_indexing') as task:
 
             # No users/groups yet: nothing to re-index
-            acl = ColumnAcl.objects.create(layer=layer, restricted_fields=['NAME'])
+            with self.captureOnCommitCallbacks(execute=True):
+                acl = ColumnAcl.objects.create(layer=layer, restricted_fields=['NAME'])
             task.assert_not_called()
 
-            acl.users.add(self.test_viewer1)
+            # Task is queued only after commit
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.users.add(self.test_viewer1)
+                task.assert_not_called()
             self.assertEqual(set(task.call_args[0][1]), {self.test_viewer1})
 
-            acl.groups.add(self.test_gu_viewer1)
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.groups.add(self.test_gu_viewer1)
             self.assertIn(self.test_viewer1_2, task.call_args[0][1])
 
             # Removed users are re-indexed too
-            acl.users.remove(self.test_viewer1)
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.users.remove(self.test_viewer1)
             self.assertIn(self.test_viewer1, task.call_args[0][1])
 
-            acl.delete()
+            # Cleared group members are snapshotted before the clear
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.groups.clear()
+            self.assertIn(self.test_viewer1_2, task.call_args[0][1])
+
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.delete()
             self.assertEqual(task.call_args[0][0], layer)

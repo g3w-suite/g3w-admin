@@ -11,6 +11,7 @@ __date__ = '2025-05-02'
 __copyright__ = 'Copyright 2015 - 2025, Gis3w'
 
 from django.conf import settings
+from django.db import transaction
 from django.db.models.signals import (
     pre_delete,
     post_save,
@@ -122,15 +123,20 @@ def update_es_document(sender, **kwargs):
         method(sender.layer.project,sender.layer, [fid])
 
 
-def _reindex_columnacl(acl, users=()):
-    """Re-index the ACL layer for its current users/group members plus ``users``"""
+def _reindex_columnacl(acl, using, users=()):
+    """Re-index the ACL layer for its current users/group members plus ``users``.
+
+    Users are snapshotted now (e.g. before a clear/delete), the task is queued
+    after commit so the worker reads the final ACL state.
+    """
 
     if not is_project_indexing_enabled(acl.layer.project):
         return
 
-    users = set(users) | set(acl.users.all()) | set(User.objects.filter(groups__in=acl.groups.all()))
+    users = list(set(users) | set(acl.users.all()) | set(User.objects.filter(groups__in=acl.groups.all())))
     if users:
-        es_project_indexing(acl.layer, list(users))
+        layer = acl.layer
+        transaction.on_commit(lambda: es_project_indexing(layer, users), using=using)
 
 
 @receiver(post_save, sender=ColumnAcl)
@@ -138,12 +144,12 @@ def _reindex_columnacl(acl, users=()):
 def re_indexing_es_columnacl(**kwargs):
     """Re-indexing project when column ACL is changed"""
 
-    _reindex_columnacl(kwargs['instance'])
+    _reindex_columnacl(kwargs['instance'], kwargs['using'])
 
 
 @receiver(m2m_changed, sender=ColumnAcl.users.through)
 @receiver(m2m_changed, sender=ColumnAcl.groups.through)
-def re_indexing_es_columnacl_m2m(sender, instance, action, reverse, pk_set, **kwargs):
+def re_indexing_es_columnacl_m2m(sender, instance, action, reverse, pk_set, using, **kwargs):
     """Re-indexing when users/groups of a column ACL change (removed ones included)"""
 
     # ponytail: reverse side (user.column_acl_restrictions.add) not handled, add it if used
@@ -156,7 +162,7 @@ def re_indexing_es_columnacl_m2m(sender, instance, action, reverse, pk_set, **kw
             changed = User.objects.filter(pk__in=pk_set)
         else:
             changed = User.objects.filter(groups__pk__in=pk_set)
-    _reindex_columnacl(instance, changed)
+    _reindex_columnacl(instance, using, changed)
 
 
 @receiver(post_save, sender=GeoConstraintRule)
