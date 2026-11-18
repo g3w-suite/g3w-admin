@@ -139,3 +139,31 @@ class TestQesUtilsAPI(QesTesBase):
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
         self.assertEqual(data[0]['docs.count'], '0')
 
+
+    def test_columnacl_reindexing(self):
+        """Column ACL changes re-index the layer for affected users (M2M users/groups)"""
+
+        from unittest import mock
+        from qdjango.models import ColumnAcl
+
+        layer = self.project310.instance.layer_set.get(qgs_layer_id='cities10000eu20171228095720113')
+
+        with mock.patch('qes.receivers.is_project_indexing_enabled', return_value=True), \
+                mock.patch('qes.receivers.es_project_indexing') as task:
+
+            # No users/groups yet: nothing to re-index
+            acl = ColumnAcl.objects.create(layer=layer, restricted_fields=['NAME'])
+            task.assert_not_called()
+
+            acl.users.add(self.test_viewer1)
+            self.assertEqual(set(task.call_args[0][1]), {self.test_viewer1})
+
+            acl.groups.add(self.test_gu_viewer1)
+            self.assertIn(self.test_viewer1_2, task.call_args[0][1])
+
+            # Removed users are re-indexed too
+            acl.users.remove(self.test_viewer1)
+            self.assertIn(self.test_viewer1, task.call_args[0][1])
+
+            acl.delete()
+            self.assertEqual(task.call_args[0][0], layer)
