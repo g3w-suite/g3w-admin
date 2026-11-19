@@ -13,7 +13,10 @@ __license__ = "MPL 2.0"
 from django.conf import settings
 from django.dispatch import receiver
 from usersmanage.signals import after_save_user_form
-from usersmanage.configs import G3W_EDITOR1
+from usersmanage.configs import (
+    G3W_EDITOR1, 
+    G3W_EDITOR2
+)    
 from usersmanage.utils import userHasGroups
 
 from os import makedirs, path
@@ -30,7 +33,7 @@ def make_project_data_subdir(sender, user, **kwargs):
     """
 
     # Check if user is an Editor level 1
-    if not userHasGroups(user, [G3W_EDITOR1]):
+    if not userHasGroups(user, [G3W_EDITOR1, G3W_EDITOR2]):
         return
 
     makedirs(path.join(settings.DATASOURCE_PATH, user.username), exist_ok=True)

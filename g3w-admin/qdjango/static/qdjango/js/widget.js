@@ -440,7 +440,7 @@ ga.Qdjango.widgetEditor = {
       // Case QDATETIME
       //if (_.indexOf(['QDATETIME', 'QDATE'], $(this).find("option:selected").data().type) != -1 &&
       widgetSelect.find('[value="datetimebox"]').remove();
-      if (_.indexOf([$(this).val()], ga.Qdjango.localVars.layer_edittypes) != -1) {
+      if (_.has(ga.Qdjango.localVars.layer_edittypes, $(this).val())) {
         if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
           // Append 'DatetimBox' to widget selectbox
           widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');

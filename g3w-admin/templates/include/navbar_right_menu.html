@@ -54,7 +54,11 @@
                         <a href="{% url 'user-update' user.pk %}" class="btn btn-default btn-flat"><i class="fa fa-folder"></i> {% trans 'Profile' %}</a>
                     </div>
                     <div class="pull-right">
-                        <a href="{% url SETTINGS.LOGOUT_URL %}{% if SETTINGS.FRONTEND %}?next={% url 'frontend' %}{% endif %}" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> {% trans 'Logout' %}</a>
+                        <form action="{% url SETTINGS.LOGOUT_URL %}" method="post" class="form-inline">
+                            {% csrf_token %}
+                            {% if SETTINGS.FRONTEND %}<input type="hidden" name="next" value="{% url 'frontend' %}">{% endif %}
+                            <button type="submit" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> {% trans 'Logout' %}</button>
+                        </form>
                     </div>
                 </li>
             </ul>
@@ -80,7 +84,7 @@
         {% endif %}
         <!-- Control Sidebar Toggle Button -->
         <li>
-        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+        {% if user.is_superuser or user|has_group:G3W_EDITOR1 or user|has_group:G3W_EDITOR2  %}
         <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
         {% else %}
         <span style=" display:inline-block; width: 45px;"></span>
