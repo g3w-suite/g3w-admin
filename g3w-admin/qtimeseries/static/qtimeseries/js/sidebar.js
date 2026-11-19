@@ -3,18 +3,25 @@ const GUI = g3w.app;
 const DateTime = {
   template: /* html */`
     <div>
-      <label :for="id" style="display: block" v-t="label"></label>
-      <div class="form-group">
-        <div ref="picker" class="input-group date">
-          <input :id="id" type="text" class="form-control" />
-          <span class="input-group-addon" style="cursor: pointer">
-            <span :class="'time' === type ? 'far fa-clock' : 'fas fa-calendar-alt'"></span>
+      <label :for = "id" style = "display: block" v-t = "label"></label>
+      <div class = "form-group">
+        <div ref = "picker" class = "input-group date">
+          <input :id = "id" type = "text" class = "form-control" />
+          <span class = "input-group-addon" style = "cursor: pointer">
+            <span :class = "'time' === type ? 'far fa-clock' : 'fas fa-calendar-alt'"></span>
           </span>
         </div>
       </div>
     </div>`,
-  props: ['label', 'format', 'minDate', 'maxDate', 'type', 'value'],
-  data() { return { id: g3wsdk.core.utils.getUniqueDomId() }; },
+  props: {
+    label: String,
+    format: String,
+    minDate: [String, Object],
+    maxDate: [String, Object],
+    type: String,
+    value: [String, Object],
+  },
+  data() { return { id: g3w.utils.getUniqueDomId() }; },
   async mounted() {
     await this.$nextTick();
     this.picker = $(this.$refs.picker);
