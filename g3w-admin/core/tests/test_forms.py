@@ -13,6 +13,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.test.client import RequestFactory
 from django.test import override_settings
+from django.forms import Textarea
 from crispy_forms.utils import render_crispy_form
 from django.forms.models import model_to_dict
 from guardian.shortcuts import assign_perm
@@ -54,6 +55,9 @@ class CoreTestForm(CoreTestBase):
                     self.assertIn(f'name="{name}"', rendered)
                 for name in {'editor1', 'editor2', 'editorgroup', 'viewergroup'} - form.fields.keys():
                     self.assertNotIn(f'name="{name}"', rendered)
+
+    def test_group_description_uses_textarea(self):
+        self.assertIsInstance(GroupForm.base_fields['description'].widget, Textarea)
 
     def test_groups_form(self):
 
