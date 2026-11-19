@@ -885,7 +885,6 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .query_relation_field_message,
 .queryresults-container ul > li span.key,
 .queryresults-container .link,
-.queryresults-container .law-button                                                                          { color: var(--skin-color); }
 
 .query_relation_field,
 .queryresults-container tr.featurebox-header-open + .featurebox-body .action-buttons-container               { background-color: var(--skin-color); }
