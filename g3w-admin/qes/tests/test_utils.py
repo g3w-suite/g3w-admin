@@ -139,3 +139,43 @@ class TestQesUtilsAPI(QesTesBase):
         self.assertEqual(data[0]['index'], f'qgis_features_{self.test_admin1.pk}')
         self.assertEqual(data[0]['docs.count'], '0')
 
+
+    def test_columnacl_reindexing(self):
+        """Column ACL changes re-index the layer for affected users (M2M users/groups)"""
+
+        from unittest import mock
+        from qdjango.models import ColumnAcl
+
+        layer = self.project310.instance.layer_set.get(qgs_layer_id='cities10000eu20171228095720113')
+
+        with mock.patch('qes.receivers.is_project_indexing_enabled', return_value=True), \
+                mock.patch('qes.receivers.es_project_indexing') as task:
+
+            # No users/groups yet: nothing to re-index
+            with self.captureOnCommitCallbacks(execute=True):
+                acl = ColumnAcl.objects.create(layer=layer, restricted_fields=['NAME'])
+            task.assert_not_called()
+
+            # Task is queued only after commit
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.users.add(self.test_viewer1)
+                task.assert_not_called()
+            self.assertEqual(set(task.call_args[0][1]), {self.test_viewer1})
+
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.groups.add(self.test_gu_viewer1)
+            self.assertIn(self.test_viewer1_2, task.call_args[0][1])
+
+            # Removed users are re-indexed too
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.users.remove(self.test_viewer1)
+            self.assertIn(self.test_viewer1, task.call_args[0][1])
+
+            # Cleared group members are snapshotted before the clear
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.groups.clear()
+            self.assertIn(self.test_viewer1_2, task.call_args[0][1])
+
+            with self.captureOnCommitCallbacks(execute=True):
+                acl.delete()
+            self.assertEqual(task.call_args[0][0], layer)
