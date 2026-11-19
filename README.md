@@ -193,6 +193,23 @@ Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-s
 
 More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [setup_suite.sh](./ci_scripts/setup_suite.sh)
 
+### Qtimeseries JavaScript
+
+Run the Behave + Playwright scenarios from the repository root:
+
+```sh
+python -m pip install -r requirements_test.txt
+python -m playwright install --with-deps chromium
+python -m behave
+```
+
+These browser tests serve local static files and use the bundled Vue and Moment
+libraries, with a simulated G3W host SDK. They cover plugin registration, temporal
+units, panel lifecycle, time navigation and animation; Django, QGIS and a database
+are not required. The host's `x-select` controls are not exercised.
+Use `-D headless=false` to see the browser, or `-D browser=firefox` after installing
+that Playwright browser. CI runs Chromium via [ci.yml](.github/workflows/ci.yml).
+
 ---
 
 ## FAQ
