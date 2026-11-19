@@ -2,7 +2,6 @@
 
   const BASE_URL = initConfig.group.plugins.qtimeseries.baseUrl + 'qtimeseries/js';
 
-  const ApplicationState  = g3w.state;
   const { toRawType }     = g3wsdk.core.utils;
   const GUI               = g3w.app;
   const { Plugin, Panel } = g3w;
@@ -18,9 +17,64 @@
 
       const enabled = this.registerPlugin(this.config.gid);
 
+
       this.setHookLoading({ loading: true });
 
-      const project = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
+      const project = g3w.state.project;
+
+      // define time steps for the plugin
+      this.config.steps = [
+        {
+          moment: "100:years",
+          label:  "centuries",
+          qgis:   "c"
+        },
+        {
+          moment: "10:years",
+          label:  "decades",
+          qgis:   "dec"
+        },
+        {
+          moment: "years",
+          label:  "years",
+          qgis:   "y"
+        },
+        {
+          moment: "months",
+          label:  "months",
+          qgis:   "mon"
+        },
+        {
+          moment: "7:days",
+          label : "weeks",
+          qgis:   "wk"
+        },
+        {
+          moment: "days",
+          label:  "days",
+          qgis:   "d"
+        },
+        {
+          moment: "hours",
+          label:  "hours",
+          qgis:   "h"
+        },
+        {
+          moment: "minutes",
+          label:  "minutes",
+          qgis:   "min"
+        },
+        {
+          moment: "seconds",
+          label:  "seconds",
+          qgis:   "s"
+        },
+        {
+          moment: "milliseconds",
+          label:  "milliseconds",
+          qgis:   "ms"
+        }
+      ];
 
       // add project layers from config
       project
@@ -64,6 +118,18 @@
           return;
         }
 
+        // create sidebar configuration for the plugin
+        this.config.sidebar = {
+          id:                           'qtimeseries',
+          title:                        `plugins.qtimeseries.title`,
+          open:                         false,
+          collapsible:                  true,
+          closewhenshowviewportcontent: false,
+          iconConfig:                   { color: '#25bce9', icon: 'time'},
+          mobile:                       true,
+          sidebarOptions:               { position: 'catalog'},
+        };
+
         const sidebar = this.createSideBarComponent({}, this.config.sidebar);
 
         sidebar.onbefore('setOpen', async (open) => {
@@ -71,7 +137,7 @@
             const panel = new Panel({
               id:            "qtimeseries-panel",
               title:         "plugins.qtimeseries.title",
-              internalPanel: new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({}),
+              internalPanel: new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({}),
             })
             GUI.showPanel(panel);
             //listen destroyed event of the internal panel
