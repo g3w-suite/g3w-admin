@@ -26504,6 +26504,9 @@ table.users-table > tbody > tr:first-child > td {
     border: 1px solid #e3e6d4;
     transition: border-color .15s ease, box-shadow .15s ease;
 }
+.form-shell .form-control.translate {
+    border: 1px dashed #006699;
+}
 .form-shell .form-control:focus {
     border-color: #95ad36;
     box-shadow: 0 0 0 3px rgba(149, 173, 54, .18);
