@@ -258,6 +258,7 @@
                             <th style="width:100px">{% trans 'WMS External' %}</th>
                             {% endif %}
                             <th style="width: 40px">WFS</th>
+                            <th style="width: 40px">WCS</th>
                             <th style="min-width:200px; width:240px;">{% trans 'Actions'%}</th>
                             {% if "change_project" in userPrj_perms %}
                             <th style="width:100px">{% trans 'Preview fields (max.)' %}</th>
@@ -296,6 +297,13 @@
                             <td data-label="WFS" class="layer-wfs-cell">
                                 {% if object.wfscapabilities %}
                                 <span class="fa fa-check-circle"></span>
+                                {% endif %}
+                            </td>
+                            <td data-label="WCS" class="layer-wcs-cell">
+                                {% if object.wcscapabilities %}
+                                <span class="fa fa-check-circle" aria-hidden="true"></span><span class="sr-only">{% trans 'Yes' %}</span>
+                                {% else %}
+                                <span class="sr-only">{% trans 'No' %}</span>
                                 {% endif %}
                             </td>
                             <td data-label="{% trans 'Actions' %}">

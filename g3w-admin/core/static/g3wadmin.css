@@ -24641,12 +24641,14 @@ table.layers-table .layer-type-cell svg {
     max-height: 22px;
     width: auto;
 }
-table.layers-table .layer-wfs-cell {
+table.layers-table .layer-wfs-cell,
+table.layers-table .layer-wcs-cell {
     text-align: center;
     color: #cbd5e1;
     font-size: 16px;
 }
-table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important; }
+table.layers-table .layer-wfs-cell .fa-check-circle,
+table.layers-table .layer-wcs-cell .fa-check-circle { color: #16a34a !important; }
 
 .layer-actions-grid {
     display: flex;

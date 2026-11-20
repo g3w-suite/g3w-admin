@@ -25,6 +25,7 @@ from core.utils.response import send_file
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from guardian.shortcuts import get_anonymous_user
+from qgis.server import QgsServerProjectUtils
 from core.api.base.views import G3WAPIView
 from core.api.permissions import ProjectPermission
 from qdjango.api.projects.permissions import ProjectIsActivePermission
@@ -71,13 +72,16 @@ class QdjangoWebServicesAPIview(G3WAPIView):
             if alias:
                 res['WMS']['alias'] = reverse('OWS:ows-alias', args=[alias])
 
-            # check if WFS, WMTS, TMS layers is active
+            # check if WFS, WCS, WMTS, TMS layers is active
             wfs = False
+            wcs = False
             wmts = False
             tms_layers = []
             for layer in layers:
                 if layer.wfscapabilities is not None:
                     wfs = True
+                if layer.wcscapabilities:
+                    wcs = True
                 if layer.wmtscapabilities is not None:
                     wmts = True
 
@@ -89,6 +93,12 @@ class QdjangoWebServicesAPIview(G3WAPIView):
                             'name': layer.name,
                             'url': msg[1]['TMS']['url']
                         })
+
+            if not wcs:
+                qgs_project = get_qgs_project(project.qgis_file.path)
+                if qgs_project is not None:
+                    wcs_layer_ids = QgsServerProjectUtils.wcsLayerIds(qgs_project)
+                    wcs = any(layer.qgs_layer_id in wcs_layer_ids for layer in layers)
 
             if wfs:
                 res.update({
@@ -105,6 +115,11 @@ class QdjangoWebServicesAPIview(G3WAPIView):
             if wmts:
                 res.update({
                     'WMTS': res['WMS']
+                })
+
+            if wcs:
+                res.update({
+                    'WCS': res['WMS']
                 })
 
 
