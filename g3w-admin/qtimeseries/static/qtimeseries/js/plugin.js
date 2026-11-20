@@ -17,64 +17,9 @@
 
       const enabled = this.registerPlugin(this.config.gid);
 
-
       this.setHookLoading({ loading: true });
 
       const project = g3w.state.project;
-
-      // define time steps for the plugin
-      this.config.steps = [
-        {
-          moment: "100:years",
-          label:  "centuries",
-          qgis:   "c"
-        },
-        {
-          moment: "10:years",
-          label:  "decades",
-          qgis:   "dec"
-        },
-        {
-          moment: "years",
-          label:  "years",
-          qgis:   "y"
-        },
-        {
-          moment: "months",
-          label:  "months",
-          qgis:   "mon"
-        },
-        {
-          moment: "7:days",
-          label : "weeks",
-          qgis:   "wk"
-        },
-        {
-          moment: "days",
-          label:  "days",
-          qgis:   "d"
-        },
-        {
-          moment: "hours",
-          label:  "hours",
-          qgis:   "h"
-        },
-        {
-          moment: "minutes",
-          label:  "minutes",
-          qgis:   "min"
-        },
-        {
-          moment: "seconds",
-          label:  "seconds",
-          qgis:   "s"
-        },
-        {
-          moment: "milliseconds",
-          label:  "milliseconds",
-          qgis:   "ms"
-        }
-      ];
 
       // add project layers from config
       project
