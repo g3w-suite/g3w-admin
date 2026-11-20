@@ -25,6 +25,7 @@ from core.utils.response import send_file
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from guardian.shortcuts import get_anonymous_user
+from qgis.server import QgsServerProjectUtils
 from core.api.base.views import G3WAPIView
 from core.api.permissions import ProjectPermission
 from qdjango.api.projects.permissions import ProjectIsActivePermission
@@ -96,7 +97,7 @@ class QdjangoWebServicesAPIview(G3WAPIView):
             if not wcs:
                 qgs_project = get_qgs_project(project.qgis_file.path)
                 if qgs_project is not None:
-                    wcs_layer_ids, _ = qgs_project.readListEntry("WCSLayers", "Layer")
+                    wcs_layer_ids = QgsServerProjectUtils.wcsLayerIds(qgs_project)
                     wcs = any(layer.qgs_layer_id in wcs_layer_ids for layer in layers)
 
             if wfs:

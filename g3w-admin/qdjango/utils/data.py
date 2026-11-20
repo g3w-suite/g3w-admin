@@ -1613,8 +1613,7 @@ class QgisProject(XmlData):
         return QgsServerProjectUtils.wfsLayerIds(self.qgs_project)
 
     def _getDataWcsLayers(self):
-        wcs_layers, _ = self.qgs_project.readListEntry("WCSLayers", "Layer")
-        return wcs_layers
+        return QgsServerProjectUtils.wcsLayerIds(self.qgs_project)
 
     def _getDataWfstLayers(self):
         """

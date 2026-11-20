@@ -57,7 +57,7 @@ from .base import (
     QGS328_RELATION_REFERENCE,
     QGS340_THEME_FILE
 )
-from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
+from qgis.core import QgsFeatureRequest, QgsProject, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
 import time
@@ -419,8 +419,10 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         self.project310.instance.layer_set.update(wcscapabilities=None)
         layer_id = self.project310.instance.layer_set.first().qgs_layer_id
+        qgs_project = QgsProject()
+        qgs_project.writeEntry('WCSLayers', '/', [layer_id])
         with patch('qdjango.api.projects.views.get_qgs_project') as get_qgs_project:
-            get_qgs_project.return_value.readListEntry.return_value = ([layer_id], True)
+            get_qgs_project.return_value = qgs_project
             resp = json.loads(self._testApiCall(
                 'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
         self.assertIn('WCS', resp['data'])
