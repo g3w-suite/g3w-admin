@@ -41,7 +41,7 @@ from core.utils.qgisapi import (
     qvariant_type_name,
 )
 from core.utils.general import clean_for_json
-from core.utils.geo import get_crs_bbox
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4
 
 from qgis.core import (
     QgsJsonUtils,
@@ -105,7 +105,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         else:
 
 
-            map_extent = get_crs_bbox(instance.group.srid.auth_srid)
+            map_extent = get_crs_bbox(instance.group.srid.authid)
 
         # if use_map_extent_as_init_extent is not flaged set init_map_extent as map_extent
         if not instance.use_map_extent_as_init_extent:
@@ -326,7 +326,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 "id": bmark.id(),
                 "name": bmark.name(),
                 "crs": {
-                    "epsg": bbox.crs().postgisSrid()
+                    "authid": bbox.crs().authid(),
+                    "epsg": get_crs_epsg(bbox.crs()),
+                    "proj4": get_crs_proj4(bbox.crs()),
+                    "geographic": bbox.crs().isGeographic(),
+                    "axisinverted": bbox.crs().hasAxisInverted(),
+                    "extent": get_crs_bbox(bbox.crs())
                 },
                 "extent": [
                     bbox.xMinimum(),
@@ -974,22 +979,15 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # replace crs property if is not none with dict structure
 
         if ret['crs']:
-            crs = QgsCoordinateReferenceSystem(f'EPSG:{ret["crs"]}')
-
-            # Patch for Proj4 > 4.9.3 version
-            if ret["crs"] in settings.G3W_PROJ4_EPSG.keys():
-                proj4 = settings.G3W_PROJ4_EPSG[ret["crs"]]['proj4']
-                extent = settings.G3W_PROJ4_EPSG[ret["crs"]]['extent']
-
-            else:
-                proj4 = crs.toProj4()
-                if crs.postgisSrid() in (4326, 3857):
-                    extent = get_crs_bbox(crs)
-                else:
-                    extent = [0, 0, 8388608, 8388608]
+            crs = qgs_maplayer.crs()
+            if not crs.isValid():
+                crs = QgsCoordinateReferenceSystem(f'POSTGIS:{ret["crs"]}')
+            proj4 = get_crs_proj4(crs)
+            extent = get_crs_bbox(crs)
 
             ret['crs'] = {
-                'epsg': crs.postgisSrid(),
+                'authid': crs.authid(),
+                'epsg': get_crs_epsg(crs),
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
                 'axisinverted': crs.hasAxisInverted(),

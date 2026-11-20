@@ -524,10 +524,10 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
             form_feature = get_qgis_features(layer.qgis_layer, qgis_feature_request)[0]
 
         # Reprojection
-        if layer.project.group.srid.auth_srid != layer.srid:
+        if layer.project.group.srid.srid != layer.srid:
 
-            to_srid = QgsCoordinateReferenceSystem(f'EPSG:{layer.srid}')
-            from_srid = QgsCoordinateReferenceSystem(f'EPSG:{layer.project.group.srid.auth_srid}')
+            to_srid = QgsCoordinateReferenceSystem(f'POSTGIS:{layer.srid}')
+            from_srid = QgsCoordinateReferenceSystem(layer.project.group.srid.authid)
             ct = QgsCoordinateTransform(
                 from_srid, to_srid, QgsCoordinateTransformContext())
 

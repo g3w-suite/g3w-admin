@@ -218,7 +218,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                     # for GEOSGeometry of Django 2.2 it must add crs to feature if is not set if a geo feature
                     if metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
                         if geojson_feature['geometry'] and 'crs' not in geojson_feature['geometry']:
-                            geojson_feature['geometry']['crs'] = "{}:{}".format(self.layer.project.group.srid.auth_name, self.layer.project.group.srid.auth_srid)
+                            geojson_feature['geometry']['crs'] = self.layer.project.group.srid.authid
 
                     # reproject data if necessary
                     if kwargs['reproject'] and metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
@@ -639,7 +639,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 )
 
                 # Check reproject status of referencing layer
-                reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[
+                reproject = self.layer.project.group.srid.srid != self.metadata_relations[
                     referencing_layer].layer.srid
 
                 insert_ids, lock_ids, update_ids = self.save_vector_data(self.metadata_relations[referencing_layer],

@@ -28,7 +28,9 @@ class CustomGridProjection():
 
     def normalizeSrs(self,srs):
         if isinstance(srs, (int, float)):
-            return 'EPSG:' + srs
+            return f'EPSG:{srs}'
+        if isinstance(srs, str) and ':' in srs:
+            return srs
         codes = re.findall(r'\d+', srs)
         if len(codes) > 0:
             return 'EPSG:{}'.format(codes[0])

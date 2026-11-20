@@ -204,10 +204,10 @@ class IntersectsBBoxFilter(BaseFilterBackend):
                     'IntersectsBBoxFilter within operator not yet implemented')
 
             if hasattr(view, 'reproject') and view.reproject:
-                from_srid = view.layer.project.group.srid.auth_srid
+                from_crs = QgsCoordinateReferenceSystem(view.layer.project.group.srid.authid)
                 to_srid = view.layer.srid
-                ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(
-                    from_srid), QgsCoordinateReferenceSystem(to_srid), QgsCoordinateTransformContext())
+                ct = QgsCoordinateTransform(
+                    from_crs, QgsCoordinateReferenceSystem(f'POSTGIS:{to_srid}'), QgsCoordinateTransformContext())
                 bbox_filter = ct.transform(bbox_filter)
 
             qgis_feature_request.setFilterRect(bbox_filter)
@@ -535,10 +535,10 @@ class WKTPolyFilter(BaseFilterBackend):
             if hasattr(view, 'reproject') and view.reproject:
 
                 geom = QgsGeometry.fromWkt(wkt)
-                from_srid = view.layer.project.group.srid.auth_srid
+                from_crs = QgsCoordinateReferenceSystem(view.layer.project.group.srid.authid)
                 to_srid = view.layer.srid
-                ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(
-                    from_srid), QgsCoordinateReferenceSystem(to_srid), QgsCoordinateTransformContext())
+                ct = QgsCoordinateTransform(
+                    from_crs, QgsCoordinateReferenceSystem(f'POSTGIS:{to_srid}'), QgsCoordinateTransformContext())
                 geom.transform(ct)
 
                 # Restore to WKT

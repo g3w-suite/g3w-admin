@@ -17,7 +17,7 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.permissions import ProjectPermission
 from core.api.base.views import G3WAPIView, APIException
 from core.models import ShortURL, PermaLinkURL
-from core.utils.geo import get_crs_bbox
+from core.utils.geo import get_crs_bbox, get_crs_epsg, get_crs_proj4
 from core.utils.qgisapi import (
     expression_eval,
     ExpressionEvalError,
@@ -309,19 +309,17 @@ class InterfaceOws(G3WAPIView):
             # Build crs
             crss = []
             for srid in ows[al].crsOptions:
-                if srid.startswith('EPSG:') or srid.startswith('CRS:'):
+                crs = QgsCoordinateReferenceSystem(srid)
+                if not crs.isValid():
                     crs = QgsCoordinateReferenceSystem()
-                    crs.createFromOgcWmsCrs(srid)
-                else:
-                    crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
+                    if not crs.createFromOgcWmsCrs(srid):
+                        crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
 
-                if crs.postgisSrid() in settings.G3W_PROJ4_EPSG.keys():
-                    proj4 = settings.G3W_PROJ4_EPSG[crs.postgisSrid()]
-                else:
-                    proj4 = crs.toProj4()
+                proj4 = get_crs_proj4(crs)
 
                 crss.append({
-                    'epsg': crs.postgisSrid(),
+                    'authid': crs.authid(),
+                    'epsg': get_crs_epsg(crs),
                     'proj4': proj4,
                     'geographic': crs.isGeographic(),
                     'axisinverted': crs.hasAxisInverted(),
@@ -351,25 +349,28 @@ class CRSInfoAPIView(G3WAPIView):
 
     def get(self, request, **kwargs):
 
-        crs = QgsCoordinateReferenceSystem(f"EPSG:{kwargs['epsg']}")
-
-        req_epsg = int(kwargs['epsg'])
-
-        # Patch for Proj4 > 4.9.3 version
-        if req_epsg in settings.G3W_PROJ4_EPSG.keys():
-            proj4 = settings.G3W_PROJ4_EPSG[req_epsg]['proj4']
-            extent = settings.G3W_PROJ4_EPSG[req_epsg]['extent']
-
+        authid = request.query_params.get('authid')
+        if authid:
+            crs = QgsCoordinateReferenceSystem(authid)
+            if not crs.isValid():
+                crs = QgsCoordinateReferenceSystem()
+                crs.createFromOgcWmsCrs(authid)
+        elif 'epsg' in kwargs:
+            authid = f"EPSG:{kwargs['epsg']}"
+            crs = QgsCoordinateReferenceSystem(authid)
         else:
-            proj4 = crs.toProj4()
-            if crs.postgisSrid() in (4326, 3857):
-                extent = get_crs_bbox(crs)
-            else:
-                extent = [0, 0, 8388608, 8388608]
+            raise APIException('A CRS authid is required.')
+
+        if not crs.isValid():
+            raise APIException(f"CRS '{authid}' is not valid or available in QGIS.")
+
+        proj4 = get_crs_proj4(crs)
+        extent = get_crs_bbox(crs)
 
         self.results.results.update({
             'data': {
-                'epsg': crs.postgisSrid(),
+                'authid': crs.authid(),
+                'epsg': get_crs_epsg(crs),
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
                 'axisinverted': crs.hasAxisInverted(),

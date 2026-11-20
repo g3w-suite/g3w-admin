@@ -130,6 +130,11 @@ urlpatterns = [
     # CRS API info
     #############################################################
     path(
+        'crs/',
+        CRSInfoAPIView.as_view(),
+        name='core-crs-authid-api'
+    ),
+    path(
         'crs/<int:epsg>/',
         CRSInfoAPIView.as_view(),
         name='core-crs-api'

@@ -1,7 +1,6 @@
-from django.conf import settings
 from qgis.core import \
-    QgsCoordinateReferenceSystem,  \
     QgsCoordinateReferenceSystem, \
+    QgsDatumTransform, \
     QgsCoordinateTransformContext, \
     QgsCoordinateTransform
 
@@ -25,6 +24,87 @@ def camel_geometry_type(geometry_type):
     return trans[geometry_type.lower()]
 
 
+def get_crs_epsg(crs):
+    return crs.postgisSrid() if crs.authid().startswith('EPSG:') else None
+
+
+def get_crs_srid(crs):
+    srid = crs.postgisSrid()
+    if srid:
+        return srid
+
+    from core.models import G3WSpatialRefSys
+
+    spatial_ref = G3WSpatialRefSys.objects.filter(
+        auth_id=crs.authid()
+    ).values_list('srid', flat=True).first()
+    if spatial_ref is None:
+        auth_name, separator, auth_code = crs.authid().partition(':')
+        if not separator:
+            return srid
+        try:
+            auth_srid = int(auth_code)
+        except ValueError:
+            return srid
+
+        # Older catalog rows may not have auth_id populated.
+        spatial_ref = G3WSpatialRefSys.objects.filter(
+            auth_name=auth_name,
+            auth_srid=auth_srid
+        ).values_list('srid', flat=True).first()
+
+    return spatial_ref if spatial_ref is not None else srid
+
+
+def get_crs_proj4(crs):
+    """Return a Proj4js-compatible definition for a QGIS CRS."""
+    proj4 = crs.toProj()
+    if '+towgs84=' not in proj4:
+        wgs84 = QgsCoordinateReferenceSystem('EPSG:4326')
+        for operation in QgsDatumTransform.operations(crs, wgs84):
+            if not operation.isAvailable or operation.grids:
+                continue
+
+            helmert_steps = [
+                step.split()
+                for step in operation.proj.split('+step')
+                if '+proj=helmert' in step.split()
+            ]
+            if len(helmert_steps) != 1 or '+inv' in helmert_steps[0] or '+exact' in helmert_steps[0]:
+                continue
+
+            parameters = {
+                token[1:].split('=', 1)[0]: token.split('=', 1)[1]
+                for token in helmert_steps[0]
+                if token.startswith('+') and '=' in token
+            }
+            if set(parameters) - {'proj', 'x', 'y', 'z', 'rx', 'ry', 'rz', 's', 'convention'}:
+                continue
+            if not all(key in parameters for key in ('x', 'y', 'z')):
+                continue
+
+            convention = parameters.get('convention', 'position_vector')
+            if convention not in ('position_vector', 'coordinate_frame'):
+                continue
+
+            towgs84 = [parameters[key] for key in ('x', 'y', 'z')]
+            if any(key in parameters for key in ('rx', 'ry', 'rz', 's')):
+                rotation_sign = -1 if convention == 'coordinate_frame' else 1
+                towgs84.extend(
+                    str(rotation_sign * float(parameters.get(key, '0')))
+                    for key in ('rx', 'ry', 'rz')
+                )
+                towgs84.append(parameters.get('s', '0'))
+
+            proj4 = f"{proj4} +towgs84={','.join(towgs84)}"
+            break
+
+    # Explicitly mark the result as a CRS for downstream Proj4 consumers.
+    if '+type=crs' not in proj4:
+        proj4 = f'{proj4} +type=crs'
+    return proj4
+
+
 def get_crs_bbox(crs):
     """
     Give a instance of QgsCoordinateReferenceSystem (crs) return bounds of this crs as list as map units
@@ -34,19 +114,17 @@ def get_crs_bbox(crs):
     """
 
     if not isinstance(crs, QgsCoordinateReferenceSystem):
-        crs = QgsCoordinateReferenceSystem(f'EPSG:{crs}')
+        crs_id = str(crs)
+        crs = QgsCoordinateReferenceSystem(
+            crs_id if ':' in crs_id else f'EPSG:{crs_id}'
+        )
 
-    # Patch for Proj4 > 4.9.3 version
-    # Get from settings is custom
-    if crs.authid()[5:] in settings.G3W_PROJ4_EPSG.keys():
-        return settings.G3W_PROJ4_EPSG[crs.authid()[5:]]['extent']
-
-    if crs.postgisSrid() == '4326':
+    if crs.authid() == 'EPSG:4326':
         bbox = crs.bounds()
     else:
         from_srid = QgsCoordinateReferenceSystem('EPSG:4326')
         ct = QgsCoordinateTransform(from_srid, crs, QgsCoordinateTransformContext())
-        bbox = ct.transform(crs.bounds())
+        bbox = ct.transformBoundingBox(crs.bounds())
     return [
         bbox.xMinimum(),
         bbox.yMinimum(),

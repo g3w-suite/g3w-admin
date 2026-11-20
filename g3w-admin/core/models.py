@@ -39,8 +39,13 @@ class G3WSpatialRefSys(models.Model):
     srid = models.IntegerField(_('SRID'), primary_key=True)
     auth_name = models.CharField(_('SRS name'), max_length=256)
     auth_srid = models.IntegerField(_('SRS ID'))
+    auth_id = models.CharField(_('Authority ID'), max_length=256, null=True, blank=True, unique=True)
     srtext = models.CharField(_('WKT SRS'), max_length=2048)
     proj4text = models.CharField(_('PROJ coordinate definition'), max_length=2048)
+
+    @property
+    def authid(self):
+        return self.auth_id or f'{self.auth_name}:{self.auth_srid}'
 
     def __str__(self):
         '''
@@ -50,7 +55,7 @@ class G3WSpatialRefSys(models.Model):
             return "{} - [{}] - {}".format(str(self.srid), sref.GetLinearUnitsName(), sref.GetAttrValue())
         except Exception as e:
         '''
-        return "{} {}".format(self.auth_name, str(self.srid))
+        return self.authid
 
 
 class BaseLayer(OrderedModel):

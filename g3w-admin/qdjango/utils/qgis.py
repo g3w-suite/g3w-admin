@@ -96,7 +96,7 @@ def wmts_extents(layer) -> str:
     """
     
 
-    srs = layer.project.group.srid.auth_name + ':' + str(layer.project.group.srid.auth_srid)
+    srs = layer.project.group.srid.authid
     crs_4326 = QgsCoordinateReferenceSystem('EPSG:4326')
     crs_prj = QgsCoordinateReferenceSystem(srs)
     crs_layer = QgsCoordinateReferenceSystem(layer.qgis_layer.crs())

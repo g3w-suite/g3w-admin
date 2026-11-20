@@ -88,7 +88,7 @@ class QplotlyFactoring(PlotFactory):
         # FIXME: use QgsProject crs(), can be (in a try/except block):
         # self.layer.project.qgis_project.crs() != self.layer.qgis_layer.crs()
         if self.layer:
-            self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
+            self.reproject = self.layer.project.group.srid.srid != self.layer.srid
 
     def build_trace(self):
         """Build only trace"""

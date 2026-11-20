@@ -94,7 +94,7 @@ class LayerRasterView(BaseRasterApiView):
             # If crs layer is not equal to project crs
             if self.reproject:
                 ct = QgsCoordinateTransform(
-                    QgsCoordinateReferenceSystem(f'EPSG:{self.layer.project.group.srid.srid}'),
+                    QgsCoordinateReferenceSystem(self.layer.project.group.srid.authid),
                     self.metadata_layer.qgis_layer.crs(),
                     QgsCoordinateTransformContext()
                 )
