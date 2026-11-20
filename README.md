@@ -205,8 +205,10 @@ python -m behave
 
 These browser tests serve local static files and use the bundled Vue and Moment
 libraries, with a simulated G3W host SDK. They cover plugin registration, temporal
-units, panel lifecycle, time navigation and animation; Django, QGIS and a database
-are not required. The host's `x-select` controls are not exercised.
+units, panel lifecycle (including visible, disabled fields and a localized layer
+prompt when no time layer is checked), time
+navigation and animation. Django, QGIS and a database are not required. The
+host's `x-select` controls are not exercised.
 Use `-D headless=false` to see the browser, or `-D browser=firefox` after installing
 that Playwright browser. CI runs Chromium via [ci.yml](.github/workflows/ci.yml).
 

@@ -1,6 +1,6 @@
 // Only the host SDK is simulated; plugin, sidebar, Vue and Moment are real.
 Vue.config.ignoredElements = ['x-select', 'x-option'];
-Vue.directive('t', () => {});
+Vue.directive('t', (element, { value }) => { element.textContent = Vue.prototype.$t(value); });
 Vue.directive('t-plugin', () => {});
 Vue.directive('disabled', (element, binding) => { element.disabled = !!binding.value; });
 Vue.prototype.$fa = name => name;
@@ -9,16 +9,14 @@ const state = window.testState = { updates: [], loading: [], panels: [] };
 let ready;
 const guiReady = new Promise(resolve => { ready = resolve; });
 const mapLayers = new Map();
+const projectLayers = new Map();
 let layers;
 
 const project = {
   getConfigLayers: () => layers,
-  getLayerById: id => ({
-    getName: () => `Layer ${id}`,
-    getWMSLayerName: () => `wms_${id}`,
-    setChecked: () => {},
-  }),
+  getLayerById: id => projectLayers.get(id),
 };
+state.projectLayers = projectLayers;
 
 window.g3wsdk = {
   core: {
@@ -84,8 +82,33 @@ window.g3w = {
 };
 
 window.startPlugin = async options => {
+  const { default: messages } = await import('/qtimeseries/static/qtimeseries/js/i18n/en.js');
+  Vue.prototype.$t = key => key.replace(/^plugins\.qtimeseries\./, '').split('.')
+    .reduce((message, part) => message[part], messages);
   state.enabled = options.enabled ?? true;
   layers = options.layers;
+  projectLayers.clear();
+  layers.forEach(({ id }) => projectLayers.set(id, {
+    state: {
+      id,
+      checked: options.checkedLayers?.includes(id) ?? true,
+      visible: options.visibleLayers?.includes(id) ?? true,
+      parentGroup: null,
+    },
+    getName: () => `Layer ${id}`,
+    getWMSLayerName: () => `wms_${id}`,
+    isChecked() { return this.state.checked; },
+    isVisible() { return this.state.visible; },
+    setChecked(checked) { this.state.checked = checked; },
+  }));
+  (options.exclusiveGroups || []).forEach(ids => {
+    const group = { 'mutually-exclusive': true, nodes: [] };
+    ids.forEach(id => {
+      const layer = projectLayers.get(id);
+      layer.state.parentGroup = group;
+      group.nodes.push(layer.state);
+    });
+  });
   layers.forEach(({ id }) => mapLayers.set(id, {
     id,
     events: {},

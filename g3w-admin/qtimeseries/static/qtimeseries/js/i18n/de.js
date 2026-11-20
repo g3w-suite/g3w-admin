@@ -1,5 +1,6 @@
 export default  {
   title: "Zeitreihen",
+  choose_layer: 'Layer auswählen',
   current_date: 'Aktuelles Datum',
   steps: 'Stufen',
   step: 'Stufe',

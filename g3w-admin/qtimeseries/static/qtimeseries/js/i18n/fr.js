@@ -1,5 +1,6 @@
 export default  {
   title: "Time Series",
+  choose_layer: 'Choisir une couche',
   current_date: 'Current Date',
   steps: 'Steps',
   step: 'Step',

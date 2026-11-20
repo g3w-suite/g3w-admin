@@ -9,6 +9,31 @@ def project_layers(context):
     context.layers = json.loads(context.text)
 
 
+@given('"{first}" and "{second}" belong to a mutually-exclusive group')
+def mutually_exclusive_layers(context, first, second):
+    context.exclusive_groups = [[first, second]]
+
+
+@given('only "{layer_id}" is checked on the TOC')
+def checked_toc_layer(context, layer_id):
+    context.checked_layers = [layer_id]
+
+
+@given("no layers are checked on the TOC")
+def no_checked_toc_layers(context):
+    context.checked_layers = []
+
+
+@given('both "{first}" and "{second}" are checked on the TOC')
+def both_checked_toc_layers(context, first, second):
+    context.checked_layers = [first, second]
+
+
+@given('only "{layer_id}" is visible on the TOC')
+def visible_toc_layer(context, layer_id):
+    context.visible_layers = [layer_id]
+
+
 @given('a temporal layer with unit "{unit}" and step {step:d}')
 def temporal_layer(context, unit, step):
     context.layers = [{
@@ -37,6 +62,9 @@ def delay_interface(context):
 def start_plugin(context):
     context.page.evaluate("options => startPlugin(options)", {
         "layers": context.layers,
+        "exclusiveGroups": getattr(context, "exclusive_groups", []),
+        "checkedLayers": getattr(context, "checked_layers", None),
+        "visibleLayers": getattr(context, "visible_layers", None),
         "enabled": getattr(context, "enabled", True),
         "guiReady": getattr(context, "gui_ready", True),
     })
@@ -99,10 +127,78 @@ def loading_finished(context):
 @when("I open the time series sidebar")
 def open_sidebar(context):
     context.page.get_by_role("button", name="Open time series", exact=True).click()
-    expect(context.page.locator("#qtimeseries-range")).to_be_visible()
-    context.page.wait_for_function("testState.updates.length > 0")
+    expect(context.page.locator("#timeserieslayer")).to_be_visible()
+    if context.page.evaluate("testState.panels[0].internalPanel.select_layers.length"):
+        context.page.wait_for_function("testState.updates.length > 0")
     panel_id = context.page.evaluate("testState.panels[0].id")
     assert panel_id == "qtimeseries-panel", panel_id
+
+
+@when('I select time layer "{layer_id}"')
+def select_time_layer(context, layer_id):
+    context.page.evaluate("""id => {
+      const component = testState.panels[0].internalPanel;
+      const index = String(component.layers.findIndex(layer => layer.id === id));
+      const selected_options = [...component.current_layers, index].map(value => ({ value }));
+      component.changeLayers({ target: { selected_options } });
+    }""", layer_id)
+
+
+@then('only time layer "{layer_id}" is selected and checked')
+def selected_and_checked_layer(context, layer_id):
+    context.page.wait_for_function("""layerId => {
+      const component = testState.panels[0].internalPanel;
+      return component.select_layers.some(layer => layer.id === layerId) &&
+        [...testState.projectLayers.values()].some(layer =>
+          layer.state.id === layerId && layer.state.checked
+        );
+    }""", arg=layer_id)
+    result = context.page.evaluate("""() => {
+      const component = testState.panels[0].internalPanel;
+      return {
+        selected: component.select_layers.map(layer => layer.id),
+        checked: [...testState.projectLayers.values()]
+          .filter(layer => layer.state.checked)
+          .map(layer => layer.state.id),
+      };
+    }""")
+    assert result == {"selected": [layer_id], "checked": [layer_id]}, result
+
+
+@then("no time layer is selected")
+def no_time_layer_selected(context):
+    result = context.page.evaluate("""() => ({
+      selected: testState.panels[0].internalPanel.select_layers.map(layer => layer.id),
+      updates: testState.updates,
+    })""")
+    assert result == {"selected": [], "updates": []}, result
+    placeholder = context.page.locator("#qtimeseries-layer-placeholder")
+    expect(placeholder).to_be_visible()
+    expect(placeholder).to_have_text("Choose a layer")
+    fields = context.page.locator("#panel fieldset .form-control")
+    expect(fields).to_have_count(4)
+    for field in fields.all():
+        expect(field).to_be_visible()
+        expect(field).to_be_disabled()
+        expect(field).to_have_value("")
+    expect(context.page.locator("#qtimeseries-range")).to_be_visible()
+    expect(context.page.locator("#qtimeseries-range")).to_be_disabled()
+    expect(context.page.locator(".qtimeseries-buttons button:disabled")).to_have_count(7)
+
+
+@then("the time controls are available")
+def time_controls_available(context):
+    expect(context.page.locator("#qtimeseries-layer-placeholder")).to_have_count(0)
+    expect(context.page.locator("#qtimeseries-range")).to_be_enabled()
+    expect(context.page.locator("#qtimeseries-step")).to_have_value("1")
+    expect(context.page.locator("#panel fieldset .date input").first).to_have_value("2024-01-01 00:00:00")
+    expect(context.page.locator(".qtimeseries-buttons button").nth(4)).to_be_enabled()
+
+
+@then('only time layer "{layer_id}" is selected')
+def selected_layer(context, layer_id):
+    selected = context.page.evaluate("testState.panels[0].internalPanel.select_layers.map(layer => layer.id)")
+    assert selected == [layer_id], selected
 
 
 @then('the map time window is "{window}"')

@@ -96,3 +96,52 @@ Feature: Time series JavaScript plugin
     Then the map time window is "2024-01-02T00:00:00.000Z/2024-01-03T00:00:00.000Z"
     When I pause the animation
     Then the time window stays unchanged for two seconds
+
+  Scenario: Keep mutually-exclusive time layers exclusive
+    Given the project layers are
+      """
+      [
+        {"id": "rain", "qtimeseries": {
+          "start_date": "2024-01-01T00:00:00", "end_date": "2024-01-11T00:00:00"
+        }},
+        {"id": "snow", "qtimeseries": {
+          "start_date": "2024-01-01T00:00:00", "end_date": "2024-01-11T00:00:00"
+        }}
+      ]
+      """
+    And "rain" and "snow" belong to a mutually-exclusive group
+    And only "rain" is checked on the TOC
+    When the time series plugin starts
+    And I open the time series sidebar
+    Then only time layer "rain" is selected and checked
+    When I select time layer "snow"
+    Then only time layer "snow" is selected and checked
+
+  Scenario: Start with no selected time layers when none are checked
+    Given a temporal layer with unit "d" and step 1
+    And no layers are checked on the TOC
+    When the time series plugin starts
+    And I open the time series sidebar
+    Then no time layer is selected
+    When I select time layer "rain"
+    Then only time layer "rain" is selected and checked
+    And the time controls are available
+    And the map time window is "2024-01-01T00:00:00.000Z/2024-01-02T00:00:00.000Z"
+
+  Scenario: Start with checked and visible time layers only
+    Given the project layers are
+      """
+      [
+        {"id": "hidden", "qtimeseries": {
+          "start_date": "2024-01-01T00:00:00", "end_date": "2024-01-11T00:00:00"
+        }},
+        {"id": "visible", "qtimeseries": {
+          "start_date": "2024-01-01T00:00:00", "end_date": "2024-01-11T00:00:00"
+        }}
+      ]
+      """
+    And both "hidden" and "visible" are checked on the TOC
+    And only "visible" is visible on the TOC
+    When the time series plugin starts
+    And I open the time series sidebar
+    Then only time layer "visible" is selected

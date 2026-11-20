@@ -1,5 +1,6 @@
 export default  {
   title: "Часові ряди",
+  choose_layer: 'Виберіть шар',
   current_date: 'Поточна дата',
   steps: 'Кроки',
   step: 'Крок',
