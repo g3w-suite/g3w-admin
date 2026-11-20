@@ -1,5 +1,5 @@
 from django_file_form.forms import FileFormMixin, UploadedFileField
-from django.forms import Form, ModelForm, ValidationError
+from django.forms import Form, ModelForm, Textarea, ValidationError
 from django.forms.fields import CharField, HiddenInput
 from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.db.models import Q
@@ -32,7 +32,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     """Group form."""
 
     propagate = True
-    description = Nh3Field(required=False)
+    description = Nh3Field(required=False, widget=Textarea)
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
@@ -251,12 +251,12 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
 class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
-    home_description = Nh3Field(required=False)
-    about_description = Nh3Field(required=False)
-    groups_map_description = Nh3Field(required=False)
-    login_description = Nh3Field(required=False)
-    credits = Nh3Field(required=False)
-    registration_intro = Nh3Field(required=False)
+    home_description = Nh3Field(required=False, widget=Textarea)
+    about_description = Nh3Field(required=False, widget=Textarea)
+    groups_map_description = Nh3Field(required=False, widget=Textarea)
+    login_description = Nh3Field(required=False, widget=Textarea)
+    credits = Nh3Field(required=False, widget=Textarea)
+    registration_intro = Nh3Field(required=False, widget=Textarea)
 
 
     def __init__(self, *args, **kwargs):
@@ -418,7 +418,7 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                     queryset=User.objects.filter(groups__name__in=[G3W_EDITOR1])
                                     .order_by('last_name'), required=False)
 
-    description = Nh3Field(required=False)
+    description = Nh3Field(required=False, widget=Textarea)
 
     def __init__(self, *args, **kwargs):
 

@@ -229,6 +229,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
 
     description = Nh3Field(
         required=False,
+        widget=forms.Textarea,
     )
 
     geocoding_providers = forms.MultipleChoiceField(choices=get_geocoding_providers,required=False)
