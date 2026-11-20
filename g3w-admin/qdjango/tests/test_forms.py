@@ -13,7 +13,9 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from qdjango.forms import QdjangoProjectForm
 from django.test.client import RequestFactory
 from django.contrib.auth.models import User, Group as AuthGroup
+from django.core.files.base import ContentFile
 from guardian.shortcuts import assign_perm, remove_perm
+from crispy_forms.utils import render_crispy_form
 from qdjango.models import Project
 from core.tests.utils import create_dff_image
 from core.models import MapControl, ProjectMapUrlAlias
@@ -75,6 +77,23 @@ class QdjangoFormsTest(QdjangoTestBase):
         self.assertFalse(self.test_editor1_3.has_perm('qdjango.view_project', project))
         for permission in ('view_group', 'change_group', 'delete_group'):
             self.assertFalse(self.test_editor1_3.has_perm(f'core.{permission}', self.project_group))
+
+    def test_project_form_renders_existing_thumbnail_upload_metadata(self):
+        self.request.user = self.test_user1
+        self.project.instance.thumbnail.save(
+            'thumbnail.png', ContentFile(b'thumbnail'), save=True)
+        self.addCleanup(self.project.instance.thumbnail.delete, save=False)
+
+        form = QdjangoProjectForm(
+            request=self.request,
+            group=self.project_group,
+            instance=self.project.instance,
+            initial={},
+        )
+
+        rendered = render_crispy_form(form)
+        self.assertIn('name="thumbnail-uploads"', rendered)
+        self.assertIn('&quot;type&quot;: &quot;existing&quot;', rendered)
 
     def test_qdjango_project_form(self):
         """
