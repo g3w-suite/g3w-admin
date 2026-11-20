@@ -128,7 +128,7 @@ def loading_finished(context):
 def open_sidebar(context):
     context.page.get_by_role("button", name="Open time series", exact=True).click()
     expect(context.page.locator("#timeserieslayer")).to_be_visible()
-    if context.page.evaluate("testState.panels[0].internalPanel.select_layers.length"):
+    if context.page.evaluate("testState.panels[0].internalPanel.current_layers.length"):
         context.page.wait_for_function("testState.updates.length > 0")
     panel_id = context.page.evaluate("testState.panels[0].id")
     assert panel_id == "qtimeseries-panel", panel_id
@@ -138,8 +138,10 @@ def open_sidebar(context):
 def select_time_layer(context, layer_id):
     context.page.evaluate("""id => {
       const component = testState.panels[0].internalPanel;
-      const index = String(component.layers.findIndex(layer => layer.id === id));
-      const selected_options = [...component.current_layers, index].map(value => ({ value }));
+      const selected_options = [
+        ...component.current_layers.map(layer => ({ value: layer.id })),
+        { value: id },
+      ];
       component.changeLayers({ target: { selected_options } });
     }""", layer_id)
 
@@ -148,7 +150,7 @@ def select_time_layer(context, layer_id):
 def selected_and_checked_layer(context, layer_id):
     context.page.wait_for_function("""layerId => {
       const component = testState.panels[0].internalPanel;
-      return component.select_layers.some(layer => layer.id === layerId) &&
+      return component.current_layers.some(layer => layer.id === layerId) &&
         [...testState.projectLayers.values()].some(layer =>
           layer.state.id === layerId && layer.state.checked
         );
@@ -156,7 +158,7 @@ def selected_and_checked_layer(context, layer_id):
     result = context.page.evaluate("""() => {
       const component = testState.panels[0].internalPanel;
       return {
-        selected: component.select_layers.map(layer => layer.id),
+        selected: component.current_layers.map(layer => layer.id),
         checked: [...testState.projectLayers.values()]
           .filter(layer => layer.state.checked)
           .map(layer => layer.state.id),
@@ -168,7 +170,7 @@ def selected_and_checked_layer(context, layer_id):
 @then("no time layer is selected")
 def no_time_layer_selected(context):
     result = context.page.evaluate("""() => ({
-      selected: testState.panels[0].internalPanel.select_layers.map(layer => layer.id),
+      selected: testState.panels[0].internalPanel.current_layers.map(layer => layer.id),
       updates: testState.updates,
     })""")
     assert result == {"selected": [], "updates": []}, result
@@ -197,7 +199,7 @@ def time_controls_available(context):
 
 @then('only time layer "{layer_id}" is selected')
 def selected_layer(context, layer_id):
-    selected = context.page.evaluate("testState.panels[0].internalPanel.select_layers.map(layer => layer.id)")
+    selected = context.page.evaluate("testState.panels[0].internalPanel.current_layers.map(layer => layer.id)")
     assert selected == [layer_id], selected
 
 

@@ -62,13 +62,13 @@ export default ({
             ref       = "select-layers"
             :class    = "{ 'single-layer': 1 === current_layers.length }"
             :multiple = "layers.length > 0"
-            :value    = "current_layers.join(',') || 'none'"
+            :value    = "current_layer_ids.join(',') || 'none'"
             @change   = "changeLayers"
           >
             <x-option
-              v-for     = "(layer, index) in layers"
+              v-for     = "layer in layers"
               :key      = "layer.id"
-              :value    = "index"
+              :value    = "layer.id"
             >{{ layer.name }}</x-option>
           </x-select>
           <span v-if="!has_layers" id = "qtimeseries-layer-placeholder" v-t = "'plugins.qtimeseries.choose_layer'"></span>
@@ -77,7 +77,7 @@ export default ({
         <fieldset :disabled="!has_layers">
           <!-- Recreate only the pickers when switching layers so they start with the new date bounds. -->
           <datetime
-            :key      = "'start-' + current_layers.join(',')"
+            :key      = "'start-' + current_layer_ids.join(',')"
             :disabled = "!has_layers"
             :label    = "'plugins.qtimeseries.startdate'"
             :format   = "format"
@@ -88,7 +88,7 @@ export default ({
             @change   = "changeStartDateTime"
           />
           <datetime
-            :key      = "'end-' + current_layers.join(',')"
+            :key      = "'end-' + current_layer_ids.join(',')"
             :disabled = "!has_layers"
             :label    = "'plugins.qtimeseries.enddate'"
             :format   = "format"
@@ -215,8 +215,6 @@ export default ({
       steps = [] 
     } = GUI.getPlugin('qtimeseries').config;
 
-    const project = g3w.state.project;
-
     return {
       layers,
       open:             sidebar.open,
@@ -232,13 +230,10 @@ export default ({
       step_units:       steps,
       step_unit:        layers[0].options.stepunit,
       range:            { value: 0, min: 0, max: 0 },
-      current_layers:   layers.reduce((selected, layer, index) => {
-        const projectLayer = project.getLayerById(layer.id);
-        if (projectLayer.isChecked() && projectLayer.isVisible()) {
-          selected.push(index.toString());
-        }
-        return selected;
-      }, []),
+      current_layers:   layers.filter(layer => {
+        const projectLayer = g3w.state.project.getLayerById(layer.id);
+        return projectLayer.isChecked() && projectLayer.isVisible();
+      }),
       current_date:     null,
       status:           0, // status  [1: play, -1: back, 0: pause]
     };
@@ -250,11 +245,8 @@ export default ({
       return this.current_layers.length > 0;
     },
 
-    /**
-     * @returns { Array } selected layers
-     */
-    select_layers() {
-      return this.current_layers.map(i => this.layers[i]);
+    current_layer_ids() {
+      return this.current_layers.map(layer => String(layer.id));
     },
 
     step_label() {
@@ -276,8 +268,8 @@ export default ({
       if (!this.has_layers) { return; }
       this.pause();
       // The timeline covers the full span of all selected layers.
-      this.start_date   = moment.min(this.select_layers.map(l => l.start_date));
-      this.end_date     = moment.max(this.select_layers.map(l => l.end_date));
+      this.start_date   = moment.min(this.current_layers.map(l => l.start_date));
+      this.end_date     = moment.max(this.current_layers.map(l => l.end_date));
       this.max_date     = this.end_date;
       this.min_date     = this.start_date;
       this.current_date = this.start_date;
@@ -324,7 +316,7 @@ export default ({
     /**
      * Remove the TIME filter without changing which layers are checked on the map.
      */
-    resetTimeLayer(layers = this.select_layers) {
+    resetTimeLayer(layers = this.current_layers) {
       this.pause();
       for (const layer of layers.filter(l => l.timed)) {
         GUI.updateMapLayer(GUI.getMapLayerByLayerId(layer.id), { force: true, TIME: undefined });
@@ -339,7 +331,7 @@ export default ({
      */
     async getTimeLayer() {
       await this.$nextTick();
-      const ids = this.select_layers.map(l => l.id);
+      const ids = this.current_layers.map(l => l.id);
       if (!ids.length) { return; }
       const project  = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
       try {
@@ -394,7 +386,7 @@ export default ({
       } catch (e) {
         console.warn(e); 
       }
-      this.select_layers.forEach(l => l.timed = true);
+      this.current_layers.forEach(l => l.timed = true);
     },
 
     /**
@@ -547,21 +539,21 @@ export default ({
       select.selected_options = [];
       select.container.querySelectorAll('x-option').forEach(option => {
         option.removeAttribute('selected');
-        if (this.current_layers.includes(option.value)) {
+        if (this.current_layer_ids.includes(option.value)) {
           select.select(option, { autoclose: false, emit: false });
         }
       });
       select.select(null, { autoclose: false, emit: false });
-      select.setAttribute('value', this.current_layers.join(','));
+      select.setAttribute('value', this.current_layer_ids.join(','));
     },
 
     changeLayers(event) {
       const select = event.target;
-      const layers = select.selected_options.map(option => option.value);
+      const layers = select.selected_options.map(option => this.layers.find(layer => String(layer.id) === option.value));
       if (!layers.length) {
         if (this.current_layers.length) {
-          select.select(this.current_layers[0], { autoclose: false, emit: false });
-          select.setAttribute('value', this.current_layers.join(','));
+          select.select(this.current_layer_ids[0], { autoclose: false, emit: false });
+          select.setAttribute('value', this.current_layer_ids.join(','));
         }
         return;
       }
@@ -570,20 +562,20 @@ export default ({
 
     normalizeSelectedLayers(layers, previous = []) {
       const project = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
-      const added = new Set(layers.filter(index => !previous.includes(index)));
+      const added = new Set(layers.filter(layer => !previous.includes(layer)));
       const selectedByGroup = new Map();
 
-      layers.forEach(index => {
-        const group = project.getLayerById(this.layers[index].id).state.parentGroup;
+      layers.forEach(layer => {
+        const group = project.getLayerById(layer.id).state.parentGroup;
         // Prefer a newly selected member over the existing member of its group.
-        if (group?.['mutually-exclusive'] && (added.has(index) || !selectedByGroup.has(group))) {
-          selectedByGroup.set(group, index);
+        if (group?.['mutually-exclusive'] && (added.has(layer) || !selectedByGroup.has(group))) {
+          selectedByGroup.set(group, layer);
         }
       });
 
-      return layers.filter(index => {
-        const group = project.getLayerById(this.layers[index].id).state.parentGroup;
-        return !group?.['mutually-exclusive'] || selectedByGroup.get(group) === index;
+      return layers.filter(layer => {
+        const group = project.getLayerById(layer.id).state.parentGroup;
+        return !group?.['mutually-exclusive'] || selectedByGroup.get(group) === layer;
       });
     },
 
@@ -602,12 +594,12 @@ export default ({
      * Handler when current step unit is change
      */
     step_unit(step_unit) {
-      this.select_layers.forEach(l => l.options.stepunit = step_unit);
+      this.current_layers.forEach(l => l.options.stepunit = step_unit);
       this.init();
     },
 
     async current_layers(_, previous) {
-      this.resetTimeLayer(previous.map(index => this.layers[index]));
+      this.resetTimeLayer(previous);
       this.init();
       await this.$nextTick();
       this.syncSelectedLayers();
