@@ -180,6 +180,7 @@ class QgisProjectLayer(XmlData):
         'scaleBasedVisibility',
         'srid',
         'wfsCapabilities',
+        'wcsCapabilities',
         'wmtsCapabilities',
         'editOptions',
         'datasource',
@@ -581,6 +582,9 @@ class QgisProjectLayer(XmlData):
                 wfsCapabilities = settings.QUERYABLE
 
         return None if wfsCapabilities == 0 else wfsCapabilities
+
+    def _getDataWcsCapabilities(self):
+        return self.layerId in self.qgisProject.wcsLayers
 
     def _getDataWmtsCapabilities(self):
         """
@@ -1074,6 +1078,7 @@ class QgisProjectLayer(XmlData):
                 'order': self.order,
                 'edit_options': self.editOptions,
                 'wfscapabilities': self.wfsCapabilities,
+                'wcscapabilities': self.wcsCapabilities,
                 'wmtscapabilities': self.wmtsCapabilities,
                 'exclude_attribute_wms': excludeAttributesWMS,
                 'exclude_attribute_wfs': excludeAttributesWFS,
@@ -1104,6 +1109,7 @@ class QgisProjectLayer(XmlData):
             self.instance.order = self.order
             self.instance.edit_options = self.editOptions
             self.instance.wfscapabilities = self.wfsCapabilities
+            self.instance.wcscapabilities = self.wcsCapabilities
             self.instance.wmtscapabilities = self.wmtsCapabilities
 
             # clear a previously chosen WMTS format no longer available after reimport
@@ -1139,6 +1145,7 @@ class QgisProject(XmlData):
         'maxExtent',
         'wmsuselayerids',
         'wfsLayers',
+        'wcsLayers',
         'wfstLayers',
         'wmtsGrids', # Used for WMTS grids in the project at level of QgisProjectLayer. Must call before loading WMTS layers
         'wmtsLayers', # Used for WMTS layers in the project at level fo QgisProjectLayer
@@ -1604,6 +1611,10 @@ class QgisProject(XmlData):
         """
 
         return QgsServerProjectUtils.wfsLayerIds(self.qgs_project)
+
+    def _getDataWcsLayers(self):
+        wcs_layers, _ = self.qgs_project.readListEntry("WCSLayers", "Layer")
+        return wcs_layers
 
     def _getDataWfstLayers(self):
         """

@@ -13,6 +13,7 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 
 import json
+from unittest.mock import patch
 
 from django.conf import settings
 from django.http import SimpleCookie
@@ -408,6 +409,21 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertEqual(resp['data']['WMS']['url'], ows_url)
         self.assertTrue('WFS' in resp['data'])
         self.assertEqual(resp['data']['WFS']['url'], ows_url)
+        self.assertNotIn('WCS', resp['data'])
+
+        self.project310.instance.layer_set.update(wcscapabilities=True)
+        resp = json.loads(self._testApiCall(
+            'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+        self.assertEqual(resp['data']['WCS']['url'], ows_url)
+        self.assertEqual(resp['data']['WCS']['access'], 'locked')
+
+        self.project310.instance.layer_set.update(wcscapabilities=None)
+        layer_id = self.project310.instance.layer_set.first().qgs_layer_id
+        with patch('qdjango.api.projects.views.get_qgs_project') as get_qgs_project:
+            get_qgs_project.return_value.readListEntry.return_value = ([layer_id], True)
+            resp = json.loads(self._testApiCall(
+                'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+        self.assertIn('WCS', resp['data'])
 
         # project exist free
         assign_perm('view_project', get_anonymous_user(),
