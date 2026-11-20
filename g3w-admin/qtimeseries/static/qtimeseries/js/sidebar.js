@@ -60,7 +60,6 @@ export default ({
           <x-select
             id        = "timeserieslayer"
             ref       = "select-layers"
-            :class    = "{ 'single-layer': 1 === current_layers.length }"
             :multiple = "layers.length > 0"
             :value    = "current_layer_ids.join(',') || 'none'"
             @change   = "changeLayers"
@@ -550,13 +549,6 @@ export default ({
     changeLayers(event) {
       const select = event.target;
       const layers = select.selected_options.map(option => this.layers.find(layer => String(layer.id) === option.value));
-      if (!layers.length) {
-        if (this.current_layers.length) {
-          select.select(this.current_layer_ids[0], { autoclose: false, emit: false });
-          select.setAttribute('value', this.current_layer_ids.join(','));
-        }
-        return;
-      }
       this.current_layers = this.normalizeSelectedLayers(layers, this.current_layers);
     },
 
@@ -598,8 +590,20 @@ export default ({
       this.init();
     },
 
-    async current_layers(_, previous) {
+    async current_layers(current, previous) {
       this.resetTimeLayer(previous);
+      const currentIds = new Set(current.map(layer => String(layer.id)));
+      const project = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
+      previous.filter(layer => !currentIds.has(String(layer.id))).forEach(layer => {
+        const projectLayer = project.getLayerById(layer.id);
+        projectLayer.setChecked(false);
+        const group = projectLayer.state.parentGroup;
+        if (group?.['mutually-exclusive']) {
+          group.nodes.forEach(node => {
+            if (node.id === layer.id) { node.checked = false; }
+          });
+        }
+      });
       this.init();
       await this.$nextTick();
       this.syncSelectedLayers();
@@ -646,9 +650,6 @@ document.head.insertAdjacentHTML(
 }
 #g3w_raster_timeseries_content x-select {
   color: #333;
-}
-#timeserieslayer.single-layer .x-remove {
-  display: none;
 }
 .qtimeseries-layer-select {
   position: relative;

@@ -146,6 +146,14 @@ def select_time_layer(context, layer_id):
     }""", layer_id)
 
 
+@when("I remove all selected time layers")
+def remove_all_selected_time_layers(context):
+    context.page.evaluate("""() => {
+      const component = testState.panels[0].internalPanel;
+      component.changeLayers({ target: { selected_options: [] } });
+    }""")
+
+
 @then('only time layer "{layer_id}" is selected and checked')
 def selected_and_checked_layer(context, layer_id):
     context.page.wait_for_function("""layerId => {
@@ -165,6 +173,14 @@ def selected_and_checked_layer(context, layer_id):
       };
     }""")
     assert result == {"selected": [layer_id], "checked": [layer_id]}, result
+
+
+@then("no time layer is selected and unchecked on the TOC")
+def no_time_layer_selected_and_unchecked(context):
+    context.page.wait_for_function("""() =>
+      testState.panels[0].internalPanel.current_layers.length === 0 &&
+      [...testState.projectLayers.values()].every(layer => !layer.state.checked)
+    """)
 
 
 @then("no time layer is selected")

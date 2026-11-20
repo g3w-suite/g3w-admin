@@ -128,6 +128,13 @@ Feature: Time series JavaScript plugin
     And the time controls are available
     And the map time window is "2024-01-01T00:00:00.000Z/2024-01-02T00:00:00.000Z"
 
+  Scenario: Remove the last selected time layer
+    Given a temporal layer with unit "d" and step 1
+    When the time series plugin starts
+    And I open the time series sidebar
+    When I remove all selected time layers
+    Then no time layer is selected and unchecked on the TOC
+
   Scenario: Start with checked and visible time layers only
     Given the project layers are
       """
