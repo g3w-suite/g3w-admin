@@ -318,6 +318,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             Field('description',
                                   css_class='wys5 translate'),
                             'thumbnail',
+                            'thumbnail-uploads',
                             HTML(
                                 """
                                  <img
