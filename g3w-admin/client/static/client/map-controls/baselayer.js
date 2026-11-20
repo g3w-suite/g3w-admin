@@ -76,7 +76,7 @@ class BaseLayerControl extends ol.control.Control {
               <li data-mapTypeId = "${layer.getId()}">
                 <label style = "display:block;">
                   <img onerror = "this.src = '${GUI.getResourcesUrl()}images/no-image.svg'" loading = "lazy" src = "${this.#getImgURL(layer.getId())}" style = "width: 50px; height: 50px; border-radius: 5px; object-fit: cover; margin: 0 4px; border: 2px solid #000" />
-                  ${ layer.getName() }
+                  ${ layer.getTitle() }
                 </label>
               </li>`
             ).join('')
