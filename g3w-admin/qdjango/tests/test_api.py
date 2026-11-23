@@ -13,6 +13,10 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 
 import json
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from tempfile import TemporaryDirectory
+from threading import Thread
+from urllib.parse import parse_qs, urlsplit
 
 from django.conf import settings
 from django.http import SimpleCookie
@@ -2179,6 +2183,49 @@ class QgisTemporalVectorProject(QdjangoTestBase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = APIClient()
+
+        class WMSHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                params = {key.lower(): value for key, value in parse_qs(urlsplit(self.path).query).items()}
+                if params.get('service', [''])[0].lower() != 'wms' or \
+                        params.get('request', [''])[0].lower() != 'getcapabilities':
+                    self.send_error(400)
+                    return
+                capabilities = b"""<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms">
+ <Service><Name>WMS</Name><Title>Test WMS</Title></Service>
+ <Capability>
+  <Request><GetMap><Format>image/png</Format></GetMap></Request>
+  <Layer><Title>Test WMS</Title><CRS>EPSG:4326</CRS>
+   <Layer><Name>rainfall_chirps_monthly</Name><Title>Rainfall</Title>
+    <EX_GeographicBoundingBox><westBoundLongitude>-180</westBoundLongitude>
+     <eastBoundLongitude>180</eastBoundLongitude><southBoundLatitude>-90</southBoundLatitude>
+     <northBoundLatitude>90</northBoundLatitude></EX_GeographicBoundingBox>
+    <Dimension name="time" units="ISO8601">1981-01-01/2022-03-01/P1M</Dimension>
+   </Layer>
+  </Layer>
+ </Capability>
+</WMS_Capabilities>"""
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/xml')
+                self.send_header('Content-Length', str(len(capabilities)))
+                self.end_headers()
+                self.wfile.write(capabilities)
+
+            def log_message(self, format, *args):
+                pass
+
+        server = ThreadingHTTPServer(('127.0.0.1', 0), WMSHandler)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+
+        def stop_server():
+            server.shutdown()
+            server.server_close()
+            thread.join()
+
+        cls.addClassCleanup(stop_server)
+        cls.wms_url = f'http://127.0.0.1:{server.server_port}/'
         
     def setUp(self):
 
@@ -2198,9 +2245,14 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         qgis_project_file.close()
 
         # Test WMST
-        qgis_project_file = File(
-            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_WMST), 'r',
-                 encoding='utf-8'))
+        temp_dir = TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        wmst_path = os.path.join(temp_dir.name, QGS_FILE_WMST)
+        with open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_WMST), encoding='utf-8') as source:
+            wmst_project = source.read().replace('https://ows.digitalearth.africa/', self.wms_url)
+        with open(wmst_path, 'w', encoding='utf-8') as target:
+            target.write(wmst_project)
+        qgis_project_file = File(open(wmst_path, 'r', encoding='utf-8'))
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
         self.project_wmst = QgisProject(qgis_project_file)
         self.project_wmst.group = self.project_group
@@ -2236,6 +2288,8 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         """ Test properties into qgsproject object and models """
 
         # Active
+        project = get_qgs_project(self.project_wmst.instance.qgis_file.path)
+        self.assertTrue(project.mapLayer(self.project_wmst.layers[0].layerId).isValid())
         self.assertEqual(self.project_wmst.layers[0].temporalproperties,
                          '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
         self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
