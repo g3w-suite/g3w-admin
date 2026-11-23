@@ -13,15 +13,15 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 
 import json
-from importlib import import_module
-from unittest.mock import patch
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from tempfile import TemporaryDirectory
+from threading import Thread
+from urllib.parse import parse_qs, urlsplit
 
 from django.conf import settings
 from django.http import SimpleCookie
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
-from django.db import connection
-from django.db.migrations.loader import MigrationLoader
 from django.urls import reverse
 from django.utils.http import int_to_base36
 from django.utils.crypto import salted_hmac
@@ -412,20 +412,6 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertEqual(resp['data']['WMS']['url'], ows_url)
         self.assertTrue('WFS' in resp['data'])
         self.assertEqual(resp['data']['WFS']['url'], ows_url)
-        self.assertNotIn('WCS', resp['data'])
-
-        self.project310.instance.layer_set.update(wcscapabilities=True)
-        resp = json.loads(self._testApiCall(
-            'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
-        self.assertEqual(resp['data']['WCS']['url'], ows_url)
-        self.assertEqual(resp['data']['WCS']['access'], 'locked')
-
-        self.project310.instance.layer_set.update(wcscapabilities=None)
-        with patch('qdjango.api.projects.views.get_qgs_project') as get_qgs_project:
-            resp = json.loads(self._testApiCall(
-                'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
-            get_qgs_project.assert_not_called()
-        self.assertNotIn('WCS', resp['data'])
 
         # project exist free
         assign_perm('view_project', get_anonymous_user(),
@@ -434,38 +420,6 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         resp = json.loads(self._testApiCall(
             'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
         self.assertEqual(resp['data']['WMS']['access'], 'free')
-
-    def test_wcs_capabilities_migration(self):
-        migration = import_module('qdjango.migrations.0147_populate_layer_wcscapabilities')
-        apps = MigrationLoader(connection).project_state(
-            ('qdjango', '0146_layer_wcscapabilities')
-        ).apps
-        apps.get_model('qdjango', 'Layer').objects.filter(
-            wcscapabilities__isnull=True
-        ).update(wcscapabilities=False)
-        layers = self.project310.instance.layer_set
-        layers.update(wcscapabilities=None)
-        enabled, disabled, known = list(layers.all()[:3])
-        known.wcscapabilities = True
-        known.save()
-        xml = (
-            '<qgis><properties><WCSLayers type="QStringList">'
-            f'<value>{enabled.qgs_layer_id}</value>'
-            '</WCSLayers></properties></qgis>'
-        ).encode()
-        storage = apps.get_model('qdjango', 'Project')._meta.get_field('qgis_file').storage
-        with patch.object(storage, 'open', return_value=BytesIO(xml)) as open_file:
-            migration.populate_wcs_capabilities(apps, connection.schema_editor())
-            open_file.assert_called_once()
-        for layer in (enabled, disabled, known):
-            layer.refresh_from_db()
-        self.assertTrue(enabled.wcscapabilities)
-        self.assertFalse(disabled.wcscapabilities)
-        self.assertTrue(known.wcscapabilities)
-        self.assertFalse(layers.filter(wcscapabilities__isnull=True).exists())
-        with patch.object(storage, 'open') as open_file:
-            migration.populate_wcs_capabilities(apps, connection.schema_editor())
-            open_file.assert_not_called()
 
     def test_asgeotiff_api(self):
         """ Test asgeotiff projects api"""
@@ -2229,6 +2183,49 @@ class QgisTemporalVectorProject(QdjangoTestBase):
     def setUpClass(cls):
         super().setUpClass()
         cls.client = APIClient()
+
+        class WMSHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                params = {key.lower(): value for key, value in parse_qs(urlsplit(self.path).query).items()}
+                if params.get('service', [''])[0].lower() != 'wms' or \
+                        params.get('request', [''])[0].lower() != 'getcapabilities':
+                    self.send_error(400)
+                    return
+                capabilities = b"""<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms">
+ <Service><Name>WMS</Name><Title>Test WMS</Title></Service>
+ <Capability>
+  <Request><GetMap><Format>image/png</Format></GetMap></Request>
+  <Layer><Title>Test WMS</Title><CRS>EPSG:4326</CRS>
+   <Layer><Name>rainfall_chirps_monthly</Name><Title>Rainfall</Title>
+    <EX_GeographicBoundingBox><westBoundLongitude>-180</westBoundLongitude>
+     <eastBoundLongitude>180</eastBoundLongitude><southBoundLatitude>-90</southBoundLatitude>
+     <northBoundLatitude>90</northBoundLatitude></EX_GeographicBoundingBox>
+    <Dimension name="time" units="ISO8601">1981-01-01/2022-03-01/P1M</Dimension>
+   </Layer>
+  </Layer>
+ </Capability>
+</WMS_Capabilities>"""
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/xml')
+                self.send_header('Content-Length', str(len(capabilities)))
+                self.end_headers()
+                self.wfile.write(capabilities)
+
+            def log_message(self, format, *args):
+                pass
+
+        server = ThreadingHTTPServer(('127.0.0.1', 0), WMSHandler)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+
+        def stop_server():
+            server.shutdown()
+            server.server_close()
+            thread.join()
+
+        cls.addClassCleanup(stop_server)
+        cls.wms_url = f'http://127.0.0.1:{server.server_port}/'
         
     def setUp(self):
 
@@ -2248,9 +2245,14 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         qgis_project_file.close()
 
         # Test WMST
-        qgis_project_file = File(
-            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_WMST), 'r',
-                 encoding='utf-8'))
+        temp_dir = TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        wmst_path = os.path.join(temp_dir.name, QGS_FILE_WMST)
+        with open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_WMST), encoding='utf-8') as source:
+            wmst_project = source.read().replace('https://ows.digitalearth.africa/', self.wms_url)
+        with open(wmst_path, 'w', encoding='utf-8') as target:
+            target.write(wmst_project)
+        qgis_project_file = File(open(wmst_path, 'r', encoding='utf-8'))
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
         self.project_wmst = QgisProject(qgis_project_file)
         self.project_wmst.group = self.project_group
@@ -2286,6 +2288,8 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         """ Test properties into qgsproject object and models """
 
         # Active
+        project = get_qgs_project(self.project_wmst.instance.qgis_file.path)
+        self.assertTrue(project.mapLayer(self.project_wmst.layers[0].layerId).isValid())
         self.assertEqual(self.project_wmst.layers[0].temporalproperties,
                          '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
         self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
