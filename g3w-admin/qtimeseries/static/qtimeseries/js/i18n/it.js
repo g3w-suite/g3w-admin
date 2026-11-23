@@ -1,5 +1,6 @@
 export default  {
   title: "Serie Temporali",
+  choose_layer: 'Scegli layer',
   current_date: 'Data Corrente',
   steps: 'Passi',
   step: 'Passo',

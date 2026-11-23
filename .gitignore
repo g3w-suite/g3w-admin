@@ -41,6 +41,7 @@ g3w-admin.code-workspace
 
 # Coverage html test result reports
 /g3w-admin/htmlcov/
+/g3w-admin/qtimeseries/tests/results/
 
 # Gulp dist directory
 /dist/

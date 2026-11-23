@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Qtimeseries browser tests</title>
+    <link rel="icon" href="data:,">
+    <script>
+      window.initConfig = {
+        plugins: { qtimeseries: { baseUrl: "/qtimeseries/static/" } },
+      };
+    </script>
+    <script src="/client/static/client/vendor.min.js"></script>
+  </head>
+  <body>
+    <button id="open-sidebar" type="button" hidden>Open time series</button>
+    <button id="close-panel" type="button" hidden>Close time series</button>
+    <div id="panel"></div>
+    <script src="host.js"></script>
+  </body>
+</html>
