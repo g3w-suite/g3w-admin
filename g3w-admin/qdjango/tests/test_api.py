@@ -13,11 +13,15 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 
 import json
+from importlib import import_module
+from unittest.mock import patch
 
 from django.conf import settings
 from django.http import SimpleCookie
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
+from django.db import connection
+from django.db.migrations.loader import MigrationLoader
 from django.urls import reverse
 from django.utils.http import int_to_base36
 from django.utils.crypto import salted_hmac
@@ -408,6 +412,20 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertEqual(resp['data']['WMS']['url'], ows_url)
         self.assertTrue('WFS' in resp['data'])
         self.assertEqual(resp['data']['WFS']['url'], ows_url)
+        self.assertNotIn('WCS', resp['data'])
+
+        self.project310.instance.layer_set.update(wcscapabilities=True)
+        resp = json.loads(self._testApiCall(
+            'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+        self.assertEqual(resp['data']['WCS']['url'], ows_url)
+        self.assertEqual(resp['data']['WCS']['access'], 'locked')
+
+        self.project310.instance.layer_set.update(wcscapabilities=None)
+        with patch('qdjango.api.projects.views.get_qgs_project') as get_qgs_project:
+            resp = json.loads(self._testApiCall(
+                'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+            get_qgs_project.assert_not_called()
+        self.assertNotIn('WCS', resp['data'])
 
         # project exist free
         assign_perm('view_project', get_anonymous_user(),
@@ -416,6 +434,38 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         resp = json.loads(self._testApiCall(
             'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
         self.assertEqual(resp['data']['WMS']['access'], 'free')
+
+    def test_wcs_capabilities_migration(self):
+        migration = import_module('qdjango.migrations.0147_populate_layer_wcscapabilities')
+        apps = MigrationLoader(connection).project_state(
+            ('qdjango', '0146_layer_wcscapabilities')
+        ).apps
+        apps.get_model('qdjango', 'Layer').objects.filter(
+            wcscapabilities__isnull=True
+        ).update(wcscapabilities=False)
+        layers = self.project310.instance.layer_set
+        layers.update(wcscapabilities=None)
+        enabled, disabled, known = list(layers.all()[:3])
+        known.wcscapabilities = True
+        known.save()
+        xml = (
+            '<qgis><properties><WCSLayers type="QStringList">'
+            f'<value>{enabled.qgs_layer_id}</value>'
+            '</WCSLayers></properties></qgis>'
+        ).encode()
+        storage = apps.get_model('qdjango', 'Project')._meta.get_field('qgis_file').storage
+        with patch.object(storage, 'open', return_value=BytesIO(xml)) as open_file:
+            migration.populate_wcs_capabilities(apps, connection.schema_editor())
+            open_file.assert_called_once()
+        for layer in (enabled, disabled, known):
+            layer.refresh_from_db()
+        self.assertTrue(enabled.wcscapabilities)
+        self.assertFalse(disabled.wcscapabilities)
+        self.assertTrue(known.wcscapabilities)
+        self.assertFalse(layers.filter(wcscapabilities__isnull=True).exists())
+        with patch.object(storage, 'open') as open_file:
+            migration.populate_wcs_capabilities(apps, connection.schema_editor())
+            open_file.assert_not_called()
 
     def test_asgeotiff_api(self):
         """ Test asgeotiff projects api"""

@@ -216,16 +216,24 @@ new (class extends Plugin {
       this.config.name          = this.config.name || "plugins.editing.editing_data";
 
       const comp = this.createSideBarComponent({}, {
-        id:          'editing',
-        collapsible: false,
+        id:             'editing',
+        collapsible:    false,
         sidebarOptions: { position: 'themes' },
-        title:       this.config.name,
-        offline:     false,
-        icon:        'pencil',
-        iconColor:   'yellow',
+        title:          this.config.name,
+        offline:        false,
+        icon:           'pencil',
+        iconColor:      'yellow',
       });
 
-      comp.onbefore('setOpen', bool => bool && this.showEditingPanel());
+      comp.onbefore('setOpen', async bool => { 
+        if (bool) {
+          const panel = await this.showEditingPanel();
+          // close component when panel is destroyed
+          panel?.internalPanel?.$on?.('hook:destroyed',  () => {
+            comp.setOpen(false);
+          });
+        }; 
+      });
     }
 
     // init custom GUI elements

@@ -11,11 +11,14 @@ __date__ = '2025-05-02'
 __copyright__ = 'Copyright 2015 - 2025, Gis3w'
 
 from django.conf import settings
+from django.db import transaction
 from django.db.models.signals import (
     pre_delete,
-    post_save
+    post_save,
+    m2m_changed
 )
 from django.dispatch import receiver
+from usersmanage.models import User
 
 from qdjango.models import (
     Project,
@@ -45,6 +48,7 @@ from .tasks import (
 )
 
 from .utils import get_users
+from .utils.config import is_project_indexing_enabled
 
 import json
 import logging
@@ -55,7 +59,7 @@ logger = logging.getLogger("django.request")
 def create_update_es_documents(sender, **kwargs):
     """ Create or update ES documents for project """
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(sender.instance):
         users = get_users(sender.instance)
 
         # Execute task in background
@@ -67,7 +71,7 @@ def create_update_es_documents_from_model(sender, **kwargs):
     """ Create or update ES documents for project """
 
     # Is necessary check if the project has layers to indexing
-    if settings.QES_INDEXING_PROJECT and kwargs['instance'].layer_set.count() > 0:
+    if is_project_indexing_enabled(kwargs['instance']) and kwargs['instance'].layer_set.count() > 0:
         users = get_users(kwargs['instance'])
 
         # Execute task in background
@@ -77,7 +81,7 @@ def create_update_es_documents_from_model(sender, **kwargs):
 def delete_es_documents(sender, **kwargs):
     """ Delete ES documents for project """
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(kwargs['instance']):
         users = get_users(kwargs['instance'])
 
         # Execute task in background
@@ -92,8 +96,8 @@ def update_es_document(sender, **kwargs):
     On editing actions
     """
 
-    # Only if indexing for QGIS feature is enabled
-    if not settings.QES_INDEXING_PROJECT:
+    # Only if indexing for QGIS feature is enabled for this specific project
+    if not is_project_indexing_enabled(sender.layer.project):
         return
 
     if "mode" not in kwargs:
@@ -119,21 +123,46 @@ def update_es_document(sender, **kwargs):
         method(sender.layer.project,sender.layer, [fid])
 
 
+def _reindex_columnacl(acl, using, users=()):
+    """Re-index the ACL layer for its current users/group members plus ``users``.
+
+    Users are snapshotted now (e.g. before a clear/delete), the task is queued
+    after commit so the worker reads the final ACL state.
+    """
+
+    if not is_project_indexing_enabled(acl.layer.project):
+        return
+
+    users = list(set(users) | set(acl.users.all()) | set(User.objects.filter(groups__in=acl.groups.all())))
+    if users:
+        layer = acl.layer
+        transaction.on_commit(lambda: es_project_indexing(layer, users), using=using)
+
+
 @receiver(post_save, sender=ColumnAcl)
 @receiver(pre_delete, sender=ColumnAcl)
 def re_indexing_es_columnacl(**kwargs):
     """Re-indexing project when column ACL is changed"""
 
-    if settings.QES_INDEXING_PROJECT:
-        users = []
-        if kwargs['instance'].user:
-            users.append(kwargs['instance'].user)
-        if kwargs['instance'].group:
-            users += kwargs['instance'].group.user_set.all()
+    _reindex_columnacl(kwargs['instance'], kwargs['using'])
 
 
-        # Execute task in background
-        task = es_project_indexing(kwargs['instance'].layer, users)
+@receiver(m2m_changed, sender=ColumnAcl.users.through)
+@receiver(m2m_changed, sender=ColumnAcl.groups.through)
+def re_indexing_es_columnacl_m2m(sender, instance, action, reverse, pk_set, using, **kwargs):
+    """Re-indexing when users/groups of a column ACL change (removed ones included)"""
+
+    # ponytail: reverse side (user.column_acl_restrictions.add) not handled, add it if used
+    if reverse or action not in ('post_add', 'post_remove', 'pre_clear'):
+        return
+
+    changed = []
+    if pk_set:
+        if sender is ColumnAcl.users.through:
+            changed = User.objects.filter(pk__in=pk_set)
+        else:
+            changed = User.objects.filter(groups__pk__in=pk_set)
+    _reindex_columnacl(instance, using, changed)
 
 
 @receiver(post_save, sender=GeoConstraintRule)
@@ -145,7 +174,7 @@ def re_indexing_es_columnacl(**kwargs):
 def re_indexing_es_constraint(**kwargs):
     """Re-indexing project when constraints are changed"""
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(kwargs['instance'].constraint.layer.project):
         users = []
         if kwargs['instance'].user:
             users.append(kwargs['instance'].user)
@@ -161,7 +190,7 @@ def re_indexing_es_constraint(**kwargs):
 def re_indexing_es_layeracl(**kwargs):
     """Re-indexing project when Layer ACL is changed"""
 
-    if settings.QES_INDEXING_PROJECT:
+    if is_project_indexing_enabled(kwargs['instance'].layer.project):
         users = []
         if kwargs['instance'].user:
             users.append(kwargs['instance'].user)

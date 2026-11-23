@@ -3,6 +3,10 @@ class AuthForbiddenRequest(Exception):
     pass
 
 
+class UnauthorizedRequest(Exception):
+    """ Raised when a request is unauthorized. """
+    pass
+
 class NullAuthorizer(object):
     def auth_request(self, request):
         return True
