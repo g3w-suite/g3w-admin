@@ -18,6 +18,7 @@ from core.models import ProjectMapUrlAlias
 from .base import QdjangoTestBase, CoreGroup, G3WSpatialRefSys
 from .utils import create_dff_project
 from copy import copy
+from lxml import html
 
 
 class QdjangoViewsTest(QdjangoTestBase):
@@ -46,8 +47,20 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         url = reverse("qdjango-project-layers-list", args=[self.project_group.slug, self.project.instance.slug])
 
+        layers = list(self.project.instance.layer_set.all()[:3])
+        for layer, value in zip(layers, (True, False, None)):
+            layer.wcscapabilities = value
+            layer.save()
+
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        page = html.fromstring(response.content)
+        self.assertEqual(page.xpath('count(//table[@id="layers_table"]/thead/tr/th[text()="WCS"])'), 1)
+        for layer, enabled in zip(layers, (True, False, None)):
+            cell = page.xpath('//tr[@id=$row]/td[@data-label="WCS"]',
+                              row=f'qdjango_project_layer_{layer.slug}')[0]
+            self.assertEqual(bool(cell.xpath('.//span[contains(@class, "fa-check-circle")]')), bool(enabled))
 
         client.logout()
 
