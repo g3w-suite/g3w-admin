@@ -94,7 +94,7 @@ class QdjangoWebServicesAPIview(G3WAPIView):
                             'url': msg[1]['TMS']['url']
                         })
 
-            if not wcs:
+            if not wcs and any(layer.wcscapabilities is None for layer in layers):
                 qgs_project = get_qgs_project(project.qgis_file.path)
                 if qgs_project is not None:
                     wcs_layer_ids = QgsServerProjectUtils.wcsLayerIds(qgs_project)
