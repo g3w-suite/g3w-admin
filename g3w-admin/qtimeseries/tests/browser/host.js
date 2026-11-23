@@ -32,7 +32,22 @@ window.g3w = {
     constructor(options) {
       state.plugin = this;
       state.options = options;
-      this.config = { gid: 'qdjango:1', layers: [] };
+      this.config = {
+        gid: 'qdjango:1',
+        layers: [],
+        steps: [
+          { qgis: 'c', moment: '100:years' },
+          { qgis: 'dec', moment: '10:years' },
+          { qgis: 'y', moment: 'years' },
+          { qgis: 'mon', moment: 'months' },
+          { qgis: 'wk', moment: '7:days' },
+          { qgis: 'd', moment: 'days' },
+          { qgis: 'h', moment: 'hours' },
+          { qgis: 'min', moment: 'minutes' },
+          { qgis: 's', moment: 'seconds' },
+          { qgis: 'ms', moment: 'milliseconds' },
+        ],
+      };
     }
     registerPlugin(gid) { state.gid = gid; return state.enabled; }
     setHookLoading(value) { state.loading.push(value.loading); }
