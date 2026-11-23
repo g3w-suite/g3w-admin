@@ -71,13 +71,16 @@ class QdjangoWebServicesAPIview(G3WAPIView):
             if alias:
                 res['WMS']['alias'] = reverse('OWS:ows-alias', args=[alias])
 
-            # check if WFS, WMTS, TMS layers is active
+            # check if WFS, WCS, WMTS, TMS layers is active
             wfs = False
+            wcs = False
             wmts = False
             tms_layers = []
             for layer in layers:
                 if layer.wfscapabilities is not None:
                     wfs = True
+                if layer.wcscapabilities:
+                    wcs = True
                 if layer.wmtscapabilities is not None:
                     wmts = True
 
@@ -105,6 +108,11 @@ class QdjangoWebServicesAPIview(G3WAPIView):
             if wmts:
                 res.update({
                     'WMTS': res['WMS']
+                })
+
+            if wcs:
+                res.update({
+                    'WCS': res['WMS']
                 })
 
 
