@@ -1,0 +1,22 @@
+name: Qtimeseries JavaScript CI tests
+
+on: [push, pull_request]
+
+jobs:
+  javascript_bdd:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements_test.txt
+      - run: python -m pip install -r requirements_test.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: python -m behave --junit --junit-directory g3w-admin/qtimeseries/tests/results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qtimeseries-javascript-bdd-results
+          path: g3w-admin/qtimeseries/tests/results
