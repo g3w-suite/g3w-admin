@@ -27,6 +27,7 @@ from collections import OrderedDict
 import os
 import json
 import requests
+import tempfile
 
 CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/qdjango/tests/data/'
@@ -63,6 +64,23 @@ class QgisProjectTest(TestCase):
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
         self.project_organize_column = QgisProject(qgis_project_file)
         qgis_project_file.close()
+
+    def test_wcs_layers(self):
+        layer_id = 'europa_dem20171228095729169'
+        with open(CURRENT_PATH + TEST_BASE_PATH + QGS_FILE, encoding='utf-8') as source:
+            project_xml = source.read().replace(
+                '<WCSLayers type="QStringList"/>',
+                f'<WCSLayers type="QStringList"><value>{layer_id}</value></WCSLayers>'
+            ).replace('./geodata/', DATASOURCE_PATH + 'geodata/')
+
+        with tempfile.NamedTemporaryFile(mode='w+', suffix='.qgs', encoding='utf-8') as project_file:
+            project_file.write(project_xml)
+            project_file.flush()
+            project = QgisProject(File(project_file))
+
+        self.assertEqual(project.wcsLayers, [layer_id])
+        self.assertTrue(next(layer for layer in project.layers if layer.layerId == layer_id).wcsCapabilities)
+        self.assertFalse(next(layer for layer in project.layers if layer.layerId != layer_id).wcsCapabilities)
 
 
     def test_qgis_project(self):
