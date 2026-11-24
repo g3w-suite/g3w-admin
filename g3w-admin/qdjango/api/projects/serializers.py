@@ -776,10 +776,10 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret = ['WMS']
         if instance.wfscapabilities:
             ret.append('WFS')
+        if instance.wcscapabilities:
+            ret.append('WCS')
         if instance.wmtscapabilities and instance.wmts_format:
                 ret.append('WMTS')
-
-        # TODO: add WCS if is set
 
         return ret
 
