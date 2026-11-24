@@ -87,42 +87,62 @@
           const charts         = relations.filter(r => 'MANY' === r.type).map(r => Array.from(this.#QUERY_RELATIONS_LAYERS).map(l => l.getId()).find(id => id === r.referencingLayer)).filter(Boolean);
           const show_relations = actions[layer.id].findIndex(action => 'show-query-relations' === action.id);
           if (charts.length) {
-            let _container;
+            const containers = new Map();
+            const state = Vue.observable({ toggled: layer.features.reduce((a, _, i) => { a[i] = null; return a; }, {}) });
+            const clear = async () => {
+              const entries = Array.from(containers);
+              containers.clear();
+              const results = await Promise.allSettled(entries.map(async ([index, { container, pending }]) => {
+                try {
+                  await pending;
+                } finally {
+                  await this.toggleCharts({ show: false, container });
+                  Vue.set(state.toggled, index, false);
+                }
+              }));
+              const failure = results.find(result => 'rejected' === result.status);
+              if (failure) {
+                throw failure.reason;
+              }
+            };
             actions[layer.id].splice(-1 !== show_relations ? (show_relations + 1) : actions[layer.id].length, 0, {
               id:       'show-plots-relations',
               opened:   true,
               class:    'fas fa-chart-bar',
-              state:    Vue.observable({ toggled: layer.features.reduce((a, _ , i ) => { a[i] = null; return a; }, {}) }),
+              state,
               hint:     'Show relations chart',
               cbk: throttle(async (layer, feature, action, index, container) => {
-                action.state.toggled[index] = !action.state.toggled[index];
+                Vue.set(action.state.toggled, index, !action.state.toggled[index]);
                 if (action.state.toggled[index]) {
-                  //disabel content
                   GUI.disableContent(true);
-                  await this.toggleCharts({
-                    show: true,
-                    ids: charts,
-                    container,
-                    rel: {
-                      relations,
-                      fid:       feature.attributes[G3W_FID],
-                      height:    400
-                    }
-                  });
-                  //enable content after loading
-                  GUI.disableContent(false);
-                  _container = container; // save container to action
+                  try {
+                    const pending = this.toggleCharts({
+                      show: true,
+                      ids: charts,
+                      container,
+                      rel: {
+                        relations,
+                        fid:       feature.attributes[G3W_FID],
+                        height:    400
+                      }
+                    });
+                    containers.set(index, { container, pending });
+                    await pending;
+                  } catch (e) {
+                    containers.delete(index);
+                    Vue.set(action.state.toggled, index, false);
+                    GUI.showUserMessage({ type: 'alert', message: e.message || e });
+                  } finally {
+                    GUI.disableContent(false);
+                  }
                 } else {
-                  this.toggleCharts({ show: false, container });
-                  _container = null; // remove container from action
+                  const entry = containers.get(index);
+                  containers.delete(index);
+                  await this.toggleCharts({ show: false, container: entry?.container || container });
                 }
               }),
-              clear: async () => {
-                if (_container) {
-                  await this.toggleCharts({ show: false, container: _container });
-                  _container = null;
-                }
-              }
+              clear,
+              change: () => clear().catch(e => console.warn(e)),
             });
           }
         });
@@ -165,7 +185,10 @@
                 return;
               }
 
-              const container = document.querySelector('.layer-relation .relation-table');
+              const container = GUI.getCurrentContent()?.content?.getInternalComponent?.()?.$el?.querySelector('.relation-table');
+              if (!container) {
+                throw new Error('Relation chart container not found');
+              }
               let width = 30;
               panel     = document.createElement('div');
               panel.innerHTML = /* html */`
@@ -238,7 +261,7 @@
                 chart         = null;
                 state.toggled = false;
               }
-              throw e;
+              GUI.showUserMessage({ type: 'alert', message: e.message || e });
             } finally {
               pending        = null;
               state.disabled = false;
@@ -249,8 +272,8 @@
           clear: async () => {
             // Block future callbacks before waiting for an in-flight chart mount to finish.
             disposed = true;
-            await pending;
             try {
+              await pending;
               if (chart) {
                 await this.toggleCharts({ show: false, container: chart });
               }
@@ -291,7 +314,13 @@
         sidebar.onbefore('setOpen', async b => {
           //need to close content before. In this way eventually charts on query result service are cleared
           await GUI.closeContent();
-          await this.toggleCharts({ show: b });
+          try {
+            await this.toggleCharts({ show: b });
+          } catch (e) {
+            GUI.showUserMessage({ type: 'alert', message: e.message || e });
+            sidebar.setOpen(false);
+            return;
+          }
           GUI.once('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
           if (!b) { 
             GUI.closeContent();
@@ -710,7 +739,16 @@
           this.#CHARTS.push(component);
 
           // Wait until the sidebar has finished drawing its charts and setting up observers.
-          await component.mountPromise;
+          try {
+            await component.mountPromise;
+          } catch (e) {
+            const index = this.#CHARTS.indexOf(component);
+            if (index !== -1) {
+              component.$destroy();
+              this.#CHARTS.splice(index, 1);
+            }
+            throw e;
+          }
         }
 
         if (false === show) {
@@ -722,8 +760,11 @@
               await component.mountPromise;
             } finally {
               // Properly destroy the Vue instance and remove it from the tracking array
-              component.$destroy();
-              this.#CHARTS.splice(index, 1);
+              const currentIndex = this.#CHARTS.indexOf(component);
+              if (currentIndex !== -1) {
+                component.$destroy();
+                this.#CHARTS.splice(currentIndex, 1);
+              }
 
               // Cleanup plot data after closing the sidebar
               plots.forEach(p => p.loaded && this.clearData(p));
@@ -838,6 +879,10 @@
 
       } catch (e) {
         console.warn("toggleCharts error:", e);
+        if (true === show) {
+          this.setLoading(false);
+          throw e;
+        }
       }
     }
 
