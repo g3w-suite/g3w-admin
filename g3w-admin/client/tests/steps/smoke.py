@@ -10,11 +10,13 @@ SERVER_URL = "https://dev.g3wsuite.it/"
 
 @given("matching local static files are used for the development server")
 def use_local_static_files(context):
+    static_roots = [Path(path) for path in glob(str(REPOSITORY_ROOT / "**" / "static"), recursive=True)]
+
     def handle_route(route, request):
-        relative_path = request.url.split(SERVER_URL)[1].split("?")[0]
-        matches = glob(str(REPOSITORY_ROOT / "**" / relative_path), recursive=True)
-        if matches:
-            route.fulfill(path=matches[0])
+        relative_path = request.url.split(SERVER_URL)[1].split("?")[0].removeprefix("static/")
+        match = next((root / relative_path for root in static_roots if (root / relative_path).is_file()), None)
+        if match:
+            route.fulfill(path=match)
         else:
             route.continue_()
 

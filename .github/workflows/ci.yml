@@ -194,7 +194,7 @@ jobs:
   test_static_files:
     needs: static_changes
     if: needs.static_changes.outputs.static == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     concurrency:
       group: test-static-files-${{ github.ref }}
       cancel-in-progress: true
