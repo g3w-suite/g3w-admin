@@ -1,5 +1,6 @@
 export default  {
   title: "Time Series",
+  choose_layer: 'Valitse taso',
   current_date: 'Current Date',
   steps: 'Steps',
   step: 'Step',

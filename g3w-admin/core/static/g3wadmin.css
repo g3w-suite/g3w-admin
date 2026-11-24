@@ -24641,12 +24641,14 @@ table.layers-table .layer-type-cell svg {
     max-height: 22px;
     width: auto;
 }
-table.layers-table .layer-wfs-cell {
+table.layers-table .layer-wfs-cell,
+table.layers-table .layer-wcs-cell {
     text-align: center;
     color: #cbd5e1;
     font-size: 16px;
 }
-table.layers-table .layer-wfs-cell .fa-check-circle { color: #16a34a !important; }
+table.layers-table .layer-wfs-cell .fa-check-circle,
+table.layers-table .layer-wcs-cell .fa-check-circle { color: #16a34a !important; }
 
 .layer-actions-grid {
     display: flex;
@@ -26494,6 +26496,7 @@ table.users-table > tbody > tr:first-child > td {
 /* Box body */
 .form-shell .box > .box-body {
     background: #fff;
+    color: #333;
     padding: 18px;
 }
 
@@ -26502,6 +26505,9 @@ table.users-table > tbody > tr:first-child > td {
     border-radius: 8px;
     border: 1px solid #e3e6d4;
     transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-shell .form-control.translate {
+    border: 1px dashed #006699;
 }
 .form-shell .form-control:focus {
     border-color: #95ad36;

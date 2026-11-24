@@ -897,6 +897,12 @@ class Layer(G3WACLModelMixins, models.Model):
         null=True,
     )
 
+    wcscapabilities = models.BooleanField(
+        _('WCS capabilities'),
+        blank=True,
+        null=True,
+    )
+
     wmtscapabilities = models.JSONField(
         _('Dict wmts options'),
         blank=True,

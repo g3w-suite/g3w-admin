@@ -13,7 +13,9 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from qdjango.forms import QdjangoProjectForm
 from django.test.client import RequestFactory
 from django.contrib.auth.models import User, Group as AuthGroup
+from django.core.files.base import ContentFile
 from guardian.shortcuts import assign_perm, remove_perm
+from crispy_forms.utils import render_crispy_form
 from qdjango.models import Project
 from core.tests.utils import create_dff_image
 from core.models import MapControl, ProjectMapUrlAlias
@@ -31,6 +33,67 @@ class QdjangoFormsTest(QdjangoTestBase):
         super().setUpTestData()
         cls.request = RequestFactory()
         cls.map_controls = MapControl.objects.all()
+
+    def test_editor2_project_grants_permissions_to_editor1_owners(self):
+        creator = self.test_editor2
+        owners = (self.test_editor1, self.test_editor1_2)
+        for owner in owners:
+            assign_perm('auth.change_user', owner, creator)
+            self.assertFalse(owner.has_perm('core.view_group', self.project_group))
+        self.project_group.addPermissionsToEditor(creator)
+        self.request.user = creator
+        upload = create_dff_project('qgis_file')
+        form = QdjangoProjectForm(
+            request=self.request, group=self.project_group,
+            data={
+                'form_id': upload.form_id,
+                'feature_count_wms': 10,
+                'multilayer_query': 'single',
+                'multilayer_querybybbox': 'single',
+                'multilayer_querybypolygon': 'single',
+                'toc_tab_default': 'layers',
+                'toc_layers_init_status': 'not_collapsed',
+                'toc_themes_init_status': 'collapsed',
+                'legend_position': 'tab',
+                'wms_getmap_format': 'image/png; mode=8bit',
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.cleaned_data['thumbnail'] = None
+        form.qgisProject.save(**form.cleaned_data)
+        form.instance = form.qgisProject.instance
+        form.save()
+
+        project = form.instance
+        self.assertTrue(project.layer_set.exists())
+        for editor in (creator, *owners):
+            for permission in ('view_project', 'change_project', 'delete_project'):
+                self.assertTrue(editor.has_perm(f'qdjango.{permission}', project))
+            for permission in ('view_group', 'change_group', 'delete_group'):
+                self.assertTrue(editor.has_perm(f'core.{permission}', self.project_group))
+            for layer in project.layer_set.all():
+                for permission in ('view_layer', 'change_layer', 'delete_layer', *EDITING_ATOMIC_PERMISSIONS):
+                    self.assertTrue(editor.has_perm(f'qdjango.{permission}', layer))
+        self.assertFalse(self.test_editor1_3.has_perm('qdjango.view_project', project))
+        for permission in ('view_group', 'change_group', 'delete_group'):
+            self.assertFalse(self.test_editor1_3.has_perm(f'core.{permission}', self.project_group))
+
+    def test_project_form_renders_existing_thumbnail_upload_metadata(self):
+        self.request.user = self.test_user1
+        self.project.instance.thumbnail.save(
+            'thumbnail.png', ContentFile(b'thumbnail'), save=True)
+        self.addCleanup(self.project.instance.thumbnail.delete, save=False)
+
+        form = QdjangoProjectForm(
+            request=self.request,
+            group=self.project_group,
+            instance=self.project.instance,
+            initial={},
+        )
+
+        rendered = render_crispy_form(form)
+        self.assertIn('name="thumbnail-uploads"', rendered)
+        self.assertIn('&quot;type&quot;: &quot;existing&quot;', rendered)
 
     def test_qdjango_project_form(self):
         """
