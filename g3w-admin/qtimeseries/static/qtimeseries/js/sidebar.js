@@ -3,19 +3,28 @@ const GUI = g3w.app;
 const DateTime = {
   template: /* html */`
     <div>
-      <label :for="id" style="display: block" v-t="label"></label>
-      <div class="form-group">
-        <div ref="picker" class="input-group date">
-          <input :id="id" type="text" class="form-control" />
-          <span class="input-group-addon" style="cursor: pointer">
-            <span :class="'time' === type ? 'far fa-clock' : 'fas fa-calendar-alt'"></span>
+      <label :for = "id" style = "display: block" v-t = "label"></label>
+      <div class = "form-group">
+        <div ref = "picker" class = "input-group date">
+          <input :id = "id" type = "text" class = "form-control" />
+          <span class = "input-group-addon" style = "cursor: pointer">
+            <span :class = "'time' === type ? 'far fa-clock' : 'fas fa-calendar-alt'"></span>
           </span>
         </div>
       </div>
     </div>`,
-  props: ['label', 'format', 'minDate', 'maxDate', 'type', 'value'],
-  data() { return { id: g3wsdk.core.utils.getUniqueDomId() }; },
+  props: {
+    disabled: Boolean,
+    label: String,
+    format: String,
+    minDate: [String, Object],
+    maxDate: [String, Object],
+    type: String,
+    value: [String, Object],
+  },
+  data() { return { id: g3w.utils.getUniqueDomId() }; },
   async mounted() {
+    if (this.disabled) { return; }
     await this.$nextTick();
     this.picker = $(this.$refs.picker);
     this.picker.datetimepicker({
@@ -44,57 +53,66 @@ export default ({
     <section>
       <form v-disabled="0 !== this.status">
 
-        <label style="display: block">Layer</label>
+        <label id = "qtimeseries-layer-label" style = "display: block">Layer</label>
 
-        <x-select
-          id        = "timeserieslayer"
-          ref       = "select-layers"
-          :class    = "{ 'single-layer': 1 === current_layers.length }"
-          :multiple = "layers.length > 0"
-          :value    = "current_layers.join(',')"
-          @change   = "changeLayers"
-        >
-          <x-option
-            v-for     = "(layer, index) in layers"
-            :key      = "layer.id"
-            :value    = "index"
-          >{{ layer.name }}</x-option>
-        </x-select>
+        <div class = "qtimeseries-layer-select">
+          <!-- An empty value makes x-select pick the first option automatically. -->
+          <x-select
+            id        = "timeserieslayer"
+            ref       = "select-layers"
+            :multiple = "layers.length > 0"
+            :value    = "current_layer_ids.join(',') || 'none'"
+            @change   = "changeLayers"
+          >
+            <x-option
+              v-for     = "layer in layers"
+              :key      = "layer.id"
+              :value    = "layer.id"
+            >{{ layer.name }}</x-option>
+          </x-select>
+          <span v-if="!has_layers" id = "qtimeseries-layer-placeholder" v-t = "'plugins.qtimeseries.choose_layer'"></span>
+        </div>
 
-        <div v-if="!changed_layer">
+        <fieldset :disabled="!has_layers">
+          <!-- Recreate only the pickers when switching layers so they start with the new date bounds. -->
           <datetime
-            :label   = "'plugins.qtimeseries.startdate'"
-            :format  = "format"
-            :minDate = "min_date"
-            :maxDate = "end_date"
-            :type    = "'datetime'"
-            :value   = "start_date"
-            @change  = "changeStartDateTime"
+            :key      = "'start-' + current_layer_ids.join(',')"
+            :disabled = "!has_layers"
+            :label    = "'plugins.qtimeseries.startdate'"
+            :format   = "format"
+            :minDate  = "min_date"
+            :maxDate  = "end_date"
+            :type     = "'datetime'"
+            :value    = "start_date"
+            @change   = "changeStartDateTime"
           />
           <datetime
-            :label   = "'plugins.qtimeseries.enddate'"
-            :format  = "format"
-            :minDate ="start_date"
-            :maxDate = "max_date"
-            :type    = "'datetime'"
-            :value   = "end_date"
-            @change  = "changeEndDateTime"
+            :key      = "'end-' + current_layer_ids.join(',')"
+            :disabled = "!has_layers"
+            :label    = "'plugins.qtimeseries.enddate'"
+            :format   = "format"
+            :minDate  ="start_date"
+            :maxDate  = "max_date"
+            :type     = "'datetime'"
+            :value    = "end_date"
+            @change   = "changeEndDateTime"
           />
-          <label
-            v-if           = "!change_step_unit"
-            v-t-plugin:pre = "'qtimeseries.step'"
-          > [<span v-t-plugin="'qtimeseries.stepsunit.' + step_label"></span> ] </label>
+          <label for="qtimeseries-step">
+            {{ $t('plugins.qtimeseries.step') }}<template v-if="has_layers"> [{{ $t('plugins.qtimeseries.stepsunit.' + step_label) }}]</template>
+          </label>
           <input
+            id      = "qtimeseries-step"
             class   = "form-control"
             type    = "number"
             :min    = "range.min"
             :max    = "range.max"
             :step   = "step_multiplier"
-            v-model = "step"
+            :value  = "has_layers ? step : ''"
+            @input  = "step = $event.target.value"
           />
           <div v-disabled="range.max === range.min">
             <section style="display: flex; justify-content: space-between; font-weight: bold">
-              <section style="align-self: flex-end"><span class="min-max-label">{{ range.min }}</span></section>
+              <section style="align-self: flex-end"><span class="min-max-label">{{ has_layers ? range.min : '' }}</span></section>
               <div style="display: flex; flex-direction: column; margin: 0 3px">
                 <label for="qtimeseries-range" style="display: block" class="skin-color" v-t="'plugins.qtimeseries.steps'"></label>
                 <input
@@ -107,11 +125,12 @@ export default ({
                   @change = "changeRangeStep({ value: $event.target.value })"
                 />
               </div>
-              <section style="align-self: flex-end"><span>{{ range.max }}</span></section>
+              <section style="align-self: flex-end"><span>{{ has_layers ? range.max : '' }}</span></section>
             </section>
           </div>
           <label style="display: block"></label>
           <x-select
+            v-if      = "has_layers"
             id        = "g3w-timeseries-select-unit"
             :value    = "step_unit"
             @change   = "step_unit = $event.target.value"
@@ -123,26 +142,34 @@ export default ({
               v-t-plugin   = "'qtimeseries.stepsunit.'+ u.label"
             ></x-option>
           </x-select>
-        </div>
+          <select
+            v-else
+            id          = "g3w-timeseries-select-unit"
+            class       = "form-control"
+            :aria-label = "$t('plugins.qtimeseries.stepsunit.label')"
+          >
+            <option value = ""></option>
+          </select>
+        </fieldset>
       </form>
 
       <div class="qtimeseries-buttons">
         <button
           class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value === 0"
+          :disabled   = "!validRangeDates || range.value === 0"
           @click.stop = "fastBackwardForward(-1)"
         ><span :class = "$fa('fast-backward')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value <= 0"
+          :disabled   = "!validRangeDates || range.value <= 0"
           @click.stop = "stepBackwardForward(-1)"
         ><span :class = "$fa('step-backward')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
           :class      = "{ toggled: status === -1 }"
-          v-disabled  = "!validRangeDates || range.value <= 0"
+          :disabled   = "!validRangeDates || range.value <= 0"
           style       = "transform: rotate(180deg)"
           @click.stop = "run(-1)"
         ><span :class = "$fa('run')"></span></button>
@@ -150,25 +177,26 @@ export default ({
         <button
           class       = "sidebar-button skin-button btn btn-block"
           :class      = "{ toggled: status === 0 }"
+          :disabled   = "!has_layers"
           @click.stop = "pause"
         ><span :class = "$fa('pause')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
           :class      = "{toggled: status === 1}"
-          v-disabled  = "!validRangeDates || range.value >= range.max"
+          :disabled   = "!validRangeDates || range.value >= range.max"
           @click.stop = "run(1)"
         ><span :class = "$fa('run')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value >= range.max"
+          :disabled   = "!validRangeDates || range.value >= range.max"
           @click.stop = "stepBackwardForward(1)"
         ><span :class = "$fa('step-forward')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value === range.max"
+          :disabled   = "!validRangeDates || range.value === range.max"
           @click.stop = "fastBackwardForward(1)"
         ><span :class = "$fa('fast-forward')"></span></button>
 
@@ -191,20 +219,20 @@ export default ({
       open:             sidebar.open,
       step:             layers[0].options.step,
       /** @TODO */
-      start_date:       layers[0].start_date,
-      end_date:         layers[0].end_date,
+      start_date:       null,
+      end_date:         null,
       step_multiplier:  layers[0].options.stepunitmultiplier,
       /** @TODO */
       format:           'YYYY-MM-DD HH:mm:ss',
-      min_date:         layers[0].start_date,
-      max_date:         layers[0].end_date,
+      min_date:         null,
+      max_date:         null,
       step_units:       steps,
       step_unit:        layers[0].options.stepunit,
-      change_step_unit: false,
-      step_label:       steps.find(u => u.moment === layers[0].options.stepunit).label,
       range:            { value: 0, min: 0, max: 0 },
-      changed_layer:    false,
-      current_layers:   layers.map((_, index) => index.toString()),
+      current_layers:   layers.filter(layer => {
+        const projectLayer = g3w.state.project.getLayerById(layer.id);
+        return projectLayer.isChecked() && projectLayer.isVisible();
+      }),
       current_date:     null,
       status:           0, // status  [1: play, -1: back, 0: pause]
     };
@@ -212,20 +240,16 @@ export default ({
 
   computed: {
 
-    /**
-     * @returns { Array } selected layers
-     */
-    select_layers() {
-      this.changed_layer = true;
-      setTimeout(()=> this.changed_layer = false);
-      return this.current_layers.map(i => this.layers[i]);
+    has_layers() {
+      return this.current_layers.length > 0;
     },
 
-    /**
-     * @returns { boolean } whether to disable run button
-     */
-    disablerun() {
-      return 0 === this.status && (!this.start_date || !this.end_date) ;
+    current_layer_ids() {
+      return this.current_layers.map(layer => String(layer.id));
+    },
+
+    step_label() {
+      return this.step_units.find(unit => unit.moment === this.step_unit)?.label;
     },
 
     /**
@@ -240,20 +264,18 @@ export default ({
   methods: {
 
     init() {
-      this.status       = 0;
-      this.interval     = null;
-      this.start_date   = this.select_layers.length > 1 ? moment.min(this.select_layers.map(l => l.start_date)) : this.layers[this.current_layers[0]].start_date;
-      this.end_date     = this.select_layers.length > 1 ? moment.max(this.select_layers.map(l => l.end_date))   : this.layers[this.current_layers[0]].end_date; 
-      this.max_date     = this.select_layers.length > 1 ? this.end_date : this.max_date; // set max date as end_date
+      if (!this.has_layers) { return; }
+      this.pause();
+      // The timeline covers the full span of all selected layers.
+      this.start_date   = moment.min(this.current_layers.map(l => l.start_date));
+      this.end_date     = moment.max(this.current_layers.map(l => l.end_date));
+      this.max_date     = this.end_date;
       this.min_date     = this.start_date;
       this.current_date = this.start_date;
-      this.range.value  = 0;
-      this.range.min    = 0;
       this.resetRangeInputData();
       if (this.current_date) {
         this.getTimeLayer();
       }
-      this.showCharts   = false;
     },
     /**
      * Reset range on change start date or end date time
@@ -262,7 +284,7 @@ export default ({
       this.range.value = 0;
       this.range.max   = this.validateStartDateEndDate()
         ? Number.parseInt(moment(this.end_date).diff(moment(this.start_date), this.get_step_unit()) / this.get_multiplier() * this.step_multiplier)
-        : 0;;
+        : 0;
     },
 
     /**
@@ -291,35 +313,14 @@ export default ({
     },
 
     /**
-     * Reset time layers to original map layers (no filter by time or band)
-     * 
-     * @param layers
-     * 
-     * @returns { Promise<void> }
+     * Remove the TIME filter without changing which layers are checked on the map.
      */
-    async resetTimeLayer(layers = this.select_layers) {
+    resetTimeLayer(layers = this.current_layers) {
       this.pause();
-      await this._resetTimeLayer(layers);
-      layers.forEach(l => l.timed = false);
-    },
-
-    _resetTimeLayer(layers, hideInfo=false) {
-      let len   = layers.length;
-      return new Promise(resolve => {
-        for (let l of layers.filter(l => l.timed)) {
-          const layer = GUI.getMapLayerByLayerId(l.id);
-          layer.once('loadend', () => {
-            if (0 === --len) {
-              resolve();
-            }
-          });
-          GUI.updateMapLayer(layer, { force: true, TIME: undefined });
-        }
-        if (hideInfo) {
-          GUI.showMapInfo();
-        }
-        resolve();
-      })
+      for (const layer of layers.filter(l => l.timed)) {
+        GUI.updateMapLayer(GUI.getMapLayerByLayerId(layer.id), { force: true, TIME: undefined });
+        layer.timed = false;
+      }
     },
 
     /**
@@ -329,13 +330,27 @@ export default ({
      */
     async getTimeLayer() {
       await this.$nextTick();
+      const ids = this.current_layers.map(l => l.id);
+      if (!ids.length) { return; }
       const project  = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
       try {
         await (
           new Promise((resolve, reject) => {
-            const ids               = this.select_layers.map(l => l.id);
-
-            ids.forEach(id => project.getLayerById(id).setChecked(true));
+            ids.forEach(id => {
+              const layer = project.getLayerById(id);
+              layer.setChecked(true);
+              const group = layer.state.parentGroup;
+              if (group?.['mutually-exclusive']) {
+                // Match CatalogTree: checking one child unchecks its siblings.
+                group.nodes.forEach(node => node.checked = node.id === id);
+              }
+              // CatalogTree also enables ancestor groups when a child is checked.
+              let parentGroup = group;
+              while (parentGroup) {
+                parentGroup.checked = true;
+                parentGroup = parentGroup.parentGroup;
+              }
+            });
 
             const layers = ids.map(i => GUI.getMapLayerByLayerId(i)); // layers to update
             const offset = new Date(this.current_date).getTimezoneOffset();
@@ -370,7 +385,7 @@ export default ({
       } catch (e) {
         console.warn(e); 
       }
-      this.select_layers.forEach(l => l.timed = true);
+      this.current_layers.forEach(l => l.timed = true);
     },
 
     /**
@@ -444,34 +459,30 @@ export default ({
         return;
       }
 
-      // used to wait util the image request to layers is loaded
-      let waiting= false;
-
-      clearInterval(this.interval);
+      let waiting = false;
+      this.pause();
 
       this.interval = setInterval(async ()=> {
+        // Skip ticks while the previous map frame is still loading.
         if (waiting) {
           return;
         }
         try {
-          this.range.value = this.range.value + (1 === status ? 1 : -1) * (1 * this.step);
+          this.range.value += status * this.step;
           if (this.range.value > this.range.max || this.range.value < 0) {
             this.resetRangeInputData();
             this.pause();
             this.fastBackwardForward(-1);
-          } else {
-            this.setCurrentDateTime(status);
-            waiting = true;
-            try {
-              await this.getTimeLayer();
-            } catch(e) {
-              console.warn(e);
-            }
-            waiting = false;
+            return;
           }
+          this.setCurrentDateTime(status);
+          waiting = true;
+          await this.getTimeLayer();
         } catch(e) {
           console.warn(e);
           this.pause();
+        } finally {
+          waiting = false;
         }
       }, 1000);
 
@@ -517,26 +528,47 @@ export default ({
     syncSelectedLayers() {
       const select = this.$refs['select-layers'];
       if (!select?.container) { return; }
+      select.trigger.setAttribute('aria-labelledby', 'qtimeseries-layer-label');
+      if (this.has_layers) {
+        select.trigger.removeAttribute('aria-describedby');
+      } else {
+        select.trigger.setAttribute('aria-describedby', 'qtimeseries-layer-placeholder');
+      }
+      // Changing x-select's value attribute alone does not update its multi-select badges.
       select.selected_options = [];
       select.container.querySelectorAll('x-option').forEach(option => {
         option.removeAttribute('selected');
-        if (this.current_layers.includes(option.value)) {
+        if (this.current_layer_ids.includes(option.value)) {
           select.select(option, { autoclose: false, emit: false });
         }
       });
       select.select(null, { autoclose: false, emit: false });
-      select.setAttribute('value', this.current_layers.join(','));
+      select.setAttribute('value', this.current_layer_ids.join(','));
     },
 
     changeLayers(event) {
       const select = event.target;
-      const layers = select.selected_options.map(option => option.value);
-      if (!layers.length) {
-        select.select(this.current_layers[0], { autoclose: false, emit: false });
-        select.setAttribute('value', this.current_layers.join(','));
-        return;
-      }
-      this.current_layers = layers;
+      const layers = select.selected_options.map(option => this.layers.find(layer => String(layer.id) === option.value));
+      this.current_layers = this.normalizeSelectedLayers(layers, this.current_layers);
+    },
+
+    normalizeSelectedLayers(layers, previous = []) {
+      const project = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
+      const added = new Set(layers.filter(layer => !previous.includes(layer)));
+      const selectedByGroup = new Map();
+
+      layers.forEach(layer => {
+        const group = project.getLayerById(layer.id).state.parentGroup;
+        // Prefer a newly selected member over the existing member of its group.
+        if (group?.['mutually-exclusive'] && (added.has(layer) || !selectedByGroup.has(group))) {
+          selectedByGroup.set(group, layer);
+        }
+      });
+
+      return layers.filter(layer => {
+        const group = project.getLayerById(layer.id).state.parentGroup;
+        return !group?.['mutually-exclusive'] || selectedByGroup.get(group) === layer;
+      });
     },
 
   },
@@ -553,29 +585,28 @@ export default ({
     /**
      * Handler when current step unit is change
      */
-    step_unit: {
-      immediate: false,
-      async handler(step_unit) {
-        this.change_step_unit        = true;
-        this.select_layers.forEach(l => l.options.stepunit = step_unit);
-        this.step_label = GUI.getPlugin('qtimeseries').config.steps.find(c => c.moment === step_unit).label;
-        this.init();
-        await this.$nextTick();
-        this.change_step_unit = false; // set false to enforce changing translation of label
-      },
+    step_unit(step_unit) {
+      this.current_layers.forEach(l => l.options.stepunit = step_unit);
+      this.init();
     },
 
-    /**
-     * check if try to remove selected layer
-     */
-    current_layers: {
-      immediate: false,
-      async handler(newVal, oldVal) {
-        await this.$nextTick();
-        this.syncSelectedLayers();
-        this.resetTimeLayer(oldVal.map(index => this.layers[index]));
-        this.init();
-      }
+    async current_layers(current, previous) {
+      this.resetTimeLayer(previous);
+      const currentIds = new Set(current.map(layer => String(layer.id)));
+      const project = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
+      previous.filter(layer => !currentIds.has(String(layer.id))).forEach(layer => {
+        const projectLayer = project.getLayerById(layer.id);
+        projectLayer.setChecked(false);
+        const group = projectLayer.state.parentGroup;
+        if (group?.['mutually-exclusive']) {
+          group.nodes.forEach(node => {
+            if (node.id === layer.id) { node.checked = false; }
+          });
+        }
+      });
+      this.init();
+      await this.$nextTick();
+      this.syncSelectedLayers();
     },
 
     /**
@@ -590,18 +621,20 @@ export default ({
 
   },
 
+  created() {
+    // The configured initial selection can also contain mutually-exclusive siblings.
+    this.current_layers.splice(0, this.current_layers.length, ...this.normalizeSelectedLayers(this.current_layers));
+  },
+
   async mounted() {
+    this.init();
     await this.$nextTick();
     this.syncSelectedLayers();
-    this.init();
   },
 
   beforeDestroy() {
-    const layers = GUI.getPlugin('qtimeseries').config.layers.filter(l => l.timed);
-    if (layers) {
-      this._resetTimeLayer(layers, true);
-    }
-    this.resetTimeLayer();
+    this.resetTimeLayer(this.layers);
+    GUI.showMapInfo();
   },
 
 });
@@ -618,9 +651,22 @@ document.head.insertAdjacentHTML(
 #g3w_raster_timeseries_content x-select {
   color: #333;
 }
-#timeserieslayer.single-layer .x-remove {
-  display: none;
+.qtimeseries-layer-select {
+  position: relative;
 }
+.qtimeseries-layer-select:has(#qtimeseries-layer-placeholder) .x-selected-content {
+  visibility: hidden;
+}
+#qtimeseries-layer-placeholder {
+  position: absolute;
+  inset: 0 24px 0 8px;
+  display: flex;
+  align-items: center;
+  color: #333;
+  pointer-events: none;
+}
+fieldset:disabled #qtimeseries-range::-webkit-slider-thumb { opacity: 0; }
+fieldset:disabled #qtimeseries-range::-moz-range-thumb { opacity: 0; }
 .qtimeseries-buttons {
   display: flex;
   justify-content: space-between;

@@ -2,7 +2,6 @@
 
   const BASE_URL = initConfig.group.plugins.qtimeseries.baseUrl + 'qtimeseries/js';
 
-  const ApplicationState  = g3w.state;
   const { toRawType }     = g3wsdk.core.utils;
   const GUI               = g3w.app;
   const { Plugin, Panel } = g3w;
@@ -20,7 +19,7 @@
 
       this.setHookLoading({ loading: true });
 
-      const project = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
+      const project = g3w.state.project;
 
       // add project layers from config
       project
@@ -64,6 +63,18 @@
           return;
         }
 
+        // create sidebar configuration for the plugin
+        this.config.sidebar = {
+          id:                           'qtimeseries',
+          title:                        `plugins.qtimeseries.title`,
+          open:                         false,
+          collapsible:                  true,
+          closewhenshowviewportcontent: false,
+          iconConfig:                   { color: '#25bce9', icon: 'time'},
+          mobile:                       true,
+          sidebarOptions:               { position: 'catalog'},
+        };
+
         const sidebar = this.createSideBarComponent({}, this.config.sidebar);
 
         sidebar.onbefore('setOpen', async (open) => {
@@ -71,7 +82,7 @@
             const panel = new Panel({
               id:            "qtimeseries-panel",
               title:         "plugins.qtimeseries.title",
-              internalPanel: new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({}),
+              internalPanel: new (Vue.extend((await import(`${BASE_URL}/sidebar.js`)).default))({}),
             })
             GUI.showPanel(panel);
             //listen destroyed event of the internal panel
