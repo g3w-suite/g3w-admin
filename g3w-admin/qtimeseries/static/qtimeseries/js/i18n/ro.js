@@ -1,5 +1,6 @@
 export default  {
   title: "Intervale de timp",
+  choose_layer: 'Alege un strat',
   current_date: 'Data Curentă',
   steps: 'Pași',
   step: 'Pas',
