@@ -74,7 +74,7 @@ On error (handled by `G3WExceptionHandler`):
   "result": false,
   "error": {
     "code": "validation",
-    "message": "Data are not correct or insufficent!",
+    "message": "Data are not correct or insufficient!",
     "data": { /* DRF detail */ }
   }
 }
