@@ -1,15 +1,12 @@
 name: CI
 
-# CI starts on every push and pull request. Each job below selects its own
-# events: Django tests run for PRs and certain tags, JavaScript BDD tests run
-# for all events, and the static-file check runs only for branch pushes.
-# The jobs are independent except for test_static_files, which needs
-# static_changes to report a matching file.
+# Django tests run for pull requests and tags without slashes.
+# JavaScript BDD tests run for every event; static tests run for branch
+# pushes that change static files.
 on: [push, pull_request]
 
 jobs:
   # Django integration tests in Docker with QGIS and the Compose services.
-  # Only PRs and tag pushes with no slash in the tag name run this job.
   # A newer run for the same ref cancels the previous Docker test run.
   ci_tests:
     if: github.event_name == 'pull_request' || (startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '/'))
@@ -162,11 +159,9 @@ jobs:
           name: qplotly-javascript-bdd-results
           path: g3w-admin/qplotly/tests/results
 
-  # Detect **/static/** changes for branch pushes, not PRs or tag pushes.
-  # Existing branches are compared with the pre-push commit. On the first push
-  # of a non-default branch, paths-filter compares against the merge base with
-  # the default branch; on an initial default-branch push all files are added.
-  # These first-push rules can differ from GitHub's native paths filter.
+  # Compare static files on branch pushes. On a first push to a non-default
+  # branch, compare with the default branch; the initial default-branch push
+  # treats all files as added. This can differ from GitHub's native paths filter.
   static_changes:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
     runs-on: ubuntu-latest
@@ -185,8 +180,7 @@ jobs:
             static:
               - '**/static/**'
 
-  # Run only when static_changes finds a match. Applying concurrency here means
-  # pushes without static changes do not cancel an in-progress static test.
+  # Run only when static files changed on a branch push.
   # The browser scenario opens the development expression map, substitutes
   # matching local static files, and checks application and editing-plugin
   # readiness. Unmatched files come from the remote server; JavaScript errors
