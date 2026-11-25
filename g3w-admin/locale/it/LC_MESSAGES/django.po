@@ -1,123 +1,791 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Italian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-17 10:51+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: it <info@g3wsuite.it>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: rl_dbsync/forms/admin.py:46
-msgid "QGIS project to sync"
-msgstr ""
+#: OWS/utils/data.py:125
+#, python-brace-format
+msgid "The GetFeatureResponse response is malformed: {}"
+msgstr "La risposta GetFeatureResponse non è valida: {}"
 
-#: rl_dbsync/models.py:28
+#: templates/403.html:6
+msgid "Access denied"
+msgstr "Accesso negato"
+
+#: templates/403.html:9
+#| msgid "You don't have grant to access this section"
+msgid "You do not have permission to access this page."
+msgstr "Non hai il permesso di accedere a questa pagina."
+
+#: templates/404.html:6
+msgid "Oops! Page not found."
+msgstr "Ops! Pagina non trovata"
+
+#: templates/404.html:9
+msgid "We could not find the page you were looking for."
+msgstr "Non abbiamo trovato la pagina che stavi cercando."
+
+#: templates/500.html:6
+msgid "Oops! Something went wrong."
+msgstr "Ops! Qualcosa è andato storto."
+
+#: templates/500.html:9
+msgid "An unexpected error has occurred on the server."
+msgstr "Si è verificato un errore imprevisto sul server."
+
+#: templates/admin/base.html:7
+msgid "G3W-ADMIN"
+msgstr "G3W-ADMIN"
+
+#: templates/admin/base.html:12
+#| msgid "Current situation"
+msgid "Documentation"
+msgstr "Documentazione"
+
+#: templates/admin/base.html:16
+#| msgid "Change my password"
+msgid "Change password"
+msgstr "Cambia password"
+
+#: templates/admin/base.html:18
+#| msgid "Sign out"
+msgid "Log out"
+msgstr "Esci"
+
+#: templates/base.html:183
+msgid "Dashboard"
+msgstr "Scrivania"
+
+#: templates/base.html:229
+#, python-format
 msgid ""
-"Upload the project file: .qgs or .qgz. The layers contained in the project "
-"file will be synchronized to the target database."
+"<strong>G3W-SUITE Version %(version)s</strong>: administration GIS "
+"application."
 msgstr ""
+"<strong>G3W-SUITE Versione %(version)s</strong>: applicazione di "
+"amministrazione GIS."
 
-#: rl_dbsync/models.py:34
-msgid "The new project file generated after synchronization."
+#: templates/base.html:236
+#, python-format
+msgid ""
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://"
+"www.gis3w.it\">GIS3W</a>.</strong> All rights reserved."
 msgstr ""
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://"
+"www.gis3w.it\">GIS3W</a>.</strong> Tutti i diritti riservati."
 
-#: rl_dbsync/templates/rl_dbsync/sync_add.html:8
-msgid "RLDbsync"
-msgstr ""
+#: templates/base.html:254
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr "Questo sito utilizza i cookie per garantirti la migliore esperienza."
 
-#: rl_dbsync/templates/rl_dbsync/sync_add.html:9
-msgid "syncronization data and rewrite QGIS project"
-msgstr ""
+#: templates/base_login.html:25 templates/login.html:20
+msgid "Sign in to start your session"
+msgstr "Accedi per iniziare la tua sessione di lavoro"
 
-#: rl_dbsync/templates/rl_dbsync/sync_add.html:19
-msgid "Alert"
-msgstr "Attenzione"
+#: templates/base_login.html:29 templates/login.html:24
+#: templates/registration/password_reset_form.html:10
+#: templates/registration/username_recovery_form.html:10
+msgid "LOGIN ERROR"
+msgstr "ERRORE DI LOGIN"
 
-#: rl_dbsync/templates/rl_dbsync/sync_add.html:20
-msgid "Some errors on form. Check it and send again."
-msgstr "Alcuni errori nel form. Controlla e invia di nuovo."
+#: templates/base_login.html:30 templates/login.html:28
+#: templates/login.html:34
+msgid "Username and/or password uncorrect"
+msgstr "Username e/o password non corretti"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:9
-msgid "Regione Lazio DB Sync"
-msgstr ""
+#: templates/base_login.html:45 templates/login.html:92
+#: templates/two_factor/_wizard_actions.html:17
+#: templates/two_factor/_wizard_actions.html:25
+#: templates/two_factor/_wizard_actions_login.html:9
+msgid "Sign In"
+msgstr "Accedi"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:20
-msgid "Sync data between Regione Lazio databases (testing and production)"
-msgstr ""
+#: templates/base_login.html:51 templates/login.html:120
+#: templates/registration/password_reset_form.html:22
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:30
-msgid "Sync"
-msgstr ""
+#: templates/base_login.html:58 templates/login.html:132
+#| msgid "Sign out"
+msgid "Sign up"
+msgstr "Registrati"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:38
-#, fuzzy
+#: templates/include/login_page_version.html:2
+msgid " Version"
+msgstr "Versione"
+
+#: templates/include/navbar_right_menu.html:11 templates/index.html:21
+#: templates/search.html:8 templates/search.html:33
+msgid "Search"
+msgstr "Cerca"
+
+#: templates/include/navbar_right_menu.html:25
+msgid "Frontend"
+msgstr "Frontend"
+
+#: templates/include/navbar_right_menu.html:46
+msgid "Registered on"
+msgstr "Registrato il"
+
+#: templates/include/navbar_right_menu.html:47
+msgid "Last login"
+msgstr "Ultimo accesso"
+
+#: templates/include/navbar_right_menu.html:54
+msgid "Profile"
+msgstr "Profilo"
+
+#: templates/include/navbar_right_menu.html:57
+msgid "Logout"
+msgstr "Esci"
+
+#: templates/include/sidebar_right.html:10
+msgid "Information"
+msgstr "Informazioni"
+
+#: templates/include/sidebar_right.html:13
+#: templates/include/sidebar_right.html:16
+msgid "System information"
+msgstr "Informazioni di sistema"
+
+#: templates/include/sidebar_right.html:17
+msgid "System information about QGIS-Server etc."
+msgstr "Informazioni di sistema su QGIS-Server ecc."
+
+#: templates/include/sidebar_right.html:23
+msgid "Configurations"
+msgstr "Configurazioni"
+
+#: templates/include/sidebar_right.html:30
+msgid "Edit general data"
+msgstr "Modifica i dati generali"
+
+#: templates/include/sidebar_right.html:31
+msgid "Frontend data and other"
+msgstr "Dati del frontend e altro"
+
+#: templates/include/sidebar_right.html:39
 #| msgid "Adminstration"
-msgid "Actions"
-msgstr "Azioni"
+msgid "Django administration"
+msgstr "Amministrazione Django"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:39
-msgid "State"
-msgstr ""
+#: templates/include/sidebar_right.html:40
+#| msgid "Login to go backend administration system"
+msgid "Go to staff administration section"
+msgstr "Vai alla sezione di amministrazione dello staff"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:40
-#, fuzzy
+#: templates/index.html:11
+#, python-format
+msgid "Welcome back, %(name)s"
+msgstr "Bentornato, %(name)s"
+
+#: templates/index.html:13
+msgid "Here is an overview of your geospatial workspaces."
+msgstr "Ecco una panoramica dei tuoi spazi di lavoro geospaziali."
+
+#: templates/index.html:20
+msgid "Search groups, projects, layers…"
+msgstr "Cerca gruppi, progetti, layer…"
+
+#: templates/index.html:35
+#| msgid "Groups list"
+msgid "Map groups"
+msgstr "Gruppi cartografici"
+
+#: templates/index.html:46
 #| msgid "Project"
-msgid "Project IN File"
-msgstr "Progetto"
+msgid "Projects"
+msgstr "Progetti"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:41
-#, fuzzy
-#| msgid "Project"
-msgid "Project OUT File"
-msgstr "Progetto"
+#: templates/index.html:55 templates/index.html:119
+#: templates/index.html:120
+msgid "Layers"
+msgstr "Layer"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:42
-msgid "Create"
+# --- Dashboard section titles ---
+#: templates/index.html:64
+msgid "Bookmarked projects"
+msgstr "Progetti preferiti"
+
+#: templates/index.html:71
+msgid "Quick actions"
+msgstr "Azioni rapide"
+
+#: templates/index.html:73
+msgid "Browse groups"
+msgstr "Esplora i gruppi"
+
+#: templates/index.html:75
+msgid "New group"
+msgstr "Nuovo gruppo"
+
+#: templates/index.html:77
+msgid "Advanced search"
+msgstr "Ricerca avanzata"
+
+#: templates/index.html:81
+msgid "Projects bookmarked"
+msgstr "Progetti preferiti"
+
+#: templates/index.html:94
+msgid "Project not accessible to anonymous users"
+msgstr "Progetto non accessibile agli utenti anonimi"
+
+#: templates/index.html:104
+#| msgid "Projects bookmarked"
+msgid "Remove bookmark"
+msgstr "Rimuovi dai preferiti"
+
+#: templates/index.html:113
+#| msgid "Show"
+msgid "Show map"
+msgstr "Mostra la mappa"
+
+#: templates/index.html:114
+msgid "Map"
+msgstr "Mappa"
+
+#: templates/index.html:123 templates/index.html:124
+msgid "Edit"
+msgstr "Modifica"
+
+#: templates/index.html:136
+msgid "No bookmarked projects yet"
+msgstr "Nessun progetto preferito"
+
+#: templates/index.html:137
+msgid "Open any project map and click the bookmark icon to pin it here."
+msgstr "Apri la mappa di un progetto e fai clic sull'icona dei preferiti per aggiungerlo qui."
+
+#: templates/index.html:143
+msgid "Recent activity"
+msgstr "Attività recente"
+
+#: templates/index.html:160
+msgid "ago"
+msgstr "fa"
+
+#: templates/index.html:169
+msgid "Module widgets"
+msgstr "Widget modulo"
+
+#: templates/login.html:42 templates/two_factor/core/_login.html:17
+msgid ""
+"Use this form for entering backup tokens for logging in. These tokens have "
+"been generated for you to print and keep safe. Please enter one of these "
+"backup tokens to login to your account."
 msgstr ""
+"Usa questo modulo per inserire i codici di recupero per l'accesso. Questi "
+"codici sono stati generati per essere stampati e conservati in un luogo "
+"sicuro. Inserisci uno dei codici di recupero per accedere al tuo account."
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:43
-msgid "Taks ID"
+#: templates/login.html:64 templates/two_factor/core/_login.html:31
+msgid "Or, alternatively, use one of your other authentication methods:"
+msgstr "Oppure usa uno degli altri metodi di autenticazione:"
+
+#: templates/login.html:103 templates/two_factor/core/_login.html:51
+msgid "As a last resort, you can use a backup token:"
+msgstr "Come ultima risorsa, puoi usare un codice di recupero:"
+
+#: templates/login.html:106 templates/two_factor/core/_login.html:54
+msgid "Use Backup Token"
+msgstr "Usa un codice di recupero"
+
+#: templates/login.html:125
+#: templates/registration/username_recovery_form.html:22
+#| msgid "Forgot your password?"
+msgid "Forgot your username?"
+msgstr "Hai dimenticato il tuo username?"
+
+#: templates/otp/email/token.txt:1
+#, python-format
+msgid "This email was sent by %(domain)s for two-factor authentication (2FA)."
+msgstr "Questa email è stata inviata da %(domain)s per l'autenticazione a due fattori (2FA)."
+
+#: templates/otp/email/token.txt:1
+msgid "This email was sent by G3W-SUITE for two-factor authentication (2FA)."
+msgstr "Questa email è stata inviata da G3W-SUITE per l'autenticazione a due fattori (2FA)."
+
+#: templates/otp/email/token.txt:3
+#, python-format
+msgid "Your one-time password (OTP) token is: %(token)s"
+msgstr "Il tuo codice monouso (OTP) è: %(token)s"
+
+#: templates/registration/password_reset_complete.html:8
+msgid "Password reset complete"
+msgstr "Reimpostazione password completata"
+
+#: templates/registration/password_reset_complete.html:9
+msgid "Your new password has been set. You can log in now on the"
+msgstr "La tua nuova password è stata impostata. Ora puoi accedere alla"
+
+#: templates/registration/password_reset_complete.html:9
+msgid "log in page"
+msgstr "pagina di accesso"
+
+#: templates/registration/password_reset_confirm.html:9
+msgid "Enter new password"
+msgstr "Inserisci una nuova password"
+
+#: templates/registration/password_reset_confirm.html:16
+msgid "New password"
+msgstr "Nuova password"
+
+#: templates/registration/password_reset_confirm.html:21
+msgid "Repeat password"
+msgstr "Ripeti la password"
+
+#: templates/registration/password_reset_confirm.html:26
+msgid "Change my password"
+msgstr "Cambia la mia password"
+
+#: templates/registration/password_reset_confirm.html:31
+msgid ""
+"The password reset link <strong>was invalid</strong>, possibly because it "
+"has already been used.  Please request a new password reset."
 msgstr ""
+"Il link per reimpostare la password <strong>non è valido</strong>, è "
+"possibile che sia già stato usato. Per favore esegui una nuova richiesta di "
+"reimpostazione password."
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:55
-msgid "Delete"
-msgstr "Elimina"
+#: templates/registration/password_reset_done.html:8
+#: templates/registration/username_recovery_done.html:8
+msgid "Check your inbox."
+msgstr "Controlla la tua casella di posta"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:59
-msgid "Logs"
+#: templates/registration/password_reset_done.html:9
+msgid ""
+"We've emailed you instructions for setting your password. You should receive "
+"the email shortly!"
 msgstr ""
+"Ti abbiamo inviato le istruzioni per reimpostare la tua password. Dovresti "
+"ricevere una email a breve!"
 
-#: rl_dbsync/templates/rl_dbsync/sync_list.html:85
-#, fuzzy
-#| msgid "Project"
-msgid "New Project File"
-msgstr "Progetto"
-
-#: rl_dbsync/templates/rl_dbsync/sync_task_info.html:11
-msgid "Synchronization Results"
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
 msgstr ""
+"Hai ricevuto questa email perché hai richiesto la reimpostazione della "
+"password per il tuo account su %(site_name)s."
 
-#: rl_dbsync/templates/rl_dbsync/sync_task_info.html:36
-msgid "Datasources updated"
+#: templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Vai alla seguente pagina e scegli una nuova password:"
+
+#: templates/registration/password_reset_email.html:8
+msgid "Your username, in case you’ve forgotten:"
+msgstr "Il tuo username, nel caso lo avessi dimenticato:"
+
+#: templates/registration/password_reset_form.html:12
+#: templates/registration/username_recovery_form.html:12
+msgid "Email no present into database"
+msgstr "Email non presente nel sistema"
+
+#: templates/registration/password_reset_form.html:15
+#: templates/registration/username_recovery_form.html:15
+msgid "Checking the CAPTCHA is required"
+msgstr "Il controllo CAPTCHA è obbligatorio"
+
+#: templates/registration/password_reset_form.html:23
+msgid ""
+"Enter your email address below, and we'll email instructions for setting a "
+"new one."
 msgstr ""
+"Inserisci il tuo indirizzo email qui sotto e ti invieremo le istruzioni per "
+"impostarne una nuova."
 
-#: rl_dbsync/templates/rl_dbsync/sync_task_info.html:61
-msgid "Download Results"
+#: templates/registration/password_reset_form.html:32
+msgid "Send me instruction"
+msgstr "Inviami le istruzioni"
+
+#: templates/registration/password_reset_subject.txt:2
+#, python-format
+#| msgid "Password reset complete"
+msgid "Password reset on %(site_name)s"
+msgstr "Reimpostazione password su %(site_name)s"
+
+#: templates/registration/username_recovery_done.html:9
+#| msgid ""
+#| "We've emailed you instructions for setting your password. You should "
+#| "receive the email shortly!"
+msgid "We've emailed you your username. You should receive the email shortly!"
 msgstr ""
+"Ti abbiamo inviato il tuo username via email. Dovresti riceverla a breve!"
 
-#~ msgid "The GetFeatureResponse response is malformed: {}"
-#~ msgstr "La risposta GetFeatureResponse non è valida: {}"
+#: templates/registration/username_recovery_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a username recovery for "
+"your user account at %(site_name)s."
+msgstr ""
+"Hai ricevuto questa email perché hai richiesto il recupero dello username "
+"per il tuo account su %(site_name)s."
+
+#: templates/registration/username_recovery_email.html:4
+msgid "Your username is:"
+msgstr "Il tuo username è:"
+
+#: templates/registration/username_recovery_form.html:23
+#| msgid ""
+#| "Enter your email address below, and we'll email instructions for setting "
+#| "a new one."
+msgid "Enter your email address below, and we'll email your username."
+msgstr ""
+"Inserisci il tuo indirizzo email qui sotto e ti invieremo il tuo username via email."
+
+#: templates/registration/username_recovery_form.html:32
+#| msgid "Send me instruction"
+msgid "Send me username"
+msgstr "Inviami lo username"
+
+#: templates/registration/username_recovery_subject.txt:2
+#, python-format
+msgid "Username recovery on %(site_name)s"
+msgstr "Recupero username su %(site_name)s"
+
+#: templates/search.html:8
+#| msgid "Search results for"
+msgid "Search results"
+msgstr "Risultati della ricerca"
+
+#: templates/search.html:11
+msgid "for"
+msgstr "per"
+
+#: templates/search.html:19
+#, python-format
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] "%(counter)s risultato"
+msgstr[1] "%(counter)s risultati"
+
+#: templates/search.html:22
+#| msgid " results."
+msgid "No results"
+msgstr "Nessun risultato"
+
+#: templates/search.html:31
+msgid "Search groups, macro groups, projects..."
+msgstr "Cerca gruppi, macrogruppi, progetti..."
+
+#: templates/search.html:44
+#| msgid "Not results found!"
+msgid "No results found"
+msgstr "Nessun risultato trovato"
+
+#: templates/search.html:45
+msgid "No item matches your query. Try a different keyword or check spelling."
+msgstr "Nessun elemento corrisponde alla ricerca. Prova un'altra parola chiave o controlla l'ortografia."
+
+#: templates/socialaccount/authentication_error.html:5
+#: templates/socialaccount/authentication_error.html:8
+msgid "Social Network Login Failure"
+msgstr "Accesso tramite social network non riuscito"
+
+#: templates/socialaccount/authentication_error.html:10
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr "Si è verificato un errore durante il tentativo di accesso tramite il tuo account social."
+
+#: templates/socialaccount/authentication_error.html:12
+msgid "Code"
+msgstr "Codice"
+
+#: templates/socialaccount/authentication_error.html:13
+#| msgid "Adminstration"
+msgid "Exception"
+msgstr "Eccezione"
+
+#: templates/two_factor/_wizard_actions.html:11
+#: templates/two_factor/_wizard_actions_login.html:23
+msgid "Back"
+msgstr "Indietro"
+
+#: templates/two_factor/_wizard_actions.html:16
+#: templates/two_factor/_wizard_actions.html:24
+#: templates/two_factor/_wizard_actions_login.html:7
+msgid "Verify"
+msgstr "Verifica"
+
+#: templates/two_factor/_wizard_actions.html:18
+#: templates/two_factor/_wizard_actions.html:26
+#: templates/two_factor/_wizard_actions_login.html:11
+msgid "Next"
+msgstr "Avanti"
+
+#: templates/two_factor/_wizard_actions.html:35
+#: templates/two_factor/_wizard_actions_login.html:32
+msgid "Cancel"
+msgstr "Annulla"
+
+#: templates/two_factor/core/_login.html:10
+#| msgid "Last login"
+msgid "Login"
+msgstr "Accesso"
+
+#: templates/two_factor/core/_login.html:13
+msgid "Enter your credentials."
+msgstr "Inserisci le tue credenziali."
+
+#: templates/two_factor/core/backup_tokens.html:5
+#: templates/two_factor/profile/profile.html:37
+msgid "Backup Tokens"
+msgstr "Codici di recupero"
+
+#: templates/two_factor/core/backup_tokens.html:10
+msgid ""
+"Backup tokens can be used when your primary and backup phone numbers aren't "
+"available. The backup tokens below can be used for login verification. If "
+"you've used up all your backup tokens, you can generate a new set of backup "
+"tokens. Only the backup tokens shown below will be valid."
+msgstr ""
+"Puoi usare i codici di recupero quando i tuoi numeri di telefono principale "
+"e di riserva non sono disponibili. I codici qui sotto possono essere usati "
+"per verificare l'accesso. Se li hai esauriti tutti, puoi generarne una nuova "
+"serie. Saranno validi solo i codici di recupero mostrati qui sotto."
+
+#: templates/two_factor/core/backup_tokens.html:22
+msgid "Print these tokens and keep them somewhere safe."
+msgstr "Stampa questi codici e conservali in un luogo sicuro."
+
+#: templates/two_factor/core/backup_tokens.html:24
+#| msgid "You don't have grant to access this section"
+msgid "You don't have any backup codes yet."
+msgstr "Non hai ancora codici di recupero."
+
+#: templates/two_factor/core/backup_tokens.html:29
+#: templates/two_factor/core/setup_complete.html:16
+#: templates/two_factor/core/setup_complete.html:23
+msgid "Back to Account Security"
+msgstr "Torna alla sicurezza dell'account"
+
+#: templates/two_factor/core/backup_tokens.html:30
+msgid "Generate Tokens"
+msgstr "Genera codici"
+
+#: templates/two_factor/core/setup.html:9
+#: templates/two_factor/core/setup_complete.html:5
+#: templates/two_factor/profile/profile.html:60
+msgid "Enable Two-Factor Authentication"
+msgstr "Attiva l'autenticazione a due fattori"
+
+#: templates/two_factor/core/setup.html:14
+msgid ""
+"You are about to take your account security to the next level. Follow the "
+"steps in this wizard to enable two-factor authentication."
+msgstr ""
+"Stai per aumentare la sicurezza del tuo account. Segui i passaggi di questa "
+"procedura guidata per attivare l'autenticazione a due fattori."
+
+#: templates/two_factor/core/setup.html:18
+msgid "Please select which authentication method you would like to use."
+msgstr "Seleziona il metodo di autenticazione che desideri usare."
+
+#: templates/two_factor/core/setup.html:21
+msgid ""
+"To start using a token generator, please use your smartphone to scan the QR "
+"code below. For example, use Google Authenticator."
+msgstr ""
+"Per iniziare a usare un generatore di codici, scansiona il codice QR qui "
+"sotto con il tuo smartphone, ad esempio usando Google Authenticator."
+
+#: templates/two_factor/core/setup.html:25
+msgid ""
+"Alternatively you can use the following secret to setup TOTP in your "
+"authenticator or password manager manually."
+msgstr ""
+"In alternativa, puoi usare la seguente chiave segreta per configurare "
+"manualmente TOTP nella tua app di autenticazione o nel gestore di password."
+
+#: templates/two_factor/core/setup.html:27
+msgid "TOTP Secret:"
+msgstr "Chiave segreta TOTP:"
+
+#: templates/two_factor/core/setup.html:28
+msgid "Then, enter the token generated by the app."
+msgstr "Poi inserisci il codice generato dall'app."
+
+#: templates/two_factor/core/setup.html:31
+msgid ""
+"Please enter the phone number you wish to receive the text messages on. This "
+"number will be validated in the next step."
+msgstr ""
+"Inserisci il numero di telefono su cui desideri ricevere gli SMS. Il numero "
+"verrà verificato nel passaggio successivo."
+
+#: templates/two_factor/core/setup.html:35
+msgid ""
+"Please enter the phone number you wish to be called on. This number will be "
+"validated in the next step."
+msgstr ""
+"Inserisci il numero di telefono su cui desideri ricevere la chiamata. Il "
+"numero verrà verificato nel passaggio successivo."
+
+#: templates/two_factor/core/setup.html:40
+msgid "We are calling your phone right now, please enter the digits you hear."
+msgstr "Ti stiamo chiamando: inserisci le cifre che senti."
+
+#: templates/two_factor/core/setup.html:43
+msgid "We sent you a text message, please enter the tokens we sent."
+msgstr "Ti abbiamo inviato un SMS: inserisci i codici ricevuti."
+
+#: templates/two_factor/core/setup.html:47
+msgid ""
+"We've encountered an issue with the selected authentication method. Please "
+"go back and verify that you entered your information correctly, try again, "
+"or use a different authentication method instead. If the issue persists, "
+"contact the site administrator."
+msgstr ""
+"Si è verificato un problema con il metodo di autenticazione selezionato. "
+"Torna indietro e verifica di aver inserito correttamente i dati, riprova "
+"oppure usa un altro metodo di autenticazione. Se il problema persiste, "
+"contatta l'amministratore del sito."
+
+#: templates/two_factor/core/setup.html:54
+msgid ""
+"To identify and verify your YubiKey, please insert a token in the field "
+"below. Your YubiKey will be linked to your account."
+msgstr ""
+"Per identificare e verificare la tua YubiKey, inserisci un codice nel campo "
+"qui sotto. La tua YubiKey verrà associata al tuo account."
+
+#: templates/two_factor/core/setup_complete.html:11
+msgid "Congratulations, you've successfully enabled two-factor authentication."
+msgstr "Complimenti, hai attivato correttamente l'autenticazione a due fattori."
+
+#: templates/two_factor/core/setup_complete.html:18
+msgid ""
+"However, it might happen that you don't have access to your primary token "
+"device. To enable account recovery, add a phone number."
+msgstr ""
+"Potrebbe però capitarti di non avere accesso al dispositivo principale "
+"che genera i codici. Aggiungi un numero di telefono per consentire il "
+"recupero dell'account."
+
+#: templates/two_factor/core/setup_complete.html:25
+#: templates/two_factor/profile/profile.html:34
+msgid "Add Phone Number"
+msgstr "Aggiungi un numero di telefono"
+
+#: templates/two_factor/profile/disable.html:5
+msgid "Disable Two-factor Authentication"
+msgstr "Disattiva l'autenticazione a due fattori"
+
+#: templates/two_factor/profile/disable.html:9
+msgid ""
+"You are about to disable two-factor authentication. This weakens your "
+"account security, are you sure?"
+msgstr ""
+"Stai per disattivare l'autenticazione a due fattori. Questa operazione "
+"riduce la sicurezza del tuo account. Vuoi davvero procedere?"
+
+#: templates/two_factor/profile/disable.html:15
+msgid "Disable"
+msgstr "Disattiva"
+
+#: templates/two_factor/profile/profile.html:6
+msgid "Account Security"
+msgstr "Sicurezza dell'account"
+
+#: templates/two_factor/profile/profile.html:12
+#, python-format
+msgid "Primary method: %(primary)s"
+msgstr "Metodo principale: %(primary)s"
+
+#: templates/two_factor/profile/profile.html:15
+msgid "Backup Phone Numbers"
+msgstr "Numeri di telefono di riserva"
+
+#: templates/two_factor/profile/profile.html:16
+msgid ""
+"If your primary method is not available, we are able to send backup tokens "
+"to the phone numbers listed below."
+msgstr ""
+"Se il metodo principale non è disponibile, possiamo inviare codici di "
+"recupero ai numeri di telefono elencati qui sotto."
+
+#: templates/two_factor/profile/profile.html:24
+msgid "Are you sure?"
+msgstr "Vuoi davvero procedere?"
+
+#: templates/two_factor/profile/profile.html:27
+#| msgid "Registered on"
+msgid "Unregister"
+msgstr "Rimuovi la registrazione"
+
+#: templates/two_factor/profile/profile.html:39
+msgid ""
+"If you don't have any device with you, you can access your account using "
+"backup tokens."
+msgstr ""
+"Se non hai alcun dispositivo con te, puoi accedere al tuo account usando "
+"i codici di recupero."
+
+#: templates/two_factor/profile/profile.html:41
+#, python-format
+msgid "You have only one backup token remaining."
+msgid_plural "You have %(counter)s backup tokens remaining."
+msgstr[0] "Ti rimane un solo codice di recupero."
+msgstr[1] "Ti rimangono %(counter)s codici di recupero."
+
+#: templates/two_factor/profile/profile.html:48
+msgid "Show Codes"
+msgstr "Mostra i codici"
+
+#: templates/two_factor/profile/profile.html:50
+#: templates/two_factor/profile/profile.html:54
+msgid "Disable Two-Factor Authentication"
+msgstr "Disattiva l'autenticazione a due fattori"
+
+#: templates/two_factor/profile/profile.html:51
+msgid ""
+"However we strongly discourage you to do so, you can also disable two-factor "
+"authentication for your account."
+msgstr ""
+"Puoi anche disattivare l'autenticazione a due fattori per il tuo account, "
+"ma te lo sconsigliamo vivamente."
+
+#: templates/two_factor/profile/profile.html:56
+msgid ""
+"Two-factor authentication is not enabled for your account. Enable two-factor "
+"authentication for enhanced account security."
+msgstr ""
+"L'autenticazione a due fattori non è attiva per il tuo account. Attivala "
+"per aumentare la sicurezza dell'account."
+
+#~ msgid "Alert"
+#~ msgstr "Attenzione"
+
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Alcuni errori nel form. Controlla e invia di nuovo."
+
+#~| msgid "Project"
+#~ msgid "Project OUT File"
+#~ msgstr "Progetto"
+
+#~ msgid "Delete"
+#~ msgstr "Elimina"
+
+#~| msgid "Project"
+#~ msgid "New Project File"
+#~ msgstr "Progetto"
 
 #~ msgid "Input layer is not a point or multipoint layer."
 #~ msgstr "Il layer di input non è un layer di punti o multipunti."
@@ -181,7 +849,6 @@ msgstr ""
 #~ msgid "Malformed range array."
 #~ msgstr "Array range non valido."
 
-#, fuzzy
 #~| msgid "Oops! Page not found."
 #~ msgid "Task not found!"
 #~ msgstr "Attività non trovata!"
@@ -197,9 +864,6 @@ msgstr ""
 
 #~ msgid "Services"
 #~ msgstr "Servizi"
-
-#~ msgid "Edit"
-#~ msgstr "Modifica"
 
 #~ msgid "Cannot create temporary layer for isochrone result."
 #~ msgstr ""
@@ -273,257 +937,12 @@ msgstr ""
 #~ msgid "error page"
 #~ msgstr "Pagina di errore"
 
-#~ msgid "Access denied"
-#~ msgstr "Accesso negato"
-
-#~ msgid "You don't have grant to access this section"
-#~ msgstr "Non hai i privilegi per accedere a questa sezione"
-
-#~ msgid "Oops! Page not found."
-#~ msgstr "Ops! Pagina non trovata"
-
-#~ msgid "We could not find the page you were looking for."
-#~ msgstr "Non abbiamo trovato la pagina che stavi cercando."
-
-#~ msgid "G3W-ADMIN"
-#~ msgstr "G3W-ADMIN"
-
-#, fuzzy
-#~| msgid "Current situation"
-#~ msgid "Documentation"
-#~ msgstr "Documentazione"
-
-#, fuzzy
-#~| msgid "Change my password"
-#~ msgid "Change password"
-#~ msgstr "Cambia password"
-
-#, fuzzy
-#~| msgid "Sign out"
-#~ msgid "Log out"
-#~ msgstr "Esci"
-
-#~ msgid "Dashboard"
-#~ msgstr "Scrivania"
-
-#, fuzzy
 #~| msgid " Version"
 #~ msgid "Version"
 #~ msgstr "Versione"
 
-#~ msgid ""
-#~ "This website uses cookies to ensure you get the best experience on our "
-#~ "website"
-#~ msgstr ""
-#~ "Questo sito utilizza i cookie per garantirti la migliore esperienza."
-
-#~ msgid "Sign in to start your session"
-#~ msgstr "Accedi per iniziare la tua sessione di lavoro"
-
-#~ msgid "LOGIN ERROR"
-#~ msgstr "ERRORE DI LOGIN"
-
-#~ msgid "Username and/or password uncorrect"
-#~ msgstr "Username e/o password non corretti"
-
-#~ msgid "Sign In"
-#~ msgstr "Accedi"
-
-#~ msgid "Forgot your password?"
-#~ msgstr "Hai dimenticato la password?"
-
-#, fuzzy
-#~| msgid "Sign out"
-#~ msgid "Sign up"
-#~ msgstr "Registrati"
-
-#~ msgid " Version"
-#~ msgstr "Versione"
-
-#~ msgid "Search"
-#~ msgstr "Cerca"
-
-#~ msgid "Frontend"
-#~ msgstr "Frontend"
-
-#~ msgid "Registered on"
-#~ msgstr "Registrato il"
-
-#~ msgid "Last login"
-#~ msgstr "Ultimo accesso"
-
-#~ msgid "Profile"
-#~ msgstr "Profilo"
-
-#~ msgid "Logout"
-#~ msgstr "Esci"
-
-#~ msgid "Information"
-#~ msgstr "Informazioni"
-
-#~ msgid "System information"
-#~ msgstr "Informazioni di sistema"
-
-#~ msgid "System information about QGIS-Server etc."
-#~ msgstr "Informazioni di sistema su QGIS-Server ecc."
-
-#~ msgid "Configurations"
-#~ msgstr "Configurazioni"
-
-#~ msgid "Edit general data"
-#~ msgstr "Modifica i dati generali"
-
-#~ msgid "Frontend data and other"
-#~ msgstr "Dati del frontend e altro"
-
-#, fuzzy
-#~| msgid "Adminstration"
-#~ msgid "Django administration"
-#~ msgstr "Amministrazione Django"
-
-#, fuzzy
-#~| msgid "Login to go backend administration system"
-#~ msgid "Go to staff administration section"
-#~ msgstr "Vai alla sezione di amministrazione dello staff"
-
 #~ msgid "Current situation"
 #~ msgstr "Situazione attuale"
 
-#, fuzzy
-#~| msgid "Groups list"
-#~ msgid "Groups"
-#~ msgstr "Gruppi"
-
-#~ msgid "Show"
-#~ msgstr "Mostra"
-
-#~ msgid "Module widgets"
-#~ msgstr "Widget modulo"
-
-#, fuzzy
-#~| msgid "Forgot your password?"
-#~ msgid "Forgot your username?"
-#~ msgstr "Hai dimenticato il tuo username?"
-
-#~ msgid "Password reset complete"
-#~ msgstr "Reimpostazione password completata"
-
-#~ msgid "Your new password has been set. You can log in now on the"
-#~ msgstr "La tua nuova password è stata impostata. Ora puoi accedere alla"
-
-#~ msgid "log in page"
-#~ msgstr "pagina di accesso"
-
-#~ msgid "Enter new password"
-#~ msgstr "Inserisci una nuova password"
-
-#~ msgid "New password"
-#~ msgstr "Nuova password"
-
-#~ msgid "Repeat password"
-#~ msgstr "Ripeti la password"
-
-#~ msgid "Change my password"
-#~ msgstr "Cambia la mia password"
-
-#~ msgid ""
-#~ "The password reset link <strong>was invalid</strong>, possibly because it "
-#~ "has already been used.  Please request a new password reset."
-#~ msgstr ""
-#~ "Il link per reimpostare la password <strong>non è valido</strong>, è "
-#~ "possibile che sia già stato usato. Per favore esegui una nuova richiesta "
-#~ "di reimpostazione password."
-
-#~ msgid "Check your inbox."
-#~ msgstr "Controlla la tua casella di posta"
-
-#~ msgid ""
-#~ "We've emailed you instructions for setting your password. You should "
-#~ "receive the email shortly!"
-#~ msgstr ""
-#~ "Ti abbiamo inviato le istruzioni per reimpostare la tua password. "
-#~ "Dovresti ricevere una email a breve!"
-
-#, python-format
-#~ msgid ""
-#~ "You're receiving this email because you requested a password reset for "
-#~ "your user account at %(site_name)s."
-#~ msgstr ""
-#~ "Hai ricevuto questa email perché hai richiesto la reimpostazione della "
-#~ "password per il tuo account su %(site_name)s."
-
-#~ msgid "Please go to the following page and choose a new password:"
-#~ msgstr "Vai alla seguente pagina e scegli una nuova password:"
-
-#~ msgid "Your username, in case you’ve forgotten:"
-#~ msgstr "Il tuo username, nel caso lo avessi dimenticato:"
-
-#~ msgid "Email no present into database"
-#~ msgstr "Email non presente nel sistema"
-
-#~ msgid "Checking the CAPTCHA is required"
-#~ msgstr "Il controllo CAPTCHA è obbligatorio"
-
-#~ msgid ""
-#~ "Enter your email address below, and we'll email instructions for setting "
-#~ "a new one."
-#~ msgstr ""
-#~ "Inserisci il tuo indirizzo email qui sotto e ti invieremo le istruzioni "
-#~ "per impostarne una nuova."
-
-#~ msgid "Send me instruction"
-#~ msgstr "Inviami le istruzioni"
-
-#, fuzzy, python-format
-#~| msgid "Password reset complete"
-#~ msgid "Password reset on %(site_name)s"
-#~ msgstr "Reimpostazione password su %(site_name)s"
-
-#, fuzzy
-#~| msgid ""
-#~| "We've emailed you instructions for setting your password. You should "
-#~| "receive the email shortly!"
-#~ msgid ""
-#~ "We've emailed you your username. You should receive the email shortly!"
-#~ msgstr ""
-#~ "Ti abbiamo inviato il tuo username. Dovresti ricevere una email a breve!"
-
-#, python-format
-#~ msgid ""
-#~ "You're receiving this email because you requested a username recovery for "
-#~ "your user account at %(site_name)s."
-#~ msgstr ""
-#~ "Hai ricevuto questa email perché hai richiesto il recupero dello username "
-#~ "per il tuo account su %(site_name)s."
-
-#~ msgid "Your username is:"
-#~ msgstr "Il tuo username è:"
-
-#, fuzzy
-#~| msgid ""
-#~| "Enter your email address below, and we'll email instructions for setting "
-#~| "a new one."
-#~ msgid "Enter your email address below, and we'll email your username."
-#~ msgstr ""
-#~ "Inserisci il tuo indirizzo email qui sotto e ti invieremo il tuo username."
-
-#, fuzzy
-#~| msgid "Send me instruction"
-#~ msgid "Send me username"
-#~ msgstr "Inviami lo username"
-
-#, python-format
-#~ msgid "Username recovery on %(site_name)s"
-#~ msgstr "Recupero username su %(site_name)s"
-
-#~ msgid "Search results for"
-#~ msgstr "Risultati della ricerca per"
-
-#~ msgid "Not results found!"
-#~ msgstr "Nessun risultato trovato!"
-
 #~ msgid "Found "
 #~ msgstr "Trovati "
-
-#~ msgid " results."
-#~ msgstr " risultati."

@@ -2,11 +2,6 @@
 {% load static %}
 {% load i18n %}
 
-{% block custom_css_links_page %}
-<!-- iCheck -->
-<link rel="stylesheet" href="{% static "bower_components/icheck/skins/square/blue.css" %}">
-{% endblock %}
-
 {% block body_content %}
  <div class="{% block login-box-class %}login-box{% endblock %}">
   {% block login_page_logo %}
@@ -69,8 +64,6 @@
 
 
 {% block custom_js_links_page %}
-<!-- iCheck -->
-<script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
 <script>
 $(function () {
     $('input').iCheck({

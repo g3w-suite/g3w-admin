@@ -1,6 +1,5 @@
 /**
- * @file ORIGINAL SOURCE: src/map/layers/feature.js@v4.0.0
- * @since 4.1.0
+ * @file
  */
 
 const { GEOMETRY_FIELDS } = g3w.constants;
@@ -8,13 +7,14 @@ const { getUniqueDomId }  = g3w.utils;
 
 export class Feature extends ol.Feature {
 
-  constructor(opts = {}) {
+  constructor(opts = {}, state = {}) {
     super();
 
     this.state = {
-      new:     false,
-      state:   null,
-      visible: true
+      new:     state?.new     ?? false,
+      action:  state?.action  ?? null,
+      visible: state?.visible ?? true,
+      locked:  state?.locked  ?? false, // whether feature is locked by another user
     };
 
     //store unique id for the feature
@@ -96,9 +96,9 @@ export class Feature extends ol.Feature {
     if (this.isGeometry()) {
       feature.setGeometry(feature.getGeometry().clone());
     }
-    const clone = new Feature({ feature });
+    const clone = new Feature({ feature }, {locked: this.isLocked()});
     clone._uid  = this.getUid();
-    clone.setState(this.getState());
+    clone.setAction(this.getAction());
     if (this.isNew()) {
       clone.setNew();
     }
@@ -115,17 +115,17 @@ export class Feature extends ol.Feature {
   }
 
   delete() {
-    this.state.state = 'delete';
+    this.state.action = 'delete';
     return this;
   }
 
   update() {
-    this.state.state = 'update';
+    this.state.action = 'update';
     return this;
   }
 
   add() {
-    this.state.state = 'add';
+    this.state.action = 'add';
     return this;
   }
 
@@ -133,24 +133,31 @@ export class Feature extends ol.Feature {
     return this.state.new;
   }
 
+  /**
+   * @returns {boolean} 
+   */
+  isLocked() {
+    return this.state.locked;
+  }
+
   isAdded() {
-    return 'add' === this.state.state;
+    return 'add' === this.state.action;
   }
 
   isUpdated() {
-    return 'update' === this.state.state;
+    return 'update' === this.state.action;
   }
 
   isDeleted() {
-    return 'delete' === this.state.state;
+    return 'delete' === this.state.action;
   }
 
-  setState(state) {
-    this.state.state = state;
+  setAction(action) {
+    this.state.action = action;
   }
 
-  getState() {
-    return this.state.state;
+  getAction() {
+    return this.state.action;
   }
 
   /**
@@ -168,7 +175,7 @@ export class Feature extends ol.Feature {
    * clean state of the features
    */
   clearState() {
-    this.state.state = null;
+    this.state.action = null;
     this.state.new   = false;
   }
 

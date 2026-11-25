@@ -3,9 +3,9 @@
 
 # G3W-ADMIN
 
-Admin server for G3W-SUITE written in Python, based on **Django** LTS (v4.2) and **QGIS Server** LTR (v3.40)
+Admin server for G3W-SUITE written in Python, based on **Django** LTS (v5.2) and **QGIS Server** LTR (v4.2.4)
 
-![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
+![Admin GUI](https://github.com/user-attachments/assets/98ae5bd2-160c-4f82-8c8a-d32979ed161e)
 
 ---
 
@@ -15,10 +15,11 @@ Software releases follow theese main branches as described in the compatibility 
 
 | Branch     | Python | Django         | QGIS          | [client]     | First release | Status         |
 |------------|--------|----------------|---------------|--------------|---------------|----------------|
-| [dev]      | 3.12   | 5.2            | 3.44          | dev          | Unreleased    | ⚠️️ Unstable    |
-| [v.3.11.x] | 3.12   | 4.2            | 3.44          | 4.1.2        | Jun 2026      | New release    |
-| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.11       | Jun 2026      | 🪲️ Bug fixing  |
-| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🪲️ Bug fixing  |
+| [dev]      | 3.14   | 5.2            | 4.2           | dev          | Unreleased    | ⚠️️ Unstable    |
+| [v.4.0.x]  | 3.14   | 5.2            | 4.2           | dev          | Oct 2026      | 🪲️ Bug fixing  |
+| [v.3.11.x] | 3.12   | 4.2            | 3.44          | 4.1.2        | Jun 2026      | 🪲️ Bug fixing  |
+| [v.3.10.x] | 3.12   | 4.2            | 3.40          | 4.0.11       | Jun 2026      | 🚨 End of Life |
+| [v.3.9.x]  | 3.12   | 4.2            | 3.34          | 3.11.0       | Jan 2025      | 🚨 End of Life |
 | [v.3.8.x]  | 3.10   | 3.2            | 3.34          | 3.10.3       | Sep 2024      | 🚨 End of Life |
 | [v.3.7.x]  | 3.10   | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🚨 End of Life |
 | [v.3.6.x]  | 3.10   | 3.2            | 3.28          | 3.8.15       | May 2023      | 🚨 End of Life |
@@ -72,25 +73,9 @@ To figure out which to choose, see also: [deploying django](https://docs.djangop
 
 Then in your development environment:
 
-1. download and install [**Node.js**](https://nodejs.org/en/download/) and [**Yarn**](https://yarnpkg.com/en/docs/install)
-2. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
-3. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
-4. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
-
-##### For Ubuntu 24.04
-
-Installa *nvm* for install node at version 8.x:
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-source ~/.bashrc
-
-# Installa Node.js 8.x
-nvm install 8.17.0
-nvm use 8.17.0
-
-# Installa Gulp
-npm install -g gulp-cli@2.3.0
-```
+1. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
+2. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
+3. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
 
 
 After that you can clone this repository:
@@ -141,7 +126,7 @@ DATABASES           = {
 }
 ```
 
-Complete installation process by download all python and javascript dependencies and finalizing the django database setup:
+Complete installation by downloading the Python dependencies and finalizing the Django database setup:
 
 ```sh
 paver install
@@ -168,6 +153,8 @@ If everything went fine, you can now visit your local development server URL to 
 ```sh
 http://localhost:8000
 ```
+
+JavaScript and CSS are served directly from the static files; no Node.js build step is required.
 
 If you don't want to use Paver, see also: [run g3w-suite](https://g3w-suite.readthedocs.io/en/latest/install.html#run-g3w-suite)
 
@@ -204,7 +191,26 @@ The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
-More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [build_suite.sh](./ci_scripts/build_suite.sh)
+More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [setup_suite.sh](./ci_scripts/setup_suite.sh)
+
+### Qtimeseries JavaScript
+
+Run the Behave + Playwright scenarios from the repository root:
+
+```sh
+python -m pip install -r requirements_test.txt
+python -m playwright install --with-deps chromium
+python -m behave
+```
+
+These browser tests serve local static files and use the bundled Vue and Moment
+libraries, with a simulated G3W host SDK. They cover plugin registration, temporal
+units, panel lifecycle (including visible, disabled fields and a localized layer
+prompt when no time layer is checked), time
+navigation and animation. Django, QGIS and a database are not required. The
+host's `x-select` controls are not exercised.
+Use `-D headless=false` to see the browser, or `-D browser=firefox` after installing
+that Playwright browser. CI runs Chromium via [ci.yml](.github/workflows/ci.yml).
 
 ---
 
@@ -242,7 +248,7 @@ Depending on the component you want to translate you can start by consulting one
 - Bulgarian: [suricactus](https://github.com/suricactus)
 - French: [democracy essentials](https://www.democracy-essentials.eu), [sig-echirolles](https://github.com/sig-echirolles)
 - German: [r3gis](https://www.r3gis.com)
-- Italian: [wlorenzetti](https://github.com/wlorenzetti)
+- Italian: [wlorenzetti](https://github.com/wlorenzetti), [elpaso](https://github.com/elpaso), [volterra79](https://github.com/volterra79), [leolami](https://github.com/leolami), [Raruto](https://github.com/Raruto).
 - Portuguese: [SrNetoChan](https://github.com/SrNetoChan)
 - Romanian: [tudorbarascu](https://github.com/tudorbarascu)
 - Spanish: [samtux](https://github.com/samtux)
@@ -250,8 +256,8 @@ Depending on the component you want to translate you can start by consulting one
 ---
 
 **Compatibile with:**
-[![Django version](https://img.shields.io/badge/Django-4.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.34-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![Django version](https://img.shields.io/badge/Django-5.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-4.2-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 

@@ -28,8 +28,12 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
-if 'editing' in settings.INSTALLED_APPS:
-    from qplotly.utils.models import get_qplotlywidgets4layer
+get_qplotlywidgets4layer = None
+if 'qplotly' in settings.INSTALLED_APPS:
+    try:
+        from qplotly.utils.models import get_qplotlywidgets4layer
+    except ImportError:
+        get_qplotlywidgets4layer = None
 
 from qdjango.signals import load_qdjango_widgets_data
 from qdjango.mixins.views import *
@@ -44,7 +48,7 @@ from qdjango.models import (
     ProjectBookmark,
     ScaleVisibilityLayerConstraint
 )
-from qdjango.utils.models import get_widgets4layer, comparedbdatasource
+from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_public_project_ids
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
 
@@ -87,7 +91,7 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         
         # Get project bookmarked per user
         context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user, project__in=self.get_queryset()).values_list('project_id', flat=True)
-
+        context['public_project_ids'] = get_public_project_ids(context['object_list'])
         return context
 
 
@@ -461,18 +465,22 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     ctx['widgets'] = widgets
 
                 # QPlotly widgets
-                if 'qplotly' in settings.INSTALLED_APPS:
-                    
-                    qp = {
-                        'layer': l,
-                        'plots': get_qplotlywidgets4layer(l),
-                    }
 
-                    if qp['plots']:
-                            if 'plots' not in ctx:
-                                ctx['plots'] = [qp]
-                            else:
-                                ctx['plots'].append(qp)
+                if 'qplotly' in settings.INSTALLED_APPS and get_qplotlywidgets4layer:
+                    import logging
+                    try:
+                        plots = get_qplotlywidgets4layer(l)
+                    except Exception:
+                        logging.getLogger("g3wadmin.debug").exception(
+                            "Qdjango project /api/config error in get_qplotlywidgets4layer"
+                        )
+                    else:
+                        if plots:
+                            qp = {
+                                'layer': l,
+                                'plots': plots,
+                            }
+                            ctx.setdefault('plots', []).append(qp)
 
 
             if dl_capabilities:
@@ -692,6 +700,15 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
 
         if 'external' in request.POST:
             layer.external = int(request.POST['external'])
+
+        if 'wmts_format' in request.POST:
+            value = request.POST['wmts_format']
+            # only accept a format the project actually advertises as available (avoid trusting client input)
+            if value in ('png', 'jpeg') and layer.wmtscapabilities and layer.wmtscapabilities.get(value):
+                layer.wmts_format = value
+            else:
+                layer.wmts_format = None
+
         layer.save()
 
         # Invalidate project cache

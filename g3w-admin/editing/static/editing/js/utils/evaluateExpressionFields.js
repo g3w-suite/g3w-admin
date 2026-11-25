@@ -1,20 +1,16 @@
 import { getFieldsWithValues } from '../utils/getFieldsWithValues.js';
-import { getParentFormData }   from '../utils/getParentFormData.js';
+import { Tool }                from '../g3w-tool.js';
 
 const ApplicationState = g3w.state;
 const { XHR }          = g3w.utils;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/workflows/tasks/editingtask.js@v3.7.1
- * 
  * @param expression.inputs.layer
  * @param expression.context.excludeFields
  * @param expression.context.get_default_value
  * @param expression.feature
  *
  * @returns {Promise<void>}
- *
- * @since g3w-client-plugin-editing@v3.5.14
  */
 export async function evaluateExpressionFields({
   inputs,
@@ -37,9 +33,15 @@ export async function evaluateExpressionFields({
       if (field.input.options.default_expression && (field.input.options.default_expression.apply_on_update || feature.isNew())) {
         promises.push(
           new Promise(async (resolve, reject) => {
-            /** ORIGINAL SOURCE: g3w-client/src/utils/getDefaultExpression.js@4.0.0 */
             try {
-              const parentData = getParentFormData();
+              let parentData;
+              if (Tool.Stack.length > 1) {
+                const { features, layer, fields = [] } = Tool.Stack.parent.getInputs();
+                const parentFeature = features[features.length - 1].clone();
+                fields.forEach(({ name, value }) => parentFeature.set(name, value));
+                parentData = { feature: parentFeature, qgs_layer_id: layer.getId() };
+              }
+
               if (field.input.options.default_expression) {
                 field.input.options.loading.state = 'loading';
 
@@ -90,9 +92,15 @@ export async function evaluateExpressionFields({
       if (field.input.options.filter_expression) {
         promises.push(
           new Promise(async (resolve, reject) => {
-            /** ORIGINAL SOURCE: g3w-client/src/utils/getFilterExpression.js@4.0.0 */
             try {
-              const parentData = getParentFormData();
+              let parentData;
+              if (Tool.Stack.length > 1) {
+                const { features, layer, fields = [] } = Tool.Stack.parent.getInputs();
+                const parentFeature = features[features.length - 1].clone();
+                fields.forEach(({ name, value }) => parentFeature.set(name, value));
+                parentData = { feature: parentFeature, qgs_layer_id: layer.getId() };
+              }
+
                 if (field.input.options.filter_expression) {
 
                 field.input.options.loading.state = 'loading';
@@ -118,7 +126,7 @@ export async function evaluateExpressionFields({
                       }),
                       formatter:  0,
                       expression: field.input.options.filter_expression.expression,
-                      ordering:   [undefined, false].includes(field.input.options.orderbyvalue) ? field.input.options.key : field.input.options.value, //@since 3.11.0
+                      ordering:   [undefined, false].includes(field.input.options.orderbyvalue) ? field.input.options.key : field.input.options.value,
                     }),
                   });
                   if (response.result) {
@@ -152,7 +160,7 @@ export async function evaluateExpressionFields({
 
                     // see: https://github.com/g3w-suite/g3w-client/pull/856
                     if (parentData) {
-                      ApplicationState.project.getLayerById(qgs_layer_id).config.editing.fields.find(f => f.name === field.name ).input.options.values = values;
+                      g3w.app.getPlugin('editing').getToolBoxById(qgs_layer_id).state.fields.find(f => f.name === field.name).input.options.values = values;
                     }
                   }
                 } catch(e) {

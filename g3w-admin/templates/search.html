@@ -2,27 +2,49 @@
 {% load i18n %}
 
 {% block page_header %}
-<h1>
-    <i class="fa fa-search text-muted"></i>
-    {% trans 'Search results' %}
-    <small>{% trans 'for' %} <q class="search-results-query">{{ search_text }}</q></small>
-</h1>
+<div class="dash-hero search-hero">
+  <div class="row">
+    <div class="col-md-8">
+      <h1><i class="fa fa-search"></i> {% if search_text %}{% trans 'Search results' %}{% else %}{% trans 'Search' %}{% endif %}</h1>
+      {% if search_text %}
+      <p class="search-hero-query">
+        {% trans 'for' %}
+        <q class="search-results-query">{{ search_text }}</q>
+      </p>
+      {% endif %}
+    </div>
+    <div class="col-md-4 text-right hero-meta">
+      {% if n_tot_results > 0 %}
+        <i class="fa fa-check-circle"></i>
+        {% blocktrans count counter=n_tot_results %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktrans %}
+      {% else %}
+        <i class="fa fa-info-circle"></i>
+        {% trans 'No results' %}
+      {% endif %}
+    </div>
+  </div>
+
+  <form class="search-hero-form" method="get" action="{% url 'search-admin' %}">
+    <div class="search-hero-input">
+      <i class="fa fa-search"></i>
+      <input type="text" name="stext" value="{{ search_text }}"
+             placeholder="{% trans 'Search groups, macro groups, projects...' %}"
+             autocomplete="off">
+      <button type="submit" class="search-hero-submit">{% trans 'Search' %}</button>
+    </div>
+  </form>
+</div>
 {% endblock %}
 
 {% block main_content %}
 <div class="search-results-summary">
     {% if n_tot_results == 0 %}
-        <div class="callout callout-warning search-results-empty">
-            <h4><i class="fa fa-info-circle"></i> {% trans 'No results found' %}</h4>
-            <p>{% blocktrans %}No item matches your query. Try a different keyword.{% endblocktrans %}</p>
+        <div class="empty-state search-empty">
+            <i class="fa fa-search-minus"></i>
+            <strong>{% trans 'No results found' %}</strong>
+            <p>{% blocktrans %}No item matches your query. Try a different keyword or check spelling.{% endblocktrans %}</p>
         </div>
     {% else %}
-        <div class="callout callout-info search-results-count">
-            <h4>
-                <i class="fa fa-check-circle"></i>
-                {% blocktrans count counter=n_tot_results %}Found {{ counter }} result{% plural %}Found {{ counter }} results{% endblocktrans %}
-            </h4>
-        </div>
         <div class="search-results-list">
             {% for r in results %}
                 {{ r.render }}

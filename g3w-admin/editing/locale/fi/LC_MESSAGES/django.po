@@ -1,158 +1,289 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Finnish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# Walter Lorenzetti <lorenzetti@gis3w.it>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: fi <info@g3wsuite.it>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: editing/api/base/views.py:64
+#: editing/api/base/views.py:88
+#, python-brace-format
 msgid ""
 "The feature id {} of layer {} cannot be modified because it is not locked "
 "anymore"
-msgstr ""
+msgstr "Kohdetta {}, joka kuuluu tasoon {}, ei voi muokata, koska sitä ei enää ole lukittu"
 
-#: editing/api/base/views.py:146
+#: editing/api/base/views.py:171
 msgid "Sorry but your user doesn't has 'Add Feature' capability"
-msgstr ""
+msgstr "Käyttäjälläsi ei ole oikeutta lisätä kohteita"
 
-#: editing/api/base/views.py:150
+#: editing/api/base/views.py:175
 msgid "Sorry but your user doesn't has 'Delete Feature' capability"
-msgstr ""
+msgstr "Käyttäjälläsi ei ole oikeutta poistaa kohteita"
 
-#: editing/api/base/views.py:156
+#: editing/api/base/views.py:181
 msgid ""
 "Sorry but your user doesn't has 'Change or Change Attributes Features' "
 "capability"
-msgstr ""
+msgstr "Käyttäjälläsi ei ole oikeutta muokata kohteita tai niiden ominaisuustietoja"
 
-#: editing/api/base/views.py:300 editing/api/base/views.py:303
+#: editing/api/base/views.py:408 editing/api/base/views.py:411
 #, python-format
 msgid "Error adding feature: %s"
-msgstr ""
+msgstr "Virhe kohteen lisäämisessä: %s"
 
-#: editing/api/base/views.py:310
+#: editing/api/base/views.py:418
 msgid "Error adding feature on Spatialite provider: "
-msgstr ""
+msgstr "Virhe kohteen lisäämisessä Spatialite-tietolähteeseen: "
 
-#: editing/api/base/views.py:327 editing/api/base/views.py:338
+#: editing/api/base/views.py:438 editing/api/base/views.py:449
 #, python-format
 msgid "Error changing attribute values: %s"
-msgstr ""
+msgstr "Virhe ominaisuustietojen muuttamisessa: %s"
 
-#: editing/api/base/views.py:333 editing/api/base/views.py:341
+#: editing/api/base/views.py:444 editing/api/base/views.py:452
 #, python-format
 msgid "Error changing geometry: %s"
-msgstr ""
+msgstr "Virhe geometrian muuttamisessa: %s"
 
-#: editing/api/base/views.py:429 editing/api/base/views.py:433
+#: editing/api/base/views.py:564 editing/api/base/views.py:568
 #, python-format
 msgid "Cannot delete feature: %s"
-msgstr ""
+msgstr "Kohdetta ei voi poistaa: %s"
 
-#: editing/api/base/views.py:474
+#: editing/api/base/views.py:609
 #, python-format
 msgid "Layer %s is not editable!"
-msgstr ""
+msgstr "Tasoa %s ei voi muokata!"
 
-#: editing/api/base/views.py:529
+#: editing/api/base/views.py:686
 #, python-format
 msgid "Backend error saving layer %s: %s"
-msgstr ""
+msgstr "Taustajärjestelmän virhe tallennettaessa tasoa %s: %s"
 
-#: editing/forms.py:21
+#: editing/forms.py:70 editing/forms.py:235
 msgid "Active"
-msgstr ""
+msgstr "Aktiivinen"
 
-#: editing/forms.py:22
+#: editing/forms.py:71 editing/forms.py:233
 msgid "Scale"
-msgstr ""
+msgstr "Mittakaava"
 
-#: editing/forms.py:22
+#: editing/forms.py:71 editing/forms.py:233
 msgid "Scale after that editing mode is active"
-msgstr ""
+msgstr "Mittakaava, josta alkaen muokkaustila on käytössä"
 
-#: editing/forms.py:23
+#: editing/forms.py:72 editing/forms.py:237
+msgid "Visible"
+msgstr "Näkyvä"
+
+#: editing/forms.py:73 editing/forms.py:239
 msgid "Viewers"
-msgstr ""
+msgstr "Katselijat"
 
-#: editing/forms.py:24
+#: editing/forms.py:74 editing/forms.py:240
 msgid "Select user with viewer role can do editing on layer"
-msgstr ""
+msgstr "Valitse katselijan roolissa olevat käyttäjät, jotka saavat muokata tasoa"
 
-#: editing/forms.py:26
+#: editing/forms.py:77 editing/forms.py:242
 msgid "Select VIEWER groups can do editing on layer"
-msgstr ""
+msgstr "Valitse KATSELIJARYHMÄT, jotka saavat muokata tasoa"
 
-#: editing/forms.py:27
+#: editing/forms.py:78 editing/forms.py:243
 msgid "User viewer groups"
-msgstr ""
+msgstr "Käyttäjän katselijaryhmät"
 
-#: editing/forms.py:29
+#: editing/forms.py:81
 msgid "User adding data field"
-msgstr ""
+msgstr "Tietojen lisääjän käyttäjätunnuskenttä"
 
-#: editing/forms.py:30
+#: editing/forms.py:82
 msgid ""
 "Optional: select layer field to store username that entered the data. Showed "
 "only string field. <br>Value stored into the field it will be so structured: "
 "<i>[username]</i>"
-msgstr ""
+msgstr "Valinnainen: valitse tason kenttä, johon tietojen lisääjän käyttäjätunnus tallennetaan. Vain tekstikentät näytetään. <br>Arvo tallennetaan kenttään seuraavassa muodossa: <i>[username]</i>"
 
-#: editing/forms.py:36
+#: editing/forms.py:88
 msgid "User editing data field"
-msgstr ""
+msgstr "Tietojen muokkaajan käyttäjätunnuskenttä"
 
-#: editing/forms.py:37
+#: editing/forms.py:89
 msgid ""
 "Optional: select layer field to store username that updated the data. Showed "
 "only string field. <br>Value stored into the field it will be so structured: "
 "<i>[username]</i>"
-msgstr ""
+msgstr "Valinnainen: valitse tason kenttä, johon tietojen päivittäjän käyttäjätunnus tallennetaan. Vain tekstikentät näytetään. <br>Arvo tallennetaan kenttään seuraavassa muodossa: <i>[username]</i>"
 
-#: editing/forms.py:61
-msgid "Check on uncheck to attive/deactive editing layer capabilities:"
-msgstr ""
+#: editing/forms.py:95
+msgid "User Groups adding data field"
+msgstr "Tietojen lisääjän käyttäjäryhmäkenttä"
 
-#: editing/forms.py:66
-msgid "Select viewers with 'view permission' on project that can edit layer:"
-msgstr ""
-
-#: editing/forms.py:77
+#: editing/forms.py:96
 msgid ""
-"'User adding data field' and 'User editing data field' cannot assume the "
-"same value."
-msgstr ""
+"Optional: select layer field to store user groups name that entered the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr "Valinnainen: valitse tason kenttä, johon tietojen lisääjän käyttäjäryhmien nimet tallennetaan. Vain tekstikentät näytetään. <br>Arvo tallennetaan kenttään seuraavassa muodossa: <i>[user group name 1, user group name 2, ...]</i>"
 
-#: editing/receivers.py:244
+#: editing/forms.py:102
+msgid "User Groups editing data field"
+msgstr "Tietojen muokkaajan käyttäjäryhmäkenttä"
+
+#: editing/forms.py:103
+msgid ""
+"Optional: select layer field to store user groups name that updated the "
+"data. Showed only string field. <br>Value stored into the field it will be "
+"so structured: <i>[user group name 1, user group name 2, ...]</i>"
+msgstr "Valinnainen: valitse tason kenttä, johon tietojen päivittäjän käyttäjäryhmien nimet tallennetaan. Vain tekstikentät näytetään. <br>Arvo tallennetaan kenttään seuraavassa muodossa: <i>[user group name 1, user group name 2, ...]</i>"
+
+#: editing/forms.py:110
+msgid "Layer'style to use"
+msgstr "Käytettävä tason tyyli"
+
+#: editing/forms.py:111
+msgid "Select layer style to use for editing. "
+msgstr "Valitse muokkauksessa käytettävä tason tyyli. "
+
+#: editing/forms.py:132
+msgid "Check on uncheck to active/deactive editing layer capabilities:"
+msgstr "Ota tason muokkaustoiminnot käyttöön tai poista ne käytöstä valitsemalla valintaruutu:"
+
+#: editing/forms.py:134 editing/forms.py:262
+msgid "Check on uncheck to show layer inside the list of layers to edit:"
+msgstr "Näytä taso muokattavien tasojen luettelossa tai piilota se valitsemalla valintaruutu:"
+
+#: editing/forms.py:149 editing/forms.py:270
+msgid "Select viewers with 'view permission' on project that can edit layer:"
+msgstr "Valitse tason muokkaukseen oikeutetut katselijat, joilla on projektin katseluoikeus:"
+
+#: editing/forms.py:161
+msgid ""
+"'User adding data field' and 'User editing data field' and 'User group "
+"adding data field' and 'User group editing data field' must be unique."
+msgstr "Tietojen lisääjän käyttäjätunnuskentän, tietojen muokkaajan käyttäjätunnuskentän, tietojen lisääjän käyttäjäryhmäkentän ja tietojen muokkaajan käyttäjäryhmäkentän on oltava eri kenttiä."
+
+#: editing/forms.py:230
+msgid "Layers"
+msgstr "Tasot"
+
+#: editing/forms.py:231
+msgid "Select layers on which to activate editing"
+msgstr "Valitse tasot, joiden muokkaus otetaan käyttöön"
+
+#: editing/forms.py:260
+msgid "Check on uncheck to attive/deactive editing layers capabilities:"
+msgstr "Ota tasojen muokkaustoiminnot käyttöön tai poista ne käytöstä valitsemalla valintaruutu:"
+
+#: editing/forms.py:300
+msgid "From User"
+msgstr "Lähdekäyttäjä"
+
+#: editing/forms.py:301
+msgid "Select the user from which to take the permissions to copy"
+msgstr "Valitse käyttäjä, jonka käyttöoikeudet kopioidaan"
+
+#: editing/forms.py:303
+msgid "To users"
+msgstr "Kohdekäyttäjät"
+
+#: editing/forms.py:304
+msgid "Select the users who will receive permissions"
+msgstr "Valitse käyttäjät, joille käyttöoikeudet annetaan"
+
+#: editing/forms.py:306
+msgid "From Group of User"
+msgstr "Lähdekäyttäjäryhmä"
+
+#: editing/forms.py:307
+msgid "Select the group df user from which to take the permissions to copy"
+msgstr "Valitse käyttäjäryhmä, jonka käyttöoikeudet kopioidaan"
+
+#: editing/forms.py:309
+msgid "To Groups of Users"
+msgstr "Kohdekäyttäjäryhmät"
+
+#: editing/forms.py:310
+msgid "Select the groups of users who will receive permissions"
+msgstr "Valitse käyttäjäryhmät, joille käyttöoikeudet annetaan"
+
+#: editing/forms.py:357
+msgid "Single users"
+msgstr "Yksittäiset käyttäjät"
+
+#: editing/forms.py:358
+msgid "Copy editing permissions from one user to one or more recipients."
+msgstr "Kopioi muokkausoikeudet yhdeltä käyttäjältä yhdelle tai useammalle käyttäjälle."
+
+#: editing/forms.py:374
+msgid "User groups"
+msgstr "Käyttäjäryhmät"
+
+#: editing/forms.py:375
+msgid ""
+"Copy editing permissions from one group of users to one or more recipient "
+"groups."
+msgstr "Kopioi muokkausoikeudet yhdeltä käyttäjäryhmältä yhdelle tai useammalle käyttäjäryhmälle."
+
+#: editing/receivers.py:308
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
-msgstr ""
+msgstr "Geometrian rajoitteiden tarkistus epäonnistui: %s"
 
-#: editing/templates/editing/editing_layer_active_form.html:7
+#: editing/templates/editing/copy_editing_permission_form.html:7
 msgid "Alert"
-msgstr ""
+msgstr "Huomio"
 
-#: editing/templates/editing/editing_layer_active_form.html:8
+#: editing/templates/editing/copy_editing_permission_form.html:8
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Lomakkeessa on virheitä. Tarkista tiedot ja lähetä uudelleen."
+
+#: editing/templates/editing/copy_editing_permission_form.html:14
+#: editing/templates/editing/editing_layer_active_form.html:20
+msgid "Important"
+msgstr "Tärkeää"
+
+#: editing/templates/editing/copy_editing_permission_form.html:15
+msgid ""
+"The following actions will change the permissions of the selected users who "
+"will lose their previous settings."
+msgstr "Seuraavat toiminnot muuttavat valittujen käyttäjien käyttöoikeuksia ja korvaavat heidän aiemmat asetuksensa."
+
+#: editing/templates/editing/editing_layer_active_form.html:10
+msgid "Some errors on form"
+msgstr "Lomakkeessa on virheitä"
+
+#: editing/templates/editing/editing_layer_active_form.html:11
+msgid "Check the highlighted fields and submit again."
+msgstr "Tarkista korostetut kentät ja lähetä uudelleen."
+
+#: editing/templates/editing/editing_layer_active_form.html:21
+msgid ""
+"The following settings will be applied to all the layers indicated and will "
+"overwrite the settings set at the single layer level."
+msgstr "Seuraavat asetukset otetaan käyttöön kaikilla valituilla tasoilla, ja ne korvaavat yksittäisten tasojen asetukset."
 
 #: editing/templates/editing/layer_action.html:5
+#: editing/templates/editing/project_layers_action.html:6
 msgid "Editing layer"
-msgstr ""
+msgstr "Tason muokkaus"
 
-#: editing/templates/editing/layer_action.html:7
+#: editing/templates/editing/layer_action.html:8
+#: editing/templates/editing/project_layers_action.html:9
 msgid "Activation layer_editing"
-msgstr ""
+msgstr "layer_editing-toiminnon käyttöönotto"
+
+#: editing/templates/editing/project_layers_action.html:15
+#: editing/templates/editing/project_layers_action.html:18
+msgid "Copy permissions"
+msgstr "Kopioi käyttöoikeudet"

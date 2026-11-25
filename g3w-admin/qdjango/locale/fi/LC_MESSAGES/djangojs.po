@@ -1,18 +1,16 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Finnish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: fi <info@g3wsuite.it>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,65 +18,65 @@ msgstr ""
 
 #: qdjango/static/qdjango/js/widget.js:212
 msgid "General configuration for search widget and results"
-msgstr ""
+msgstr "Hakukomponentin ja tulosten yleiset asetukset"
 
 #: qdjango/static/qdjango/js/widget.js:220
 msgid "Search title"
-msgstr ""
+msgstr "Haun otsikko"
 
 #: qdjango/static/qdjango/js/widget.js:264
 msgid "Client search title identification"
-msgstr ""
+msgstr "Asiakaspuolen haun otsikon tunniste"
 
 #: qdjango/static/qdjango/js/widget.js:303
 msgid "equal"
-msgstr ""
+msgstr "yht? suuri kuin"
 
 #: qdjango/static/qdjango/js/widget.js:306
 msgid "greater than"
-msgstr ""
+msgstr "suurempi kuin"
 
 #: qdjango/static/qdjango/js/widget.js:309
 msgid "lower than"
-msgstr ""
+msgstr "pienempi kuin"
 
 #: qdjango/static/qdjango/js/widget.js:312
 msgid "not equal"
-msgstr ""
+msgstr "eri suuri kuin"
 
 #: qdjango/static/qdjango/js/widget.js:315
 msgid "greater than equal"
-msgstr ""
+msgstr "suurempi tai yht? suuri kuin"
 
 #: qdjango/static/qdjango/js/widget.js:318
 msgid "lower than equal"
-msgstr ""
+msgstr "pienempi tai yht? suuri kuin"
 
 #: qdjango/static/qdjango/js/widget.js:321
 #: qdjango/static/qdjango/js/widget.js:356
 msgid "like case sensitive"
-msgstr ""
+msgstr "LIKE (kirjainkoko huomioidaan)"
 
 #: qdjango/static/qdjango/js/widget.js:340
 #: qdjango/static/qdjango/js/widget.js:357
 msgid "like not case sensitive"
-msgstr ""
+msgstr "LIKE (kirjainkoolla ei ole merkityst?)"
 
 #: qdjango/static/qdjango/js/widget.js:368
 msgid "Search field settings"
-msgstr ""
+msgstr "Hakukentän asetukset"
 
 #: qdjango/static/qdjango/js/widget.js:383
 msgid "Field"
-msgstr ""
+msgstr "Kentt?"
 
 #: qdjango/static/qdjango/js/widget.js:390
 msgid "Widget"
-msgstr ""
+msgstr "Komponentti"
 
 #: qdjango/static/qdjango/js/widget.js:397
 msgid "Alias"
-msgstr ""
+msgstr "Alias"
 
 #: qdjango/static/qdjango/js/widget.js:404
 #: qdjango/static/qdjango/js/widget.js:1317
@@ -86,283 +84,283 @@ msgstr ""
 #: qdjango/static/qdjango/js/widget.js:1774
 #: qdjango/static/qdjango/js/widget.js:2119
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
 #: qdjango/static/qdjango/js/widget.js:413
 msgid "Number of digits"
-msgstr ""
+msgstr "Numeroiden m??r?"
 
 #: qdjango/static/qdjango/js/widget.js:422
 msgid "Comparison operator"
-msgstr ""
+msgstr "Vertailuoperaattori"
 
 #: qdjango/static/qdjango/js/widget.js:431
 msgid "Dependency"
-msgstr ""
+msgstr "Riippuvuus"
 
 #: qdjango/static/qdjango/js/widget.js:438
 msgid "Strictly dependent"
-msgstr ""
+msgstr "Tiukasti riippuvainen"
 
 #: qdjango/static/qdjango/js/widget.js:458
 msgid "Logical join"
-msgstr ""
+msgstr "Looginen yhdistäminen"
 
 #: qdjango/static/qdjango/js/widget.js:477
 msgid "Alias field name for client search input"
-msgstr ""
+msgstr "Asiakaspuolen hakusyötteen aliaskentän nimi"
 
 #: qdjango/static/qdjango/js/widget.js:771
 #: qdjango/static/qdjango/js/widget.js:891
 msgid "Other searching layers"
-msgstr ""
+msgstr "Muut haettavat tasot"
 
 #: qdjango/static/qdjango/js/widget.js:775
 #: qdjango/static/qdjango/js/widget.js:895
 msgid "Select one or more additional layers to search on"
-msgstr ""
+msgstr "Valitse yksi tai useampi lisätaso, jolta haetaan"
 
 #: qdjango/static/qdjango/js/widget.js:788
 #: qdjango/static/qdjango/js/widget.js:921
 msgid "Relations"
-msgstr ""
+msgstr "Relaatiot"
 
 #: qdjango/static/qdjango/js/widget.js:792
 #: qdjango/static/qdjango/js/widget.js:925
 msgid ""
 "This layer is a child in a relation, if you want to excute the search on "
 "father layer of relation, select the relative relation"
-msgstr ""
+msgstr "Tämä taso on relaatiossa alatasona. Jos haluat tehdä haun relaation ylätasolta, valitse kyseinen relaatio"
 
 #: qdjango/static/qdjango/js/widget.js:823
 #: qdjango/static/qdjango/js/widget.js:948
 #: qdjango/static/qdjango/js/widget.js:1475
 #: qdjango/static/qdjango/js/widget.js:1681
 msgid "Add"
-msgstr ""
+msgstr "Lis??"
 
 #: qdjango/static/qdjango/js/widget.js:1043
 msgid "QGIS Expression"
-msgstr ""
+msgstr "QGIS-lauseke"
 
 #: qdjango/static/qdjango/js/widget.js:1058
 #: qdjango/static/qdjango/js/widget.js:1859
 msgid "Saved"
-msgstr ""
+msgstr "Tallennettu"
 
 #: qdjango/static/qdjango/js/widget.js:1141
 #: qdjango/static/qdjango/js/widget.js:2009
 #: qdjango/static/qdjango/js/widget.js:2803
 msgid "Form title"
-msgstr ""
+msgstr "Lomakkeen otsikko"
 
 #: qdjango/static/qdjango/js/widget.js:1217
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the QGIS expressions."
-msgstr ""
+msgstr "Määritä käyttäjille ja/tai käyttäjäryhmille katselu- ja muokkaussäännöt QGIS-lausekkeiden perusteella."
 
 #: qdjango/static/qdjango/js/widget.js:1221
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the language or SQL dialect of the associated provider."
-msgstr ""
+msgstr "Määritä käyttäjille ja/tai käyttäjäryhmille katselu- ja muokkaussäännöt liittyvän tietolähteen kielen tai SQL-murrevariantin perusteella."
 
 #: qdjango/static/qdjango/js/widget.js:1293
 #: qdjango/static/qdjango/js/widget.js:1296
 msgid "New alphanumeric constraints"
-msgstr ""
+msgstr "Uudet aakkosnumeeriset rajoitteet"
 
 #: qdjango/static/qdjango/js/widget.js:1311
 #: qdjango/static/qdjango/js/widget.js:2113
 #: qdjango/static/qdjango/js/widget.js:2282
 #: qdjango/static/qdjango/js/widget.js:2667
 msgid "Actions"
-msgstr ""
+msgstr "Toiminnot"
 
 #: qdjango/static/qdjango/js/widget.js:1314
 #: qdjango/static/qdjango/js/widget.js:1564
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For visualization"
-msgstr ""
+msgstr "Näyttöä varten"
 
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For editing"
-msgstr ""
+msgstr "Muokkausta varten"
 
 #: qdjango/static/qdjango/js/widget.js:1326
 msgid "Subset rules count"
-msgstr ""
+msgstr "Osajoukon sääntöjen määrä"
 
 #: qdjango/static/qdjango/js/widget.js:1329
 msgid "Expression rules count"
-msgstr ""
+msgstr "Lausekesääntöjen määrä"
 
 #: qdjango/static/qdjango/js/widget.js:1375
 msgid "Update alphanumeric constraint"
-msgstr ""
+msgstr "Päivitä aakkosnumeerinen rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:1385
 msgid "Constraint Rules based on provider's language / SQL dialect"
-msgstr ""
+msgstr "Tietolähteen kieleen / SQL-murrevarianttiin perustuvat rajoitesäännöt"
 
 #: qdjango/static/qdjango/js/widget.js:1396
 msgid "Constraint Rules based on QGIS Expression"
-msgstr ""
+msgstr "QGIS-lausekkeeseen perustuvat rajoitesäännöt"
 
 #: qdjango/static/qdjango/js/widget.js:1538
 #: qdjango/static/qdjango/js/widget.js:1744
 msgid "Save"
-msgstr ""
+msgstr "Tallenna"
 
 #: qdjango/static/qdjango/js/widget.js:1543
 #: qdjango/static/qdjango/js/widget.js:1749
 msgid "Delete"
-msgstr ""
+msgstr "Poista"
 
 #: qdjango/static/qdjango/js/widget.js:1560
 msgid "Set a name and a possible description for the alphanumeric constraint"
-msgstr ""
+msgstr "Anna aakkosnumeeriselle rajoitteelle nimi ja halutessasi kuvaus"
 
 #: qdjango/static/qdjango/js/widget.js:1583
 #: qdjango/static/qdjango/js/widget.js:1785
 msgid "Active for visualization"
-msgstr ""
+msgstr "Käytössä näytössä"
 
 #: qdjango/static/qdjango/js/widget.js:1594
 #: qdjango/static/qdjango/js/widget.js:1796
 msgid "Active for editing"
-msgstr ""
+msgstr "Käytössä muokkauksessa"
 
 #: qdjango/static/qdjango/js/widget.js:1609
 msgid "Provider's language / SQL dialect Rules"
-msgstr ""
+msgstr "Tietolähteen kielen / SQL-murrevariantin säännöt"
 
 #: qdjango/static/qdjango/js/widget.js:1614
 msgid "QGIS Expression Rules"
-msgstr ""
+msgstr "QGIS-lausekesäännöt"
 
 #: qdjango/static/qdjango/js/widget.js:1764
 msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
-msgstr ""
+msgstr "Valitse rajoitetaso. Geometriatyypin on oltava Polygon tai MultiPolygon"
 
 #: qdjango/static/qdjango/js/widget.js:1768
 msgid "Constraint layer"
-msgstr ""
+msgstr "Rajoitetaso"
 
 #: qdjango/static/qdjango/js/widget.js:1809
 msgid "Manage geo-constaints"
-msgstr ""
+msgstr "Hallitse geometrisia rajoitteita"
 
 #: qdjango/static/qdjango/js/widget.js:2095
 msgid "New geo constraint"
-msgstr ""
+msgstr "Uusi geometrinen rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:2098
 msgid "New constraint"
-msgstr ""
+msgstr "Uusi rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:2116
 msgid "Layer constraint"
-msgstr ""
+msgstr "Tason rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:2124
 msgid "Rules count"
-msgstr ""
+msgstr "Sääntöjen määrä"
 
 #: qdjango/static/qdjango/js/widget.js:2166
 msgid "Update constraint"
-msgstr ""
+msgstr "Päivitä rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:2177
 msgid "Geo Constraint Rules"
-msgstr ""
+msgstr "Geometristen rajoitteiden säännöt"
 
 #: qdjango/static/qdjango/js/widget.js:2268
 msgid "Create New Column Level Constraint"
-msgstr ""
+msgstr "Luo uusi saraketason rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:2271
 msgid "New Column Level Constraint"
-msgstr ""
+msgstr "Uusi saraketason rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:2284
 msgid "Group"
-msgstr ""
+msgstr "Ryhm?"
 
 #: qdjango/static/qdjango/js/widget.js:2353
 msgid "Delete Column Level Constraint"
-msgstr ""
+msgstr "Poista saraketason rajoite"
 
 #: qdjango/static/qdjango/js/widget.js:2354
 msgid "Are you sure to delete column constraint"
-msgstr ""
+msgstr "Haluatko varmasti poistaa sarakerajoitteen"
 
 #: qdjango/static/qdjango/js/widget.js:2447
 msgid "Edit Column Level Constraint."
-msgstr ""
+msgstr "Muokkaa saraketason rajoitetta."
 
 #: qdjango/static/qdjango/js/widget.js:2551
 msgid "You must select a 'group' or a 'user'!"
-msgstr ""
+msgstr "Valitse joko 'ryhmä' tai 'käyttäjä'!"
 
 #: qdjango/static/qdjango/js/widget.js:2573
 msgid "Hidden Fields is required!"
-msgstr ""
+msgstr "Piilotetut kentät ovat pakollisia!"
 
 #: qdjango/static/qdjango/js/widget.js:2606
 msgid "User (required if group is not set)"
-msgstr ""
+msgstr "Käyttäjä (pakollinen, jos ryhmää ei ole määritetty)"
 
 #: qdjango/static/qdjango/js/widget.js:2613
 msgid "Group (required if user is not set)"
-msgstr ""
+msgstr "Ryhmä (pakollinen, jos käyttäjää ei ole määritetty)"
 
 #: qdjango/static/qdjango/js/widget.js:2620
 msgid "Hidden Fields (required)"
-msgstr ""
+msgstr "Piilotetut kentät (pakollinen)"
 
 #: qdjango/static/qdjango/js/widget.js:2652
 msgid "New Style From QML"
-msgstr ""
+msgstr "Uusi tyyli QML-tiedostosta"
 
 #: qdjango/static/qdjango/js/widget.js:2669
 msgid "Current"
-msgstr ""
+msgstr "Nykyinen"
 
 #: qdjango/static/qdjango/js/widget.js:2738
 msgid "Delete Style"
-msgstr ""
+msgstr "Poista tyyli"
 
 #: qdjango/static/qdjango/js/widget.js:2739
 msgid "Are you sure to delete style"
-msgstr ""
+msgstr "Haluatko varmasti poistaa tyylin"
 
 #: qdjango/static/qdjango/js/widget.js:2797
 msgid "Create a new style from an uploaded QML file."
-msgstr ""
+msgstr "Luo uusi tyyli ladatusta QML-tiedostosta."
 
 #: qdjango/static/qdjango/js/widget.js:2799
 msgid "Edit style name or replace the style from an uploaded QML file."
-msgstr ""
+msgstr "Muokkaa tyylin nime? tai korvaa tyyli ladatulla QML-tiedostolla."
 
 #: qdjango/static/qdjango/js/widget.js:2833
 msgid "Style name is required!"
-msgstr ""
+msgstr "Tyylin nimi on pakollinen!"
 
 #: qdjango/static/qdjango/js/widget.js:2847
 msgid "A style with this name already exists!"
-msgstr ""
+msgstr "Tämänniminen tyyli on jo olemassa!"
 
 #: qdjango/static/qdjango/js/widget.js:2948
 msgid "Style name (required)"
-msgstr ""
+msgstr "Tyylin nimi (pakollinen)"
 
 #: qdjango/static/qdjango/js/widget.js:2957
 msgid "Upload layer style QML file"
-msgstr ""
+msgstr "Lataa tason tyylin QML-tiedosto"

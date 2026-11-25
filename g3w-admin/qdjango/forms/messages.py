@@ -10,12 +10,12 @@ __date__ = '2023-03-31'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__ = 'MPL 2.0'
 
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, Textarea, ValidationError
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML, Row, Field
 from crispy_forms.bootstrap import PrependedText
-from django_bleach.forms import BleachField
+from django_nh3.forms import Nh3Field
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin, G3WProjectFormMixin, G3WGroupFormMixin
 from qdjango.models import Message
 
@@ -25,7 +25,8 @@ class MessageForm(G3WFormMixin, G3WRequestFormMixin, G3WGroupFormMixin, G3WProje
     Form for project message
     """
 
-    body = BleachField()
+    body = Nh3Field(widget=Textarea)
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

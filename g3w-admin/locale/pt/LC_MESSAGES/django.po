@@ -1,241 +1,51 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Portuguese.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-12 16:43+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: pt_PT\n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: pt <info@g3wsuite.it>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: OWS/utils/data.py:125
+#, python-brace-format
 msgid "The GetFeatureResponse response is malformed: {}"
 msgstr "A resposta GetFeatureResponse está malformada: {}"
 
-#: openrouteservice/api/views.py:138
-msgid "Input layer is not a point or multipoint layer."
-msgstr "A camada de entrada não é uma camada de ponto ou multiponto."
-
-#: openrouteservice/api/views.py:156
-msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
-msgstr "Falta \"qgis_layer_id\", \"new_layer_name\" ou \"connection_id\"."
-
-#: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
-msgid ""
-"Wrong color parameter, color must be a list of three integers (red, green, "
-"blue)."
-msgstr ""
-"Parâmetro de cor incorreto, a cor deve ser uma lista de três inteiros (vermelho, verde, "
-"azul)."
-
-#: openrouteservice/api/views.py:182
-msgid ""
-"Missing tranparency parameter, because color was specified transparency is "
-"required."
-msgstr ""
-"Falta o parâmetro de transparência, porque a cor foi especificada, a transparência é "
-"obrigatória."
-
-#: openrouteservice/api/views.py:190
-msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
-msgstr "Parâmetro de transparência incorreto, a transparência deve estar entre 0 e 1."
-
-#: openrouteservice/api/views.py:196
-msgid "Missing stroke_width from style definition."
-msgstr "Falta stroke_width na definição do estilo."
-
-#: openrouteservice/api/views.py:212
-msgid "Layer is not compatible with ORS data."
-msgstr "A camada não é compatível com os dados ORS."
-
-#: openrouteservice/api/views.py:225
-msgid "Wrong connection_id."
-msgstr "connection_id incorreto."
-
-#: openrouteservice/api/views.py:229
-msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
-msgstr "qgis_layer_id ou connection_id + layer_name devem ter um valor."
-
-#: openrouteservice/api/views.py:236
-#, python-format
-msgid "Profile not found, available profiles: %s"
-msgstr "Perfil não encontrado, perfis disponíveis: %s"
-
-#: openrouteservice/api/views.py:246
-msgid "Missing \"locations\" array."
-msgstr "Falta o array \"locations\"."
-
-#: openrouteservice/api/views.py:250
-#, python-format
-msgid "Max allowed locations: %s"
-msgstr "Número máximo de localizações permitidas: %s"
-
-#: openrouteservice/api/views.py:254
-msgid "Malformed locations array."
-msgstr "Array de localizações malformado."
-
-#: openrouteservice/api/views.py:259
-msgid "Missing \"range\" array."
-msgstr "Falta o array \"range\"."
-
-#: openrouteservice/api/views.py:263
-#, python-format
-msgid "Max allowed ranges: %s"
-msgstr "Número máximo de intervalos permitidos: %s"
-
-#: openrouteservice/api/views.py:271
-msgid "Malformed range array."
-msgstr "Array de intervalos malformado."
-
-#: openrouteservice/api/views.py:398
-msgid "Task not found!"
-msgstr "Tarefa não encontrada!"
-
-#: openrouteservice/forms.py:41
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
-msgid "Project"
-msgstr "Projeto"
-
-#: openrouteservice/models.py:38
-msgid "Isochrones"
-msgstr "Isócronas"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
-msgid "Openrouteservice Project"
-msgstr "Projeto Openrouteservice"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
-msgid "Alert"
-msgstr "Alerta"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
-msgid "Some errors on form. Check it and send again."
-msgstr "Alguns erros no formulário. Verifique e envie novamente."
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
-msgid "Openrouteservice Projects"
-msgstr "Projetos Openrouteservice"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
-msgid "Actions"
-msgstr "Ações"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
-msgid "Services"
-msgstr "Serviços"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
-msgid "Edit"
-msgstr "Editar"
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
-msgid "Delete"
-msgstr "Eliminar"
-
-#: openrouteservice/utils.py:494
-msgid "Cannot create temporary layer for isochrone result."
-msgstr "Não foi possível criar uma camada temporária para o resultado da isócrona."
-
-#: openrouteservice/utils.py:512
-msgid ""
-"Cannot save isochrone result to destination layer: layer already exists (use "
-"\"qgis_layer_id\" instead)!"
-msgstr ""
-"Não foi possível guardar o resultado da isócrona na camada de destino: a camada já existe (use "
-"\"qgis_layer_id\" em vez disso)!"
-
-#: openrouteservice/utils.py:525
-msgid "Cannot save isochrone result to destination layer: "
-msgstr "Não foi possível guardar o resultado da isócrona na camada de destino: "
-
-#: openrouteservice/utils.py:553
-msgid "Wrong connection id."
-msgstr "ID de ligação incorreto."
-
-#: openrouteservice/utils.py:585
-msgid "Error creating destination layer connection."
-msgstr "Erro ao criar a ligação da camada de destino."
-
-#: openrouteservice/utils.py:592
-msgid "Error creating destination layer: "
-msgstr "Erro ao criar a camada de destino: "
-
-#: openrouteservice/utils.py:606
-msgid "Error creating destination layer: layer is not valid!"
-msgstr "Erro ao criar a camada de destino: a camada não é válida!"
-
-#: openrouteservice/utils.py:619
-msgid "Error saving the destination layer: could not write project!"
-msgstr "Erro ao guardar a camada de destino: não foi possível escrever o projeto!"
-
-#: openrouteservice/utils.py:643
-msgid "Error adding destination Layer to the project: layer already exists."
-msgstr "Erro ao adicionar a camada de destino ao projeto: a camada já existe."
-
-#: openrouteservice/utils.py:653
-#, python-format
-msgid "Error opening destination layer %s: layer not found in QGIS project!"
-msgstr "Erro ao abrir a camada de destino %s: camada não encontrada no projeto QGIS!"
-
-#: openrouteservice/utils.py:670
-msgid "Error transforming geometry from 4326 to destination layer CRS."
-msgstr "Erro ao transformar a geometria de 4326 para o CRS da camada de destino."
-
-#: openrouteservice/utils.py:674
-msgid "No compatible features returned from isochrone."
-msgstr "Nenhuma entidade compatível retornada da isócrona."
-
-#: openrouteservice/utils.py:677
-msgid "Destination layer is not editable."
-msgstr "A camada de destino não é editável."
-
-#: openrouteservice/utils.py:681
-msgid "Error adding features to the destination layer."
-msgstr "Erro ao adicionar entidades à camada de destino."
-
-#: openrouteservice/utils.py:685
-msgid "Error committing features to the destination layer."
-msgstr "Erro ao confirmar entidades na camada de destino."
-
-#: openrouteservice/utils.py:794
-#, python-format
-msgid "Error generating isochrone: %s."
-msgstr "Erro ao gerar isócrona: %s."
-
-#: openrouteservice/utils.py:823
-msgid "Unknown error adding results to the destination layer."
-msgstr "Erro desconhecido ao adicionar resultados à camada de destino."
-
-#: templates/403.html:7
-msgid "error page"
-msgstr "página de erro"
-
-#: templates/403.html:15
+#: templates/403.html:6
 msgid "Access denied"
 msgstr "Acesso negado"
 
-#: templates/403.html:17
-msgid "You don't have grant to access this section"
-msgstr "Não tem permissão para aceder a esta secção"
+#: templates/403.html:9
 
-#: templates/404.html:11
+#| msgid "You don't have grant to access this section"
+msgid "You do not have permission to access this page."
+msgstr "Não tem permissão para aceder a esta página."
+
+#: templates/404.html:6
 msgid "Oops! Page not found."
 msgstr "Oops! Página não encontrada."
 
-#: templates/404.html:13
+#: templates/404.html:9
 msgid "We could not find the page you were looking for."
 msgstr "Não conseguimos encontrar a página que procurava."
+
+#: templates/500.html:6
+msgid "Oops! Something went wrong."
+msgstr "Ups! Ocorreu um erro."
+
+#: templates/500.html:9
+msgid "An unexpected error has occurred on the server."
+msgstr "Ocorreu um erro inesperado no servidor."
 
 #: templates/admin/base.html:7
 msgid "G3W-ADMIN"
@@ -253,38 +63,58 @@ msgstr "Alterar palavra-passe"
 msgid "Log out"
 msgstr "Terminar sessão"
 
-#: templates/base.html:189 templates/index.html:6
+#: templates/base.html:183
 msgid "Dashboard"
 msgstr "Painel de controlo"
 
-#: templates/base.html:228
-msgid "Version"
-msgstr "Versão"
+#: templates/base.html:229
+#, python-format
+msgid ""
+"<strong>G3W-SUITE Version %(version)s</strong>: administration GIS "
+"application."
+msgstr "<strong>Versão %(version)s do G3W-SUITE</strong>: aplicação de administração de SIG."
 
-#: templates/base_login.html:25 templates/login.html:18
+#: templates/base.html:236
+#, python-format
+msgid ""
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://"
+"www.gis3w.it\">GIS3W</a>.</strong> All rights reserved."
+msgstr "<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://www.gis3w.it\">GIS3W</a>.</strong> Todos os direitos reservados."
+
+#: templates/base.html:254
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr "Este site usa cookies para garantir que obtenha a melhor experiência no nosso site"
+
+#: templates/base_login.html:25 templates/login.html:20
 msgid "Sign in to start your session"
 msgstr "Inicie sessão para começar"
 
-#: templates/base_login.html:29 templates/login.html:22
+#: templates/base_login.html:29 templates/login.html:24
 #: templates/registration/password_reset_form.html:10
 #: templates/registration/username_recovery_form.html:10
 msgid "LOGIN ERROR"
 msgstr "ERRO DE LOGIN"
 
-#: templates/base_login.html:30 templates/login.html:23
+#: templates/base_login.html:30 templates/login.html:28
+#: templates/login.html:34
 msgid "Username and/or password uncorrect"
 msgstr "Nome de utilizador e/ou palavra-passe incorretos"
 
-#: templates/base_login.html:45 templates/login.html:39
+#: templates/base_login.html:45 templates/login.html:92
+#: templates/two_factor/_wizard_actions.html:17
+#: templates/two_factor/_wizard_actions.html:25
+#: templates/two_factor/_wizard_actions_login.html:9
 msgid "Sign In"
 msgstr "Iniciar sessão"
 
-#: templates/base_login.html:51 templates/login.html:50
+#: templates/base_login.html:51 templates/login.html:120
 #: templates/registration/password_reset_form.html:22
 msgid "Forgot your password?"
 msgstr "Esqueceu-se da palavra-passe?"
 
-#: templates/base_login.html:58 templates/login.html:62
+#: templates/base_login.html:58 templates/login.html:132
 msgid "Sign up"
 msgstr "Registar"
 
@@ -292,7 +122,8 @@ msgstr "Registar"
 msgid " Version"
 msgstr " Versão"
 
-#: templates/include/navbar_right_menu.html:11
+#: templates/include/navbar_right_menu.html:11 templates/index.html:21
+#: templates/search.html:8 templates/search.html:33
 msgid "Search"
 msgstr "Pesquisar"
 
@@ -349,26 +180,140 @@ msgstr "Administração Django"
 msgid "Go to staff administration section"
 msgstr "Ir para a secção de administração de staff"
 
-#: templates/index.html:7
-msgid "Current situation"
-msgstr "Situação atual"
+#: templates/index.html:11
+#, python-format
+msgid "Welcome back, %(name)s"
+msgstr "Bem-vindo(a) novamente, %(name)s"
 
-#: templates/index.html:19
-msgid "Groups"
-msgstr "Grupos"
+#: templates/index.html:13
+msgid "Here is an overview of your geospatial workspaces."
+msgstr "Aqui tem uma visão geral dos seus espaços de trabalho geoespaciais."
 
-#: templates/index.html:26
-msgid "Show"
-msgstr "Mostrar"
+#: templates/index.html:20
+msgid "Search groups, projects, layers…"
+msgstr "Pesquisar grupos, projetos e camadas…"
 
-#: templates/index.html:32
+#: templates/index.html:35
+
+#| msgid "Groups"
+msgid "Map groups"
+msgstr "Grupos de mapas"
+
+#: templates/index.html:46
+#| msgid "Project"
+msgid "Projects"
+msgstr "Projetos"
+
+#: templates/index.html:55 templates/index.html:119
+#: templates/index.html:120
+msgid "Layers"
+msgstr "Camadas"
+
+#: templates/index.html:64
+msgid "Bookmarked projects"
+msgstr "Projetos favoritos"
+
+#: templates/index.html:71
+
+#| msgid "Actions"
+msgid "Quick actions"
+msgstr "Ações rápidas"
+
+#: templates/index.html:73
+msgid "Browse groups"
+msgstr "Explorar grupos"
+
+#: templates/index.html:75
+msgid "New group"
+msgstr "Novo grupo"
+
+#: templates/index.html:77
+msgid "Advanced search"
+msgstr "Pesquisa avançada"
+
+#: templates/index.html:81
+msgid "Projects bookmarked"
+msgstr "Projetos favoritos"
+
+#: templates/index.html:94
+msgid "Project not accessible to anonymous users"
+msgstr "Projeto não acessível a utilizadores anónimos"
+
+#: templates/index.html:104
+msgid "Remove bookmark"
+msgstr "Remover dos favoritos"
+
+#: templates/index.html:113
+
+#| msgid "Show"
+msgid "Show map"
+msgstr "Mostrar mapa"
+
+#: templates/index.html:114
+msgid "Map"
+msgstr "Mapa"
+
+#: templates/index.html:123 templates/index.html:124
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/index.html:136
+msgid "No bookmarked projects yet"
+msgstr "Ainda não existem projetos favoritos"
+
+#: templates/index.html:137
+msgid "Open any project map and click the bookmark icon to pin it here."
+msgstr "Abra o mapa de qualquer projeto e clique no ícone de favorito para o adicionar aqui."
+
+#: templates/index.html:143
+msgid "Recent activity"
+msgstr "Atividade recente"
+
+#: templates/index.html:160
+msgid "ago"
+msgstr "atrás"
+
+#: templates/index.html:169
 msgid "Module widgets"
 msgstr "Widgets do módulo"
 
-#: templates/login.html:55
+#: templates/login.html:42 templates/two_factor/core/_login.html:17
+msgid ""
+"Use this form for entering backup tokens for logging in. These tokens have "
+"been generated for you to print and keep safe. Please enter one of these "
+"backup tokens to login to your account."
+msgstr "Utilize este formulário para iniciar sessão com um token de recuperação. Estes tokens foram gerados para imprimir e guardar em segurança. Introduza um deles para iniciar sessão na sua conta."
+
+#: templates/login.html:64 templates/two_factor/core/_login.html:31
+msgid "Or, alternatively, use one of your other authentication methods:"
+msgstr "Em alternativa, utilize um dos seus outros métodos de autenticação:"
+
+#: templates/login.html:103 templates/two_factor/core/_login.html:51
+msgid "As a last resort, you can use a backup token:"
+msgstr "Como último recurso, pode utilizar um token de recuperação:"
+
+#: templates/login.html:106 templates/two_factor/core/_login.html:54
+msgid "Use Backup Token"
+msgstr "Utilizar token de recuperação"
+
+#: templates/login.html:125
 #: templates/registration/username_recovery_form.html:22
 msgid "Forgot your username?"
 msgstr "Esqueceu-se do nome de utilizador?"
+
+#: templates/otp/email/token.txt:1
+#, python-format
+msgid "This email was sent by %(domain)s for two-factor authentication (2FA)."
+msgstr "Este e-mail foi enviado por %(domain)s para a autenticação de dois fatores (2FA)."
+
+#: templates/otp/email/token.txt:1
+msgid "This email was sent by G3W-SUITE for two-factor authentication (2FA)."
+msgstr "Este e-mail foi enviado pelo G3W-SUITE para a autenticação de dois fatores (2FA)."
+
+#: templates/otp/email/token.txt:3
+#, python-format
+msgid "Your one-time password (OTP) token is: %(token)s"
+msgstr "O seu token de palavra-passe de utilização única (OTP) é: %(token)s"
 
 #: templates/registration/password_reset_complete.html:8
 msgid "Password reset complete"
@@ -403,8 +348,9 @@ msgid ""
 "The password reset link <strong>was invalid</strong>, possibly because it "
 "has already been used.  Please request a new password reset."
 msgstr ""
-"O link de reposição da palavra-passe <strong>era inválido</strong>, possivelmente porque "
-"já foi utilizado. Por favor, solicite uma nova reposição da palavra-passe."
+"O link de reposição da palavra-passe <strong>era inválido</strong>, "
+"possivelmente porque já foi utilizado. Por favor, solicite uma nova "
+"reposição da palavra-passe."
 
 #: templates/registration/password_reset_done.html:8
 #: templates/registration/username_recovery_done.html:8
@@ -416,8 +362,8 @@ msgid ""
 "We've emailed you instructions for setting your password. You should receive "
 "the email shortly!"
 msgstr ""
-"Enviamos-lhe instruções por e-mail para definir a sua palavra-passe. Deverá receber "
-"o e-mail em breve!"
+"Enviamos-lhe instruções por e-mail para definir a sua palavra-passe. Deverá "
+"receber o e-mail em breve!"
 
 #: templates/registration/password_reset_email.html:2
 #, python-format
@@ -425,8 +371,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
 msgstr ""
-"Está a receber este e-mail porque solicitou uma reposição da palavra-passe para a sua "
-"conta de utilizador em %(site_name)s."
+"Está a receber este e-mail porque solicitou uma reposição da palavra-passe "
+"para a sua conta de utilizador em %(site_name)s."
 
 #: templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -451,12 +397,497 @@ msgid ""
 "Enter your email address below, and we'll email instructions for setting a "
 "new one."
 msgstr ""
-"Introduza o seu endereço de e-mail abaixo e enviaremos instruções por e-mail para definir uma "
-"nova palavra-passe."
+"Introduza o seu endereço de e-mail abaixo e enviaremos instruções por e-mail "
+"para definir uma nova palavra-passe."
 
 #: templates/registration/password_reset_form.html:32
 msgid "Send me instruction"
 msgstr "Enviar-me instruções"
 
 #: templates/registration/password_reset_subject.txt:2
-#,
+#, python-format
+#| msgid "Password reset complete"
+msgid "Password reset on %(site_name)s"
+msgstr "Reposição da palavra-passe em %(site_name)s"
+
+#: templates/registration/username_recovery_done.html:9
+
+#| msgid ""
+#| "We've emailed you instructions for setting your password. You should "
+#| "receive the email shortly!"
+msgid "We've emailed you your username. You should receive the email shortly!"
+msgstr "Enviámos-lhe o seu nome de utilizador por e-mail. Deverá receber a mensagem em breve!"
+
+#: templates/registration/username_recovery_email.html:2
+#, python-format
+#| msgid ""
+#| "You're receiving this email because you requested a password reset for "
+#| "your user account at %(site_name)s."
+msgid ""
+"You're receiving this email because you requested a username recovery for "
+"your user account at %(site_name)s."
+msgstr "Recebeu este e-mail porque pediu a recuperação do nome de utilizador da sua conta em %(site_name)s."
+
+#: templates/registration/username_recovery_email.html:4
+
+#| msgid "Forgot your username?"
+msgid "Your username is:"
+msgstr "O seu nome de utilizador é:"
+
+#: templates/registration/username_recovery_form.html:23
+
+#| msgid ""
+#| "Enter your email address below, and we'll email instructions for setting "
+#| "a new one."
+msgid "Enter your email address below, and we'll email your username."
+msgstr "Introduza abaixo o seu endereço de e-mail e enviar-lhe-emos o nome de utilizador."
+
+#: templates/registration/username_recovery_form.html:32
+
+#| msgid "Send me instruction"
+msgid "Send me username"
+msgstr "Enviar-me o nome de utilizador"
+
+#: templates/registration/username_recovery_subject.txt:2
+#, python-format
+msgid "Username recovery on %(site_name)s"
+msgstr "Recuperação do nome de utilizador em %(site_name)s"
+
+#: templates/search.html:8
+
+#| msgid "Search"
+msgid "Search results"
+msgstr "Resultados da pesquisa"
+
+#: templates/search.html:11
+msgid "for"
+msgstr "para"
+
+#: templates/search.html:19
+#, python-format
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] "%(counter)s resultado"
+msgstr[1] "%(counter)s resultados"
+
+#: templates/search.html:22
+msgid "No results"
+msgstr "Sem resultados"
+
+#: templates/search.html:31
+msgid "Search groups, macro groups, projects..."
+msgstr "Pesquisar grupos, grupos macro e projetos..."
+
+#: templates/search.html:44
+msgid "No results found"
+msgstr "Não foram encontrados resultados"
+
+#: templates/search.html:45
+msgid "No item matches your query. Try a different keyword or check spelling."
+msgstr "Nenhum elemento corresponde à pesquisa. Experimente outra palavra-chave ou verifique a ortografia."
+
+#: templates/socialaccount/authentication_error.html:5
+#: templates/socialaccount/authentication_error.html:8
+msgid "Social Network Login Failure"
+msgstr "Falha na autenticação pela rede social"
+
+#: templates/socialaccount/authentication_error.html:10
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr "Ocorreu um erro ao tentar iniciar sessão através da sua conta de rede social."
+
+#: templates/socialaccount/authentication_error.html:12
+msgid "Code"
+msgstr "Código"
+
+#: templates/socialaccount/authentication_error.html:13
+
+#| msgid "Actions"
+msgid "Exception"
+msgstr "Exceção"
+
+#: templates/two_factor/_wizard_actions.html:11
+#: templates/two_factor/_wizard_actions_login.html:23
+msgid "Back"
+msgstr "Voltar"
+
+#: templates/two_factor/_wizard_actions.html:16
+#: templates/two_factor/_wizard_actions.html:24
+#: templates/two_factor/_wizard_actions_login.html:7
+msgid "Verify"
+msgstr "Verificar"
+
+#: templates/two_factor/_wizard_actions.html:18
+#: templates/two_factor/_wizard_actions.html:26
+#: templates/two_factor/_wizard_actions_login.html:11
+msgid "Next"
+msgstr "Seguinte"
+
+#: templates/two_factor/_wizard_actions.html:35
+#: templates/two_factor/_wizard_actions_login.html:32
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/two_factor/core/_login.html:10
+
+#| msgid "Last login"
+msgid "Login"
+msgstr "Iniciar sessão"
+
+#: templates/two_factor/core/_login.html:13
+msgid "Enter your credentials."
+msgstr "Introduza as suas credenciais."
+
+#: templates/two_factor/core/backup_tokens.html:5
+#: templates/two_factor/profile/profile.html:37
+msgid "Backup Tokens"
+msgstr "Tokens de recuperação"
+
+#: templates/two_factor/core/backup_tokens.html:10
+msgid ""
+"Backup tokens can be used when your primary and backup phone numbers aren't "
+"available. The backup tokens below can be used for login verification. If "
+"you've used up all your backup tokens, you can generate a new set of backup "
+"tokens. Only the backup tokens shown below will be valid."
+msgstr "Os tokens de recuperação podem ser utilizados quando os seus números de telefone principal e de reserva não estão disponíveis. Os tokens abaixo podem verificar o início de sessão. Se os tiver utilizado todos, pode gerar um novo conjunto. Apenas os tokens apresentados abaixo serão válidos."
+
+#: templates/two_factor/core/backup_tokens.html:22
+msgid "Print these tokens and keep them somewhere safe."
+msgstr "Imprima estes tokens e guarde-os num local seguro."
+
+#: templates/two_factor/core/backup_tokens.html:24
+
+#| msgid "You don't have grant to access this section"
+msgid "You don't have any backup codes yet."
+msgstr "Ainda não tem códigos de recuperação."
+
+#: templates/two_factor/core/backup_tokens.html:29
+#: templates/two_factor/core/setup_complete.html:16
+#: templates/two_factor/core/setup_complete.html:23
+msgid "Back to Account Security"
+msgstr "Voltar à segurança da conta"
+
+#: templates/two_factor/core/backup_tokens.html:30
+msgid "Generate Tokens"
+msgstr "Gerar tokens"
+
+#: templates/two_factor/core/setup.html:9
+#: templates/two_factor/core/setup_complete.html:5
+#: templates/two_factor/profile/profile.html:60
+msgid "Enable Two-Factor Authentication"
+msgstr "Ativar a autenticação de dois fatores"
+
+#: templates/two_factor/core/setup.html:14
+msgid ""
+"You are about to take your account security to the next level. Follow the "
+"steps in this wizard to enable two-factor authentication."
+msgstr "Vai reforçar a segurança da sua conta. Siga os passos deste assistente para ativar a autenticação de dois fatores."
+
+#: templates/two_factor/core/setup.html:18
+msgid "Please select which authentication method you would like to use."
+msgstr "Selecione o método de autenticação que pretende utilizar."
+
+#: templates/two_factor/core/setup.html:21
+msgid ""
+"To start using a token generator, please use your smartphone to scan the QR "
+"code below. For example, use Google Authenticator."
+msgstr "Para começar a utilizar um gerador de tokens, leia o código QR abaixo com o seu smartphone. Por exemplo, utilize o Google Authenticator."
+
+#: templates/two_factor/core/setup.html:25
+msgid ""
+"Alternatively you can use the following secret to setup TOTP in your "
+"authenticator or password manager manually."
+msgstr "Em alternativa, pode utilizar o segredo seguinte para configurar manualmente o TOTP na aplicação de autenticação ou no gestor de palavras-passe."
+
+#: templates/two_factor/core/setup.html:27
+msgid "TOTP Secret:"
+msgstr "Segredo TOTP:"
+
+#: templates/two_factor/core/setup.html:28
+msgid "Then, enter the token generated by the app."
+msgstr "Em seguida, introduza o token gerado pela aplicação."
+
+#: templates/two_factor/core/setup.html:31
+msgid ""
+"Please enter the phone number you wish to receive the text messages on. This "
+"number will be validated in the next step."
+msgstr "Introduza o número de telefone em que pretende receber as mensagens de texto. O número será validado no passo seguinte."
+
+#: templates/two_factor/core/setup.html:35
+msgid ""
+"Please enter the phone number you wish to be called on. This number will be "
+"validated in the next step."
+msgstr "Introduza o número de telefone para o qual pretende receber uma chamada. O número será validado no passo seguinte."
+
+#: templates/two_factor/core/setup.html:40
+msgid "We are calling your phone right now, please enter the digits you hear."
+msgstr "Estamos a ligar-lhe agora. Introduza os algarismos que ouvir."
+
+#: templates/two_factor/core/setup.html:43
+msgid "We sent you a text message, please enter the tokens we sent."
+msgstr "Enviámos-lhe uma mensagem de texto. Introduza os tokens que enviámos."
+
+#: templates/two_factor/core/setup.html:47
+msgid ""
+"We've encountered an issue with the selected authentication method. Please "
+"go back and verify that you entered your information correctly, try again, "
+"or use a different authentication method instead. If the issue persists, "
+"contact the site administrator."
+msgstr "Ocorreu um problema com o método de autenticação selecionado. Volte atrás e confirme se introduziu corretamente os seus dados, tente novamente ou utilize outro método. Se o problema persistir, contacte o administrador do site."
+
+#: templates/two_factor/core/setup.html:54
+msgid ""
+"To identify and verify your YubiKey, please insert a token in the field "
+"below. Your YubiKey will be linked to your account."
+msgstr "Para identificar e verificar a sua YubiKey, introduza um token no campo abaixo. A YubiKey ficará associada à sua conta."
+
+#: templates/two_factor/core/setup_complete.html:11
+msgid "Congratulations, you've successfully enabled two-factor authentication."
+msgstr "Parabéns, ativou com sucesso a autenticação de dois fatores."
+
+#: templates/two_factor/core/setup_complete.html:18
+msgid ""
+"However, it might happen that you don't have access to your primary token "
+"device. To enable account recovery, add a phone number."
+msgstr "Poderá acontecer que não tenha acesso ao dispositivo do seu token principal. Para permitir a recuperação da conta, adicione um número de telefone."
+
+#: templates/two_factor/core/setup_complete.html:25
+#: templates/two_factor/profile/profile.html:34
+msgid "Add Phone Number"
+msgstr "Adicionar número de telefone"
+
+#: templates/two_factor/profile/disable.html:5
+msgid "Disable Two-factor Authentication"
+msgstr "Desativar a autenticação de dois fatores"
+
+#: templates/two_factor/profile/disable.html:9
+msgid ""
+"You are about to disable two-factor authentication. This weakens your "
+"account security, are you sure?"
+msgstr "Vai desativar a autenticação de dois fatores. Esta ação reduz a segurança da sua conta. Tem a certeza?"
+
+#: templates/two_factor/profile/disable.html:15
+msgid "Disable"
+msgstr "Desativar"
+
+#: templates/two_factor/profile/profile.html:6
+msgid "Account Security"
+msgstr "Segurança da conta"
+
+#: templates/two_factor/profile/profile.html:12
+#, python-format
+msgid "Primary method: %(primary)s"
+msgstr "Método principal: %(primary)s"
+
+#: templates/two_factor/profile/profile.html:15
+msgid "Backup Phone Numbers"
+msgstr "Números de telefone de reserva"
+
+#: templates/two_factor/profile/profile.html:16
+msgid ""
+"If your primary method is not available, we are able to send backup tokens "
+"to the phone numbers listed below."
+msgstr "Se o método principal não estiver disponível, podemos enviar tokens de recuperação para os números de telefone indicados abaixo."
+
+#: templates/two_factor/profile/profile.html:24
+msgid "Are you sure?"
+msgstr "Tem a certeza?"
+
+#: templates/two_factor/profile/profile.html:27
+
+#| msgid "Registered on"
+msgid "Unregister"
+msgstr "Anular registo"
+
+#: templates/two_factor/profile/profile.html:39
+msgid ""
+"If you don't have any device with you, you can access your account using "
+"backup tokens."
+msgstr "Se não tiver nenhum dispositivo consigo, pode aceder à sua conta utilizando tokens de recuperação."
+
+#: templates/two_factor/profile/profile.html:41
+#, python-format
+msgid "You have only one backup token remaining."
+msgid_plural "You have %(counter)s backup tokens remaining."
+msgstr[0] "Resta-lhe apenas um token de recuperação."
+msgstr[1] "Restam-lhe %(counter)s tokens de recuperação."
+
+#: templates/two_factor/profile/profile.html:48
+msgid "Show Codes"
+msgstr "Mostrar códigos"
+
+#: templates/two_factor/profile/profile.html:50
+#: templates/two_factor/profile/profile.html:54
+msgid "Disable Two-Factor Authentication"
+msgstr "Desativar a autenticação de dois fatores"
+
+#: templates/two_factor/profile/profile.html:51
+msgid ""
+"However we strongly discourage you to do so, you can also disable two-factor "
+"authentication for your account."
+msgstr "Embora não o recomendemos, também pode desativar a autenticação de dois fatores da sua conta."
+
+#: templates/two_factor/profile/profile.html:56
+msgid ""
+"Two-factor authentication is not enabled for your account. Enable two-factor "
+"authentication for enhanced account security."
+msgstr "A autenticação de dois fatores não está ativada na sua conta. Ative-a para reforçar a segurança da conta."
+
+#~ msgid "Input layer is not a point or multipoint layer."
+#~ msgstr "A camada de entrada não é uma camada de ponto ou multiponto."
+
+#~ msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
+#~ msgstr "Falta \"qgis_layer_id\", \"new_layer_name\" ou \"connection_id\"."
+
+#~ msgid ""
+#~ "Wrong color parameter, color must be a list of three integers (red, "
+#~ "green, blue)."
+#~ msgstr ""
+#~ "Parâmetro de cor incorreto, a cor deve ser uma lista de três inteiros "
+#~ "(vermelho, verde, azul)."
+
+#~ msgid ""
+#~ "Missing tranparency parameter, because color was specified transparency "
+#~ "is required."
+#~ msgstr ""
+#~ "Falta o parâmetro de transparência, porque a cor foi especificada, a "
+#~ "transparência é obrigatória."
+
+#~ msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
+#~ msgstr ""
+#~ "Parâmetro de transparência incorreto, a transparência deve estar entre 0 "
+#~ "e 1."
+
+#~ msgid "Missing stroke_width from style definition."
+#~ msgstr "Falta stroke_width na definição do estilo."
+
+#~ msgid "Layer is not compatible with ORS data."
+#~ msgstr "A camada não é compatível com os dados ORS."
+
+#~ msgid "Wrong connection_id."
+#~ msgstr "connection_id incorreto."
+
+#~ msgid ""
+#~ "Either qgis_layer_id or connection_id + layer_name must have a value."
+#~ msgstr "qgis_layer_id ou connection_id + layer_name devem ter um valor."
+
+#, python-format
+#~ msgid "Profile not found, available profiles: %s"
+#~ msgstr "Perfil não encontrado, perfis disponíveis: %s"
+
+#~ msgid "Missing \"locations\" array."
+#~ msgstr "Falta o array \"locations\"."
+
+#, python-format
+#~ msgid "Max allowed locations: %s"
+#~ msgstr "Número máximo de localizações permitidas: %s"
+
+#~ msgid "Malformed locations array."
+#~ msgstr "Array de localizações malformado."
+
+#~ msgid "Missing \"range\" array."
+#~ msgstr "Falta o array \"range\"."
+
+#, python-format
+#~ msgid "Max allowed ranges: %s"
+#~ msgstr "Número máximo de intervalos permitidos: %s"
+
+#~ msgid "Malformed range array."
+#~ msgstr "Array de intervalos malformado."
+
+#~ msgid "Task not found!"
+#~ msgstr "Tarefa não encontrada!"
+
+#~ msgid "Isochrones"
+#~ msgstr "Isócronas"
+
+#~ msgid "Openrouteservice Project"
+#~ msgstr "Projeto Openrouteservice"
+
+#~ msgid "Alert"
+#~ msgstr "Alerta"
+
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Alguns erros no formulário. Verifique e envie novamente."
+
+#~ msgid "Openrouteservice Projects"
+#~ msgstr "Projetos Openrouteservice"
+
+#~ msgid "Services"
+#~ msgstr "Serviços"
+
+#~ msgid "Delete"
+#~ msgstr "Eliminar"
+
+#~ msgid "Cannot create temporary layer for isochrone result."
+#~ msgstr ""
+#~ "Não foi possível criar uma camada temporária para o resultado da isócrona."
+
+#~ msgid ""
+#~ "Cannot save isochrone result to destination layer: layer already exists "
+#~ "(use \"qgis_layer_id\" instead)!"
+#~ msgstr ""
+#~ "Não foi possível guardar o resultado da isócrona na camada de destino: a "
+#~ "camada já existe (use \"qgis_layer_id\" em vez disso)!"
+
+#~ msgid "Cannot save isochrone result to destination layer: "
+#~ msgstr ""
+#~ "Não foi possível guardar o resultado da isócrona na camada de destino: "
+
+#~ msgid "Wrong connection id."
+#~ msgstr "ID de ligação incorreto."
+
+#~ msgid "Error creating destination layer connection."
+#~ msgstr "Erro ao criar a ligação da camada de destino."
+
+#~ msgid "Error creating destination layer: "
+#~ msgstr "Erro ao criar a camada de destino: "
+
+#~ msgid "Error creating destination layer: layer is not valid!"
+#~ msgstr "Erro ao criar a camada de destino: a camada não é válida!"
+
+#~ msgid "Error saving the destination layer: could not write project!"
+#~ msgstr ""
+#~ "Erro ao guardar a camada de destino: não foi possível escrever o projeto!"
+
+#~ msgid "Error adding destination Layer to the project: layer already exists."
+#~ msgstr ""
+#~ "Erro ao adicionar a camada de destino ao projeto: a camada já existe."
+
+#, python-format
+#~ msgid "Error opening destination layer %s: layer not found in QGIS project!"
+#~ msgstr ""
+#~ "Erro ao abrir a camada de destino %s: camada não encontrada no projeto "
+#~ "QGIS!"
+
+#~ msgid "Error transforming geometry from 4326 to destination layer CRS."
+#~ msgstr ""
+#~ "Erro ao transformar a geometria de 4326 para o CRS da camada de destino."
+
+#~ msgid "No compatible features returned from isochrone."
+#~ msgstr "Nenhuma entidade compatível retornada da isócrona."
+
+#~ msgid "Destination layer is not editable."
+#~ msgstr "A camada de destino não é editável."
+
+#~ msgid "Error adding features to the destination layer."
+#~ msgstr "Erro ao adicionar entidades à camada de destino."
+
+#~ msgid "Error committing features to the destination layer."
+#~ msgstr "Erro ao confirmar entidades na camada de destino."
+
+#, python-format
+#~ msgid "Error generating isochrone: %s."
+#~ msgstr "Erro ao gerar isócrona: %s."
+
+#~ msgid "Unknown error adding results to the destination layer."
+#~ msgstr "Erro desconhecido ao adicionar resultados à camada de destino."
+
+#~ msgid "error page"
+#~ msgstr "página de erro"
+
+#~ msgid "Version"
+#~ msgstr "Versão"
+
+#~ msgid "Current situation"
+#~ msgstr "Situação atual"

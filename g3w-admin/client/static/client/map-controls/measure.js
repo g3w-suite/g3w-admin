@@ -167,6 +167,8 @@ class MeasureControl extends MapControl {
           HELP.setMap(interaction.getMap());
           HELP.getElement().innerHTML = _(`measure_descriptions.${type}`);
           HELP.setPosition(e.coordinate);
+          //set offset of overlay based on view padding values
+          HELP.set('offset', [-interaction.getMap().getView().padding?.at?.(-1), interaction.getMap().getView().padding?.at?.(-2) ]);
           HELP.getElement().classList.remove('hidden');
         }
       },

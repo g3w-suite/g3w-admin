@@ -5,7 +5,12 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
-from core.api.filters import IntersectsBBoxFilter, FieldFilterBackend
+from core.api.filters import (
+    IntersectsBBoxFilter, 
+    FieldFilterBackend, 
+    OrderingFilter, 
+    SearchFilter
+    )
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
@@ -40,7 +45,9 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
 
     # for editing apply only constraint and bbox filters
     filter_backends = (
+        OrderingFilter,
         GeoConstraintsFilter,
+        SearchFilter,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         IntersectsBBoxFilter,

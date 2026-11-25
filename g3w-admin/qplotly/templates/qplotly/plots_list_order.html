@@ -1,33 +1,43 @@
 {% load i18n %}
 {% load static %}
 
-<div>
-  {% trans "<b>Drag</b> and <b>drop</b> the following table's rows to change the widget list order" %}
-</div>
+<div class="qplotly-order-modal">
 
-<table id="plots_list" class="table table-bordered table-condensed" style="width:100%">
-  <thead>
-    <tr>
-      <th style="width:20px;"></th>
-      <th>{% trans 'Title' %}</th>
-      <th>{% trans 'Type' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for plot in plots %}
-      <tr id="qplotlywidget_{{ plot.0.pk }}">
-        <td class="drag-handle" style="cursor:grab; color:#aaa; text-align:center;"><i class="fa fa-bars"></i></td>
-        <td>
-          {{ plot.0.title }}
-          {% if plot.0.has_related %}
-            <i class="fa fa-sitemap" style="color:#aaa; margin-left:4px;" title="{% trans 'Has related widgets' %}"></i>
-          {% endif %}
-        </td>
-        <td>{{ plot.0.type }}</td>
+  <div class="qo-intro">
+    <span class="qo-intro-icon"><i class="fa fa-sort"></i></span>
+    <div>
+      <h4>{% trans 'Reorder widgets' %}</h4>
+      <p>{% trans 'Drag and drop the rows to change the order in which the Qplotly widgets will appear.' %}</p>
+    </div>
+  </div>
+
+  <table id="plots_list" class="qo-table">
+    <thead>
+      <tr>
+        <th class="qo-col-handle"></th>
+        <th>{% trans 'Title' %}</th>
+        <th class="qo-col-type">{% trans 'Type' %}</th>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {% for plot in plots %}
+        <tr id="qplotlywidget_{{ plot.0.pk }}">
+          <td class="qo-drag-handle" title="{% trans 'Drag to reorder' %}"><i class="fa fa-arrows-v"></i></td>
+          <td>
+            <span class="qo-title">{{ plot.0.title }}</span>
+            {% if plot.0.has_related %}
+              <span class="qo-related-badge" title="{% trans 'Has related widgets' %}">
+                <i class="fa fa-sitemap"></i>
+              </span>
+            {% endif %}
+          </td>
+          <td><span class="qo-type-chip">{{ plot.0.type }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
 
 <!-- Sortable rows -->
 <script>
@@ -35,13 +45,12 @@
     let dragged = null;
     document.querySelectorAll('#plots_list tbody tr').forEach(row => {
       row.setAttribute('draggable', true);
-      row.addEventListener('mouseover',  () => { row.style.cursor = 'move'; });
-      row.addEventListener('mouseleave', () => { row.style.cursor = null; });
-      row.addEventListener('dragstart',  () => { dragged = row; });
-      row.addEventListener('dragend',    () => { dragged = null; });
-      row.addEventListener('dragover',   e => { e.preventDefault(); row.style.border="2px dashed #000"; });
-      row.addEventListener('dragleave',  () => { row.style.border=null; });
+      row.addEventListener('dragstart',  () => { dragged = row; row.classList.add('qo-dragging'); });
+      row.addEventListener('dragend',    () => { dragged = null; row.classList.remove('qo-dragging'); });
+      row.addEventListener('dragover',   e => { e.preventDefault(); row.classList.add('qo-dragover'); });
+      row.addEventListener('dragleave',  () => { row.classList.remove('qo-dragover'); });
       row.addEventListener('drop', e => {
+        row.classList.remove('qo-dragover');
         if (dragged) {
           dragged.parentNode.insertBefore(dragged, dragged == row.nextSibling ? row : row.nextSibling);
           fetch(`/qplotly/jx/widgets/setorder/`, {
@@ -53,7 +62,6 @@
             ]),
           });
         }
-        row.style.border=null;
       });
     });
   })();

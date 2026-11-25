@@ -11,16 +11,30 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from qdjango.models import Project, LayerAcl
 from qdjango.views import QdjangoProjectUpdateView
 from core.models import ProjectMapUrlAlias
 from .base import QdjangoTestBase, CoreGroup, G3WSpatialRefSys
 from .utils import create_dff_project
 from copy import copy
+from lxml import html
 
 
 class QdjangoViewsTest(QdjangoTestBase):
+
+    def test_qdjango_project_list_exposes_public_project_ids(self):
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        assign_perm('view_project', get_anonymous_user(), self.project.instance)
+        response = client.get(reverse("qdjango-project-list", args=[self.project_group.slug]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.project.instance.pk, response.context['public_project_ids'])
+        self.assertIn('project-card', response.content.decode())
+
+        client.logout()
 
     def test_qdjango_layers(self):
         """
@@ -33,8 +47,20 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         url = reverse("qdjango-project-layers-list", args=[self.project_group.slug, self.project.instance.slug])
 
+        layers = list(self.project.instance.layer_set.all()[:3])
+        for layer, value in zip(layers, (True, False, None)):
+            layer.wcscapabilities = value
+            layer.save()
+
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        page = html.fromstring(response.content)
+        self.assertEqual(page.xpath('count(//table[@id="layers_table"]/thead/tr/th[text()="WCS"])'), 1)
+        for layer, enabled in zip(layers, (True, False, None)):
+            cell = page.xpath('//tr[@id=$row]/td[@data-label="WCS"]',
+                              row=f'qdjango_project_layer_{layer.slug}')[0]
+            self.assertEqual(bool(cell.xpath('.//span[contains(@class, "fa-check-circle")]')), bool(enabled))
 
         client.logout()
 
@@ -86,6 +112,31 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         # check for max_preview_fields
         self.assertEqual(layer.max_preview_fields, 5)
+
+        client.logout()
+
+    def test_QdjangoLayerDataView_wmts_format(self):
+        """ Test wmts_format is only accepted when advertised as available in wmtscapabilities """
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        layer = self.project.instance.layer_set.all()[0]
+        layer.wmtscapabilities = {'png': True, 'jpeg': False}
+        layer.save()
+
+        url = reverse('qdjango-project-layers-data-editing',
+                      args=[self.project_group.slug, self.project.instance.slug, layer.pk])
+
+        # png is available: accepted
+        response = client.post(url, data={'wmts_format': 'png'})
+        layer.refresh_from_db()
+        self.assertEqual(layer.wmts_format, 'png')
+
+        # jpeg is not available: rejected, reset to None
+        response = client.post(url, data={'wmts_format': 'jpeg'})
+        layer.refresh_from_db()
+        self.assertIsNone(layer.wmts_format)
 
         client.logout()
 
@@ -335,8 +386,6 @@ class QdjangoViewsTest(QdjangoTestBase):
         self.assertTrue('editor2_user' in form.initial)
         self.assertEqual(form.initial['editor_user'], self.test_editor1.pk)
         self.assertEqual(form.initial['editor2_user'], self.test_editor2.pk)
-        self.assertEqual(form.initial['viewer_users'], [self.test_viewer1.pk, self.test_viewer1_2.pk])
+        self.assertCountEqual(form.initial['viewer_users'], [self.test_viewer1.pk, self.test_viewer1_2.pk])
         self.assertEqual(form.initial['editor_user_groups'], [])
         self.assertEqual(form.initial['viewer_user_groups'], [])
-
-

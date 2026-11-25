@@ -122,4 +122,3 @@ if [ $MOD == "test" ]; then
 else
     $DOCKER_COMMAND exec g3w-suite bash
 fi
-

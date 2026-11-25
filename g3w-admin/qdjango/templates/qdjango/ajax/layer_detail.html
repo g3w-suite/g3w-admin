@@ -1,26 +1,35 @@
 {% load i18n %}
 {% load auth_extras %}
 
-<div class="row">
-    <div class="col-md-12">
-        <ul class="list-unstyled">
-            <li>
-                  <h4>{% trans 'Title' %}:</h4>
-                  <span>{{ object.title }}</span>
-            </li>
-            <li>
-                  <h4>{% trans 'Name' %}:</h4>
-                  <span>{{ object.origname }}</span>
-            </li>
-            <li>
-                  <h4>{% trans 'QGIS layer ID' %}:</h4>
-                  <span>{{ object.qgs_layer_id }}</span>
-            </li>
-            <li>
-                  <h4>{% trans 'Datasource' %}:</h4>
-                  <span>{{ object.datasource }}</span>
-            </li>
+<div class="g3w-detail-overlay layer-detail-overlay">
+    <header class="layer-detail-head">
+        <div class="layer-detail-icon">
+            <i class="fa fa-map-o"></i>
+        </div>
+        <div class="layer-detail-titles">
+            <h2>{{ object.title|default:object.origname }}</h2>
+            {% if object.title and object.origname and object.title != object.origname %}
+            <p>{{ object.origname }}</p>
+            {% endif %}
+        </div>
+    </header>
 
-        </ul>
-    </div>
+    <ul class="layer-detail-list">
+        <li>
+            <span class="ld-key"><i class="fa fa-tag"></i> {% trans 'Title' %}</span>
+            <span class="ld-value">{{ object.title|default:'—' }}</span>
+        </li>
+        <li>
+            <span class="ld-key"><i class="fa fa-file-text-o"></i> {% trans 'Name' %}</span>
+            <span class="ld-value">{{ object.origname|default:'—' }}</span>
+        </li>
+        <li>
+            <span class="ld-key"><i class="fa fa-fingerprint"></i> {% trans 'QGIS layer ID' %}</span>
+            <span class="ld-value ld-mono">{{ object.qgs_layer_id|default:'—' }}</span>
+        </li>
+        <li>
+            <span class="ld-key"><i class="fa fa-database"></i> {% trans 'Datasource' %}</span>
+            <span class="ld-value ld-mono ld-multiline">{{ object.datasource|default:'—' }}</span>
+        </li>
+    </ul>
 </div>

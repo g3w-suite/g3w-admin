@@ -25,7 +25,7 @@ from core.signals import (
     pre_delete_maplayer,
     pre_save_maplayer
     )
-from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids
+from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids, qvariant_type_name
 from editing.models import (
     EDITING_POST_DATA_ADDED, 
     EDITING_POST_DATA_DELETED,
@@ -53,7 +53,8 @@ from qgis.PyQt.QtCore import (
     NULL
 )
 
-import bleach
+# For html and css sanitize
+import nh3
 
 import re
 import logging
@@ -260,10 +261,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             original_feature = qgis_layer.getFeature(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
+                        # NOTE: the `encoding` parameter of
+                        # QgsJsonUtils.stringToFeatureList was removed in QGIS 4.2.
+                        # Calling with 2 args is compatible with both QGIS 3.44
+                        # (encoding defaults to None) and QGIS 4.2.
                         imported_feature = QgsJsonUtils.stringToFeatureList(
                             json.dumps(geojson_feature),
                             qgis_layer.fields(),
-                            None  # UTF8 codec
                         )[0]
 
                         feature.setGeometry(imported_feature.geometry())
@@ -341,7 +345,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For PostGis provider or oder provider with type int or double and with field can be null
                             # ----------------------------------------------------------------------------------------
-                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double', 'qlonglong') and \
+                            elif (qvariant_type_name(qgis_field.type()) or '').lower() in ('int', 'double', 'qlonglong') and \
                                     qgis_field.name() in geojson_feature['properties'] and \
                                     geojson_feature['properties'][qgis_field.name()] == '':
 
@@ -353,21 +357,37 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     feature.setAttribute(qgis_field.name(), NULL)
                                     numeric_nullable_field_values[qgis_field.name()] = NULL
 
-                            # For fields with UseHtml options, filter content with bleach
+                            # For fields with UseHtml options, filter content with nh3
                             # -----------------------------------------------------------
-                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] == True):
-                                css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
-                                    allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
+                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] is True):
+
                                 attr_value = geojson_feature['properties'][qgis_field.name()]
-                                feature.setAttribute(qgis_field.name(),
-                                                     bleach.clean(
-                                                         attr_value if attr_value else '',
-                                                         tags=settings.BLEACH_ALLOWED_TAGS,
-                                                         attributes=settings.BLEACH_ALLOWED_ATTRIBUTES,
-                                                         strip=settings.BLEACH_STRIP_TAGS,
-                                                         css_sanitizer=css_sanitizer
-                                                     )
-                                                 )
+
+                                # Optional: filter style properties via attribute_filter
+                                allowed_css = set(getattr(settings, 'NH3_ALLOWED_STYLES', []))
+
+                                def _style_filter(tag, attr, value, _allowed_css=allowed_css):
+                                    if attr != 'style':
+                                        return value
+                                    cleaned = []
+                                    for decl in value.split(';'):
+                                        if ':' not in decl:
+                                            continue
+                                        prop, val = decl.split(':', 1)
+                                        if prop.strip().lower() in _allowed_css:
+                                            cleaned.append(f"{prop.strip()}:{val.strip()}")
+                                    return ';'.join(cleaned) if cleaned else None
+
+                                feature.setAttribute(
+                                    qgis_field.name(),
+                                    nh3.clean(
+                                        attr_value if attr_value else '',
+                                        tags=set(getattr(settings, 'NH3_ALLOWED_TAGS')),
+                                        attributes=getattr(settings, 'NH3_ALLOWED_ATTRIBUTES'),
+                                        attribute_filter=_style_filter,
+                                        strip_comments=getattr(settings, 'NH3_STRIP_COMMENTS', True),
+                                    )
+                                )
 
 
                         # Call validator!

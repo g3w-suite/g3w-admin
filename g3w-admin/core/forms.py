@@ -1,5 +1,5 @@
 from django_file_form.forms import FileFormMixin, UploadedFileField
-from django.forms import Form, ModelForm, ValidationError
+from django.forms import Form, ModelForm, Textarea, ValidationError
 from django.forms.fields import CharField, HiddenInput
 from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.db.models import Q
@@ -12,7 +12,7 @@ from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
-from django_bleach.forms import BleachField
+from django_nh3.forms import Nh3Field
 from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import (
     crispyBoxACL,
@@ -32,10 +32,31 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     """Group form."""
 
     propagate = True
-    description = BleachField(required=False)
+    description = Nh3Field(required=False, widget=Textarea)
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
+
+        if not self.request.user.is_superuser and userHasGroups(self.request.user, [G3W_EDITOR2]):
+            owners = get_users_for_object(self.request.user, 'change_user', [G3W_EDITOR1])
+            users = User.objects.none() if owners else User.objects.all()
+            groups = AuthGroup.objects.none() if owners else AuthGroup.objects.all()
+            for owner in owners:
+                users |= get_objects_for_user(owner, 'auth.change_user', User)
+                groups |= get_objects_for_user(owner, 'auth.change_group', AuthGroup)
+
+            for field, roles in (
+                ('editor_user', self.editor1_groups),
+                ('editor2_user', self.editor2_groups),
+                ('viewer_users', self.viewer_groups),
+            ):
+                queryset = User.objects.filter(pk__in=users.filter(groups__name__in=roles))
+                if field == 'viewer_users' and self.initial_editor_user:
+                    queryset = queryset.exclude(pk=self.initial_editor_user)
+                self.fields[field].queryset = queryset.order_by('last_name')
+            for field, role in (('editor_user_groups', 'editor'), ('viewer_user_groups', 'viewer')):
+                self.fields[field].queryset = groups.filter(grouprole__role=role).distinct().order_by('name')
+            self._add_anonymou_user()
 
         # add MacroGroups by users
         self.fields['macrogroups'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
@@ -180,6 +201,12 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         )
 
     def clean_macrogroups(self):
+        if (
+            self.instance.pk
+            and not self.request.user.is_superuser
+            and not userHasGroups(self.request.user, [G3W_EDITOR1])
+        ):
+            return self.instance.macrogroups.all()
 
         # for case editor1 without permission on magrogroup
         if userHasGroups(self.request.user, [G3W_EDITOR1]) and self.instance.pk:
@@ -192,13 +219,18 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         For not new group or existing not empty item, check if NEW srid is different from projects SRID
         """
 
-        projects = Project.objects.filter(group=self.instance)
-        if self.instance.pk and len(projects) > 0:
-            srid = self.cleaned_data['srid'].auth_srid
-            layer_srid = projects[0].qgis_project.crs().postgisSrid()
-            if srid != layer_srid:
-                raise ValidationError(
-                    _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"))
+        if self.instance.pk:
+            project = Project.objects.filter(group_id=self.instance.pk).only('srid', 'qgis_file').first()
+            if project:
+                srid = self.cleaned_data['srid'].auth_srid
+                project_srid = project.srid
+                if project_srid is None:
+                    qgis_project = project.qgis_project
+                    project_srid = qgis_project.crs().postgisSrid() if qgis_project else None
+
+                if srid != project_srid:
+                    raise ValidationError(
+                        _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{project_srid}"))
 
         return self.cleaned_data['srid']
 
@@ -208,20 +240,23 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         super(GroupForm, self).save()
         self._ACLPolicy()
 
-        # add permission to editor1 if current user is editor1
-        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+        # Give the current editor permissions on the group.
+        if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
             self.instance.addPermissionsToEditor(self.request.user)
+            if userHasGroups(self.request.user, [G3W_EDITOR2]):
+                for owner in get_users_for_object(self.request.user, 'change_user', [G3W_EDITOR1]):
+                    self.instance.addPermissionsToEditor(owner)
 
 
 class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
-    home_description = BleachField(required=False)
-    about_description = BleachField(required=False)
-    groups_map_description = BleachField(required=False)
-    login_description = BleachField(required=False)
-    credits = BleachField(required=False)
-    registration_intro = BleachField(required=False)
+    home_description = Nh3Field(required=False, widget=Textarea)
+    about_description = Nh3Field(required=False, widget=Textarea)
+    groups_map_description = Nh3Field(required=False, widget=Textarea)
+    login_description = Nh3Field(required=False, widget=Textarea)
+    credits = Nh3Field(required=False, widget=Textarea)
+    registration_intro = Nh3Field(required=False, widget=Textarea)
 
 
     def __init__(self, *args, **kwargs):
@@ -383,7 +418,7 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                     queryset=User.objects.filter(groups__name__in=[G3W_EDITOR1])
                                     .order_by('last_name'), required=False)
 
-    description = BleachField(required=False)
+    description = Nh3Field(required=False, widget=Textarea)
 
     def __init__(self, *args, **kwargs):
 
@@ -533,20 +568,17 @@ class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
-        Div(
-                    Field('macrogroup', css_class='select2', style='width:100%;'),
-                    Field('epsg', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[0]}'
-                ),
-                Div(
-                    Field('editor1', css_class='select2', style='width:100%;'),
-                    Field('editor2', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[1]}'
-                ),
-                Div(
-                    Field('editorgroup', css_class='select2', style='width:100%;'),
-                    Field('viewergroup', css_class='select2', style='width:100%;'),
-                    css_class=f'col-md-{ffc[2]}'
+                *(
+                    Div(
+                        *(Field(name, css_class='select2', style='width:100%;')
+                          for name in names if name in self.fields),
+                        css_class=f'col-md-{width}'
+                    )
+                    for names, width in zip(
+                        (('macrogroup', 'epsg'), ('editor1', 'editor2'), ('editorgroup', 'viewergroup')),
+                        ffc
+                    )
+                    if width
                 ),
                 css_class='row'
             )

@@ -30,7 +30,7 @@ GUI.setupControl.mouseposition = function() {
     GUI.getMapControl('mouseposition').on('change:epsg',
       e => {
         GUI.getMapControl('mouseposition').setCoordinateFormat(coordinateFormat.bind(null, e.epsg))
-        document.querySelector('.ol-mouse-position').innerText = g3wsdk.gui.GUI.getMapControl('mouseposition').get('coordinateFormat')(mouse_coords);
+        document.querySelector('.ol-mouse-position').innerText = g3w.app.getMapControl('mouseposition').get('coordinateFormat')(mouse_coords);
       }
     );
   }

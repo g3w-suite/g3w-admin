@@ -1,756 +1,690 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Swedish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: se <info@g3wsuite.it>\n"
+"Language: se\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: OWS/utils/data.py:125
+#, python-brace-format
 msgid "The GetFeatureResponse response is malformed: {}"
-msgstr ""
+msgstr "Svaret från GetFeatureResponse är felaktigt formaterat: {}"
 
-#: bforest/forms/admin.py:61
-#: bforest/templates/bforest/admin/uploadscsv_add.html:9
-msgid "Upload CSV data file"
-msgstr ""
-
-#: bforest/forms/admin.py:97
-msgid "This file must have a '.csv' extension!"
-msgstr ""
-
-#: bforest/forms/admin.py:109
-msgid "Input data has not HEADERS column."
-msgstr ""
-
-#: bforest/forms/admin.py:121
-msgid "The follows fields are required: {\", \".join(field_intersect)}"
-msgstr ""
-
-#: bforest/forms/admin.py:161
-msgid "Sorry but only one user's data for CSV file: {\", \".join(users)}"
-msgstr ""
-
-#: bforest/forms/admin.py:165
-#, python-brace-format
-msgid "Sorry but user's data {users[0]} is not present into DB."
-msgstr ""
-
-#: bforest/forms/admin.py:168
-#, python-brace-format
-msgid "Sorry but user's data {users[0]} is not your current username."
-msgstr ""
-
-#: bforest/forms/admin.py:250
-#: bforest/templates/bforest/admin/project_list.html:17
-#: bforest/templates/bforest/admin/project_list.html:24 eleprofile/forms.py:44
-#: eleprofile/templates/eleprofile/project_form.html:14
-#: eleprofile/templates/eleprofile/projects_list.html:18
-#: eleprofile/templates/eleprofile/projects_list.html:26
-#: openrouteservice/forms.py:41
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
-msgid "Project"
-msgstr ""
-
-#: bforest/models/admin.py:31
-msgid "CSV file type"
-msgstr ""
-
-#: bforest/models/admin.py:33
-msgid "ADS DETECTED"
-msgstr ""
-
-#: bforest/models/admin.py:34
-msgid "TREES"
-msgstr ""
-
-#: bforest/models/admin.py:37
-msgid "CSV file to upload"
-msgstr ""
-
-#: bforest/models/admin.py:38
-#: bforest/templates/bforest/admin/project_list.html:25
-#: bforest/templates/bforest/admin/uploadscsv_list.html:28
-#: eleprofile/templates/eleprofile/dtms_list.html:35
-#: eleprofile/templates/eleprofile/projects_list.html:27
-msgid "Note"
-msgstr ""
-
-#: bforest/models/admin.py:43
-msgid "CSV rows"
-msgstr ""
-
-#: bforest/models/admin.py:44
-msgid "DB rows imported"
-msgstr ""
-
-#: bforest/models/admin.py:45
-msgid "Import ID"
-msgstr ""
-
-#: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:6
-#: bforest/templates/bforest/admin/raster_storic_analysis.html:6
-#: bforest/templates/bforest/admin/uploadscsv_list.html:31
-msgid "Date"
-msgstr ""
-
-#: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:7
-#: bforest/templates/bforest/admin/raster_storic_analysis.html:7
-msgid "Result"
-msgstr ""
-
-#: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:8
-#: bforest/templates/bforest/admin/raster_storic_analysis.html:8
-msgid "Result Log"
-msgstr ""
-
-#: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:21
-#: bforest/templates/bforest/admin/raster_storic_analysis.html:27
-msgid "No storic analyzes."
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_form.html:11
-#: bforest/templates/bforest/admin/project_form.html:14
-msgid "BForest Project"
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_form.html:14
-#: eleprofile/templates/eleprofile/dtm_form.html:14
-#: eleprofile/templates/eleprofile/project_form.html:14
-#: portal/templates/portal/picture_form.html:14
-msgid "New"
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_form.html:27
-#: bforest/templates/bforest/admin/uploadscsv_add.html:19
-#: eleprofile/templates/eleprofile/dtm_form.html:27
-#: eleprofile/templates/eleprofile/project_form.html:27
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
-#: portal/templates/portal/picture_form.html:27
-msgid "Alert"
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_form.html:28
-#: bforest/templates/bforest/admin/uploadscsv_add.html:20
-#: eleprofile/templates/eleprofile/dtm_form.html:28
-#: eleprofile/templates/eleprofile/project_form.html:28
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
-#: portal/templates/portal/picture_form.html:28
-msgid "Some errors on form. Check it and send again."
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_list.html:8
-msgid "BForest Projects"
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_list.html:23
-#: bforest/templates/bforest/admin/uploadscsv_list.html:25
-#: eleprofile/templates/eleprofile/dtms_list.html:32
-#: eleprofile/templates/eleprofile/projects_list.html:25
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
-msgid "Actions"
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_list.html:32
-#: eleprofile/templates/eleprofile/dtms_list.html:43
-#: eleprofile/templates/eleprofile/projects_list.html:34
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
-#: portal/templates/portal/picture_list.html:50
-msgid "Edit"
-msgstr ""
-
-#: bforest/templates/bforest/admin/project_list.html:35
-#: bforest/templates/bforest/admin/uploadscsv_list.html:38
-#: eleprofile/templates/eleprofile/dtms_list.html:46
-#: eleprofile/templates/eleprofile/projects_list.html:37
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
-#: portal/templates/portal/picture_list.html:53
-msgid "Delete"
-msgstr ""
-
-#: bforest/templates/bforest/admin/raster_analysis.html:38
-msgid "BForest Raster Analyzes"
-msgstr ""
-
-#: bforest/templates/bforest/admin/raster_analysis.html:48
-msgid "RUN ZONAL ANALISYS"
-msgstr ""
-
-#: bforest/templates/bforest/admin/raster_analysis.html:50
-msgid "Click to run Zonal Statistics Analysis"
-msgstr ""
-
-#: bforest/templates/bforest/admin/raster_analysis.html:51
-#: bforest/templates/bforest/admin/raster_analysis.html:69
-msgid "Last 5 analysys done"
-msgstr ""
-
-#: bforest/templates/bforest/admin/raster_analysis.html:66
-msgid "RUN RECALCULATION ANALISYS"
-msgstr ""
-
-#: bforest/templates/bforest/admin/raster_analysis.html:68
-msgid "Click to recalculate rasters"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_info.html:5
-msgid "General aspects"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_info.html:6
-msgid "File extention support: .csv"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_info.html:10
-msgid "Important"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_info.html:10
-msgid "CSV file must have \"comma (,)\"  as field separator"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_info.html:11
-msgid "The order and position of columns is not mandatory"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_list.html:10
-msgid "Uploaded CSV data files"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_list.html:19
-msgid "CSV file"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_list.html:26
-msgid "Type"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_list.html:27
-msgid "CSV File"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_list.html:29
-msgid "CSV records"
-msgstr ""
-
-#: bforest/templates/bforest/admin/uploadscsv_list.html:30
-msgid "DB records imported"
-msgstr ""
-
-#: bforest/templates/bforest/include/admin/form_buttons.html:6
-msgid "Upload and load into DB"
-msgstr ""
-
-#: bforest/templates/bforest/include/admin/form_buttons.html:10
-msgid "Redo/Back"
-msgstr ""
-
-#: bforest/templates/bforest/include/admin/form_buttons.html:12
-msgid "Data structure for uploading"
-msgstr ""
-
-#: bforest/templates/bforest/widgets/dashboard.html:17
-msgid "BForest CSV management module"
-msgstr ""
-
-#: bforest/templates/bforest/widgets/dashboard.html:26
-msgid "Import CSV"
-msgstr ""
-
-#: bforest/templates/bforest/widgets/dashboard.html:34
-msgid "CSV imported"
-msgstr ""
-
-#: br_service/apps.py:21
-msgid "BR service"
-msgstr ""
-
-#: eleprofile/forms.py:92
-msgid "DTM Layer and pth layers"
-msgstr ""
-
-#: eleprofile/models.py:33
-msgid "Select DTM project layer to use for sampling"
-msgstr ""
-
-#: eleprofile/models.py:34
-msgid "Sampling DTM step"
-msgstr ""
-
-#: eleprofile/models.py:35
-msgid "Sampling step in map units, default 10"
-msgstr ""
-
-#: eleprofile/models.py:36
-msgid "Select one or more path layers"
-msgstr ""
-
-#: eleprofile/models.py:44
-msgid "Layer must be a 'raster' or 'gdal' type"
-msgstr ""
-
-#: eleprofile/models.py:51
-#, python-brace-format
-msgid ""
-"Layer {layer.name} must be one of 'postgres', 'spatialite', 'ogr' or 'mssql' "
-"type"
-msgstr ""
-
-#: eleprofile/models.py:57
-#, python-brace-format
-msgid ""
-"Layer {layer.name} must be one geometry type of 'LineString' or "
-"'MultiLineString"
-msgstr ""
-
-#: eleprofile/templates/eleprofile/dtm_form.html:11
-#: eleprofile/templates/eleprofile/dtm_form.html:14
-msgid "DTM Layer and Path layers"
-msgstr ""
-
-#: eleprofile/templates/eleprofile/dtms_list.html:11
-msgid "DTM layer and path layers of project "
-msgstr ""
-
-#: eleprofile/templates/eleprofile/dtms_list.html:23
-#: eleprofile/templates/eleprofile/projects_list.html:40
-msgid "DTM layer and Path layers"
-msgstr ""
-
-#: eleprofile/templates/eleprofile/dtms_list.html:33
-msgid "DTM layer"
-msgstr ""
-
-#: eleprofile/templates/eleprofile/dtms_list.html:34
-msgid "Path layers"
-msgstr ""
-
-#: eleprofile/templates/eleprofile/project_form.html:11
-msgid "Elevation Profile Project"
-msgstr ""
-
-#: eleprofile/templates/eleprofile/projects_list.html:8
-msgid "Elevation Profile Projects"
-msgstr ""
-
-#: iam_bari/templates/_login.html:30
-msgid "Sign Out"
-msgstr ""
-
-#: iam_bari/templates/_login.html:35 templates/login.html:41
-msgid "Sign In"
-msgstr ""
-
-#: openrouteservice/api/views.py:138
-msgid "Input layer is not a point or multipoint layer."
-msgstr ""
-
-#: openrouteservice/api/views.py:156
-msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
-msgstr ""
-
-#: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
-msgid ""
-"Wrong color parameter, color must be a list of three integers (red, green, "
-"blue)."
-msgstr ""
-
-#: openrouteservice/api/views.py:182
-msgid ""
-"Missing tranparency parameter, because color was specified transparency is "
-"required."
-msgstr ""
-
-#: openrouteservice/api/views.py:190
-msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
-msgstr ""
-
-#: openrouteservice/api/views.py:196
-msgid "Missing stroke_width from style definition."
-msgstr ""
-
-#: openrouteservice/api/views.py:212
-msgid "Layer is not compatible with ORS data."
-msgstr ""
-
-#: openrouteservice/api/views.py:225
-msgid "Wrong connection_id."
-msgstr ""
-
-#: openrouteservice/api/views.py:229
-msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
-msgstr ""
-
-#: openrouteservice/api/views.py:236
-#, python-format
-msgid "Profile not found, available profiles: %s"
-msgstr ""
-
-#: openrouteservice/api/views.py:246
-msgid "Missing \"locations\" array."
-msgstr ""
-
-#: openrouteservice/api/views.py:250
-#, python-format
-msgid "Max allowed locations: %s"
-msgstr ""
-
-#: openrouteservice/api/views.py:254
-msgid "Malformed locations array."
-msgstr ""
-
-#: openrouteservice/api/views.py:259
-msgid "Missing \"range\" array."
-msgstr ""
-
-#: openrouteservice/api/views.py:263
-#, python-format
-msgid "Max allowed ranges: %s"
-msgstr ""
-
-#: openrouteservice/api/views.py:267
-msgid "Malformed range array."
-msgstr ""
-
-#: openrouteservice/api/views.py:394
-msgid "Task not found!"
-msgstr ""
-
-#: openrouteservice/models.py:38
-msgid "Isochrones"
-msgstr ""
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
-msgid "Openrouteservice Project"
-msgstr ""
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
-msgid "Openrouteservice Projects"
-msgstr ""
-
-#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
-msgid "Services"
-msgstr ""
-
-#: openrouteservice/utils.py:494
-msgid "Cannot create temporary layer for isochrone result."
-msgstr ""
-
-#: openrouteservice/utils.py:512
-msgid ""
-"Cannot save isochrone result to destination layer: layer already exists (use "
-"\"qgis_layer_id\" instead)!"
-msgstr ""
-
-#: openrouteservice/utils.py:525
-msgid "Cannot save isochrone result to destination layer: "
-msgstr ""
-
-#: openrouteservice/utils.py:553
-msgid "Wrong connection id."
-msgstr ""
-
-#: openrouteservice/utils.py:585
-msgid "Error creating destination layer connection."
-msgstr ""
-
-#: openrouteservice/utils.py:592
-msgid "Error creating destination layer: "
-msgstr ""
-
-#: openrouteservice/utils.py:606
-msgid "Error creating destination layer: layer is not valid!"
-msgstr ""
-
-#: openrouteservice/utils.py:619
-msgid "Error saving the destination layer: could not write project!"
-msgstr ""
-
-#: openrouteservice/utils.py:643
-msgid "Error adding destination Layer to the project: layer already exists."
-msgstr ""
-
-#: openrouteservice/utils.py:653
-#, python-format
-msgid "Error opening destination layer %s: layer not found in QGIS project!"
-msgstr ""
-
-#: openrouteservice/utils.py:670
-msgid "Error transforming geometry from 4326 to destination layer CRS."
-msgstr ""
-
-#: openrouteservice/utils.py:674
-msgid "No compatible features returned from isochrone."
-msgstr ""
-
-#: openrouteservice/utils.py:677
-msgid "Destination layer is not editable."
-msgstr ""
-
-#: openrouteservice/utils.py:681
-msgid "Error adding features to the destination layer."
-msgstr ""
-
-#: openrouteservice/utils.py:685
-msgid "Error committing features to the destination layer."
-msgstr ""
-
-#: openrouteservice/utils.py:793
-#, python-format
-msgid "Error generating isochrone: %s."
-msgstr ""
-
-#: openrouteservice/utils.py:822
-msgid "Unknown error adding results to the destination layer."
-msgstr ""
-
-#: portal/forms.py:45
-msgid "Picture data"
-msgstr ""
-
-#: portal/forms.py:67
-msgid "Author and style data"
-msgstr ""
-
-#: portal/models.py:20 portal/templates/portal/picture_form.html:11
-#: portal/templates/portal/picture_form.html:14
-msgid "Picture"
-msgstr ""
-
-#: portal/models.py:21
-msgid "Main color"
-msgstr ""
-
-#: portal/models.py:22
-msgid "Main title color"
-msgstr ""
-
-#: portal/models.py:23
-msgid "Subtitle color"
-msgstr ""
-
-#: portal/models.py:24 portal/templates/portal/picture_list.html:41
-msgid "Author"
-msgstr ""
-
-#: portal/models.py:25
-msgid "Author URL"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:10
-msgid "Portal pictures"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:21
-msgid "Add, update or delete portal picture"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:31
-msgid "Pictures"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:40
-msgid "Image"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:42
-msgid "Author url"
-msgstr ""
-
-#: templates/403.html:7
-msgid "error page"
-msgstr ""
-
-#: templates/403.html:15
+#: templates/403.html:6
 msgid "Access denied"
-msgstr ""
+msgstr "åtkomst nekad"
 
-#: templates/403.html:17
-msgid "You don't have grant to access this section"
-msgstr ""
+#: templates/403.html:9
+msgid "You do not have permission to access this page."
+msgstr "Du har inte behörighet att öppna den här sidan."
 
-#: templates/404.html:11
+#: templates/404.html:6
 msgid "Oops! Page not found."
-msgstr ""
+msgstr "Hoppsan! Sidan kunde inte hittas."
 
-#: templates/404.html:13
+#: templates/404.html:9
 msgid "We could not find the page you were looking for."
-msgstr ""
+msgstr "Vi kunde inte hitta sidan du sökte."
 
-#: templates/base.html:193 templates/index.html:6
+#: templates/500.html:6
+msgid "Oops! Something went wrong."
+msgstr "Hoppsan! Något gick fel."
+
+#: templates/500.html:9
+msgid "An unexpected error has occurred on the server."
+msgstr "Ett oväntat fel har inträffat på servern."
+
+#: templates/admin/base.html:7
+msgid "G3W-ADMIN"
+msgstr "G3W-ADMIN"
+
+#: templates/admin/base.html:12
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: templates/admin/base.html:16
+msgid "Change password"
+msgstr "ändra lösenord"
+
+#: templates/admin/base.html:18
+msgid "Log out"
+msgstr "Logga ut"
+
+#: templates/base.html:183
 msgid "Dashboard"
-msgstr ""
+msgstr "Kontrollpanel"
 
-#: templates/base.html:232
-msgid "Version"
-msgstr ""
+#: templates/base.html:229
+#, python-format
+msgid ""
+"<strong>G3W-SUITE Version %(version)s</strong>: administration GIS "
+"application."
+msgstr "<strong>G3W-SUITE version %(version)s</strong>: GIS-administrationsprogram."
 
-#: templates/include/navbar_right_menu.html:10
+#: templates/base.html:236
+#, python-format
+msgid ""
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://"
+"www.gis3w.it\">GIS3W</a>.</strong> All rights reserved."
+msgstr "<strong>Upphovsrätt &copy; 2015–%(year)s <a href=\"http://www.gis3w.it\">GIS3W</a>.</strong> Med ensamrätt."
+
+#: templates/base.html:254
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr "Den här webbplatsen använder cookies för att ge dig bästa möjliga upplevelse"
+
+#: templates/base_login.html:25 templates/login.html:20
+msgid "Sign in to start your session"
+msgstr "Logga in för att starta din session"
+
+#: templates/base_login.html:29 templates/login.html:24
+#: templates/registration/password_reset_form.html:10
+#: templates/registration/username_recovery_form.html:10
+msgid "LOGIN ERROR"
+msgstr "INLOGGNINGSFEL"
+
+#: templates/base_login.html:30 templates/login.html:28
+#: templates/login.html:34
+msgid "Username and/or password uncorrect"
+msgstr "Felaktigt användarnamn och/eller lösenord"
+
+#: templates/base_login.html:45 templates/login.html:92
+#: templates/two_factor/_wizard_actions.html:17
+#: templates/two_factor/_wizard_actions.html:25
+#: templates/two_factor/_wizard_actions_login.html:9
+msgid "Sign In"
+msgstr "Logga in"
+
+#: templates/base_login.html:51 templates/login.html:120
+#: templates/registration/password_reset_form.html:22
+msgid "Forgot your password?"
+msgstr "Glömt lösenordet?"
+
+#: templates/base_login.html:58 templates/login.html:132
+msgid "Sign up"
+msgstr "Registrera dig"
+
+#: templates/include/login_page_version.html:2
+msgid " Version"
+msgstr " Version"
+
+#: templates/include/navbar_right_menu.html:11 templates/index.html:21
+#: templates/search.html:8 templates/search.html:33
 msgid "Search"
-msgstr ""
+msgstr "Sök"
 
-#: templates/include/navbar_right_menu.html:24
+#: templates/include/navbar_right_menu.html:25
 msgid "Frontend"
-msgstr ""
-
-#: templates/include/navbar_right_menu.html:45
-msgid "Registered on"
-msgstr ""
+msgstr "Webbgränssnitt"
 
 #: templates/include/navbar_right_menu.html:46
+msgid "Registered on"
+msgstr "Registrerad den"
+
+#: templates/include/navbar_right_menu.html:47
 msgid "Last login"
-msgstr ""
+msgstr "Senaste inloggning"
 
-#: templates/include/navbar_right_menu.html:53
+#: templates/include/navbar_right_menu.html:54
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
-#: templates/include/navbar_right_menu.html:56
+#: templates/include/navbar_right_menu.html:57
 msgid "Logout"
-msgstr ""
+msgstr "Logga ut"
 
-#: templates/include/sidebar_right.html:9
-msgid "Configurations"
-msgstr ""
+#: templates/include/sidebar_right.html:10
+msgid "Information"
+msgstr "Information"
 
-#: templates/include/sidebar_right.html:15
-msgid "Edit general data"
-msgstr ""
-
+#: templates/include/sidebar_right.html:13
 #: templates/include/sidebar_right.html:16
+msgid "System information"
+msgstr "Systeminformation"
+
+#: templates/include/sidebar_right.html:17
+msgid "System information about QGIS-Server etc."
+msgstr "Systeminformation om QGIS Server med mera."
+
+#: templates/include/sidebar_right.html:23
+msgid "Configurations"
+msgstr "Konfigurationer"
+
+#: templates/include/sidebar_right.html:30
+msgid "Edit general data"
+msgstr "Redigera allmänna uppgifter"
+
+#: templates/include/sidebar_right.html:31
 msgid "Frontend data and other"
-msgstr ""
+msgstr "Webbgränssnittsdata med mera"
 
-#: templates/include/sidebar_right.html:25
+#: templates/include/sidebar_right.html:39
 msgid "Django administration"
-msgstr ""
+msgstr "Django-administration"
 
-#: templates/include/sidebar_right.html:26
+#: templates/include/sidebar_right.html:40
 msgid "Go to staff administration section"
-msgstr ""
+msgstr "Gå till administrationsdelen för personal"
 
-#: templates/index.html:7
-msgid "Current situation"
-msgstr ""
+#: templates/index.html:11
+#, python-format
+msgid "Welcome back, %(name)s"
+msgstr "Välkommen tillbaka, %(name)s"
 
-#: templates/index.html:19
-msgid "Groups"
-msgstr ""
+#: templates/index.html:13
+msgid "Here is an overview of your geospatial workspaces."
+msgstr "Här är en översikt över dina geografiska arbetsytor."
 
-#: templates/index.html:26
-msgid "Show"
-msgstr ""
+#: templates/index.html:20
+msgid "Search groups, projects, layers…"
+msgstr "Sök efter grupper, projekt och lager"
 
-#: templates/index.html:32
+#: templates/index.html:35
+msgid "Map groups"
+msgstr "Kartgrupper"
+
+#: templates/index.html:46
+msgid "Projects"
+msgstr "Projekt"
+
+#: templates/index.html:55 templates/index.html:119
+#: templates/index.html:120
+msgid "Layers"
+msgstr "Lager"
+
+#: templates/index.html:64
+msgid "Bookmarked projects"
+msgstr "Bokmärkta projekt"
+
+#: templates/index.html:71
+msgid "Quick actions"
+msgstr "Snabbåtgärder"
+
+#: templates/index.html:73
+msgid "Browse groups"
+msgstr "Bläddra bland grupper"
+
+#: templates/index.html:75
+msgid "New group"
+msgstr "Ny grupp"
+
+#: templates/index.html:77
+msgid "Advanced search"
+msgstr "Avancerad sökning"
+
+#: templates/index.html:81
+msgid "Projects bookmarked"
+msgstr "Bokmärkta projekt"
+
+#: templates/index.html:94
+msgid "Project not accessible to anonymous users"
+msgstr "Projektet är inte tillgängligt för anonyma användare"
+
+#: templates/index.html:104
+msgid "Remove bookmark"
+msgstr "Ta bort bokmärke"
+
+#: templates/index.html:113
+msgid "Show map"
+msgstr "Visa karta"
+
+#: templates/index.html:114
+msgid "Map"
+msgstr "Karta"
+
+#: templates/index.html:123 templates/index.html:124
+msgid "Edit"
+msgstr "Redigera"
+
+#: templates/index.html:136
+msgid "No bookmarked projects yet"
+msgstr "Inga bokmärkta projekt ännu"
+
+#: templates/index.html:137
+msgid "Open any project map and click the bookmark icon to pin it here."
+msgstr "öppna en projektkarta och klicka på bokmärkesikonen för att fästa den här."
+
+#: templates/index.html:143
+msgid "Recent activity"
+msgstr "Senaste aktivitet"
+
+#: templates/index.html:160
+msgid "ago"
+msgstr "sedan"
+
+#: templates/index.html:169
 msgid "Module widgets"
-msgstr ""
+msgstr "Modulwidgetar"
 
-#: templates/login.html:21
-msgid "Sign in to start your session"
-msgstr ""
+#: templates/login.html:42 templates/two_factor/core/_login.html:17
+msgid ""
+"Use this form for entering backup tokens for logging in. These tokens have "
+"been generated for you to print and keep safe. Please enter one of these "
+"backup tokens to login to your account."
+msgstr "Använd det här formuläret för att logga in med reservkoder. Koderna har skapats så att du kan skriva ut och förvara dem säkert. Ange en av reservkoderna för att logga in på ditt konto."
 
-#: templates/login.html:25 templates/registration/password_reset_form.html:24
-msgid "LOGIN ERROR"
-msgstr ""
+#: templates/login.html:64 templates/two_factor/core/_login.html:31
+msgid "Or, alternatively, use one of your other authentication methods:"
+msgstr "Du kan också använda någon av dina andra autentiseringsmetoder:"
 
-#: templates/login.html:26
-msgid "Username and/or password uncorrect"
-msgstr ""
+#: templates/login.html:103 templates/two_factor/core/_login.html:51
+msgid "As a last resort, you can use a backup token:"
+msgstr "Som en sista utväg kan du använda en reservkod:"
 
-#: templates/login.html:47 templates/registration/password_reset_form.html:31
-msgid "Forgot your password?"
-msgstr ""
+#: templates/login.html:106 templates/two_factor/core/_login.html:54
+msgid "Use Backup Token"
+msgstr "Använd reservkod"
 
-#: templates/login.html:53
-#: templates/registration/password_reset_complete.html:26
-#: templates/registration/password_reset_confirm.html:47
-#: templates/registration/password_reset_done.html:26
-#: templates/registration/password_reset_form.html:45
-msgid " Version"
-msgstr ""
+#: templates/login.html:125
+#: templates/registration/username_recovery_form.html:22
+msgid "Forgot your username?"
+msgstr "Glömt användarnamnet?"
 
-#: templates/registration/password_reset_complete.html:22
+#: templates/otp/email/token.txt:1
+#, python-format
+msgid "This email was sent by %(domain)s for two-factor authentication (2FA)."
+msgstr "Det här e-postmeddelandet skickades av %(domain)s för tvåfaktorsautentisering (2FA)."
+
+#: templates/otp/email/token.txt:1
+msgid "This email was sent by G3W-SUITE for two-factor authentication (2FA)."
+msgstr "Det här e-postmeddelandet skickades av G3W-SUITE för tvåfaktorsautentisering (2FA)."
+
+#: templates/otp/email/token.txt:3
+#, python-format
+msgid "Your one-time password (OTP) token is: %(token)s"
+msgstr "Din engångskod (OTP) är: %(token)s"
+
+#: templates/registration/password_reset_complete.html:8
 msgid "Password reset complete"
-msgstr ""
+msgstr "Lösenordet har återställts"
 
-#: templates/registration/password_reset_complete.html:23
+#: templates/registration/password_reset_complete.html:9
 msgid "Your new password has been set. You can log in now on the"
-msgstr ""
+msgstr "Ditt nya lösenord har sparats. Du kan nu logga in på"
 
-#: templates/registration/password_reset_complete.html:23
+#: templates/registration/password_reset_complete.html:9
 msgid "log in page"
-msgstr ""
+msgstr "inloggningssidan"
 
-#: templates/registration/password_reset_confirm.html:22
+#: templates/registration/password_reset_confirm.html:9
 msgid "Enter new password"
-msgstr ""
+msgstr "Ange nytt lösenord"
 
-#: templates/registration/password_reset_confirm.html:29
+#: templates/registration/password_reset_confirm.html:16
 msgid "New password"
-msgstr ""
+msgstr "Nytt lösenord"
 
-#: templates/registration/password_reset_confirm.html:34
+#: templates/registration/password_reset_confirm.html:21
 msgid "Repeat password"
-msgstr ""
+msgstr "Upprepa lösenordet"
 
-#: templates/registration/password_reset_confirm.html:39
+#: templates/registration/password_reset_confirm.html:26
 msgid "Change my password"
-msgstr ""
+msgstr "ändra mitt lösenord"
 
-#: templates/registration/password_reset_confirm.html:44
+#: templates/registration/password_reset_confirm.html:31
 msgid ""
 "The password reset link <strong>was invalid</strong>, possibly because it "
 "has already been used.  Please request a new password reset."
-msgstr ""
+msgstr "Länken för att återställa lösenordet <strong>var ogiltig</strong>, kanske för att den redan har använts. Begär en ny återställning av lösenordet."
 
-#: templates/registration/password_reset_done.html:22
+#: templates/registration/password_reset_done.html:8
+#: templates/registration/username_recovery_done.html:8
 msgid "Check your inbox."
-msgstr ""
+msgstr "Kontrollera din inkorg."
 
-#: templates/registration/password_reset_done.html:23
+#: templates/registration/password_reset_done.html:9
 msgid ""
 "We've emailed you instructions for setting your password. You should receive "
 "the email shortly!"
-msgstr ""
+msgstr "Vi har skickat instruktioner för att ange ditt lösenord via e-post. Du bör få meddelandet inom kort!"
 
-#: templates/registration/password_reset_form.html:25
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr "Du för det här e-postmeddelandet eftersom du har begärt att återställa lösenordet för ditt användarkonto på %(site_name)s."
+
+#: templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Gå till följande sida och välj ett nytt lösenord:"
+
+#: templates/registration/password_reset_email.html:8
+msgid "Your username, in case you’ve forgotten:"
+msgstr "Ditt användarnamn, om du har glömt det:"
+
+#: templates/registration/password_reset_form.html:12
+#: templates/registration/username_recovery_form.html:12
 msgid "Email no present into database"
-msgstr ""
+msgstr "E-postadressen finns inte i databasen"
 
-#: templates/registration/password_reset_form.html:32
+#: templates/registration/password_reset_form.html:15
+#: templates/registration/username_recovery_form.html:15
+msgid "Checking the CAPTCHA is required"
+msgstr "Du måste slutföra CAPTCHA-kontrollen"
+
+#: templates/registration/password_reset_form.html:23
 msgid ""
 "Enter your email address below, and we'll email instructions for setting a "
 "new one."
-msgstr ""
+msgstr "Ange din e-postadress nedan så skickar vi instruktioner för att ange ett nytt lösenord."
 
-#: templates/registration/password_reset_form.html:40
+#: templates/registration/password_reset_form.html:32
 msgid "Send me instruction"
-msgstr ""
+msgstr "Skicka instruktioner"
 
-#: templates/search.html:6
-msgid "Search results for"
-msgstr ""
+#: templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
+msgstr "återställ lösenordet på %(site_name)s"
 
-#: templates/search.html:14
-msgid "Not results found!"
-msgstr ""
+#: templates/registration/username_recovery_done.html:9
+msgid "We've emailed you your username. You should receive the email shortly!"
+msgstr "Vi har skickat ditt användarnamn via e-post. Du bör få meddelandet inom kort!"
 
-#: templates/search.html:16
-msgid "Found "
-msgstr ""
+#: templates/registration/username_recovery_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a username recovery for "
+"your user account at %(site_name)s."
+msgstr "Du för det här e-postmeddelandet eftersom du har begärt att få användarnamnet för ditt konto på %(site_name)s."
 
-#: templates/search.html:16
-msgid " results."
-msgstr ""
+#: templates/registration/username_recovery_email.html:4
+msgid "Your username is:"
+msgstr "Ditt användarnamn är:"
+
+#: templates/registration/username_recovery_form.html:23
+msgid "Enter your email address below, and we'll email your username."
+msgstr "Ange din e-postadress nedan så skickar vi ditt användarnamn."
+
+#: templates/registration/username_recovery_form.html:32
+msgid "Send me username"
+msgstr "Skicka mitt användarnamn"
+
+#: templates/registration/username_recovery_subject.txt:2
+#, python-format
+msgid "Username recovery on %(site_name)s"
+msgstr "återställ användarnamn på %(site_name)s"
+
+#: templates/search.html:8
+msgid "Search results"
+msgstr "Sökresultat"
+
+#: templates/search.html:11
+msgid "for"
+msgstr "för"
+
+#: templates/search.html:19
+#, python-format
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] "%(counter)s träff"
+msgstr[1] "%(counter)s träffar"
+
+#: templates/search.html:22
+msgid "No results"
+msgstr "Inga resultat"
+
+#: templates/search.html:31
+msgid "Search groups, macro groups, projects..."
+msgstr "Sök efter grupper, makrogrupper och projekt..."
+
+#: templates/search.html:44
+msgid "No results found"
+msgstr "Inga resultat hittades"
+
+#: templates/search.html:45
+msgid "No item matches your query. Try a different keyword or check spelling."
+msgstr "Inget objekt matchar sökningen. Försök med ett annat sökord eller kontrollera stavningen."
+
+#: templates/socialaccount/authentication_error.html:5
+#: templates/socialaccount/authentication_error.html:8
+msgid "Social Network Login Failure"
+msgstr "Inloggning via socialt nätverk misslyckades"
+
+#: templates/socialaccount/authentication_error.html:10
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr "Ett fel inträffade vid inloggning med ditt konto på det sociala nätverket."
+
+#: templates/socialaccount/authentication_error.html:12
+msgid "Code"
+msgstr "Kod"
+
+#: templates/socialaccount/authentication_error.html:13
+msgid "Exception"
+msgstr "Undantag"
+
+#: templates/two_factor/_wizard_actions.html:11
+#: templates/two_factor/_wizard_actions_login.html:23
+msgid "Back"
+msgstr "Tillbaka"
+
+#: templates/two_factor/_wizard_actions.html:16
+#: templates/two_factor/_wizard_actions.html:24
+#: templates/two_factor/_wizard_actions_login.html:7
+msgid "Verify"
+msgstr "Verifiera"
+
+#: templates/two_factor/_wizard_actions.html:18
+#: templates/two_factor/_wizard_actions.html:26
+#: templates/two_factor/_wizard_actions_login.html:11
+msgid "Next"
+msgstr "Nästa"
+
+#: templates/two_factor/_wizard_actions.html:35
+#: templates/two_factor/_wizard_actions_login.html:32
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: templates/two_factor/core/_login.html:10
+msgid "Login"
+msgstr "Logga in"
+
+#: templates/two_factor/core/_login.html:13
+msgid "Enter your credentials."
+msgstr "Ange dina inloggningsuppgifter."
+
+#: templates/two_factor/core/backup_tokens.html:5
+#: templates/two_factor/profile/profile.html:37
+msgid "Backup Tokens"
+msgstr "Reservkoder"
+
+#: templates/two_factor/core/backup_tokens.html:10
+msgid ""
+"Backup tokens can be used when your primary and backup phone numbers aren't "
+"available. The backup tokens below can be used for login verification. If "
+"you've used up all your backup tokens, you can generate a new set of backup "
+"tokens. Only the backup tokens shown below will be valid."
+msgstr "Reservkoder kan användas när ditt primära telefonnummer och reservnumret inte är tillgängliga. Koderna nedan kan användas för att verifiera inloggningen. Om alla reservkoder har använts kan du skapa en ny uppsättning. Endast koderna som visas nedan är giltiga."
+
+#: templates/two_factor/core/backup_tokens.html:22
+msgid "Print these tokens and keep them somewhere safe."
+msgstr "Skriv ut koderna och förvara dem på ett säkert ställe."
+
+#: templates/two_factor/core/backup_tokens.html:24
+msgid "You don't have any backup codes yet."
+msgstr "Du har inga reservkoder ännu."
+
+#: templates/two_factor/core/backup_tokens.html:29
+#: templates/two_factor/core/setup_complete.html:16
+#: templates/two_factor/core/setup_complete.html:23
+msgid "Back to Account Security"
+msgstr "Tillbaka till kontosäkerhet"
+
+#: templates/two_factor/core/backup_tokens.html:30
+msgid "Generate Tokens"
+msgstr "Skapa koder"
+
+#: templates/two_factor/core/setup.html:9
+#: templates/two_factor/core/setup_complete.html:5
+#: templates/two_factor/profile/profile.html:60
+msgid "Enable Two-Factor Authentication"
+msgstr "Aktivera tvåfaktorsautentisering"
+
+#: templates/two_factor/core/setup.html:14
+msgid ""
+"You are about to take your account security to the next level. Follow the "
+"steps in this wizard to enable two-factor authentication."
+msgstr "Du är på väg att höja säkerheten för ditt konto. Följ stegen i guiden för att aktivera tvåfaktorsautentisering."
+
+#: templates/two_factor/core/setup.html:18
+msgid "Please select which authentication method you would like to use."
+msgstr "Välj vilken autentiseringsmetod du vill använda."
+
+#: templates/two_factor/core/setup.html:21
+msgid ""
+"To start using a token generator, please use your smartphone to scan the QR "
+"code below. For example, use Google Authenticator."
+msgstr "Om du vill börja använda en kodgenerator skannar du QR-koden nedan med din mobiltelefon. Du kan till exempel använda Google Authenticator."
+
+#: templates/two_factor/core/setup.html:25
+msgid ""
+"Alternatively you can use the following secret to setup TOTP in your "
+"authenticator or password manager manually."
+msgstr "Du kan också använda följande hemliga nyckel för att ställa in TOTP manuellt i din autentiseringsapp eller lösenordshanterare."
+
+#: templates/two_factor/core/setup.html:27
+msgid "TOTP Secret:"
+msgstr "TOTP-hemlighet:"
+
+#: templates/two_factor/core/setup.html:28
+msgid "Then, enter the token generated by the app."
+msgstr "Ange sedan koden som appen har genererat."
+
+#: templates/two_factor/core/setup.html:31
+msgid ""
+"Please enter the phone number you wish to receive the text messages on. This "
+"number will be validated in the next step."
+msgstr "Ange telefonnumret som du vill ta emot SMS på. Numret verifieras i nästa steg."
+
+#: templates/two_factor/core/setup.html:35
+msgid ""
+"Please enter the phone number you wish to be called on. This number will be "
+"validated in the next step."
+msgstr "Ange telefonnumret som du vill bli uppringd på. Numret verifieras i nästa steg."
+
+#: templates/two_factor/core/setup.html:40
+msgid "We are calling your phone right now, please enter the digits you hear."
+msgstr "Vi ringer upp dig nu. Ange siffrorna du här."
+
+#: templates/two_factor/core/setup.html:43
+msgid "We sent you a text message, please enter the tokens we sent."
+msgstr "Vi har skickat ett SMS till dig. Ange koden i meddelandet."
+
+#: templates/two_factor/core/setup.html:47
+msgid ""
+"We've encountered an issue with the selected authentication method. Please "
+"go back and verify that you entered your information correctly, try again, "
+"or use a different authentication method instead. If the issue persists, "
+"contact the site administrator."
+msgstr "Ett problem uppstod med den valda autentiseringsmetoden. Gå tillbaka och kontrollera att du har angett rätt uppgifter, försök igen eller välj en annan autentiseringsmetod. Kontakta webbplatsens administratör om problemet kvarstår."
+
+#: templates/two_factor/core/setup.html:54
+msgid ""
+"To identify and verify your YubiKey, please insert a token in the field "
+"below. Your YubiKey will be linked to your account."
+msgstr "Sätt in en kod från din YubiKey i fältet nedan för att identifiera och verifiera den. Din YubiKey kopplas till ditt konto."
+
+#: templates/two_factor/core/setup_complete.html:11
+msgid "Congratulations, you've successfully enabled two-factor authentication."
+msgstr "Gratulerar! Du har aktiverat tvåfaktorsautentisering."
+
+#: templates/two_factor/core/setup_complete.html:18
+msgid ""
+"However, it might happen that you don't have access to your primary token "
+"device. To enable account recovery, add a phone number."
+msgstr "Det kan hända att du inte har tillgång till din primära enhet för autentiseringskoder. Lägg till ett telefonnummer för att kunna återställa åtkomsten till kontot."
+
+#: templates/two_factor/core/setup_complete.html:25
+#: templates/two_factor/profile/profile.html:34
+msgid "Add Phone Number"
+msgstr "Lägg till telefonnummer"
+
+#: templates/two_factor/profile/disable.html:5
+msgid "Disable Two-factor Authentication"
+msgstr "Inaktivera tvåfaktorsautentisering"
+
+#: templates/two_factor/profile/disable.html:9
+msgid ""
+"You are about to disable two-factor authentication. This weakens your "
+"account security, are you sure?"
+msgstr "Du håller på att inaktivera tvåfaktorsautentisering. Det försämrar kontosäkerheten. Vill du fortsätta?"
+
+#: templates/two_factor/profile/disable.html:15
+msgid "Disable"
+msgstr "Inaktivera"
+
+#: templates/two_factor/profile/profile.html:6
+msgid "Account Security"
+msgstr "Kontosäkerhet"
+
+#: templates/two_factor/profile/profile.html:12
+#, python-format
+msgid "Primary method: %(primary)s"
+msgstr "Primär metod: %(primary)s"
+
+#: templates/two_factor/profile/profile.html:15
+msgid "Backup Phone Numbers"
+msgstr "Reservtelefonnummer"
+
+#: templates/two_factor/profile/profile.html:16
+msgid ""
+"If your primary method is not available, we are able to send backup tokens "
+"to the phone numbers listed below."
+msgstr "Om den primära metoden inte är tillgänglig kan vi skicka reservkoder till telefonnumren nedan."
+
+#: templates/two_factor/profile/profile.html:24
+msgid "Are you sure?"
+msgstr "är du säker?"
+
+#: templates/two_factor/profile/profile.html:27
+msgid "Unregister"
+msgstr "Ta bort registrering"
+
+#: templates/two_factor/profile/profile.html:39
+msgid ""
+"If you don't have any device with you, you can access your account using "
+"backup tokens."
+msgstr "Om du inte har någon enhet med dig kan du komma åt kontot med reservkoder."
+
+#: templates/two_factor/profile/profile.html:41
+#, python-format
+msgid "You have only one backup token remaining."
+msgid_plural "You have %(counter)s backup tokens remaining."
+msgstr[0] "Du har bara en reservkod kvar."
+msgstr[1] "Du har %(counter)s reservkoder kvar."
+
+#: templates/two_factor/profile/profile.html:48
+msgid "Show Codes"
+msgstr "Visa koder"
+
+#: templates/two_factor/profile/profile.html:50
+#: templates/two_factor/profile/profile.html:54
+msgid "Disable Two-Factor Authentication"
+msgstr "Inaktivera tvåfaktorsautentisering"
+
+#: templates/two_factor/profile/profile.html:51
+msgid ""
+"However we strongly discourage you to do so, you can also disable two-factor "
+"authentication for your account."
+msgstr "Du kan också inaktivera tvåfaktorsautentisering för kontot, men vi avråder starkt från det."
+
+#: templates/two_factor/profile/profile.html:56
+msgid ""
+"Two-factor authentication is not enabled for your account. Enable two-factor "
+"authentication for enhanced account security."
+msgstr "Tvåfaktorsautentisering är inte aktiverad för ditt konto. Aktivera den för att förbättra kontosäkerheten."

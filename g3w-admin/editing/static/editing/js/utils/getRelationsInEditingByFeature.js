@@ -5,8 +5,6 @@ import { getRelationFieldsFromRelation } from '../utils/getRelationFieldsFromRel
 const GUI = g3w.app;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
- * 
  * Get Relation in editing
  *
  * @param { Object } opts
@@ -15,8 +13,6 @@ const GUI = g3w.app;
  * @param opts.feature
  *
  * @returns { Array }
- * 
- * @since g3w-client-plugin-editing@v3.8.0
  */
 export function getRelationsInEditingByFeature({
   layerId,
@@ -43,13 +39,13 @@ export function getRelationsInEditingByFeature({
         relation: relation.getState(),
         // get relation attributes by feature
         relations: GUI.getPlugin('editing')
-          .getLayerById(relationLayerId)
-          .getEditor().readEditingFeatures()
+          .getToolBoxById(relationLayerId)
+          .readEditingFeatures()
           .filter(feature => ownField.every((field, i) => feature.get(field) == values[i])) // get relations by feature
           .map(relation => ({
             fields: getFieldsWithValues(layer, relation, { relation: true }),
             id:     relation.getId(),
-            select: false, /** @since v3.9.0 Used to set relation select or not **/
+            select: false, // whether select relation
           }))
       };
       relationinediting.validate = { valid: true };

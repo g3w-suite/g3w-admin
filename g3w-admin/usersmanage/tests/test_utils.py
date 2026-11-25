@@ -12,16 +12,20 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.test import TestCase, RequestFactory, Client
 from django.test.client import RequestFactory
 from django.forms import Form
+from django.core.files import File
 from django.dispatch import receiver
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_perms
 from crispy_forms.layout import Field
 from usersmanage.models import User, Userbackend, USER_BACKEND_TYPES
 from usersmanage.configs import *
 from usersmanage.utils import *
 from usersmanage.forms import G3WACLForm
 from core.forms import GroupForm, G3WRequestFormMixin
-from core.models import Group, G3WSpatialRefSys
+from core.models import Group, G3WSpatialRefSys, MapControl
+from core.tests.utils import create_dff_image, clear_dff_image
 from core.signals import pre_show_user_data
+from qdjango.utils.data import QgisProject
+from pathlib import Path
 from .base import BaseUsermanageTestCase
 from .utils import setup_testing_user_relations
 import copy
@@ -43,6 +47,92 @@ class UsersManageTest(BaseUsermanageTestCase):
         self.group_test = Group(name='Test', title='Test', srid=G3WSpatialRefSys.objects.get(srid=4326),
                                 header_logo_img='')
         self.group_test.save()
+
+    def test_acl_preserves_assignments_outside_selectable_querysets(self):
+        project_path = Path(__file__).resolve().parents[2] / 'qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs'
+        with project_path.open() as source, File(source) as project_file:
+            project = QgisProject(project_file)
+            project.group = self.group_test
+            project.save()
+
+        editor = self.test_editor2
+        assignments = (
+            ('viewer_users', [self.test_viewer1, self.test_viewer1_2],
+             'auth.change_user', 'addPermissionsToViewers', 'view_group', 'view_project'),
+            ('viewer_user_groups', [self.test_gu_viewer1, self.test_gu_viewer2],
+             'auth.change_group', 'add_permissions_to_viewer_user_groups', 'view_group', 'view_project'),
+            ('editor_user_groups', [self.test_gu_editor1, self.test_gu_editor2],
+             'auth.change_group', 'add_permissions_to_editor_user_groups',
+             'add_project_to_group', 'change_project'),
+        )
+        initial = {}
+        for field, subjects, manage_permission, grant_method, _, _ in assignments:
+            initial[field] = [subject.pk for subject in subjects]
+            assign_perm(manage_permission, editor, subjects[0])
+            if field == 'editor_user_groups':
+                getattr(self.group_test, grant_method)(initial[field])
+            else:
+                getattr(self.group_test, grant_method)(initial[field], propagate=True)
+
+        request = self.factory.request()
+        request.user = editor
+        form = TestForm(request=request, initial=initial, data={})
+        form.instance = self.group_test
+        self.assertTrue(form.is_valid(), form.errors)
+
+        for field, subjects, _, _, group_permission, project_permission in assignments:
+            self.assertIn(subjects[0], form.fields[field].queryset)
+            self.assertNotIn(subjects[1], form.fields[field].queryset)
+            for subject in subjects:
+                self.assertIn(group_permission, get_perms(subject, self.group_test))
+                self.assertIn(project_permission, get_perms(subject, project.instance))
+
+        form._ACLPolicy()
+
+        for _, subjects, _, _, group_permission, project_permission in assignments:
+            self.assertNotIn(group_permission, get_perms(subjects[0], self.group_test))
+            self.assertNotIn(project_permission, get_perms(subjects[0], project.instance))
+            self.assertIn(group_permission, get_perms(subjects[1], self.group_test))
+            self.assertIn(project_permission, get_perms(subjects[1], project.instance))
+
+    def test_editor2_can_propagate_viewer_permissions_to_projects(self):
+        project_path = Path(__file__).resolve().parents[2] / 'qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs'
+        with project_path.open() as source, File(source) as project_file:
+            project = QgisProject(project_file)
+            project.group = self.group_test
+            project.save()
+
+        request = self.factory.request()
+        request.user = self.test_editor2
+        self.group_test.addPermissionsToEditor(request.user)
+        viewer = self.test_viewer1_3
+        viewer_group = self.test_gu_viewer2
+        upload = create_dff_image(field_name='header_logo_img')
+        self.addCleanup(clear_dff_image)
+        map_control = MapControl.objects.create(name='zoom')
+        for propagate in (False, True):
+            with self.subTest(propagate=propagate):
+                form = GroupForm(request=request, instance=self.group_test, data={
+                    'name': self.group_test.name,
+                    'title': self.group_test.title,
+                    'srid': self.group_test.srid_id,
+                    'form_id': upload.form_id,
+                    'mapcontrols': [map_control.pk],
+                    'viewer_users': [viewer.pk],
+                    'viewer_user_groups': [viewer_group.pk],
+                    'propagate_viewers': propagate,
+                })
+                self.assertIn(
+                    'propagate_viewers',
+                    [field.name for field in form.helper.layout.get_field_names()]
+                )
+                self.assertTrue(form.is_valid(), form.errors)
+                form.save()
+                for subject in (viewer, viewer_group):
+                    self.assertIn('view_group', get_perms(subject, self.group_test))
+                    self.assertEqual(
+                        'view_project' in get_perms(subject, project.instance), propagate
+                    )
 
     def test_user_groups(self):
         """ Test same util function """
@@ -201,7 +291,7 @@ class UsersManageTest(BaseUsermanageTestCase):
         # As Editor level 2
         request.user = self.test_editor2
 
-        expected_e2 = copy.copy(expected_e1)[1:-1]
+        expected_e2 = copy.copy(expected_e1)[1:]
         del(expected_e2[1])
 
         form = TestForm(request=request)
@@ -323,7 +413,5 @@ class UsersManageTest(BaseUsermanageTestCase):
         self.assertEqual(set(perms), set([
             'add_user'
         ]))
-
-
 
 

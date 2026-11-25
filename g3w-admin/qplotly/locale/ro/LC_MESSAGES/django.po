@@ -1,90 +1,128 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Romanian.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:58+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: ro <info@g3wsuite.it>\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
 "2:1));\n"
-#: qplotly/api/widgets/serializers.py:44
-#, python-brace-format
-msgid ""
-"Layer with id {layer.qgs_layer_id} is no equal to setting {settings."
-"source_layer_id}"
-msgstr ""
+"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20) ? 1 : 2));\n"
 
 #: qplotly/models.py:12
 msgid "XML original settings"
-msgstr ""
+msgstr "Setări XML originale"
 
 #: qplotly/models.py:13
 msgid "Layer datasource"
-msgstr ""
+msgstr "Sursa de date a stratului"
 
 #: qplotly/models.py:14
 msgid "Use selected features only"
-msgstr ""
+msgstr "Utilizare doar a elementelor selectate"
 
 #: qplotly/models.py:15
 msgid "Use visible features only"
-msgstr ""
+msgstr "Utilizare doar a elementelor vizibile"
 
 #: qplotly/models.py:16
 msgid "Plot type"
-msgstr ""
+msgstr "Tip de diagramă"
 
 #: qplotly/models.py:17
 msgid "Plot title"
-msgstr ""
+msgstr "Titlul diagramei"
 
-#: qplotly/models.py:19
+#: qplotly/models.py:18
 msgid "Set as default plot on starting map"
-msgstr ""
+msgstr "Setare ca diagramă implicită la deschiderea hărții"
 
-#: qplotly/models.py:33
-msgid "XML is not a DataPlotly settings."
-msgstr ""
+#: qplotly/models.py:28
+msgid "Related widgets"
+msgstr "Widgeturi asociate"
+
+#: qplotly/models.py:32 qplotly/models.py:127
+msgid "Order"
+msgstr "Ordin"
 
 #: qplotly/models.py:39
-#, python-brace-format
-msgid ""
-"Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
-msgstr ""
+msgid "SChart show position"
+msgstr "Poziția de afișare SChart"
 
-#: qplotly/models.py:43
+#: qplotly/models.py:57
+msgid "XML is not a DataPlotly settings."
+msgstr "XML-ul nu conține setări DataPlotly."
+
+#: qplotly/models.py:68
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
 "values."
-msgstr ""
+msgstr "Sursa de date a stratului din setările DataPlotly nu corespunde sursei de date din valori."
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:9
-msgid "Actions"
-msgstr ""
+#: qplotly/models.py:83
+msgid "Order must be \"asc\" or \"desc\"."
+msgstr "Ordinea trebuie să fie \"asc\" sau \"desc\"."
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:10
-msgid "Name"
-msgstr ""
+#: qplotly/models.py:110
+msgid "Source widget"
+msgstr "Widget sursă"
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:11
-msgid "Type"
-msgstr ""
+#: qplotly/models.py:116
+msgid "Target widget"
+msgstr "Widget destinație"
 
-#: qplotly/templates/qplotly/ajax/layer_widgets.html:12
-msgid "Linked"
-msgstr ""
+#: qplotly/models.py:122
+msgid "Project"
+msgstr "Proiect"
+
+#: qplotly/models.py:135
+msgid "QPlotly Widget relation"
+msgstr "Relație între widgeturi QPlotly"
+
+#: qplotly/models.py:136
+msgid "QPlotly Widget relations"
+msgstr "Relații între widgeturi QPlotly"
 
 #: qplotly/templates/qplotly/layer_action.html:8
 msgid "Qplotly widgets"
-msgstr ""
+msgstr "Widgeturi Qplotly"
+
+#: qplotly/templates/qplotly/plots_list_order.html:9
+msgid "Reorder widgets"
+msgstr "Reordonare widgeturi"
+
+#: qplotly/templates/qplotly/plots_list_order.html:10
+msgid ""
+"Drag and drop the rows to change the order in which the Qplotly widgets will "
+"appear."
+msgstr "Trageți și plasați rândurile pentru a modifica ordinea în care vor apărea widgeturile Qplotly."
+
+#: qplotly/templates/qplotly/plots_list_order.html:18
+msgid "Title"
+msgstr "Titlu"
+
+#: qplotly/templates/qplotly/plots_list_order.html:19
+msgid "Type"
+msgstr "Tip"
+
+#: qplotly/templates/qplotly/plots_list_order.html:25
+msgid "Drag to reorder"
+msgstr "Trageți pentru reordonare"
+
+#: qplotly/templates/qplotly/plots_list_order.html:29
+msgid "Has related widgets"
+msgstr "Are widgeturi asociate"
+
+#: qplotly/templates/qplotly/plots_list_order_action.html:5
+#: qplotly/templates/qplotly/plots_list_order_action.html:8
+msgid "Project's Qploty Widgets order"
+msgstr "Ordinea widgeturilor Qploty ale proiectului"

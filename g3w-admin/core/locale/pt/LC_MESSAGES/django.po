@@ -1,72 +1,70 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Portuguese.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-12 16:43+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: pt_PT\n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: pt <info@g3wsuite.it>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/admin.py:25
+#: core/admin.py:29
 msgid "Basic settings"
 msgstr "Configurações básicas"
 
-#: core/admin.py:28
+#: core/admin.py:32
 msgid "Access settings"
 msgstr "Configurações de acesso"
 
-#: core/admin.py:32
+#: core/admin.py:36
 msgid "Display settings"
 msgstr "Configurações de exibição"
 
-#: core/admin.py:36
+#: core/admin.py:40
 msgid "Additional settings"
 msgstr "Configurações adicionais"
 
-#: core/api/base/views.py:143
+#: core/api/base/views.py:154
 msgid "Data are not correct or insufficent!"
 msgstr "Os dados não estão corretos ou são insuficientes!"
 
-#: core/api/base/views.py:149
+#: core/api/base/views.py:160
 msgid "A error server is occured!"
 msgstr "Ocorreu um erro no servidor!"
 
-#: core/api/base/views.py:157
+#: core/api/base/views.py:168
 msgid "Not found"
 msgstr "Não encontrado"
 
-#: core/api/base/views.py:163
+#: core/api/base/views.py:174
 msgid "Permission denied"
 msgstr "Permissão negada"
 
-#: core/api/views.py:49
+#: core/api/views.py:36
 msgid "Expression evaluation error."
 msgstr "Erro na avaliação da expressão."
 
-#: core/api/views.py:54
+#: core/api/views.py:41
 msgid "Expression parse error."
 msgstr "Erro na análise da expressão."
 
-#: core/api/views.py:60
+#: core/api/views.py:47
 msgid "Expression empty error."
 msgstr "Erro de expressão vazia."
 
-#: core/api/views.py:66
+#: core/api/views.py:53
 msgid "Expression form data error."
 msgstr "Erro nos dados do formulário da expressão."
 
-#: core/api/views.py:72
+#: core/api/views.py:59
 msgid "Layer error."
 msgstr "Erro na camada."
 
@@ -78,9 +76,13 @@ msgstr "Pesquisar"
 msgid "Law"
 msgstr "Lei"
 
-#: core/forms.py:55 core/forms.py:425
+#: core/forms.py:55 core/forms.py:430
 msgid "General data"
 msgstr "Dados gerais"
+
+#: core/forms.py:60 core/forms.py:245 core/forms.py:435
+msgid "Translatable fields"
+msgstr "Campos traduzíveis"
 
 #: core/forms.py:80
 msgid "GEO data"
@@ -98,50 +100,43 @@ msgstr "Logo/Imagem"
 msgid "Copyright"
 msgstr "Direitos de autor"
 
-#: core/forms.py:201
-#, python-brace-format
-msgid ""
-"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
-msgstr ""
-"SRID EPSG:{srid} não é igual ao SRID do projeto atual EPSG:{layer_srid}"
-
-#: core/forms.py:236
+#: core/forms.py:241
 msgid "Frontend home data"
 msgstr "Dados da página inicial do frontend"
 
-#: core/forms.py:261
+#: core/forms.py:266
 msgid "Frontend about data"
 msgstr "Dados acerca do frontend"
 
-#: core/forms.py:282
+#: core/forms.py:287
 msgid "Frontend groups map data"
 msgstr "Dados acerca do dos grupos de mapas do frontend"
 
-#: core/forms.py:298
+#: core/forms.py:303
 msgid "Frontend login data"
 msgstr "Dados de login do frontend"
 
-#: core/forms.py:316
+#: core/forms.py:321
 msgid "Frontend social data"
 msgstr "Dados sociais do frontend"
 
-#: core/forms.py:338
+#: core/forms.py:343
 msgid "Map client data"
 msgstr "Dados do cliente de mapa"
 
-#: core/forms.py:356
+#: core/forms.py:361
 msgid "Registration"
 msgstr "Registo"
 
-#: core/forms.py:382
+#: core/forms.py:387
 msgid "Editor users"
 msgstr "Utilizadores editores"
 
-#: core/forms.py:402
+#: core/forms.py:407
 msgid "ACL Users"
 msgstr "Utilizadores ACL"
 
-#: core/forms.py:434
+#: core/forms.py:439
 msgid ""
 "<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
@@ -149,94 +144,173 @@ msgstr ""
 "<b>Atenção!</b> Estas configurações são válidas apenas para grupos de mapas "
 "com apenas um MacroGrupo"
 
-#: core/forms.py:475
+#: core/forms.py:480
 msgid "Macro cartographic group"
 msgstr "Grupo cartográfico macro"
 
-#: core/forms.py:477
+#: core/forms.py:482
 msgid "Editor level 1"
 msgstr "Editor nível 1"
 
-#: core/forms.py:478
+#: core/forms.py:483
 msgid "Editor level 2"
 msgstr "Editor nível 2"
 
-#: core/forms.py:479
+#: core/forms.py:484
 msgid "User editor group"
 msgstr "Grupo de utilizadores editores"
 
-#: core/forms.py:480
+#: core/forms.py:485
 msgid "User viewer group"
 msgstr "Grupo de utilizadores visualizadores"
 
-#: core/models.py:82
-msgid "Map control"
-msgstr "Controlo do mapa"
+#: core/models.py:27
+msgid "Qdjango2 module"
+msgstr "Módulo Qdjango2"
 
-#: core/models.py:83
-msgid "Map controls"
-msgstr "Controlos do mapa"
+#: core/models.py:31
+msgid "Type header"
+msgstr "Cabeçalho do tipo"
 
-#: core/models.py:91
-msgid "Identification name"
-msgstr "Nome de identificação"
+#: core/models.py:32
+msgid "Icon CSS class"
+msgstr "Classe CSS do ícone"
 
-#: core/models.py:92
-msgid "Internal identification Macrogroup name"
-msgstr "Nome interno de identificação do Macrogrupo"
+#: core/models.py:39 core/models.py:151
+#: core/templates/core/ajax/group_detail.html:9
+msgid "SRID"
+msgstr "SRID"
 
-#: core/models.py:93 core/models.py:132 core/models.py:418
-#: core/templates/core/ajax/macrogroup_detail.html:7
+#: core/models.py:40
+msgid "SRS name"
+msgstr "Nome do SRS"
+
+#: core/models.py:41
+msgid "SRS ID"
+msgstr "ID do SRS"
+
+#: core/models.py:42
+msgid "WKT SRS"
+msgstr "SRS WKT"
+
+#: core/models.py:43
+msgid "PROJ coordinate definition"
+msgstr "Definição de coordenadas PROJ"
+
+#: core/models.py:60 core/models.py:78 core/models.py:136
+msgid "Name"
+msgstr "Nome"
+
+#: core/models.py:61 core/models.py:96 core/models.py:137
+#: core/models.py:425 core/templates/core/ajax/macrogroup_detail.html:8
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
 msgstr "Título"
 
-#: core/models.py:94 core/models.py:133
-#: core/templates/core/ajax/macrogroup_detail.html:9
+#: core/models.py:62
+msgid "Icon"
+msgstr "Ícone"
+
+#: core/models.py:63 core/models.py:79 core/models.py:97
+#: core/models.py:138 core/templates/core/ajax/macrogroup_detail.html:10
 msgid "Description"
 msgstr "Descrição"
 
-#: core/models.py:95 core/models.py:140
+#: core/models.py:64
+msgid "Property"
+msgstr "Propriedade"
+
+#: core/models.py:70
+
+#| msgid "Layer"
+msgid "Base Layer"
+msgstr "Camada base"
+
+#: core/models.py:71
+
+#| msgid "Layer"
+msgid "Base Layers"
+msgstr "Camadas base"
+
+#: core/models.py:85
+msgid "Map control"
+msgstr "Controlo do mapa"
+
+#: core/models.py:86 core/models.py:157
+msgid "Map controls"
+msgstr "Controlos do mapa"
+
+#: core/models.py:94
+msgid "Identification name"
+msgstr "Nome de identificação"
+
+#: core/models.py:95
+msgid "Internal identification Macrogroup name"
+msgstr "Nome interno de identificação do Macrogrupo"
+
+#: core/models.py:98 core/models.py:145
 msgid "Logo image"
 msgstr "Imagem do logótipo"
 
-#: core/models.py:96 core/models.py:142
+#: core/models.py:99 core/models.py:147
 msgid "Logo link"
 msgstr "Link do logótipo"
 
-#: core/models.py:97 core/models.py:143
+#: core/models.py:100 core/models.py:148
 msgid "Enter link with http:// or https//"
 msgstr "Introduza o link com http:// ou https//"
 
-#: core/models.py:98
+#: core/models.py:101
 msgid "Use title for client"
 msgstr "Usar título para o cliente"
 
-#: core/models.py:99 core/models.py:167
+#: core/models.py:102 core/models.py:172
 msgid "Use logo image for client"
 msgstr "Usar imagem do logótipo para o cliente"
 
-#: core/models.py:102 core/models.py:135
+#: core/models.py:105 core/models.py:140
 msgid "Slug"
 msgstr "Slug"
 
-#: core/models.py:131
-msgid "Name"
-msgstr "Nome"
+#: core/models.py:128
 
-#: core/models.py:137
+#| msgid "MACRO Groups"
+msgid "MACRO Group"
+msgstr "Grupo MACRO"
+
+#: core/models.py:129 core/utils/forms.py:48
+msgid "MACRO Groups"
+msgstr "Grupos MACRO"
+
+#: core/models.py:142
 msgid "Is active"
 msgstr "Está ativo"
 
-#: core/models.py:159
+#: core/models.py:154
+
+#| msgid "Default base layer"
+msgid "Base layers"
+msgstr "Camadas base"
+
+#: core/models.py:160
+msgid "Background color"
+msgstr "Cor de fundo"
+
+#: core/models.py:164
 msgid "Terms of use text"
 msgstr "Texto dos termos de uso"
 
-#: core/models.py:162
+#: core/models.py:167
 msgid "Terms of use link"
 msgstr "Link dos termos de uso"
 
-#: core/models.py:168
+#: core/models.py:170
+
+#| msgid "MACRO Groups"
+msgid "MACRO groups"
+msgstr "Grupos MACRO"
+
+#: core/models.py:173
 msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
@@ -245,137 +319,198 @@ msgstr ""
 "como logótipo do cliente. Se a opção do MacroGrupo estiver ativa, esta opção "
 "tem precedência"
 
-#: core/models.py:409 core/templates/core/group_form.html:11
+#: core/models.py:178 core/models.py:416
 msgid "Group"
 msgstr "Grupo"
 
-#: core/models.py:410
+#: core/models.py:179 core/templates/core/ajax/macrogroup_detail.html:12
+#: core/templates/core/macrogroup_list_table.html:29
+msgid "Groups"
+msgstr "Grupos"
+
+#: core/models.py:417
 msgid "Project type"
 msgstr "Tipo de projeto"
 
-#: core/models.py:411
+#: core/models.py:418
 msgid "Project type id"
 msgstr "ID do tipo de projeto"
 
-#: core/models.py:419
+#: core/models.py:426
 msgid "Subtitle"
 msgstr "Subtítulo"
 
-#: core/models.py:420
+#: core/models.py:427
 msgid "Home description"
 msgstr "Descrição da página inicial"
 
-#: core/models.py:421
+#: core/models.py:428
 msgid "About title"
 msgstr "Título sobre"
 
-#: core/models.py:422
+#: core/models.py:429
 msgid "About description"
 msgstr "Descrição sobre"
 
-#: core/models.py:423
+#: core/models.py:430
 msgid "About name"
 msgstr "Nome sobre"
 
-#: core/models.py:424
+#: core/models.py:431
 msgid "About phone"
 msgstr "Telefone sobre"
 
-#: core/models.py:425
+#: core/models.py:432
 msgid "About email"
 msgstr "E-mail sobre"
 
-#: core/models.py:426
+#: core/models.py:433
 msgid "About address"
 msgstr "Endereço sobre"
 
-#: core/models.py:427
+#: core/models.py:434
 msgid "Groups title"
 msgstr "Título dos grupos"
 
-#: core/models.py:428
+#: core/models.py:435
 msgid "Groups map description"
 msgstr "Descrição dos grupos de mapas"
 
-#: core/models.py:429
+#: core/models.py:436
 msgid "Login title"
 msgstr "Título de login"
 
-#: core/models.py:430
+#: core/models.py:437
 msgid "Login description"
 msgstr "Descrição de login"
 
-#: core/models.py:431
+#: core/models.py:438
 msgid "Suite logo"
 msgstr "Logótipo do Suite"
 
-#: core/models.py:432
+#: core/models.py:439
 msgid "Suite logo URL"
 msgstr "URL do logótipo do Suite"
 
-#: core/models.py:433
+#: core/models.py:440
 msgid "Registration introductory message"
 msgstr "Mensagem introdutória de registo"
 
-#: core/models.py:436
+#: core/models.py:443
 msgid "Credits"
 msgstr "Créditos"
 
-#: core/models.py:439
+#: core/models.py:446
 msgid "Main map title"
 msgstr "Título do mapa principal"
 
-#: core/models.py:441
+#: core/models.py:448
 msgid "Facebook link"
 msgstr "Link do Facebook"
 
-#: core/models.py:442
+#: core/models.py:449
 msgid "Twitter link"
 msgstr "Link do Twitter"
 
-#: core/models.py:443
+#: core/models.py:450
 msgid "Google+ link"
 msgstr "Link do Google+"
 
-#: core/models.py:444
+#: core/models.py:451
 msgid "Youtube link"
 msgstr "Link do Youtube"
 
-#: core/models.py:445
+#: core/models.py:452
 msgid "Instagram link"
 msgstr "Link do Instagram"
 
-#: core/models.py:446
+#: core/models.py:453
 msgid "Flickr link"
 msgstr "Link do Flickr"
 
-#: core/models.py:447
+#: core/models.py:454
 msgid "Tripadvisor link"
 msgstr "Link do Tripadvisor"
 
-#: core/models.py:461
+#: core/models.py:462
+
+#| msgid "About name"
+msgid "App name"
+msgstr "Nome da aplicação"
+
+#: core/models.py:463
+
+#| msgid "Project"
+msgid "Project ID"
+msgstr "ID do projeto"
+
+#: core/models.py:464
+msgid "Alias"
+msgstr "Alias"
+
+#: core/models.py:468
 msgid "NotSet"
 msgstr "Não definido"
 
-#: core/models.py:462
+#: core/models.py:469
 msgid "Info"
 msgstr "Informação"
 
-#: core/models.py:463
+#: core/models.py:470
 msgid "Warning"
 msgstr "Aviso"
 
-#: core/models.py:464
+#: core/models.py:471
 msgid "Debug"
 msgstr "Depuração"
 
-#: core/models.py:465
+#: core/models.py:472
 msgid "Error"
 msgstr "Erro"
 
-#: core/models.py:466
+#: core/models.py:473
 msgid "Fatal"
 msgstr "Fatal"
+
+#: core/models.py:479
+msgid "Logger name"
+msgstr "Nome do logger"
+
+#: core/models.py:480
+msgid "Level"
+msgstr "Nível"
+
+#: core/models.py:481
+msgid "Message"
+msgstr "Mensagem"
+
+#: core/models.py:482
+msgid "Trace"
+msgstr "Rastreio"
+
+#: core/models.py:483
+msgid "Created at"
+msgstr "Criado em"
+
+#: core/models.py:490 core/models.py:491
+msgid "Logging"
+msgstr "Registo"
+
+#: core/models.py:500
+msgid "Original URL"
+msgstr "URL original"
+
+#: core/models.py:501
+msgid "Short code"
+msgstr "Código curto"
+
+#: core/models.py:523 core/templates/core/ajax/macrogroup_detail.html:6
+msgid "Data"
+msgstr "Dados"
+
+#: core/models.py:524
+msgid "Permalink code"
+msgstr "Código do permalink"
 
 #: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
 msgid "error page"
@@ -393,240 +528,356 @@ msgstr "Não pode adicionar um novo grupo"
 msgid "You can't add new Project"
 msgstr "Não pode adicionar um novo projeto"
 
-#: core/templates/core/ajax/group_detail.html:5
+#: core/templates/core/ajax/group_detail.html:6
 msgid "Geografic component"
 msgstr "Componente geográfico"
 
-#: core/templates/core/ajax/group_detail.html:7
+#: core/templates/core/ajax/group_detail.html:8
 msgid "Geographic coordinate system"
 msgstr "Sistema de coordenadas geográficas"
 
-#: core/templates/core/ajax/group_detail.html:8
-msgid "SRID"
-msgstr "SRID"
-
-#: core/templates/core/ajax/group_detail.html:9
+#: core/templates/core/ajax/group_detail.html:10
 msgid "Units"
 msgstr "Unidades"
 
-#: core/templates/core/ajax/group_detail.html:10
+#: core/templates/core/ajax/group_detail.html:11
 msgid "Principal map"
 msgstr "Mapa principal"
 
-#: core/templates/core/ajax/group_detail.html:11
+#: core/templates/core/ajax/group_detail.html:12
 msgid "Max scale"
 msgstr "Escala máxima"
 
-#: core/templates/core/ajax/group_detail.html:12
+#: core/templates/core/ajax/group_detail.html:13
 msgid "Min scale"
 msgstr "Escala mínima"
 
-#: core/templates/core/ajax/group_detail.html:13
+#: core/templates/core/ajax/group_detail.html:14
 msgid "Overview Map"
 msgstr "Mapa de visão geral"
 
-#: core/templates/core/ajax/group_detail.html:14
+#: core/templates/core/ajax/group_detail.html:15
 msgid "Panoramic max scale"
 msgstr "Escala máxima panorâmica"
 
-#: core/templates/core/ajax/group_detail.html:15
+#: core/templates/core/ajax/group_detail.html:16
 msgid "Panoramic min scale"
 msgstr "Escala mínima panorâmica"
 
-#: core/templates/core/ajax/group_detail.html:18
+#: core/templates/core/ajax/group_detail.html:19
 msgid "Users"
 msgstr "Utilizadores"
 
-#: core/templates/core/ajax/group_detail.html:21
+#: core/templates/core/ajax/group_detail.html:22
 msgid "Editor level 1 user"
 msgstr "Utilizador editor nível 1"
 
-#: core/templates/core/ajax/group_detail.html:25
+#: core/templates/core/ajax/group_detail.html:26
 msgid "Editor level 2 user"
 msgstr "Utilizador editor nível 2"
 
-#: core/templates/core/ajax/group_detail.html:26
+#: core/templates/core/ajax/group_detail.html:27
 msgid "Viewer users"
 msgstr "Utilizadores visualizadores"
 
-#: core/templates/core/ajax/group_detail.html:27
+#: core/templates/core/ajax/group_detail.html:28
 msgid "Editor user groups"
 msgstr "Grupos de utilizadores editores"
 
-#: core/templates/core/ajax/group_detail.html:28
+#: core/templates/core/ajax/group_detail.html:29
 msgid "Viewer user groups"
 msgstr "Grupos de utilizadores visualizadores"
 
-#: core/templates/core/ajax/group_detail.html:35
+#: core/templates/core/ajax/group_detail.html:36
 msgid "Interface component"
 msgstr "Componente da interface"
 
-#: core/templates/core/ajax/group_detail.html:37
+#: core/templates/core/ajax/group_detail.html:38
 msgid "Interface language"
 msgstr "Idioma da interface"
 
-#: core/templates/core/ajax/group_detail.html:38
+#: core/templates/core/ajax/group_detail.html:39
 msgid "Language"
 msgstr "Idioma"
 
-#: core/templates/core/ajax/group_detail.html:39
+#: core/templates/core/ajax/group_detail.html:40
 msgid "Associated logo"
 msgstr "Logótipo associado"
 
-#: core/templates/core/ajax/group_detail.html:40
+#: core/templates/core/ajax/group_detail.html:41
 msgid "HeaderLogoImg"
 msgstr "Imagem do logótipo do cabeçalho"
 
-#: core/templates/core/ajax/group_detail.html:48
+#: core/templates/core/ajax/group_detail.html:49
 msgid "HeaderLogoHeight"
 msgstr "Altura do logótipo do cabeçalho"
 
-#: core/templates/core/ajax/group_detail.html:49
+#: core/templates/core/ajax/group_detail.html:50
 msgid "HeaderLogoLink"
 msgstr "Link do logótipo do cabeçalho"
 
-#: core/templates/core/ajax/group_detail.html:50
+#: core/templates/core/ajax/group_detail.html:51
 msgid "Terms of use"
 msgstr "Termos de uso"
 
-#: core/templates/core/ajax/group_detail.html:51
+#: core/templates/core/ajax/group_detail.html:52
 msgid "HeaderTermsOfUseText"
 msgstr "Texto dos termos de uso do cabeçalho"
 
-#: core/templates/core/ajax/group_detail.html:52
+#: core/templates/core/ajax/group_detail.html:53
 msgid "HeaderTermsOfUseLink"
 msgstr "Link dos termos de uso do cabeçalho"
 
-#: core/templates/core/ajax/macrogroup_detail.html:5
-msgid "Data"
-msgstr "Dados"
-
-#: core/templates/core/ajax/macrogroup_detail.html:11
-#: core/templates/core/macrogroup_list_table.html:29
-msgid "Groups"
-msgstr "Grupos"
-
-#: core/templates/core/ajax/system_info.html:4
-#: core/templates/core/ajax/system_info.html:17
+#: core/templates/core/ajax/system_info.html:9
+#: core/templates/core/ajax/system_info.html:52
 msgid "General"
 msgstr "Geral"
 
-#: core/templates/core/ajax/system_info.html:10
-msgid "DataBase"
-msgstr "Base de dados"
+#: core/templates/core/ajax/system_info.html:31
 
-#: core/templates/core/ajax/system_info.html:16
+#| msgid "DataBase"
+msgid "Databases"
+msgstr "Bases de dados"
+
+#: core/templates/core/ajax/system_info.html:42
+msgid "No database connections detected."
+msgstr "Não foram detetadas ligações a bases de dados."
+
+#: core/templates/core/ajax/system_info.html:52
+#: core/templates/core/ajax/system_info.html:66
+#: core/templates/core/ajax/system_info.html:88
 msgid "Libraries"
 msgstr "Bibliotecas"
 
-#: core/templates/core/ajax/system_info.html:21
+#: core/templates/core/ajax/system_info.html:66
 msgid "Geographic"
 msgstr "Geográfico"
 
-#: core/templates/core/ajax/system_info.html:27
-msgid "Python"
-msgstr "Python"
+#: core/templates/core/generalsuitedata_form.html:15
 
-#: core/templates/core/generalsuitedata_form.html:11
-msgid "General suite data"
-msgstr "Dados gerais do suite"
+#| msgid "General suite data"
+msgid "General suite settings"
+msgstr "Definições gerais da suite"
 
-#: core/templates/core/generalsuitedata_form.html:24
-#: core/templates/core/group_form.html:45
-#: core/templates/core/macrogroup_form.html:51
-msgid "Alert"
-msgstr "Alerta"
+#: core/templates/core/generalsuitedata_form.html:18
+msgid ""
+"Branding, default texts and global preferences for the whole G3W-Suite "
+"installation."
+msgstr "Marca, textos predefinidos e preferências globais de toda a instalação do G3W-Suite."
 
-#: core/templates/core/generalsuitedata_form.html:25
-#: core/templates/core/group_form.html:46
-#: core/templates/core/macrogroup_form.html:52
-msgid "Some errors on form. Check it and send again."
-msgstr "Alguns erros no formulário. Verifique e envie novamente."
+#: core/templates/core/generalsuitedata_form.html:23
+msgid "Back to dashboard"
+msgstr "Voltar ao painel de controlo"
 
-#: core/templates/core/group_deactive_list.html:10
-msgid "Cartographic groups deactivated"
+#: core/templates/core/generalsuitedata_form.html:40
+#: core/templates/core/group_form.html:68
+#: core/templates/core/macrogroup_form.html:67
+msgid "Some errors on form"
+msgstr "Existem erros no formulário"
+
+#: core/templates/core/generalsuitedata_form.html:41
+#: core/templates/core/group_form.html:69
+#: core/templates/core/macrogroup_form.html:68
+msgid "Check the highlighted fields and submit again."
+msgstr "Verifique os campos assinalados e volte a submeter."
+
+#: core/templates/core/group_deactive_list.html:15
+
+#| msgid "Macro cartographic group"
+msgid "Deactivated cartographic groups"
 msgstr "Grupos cartográficos desativados"
 
-#: core/templates/core/group_deactive_list.html:34
-#: core/templates/core/group_list.html:97
-#: core/templates/core/search/group.html:25
-msgid "Group projects"
-msgstr "Projetos do grupo"
+#: core/templates/core/group_deactive_list.html:18
+msgid ""
+"Groups currently in the bin. Restore them to bring projects back online, or "
+"delete permanently to free up space."
+msgstr "Grupos atualmente na reciclagem. Restaure-os para voltar a disponibilizar os projetos ou elimine-os definitivamente para libertar espaço."
 
-#: core/templates/core/group_deactive_list.html:34
-#: core/templates/core/group_form.html:33
-#: core/templates/core/group_list.html:97
-#: core/templates/core/project_list.html:11
+#: core/templates/core/group_deactive_list.html:23
+#: core/templates/core/group_deactive_list.html:108
+
+#| msgid "Cartographic groups"
+msgid "Back to active groups"
+msgstr "Voltar aos grupos ativos"
+
+#: core/templates/core/group_deactive_list.html:38
+msgid "deactivated group"
+msgid_plural "deactivated groups"
+msgstr[0] "grupo desativado"
+msgstr[1] "grupos desativados"
+
+#: core/templates/core/group_deactive_list.html:52
+
+#| msgid "Delete/Deactivate"
+msgid "Deactivated"
+msgstr "Desativado"
+
+#: core/templates/core/group_deactive_list.html:62
+#: core/templates/core/group_list.html:136
 msgid "Projects"
 msgstr "Projetos"
 
-#: core/templates/core/group_deactive_list.html:41
-#: core/templates/core/group_list.html:104
-#: core/templates/core/macrogroup_list.html:66
+#: core/templates/core/group_deactive_list.html:67
+#: core/templates/core/group_list.html:149
+#: core/templates/core/macrogroup_list.html:128
 #: core/templates/core/macrogroup_list_table.html:37
-#: core/templates/core/project_list.html:75
-#: core/templates/core/project_list.html:77
-#: core/templates/core/search/group.html:24
-#: core/templates/core/search/macrogroup.html:22
+#: core/templates/core/project_list.html:71
+#: core/templates/core/search/group.html:40
+#: core/templates/core/search/macrogroup.html:38
 msgid "Show detail"
 msgstr "Mostrar detalhes"
 
-#: core/templates/core/group_deactive_list.html:50
-msgid "Redo/Active"
-msgstr "Refazer/Ativar"
+#: core/templates/core/group_deactive_list.html:76
 
-#: core/templates/core/group_deactive_list.html:59
-#: core/templates/core/macrogroup_list.html:83
-#: core/templates/core/macrogroup_list_table.html:43
-msgid "Delete"
-msgstr "Eliminar"
+#| msgid "Redo/Active"
+msgid "Restore / Activate"
+msgstr "Restaurar/Ativar"
 
-#: core/templates/core/group_deactive_list.html:62
+#: core/templates/core/group_deactive_list.html:86
+msgid "Delete permanently"
+msgstr "Eliminar definitivamente"
+
+#: core/templates/core/group_deactive_list.html:92
 msgid "Warning: deleting the group will delete the projects it contains!"
 msgstr "Aviso: eliminar o grupo eliminará os projetos que contém!"
 
-#: core/templates/core/group_form.html:33
-msgid "Current"
-msgstr "Atual"
+#: core/templates/core/group_deactive_list.html:105
+msgid "The bin is empty"
+msgstr "A reciclagem está vazia"
 
-#: core/templates/core/group_list.html:10
-#: core/templates/core/search/group.html:9
+#: core/templates/core/group_deactive_list.html:106
+msgid "There are no deactivated cartographic groups to show."
+msgstr "Não existem grupos cartográficos desativados para apresentar."
+
+#: core/templates/core/group_form.html:15
+
+#| msgid "Cartographic groups"
+msgid "Edit cartographic group"
+msgstr "Editar grupo cartográfico"
+
+#: core/templates/core/group_form.html:15
+
+#| msgid "Cartographic groups"
+msgid "New cartographic group"
+msgstr "Novo grupo cartográfico"
+
+#: core/templates/core/group_form.html:21
+msgid ""
+"Configure name, geographic data, base layers and branding for a new map "
+"group."
+msgstr "Configure o nome, os dados geográficos, as camadas base e a marca de um novo grupo de mapas."
+
+#: core/templates/core/group_form.html:27
+#: core/templates/core/project_list.html:18
+
+#| msgid "Macro group"
+msgid "Back to groups"
+msgstr "Voltar aos grupos"
+
+#: core/templates/core/group_form.html:48
+
+#| msgid "Current"
+msgid "Currently"
+msgstr "Atualmente"
+
+#: core/templates/core/group_form.html:50
+
+#| msgid "Projects"
+msgid "projects"
+msgstr "projetos"
+
+#: core/templates/core/group_list.html:13
+#: core/templates/core/search/group.html:11
 msgid "Cartographic groups"
 msgstr "Grupos cartográficos"
 
-#: core/templates/core/group_list.html:51
-msgid "Filter by"
-msgstr "Filtrar por"
+#: core/templates/core/group_list.html:14
+msgid "Browse, organize and manage the map groups you have access to."
+msgstr "Consulte, organize e gira os grupos de mapas a que tem acesso."
 
-#: core/templates/core/group_list.html:60
-msgid "Filter"
-msgstr "Filtrar"
+#: core/templates/core/group_list.html:17
+#: core/templates/core/macrogroup_list.html:112
 
-#: core/templates/core/group_list.html:85
+#| msgid "Groups"
+msgid "groups"
+msgstr "grupos"
+
+#: core/templates/core/group_list.html:90
+
+#| msgid "Editor user groups"
+msgid "Filter groups"
+msgstr "Filtrar grupos"
+
+#: core/templates/core/group_list.html:92
+#: core/templates/core/macrogroup_list.html:82
+msgid "View mode"
+msgstr "Modo de visualização"
+
+#: core/templates/core/group_list.html:94
+#: core/templates/core/macrogroup_list.html:84
+msgid "Grid view"
+msgstr "Vista em grelha"
+
+#: core/templates/core/group_list.html:98
+#: core/templates/core/macrogroup_list.html:88
+msgid "List view"
+msgstr "Vista em lista"
+
+#: core/templates/core/group_list.html:104
+#: core/templates/core/group_list.html:203
+
+#| msgid "User viewer group"
+msgid "New group"
+msgstr "Novo grupo"
+
+#: core/templates/core/group_list.html:114
+msgid "Apply filter"
+msgstr "Aplicar filtro"
+
+#: core/templates/core/group_list.html:140
 msgid "Add new project"
 msgstr "Adicionar novo projeto"
 
-#: core/templates/core/group_list.html:113
-#: core/templates/core/macrogroup_list.html:74
+#: core/templates/core/group_list.html:156
+#: core/templates/core/macrogroup_list.html:134
 #: core/templates/core/macrogroup_list_table.html:40
-#: core/templates/core/project_list.html:82
-#: core/templates/core/project_list.html:84
-#: core/templates/core/search/group.html:28
-#: core/templates/core/search/macrogroup.html:24
+#: core/templates/core/project_list.html:79
+#: core/templates/core/search/group.html:44
+#: core/templates/core/search/macrogroup.html:40
 msgid "Edit"
 msgstr "Editar"
 
-#: core/templates/core/group_list.html:122
+#: core/templates/core/group_list.html:163
 msgid "Delete/Deactivate"
 msgstr "Eliminar/Desativar"
 
-#: core/templates/core/group_list.html:125
+#: core/templates/core/group_list.html:171
 msgid ""
 "<strong>Warning</strong>: deleting the group (move to bucket) will delete "
 "the projects it contains (move to the bucket)!"
 msgstr ""
 "<strong>Aviso</strong>: eliminar o grupo (mover para o lixo) eliminará os "
 "projetos que contém (mover para o balde)!"
+
+#: core/templates/core/group_list.html:185
+
+#| msgid "Add new project"
+msgid "Add new group"
+msgstr "Adicionar grupo"
+
+#: core/templates/core/group_list.html:193
+
+#| msgid "Not found"
+msgid "No groups found"
+msgstr "Não foram encontrados grupos"
+
+#: core/templates/core/group_list.html:196
+msgid "Create your first cartographic group to start organizing projects."
+msgstr "Crie o seu primeiro grupo cartográfico para começar a organizar projetos."
+
+#: core/templates/core/group_list.html:198
+msgid "No groups match your filter, or none have been shared with you yet."
+msgstr "Nenhum grupo corresponde ao filtro ou ainda não foi partilhado consigo."
 
 #: core/templates/core/include/add_project.html:4
 msgid "Add project"
@@ -641,8 +892,8 @@ msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
 msgstr ""
-"Este site usa cookies para garantir que obtenha a melhor experiência no nosso "
-"site"
+"Este site usa cookies para garantir que obtenha a melhor experiência no "
+"nosso site"
 
 #: core/templates/core/include/cookieconsent.html:12
 msgid "Got it"
@@ -656,23 +907,123 @@ msgstr "Guardar"
 msgid "Redo/Back"
 msgstr "Refazer/Voltar"
 
-#: core/templates/core/macrogroup_form.html:10
-msgid "Macro Group"
-msgstr "Macro Grupo"
+#: core/templates/core/macrogroup_form.html:14
 
-#: core/templates/core/macrogroup_form.html:24
-msgid "Current groups"
-msgstr "Grupos atuais"
+#| msgid "Macro group"
+msgid "Edit macro group"
+msgstr "Editar grupo macro"
 
-#: core/templates/core/macrogroup_list.html:10
+#: core/templates/core/macrogroup_form.html:14
+#: core/templates/core/macrogroup_list.html:94
+#: core/templates/core/macrogroup_list.html:175
+
+#| msgid "Macro group"
+msgid "New macro group"
+msgstr "Novo grupo macro"
+
+#: core/templates/core/macrogroup_form.html:20
+msgid "Group cartographic groups together under a shared label and branding."
+msgstr "Agrupe grupos cartográficos sob uma designação e uma marca comuns."
+
+#: core/templates/core/macrogroup_form.html:26
+
+#| msgid "Cartographic macro groups"
+msgid "Back to macro groups"
+msgstr "Voltar aos grupos macro"
+
+#: core/templates/core/macrogroup_form.html:48
+msgid "Linked groups:"
+msgstr "Grupos associados:"
+
+#: core/templates/core/macrogroup_form.html:53
+
+#| msgid "Macro cartographic group"
+msgid "No cartographic groups linked yet."
+msgstr "Ainda não existem grupos cartográficos associados."
+
+#: core/templates/core/macrogroup_list.html:13
 #: core/templates/core/macrogroup_list_table.html:10
-#: core/templates/core/search/macrogroup.html:8
+#: core/templates/core/search/macrogroup.html:10
 msgid "Cartographic macro groups"
 msgstr "Macro grupos cartográficos"
+
+#: core/templates/core/macrogroup_list.html:14
+msgid "Group together cartographic groups under shared identities and logos."
+msgstr "Agrupe grupos cartográficos sob identidades e logótipos comuns."
+
+#: core/templates/core/macrogroup_list.html:17
+
+#| msgid "Macro group"
+msgid "macro groups"
+msgstr "grupos macro"
+
+#: core/templates/core/macrogroup_list.html:80
+
+#| msgid "Macro group"
+msgid "All macro groups"
+msgstr "Todos os grupos macro"
+
+#: core/templates/core/macrogroup_list.html:121
+
+#| msgid "Logo link"
+msgid "No groups linked"
+msgstr "Nenhum grupo associado"
+
+#: core/templates/core/macrogroup_list.html:140
+#: core/templates/core/macrogroup_list_table.html:43
+msgid "Delete"
+msgstr "Eliminar"
+
+#: core/templates/core/macrogroup_list.html:157
+
+#| msgid "Macro group"
+msgid "Add new macro group"
+msgstr "Adicionar grupo macro"
+
+#: core/templates/core/macrogroup_list.html:165
+
+#| msgid "Macro group"
+msgid "No macro groups found"
+msgstr "Não foram encontrados grupos macro"
+
+#: core/templates/core/macrogroup_list.html:168
+msgid ""
+"Create your first macro group to organize cartographic groups under a shared "
+"identity."
+msgstr "Crie o seu primeiro grupo macro para organizar grupos cartográficos sob uma identidade comum."
+
+#: core/templates/core/macrogroup_list.html:170
+msgid "No macro groups have been shared with you yet."
+msgstr "Ainda não foram partilhados grupos macro consigo."
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
 msgstr "Macro grupo"
+
+#: core/templates/core/project_list.html:14
+
+#| msgid "Macro cartographic group"
+msgid "Projects available in this cartographic group."
+msgstr "Projetos disponíveis neste grupo cartográfico."
+
+#: core/templates/core/project_list.html:74
+msgid "Detail"
+msgstr "Detalhe"
+
+#: core/templates/core/project_list.html:80
+
+#| msgid "Editor user groups"
+msgid "Edit group"
+msgstr "Editar grupo"
+
+#: core/templates/core/search/group.html:17
+#: core/templates/core/search/macrogroup.html:16
+msgid "Collapse / expand"
+msgstr "Recolher/Expandir"
+
+#: core/templates/core/search/group.html:41
+msgid "Group projects"
+msgstr "Projetos do grupo"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
@@ -683,6 +1034,7 @@ msgid "Project"
 msgstr "Projeto"
 
 #: core/utils/data.py:24
+#, python-brace-format
 msgid "[{} error on {}({})]-- {}"
 msgstr "[{} erro em {}({})]-- {}"
 
@@ -690,34 +1042,67 @@ msgstr "[{} erro em {}({})]-- {}"
 msgid "Default base layer"
 msgstr "Camada base padrão"
 
-#: core/utils/forms.py:48
-msgid "MACRO Groups"
-msgstr "Grupos MACRO"
-
-#: core/utils/qgisapi.py:511
+#: core/utils/qgisapi.py:548
+#, python-brace-format
 msgid "Function \"{}\" is not allowed for security reasons!"
 msgstr "A função \"{}\" não é permitida por razões de segurança!"
 
-#: core/utils/qgisapi.py:516
+#: core/utils/qgisapi.py:553
+#, python-brace-format
 msgid "Variable \"{}\" is not allowed for security reasons!"
 msgstr "A variável \"{}\" não é permitida por razões de segurança!"
 
-#: core/utils/qgisapi.py:528 core/utils/qgisapi.py:545
+#: core/utils/qgisapi.py:565 core/utils/qgisapi.py:582
+#, python-brace-format
 msgid "QGIS layer with id \"{}\" could not be found!"
 msgstr "A camada QGIS com o ID \"{}\" não foi encontrada!"
 
-#: core/utils/qgisapi.py:551
+#: core/utils/qgisapi.py:588
+#, python-brace-format
 msgid "QDjango project with id \"{}\" could not be found!"
 msgstr "O projeto QDjango com o ID \"{}\" não foi encontrado!"
 
-#: core/utils/qgisapi.py:561
+#: core/utils/qgisapi.py:598
 msgid "A valid QGIS layer is required to process form data!"
-msgstr "É necessária uma camada QGIS válida para processar os dados do formulário!"
+msgstr ""
+"É necessária uma camada QGIS válida para processar os dados do formulário!"
 
-#: core/utils/qgisapi.py:575
+#: core/utils/qgisapi.py:612
 msgid "A valid QGIS layer (parent layer) is required to process form data!"
-msgstr "É necessária uma camada QGIS válida (camada principal) para processar os dados do formulário!"
+msgstr ""
+"É necessária uma camada QGIS válida (camada principal) para processar os "
+"dados do formulário!"
 
-#: core/utils/structure.py:187
+#: core/utils/structure.py:190
 msgid "Yes"
 msgstr "Sim"
+
+#, python-brace-format
+#~ msgid ""
+#~ "SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"
+#~ msgstr ""
+#~ "SRID EPSG:{srid} não é igual ao SRID do projeto atual EPSG:{layer_srid}"
+
+#~ msgid "Python"
+#~ msgstr "Python"
+
+#~ msgid "Alert"
+#~ msgstr "Alerta"
+
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Alguns erros no formulário. Verifique e envie novamente."
+
+#~ msgid "Cartographic groups deactivated"
+#~ msgstr "Grupos cartográficos desativados"
+
+#~ msgid "Filter by"
+#~ msgstr "Filtrar por"
+
+#~ msgid "Filter"
+#~ msgstr "Filtrar"
+
+#~ msgid "Macro Group"
+#~ msgstr "Macro Grupo"
+
+#~ msgid "Current groups"
+#~ msgstr "Grupos atuais"

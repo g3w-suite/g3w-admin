@@ -489,11 +489,15 @@ class CoreApiTest(CoreTestBase):
 
     def testCoreVectorApiConfigValueRelationExpression(self):
 
+        # conditional_forms.qgs project SRID is 4258, the group's SRID must match
+        group, _created = Group.objects.get_or_create(
+            name='group_epsg_4258', defaults={'title': 'Group EPSG 4258', 'srid_id': 4258})
+
         qgis_project_file = File(open(os.path.join(
             DATASOURCE_PATH, 'conditional_forms.qgs'), 'r', encoding='UTF8'))
         project = QgisProject(qgis_project_file)
         project.title = 'A form value relation project'
-        project.group = Group.objects.all()[0]
+        project.group = group
         project.save()
         qgis_project_file.close()
 

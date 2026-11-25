@@ -1,18 +1,16 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to French.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# wlorenzetti <lorenzetti@gis3w.it>, 2022.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 09:17+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: fr <info@g3wsuite.it>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,205 +18,205 @@ msgstr ""
 
 #: qplotly/static/qplotly/js/plugin.js:3
 msgid "&"
-msgstr ""
+msgstr "&"
 
 #: qplotly/static/qplotly/js/plugin.js:3
 msgid "-enter"
-msgstr ""
+msgstr "-enter"
 
 #: qplotly/static/qplotly/js/widget.js:90
 #: qplotly/static/qplotly/js/widget.js:94
 msgid "New qplotly widget"
-msgstr ""
+msgstr "Nouveau widget qplotly"
 
 #: qplotly/static/qplotly/js/widget.js:108
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 #: qplotly/static/qplotly/js/widget.js:109
 msgid "Active at startup"
-msgstr ""
+msgstr "Actif au démarrage"
 
 #: qplotly/static/qplotly/js/widget.js:110
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: qplotly/static/qplotly/js/widget.js:111
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: qplotly/static/qplotly/js/widget.js:112
 msgid "From project"
-msgstr ""
+msgstr "Depuis le projet"
 
 #: qplotly/static/qplotly/js/widget.js:113
 msgid "Linked"
-msgstr ""
+msgstr "Li?"
 
 #: qplotly/static/qplotly/js/widget.js:130
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #: qplotly/static/qplotly/js/widget.js:131
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: qplotly/static/qplotly/js/widget.js:132
 msgid "Download"
-msgstr ""
+msgstr "Télécharger"
 
 #: qplotly/static/qplotly/js/widget.js:152
 msgid "Update widget"
-msgstr ""
+msgstr "Mettre ? jour le widget"
 
 #: qplotly/static/qplotly/js/widget.js:204
 msgid "Form title"
-msgstr ""
+msgstr "Titre du formulaire"
 
 #: qplotly/static/qplotly/js/widget.js:338
 msgid "Upload DataPlotly configuration xml file"
-msgstr ""
+msgstr "Importer le fichier XML de configuration DataPlotly"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "index2"
-msgstr ""
+msgstr "index2"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "index4"
-msgstr ""
+msgstr "index4"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "uirevision"
-msgstr ""
+msgstr "uirevision"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bgcolor"
-msgstr ""
+msgstr "Couleur d'arrière-plan"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bordercolor"
-msgstr ""
+msgstr "Couleur de bordure"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "borderwidth"
-msgstr ""
+msgstr "?paisseur de bordure"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "orientation"
-msgstr ""
+msgstr "Orientation"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "traceorder"
-msgstr ""
+msgstr "Ordre des traces"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "tracegroupgap"
-msgstr ""
+msgstr "Espacement des groupes de traces"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemsizing"
-msgstr ""
+msgstr "Dimensionnement des éléments"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemclick"
-msgstr ""
+msgstr "Clic sur un élément"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemdoubleclick"
-msgstr ""
+msgstr "Double-clic sur un élément"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "xanchor"
-msgstr ""
+msgstr "Ancrage x"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "yanchor"
-msgstr ""
+msgstr "Ancrage y"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "valign"
-msgstr ""
+msgstr "Alignement vertical"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "title.text"
-msgstr ""
+msgstr "Texte du titre"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "title.side"
-msgstr ""
+msgstr "Côté du titre"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "visible"
-msgstr ""
+msgstr "Visible"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "thickness"
-msgstr ""
+msgstr "?paisseur"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "autorange"
-msgstr ""
+msgstr "?chelle automatique"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "range"
-msgstr ""
+msgstr "Plage"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bingroup"
-msgstr ""
+msgstr "Groupe d'histogrammes"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "label"
-msgstr ""
+msgstr "?tiquette"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "source"
-msgstr ""
+msgstr "Source"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "target"
-msgstr ""
+msgstr "Cible"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "value"
-msgstr ""
+msgstr "Valeur"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "line.color"
-msgstr ""
+msgstr "Couleur de ligne"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "line.width"
-msgstr ""
+msgstr "?paisseur de ligne"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "hoverinfo"
-msgstr ""
+msgstr "Informations au survol"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "hovertemplate"
-msgstr ""
+msgstr "Modèle de survol"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "color"
-msgstr ""
+msgstr "Couleur"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "final"
-msgstr ""
+msgstr "Final"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "delta"
-msgstr ""
+msgstr "Delta"
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "initial"
-msgstr ""
+msgstr "Initial"

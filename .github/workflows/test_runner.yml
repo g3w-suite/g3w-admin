@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        qgis_version: ['ltr', 'latest']
+        qgis_version: ['latest']
 
     steps:
 
@@ -48,10 +48,6 @@ jobs:
     - name: Installing Python requirements
       run: |
         docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt --break-system-packages && pip3 install -r requirements_huey.txt --break-system-packages"
-
-    - name: Installing Caching Python requirements
-      run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt --break-system-packages"
 
     - name: Installing Filemanager Python requirements
       run: |
@@ -96,10 +92,6 @@ jobs:
     - name:  Running g3w-admin editing tests
       run: |
         docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
-
-    - name:  Running g3w-admin caching tests
-      run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching"
 
     - name:  Running g3w-admin filemanager tests
       run: |

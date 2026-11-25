@@ -1,0 +1,742 @@
+/**
+ * @file
+ */
+
+const { Emitter } = g3w;
+const GUI         = g3w.app;
+
+/**
+ * Coordinates a sequential flow of editing steps.
+ *
+ * A tool owns its steps, keeps the current inputs and context, and exposes a
+ * promise-based lifecycle through {@link Tool#start} and {@link Tool#stop}.
+ * Nested tools are linked to the currently active tool through {@link Tool.Stack}.
+ */
+export class Tool extends Emitter {
+
+  /**
+   * Active tools, ordered from the root tool to the current child tool.
+   */
+  static Stack = {
+    /** @type {Tool[]} */
+    items:         [],
+    /** @returns {number} Number of active tools. */
+    get length()   { return Tool.Stack.items.length; },
+    /** @returns {Tool|undefined} Immediate parent of the current tool. */
+    get parent()   { return Tool.Stack.items.at(-2); },
+    /** @returns {Tool[]} All tools except the current one. */
+    get parents()  { return Tool.Stack.items.slice(0, -1); },
+    /** @returns {Tool|undefined} Current active tool. */
+    get current()  { return Tool.Stack.items.at(-1); },
+    /** @param {number} index Zero-based stack index. @returns {Tool|undefined} */
+    at(index)      { return Tool.Stack.items.at(index); },
+    /** Stop every active tool and roll back their changes. */
+    async stop() {
+      //get the id of the root layer id
+      const tool = Tool.Stack.items.at(0);
+      // Stop all active tools in reverse order before rolling back the root tool.
+      for (const tool of [...Tool.Stack.items].reverse()) {
+        await tool.stop();
+      }
+      // Roll back the changes made by the root tool.
+      await GUI.getPlugin('editing').getToolBoxById(tool.getContext().id).rollback();
+      // Restart the root tool if it is not set to run only once.
+      if (!tool.runOnce) {
+        await tool.start(
+          {
+            inputs:  { 
+              layer: tool.getInputs().layer,
+              features: [] 
+            },
+            context: tool.getContext(),
+          }
+        );
+      }
+      
+    }
+  };
+
+  /**
+   * Original type value used to identify this tool.
+   * 
+   * @type {string|string[]|null}
+   */
+  #type = null;
+
+  /**
+   * Steps executed in order when the tool starts.
+   * 
+   * @type {Object[]}
+   */
+  #steps = [];
+
+  /**
+   * Current step inputs.
+   *
+   * @type {Object}
+   */
+  #inputs = {};
+
+  /**
+   * Shared context passed to every step.
+   *
+   * @type {Object}
+   */
+  #context = {};
+
+  /**
+   * Translation key displayed as the current tool help message.
+   * 
+   * @type {string|null}
+   */
+  #helpMessage = null;
+
+  /**
+   * User-facing progress entries collected from the tool steps.
+   * 
+   * @type {Object<string, Object>}
+   */
+  #userMessageSteps = {};
+
+  /**
+   * Whether the Escape key event is registered for this tool.
+   *
+   * @type {boolean}
+   */
+  #registerEscKeyEvent = false;
+
+  /**
+   * Escape key up event handler.
+   *
+   * @type {Function|null}
+   */
+  #escKeyUpHandler = null;
+
+  /**
+   * Reject the active run when Escape is pressed.
+   *
+   * @type {Function|null}
+   */
+  #rejectEsc = null;
+
+  /**
+   * Tools exposed by the current step through the tool-of-tools event.
+   *
+   * @type {string[]}
+   */
+  _toolsoftool = [];
+
+  /**
+   * Tools disabled while this tool is active.
+   *
+   * @type {string[]}
+   */
+  disabledtoolsoftools = [];
+
+  /**
+   * Whether the tool is currently executing a flow.
+   *
+   * @type {boolean}
+   */
+  active = false;
+
+  /**
+   * Message associated with the current tool operation.
+   *
+   * @type {string|null}
+   */
+  message = null;
+
+  /**
+  * @param {Object} [options={}] Tool configuration.
+  * @param {string} [options.id] Identifier used by the toolbox.
+  * @param {string} [options.name] Display name or translation key.
+  * @param {string} [options.icon] Icon name or asset path.
+  * @param {boolean|Function} [options.enable=true] Whether the tool is available.
+  * @param {string|string[]} [options.type=[]] Tool type or accepted types.
+  * @param {Object} [options.inputs] Initial step inputs.
+  * @param {Object} [options.context] Shared context passed to every step.
+  * @param {Object[]} [options.steps=[]] Steps executed by the tool.
+  * @param {boolean} [options.runOnce=false] Whether the tool runs only once.
+  * @param {string} [options.backbuttonlabel] Label for a child-tool back button.
+  * @param {boolean} [options.enabled=false] Initial enabled state.
+  * @param {boolean} [options.disableEdit=false] Prevent stopping the edit .
+  * @param {boolean|Function} [options.visible=true] Whether the tool is visible.
+  * @param {string} [options.helpMessage] Initial help-message translation key.
+  * @param {boolean} [options.registerEscKeyEvent=false] Bind Escape to reject the flow.
+   */
+  constructor(options = {}) {
+
+    super();
+
+    /**
+     * Identifier used to register and retrieve the tool.
+     *
+     * @type {string|undefined}
+     */
+    this.id = options?.id;
+
+    /**
+     * Capability or editing operation handled by the tool.
+     *
+     * @type {string|string[]}
+     */
+    this.type = options?.type ?? [];
+
+    /**
+     * Display label or translation key shown by the toolbox.
+     *
+     * @type {string|undefined}
+     */
+    this.name = options?.name;
+
+    /**
+     * Icon asset or icon name displayed by the toolbox.
+     *
+     * @type {string|undefined}
+     */
+    this.icon = options?.icon;
+
+    /**
+     * Predicate or flag used to determine whether the tool can be used.
+     *
+     * @type {boolean|Function}
+     */
+    this.enable = options?.enable ?? true;
+
+    /**
+     * Whether the tool is currently enabled in the toolbox.
+     *
+     * @type {boolean}
+     */
+    this.enabled = !!options?.enabled;
+
+    /**
+     * Prevents the tool from stopping the active edit when enabled.
+     *
+     * @type {boolean}
+     */
+    this.disableEdit = !!options?.disableEdit;
+
+    /**
+     * Whether the tool is shown in the toolbox; can be computed from the tool.
+     *
+     * @type {boolean}
+     */
+    this.visible = options?.visible instanceof Function ? options.visible(this) : (undefined !== options?.visible ? options.visible: true);
+
+    /**
+     * Public reactive view of the tool properties.
+     *
+     * @type {Object<string, *>}
+     */
+    this.state = new Proxy({}, {
+      get: (_, prop) => this[prop],
+      set: (_, prop, value) => {
+        this[prop] = value;
+        return true;
+      }
+    });
+
+    /**
+     * Whether the tool should execute only once during its lifecycle.
+     *
+     * @type {boolean}
+     */
+    this.runOnce      = options?.runOnce || false;
+
+    this.#type        = options?.type        || null;
+    this.#steps       = options?.steps       || [];
+    this.#helpMessage = options?.helpMessage ?? null;
+
+    /**
+     * Initialize user message steps if any are provided.
+     */
+    if (this.#steps.length > 0) {
+      this.setUserMessagesSteps(this.#steps);
+    }
+
+    /**
+     * Label used by a parent tool to navigate back from this tool.
+     *
+     * @type {string|null}
+     */
+    this.backbuttonlabel = options?.backbuttonlabel || null; 
+
+    /** Register the ESC key event if requested by the options. */
+    this.#registerEscKeyEvent = options.registerEscKeyEvent ?? false;
+    
+  }
+
+  /**
+   * Return the identifier used to register the tool.
+   *
+   * @returns {string|undefined} Tool identifier.
+   */
+  getId() {
+    return this.id;
+  }
+
+  /**
+   * Collect the progress entries exposed by each step.
+   *
+   * @param {Object[]} steps Steps whose user-message entries should be collected.
+   * 
+   * @returns {void}
+   */
+  setUserMessagesSteps(steps) {
+    const messages = {};
+    for (const step of steps) {
+      Object.assign(messages, step.getUserMessageSteps() || {});
+    }
+    this.#userMessageSteps = messages;
+  }
+
+  /**
+   * Check whether the tool matches one of the requested types.
+   *
+   * @param {string|string[]} type Type or types to compare with this tool.
+   * 
+   * @returns {boolean} Whether the tool has one of the requested types.
+   */
+  isType(type) {
+    if (Array.isArray(type)) {
+      return type.some(t => this.#type === t);
+    }
+    return this.#type === type;
+  }
+
+  /**
+   * @returns {number|null} Position in {@link Tool.Stack}, or null before start.
+   */
+  getStackIndex() {
+    const index = Tool.Stack.items.indexOf(this);
+    return -1 === index ? null : index;
+  }
+
+  /**
+   * Set one value in the inputs passed between steps.
+   *
+   * @param {string} key Input name.
+   * @param {unknown} value Input value.
+   * 
+   * @returns {void}
+   */
+  setInput({ key, value }) {
+    this.#inputs[key] = value;
+  }
+
+  /**
+   * @returns {Object|undefined} Inputs passed to the current step.
+   */
+  getInputs() {
+    return this.#inputs;
+  }
+
+  /**
+   * Replace the context shared by all steps.
+   *
+   * @param {Object} context Context shared with the steps.
+   * 
+   * @returns {void}
+   */
+  setContext(context) {
+    this.#context = context;
+  }
+
+  /**
+   * @returns {Object|undefined} The current step context.
+   */
+  getContext() {
+    return this.#context;
+  }
+
+  /**
+   * Append a step to the current flow.
+   *
+   * @param {Object} step Step appended to the flow.
+   * 
+   * @returns {void}
+   */
+  addStep(step) {
+    this.#steps.push(step);
+  }
+
+  /**
+   * Replace the current flow and rebuild its progress entries.
+   *
+   * @param {Object[]} [steps=[]] Replacement step flow.
+   * 
+   * @returns {void}
+   */
+  setSteps(steps = []) {
+    this.#steps = steps;
+    this.setUserMessagesSteps(steps);
+  }
+
+  /**
+   * @returns {Object[]} The configured steps.
+   */
+  getSteps() {
+    return this.#steps;
+  }
+
+  /**
+   * Return the step at a given position.
+   *
+   * @param {number} index Zero-based step index.
+   * 
+   * @returns {Object|undefined} The step at the requested index.
+   */
+  getStep(index) {
+    return this.#steps[index];
+  }
+
+  /**
+   * Clear the help message and all step-progress messages.
+   *
+   * @returns {void}
+   */
+  clearMessages() {
+    this.setHelpMessage(null);
+    if (Object.keys(this.#userMessageSteps).length > 0) {
+      this.clearUserMessagesSteps();
+    }
+  }
+
+  /**
+   * Return the final step in the flow.
+   *
+   * @returns {Object|null} The final configured step, if present.
+   */
+  getLastStep() {
+    return this.#steps.at(-1) ?? null;
+  }
+
+  /**
+   * Find the step whose execution is currently active.
+   *
+   * @returns {Object|undefined} The first step currently running.
+   */
+  getRunningStep() {
+    return this.#steps.find(s => s.isRunning());
+  }
+
+  /**
+   * Run each configured step in order and pass its output to the next step.
+   *
+   * @param {*} inputs Values passed to the first step.
+   * @returns {Promise<*>} Output from the final step.
+   * @fires settoolsoftool
+   */
+  async runSteps(inputs) {
+    //get current running promise for this tool instance
+    try {
+      //loop through each step and execute it
+      for (let index = 0; index < this.#steps.length; index++) {
+        const step = this.#steps[index];
+        this.setHelpMessage(step.state.help);
+        this.emit('settoolsoftool', step.tools || []);
+        //run step and pass its output to the next step
+        inputs = await step.__run(inputs, this.getContext());
+      }
+
+      return inputs;
+    } catch(err) {
+      // A stopped flow must not reset state belonging to a newer run.
+      throw err;
+    }
+  }
+
+  /** Show progress when the configured steps provide user-facing messages. */
+  #showUserMessages() {
+    GUI.showUserMessage({
+      title:     'plugins.editing.steps',
+      type:      'tool',
+      closable:  false,
+      iconClass: 'tasks',
+      subtitle:  this.getHelpMessage() && `plugins.${this.getHelpMessage()}`,
+      hooks: {
+        body: {
+          template: /* html */`
+          <ul class = "steps-list">
+            <li
+              v-for  = "(step, id) in steps"
+              :key   = "id"
+              :style = "{ display: step.buttonnext && 'inline-flex' }"
+              :class = "{ 'done': step.done }"
+            >
+              <span v-if = "step.buttonnext" class = "button-step">
+                <span
+                  v-t-plugin = "step.description"
+                  class      = "description"
+                ></span>
+                <span
+                  class  = "dynamic-step"
+                  style  = "font-weight: bold; height: 100%;"
+                  :style = "{ color: step.buttonnext.disabled ? 'grey' : 'black' }"
+                >{{ step.dynamic }}</span>
+                <button
+                  @click          = "completeStep(step)"
+                  :class          = "'btn btn-success' + (step.buttonnext.disabled ? ' g3w-disabled' : '' )"
+                  style           = "margin-left: 10px;"
+                  data-placement  = "top"
+                  title           = "plugins.editing.next"
+                >
+                  <i style = "font-weight: bold; font-size: 1.3em;" class = "fas fa-arrow-right"></i>
+                </button>
+              </span>
+              <template v-else>
+                <i :class = "$fa(step.done ? 'success' : 'empty-circle')"></i>
+                <span v-t-plugin = "step.description"></span>
+              </template>
+            </li>
+          </ul>
+          `,
+          data: () => ({ steps: this.#userMessageSteps }),
+          methods: {
+            completeStep(step) {
+              step.done = true;
+              step.buttonnext.done();
+            },
+          },
+          beforeMount() {
+            document.head.insertAdjacentHTML(
+              'beforeend',
+              `<style id="editing-usermessage-css">
+                .steps-list                                       { align-self: flex-start; list-style: none; padding: 10px; margin-bottom: 0; }
+                .steps-list li                                    { margin-bottom: 5px; }
+                .steps-list li.done                               { font-weight: bold; color: green; }
+                .steps-list li.done > .description                { font-weight: bold; }
+                .steps-list .dynamic-step                         { padding: 10px; font-size: 1.2em; }
+                .steps-list .button-step                          { display: inline-flex; align-items: center; }
+                .steps-list :is(.button-step, button.btn-success) { align-self: normal; }
+              </style>`
+            );
+          },
+          beforeDestroy() {
+            document.head.querySelector('#editing-usermessage-css').remove();
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Start the tool and execute all configured steps in sequence.
+   *
+   * The returned promise rejects when a step rejects or the flow is stopped.
+   *
+   * @param {Object} [options={}] Runtime options.
+   * @param {Object} [options.inputs] Inputs passed to the first step.
+   * @param {Object} [options.context] Context shared with every step.
+   * @param {Object[]} [options.steps] Temporary replacement flow.
+   * 
+   * @returns {Promise<*>} Outputs from the final step.
+   * 
+   * @fires start
+   */
+  async start(options = {}) {
+    
+    this.#inputs  = options.inputs;
+    this.#context = options.context ?? {};
+
+    // Keep each active tool in the stack exactly once.
+    if (!Tool.Stack.items.includes(this)) {
+      Tool.Stack.items.push(this);
+    }
+
+    this.#steps      = options.steps ?? this.#steps;
+    this.#steps.forEach(s => s.setTool(this));
+
+    const showUserMessage = Object.keys(this.#userMessageSteps).length > 0;
+    if (showUserMessage) {
+      this.#showUserMessages?.();
+    }
+    this.emit('start');
+
+    //race promises to handle either the escape key being pressed or the steps completing
+    const promises = [];
+
+    if (this.#registerEscKeyEvent || this.#escKeyUpHandler) {
+      const { promise, reject } = Promise.withResolvers();
+      this.#rejectEsc = reject;
+      promises.push(promise);
+
+      if (this.#registerEscKeyEvent && !this.#escKeyUpHandler) {
+        this.bindEscKeyUp();
+      }
+    }
+
+    try {
+      //disable context menu
+      GUI.getMap().set('can_show_context_menu', false);
+      
+      promises.push(this.runSteps(this.#inputs));
+
+      const outputs = await Promise.race(promises);
+      if (showUserMessage) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.clearUserMessagesSteps();
+      }
+      
+      return outputs;
+      
+    } catch(e) {
+      console.warn(e);
+      if (showUserMessage) {
+        this.clearUserMessagesSteps();
+      }
+      throw e;
+    } 
+    
+  }
+
+  /**
+   * Bind Escape to reject the active run and invoke an optional callback.
+   *
+   * @param {Function} [callback=() => {}] Callback invoked on Escape.
+   */
+  bindEscKeyUp(callback = () => {}) {
+    this.unbindEscKeyUp();
+    this.#escKeyUpHandler = evt => {
+      if ('Escape' !== evt.key) {
+        return;
+      }
+      this.#rejectEsc?.();
+      callback();
+    };
+    document.addEventListener('keyup', this.#escKeyUpHandler);
+  }
+
+  /** Remove this tool's Escape key listener. */
+  unbindEscKeyUp() {
+    if (!this.#escKeyUpHandler) {
+      return;
+    }
+    document.removeEventListener('keyup', this.#escKeyUpHandler);
+    this.#escKeyUpHandler = null;
+  }
+
+  /**
+   * Close tools from child to parent. Continue cleanup after errors, then report
+   * the first failure to the caller.
+   * @param {boolean} [force=false] 
+   * @returns {Promise<void>} Resolves after cleanup completes.
+   */
+  async stop() {
+    try {
+      //get running step
+      const step = this.getRunningStep();
+      try {
+        if (step) {
+          this.clearMessages();
+          await step.__stop();
+        }
+  
+      } catch(err) {
+        console.warn(err);
+      } finally {
+        Tool.Stack.items.splice(Tool.Stack.items.indexOf(this), 1);
+      }
+    } catch(err) {
+      console.warn(err);
+    }
+    // restore context menu visibility
+    GUI.getMap().set('can_show_context_menu', true);
+    this.unbindEscKeyUp();
+    this.#rejectEsc = null;
+  
+  }
+
+  /**
+   * Reset progress state and close the tool-progress message.
+   *
+   * @returns {void}
+   */
+  clearUserMessagesSteps() {
+    Object.values(this.#userMessageSteps)
+      .forEach(step => {
+        step.done = false;
+        if (step.buttonnext) {
+          step.buttonnext.disabled = true;
+        }
+    });
+    GUI.closeUserMessage();
+  }
+
+  /**
+   * Set the label used by a parent tool to return from this tool.
+   *
+   * @param {string|null} label Back-button label, or null to clear it.
+   * 
+   * @returns {void}
+   */
+  setBackButtonLabel(label = null) {
+    this.backbuttonlabel = label;
+  }
+
+  /**
+   * @returns {string|null} The configured back-button label.
+   */
+  getBackButtonLabel() {
+    return this.backbuttonlabel;
+  }
+
+  /**
+   * Register tools exposed by a step during the current tool flow.
+   *
+   * @param {Object} step Step that owns the nested tools.
+   * @param {string[]} [tools=[]] Names of tools available to that step.
+   * 
+   * @returns {void}
+   */
+  addToolsOfTools({ step, tools = [] }) {
+    step.setToolsOfTools(this, tools);
+  }
+
+  /**
+   * Set the translation key for the current help message.
+   *
+   * @param {string|null} message Help-message translation key.
+   * 
+   * @returns {void}
+   */
+  setHelpMessage(message) {
+    this.#helpMessage = message;
+  }
+
+  /**
+   * @returns {string|null} Current help-message translation key.
+   */
+  getHelpMessage() {
+    return this.#helpMessage;
+  }
+
+  /**
+   * @returns {unknown} Features from the current inputs.
+   */
+  getFeatures() {
+    return this.#inputs.features;
+  }
+
+  /**
+   * Run only the last configured step.
+   *
+   * @param {Object} [opts={}] Runtime options passed to {@link Tool#start}.
+   * 
+   * @returns {Promise<*>} Outputs from the last step.
+   */
+  startFromLastStep(opts = {}) {
+    this.setSteps([ this.getSteps().pop() ]);
+    return this.start(opts);
+  }
+
+  /**
+   * @returns {unknown} Layer from the current inputs.
+   */
+  getLayer() {
+    return this.#inputs.layer;
+  }
+
+}

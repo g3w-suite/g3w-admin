@@ -1,8 +1,6 @@
 const GUI = g3w.app;
 
 /**
- * ORIGINAL SOURCE: g3w-client-plugin-editing/services/editingservice.js@v3.7.8
- * 
  * Finalize "formatter" value for any kind of field
  *
  * @param { string }   opts.layerId
@@ -10,8 +8,6 @@ const GUI = g3w.app;
  * @param { string }   opts.property
  *
  * @returns (field.key) or (field.value)
- *
- * @since g3w-client-plugin-editing@v3.7.0
  */
 export function getFeatureTableFieldValue({
   layerId,
@@ -19,7 +15,7 @@ export function getFeatureTableFieldValue({
   property
 } = {}) {
   // get editable fields
-  const { fields } = GUI.getPlugin('editing').getLayerById(layerId).config.editing;
+  const { fields } = GUI.getPlugin('editing').getToolBoxById(layerId).state;
 
   // get field value (raw)
   let value        = feature.get(property);

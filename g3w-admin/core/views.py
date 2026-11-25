@@ -29,6 +29,7 @@ from usersmanage.utils import get_users_for_object, userHasGroups
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2
 from usersmanage.models import User, Group as AuthGroup
 from qdjango.models import ProjectBookmark
+from qdjango.utils.models import get_public_project_ids
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm, GroupFilterForm
 from .models import (
     Group,
@@ -49,21 +50,44 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
-        # add number groups
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
-             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        user = self.request.user
 
-        qs = qs.filter(is_active=1).order_by('order')
-        context['n_groups'] = len(qs)
+        # Map groups visible to the current user
+        groups_qs = get_objects_for_user(user, 'core.view_group', Group)\
+            .filter(is_active=1).order_by('order')
+        context['n_groups'] = groups_qs.count()
+
+        # Projects / layers counters scoped on permissions and visible groups
+        try:
+            from qdjango.models import Project, Layer
+            projects_qs = get_objects_for_user(user, 'qdjango.view_project', Project)\
+                .filter(group__in=groups_qs)
+            context['n_projects'] = projects_qs.count()
+            context['n_layers'] = Layer.objects.filter(project__in=projects_qs).count()
+        except Exception:
+            context['n_projects'] = 0
+            context['n_layers'] = 0
+
+        # Recent activity: only for staff/superuser since traces may be sensitive
+        context['recent_activity'] = []
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            from .models import StatusLog
+            context['recent_activity'] = list(
+                StatusLog.objects.all().order_by('-create_datetime')[:5]
+            )
+
+        # Module widgets
         context['widgets'] = []
-
         dashboard_widgets = load_dashboard_widgets.send(self)
         for widget in dashboard_widgets:
             if widget[1]:
                 context['widgets'].append(widget[1])
 
         # Get bookmarked projects for user
-        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=self.request.user)
+        context['projects_bookmarked'] = ProjectBookmark.objects.filter(user=user).select_related('project')
+        context['public_project_ids'] = get_public_project_ids(
+            [bookmark.project for bookmark in context['projects_bookmarked']]
+        )
 
         return context
 
@@ -93,17 +117,20 @@ class SearchAdminView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Execute searches on modules
-        results = execute_search_on_models.send(self, request=self.request, search_text=self.request.GET['stext'])
-        context['search_text'] = self.request.GET['stext']
+        stext = self.request.GET.get('stext', '').strip()
+        context['search_text'] = stext
         context['results'] = []
-        for r in results:
-            context['results'] += r[1]
-
-        # Get _n_tot_results
         context['n_tot_results'] = 0
-        for r in context['results']:
-            context['n_tot_results'] += r.n_tot_results
+
+        # Execute searches on modules
+        if stext:
+            results = execute_search_on_models.send(self, request=self.request, search_text=stext)
+            for r in results:
+                context['results'] += r[1]
+
+            # Get _n_tot_results
+            for r in context['results']:
+                context['n_tot_results'] += r.n_tot_results
 
         return context
 
@@ -113,6 +140,8 @@ class SearchAdminView(TemplateView):
 
 class GroupListView(ListView):
     """List group view."""
+
+    queryset_permission = 'core.view_group'
 
     def set_filters(self):
         """ Set filters by URL GET parameters """
@@ -181,7 +210,7 @@ class GroupListView(ListView):
 
     def get_queryset(self):
 
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
+        qs = get_objects_for_user(self.request.user, self.queryset_permission, Group)
              #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
         qs = self._is_active(qs)
         qs = qs.order_by('order')
@@ -210,9 +239,11 @@ class GroupListView(ListView):
 
 
 class GroupDeactiveListView(GroupListView):
-    """ ListView to show map groups with is_active=0"""
+    """List inactive map groups the user can delete."""
 
     template_name = 'core/group_deactive_list.html'
+    queryset_permission = 'core.delete_group'
+
     def _is_active(self, qs):
         """ Add a filter fo is_active property """
         return qs.filter(is_active=0)

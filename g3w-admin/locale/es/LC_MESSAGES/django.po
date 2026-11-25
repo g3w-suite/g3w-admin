@@ -1,24 +1,23 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translation of G3W-ADMIN to Spanish.
+# Copyright (C) 2016-2018 GIS3W di Lorenzetti Walter & c. S.n.c.
+# This file is distributed under the terms of the Mozilla Public License 2.0.
+# Samuel Mesa <samuelmesa@linuxmail.org>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-18 22:38+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: g3w-admin\n"
+"POT-Creation-Date: 2026-10-23 10:10+0200\n"
+"PO-Revision-Date: 2026-10-23 10:10+0200\n"
+"Last-Translator: G3W-SUITE Development Team <info@g3wsuite.it>\n"
+"Language-Team: es <info@g3wsuite.it>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: OWS/utils/data.py:125
+#, python-brace-format
 msgid "The GetFeatureResponse response is malformed: {}"
 msgstr "La respuesta GetFeatureResponse tiene un formato incorrecto: {}"
 
@@ -62,7 +61,7 @@ msgstr "Cambiar contraseña"
 msgid "Log out"
 msgstr "Cerrar sesión"
 
-#: templates/base.html:190 templates/index.html:7
+#: templates/base.html:183
 msgid "Dashboard"
 msgstr "Panel de control"
 
@@ -71,14 +70,14 @@ msgstr "Panel de control"
 msgid ""
 "<strong>G3W-SUITE Version %(version)s</strong>: administration GIS "
 "application."
-msgstr ""
+msgstr "<strong>Versión %(version)s de G3W-SUITE</strong>: aplicación de administración de SIG."
 
 #: templates/base.html:236
 #, python-format
 msgid ""
-"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://www.gis3w."
-"it\">GIS3W</a>.</strong> All rights reserved."
-msgstr ""
+"<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://"
+"www.gis3w.it\">GIS3W</a>.</strong> All rights reserved."
+msgstr "<strong>Copyright &copy; 2015 - %(year)s <a href=\"http://www.gis3w.it\">GIS3W</a>.</strong> Todos los derechos reservados."
 
 #: templates/base.html:254
 msgid ""
@@ -98,23 +97,24 @@ msgstr "Autenticarse para iniciar sesión"
 msgid "LOGIN ERROR"
 msgstr "ERROR DE INICIO DE SESIÓN"
 
-#: templates/base_login.html:30 templates/login.html:25
+#: templates/base_login.html:30 templates/login.html:28
+#: templates/login.html:34
 msgid "Username and/or password uncorrect"
 msgstr "Nombre de usuario y/o contraseña incorrectos"
 
-#: templates/base_login.html:45 templates/login.html:82
+#: templates/base_login.html:45 templates/login.html:92
 #: templates/two_factor/_wizard_actions.html:17
 #: templates/two_factor/_wizard_actions.html:25
 #: templates/two_factor/_wizard_actions_login.html:9
 msgid "Sign In"
 msgstr "Iniciar sesión"
 
-#: templates/base_login.html:51 templates/login.html:110
+#: templates/base_login.html:51 templates/login.html:120
 #: templates/registration/password_reset_form.html:22
 msgid "Forgot your password?"
 msgstr "¿Olvidó su contraseña?"
 
-#: templates/base_login.html:58 templates/login.html:122
+#: templates/base_login.html:58 templates/login.html:132
 msgid "Sign up"
 msgstr "Registrarse"
 
@@ -122,7 +122,8 @@ msgstr "Registrarse"
 msgid " Version"
 msgstr "Versión"
 
-#: templates/include/navbar_right_menu.html:11
+#: templates/include/navbar_right_menu.html:11 templates/index.html:21
+#: templates/search.html:8 templates/search.html:33
 msgid "Search"
 msgstr "Buscar"
 
@@ -179,43 +180,98 @@ msgstr "Administración de Django"
 msgid "Go to staff administration section"
 msgstr "Ir a la sección de administración del personal"
 
-#: templates/index.html:8
-msgid "Current situation"
-msgstr "Situación actual"
+#: templates/index.html:11
+#, python-format
+msgid "Welcome back, %(name)s"
+msgstr "Te damos la bienvenida de nuevo, %(name)s"
+
+#: templates/index.html:13
+msgid "Here is an overview of your geospatial workspaces."
+msgstr "Aquí tienes un resumen de tus espacios de trabajo geoespaciales."
 
 #: templates/index.html:20
-msgid "Groups"
-msgstr "Grupos"
+msgid "Search groups, projects, layers…"
+msgstr "Buscar grupos, proyectos y capas…"
 
-#: templates/index.html:27
-msgid "Show"
-msgstr "Mostrar"
+#: templates/index.html:35
+#| msgid "Groups"
+msgid "Map groups"
+msgstr "Grupos de mapas"
 
-#: templates/index.html:33
-msgid "Projects bookmarked"
-msgstr "Proyectos marcados"
+#: templates/index.html:46
+msgid "Projects"
+msgstr "Proyectos"
 
-#: templates/index.html:39 templates/index.html:52
-msgid "Show map"
-msgstr "Mostrar mapa"
-
-#: templates/index.html:57
+#: templates/index.html:55 templates/index.html:119
+#: templates/index.html:120
 msgid "Layers"
 msgstr "Capas"
 
-#: templates/index.html:62
-msgid "Edit"
-msgstr "Editar"
+#: templates/index.html:64
+msgid "Bookmarked projects"
+msgstr "Proyectos marcados"
 
-#: templates/index.html:72
+#: templates/index.html:71
+msgid "Quick actions"
+msgstr "Acciones rápidas"
+
+#: templates/index.html:73
+msgid "Browse groups"
+msgstr "Explorar grupos"
+
+#: templates/index.html:75
+msgid "New group"
+msgstr "Nuevo grupo"
+
+#: templates/index.html:77
+msgid "Advanced search"
+msgstr "Búsqueda avanzada"
+
+#: templates/index.html:81
+msgid "Projects bookmarked"
+msgstr "Proyectos marcados"
+
+#: templates/index.html:94
+msgid "Project not accessible to anonymous users"
+msgstr "El proyecto no está disponible para usuarios anónimos"
+
+#: templates/index.html:104
 msgid "Remove bookmark"
 msgstr "Eliminar marcador"
 
-#: templates/index.html:85
+#: templates/index.html:113
+msgid "Show map"
+msgstr "Mostrar mapa"
+
+#: templates/index.html:114
+msgid "Map"
+msgstr "Mapa"
+
+#: templates/index.html:123 templates/index.html:124
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/index.html:136
+msgid "No bookmarked projects yet"
+msgstr "Todavía no hay proyectos marcados"
+
+#: templates/index.html:137
+msgid "Open any project map and click the bookmark icon to pin it here."
+msgstr "Abre el mapa de cualquier proyecto y pulsa el icono de marcador para fijarlo aquí."
+
+#: templates/index.html:143
+msgid "Recent activity"
+msgstr "Actividad reciente"
+
+#: templates/index.html:160
+msgid "ago"
+msgstr "hace"
+
+#: templates/index.html:169
 msgid "Module widgets"
 msgstr "Widgets de módulo"
 
-#: templates/login.html:32 templates/two_factor/core/_login.html:17
+#: templates/login.html:42 templates/two_factor/core/_login.html:17
 msgid ""
 "Use this form for entering backup tokens for logging in. These tokens have "
 "been generated for you to print and keep safe. Please enter one of these "
@@ -226,29 +282,19 @@ msgstr ""
 "segura. Introduzca uno de estos tokens de respaldo para iniciar sesión en su "
 "cuenta."
 
-#: templates/login.html:54 templates/two_factor/core/_login.html:31
+#: templates/login.html:64 templates/two_factor/core/_login.html:31
 msgid "Or, alternatively, use one of your other authentication methods:"
 msgstr "O, alternativamente, use uno de sus otros métodos de autenticación:"
 
-#: templates/login.html:72
-msgid "Username"
-msgstr ""
-
-#: templates/login.html:76
-#, fuzzy
-#| msgid "New password"
-msgid "Password"
-msgstr "Nueva contraseña"
-
-#: templates/login.html:93 templates/two_factor/core/_login.html:51
+#: templates/login.html:103 templates/two_factor/core/_login.html:51
 msgid "As a last resort, you can use a backup token:"
 msgstr "Como último recurso, puede usar un token de respaldo:"
 
-#: templates/login.html:96 templates/two_factor/core/_login.html:54
+#: templates/login.html:106 templates/two_factor/core/_login.html:54
 msgid "Use Backup Token"
 msgstr "Usar token de respaldo"
 
-#: templates/login.html:115
+#: templates/login.html:125
 #: templates/registration/username_recovery_form.html:22
 msgid "Forgot your username?"
 msgstr "¿Olvidó su nombre de usuario?"
@@ -256,7 +302,7 @@ msgstr "¿Olvidó su nombre de usuario?"
 #: templates/otp/email/token.txt:1
 #, python-format
 msgid "This email was sent by %(domain)s for two-factor authentication (2FA)."
-msgstr ""
+msgstr "Este correo electrónico se ha enviado desde %(domain)s para la autenticación de dos factores (2FA)."
 
 #: templates/otp/email/token.txt:1
 msgid "This email was sent by G3W-SUITE for two-factor authentication (2FA)."
@@ -267,7 +313,7 @@ msgstr ""
 #: templates/otp/email/token.txt:3
 #, python-format
 msgid "Your one-time password (OTP) token is: %(token)s"
-msgstr ""
+msgstr "Tu código de un solo uso (OTP) es: %(token)s"
 
 #: templates/registration/password_reset_complete.html:8
 msgid "Password reset complete"
@@ -324,7 +370,7 @@ msgstr ""
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
-msgstr ""
+msgstr "Has recibido este correo porque solicitaste restablecer la contraseña de tu cuenta de usuario en %(site_name)s."
 
 #: templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -332,7 +378,7 @@ msgstr "Por favor, vaya a la siguiente página y elija una nueva contraseña:"
 
 #: templates/registration/password_reset_email.html:8
 msgid "Your username, in case you’ve forgotten:"
-msgstr ""
+msgstr "Tu nombre de usuario, por si lo has olvidado:"
 
 #: templates/registration/password_reset_form.html:12
 #: templates/registration/username_recovery_form.html:12
@@ -359,7 +405,7 @@ msgstr "Enviarme instrucciones"
 #: templates/registration/password_reset_subject.txt:2
 #, python-format
 msgid "Password reset on %(site_name)s"
-msgstr ""
+msgstr "Restablecimiento de contraseña en %(site_name)s"
 
 #: templates/registration/username_recovery_done.html:9
 msgid "We've emailed you your username. You should receive the email shortly!"
@@ -372,7 +418,7 @@ msgstr ""
 msgid ""
 "You're receiving this email because you requested a username recovery for "
 "your user account at %(site_name)s."
-msgstr ""
+msgstr "Has recibido este correo porque solicitaste recuperar el nombre de usuario de tu cuenta en %(site_name)s."
 
 #: templates/registration/username_recovery_email.html:4
 msgid "Your username is:"
@@ -391,23 +437,41 @@ msgstr "Enviarme nombre de usuario"
 #: templates/registration/username_recovery_subject.txt:2
 #, python-format
 msgid "Username recovery on %(site_name)s"
-msgstr ""
+msgstr "Recuperación del nombre de usuario en %(site_name)s"
 
-#: templates/search.html:6
-msgid "Search results for"
-msgstr "Resultados de búsqueda para"
+#: templates/search.html:8
+#| msgid "Search results for"
+msgid "Search results"
+msgstr "Resultados de búsqueda"
 
-#: templates/search.html:14
-msgid "Not results found!"
-msgstr "¡No se encontraron resultados!"
+#: templates/search.html:11
+msgid "for"
+msgstr "para"
 
-#: templates/search.html:16
-msgid "Found "
-msgstr "Encontrado "
+#: templates/search.html:19
+#, python-format
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] "%(counter)s resultado"
+msgstr[1] "%(counter)s resultados"
 
-#: templates/search.html:16
-msgid " results."
-msgstr "resultados."
+#: templates/search.html:22
+#| msgid " results."
+msgid "No results"
+msgstr "No hay resultados"
+
+#: templates/search.html:31
+msgid "Search groups, macro groups, projects..."
+msgstr "Buscar grupos, macrogrupos y proyectos…"
+
+#: templates/search.html:44
+#| msgid "Not results found!"
+msgid "No results found"
+msgstr "No se encontraron resultados"
+
+#: templates/search.html:45
+msgid "No item matches your query. Try a different keyword or check spelling."
+msgstr "Ningún elemento coincide con tu búsqueda. Prueba con otra palabra clave o revisa la ortografía."
 
 #: templates/socialaccount/authentication_error.html:5
 #: templates/socialaccount/authentication_error.html:8
@@ -625,7 +689,7 @@ msgstr "Seguridad de la cuenta"
 #: templates/two_factor/profile/profile.html:12
 #, python-format
 msgid "Primary method: %(primary)s"
-msgstr ""
+msgstr "Método principal: %(primary)s"
 
 #: templates/two_factor/profile/profile.html:15
 msgid "Backup Phone Numbers"
@@ -659,8 +723,8 @@ msgstr ""
 #, python-format
 msgid "You have only one backup token remaining."
 msgid_plural "You have %(counter)s backup tokens remaining."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Solo te queda un código de respaldo."
+msgstr[1] "Te quedan %(counter)s códigos de respaldo."
 
 #: templates/two_factor/profile/profile.html:48
 msgid "Show Codes"
@@ -686,3 +750,16 @@ msgid ""
 msgstr ""
 "La autenticación de dos factores no está habilitada para su cuenta. Active "
 "la autenticación de dos factores para mejorar la seguridad de su cuenta."
+
+#~ msgid "Current situation"
+#~ msgstr "Situación actual"
+
+#~ msgid "Show"
+#~ msgstr "Mostrar"
+
+#~| msgid "New password"
+#~ msgid "Password"
+#~ msgstr "Contraseña"
+
+#~ msgid "Found "
+#~ msgstr "Encontrado "
