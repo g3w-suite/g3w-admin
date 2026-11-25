@@ -1,15 +1,10 @@
 name: CI
 
-# Django tests run for pull requests and tags without slashes.
-# Browser BDD tests run for every event; static-file tests run for changed
-# static files on branch pushes.
 on: [push, pull_request]
 
 jobs:
-  # Django integration tests in Docker with QGIS and the Compose services.
-  # A newer run for the same ref cancels the previous Docker test run.
+  # Integration tests run in Docker with QGIS and the Compose services.
   ci_tests:
-    if: github.event_name == 'pull_request' || (startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '/'))
     runs-on: ubuntu-24.04
     concurrency:
       group: ci-tests-${{ github.ref }}
@@ -126,11 +121,13 @@ jobs:
         with:
           limit-access-to-actor: true
 
-  # Browser BDD tests run on every push and PR, independently of Docker tests.
-  # Static-file smoke tests share this job and run only on matching branch pushes.
-  # Each suite runs separately because it has its own steps and environment.
-  javascript_bdd:
+  # BDD tests run independently of Docker tests.
+  bdd_tests:
     runs-on: ubuntu-24.04
+    concurrency:
+      group: bdd-tests-${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -144,7 +141,7 @@ jobs:
       # Compare against the previous commit (or the default branch on first push).
       - name: Check for static file changes
         id: static_changes
-        if: ${{ !cancelled() && github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') }}
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') }}
         uses: dorny/paths-filter@v3
         with:
           base: ${{ github.ref }}
@@ -152,8 +149,8 @@ jobs:
             static:
               - '**/static/**'
 
-      - name: Run smoke tests (client)
-        if: ${{ !cancelled() && steps.static_changes.outputs.static == 'true' }}
+      - name: Run BDD tests (client)
+        if: ${{ steps.static_changes.outputs.static == 'true' }}
         run: python -m behave g3w-admin/client/tests/features --format progress --junit --junit-directory g3w-admin/client/tests/results
 
       - name: Run BDD tests (qtimeseries)
@@ -162,11 +159,11 @@ jobs:
       - name: Run BDD tests (qplotly)
         run: python -m behave g3w-admin/qplotly/tests/features --format progress --junit --junit-directory g3w-admin/qplotly/tests/results
 
-      # Upload all available JUnit reports even if a preceding test fails.
+      # Upload tests reports.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: javascript-bdd-results
+          name: bdd-results
           path: |
             g3w-admin/qtimeseries/tests/results
             g3w-admin/qplotly/tests/results
