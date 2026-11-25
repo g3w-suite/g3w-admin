@@ -1,8 +1,8 @@
 name: CI
 
 # Django tests run for pull requests and tags without slashes.
-# JavaScript BDD tests run for every event; static tests run for branch
-# pushes that change static files.
+# Browser BDD tests run for every event; static-file tests run for changed
+# static files on branch pushes.
 on: [push, pull_request]
 
 jobs:
@@ -127,13 +127,8 @@ jobs:
           limit-access-to-actor: true
 
   # Browser BDD tests run on every push and PR, independently of Docker tests.
-  # They use Python 3.12 and headless Chromium; behave.ini selects Qtimeseries
-  # by default, while the Qplotly feature directory is passed explicitly.
-  # Run locally from the repository root:
-  #   python -m pip install -r requirements_test.txt
-  #   python -m playwright install chromium
-  #   python -m behave
-  #   python -m behave g3w-admin/qplotly/tests/features
+  # Static-file smoke tests share this job and run only on matching branch pushes.
+  # Each suite runs separately because it has its own steps and environment.
   javascript_bdd:
     runs-on: ubuntu-24.04
     steps:
@@ -145,34 +140,11 @@ jobs:
           cache-dependency-path: requirements_test.txt
       - run: python -m pip install -r requirements_test.txt
       - run: python -m playwright install --with-deps chromium
-      - run: python -m behave --junit --junit-directory g3w-admin/qtimeseries/tests/results
-      - run: python -m behave g3w-admin/qplotly/tests/features --junit --junit-directory g3w-admin/qplotly/tests/results
-      # Attempt to upload each JUnit report even if a preceding step fails.
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: qtimeseries-javascript-bdd-results
-          path: g3w-admin/qtimeseries/tests/results
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: qplotly-javascript-bdd-results
-          path: g3w-admin/qplotly/tests/results
 
-  # Compare static files on branch pushes. On a first push to a non-default
-  # branch, compare with the default branch; the initial default-branch push
-  # treats all files as added. This can differ from GitHub's native paths filter.
-  static_changes:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
-    runs-on: ubuntu-latest
-    outputs:
-      static: ${{ steps.changes.outputs.static }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      # Compare against the previous commit (or the default branch on first push).
       - name: Check for static file changes
-        id: changes
+        id: static_changes
+        if: ${{ !cancelled() && github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') }}
         uses: dorny/paths-filter@v3
         with:
           base: ${{ github.ref }}
@@ -180,32 +152,22 @@ jobs:
             static:
               - '**/static/**'
 
-  # Run only when static files changed on a branch push.
-  # The browser scenario opens the development expression map, substitutes
-  # matching local static files, and checks application and editing-plugin
-  # readiness. Unmatched files come from the remote server; JavaScript errors
-  # are collected after navigation, not during the initial page load.
-  test_static_files:
-    needs: static_changes
-    if: needs.static_changes.outputs.static == 'true'
-    runs-on: ubuntu-24.04
-    concurrency:
-      group: test-static-files-${{ github.ref }}
-      cancel-in-progress: true
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Run smoke tests (client)
+        if: ${{ !cancelled() && steps.static_changes.outputs.static == 'true' }}
+        run: python -m behave g3w-admin/client/tests/features --format progress --junit --junit-directory g3w-admin/client/tests/results
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Run BDD tests (qtimeseries)
+        run: python -m behave g3w-admin/qtimeseries/tests/features --format progress --junit --junit-directory g3w-admin/qtimeseries/tests/results
+
+      - name: Run BDD tests (qplotly)
+        run: python -m behave g3w-admin/qplotly/tests/features --format progress --junit --junit-directory g3w-admin/qplotly/tests/results
+
+      # Upload all available JUnit reports even if a preceding test fails.
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          python-version: '3.11'
-
-      - name: Install test dependencies
-        run: python -m pip install -r requirements_test.txt
-
-      - name: Install Playwright browser
-        run: playwright install chromium
-
-      - name: Run tests
-        run: python -m behave g3w-admin/client/tests/features
+          name: javascript-bdd-results
+          path: |
+            g3w-admin/qtimeseries/tests/results
+            g3w-admin/qplotly/tests/results
+            g3w-admin/client/tests/results
