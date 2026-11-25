@@ -882,7 +882,6 @@ ul.g3w-tools .tool:hover              { background-color: #374850; }
 .fade-enter-active, .fade-leave-active                                                        { transition: opacity 0.25s ease-out; }
 
 .back-btn .back-link,
-.query_relation_field_message,
 .queryresults-container ul > li span.key,
 
 .query_relation_field,
