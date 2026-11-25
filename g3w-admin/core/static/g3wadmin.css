@@ -29500,6 +29500,7 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 .projects-cards-grid.is-list-view .project-card .pc-title {
     margin: 0 0 4px;
     font-size: 15px;
+    flex-shrink: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -29507,9 +29508,13 @@ div.qplotly > table > tbody > tr > td:nth-child(5) {
 .projects-cards-grid.is-list-view .project-card .pc-meta {
     font-size: 12px;
     display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     gap: 6px 14px;
     margin: 0;
+}
+.projects-cards-grid.is-list-view .project-card .pc-meta > span:last-child {
+    flex-basis: 100%;
 }
 .projects-cards-grid.is-list-view .project-card .pc-actions {
     border-top: none;

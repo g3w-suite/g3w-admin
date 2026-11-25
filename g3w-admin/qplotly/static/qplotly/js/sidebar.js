@@ -10,8 +10,11 @@ export default ({
       v-disabled = "service.state.loading"
       :id        = "id"
       class      = "plot-content"
+      :role      = "rel ? 'region' : null"
+      :aria-label = "rel ? $t('plugins.qplotly.title') : null"
+      :tabindex  = "rel ? 0 : null"
       :style     = "{
-        overflow: 'hidden visible',
+        overflow: rel ? 'auto' : 'hidden visible',
         width:    '100%',
         height:   order.length > 1 && rel?.height ? rel.height + 'px' : '100%',
       }"
@@ -66,7 +69,10 @@ export default ({
             ></li>
           </ul>
 
-          <div :ref = "plotId"></div>
+          <div
+            :ref   = "plotId"
+            :style = "rel ? { minWidth: '250px', minHeight: rel.height ? null : '250px' } : {}"
+          ></div>
 
         </figure>
 
@@ -126,6 +132,7 @@ export default ({
      * @param { Object } opts.charts
      * @param { Array }  opts.order  ordered array of plot ids 
      * @param { Array }  opts.plotId id of plot to be removed 
+     * @param { boolean } opts.throwOnError propagate errors during initial mounting
      * 
      * @returns { Promise<void> }
      */
@@ -133,6 +140,7 @@ export default ({
       charts = {},
       order  = [],
       plotId = null,
+      throwOnError = false,
     } = {}) {
       if (!order || !charts) {
         return;
@@ -154,7 +162,7 @@ export default ({
       });
 
       // draw all charts → loop through plots ids (ordered) draw Plotly Chart
-      (await Promise.allSettled(this.order.flatMap(plotId => 
+      const results = await Promise.allSettled(this.order.flatMap(plotId =>
         this.charts?.[plotId]?.map(async ({ chart, state }) => {
           try {
             await this.$nextTick();
@@ -162,6 +170,9 @@ export default ({
             const svg_container  = plot_container?.querySelector('.svg-container');
             // fold multi‑plot arrays into a single trace list
             let traces = chart.data;
+            if (!traces) {
+              throw new Error('Failed to load chart data');
+            }
             if (Array.isArray(traces[0])) {
               // chart.data is an array of arrays: flatten one level
               traces = traces.flat();
@@ -214,12 +225,20 @@ export default ({
             }
           } catch (e) {
             console.warn(e);
+            if (throwOnError) {
+              throw e;
+            }
           }
           return plotId;
         })
-      ))).forEach(response => this.charts?.[response.value]?.forEach(chart => chart.state.loading = false));
+      ));
+      results.forEach(response => this.charts?.[response.value]?.forEach(chart => chart.state.loading = false));
 
       setTimeout(() => this.service.setLoading(false))
+      const failure = throwOnError && results.find(response => 'rejected' === response.status);
+      if (failure) {
+        throw failure.reason;
+      }
     },
 
   },
@@ -227,44 +246,46 @@ export default ({
   /**
    * @listens service~change-charts
    */
-  async mounted() {
+  mounted() {
+    this.mountPromise = (async () => {
 
-    //show chart on query result
-    if (this.container) {
-      this.container.append(this.$el);
-    }
-    
-    this.service.on('change-charts', this.draw);
+      //show chart on query result
+      if (this.container) {
+        this.container.append(this.$el);
+      }
 
-    // show chart in sidebar
-    if (!this.container) {
-      await GUI.showContent({
-        content: this.$el,
-        title:   'plugins.qplotly.title',
+      this.service.on('change-charts', this.draw);
+
+      // show chart in sidebar
+      if (!this.container) {
+        await GUI.showContent({
+          content: this.$el,
+          title:   'plugins.qplotly.title',
+        });
+      }
+
+      // at mount time get Charts
+      const { charts, order } = await this.service.getCharts({
+        layerIds: this.ids, // provided by query result service otherwise is undefined
+        rel:      this.rel, // provided by query result service otherwise is undefined
       });
-    }
 
-    // at mount time get Charts
-    const { charts, order } = await this.service.getCharts({
-      layerIds: this.ids, // provided by query result service otherwise is undefined
-      rel:      this.rel, // provided by query result service otherwise is undefined
-    });
+      // set charts
+      await this.draw({ charts, order, throwOnError: true });
 
-    // set charts
-    await this.draw({ charts, order });
-    
-    this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
-    this.resize.observe(this.$el);
-    
-    this.service.state.showCharts = true;
-    
+      this.resize = new ResizeObserver(debounce(() => { this.draw({ order: this.order }); }));
+      this.resize.observe(this.$el);
+
+      this.service.state.showCharts = true;
+
+    })();
   },
 
   /**
    * un listen all events
    */
   beforeDestroy() {
-    this.resize.unobserve(this.$el);
+    this.resize?.unobserve(this.$el);
 
     if (this.container) {
       this.$el.remove();
