@@ -1,0 +1,25 @@
+name: CD
+
+# Deploy the development server on pushes to dev. This workflow is independent
+# of CI: deployment does not wait for tests and can run even if they fail.
+on:
+  push:
+    branches: [ dev ]
+
+jobs:
+  # The SSH action executes update-deploy.sh in the existing remote Docker
+  # checkout. The script and server configuration are managed outside this repo.
+  deploy:
+    runs-on: ubuntu-24.04
+    
+    steps:
+      - name: Deploy to dev.g3wsuite.it
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: cd /srv/g3w-suite-docker && sh update-deploy.sh
+          # Configure these repository secrets with the SSH host, username,
+          # private key and private-key passphrase respectively.
+          host: ${{ secrets.HOST_DEV_G3WSUITE }}
+          username: ${{ secrets.user_DEV_G3WSUITE }}
+          privateKey: ${{ secrets.PRIVATE_KEY_PASS}}
+          passphrase: ${{ secrets.PASSPRHASE_KEY_PASS }}

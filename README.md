@@ -1,4 +1,4 @@
-![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
+![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/ci.yml/badge.svg)
 [![License](https://img.shields.io/badge/license-MPL%202-blue.svg?style=flat)](LICENSE)
 
 # G3W-ADMIN
@@ -182,8 +182,6 @@ Any additional package must be placed into the [`/g3w-admin/g3w-admin`](./g3w-ad
 
 ## Testing
 
-Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.34) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
-
 The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 - [Dockerfile.deps](ci_scripts/Dockerfile.deps) + [docker-compose.yml](docker-compose.yml) → latest QGIS release
@@ -191,26 +189,7 @@ The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
-More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [setup_suite.sh](./ci_scripts/setup_suite.sh)
-
-### Qtimeseries JavaScript
-
-Run the Behave + Playwright scenarios from the repository root:
-
-```sh
-python -m pip install -r requirements_test.txt
-python -m playwright install --with-deps chromium
-python -m behave
-```
-
-These browser tests serve local static files and use the bundled Vue and Moment
-libraries, with a simulated G3W host SDK. They cover plugin registration, temporal
-units, panel lifecycle (including visible, disabled fields and a localized layer
-prompt when no time layer is checked), time
-navigation and animation. Django, QGIS and a database are not required. The
-host's `x-select` controls are not exercised.
-Use `-D headless=false` to see the browser, or `-D browser=firefox` after installing
-that Playwright browser. CI runs Chromium via [ci.yml](.github/workflows/ci.yml).
+More info: [ci.yml](./.github/workflows/ci.yml) + [setup_suite.sh](./ci_scripts/setup_suite.sh)
 
 ---
 

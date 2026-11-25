@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Qplotly browser tests</title>
+    <link rel="icon" href="data:,">
+    <script>
+      window.initConfig = { group: { plugins: { qplotly: { baseUrl: '/qplotly/static/' } } }, staticurl: '/static/', baseurl: '/' };
+    </script>
+    <script src="/client/static/client/vendor.min.js"></script>
+  </head>
+  <body>
+    <div class="layer-relation"><div class="relation-table" id="first"></div></div>
+    <div class="layer-relation"><div class="relation-table" id="second"></div></div>
+    <script src="host.js"></script>
+    <script src="/qplotly/static/qplotly/js/plugin.js"></script>
+  </body>
+</html>

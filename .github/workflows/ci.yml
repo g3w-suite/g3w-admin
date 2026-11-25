@@ -1,10 +1,133 @@
-name: Qtimeseries JavaScript CI tests
+name: CI
 
 on: [push, pull_request]
 
 jobs:
-  javascript_bdd:
+  # Integration tests run in Docker with QGIS and the Compose services.
+  ci_tests:
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ci-tests-${{ github.ref }}
+      cancel-in-progress: true
+
+    strategy:
+      matrix:
+        # Selects docker-compose.latest.yml; no LTR version is tested here.
+        qgis_version: ['latest']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      # Cache the runner's pip downloads using all requirements files as the key.
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Start the services and copy the checkout into the G3W Suite container.
+      - name: Starting Docker compose
+        run: docker compose -f docker-compose.${{ matrix.qgis_version }}.yml up -d
+
+      - name: Copying code into the container
+        run: |
+          docker cp ./ "$(docker compose -f docker-compose.${{ matrix.qgis_version }}.yml ps -q g3w-suite)":/code
+
+      # Install the main, Huey, Filemanager and Qplotly requirements in Docker.
+      - name: Installing Python requirements
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt --break-system-packages && pip3 install -r requirements_huey.txt --break-system-packages"
+
+      - name: Installing Filemanager Python requirements
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt --break-system-packages"
+
+      - name: Installing Qplotly Python requirements
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt --break-system-packages"
+
+      # build_suite.sh is currently a no-op. setup_suite.sh prepares Django,
+      # including database migrations, collected static files and fixtures.
+      - name: Building g3w-suite
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
+
+      - name: Setting up g3w-suite
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "/code/ci_scripts/setup_suite.sh"
+
+      # Start Django in the background and wait up to 240 seconds for its port.
+      - name: Starting Django
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py runserver 0.0.0.0:8000" &
+
+      - name: Waiting for Django
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "wait-for-it -h localhost -p 8000 -t 240"
+
+      # Run each Django app's tests separately so failures identify the suite.
+      - name: Running g3w-admin core tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core"
+
+      - name: Running g3w-admin qdjango tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango"
+
+      - name: Running g3w-admin usersmanage tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage"
+
+      - name: Running g3w-admin client tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client"
+
+      - name: Running g3w-admin editing tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
+
+      - name: Running g3w-admin filemanager tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager"
+
+      - name: Running g3w-admin qplotly tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplotly"
+
+      - name: Running g3w-admin qtimeseries tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries"
+
+      - name: Running g3w-admin about tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test about"
+
+      - name: Running g3w-admin qes tests
+        run: |
+          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qes"
+
+      # On failure, allow only the workflow actor to debug for up to 15 minutes.
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+        with:
+          limit-access-to-actor: true
+
+  # BDD tests run independently of Docker tests.
+  bdd_tests:
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: bdd-tests-${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -14,9 +137,34 @@ jobs:
           cache-dependency-path: requirements_test.txt
       - run: python -m pip install -r requirements_test.txt
       - run: python -m playwright install --with-deps chromium
-      - run: python -m behave --junit --junit-directory g3w-admin/qtimeseries/tests/results
+
+      # Compare against the previous commit (or the default branch on first push).
+      - name: Check for static file changes
+        id: static_changes
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') }}
+        uses: dorny/paths-filter@v3
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            static:
+              - '**/static/**'
+
+      - name: Run BDD tests (client)
+        if: ${{ steps.static_changes.outputs.static == 'true' }}
+        run: python -m behave g3w-admin/client/tests/features --format progress --junit --junit-directory g3w-admin/client/tests/results
+
+      - name: Run BDD tests (qtimeseries)
+        run: python -m behave g3w-admin/qtimeseries/tests/features --format progress --junit --junit-directory g3w-admin/qtimeseries/tests/results
+
+      - name: Run BDD tests (qplotly)
+        run: python -m behave g3w-admin/qplotly/tests/features --format progress --junit --junit-directory g3w-admin/qplotly/tests/results
+
+      # Upload tests reports.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: qtimeseries-javascript-bdd-results
-          path: g3w-admin/qtimeseries/tests/results
+          name: bdd-results
+          path: |
+            g3w-admin/qtimeseries/tests/results
+            g3w-admin/qplotly/tests/results
+            g3w-admin/client/tests/results
