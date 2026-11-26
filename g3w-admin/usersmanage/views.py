@@ -112,7 +112,7 @@ class UserListView(G3WRequestViewMixin, ListView):
 
         column_index = request.GET.get('order[0][column]')
         column_name = request.GET.get(f'columns[{column_index}][name]')
-        queryset = self.with_display_order_annotations(queryset)
+        queryset = self.with_display_order_annotations(queryset, column_name)
         order_field = self.ajax_order_fields.get(column_name, 'username')
         if request.GET.get('order[0][dir]') == 'desc':
             order_field = f'-{order_field}'
@@ -132,7 +132,21 @@ class UserListView(G3WRequestViewMixin, ListView):
             'data': rows,
         })
 
-    def with_display_order_annotations(self, queryset):
+    def with_display_order_annotations(self, queryset, column_name):
+        annotations = {}
+        if column_name == 'groups':
+            annotations['_group_order'] = Min(
+                'groups__name',
+                filter=~Q(groups__name__in=[
+                    G3W_EDITOR1,
+                    G3W_EDITOR2,
+                    G3W_VIEWER1,
+                    G3W_VIEWER2,
+                ]),
+            )
+        if column_name != 'macrogroups':
+            return queryset.annotate(**annotations)
+
         user_group_permission = GroupObjectPermission.objects.filter(
             group__user=OuterRef(OuterRef('pk')),
             object_pk=Cast(OuterRef('pk'), ModelCharField()),
@@ -147,29 +161,21 @@ class UserListView(G3WRequestViewMixin, ListView):
             content_type__app_label='core',
             content_type__model='macrogroup',
         )
-        macrogroups = MacroGroup.objects.annotate(
+        macrogroups = MacroGroup.objects.alias(
             has_user_permission=Exists(user_permission),
             has_group_permission=Exists(user_group_permission),
         ).filter(
             Q(has_user_permission=True) | Q(has_group_permission=True)
         ).order_by('title')
 
-        return queryset.annotate(
-            _group_order=Min(
-                'groups__name',
-                filter=~Q(groups__name__in=[
-                    G3W_EDITOR1,
-                    G3W_EDITOR2,
-                    G3W_VIEWER1,
-                    G3W_VIEWER2,
-                ]),
-            ),
+        annotations.update(
             _macrogroup_order=Case(
                 When(is_superuser=True, then=Value(None)),
                 default=Subquery(macrogroups.values('title')[:1]),
                 output_field=ModelCharField(),
             ),
         )
+        return queryset.annotate(**annotations)
 
 
 class UserCreateView(G3WRequestViewMixin, CreateView):
