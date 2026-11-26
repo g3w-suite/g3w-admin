@@ -26241,15 +26241,52 @@ table.users-table > tbody > tr:first-child > td {
     outline: 0;
     box-shadow: 0 0 0 2px rgba(149, 173, 54, .2);
 }
-.users-panel .dataTables_wrapper .dataTables_paginate .paginate_button {
-    border-radius: 6px;
-    margin: 0 2px;
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 4px;
+    margin: 2px 0;
+    background: #fff;
+    border: 1px solid #eef0f3;
+    border-radius: 12px;
 }
-.users-panel .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.users-panel .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    background: #95ad36 !important;
-    border-color: #95ad36 !important;
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li {
+    float: none;
+    margin: 0;
+    border: 0;
+}
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    padding: 7px 12px;
+    color: #52606d !important;
+    background: transparent !important;
+    border: 0;
+    border-radius: 8px !important;
+    line-height: 20px;
+    text-decoration: none !important;
+}
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li > a:hover,
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li > a:focus-visible {
+    color: #0e7274 !important;
+    background: #e0f5f5 !important;
+}
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li.active > a,
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li.active > a:hover,
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li.active > a:focus {
     color: #fff !important;
+    background: #149ea0 !important;
+    box-shadow: 0 4px 10px -4px rgba(20, 158, 160, .5);
+}
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li.disabled > a,
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li.disabled > a:hover,
+.users-panel .dataTables_wrapper .dataTables_paginate ul.pagination > li.disabled > a:focus {
+    color: #6c7a89 !important;
+    background: transparent !important;
+    opacity: .5;
 }
 
 /* Responsive: condensed view on mobile */
