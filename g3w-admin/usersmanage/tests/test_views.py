@@ -16,6 +16,7 @@ from django.urls import reverse, resolve
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group as AuthGroup, User
 from usersmanage.models import Userdata
+from core.models import MacroGroup
 from .base import BaseUsermanageTestCase
 from .utils import (
     setup_testing_user_relations,
@@ -203,6 +204,60 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         })
         self.assertEqual(response.json()['recordsFiltered'], 1)
         self.assertIn(self.test_user2.username, response.json()['data'][0])
+
+    def test_users_datatables_orders_groups_and_macrogroups(self):
+        url = reverse('user-list')
+        alpha_group = AuthGroup.objects.create(name='A test group')
+        zulu_group = AuthGroup.objects.create(name='Z test group')
+        self.test_user1.groups.add(alpha_group)
+        self.test_user2.groups.add(zulu_group)
+
+        self.assertTrue(self.client.login(
+            username=self.test_user1.username,
+            password=self.test_user1.username
+        ))
+        response = self.client.get(url, {
+            'draw': 1,
+            'start': 0,
+            'length': 100,
+            'order[0][column]': 3,
+            'order[0][dir]': 'asc',
+            'columns[3][name]': 'groups',
+        })
+        rows = response.json()['data']
+        self.assertLess(
+            next(i for i, row in enumerate(rows) if self.test_user1.username in row),
+            next(i for i, row in enumerate(rows) if self.test_user2.username in row),
+        )
+
+        alpha_macrogroup = MacroGroup.objects.create(
+            name='alpha ordering',
+            title='A macro group',
+            logo_img='',
+        )
+        zulu_macrogroup = MacroGroup.objects.create(
+            name='zulu ordering',
+            title='Z macro group',
+            logo_img='',
+        )
+        assign_perm('view_macrogroup', self.test_editor1, alpha_macrogroup)
+        assign_perm('view_macrogroup', self.test_editor2, zulu_macrogroup)
+
+        response = self.client.get(url, {
+            'draw': 2,
+            'start': 0,
+            'length': 100,
+            'order[0][column]': 4,
+            'order[0][dir]': 'asc',
+            'columns[4][name]': 'macrogroups',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 11)
+        rows = response.json()['data']
+        self.assertLess(
+            next(i for i, row in enumerate(rows) if self.test_editor1.username in row),
+            next(i for i, row in enumerate(rows) if self.test_editor2.username in row),
+        )
 
     def test_users_delete(self):
         """ Test deleting user """

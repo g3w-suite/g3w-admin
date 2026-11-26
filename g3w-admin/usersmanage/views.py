@@ -25,7 +25,20 @@ from django.contrib.auth.views import (
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.db.models import Q
+from django.db.models import (
+    Case,
+    CharField as ModelCharField,
+    Exists,
+    Min,
+    OuterRef,
+    Q,
+    Subquery,
+    Value,
+    When,
+)
+from django.db.models.functions import Cast
+from guardian.models import GroupObjectPermission, UserObjectPermission
+from core.models import MacroGroup
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from django_registration.backends.activation import views as registration_views
@@ -50,6 +63,8 @@ class UserListView(G3WRequestViewMixin, ListView):
         'last_name': 'last_name',
         'date_joined': 'date_joined',
         'backend': 'userbackend__backend',
+        'groups': '_group_order',
+        'macrogroups': '_macrogroup_order',
     }
 
     def get_queryset(self):
@@ -97,6 +112,7 @@ class UserListView(G3WRequestViewMixin, ListView):
 
         column_index = request.GET.get('order[0][column]')
         column_name = request.GET.get(f'columns[{column_index}][name]')
+        queryset = self.with_display_order_annotations(queryset)
         order_field = self.ajax_order_fields.get(column_name, 'username')
         if request.GET.get('order[0][dir]') == 'desc':
             order_field = f'-{order_field}'
@@ -115,6 +131,45 @@ class UserListView(G3WRequestViewMixin, ListView):
             'recordsFiltered': filtered,
             'data': rows,
         })
+
+    def with_display_order_annotations(self, queryset):
+        user_group_permission = GroupObjectPermission.objects.filter(
+            group__user=OuterRef(OuterRef('pk')),
+            object_pk=Cast(OuterRef('pk'), ModelCharField()),
+            permission__codename='view_macrogroup',
+            content_type__app_label='core',
+            content_type__model='macrogroup',
+        )
+        user_permission = UserObjectPermission.objects.filter(
+            user_id=OuterRef(OuterRef('pk')),
+            object_pk=Cast(OuterRef('pk'), ModelCharField()),
+            permission__codename='view_macrogroup',
+            content_type__app_label='core',
+            content_type__model='macrogroup',
+        )
+        macrogroups = MacroGroup.objects.annotate(
+            has_user_permission=Exists(user_permission),
+            has_group_permission=Exists(user_group_permission),
+        ).filter(
+            Q(has_user_permission=True) | Q(has_group_permission=True)
+        ).order_by('title')
+
+        return queryset.annotate(
+            _group_order=Min(
+                'groups__name',
+                filter=~Q(groups__name__in=[
+                    G3W_EDITOR1,
+                    G3W_EDITOR2,
+                    G3W_VIEWER1,
+                    G3W_VIEWER2,
+                ]),
+            ),
+            _macrogroup_order=Case(
+                When(is_superuser=True, then=Value(None)),
+                default=Subquery(macrogroups.values('title')[:1]),
+                output_field=ModelCharField(),
+            ),
+        )
 
 
 class UserCreateView(G3WRequestViewMixin, CreateView):
