@@ -40,18 +40,10 @@ jobs:
         run: |
           docker cp ./ "$(docker compose -f docker-compose.${{ matrix.qgis_version }}.yml ps -q g3w-suite)":/code
 
-      # Install the main, Huey, Filemanager and Qplotly requirements in Docker.
+      # Install the main and Huey requirements in Docker.
       - name: Installing Python requirements
         run: |
           docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt --break-system-packages && pip3 install -r requirements_huey.txt --break-system-packages"
-
-      - name: Installing Filemanager Python requirements
-        run: |
-          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt --break-system-packages"
-
-      - name: Installing Qplotly Python requirements
-        run: |
-          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt --break-system-packages"
 
       # build_suite.sh is currently a no-op. setup_suite.sh prepares Django,
       # including database migrations, collected static files and fixtures.
@@ -92,18 +84,6 @@ jobs:
       - name: Running g3w-admin editing tests
         run: |
           docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
-
-      - name: Running g3w-admin filemanager tests
-        run: |
-          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager"
-
-      - name: Running g3w-admin qplotly tests
-        run: |
-          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplotly"
-
-      - name: Running g3w-admin qtimeseries tests
-        run: |
-          docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries"
 
       - name: Running g3w-admin about tests
         run: |
@@ -153,18 +133,10 @@ jobs:
         if: ${{ steps.static_changes.outputs.static == 'true' }}
         run: python -m behave g3w-admin/client/tests/features --format progress --junit --junit-directory g3w-admin/client/tests/results
 
-      - name: Run BDD tests (qtimeseries)
-        run: python -m behave g3w-admin/qtimeseries/tests/features --format progress --junit --junit-directory g3w-admin/qtimeseries/tests/results
-
-      - name: Run BDD tests (qplotly)
-        run: python -m behave g3w-admin/qplotly/tests/features --format progress --junit --junit-directory g3w-admin/qplotly/tests/results
-
       # Upload tests reports.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: bdd-results
           path: |
-            g3w-admin/qtimeseries/tests/results
-            g3w-admin/qplotly/tests/results
             g3w-admin/client/tests/results

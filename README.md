@@ -168,12 +168,9 @@ The following packages are released as core applications:
 
 - [caching](./g3w-admin/caching)
 - [editing](./g3w-admin/editing)
-- [filemanager](./g3w-admin/filemanager)
 - [openrouteservice](./g3w-admin/openrouteservice)
 - [OWS](./g3w-admin/OWS)
 - [qdjango](./g3w-admin/qdjango)
-- [qplotly](./g3w-admin/qplotly)
-- [qtimeseries](./g3w-admin/qtimeseries)
 - [usersmanage](./g3w-admin/usersmanage)
 
 Any additional package must be placed into the [`/g3w-admin/g3w-admin`](./g3w-admin) folder.

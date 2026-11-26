@@ -1,1 +1,1 @@
-Werkzeug==3.1.9
+# Kept as a no-op for CI/CD compatibility
