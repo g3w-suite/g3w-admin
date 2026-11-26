@@ -5,6 +5,7 @@ import zipfile
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from qgis.core import \
     QgsVectorFileWriter, \
     QgsJsonUtils, \
@@ -224,9 +225,26 @@ class QGISLayerVectorViewMixin(object):
         )
 
 
+@extend_schema(
+    tags=['core'],
+    parameters=[
+        OpenApiParameter(
+            name='mode_call',
+            location=OpenApiParameter.PATH,
+            description='Output mode: data (GeoJSON), config, shp, xls, gpx, csv, gpkg, filter_token, etc.',
+            enum=[
+                'data', 'config', 'shp', 'xls', 'gpx', 'csv', 'gpkg',
+                'filter_token', 'featurecount', 'editorformstructure',
+            ],
+        ),
+        OpenApiParameter('project_type', location=OpenApiParameter.PATH, enum=['qdjango']),
+        OpenApiParameter('project_id', location=OpenApiParameter.PATH, type=int),
+        OpenApiParameter('layer_name', location=OpenApiParameter.PATH),
+    ],
+)
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
     """
-    Returns a list of GeoJSON vector features from a layer.
+    Returns a list of GeoJSON (custom) vector features from a layer.
 
     Features can be filtered in different ways using the BaseFilterBackend implementations.
 
@@ -244,9 +262,10 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
     Example payload to filter by expression in a form context on Layer pk=2
 
+    ```json
     {
-        'layer_id': 2,
-        'form_data': {
+        "layer_id": 2,
+        "form_data": {
             "type": "Feature",
             "properties": {
                 "name": "GUATEMALA",
@@ -256,9 +275,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 "coordinates": [-90.35368448325509405, 15.68342749654157053]
             }
         },
-        'expression': "NAME=current_value('name')"
+        "expression": "NAME=current_value('name')"
     }
-
+    ```
     """
 
     permission_classes = (ProjectPermission,)

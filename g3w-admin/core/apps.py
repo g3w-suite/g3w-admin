@@ -8,6 +8,10 @@ class CoreConfig(AppConfig):
     name = 'core'
     verbose_name = 'G3W-Admin main app'
 
+    def ready(self):
+        # Register drf-spectacular auth extensions for the custom *403 classes.
+        from core.api import schema  # noqa: F401
+
     # For default Group logo image
     # -----------------------------------------------------------------
     f = settings.CLIENT_G3WSUITE_LOGO
