@@ -26,14 +26,13 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.db.models import (
+    Case,
     CharField as ModelCharField,
-    Exists,
     Min,
-    OuterRef,
     Q,
-    Subquery,
+    Value,
+    When,
 )
-from django.db.models.functions import Cast
 from guardian.models import GroupObjectPermission, UserObjectPermission
 from core.models import MacroGroup
 from guardian.shortcuts import assign_perm, get_objects_for_user
@@ -155,32 +154,42 @@ class UserListView(G3WRequestViewMixin, ListView):
         if column_name != 'macrogroups':
             return queryset.annotate(**annotations)
 
-        user_group_permission = GroupObjectPermission.objects.filter(
-            group__user=OuterRef(OuterRef('pk')),
-            object_pk=Cast(OuterRef('pk'), ModelCharField()),
-            permission__codename='view_macrogroup',
-            content_type__app_label='core',
-            content_type__model='macrogroup',
+        permission_filter = {
+            'permission__codename': 'view_macrogroup',
+            'content_type__app_label': 'core',
+            'content_type__model': 'macrogroup',
+        }
+        user_ids = list(queryset.filter(is_superuser=False).values_list('pk', flat=True))
+        macro_permissions = list(
+            UserObjectPermission.objects.filter(
+                user_id__in=user_ids,
+                **permission_filter
+            ).values_list('user_id', 'object_pk')
         )
-        user_permission = UserObjectPermission.objects.filter(
-            user_id=OuterRef(OuterRef('pk')),
-            object_pk=Cast(OuterRef('pk'), ModelCharField()),
-            permission__codename='view_macrogroup',
-            content_type__app_label='core',
-            content_type__model='macrogroup',
+        macro_permissions += list(
+            GroupObjectPermission.objects.filter(
+                group__user__in=user_ids,
+                **permission_filter
+            ).values_list('group__user', 'object_pk')
         )
-        macrogroups = MacroGroup.objects.alias(
-            has_user_permission=Exists(user_permission),
-            has_group_permission=Exists(user_group_permission),
-        ).filter(
-            Q(has_user_permission=True) | Q(has_group_permission=True)
-        ).order_by('title')
+        macro_titles = dict(
+            MacroGroup.objects.filter(
+                pk__in={object_pk for _, object_pk in macro_permissions}
+            ).values_list('pk', 'title')
+        )
+        order_by_user = {}
+        for user_id, object_pk in macro_permissions:
+            title = macro_titles.get(int(object_pk))
+            if title is not None:
+                order_by_user[user_id] = min(order_by_user.get(user_id, title), title)
 
-        annotations.update(
-            _macrogroup_order=Subquery(
-                macrogroups.values_list('title', flat=True)[:1],
-                output_field=ModelCharField(),
-            ),
+        annotations['_macrogroup_order'] = Case(
+            *[
+                When(pk=user_id, then=Value(title))
+                for user_id, title in order_by_user.items()
+            ],
+            default=Value(''),
+            output_field=ModelCharField(),
         )
         return queryset.annotate(**annotations)
 
