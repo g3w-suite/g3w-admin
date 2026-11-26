@@ -172,6 +172,38 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         self.assertEqual(len(object_list), 2)
         self.client.logout()
 
+    def test_users_datatables_pagination_and_search(self):
+        """The users DataTables endpoint paginates and searches all users."""
+        url = reverse('user-list')
+        self.assertTrue(self.client.login(
+            username=self.test_user1.username,
+            password=self.test_user1.username
+        ))
+
+        response = self.client.get(url, {
+            'draw': 1,
+            'start': 1,
+            'length': 2,
+            'order[0][column]': 1,
+            'order[0][dir]': 'asc',
+            'columns[1][name]': 'username',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['data']), 2)
+        self.assertEqual(response.json()['recordsTotal'], 11)
+
+        response = self.client.get(url, {
+            'draw': 2,
+            'start': 0,
+            'length': 10,
+            'search[value]': self.test_user2.username,
+            'order[0][column]': 1,
+            'order[0][dir]': 'asc',
+            'columns[1][name]': 'username',
+        })
+        self.assertEqual(response.json()['recordsFiltered'], 1)
+        self.assertIn(self.test_user2.username, response.json()['data'][0])
+
     def test_users_delete(self):
         """ Test deleting user """
 
