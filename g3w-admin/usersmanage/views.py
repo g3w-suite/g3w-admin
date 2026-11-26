@@ -107,7 +107,7 @@ class UserListView(G3WRequestViewMixin, ListView):
                 {'object': user},
                 request=request
             )
-            for user in queryset.order_by(order_field)[start:start + length]
+            for user in queryset.order_by(order_field, 'pk')[start:start + length]
         ]
         return JsonResponse({
             'draw': draw,
