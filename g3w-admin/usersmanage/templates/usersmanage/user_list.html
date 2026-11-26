@@ -85,6 +85,7 @@ $(function() {
     $table.DataTable({
         processing: true,
         serverSide: true,
+        orderMulti: false,
         ajax: {
             url: window.location.pathname,
             dataSrc: function(response) {
