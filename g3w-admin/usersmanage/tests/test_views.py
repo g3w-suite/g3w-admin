@@ -259,6 +259,17 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
             next(i for i, row in enumerate(rows) if self.test_editor2.username in row),
         )
 
+        response = self.client.get(url, {
+            'draw': 3,
+            'start': 0,
+            'length': 100,
+            'order[0][column]': 2,
+            'order[0][dir]': 'asc',
+            'columns[2][name]': 'roles',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['recordsTotal'], 11)
+
     def test_users_delete(self):
         """ Test deleting user """
 

@@ -26,15 +26,12 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.db.models import (
-    Case,
     CharField as ModelCharField,
     Exists,
     Min,
     OuterRef,
     Q,
     Subquery,
-    Value,
-    When,
 )
 from django.db.models.functions import Cast
 from guardian.models import GroupObjectPermission, UserObjectPermission
@@ -63,6 +60,7 @@ class UserListView(G3WRequestViewMixin, ListView):
         'last_name': 'last_name',
         'date_joined': 'date_joined',
         'backend': 'userbackend__backend',
+        'roles': '_role_order',
         'groups': '_group_order',
         'macrogroups': '_macrogroup_order',
     }
@@ -134,6 +132,16 @@ class UserListView(G3WRequestViewMixin, ListView):
 
     def with_display_order_annotations(self, queryset, column_name):
         annotations = {}
+        if column_name == 'roles':
+            annotations['_role_order'] = Min(
+                'groups__name',
+                filter=Q(groups__name__in=[
+                    G3W_EDITOR1,
+                    G3W_EDITOR2,
+                    G3W_VIEWER1,
+                    G3W_VIEWER2,
+                ]),
+            )
         if column_name == 'groups':
             annotations['_group_order'] = Min(
                 'groups__name',
@@ -169,9 +177,8 @@ class UserListView(G3WRequestViewMixin, ListView):
         ).order_by('title')
 
         annotations.update(
-            _macrogroup_order=Case(
-                When(is_superuser=True, then=Value(None)),
-                default=Subquery(macrogroups.values('title')[:1]),
+            _macrogroup_order=Subquery(
+                macrogroups.values_list('title', flat=True)[:1],
                 output_field=ModelCharField(),
             ),
         )

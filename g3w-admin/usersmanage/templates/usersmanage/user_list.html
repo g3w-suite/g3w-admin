@@ -78,7 +78,7 @@ $(function() {
         return {
             data: 'cells.' + index + '.html',
             name: name,
-            orderable: ['actions', 'roles'].indexOf(name) === -1
+            orderable: name !== 'actions'
         };
     }).get();
 
