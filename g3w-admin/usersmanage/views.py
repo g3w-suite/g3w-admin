@@ -25,6 +25,16 @@ from django.contrib.auth.views import (
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.db.models import (
+    Case,
+    CharField as ModelCharField,
+    Min,
+    Q,
+    Value,
+    When,
+)
+from guardian.models import GroupObjectPermission, UserObjectPermission
+from core.models import MacroGroup
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from django_registration.backends.activation import views as registration_views
@@ -39,10 +49,24 @@ import json
 class UserListView(G3WRequestViewMixin, ListView):
     """List users view."""
     template_name = 'usersmanage/user_list.html'
+    ajax_order_fields = {
+        'username': 'username',
+        'is_active': 'is_active',
+        'is_superuser': 'is_superuser',
+        'is_staff': 'is_staff',
+        'email': 'email',
+        'first_name': 'first_name',
+        'last_name': 'last_name',
+        'date_joined': 'date_joined',
+        'backend': 'userbackend__backend',
+        'roles': '_role_order',
+        'groups': '_group_order',
+        'macrogroups': '_macrogroup_order',
+    }
 
     def get_queryset(self):
         anonymous_user = get_user_model().get_anonymous()
-        queryset = User.objects.order_by('username')
+        queryset = User.objects.select_related('userbackend').order_by('username')
         if self.request.user.is_superuser:
             queryset = queryset.exclude(pk=anonymous_user.pk)
             if not self.request.user.is_staff:
@@ -52,6 +76,122 @@ class UserListView(G3WRequestViewMixin, ListView):
             queryset = get_objects_for_user(self.request.user, 'auth.change_user', User).order_by('username')
             #queryset = queryset.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2))
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_count'] = self.object_list.count()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if 'draw' not in request.GET:
+            return super().get(request, *args, **kwargs)
+
+        try:
+            draw = int(request.GET.get('draw', 0))
+            start = max(int(request.GET.get('start', 0)), 0)
+            length = min(max(int(request.GET.get('length', 10)), 1), 100)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid pagination parameters'}, status=400)
+
+        queryset = self.get_queryset()
+        total = queryset.count()
+        search = request.GET.get('search[value]', '').strip()
+        if search:
+            queryset = queryset.filter(
+                Q(username__icontains=search) |
+                Q(email__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(groups__name__icontains=search) |
+                Q(userbackend__backend__icontains=search)
+            ).distinct()
+        filtered = queryset.count()
+
+        column_index = request.GET.get('order[0][column]')
+        column_name = request.GET.get(f'columns[{column_index}][name]')
+        queryset = self.with_display_order_annotations(queryset, column_name)
+        order_field = self.ajax_order_fields.get(column_name, 'username')
+        if request.GET.get('order[0][dir]') == 'desc':
+            order_field = f'-{order_field}'
+
+        rows = [
+            render_to_string(
+                'usersmanage/ajax/user_list_row.html',
+                {'object': user},
+                request=request
+            )
+            for user in queryset.order_by(order_field, 'pk')[start:start + length]
+        ]
+        return JsonResponse({
+            'draw': draw,
+            'recordsTotal': total,
+            'recordsFiltered': filtered,
+            'data': rows,
+        })
+
+    def with_display_order_annotations(self, queryset, column_name):
+        annotations = {}
+        if column_name == 'roles':
+            annotations['_role_order'] = Min(
+                'groups__name',
+                filter=Q(groups__name__in=[
+                    G3W_EDITOR1,
+                    G3W_EDITOR2,
+                    G3W_VIEWER1,
+                    G3W_VIEWER2,
+                ]),
+            )
+        if column_name == 'groups':
+            annotations['_group_order'] = Min(
+                'groups__name',
+                filter=~Q(groups__name__in=[
+                    G3W_EDITOR1,
+                    G3W_EDITOR2,
+                    G3W_VIEWER1,
+                    G3W_VIEWER2,
+                ]),
+            )
+        if column_name != 'macrogroups':
+            return queryset.annotate(**annotations)
+
+        permission_filter = {
+            'permission__codename': 'view_macrogroup',
+            'content_type__app_label': 'core',
+            'content_type__model': 'macrogroup',
+        }
+        user_ids = list(queryset.filter(is_superuser=False).values_list('pk', flat=True))
+        macro_permissions = list(
+            UserObjectPermission.objects.filter(
+                user_id__in=user_ids,
+                **permission_filter
+            ).values_list('user_id', 'object_pk')
+        )
+        macro_permissions += list(
+            GroupObjectPermission.objects.filter(
+                group__user__in=user_ids,
+                **permission_filter
+            ).values_list('group__user', 'object_pk')
+        )
+        macro_titles = dict(
+            MacroGroup.objects.filter(
+                pk__in={object_pk for _, object_pk in macro_permissions}
+            ).values_list('pk', 'title')
+        )
+        order_by_user = {}
+        for user_id, object_pk in macro_permissions:
+            title = macro_titles.get(int(object_pk))
+            if title is not None:
+                order_by_user[user_id] = min(order_by_user.get(user_id, title), title)
+
+        annotations['_macrogroup_order'] = Case(
+            *[
+                When(pk=user_id, then=Value(title))
+                for user_id, title in order_by_user.items()
+            ],
+            default=Value(''),
+            output_field=ModelCharField(),
+        )
+        return queryset.annotate(**annotations)
 
 
 class UserCreateView(G3WRequestViewMixin, CreateView):
