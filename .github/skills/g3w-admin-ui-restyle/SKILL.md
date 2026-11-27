@@ -43,6 +43,7 @@ to *any* page, including plugin pages, as long as the plugin uses standard marku
 | Unified 30×30 icon-only action "chips" in any `<table class="table">` (edit/view/download green-olive, trash red) | Render navigation actions as `<a href="..." aria-label="Edit item"><i class="fa fa-pencil" aria-hidden="true"></i></a>` with a real destination — use a supported icon as the only child element, preserve an accessible action name, and omit `.btn` / `.btn-app` | CSS §"Unified action icon buttons inside admin tables" (css:30235) + teal override (css:30390) |
 | Pill Save/Redo buttons with a sticky bottom action bar on long forms | `{% include 'core/include/form_buttons.html' %}` instead of a custom button row | Template: `core/templates/core/include/form_buttons.html` (+ `form_buttons_script.html`); CSS class `.form-buttons` (css:30997) |
 | Neutralized "rainbow" AdminLTE boxes (`box-success`/`box-danger`/...) inside forms | Wrap the form body in a `<div class="form-shell">` | CSS §"Group form" → "Neutralize rainbow boxes inside the form shell" (css:26296) |
+| Restyled DataTables (card, header, search, page-size select, pagination) | Wrap the table in `.users-panel` and add `.users-table`; prefer the exact Users-list markup over plugin CSS | CSS §"Users list" (css:26029); template: `usersmanage/user_list.html` |
 
 **None of this requires copying CSS into the plugin.** It is automatic once the
 plugin reuses these includes/classes/JS helpers instead of inventing its own.
@@ -79,6 +80,15 @@ Checklist — grep the plugin for these and fix:
 7. **File upload fields not wrapped in `form` / `.form-shell`** — e.g. a bare `<input
    type="file">` injected via raw JS/AJAX outside any `<form>` won't match the
    `form input[type="file"]` / `form .dff-container` selectors.
+8. **Important/information notices using Bootstrap blue** — do not use bare
+   `.alert-info` when a plugin-specific notice must follow the teal restyle. Keep
+   `.alert`, add a scoped class (for example `.my-plugin-notice`), and use
+   `#e0f5f5` background, `#a8d8d9` border, `#0e7274` text and a 12px radius.
+9. **Endpoint/record links opening directly in a new tab** — for XML/JSON preview
+   links, use one delegated click handler and a shared `ga.ui.buildDefaultModal(...)`
+   overlay. Show a responsive iframe, format XML/JSON as indented text, and include
+   an “Open in new tab” confirm action. Preserve a real `href` so links still work
+   without JavaScript; open the new tab with `noopener,noreferrer`.
 
 ## 3. Palette & shape tokens
 
@@ -148,6 +158,43 @@ is fixed, and `.form-shell` supplies the space needed to keep the last fields vi
 </div>
 ```
 
+**DataTable matching the Users page**:
+```html
+<h3 class="box-title">Records</h3>
+<div class="users-panel">
+  <table class="table users-table" data-widget-type="dataTable">
+    <thead>...</thead>
+    <tbody>...</tbody>
+  </table>
+</div>
+```
+Do not copy Users-table search/select/pagination CSS into the plugin. The shared
+`.users-panel .dataTables_wrapper` selectors already style those controls.
+
+**Endpoint preview overlay**:
+```js
+$(document).on('click', 'a.plugin-endpoint-link', function (event) {
+    event.preventDefault();
+    var url = this.href;
+    var modal = ga.ui.buildDefaultModal({
+        modalTitle: $.trim($(this).text()),
+        modalBody: '<iframe class="plugin-endpoint-frame"></iframe>',
+        modalSize: 'modal-lg',
+        closeButtonText: gettext('Close'),
+        confirmButtonText: gettext('Open in new tab')
+    });
+    modal.$modal.find('iframe').attr('src', url);
+    modal.setConfirmButtonAction(function () {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    });
+    modal.show();
+});
+```
+When the endpoint is same-origin, fetch it as text and replace the iframe content
+with escaped, indented XML/JSON inside `<pre>`. If fetch or parsing fails, keep the
+direct iframe URL as fallback. Apply the same handler to capabilities, DCAT and
+record endpoints.
+
 ## 5. Reference map — `core/static/g3wadmin.css` sections (for copy-paste inspiration)
 
 | Line | Section | Reusable? |
@@ -160,6 +207,7 @@ is fixed, and `.form-shell` supplies the space needed to keep the last fields vi
 | 24786 | Layer expandable widgets (DataTables `row.child`) | copy pattern (snippet above) |
 | 25753 | Global chrome: header/sidebar/footer | automatic |
 | 26029 | Users list (`.users-panel`, `.user-actions`, `.role-badge`, `.bool-pill`) | copy pattern for badges/pills |
+| 26029 | Users DataTable card and controls (`.users-panel`, `table.users-table`) | **preferred pattern for plugin DataTables** |
 | 26296 | Group form (`.form-shell`, rainbow-box neutralization) | **use `.form-shell` wrapper** |
 | 26679 | Intro-card action pills (`.qa-btn`) | reusable class |
 | 28809–29421 | Per-layer sub-panel widgets (widgets/qplotly/geo-constraints/column-acl/styles/scalevis lists) | copy pattern (snippet above) |
@@ -186,3 +234,5 @@ JS helpers: `g3wadmin.js` → `ga.ui.buildDefaultModal/buildDangerModal/buildWar
 - `templates/base.html` blocks available for extension: `custom_css_links_page`,
   `body_content`, `breadcrumb`, `page_header`, `main_content`, `footer-right`,
   `custom_js_links_page`.
+- For DataTables, reuse `.users-panel` + `.users-table` before adding any
+  plugin-specific control or pagination CSS.
