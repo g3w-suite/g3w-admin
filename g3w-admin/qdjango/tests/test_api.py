@@ -16,8 +16,10 @@ import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from tempfile import TemporaryDirectory
 from threading import Thread
+from unittest import skipUnless
 from urllib.parse import parse_qs, urlsplit
 
+from django.apps import apps
 from django.conf import settings
 from django.http import SimpleCookie
 from django.core.exceptions import ObjectDoesNotExist
@@ -2295,6 +2297,7 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
                          '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
 
+    @skipUnless(apps.is_installed('qtimeseries'), 'qtimeseries plugin is not installed')
     def test_client_map_config(self):
         """ Test for client config API """
 

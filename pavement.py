@@ -98,16 +98,6 @@ def requirements():
         info("`Caching` module not active")
 
     try:
-        sh('pip install -r g3w-admin/filemanager/requirements.txt')
-    except:
-        info("`Filemanager` module not active")
-
-    try:
-        sh('pip install -r g3w-admin/qplotly/requirements.txt')
-    except:
-        info("`Qplotly` module not active")
-
-    try:
         sh('pip install -r g3w-admin/openrouteservice/requirements.txt')
     except:
         info("`Openrouteservice` module not active")

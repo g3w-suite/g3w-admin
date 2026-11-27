@@ -79,10 +79,6 @@ $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r requirements_
 
 $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
 
-$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
-
-$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
-
 $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
 
 
@@ -109,13 +105,7 @@ if [ $MOD == "test" ]; then
 
     $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching"
 
-    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager"
-
-    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplolty"
-
     $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice"
-
-    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries"
 
     $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test about"
 
